@@ -34,7 +34,7 @@ public class LineChartItemProvider extends
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
-		
+	
 		if (object instanceof LineChart) {
 			for (Object descriptor : newChildDescriptors) {
 				CommandParameter param = (CommandParameter)descriptor;

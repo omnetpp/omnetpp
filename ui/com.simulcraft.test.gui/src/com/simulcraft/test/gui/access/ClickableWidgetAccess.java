@@ -24,7 +24,7 @@ public abstract class ClickableWidgetAccess
 	}
 
 	protected abstract Point getAbsolutePointToClick();
-	
+
 	protected abstract Point toAbsolute(Point point);
 
 	protected abstract Menu getContextMenu();

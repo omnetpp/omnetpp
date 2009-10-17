@@ -202,10 +202,10 @@ public class OmnetppStartup implements IStartup {
 //						Debug.println("activeShel:"+activeShell);
 //						Debug.println("new active shell:"+Display.getDefault().getActiveShell());
 //					}
-//				
+//		
 //				});
 //			}
-//    	
+//    
 //    	});
 //    	return true;
 //    }

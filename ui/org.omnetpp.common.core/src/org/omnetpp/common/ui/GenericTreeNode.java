@@ -28,15 +28,15 @@ public class GenericTreeNode {
 	private GenericTreeNode[] children;
 	private Object payload;
 	private Comparator<GenericTreeNode> childOrder; // order of the children (maybe null)
-	
+
 	@SuppressWarnings("unchecked")
 	private static class PayloadComparator implements Comparator<GenericTreeNode> {
 		private Comparator comparator;
-		
+
 		public PayloadComparator(Comparator<? extends Object> comparator) {
 			this.comparator = comparator;
 		}
-		
+
 		public int compare(GenericTreeNode left, GenericTreeNode right) {
 			return comparator.compare(left.payload, right.payload);
 		}
@@ -49,7 +49,7 @@ public class GenericTreeNode {
 	public GenericTreeNode(Object payload) {
 		this(payload, null);
 	}
-	
+
 	public GenericTreeNode(Object payload, Comparator<? extends Object> childOrder) {
 		Assert.isTrue(payload!=null);
 		this.payload = payload;
@@ -64,7 +64,7 @@ public class GenericTreeNode {
 	public void addChild(GenericTreeNode child) {
 		if (child.parent!=null)
 			throw new RuntimeException("child node already has a parent");
-		
+
 		GenericTreeNode[] childrenNew = new GenericTreeNode[children.length + 1];
 		if (childOrder == null) {
 			System.arraycopy(children, 0, childrenNew, 0, children.length);  //XXX potential bottleneck -- use ArrayList? (Andras)
@@ -80,13 +80,13 @@ public class GenericTreeNode {
 			childrenNew[insertionPoint] = child;
 			if (insertionPoint < children.length)
 				System.arraycopy(children, insertionPoint, childrenNew, insertionPoint + 1, children.length - insertionPoint);
-			
+	
 		}
 
 		child.parent = this;
 		children = childrenNew;
 	}
-	
+
 	public void addChild(int index, GenericTreeNode child) {
 		Assert.isTrue(childOrder == null);
 		children = (GenericTreeNode[])ArrayUtils.add(children, index, child);
@@ -107,7 +107,7 @@ public class GenericTreeNode {
 		Assert.isTrue(payload!=null);
 		this.payload = payload;
 	}
-	
+
 	public int getChildCount() {
 		return children.length;
 	}
@@ -118,7 +118,7 @@ public class GenericTreeNode {
 	public GenericTreeNode[] getChildren() {
 		return children;
 	}
-	
+
 	/**
 	 * Returns the children of the node in the specified range.
 	 * 
@@ -133,7 +133,7 @@ public class GenericTreeNode {
 		System.arraycopy(children, start, result, 0, end-start);
 		return result;
 	}
-	
+
 	public GenericTreeNode getChild(int index) {
 		Assert.isLegal(0 <= index && index < children.length);
 		return children[index];
@@ -159,14 +159,14 @@ public class GenericTreeNode {
 				return i;
 		throw new RuntimeException("tree inconsistency");
 	}
-	
+
 	/**
 	 * Adds a child node with the given payload if it not already exists.
 	 */
 	public GenericTreeNode getOrCreateChild(Object payload) {
 		return getOrCreateChild(payload, null);
 	}
-	
+
 	/**
 	 * Adds a child node with the given payload and child order if it not already exists.
 	 */
@@ -178,13 +178,13 @@ public class GenericTreeNode {
 					return child;
 			}
 		}
-		
+
 		GenericTreeNode child = new GenericTreeNode(payload, childOrder);
 		addChild(child);
-		
+
 		return child;
 	}
-	
+
 	public void unlink() {
 		Assert.isLegal(parent != null);
 		parent.children = (GenericTreeNode[])ArrayUtils.remove(parent.children, indexInParent());
@@ -198,7 +198,7 @@ public class GenericTreeNode {
 	public String toString() {
 		return payload.toString();
 	}
-	
+
 	/**
 	 * Compares payloads only (of two GenericTreeNodes) 
 	 */

@@ -64,7 +64,7 @@ public class LayoutTest extends TestCase {
 		for (int i=0; i<3; ++i) 
 			addSubmodule(cmodule, "movable A", "");
 		sleep();
-		
+
 		// adding additional movables (the previous 6 nodes should not change their location)
 		for (int i=0; i<3; ++i) 
 			addSubmodule(cmodule, "movable B", "");
@@ -169,7 +169,7 @@ public class LayoutTest extends TestCase {
 			while (Display.getCurrent().readAndDispatch())
 				;
 	}
-	
+
 	private SubmoduleFigure addSubmodule(CompoundModuleFigure cmodule, String name, String displayStr) {
 		SubmoduleFigure sm = new SubmoduleFigure();
 		cmodule.getSubmoduleLayer().add(sm);
@@ -179,9 +179,9 @@ public class LayoutTest extends TestCase {
 		sm.setPinVisible(dps.getLocation(1.0f) != null);
 		return sm;
 	}
-	
+
 	private void addSubmoduleVector(CompoundModuleFigure cmodule, String name, String displayStr, int size) {
-		
+
 		for (int i=0; i<size; i++) {
 			SubmoduleFigure sm = addSubmodule(cmodule, name+"["+i+"]", displayStr);
 			sm.setSubmoduleVectorIndex(name, size, i);

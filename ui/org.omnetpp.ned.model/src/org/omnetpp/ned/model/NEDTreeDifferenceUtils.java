@@ -95,7 +95,7 @@ public class NEDTreeDifferenceUtils {
 	 */
 	public static class Applier implements IApplier {
 		final ArrayList<Runnable> runnables = new ArrayList<Runnable>();
-		
+
 		// statistics, for debugging
 		private int numNonAttributeDataChanges = 0;
 		private int numAttributeChanges = 0;
@@ -113,7 +113,7 @@ public class NEDTreeDifferenceUtils {
 				}
 			});
 		}
-		
+
 		public void replaceAttribute(final INEDElement element, final String name, final String value) {
 			numAttributeChanges++;
 			runnables.add(new Runnable() {
@@ -137,7 +137,7 @@ public class NEDTreeDifferenceUtils {
 				}
 			});
 		}
-		
+
 		public void apply() {
 			for (Runnable runnable : runnables)
 				runnable.run();
@@ -146,7 +146,7 @@ public class NEDTreeDifferenceUtils {
 		public boolean hasDifferences() {
 			return !runnables.isEmpty();
 		}
-		
+
 		@Override
 		public String toString() {
 			return "element replacements: " + numElementReplacements +
@@ -184,11 +184,11 @@ class NEDElementChildrenComparator implements IRangeComparator {
 
 		if (thisElement == null || otherElement == null || thisElement.getTagCode() != otherElement.getTagCode())
 			return false;
-		
+
 		if (thisElement.getTagCode() == NEDElementTags.NED_CONNECTION) {
 			ConnectionElement thisConnection = (ConnectionElement)thisElement;
 			ConnectionElement otherConnection = (ConnectionElement)otherElement;
-			
+	
 			String thisId = getConnectionId(thisConnection);
 			String otherId = getConnectionId(otherConnection);
 
@@ -198,7 +198,7 @@ class NEDElementChildrenComparator implements IRangeComparator {
 			// if they have the same name: synchronize (true), otherwise do remove+add (false)
 			String thisName = ((IHasName)thisElement).getName();
 			String otherName = ((IHasName)otherElement).getName();
-			
+	
 			return StringUtils.equals(thisName, otherName);
 		}
 		else {
@@ -230,7 +230,7 @@ class NEDElementChildrenComparator implements IRangeComparator {
 
 class NEDTreeDifferenceTest {
 	private static Random random = new Random(1);
-	
+
 	public void run() {
 		NEDElementFactoryEx.setInstance(new NEDElementFactoryEx());
 
@@ -244,14 +244,14 @@ class NEDTreeDifferenceTest {
 	private void test(INEDElement original) {
 		INEDElement target = original.deepDup();
 		doRandomTreeChanges(target);
-		
+
 		String targetNED = NEDTreeUtil.generateNedSource(target, false);
 		String targetXML = NEDTreeUtil.generateXmlFromPojoElementTree(target, "", false);
 
 		NEDTreeDifferenceUtils.Applier applier = new NEDTreeDifferenceUtils.Applier();
 		NEDTreeDifferenceUtils.applyTreeDifferences(original, target, applier);
 		applier.apply();
-		
+
 		final String originalNED = NEDTreeUtil.generateNedSource(original, false);
 		final String originalXML = NEDTreeUtil.generateXmlFromPojoElementTree(original, "", false);
 
@@ -278,7 +278,7 @@ class NEDTreeDifferenceTest {
 		Assert.isTrue(originalNED.equals(targetNED));
 		Assert.isTrue(originalXML.equals(targetXML));
 	}
-	
+
 	private void doRandomTreeChanges(INEDElement element) {
 		dupRandomNodes(element);
 		deleteRandomChildren(element);
@@ -288,7 +288,7 @@ class NEDTreeDifferenceTest {
 		for (INEDElement child : element)
 			doRandomTreeChanges(child);
 	}
-	
+
 	private void deleteRandomChildren(INEDElement element) {
 		for (int i = 0; i < element.getNumChildren(); i++)
 			if (random.nextDouble() < 0.1)
@@ -305,7 +305,7 @@ class NEDTreeDifferenceTest {
 			}
 		}
 	}
-	
+
 	private void dupRandomNodes(INEDElement element) {
 		if (element.getNumChildren() > 0)
 			while (random.nextDouble() < 0.1) {
@@ -323,6 +323,6 @@ class NEDTreeDifferenceTest {
 				catch (RuntimeException e) {
 					// ignore
 				}
-			}	
+			}
 	}
 }

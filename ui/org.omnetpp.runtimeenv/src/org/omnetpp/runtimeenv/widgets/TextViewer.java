@@ -706,7 +706,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 				}
 			};
 		}
-		
+
 		// restart timer
 		autoScrollDirection = direction;
 		int rate = autoScrollDirection==SWT.UP || autoScrollDirection==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE; 

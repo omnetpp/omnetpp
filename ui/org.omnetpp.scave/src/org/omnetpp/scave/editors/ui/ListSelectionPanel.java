@@ -34,7 +34,7 @@ public class ListSelectionPanel extends Composite {
 	// List controls
 	private List leftList = null;
 	private List rightList = null;
-	
+
 	/**
 	 * List of all items, i.e. union of the contents of the left and right list.
 	 */
@@ -48,14 +48,14 @@ public class ListSelectionPanel extends Composite {
 		this.items = items;
 		initialize();
 	}
-	
+
 	/**
 	 * Returns the selected items, i.e. the content of the right list.
 	 */
 	public String[] getSelectedItems() {
 		return rightList.getItems();
 	}
-	
+
 	/**
 	 * Sets the selected items.
 	 */
@@ -65,7 +65,7 @@ public class ListSelectionPanel extends Composite {
 		leftList.setItems(leftItems.toArray(new String[leftItems.size()]));
 		rightList.setItems(items.toArray(new String[items.size()]));
 	}
-	
+
 	/**
 	 * Create child controls.
 	 */
@@ -74,7 +74,7 @@ public class ListSelectionPanel extends Composite {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
 		this.setLayout(gridLayout);
-		
+
 		leftList = new List(this, SWT.MULTI | SWT.BORDER);
 		GridData gridData1 = new GridData();
 		gridData1.grabExcessHorizontalSpace = true;
@@ -90,7 +90,7 @@ public class ListSelectionPanel extends Composite {
 		gridData2.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		buttonPanel.setLayoutData(gridData2);
 		buttonPanel.setLayout(new GridLayout());
-		
+
 		Button addAllButton = new Button(buttonPanel, SWT.NONE);
 		addAllButton.setText(">>");
 		GridData gridData3 = new GridData();
@@ -101,7 +101,7 @@ public class ListSelectionPanel extends Composite {
 				move(leftList, rightList, true);
 			}
 		});
-		
+
 		Button addButton = new Button(buttonPanel, SWT.NONE);
 		addButton.setText(">");
 		GridData gridData4 = new GridData();
@@ -112,7 +112,7 @@ public class ListSelectionPanel extends Composite {
 				move(leftList, rightList, false);
 			}
 		});
-		
+
 		Button removeButton = new Button(buttonPanel, SWT.NONE);
 		removeButton.setText("<");
 		GridData gridData5 = new GridData();
@@ -123,8 +123,8 @@ public class ListSelectionPanel extends Composite {
 				move(rightList, leftList, false);
 			}
 		});
-		
-		
+
+
 		Button removeAllButton = new Button(buttonPanel, SWT.NONE);
 		removeAllButton.setText("<<");
 		GridData gridData6 = new GridData();
@@ -144,7 +144,7 @@ public class ListSelectionPanel extends Composite {
 		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		rightList.setLayoutData(gridData);
 	}
-	
+
 	/**
 	 * Moves selected or all items from <code>fromList</code> to <code>toList</code>.
 	 * The moved elements get selected in the <code>toList</code>.
@@ -156,7 +156,7 @@ public class ListSelectionPanel extends Composite {
 			fromList.removeAll();
 		else
 			fromList.remove(fromList.getSelectionIndices());
-		
+
 		// move items to toList and select them
 		toList.setRedraw(false);
 		try {
@@ -167,6 +167,6 @@ public class ListSelectionPanel extends Composite {
 			}
 		} finally {
 			toList.setRedraw(true);
-		}		
+		}
 	}
 }

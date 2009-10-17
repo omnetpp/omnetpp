@@ -19,7 +19,7 @@ public class TabItemAccess extends WidgetAccess
 	public TabItemAccess(TabItem cTabItem) {
 		super(cTabItem);
 	}
-	
+
     @Override
 	public TabItem getWidget() {
 		return (TabItem)widget;

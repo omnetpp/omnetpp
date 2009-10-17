@@ -33,7 +33,7 @@ class NumberCellEditor extends TextCellEditor
 		super(parent);
 		setValidator(NumberCellEditorValidator.instance());
 	}
-	
+
 	@Override
 	protected Object doGetValue() {
 		return Converter.stringToDouble((String)super.doGetValue());
@@ -48,7 +48,7 @@ class NumberCellEditor extends TextCellEditor
 class NumberCellEditorValidator implements ICellEditorValidator
 {
 	private static NumberCellEditorValidator instance;
-	
+
 	public static NumberCellEditorValidator instance() {
 		if (instance == null)
 			instance = new NumberCellEditorValidator();
@@ -58,14 +58,14 @@ class NumberCellEditorValidator implements ICellEditorValidator
 	public String isValid(Object value) {
 		if (value instanceof Double)
 			return null;
-		
+
 		if (value != null && !(value instanceof String))
 			return "Unexpected type: " + value.getClass().getName();
-		
+
 		String strValue = (String)value;
 		if (StringUtils.isEmpty(strValue))
 			return null;
-		
+
 		try {
 			Double.parseDouble(strValue);
 			return null;

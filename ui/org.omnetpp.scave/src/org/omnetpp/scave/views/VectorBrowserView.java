@@ -54,14 +54,14 @@ import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionEvent;
  */
 public class VectorBrowserView extends ViewWithMessagePart {
 	public static final String ID = "org.omnetpp.scave.VectorBrowserView";
-	
+
 	protected TableColumn eventNumberColumn;
 	protected VirtualTable<OutputVectorEntry> viewer;
 	protected ISelectionListener selectionChangedListener;
 	protected IPartListener partListener;
 	protected IWorkbenchPart activePart;
 	protected VectorResultContentProvider contentProvider;
-	
+
 	protected GotoAction gotoLineAction;
 	protected GotoAction gotoEventAction;
 	protected GotoAction gotoTimeAction;
@@ -73,7 +73,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		hookListeners();
 		setViewerInput(getSite().getPage().getSelection());
 	}
-	
+
 	@Override
 	protected Control createViewControl(Composite parent) {
 		contentProvider = new VectorResultContentProvider();
@@ -93,7 +93,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		tableColumn.setText("Value");
 		return viewer;
 	}
-	
+
 	private void createPulldownMenu() {
 		gotoLineAction = new GotoAction(this, GotoTarget.Line);
 		gotoEventAction = new GotoAction(this, GotoTarget.Event);
@@ -104,25 +104,25 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		manager.add(gotoEventAction);
 		manager.add(gotoTimeAction);
 	}
-	
+
 	public void gotoLine(int lineNumber) {
 		OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
 		if (entry != null)
 			viewer.scrollToElement(entry);
 	}
-	
+
 	public void gotoEvent(long eventNumber) {
 		OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
 		if (entry != null)
 			viewer.scrollToElement(entry);
 	}
-	
+
 	public void gotoTime(BigDecimal time) {
 		OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
 		if (entry != null)
 			viewer.scrollToElement(entry);
 	}
-	
+
 	public void selectLine(int lineNumber) {
 		OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
 		if (entry != null) {
@@ -130,13 +130,13 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			viewer.setSelectionElement(entry);
 		}
 	}
-	
+
 	@Override
 	public void dispose() {
 		unhookListeners();
 		super.dispose();
 	}
-	
+
 	private void hookListeners() {
 		selectionChangedListener = new INullSelectionListener() {
 			public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
@@ -150,7 +150,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
-		
+
 		partListener = new IPartListener() {
 
 			public void partActivated(IWorkbenchPart part) {
@@ -171,7 +171,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		};
 		getSite().getPage().addPartListener(partListener);
 	}
-	
+
 	private void unhookListeners() {
 		if (selectionChangedListener != null) {
 			getSite().getPage().removePostSelectionListener(selectionChangedListener);
@@ -182,12 +182,12 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			partListener = null;
 		}
 	}
-	
+
 	@Override
 	public void setFocus() {
 		viewer.setFocus();
 	}
-	
+
 	private ResultFileManager getResultFileManager(ISelection selection) {
 		if (selection instanceof IDListSelection) {
 			return ((IDListSelection)selection).getResultFileManager();
@@ -202,11 +202,11 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		}
 		return null;
 	}
-	
+
 	public void setViewerInput(ISelection selection) {
 		ResultItemRef selectedVector = null;
 		int dataPointIndex = -1;
-		
+
 		if (selection instanceof IDListSelection) {
 			IDListSelection sel = (IDListSelection)selection;
 			if (!sel.isEmpty()) {
@@ -227,18 +227,18 @@ public class VectorBrowserView extends ViewWithMessagePart {
 				}
 			}
 		}
-		
+
 		if (ObjectUtils.equals(selectedVector, viewer.getInput())) {
 			if (dataPointIndex >= 0)
 				selectLine(dataPointIndex);
 			return;
 		}
-		
+
 		if (selectedVector == null) {
 			setViewerInput((ResultItemRef)null);
 			return;
 		}
-		
+
 		// recompute computed files if needed
 		final ResultFileManager manager = selectedVector.getResultFileManager();
 		final ResultItemRef finalSelectedVector = selectedVector;
@@ -250,7 +250,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
 					return null;
 				}
-				
+		
 				ProcessingOp operation =  (ProcessingOp)vector.getComputation();
 				ResultItemRef origInput = (ResultItemRef)viewer.getInput();
 				VectorResult origVector = origInput != null ? (VectorResult)origInput.resolve() : null;
@@ -260,7 +260,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
 					return null;
 				}
-				
+		
 				setViewerInput((IDListSelection)null);
 				showMessage("Computing vectors...");
 
@@ -283,14 +283,14 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			}
 		});
 	}
-	
+
 	private static void runInUIThread(Runnable runnable) {
 		if (Display.getCurrent() == null)
 			Display.getDefault().asyncExec(runnable);
 		else
 			runnable.run();
 	}
-	
+
 	public void setViewerInputOrMessage(ResultItemRef input, int serial, IStatus status) {
 		final int severity = status.getSeverity();
 		if (severity == IStatus.OK) {
@@ -303,7 +303,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		else if (severity == IStatus.ERROR)
 			showMessage("Failed: " + status.getMessage());
 	}
-	
+
 	protected void setViewerInput(ResultItemRef input) {
 		if (!ObjectUtils.equals(input, viewer.getInput())) {
 			viewer.setInput(input);
@@ -324,7 +324,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			viewer.redraw();
 		}
 	}
-	
+
 	/**
 	 * Checks if the input is a vector whose file has an index.
 	 * If not then the content of the vector can not be displayed
@@ -354,10 +354,10 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			}
 		}
 	}
-	
+
 	// Order: Item#, Event#, Time, Value
 	private static final int[] ColumnOrder = new int[] {0,3,1,2};
-	
+
 	private void setEventNumberColumnVisible(boolean visible) {
 		if (eventNumberColumn != null && !visible) {
 			eventNumberColumn.dispose();
@@ -370,8 +370,8 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			viewer.setColumnOrder(ColumnOrder);
 		}
 	}
-	
-	
+
+
 	enum GotoTarget {
 		Line,
 		Event,
@@ -383,7 +383,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		VectorBrowserView view;
 		GotoTarget target;
 		String prompt;
-		
+
 		public GotoAction(VectorBrowserView view, GotoTarget target) {
 			this.view = view;
 			this.target = target;
@@ -393,7 +393,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			case Time: setText("Go to time..."); prompt = "Time:"; break;
 			}
 		}
-		
+
 		public void run() {
 			IInputValidator validator = new IInputValidator() {
 				public String isValid(String text) {
@@ -417,7 +417,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 				}
 			}
 		}
-		
+
 		public Object parseTarget(String str) {
 			try
 			{

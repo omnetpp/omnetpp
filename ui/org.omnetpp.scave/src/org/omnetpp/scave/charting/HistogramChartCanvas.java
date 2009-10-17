@@ -46,15 +46,15 @@ import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramB
 import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramDataType;
 
 public class HistogramChartCanvas extends ChartCanvas {
-	
+
 	private static final boolean debug = false;
-	
-	
+
+
 	private IHistogramDataset dataset = IHistogramDataset.EMPTY;
 	private LinearAxis xAxis = new LinearAxis(false, false, false);
 	private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
 	private HistogramPlot plot;
-	
+
 	private PropertyMap<HistogramProperties> properties = new PropertyMap<HistogramProperties>(HistogramProperties.class);
 	static class HistogramProperties {
 		RGB color;
@@ -64,7 +64,7 @@ public class HistogramChartCanvas extends ChartCanvas {
 		super(parent, style);
 		plot = new HistogramPlot(this);
 		new Tooltip(this);
-		
+
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				setSelection(new IChartSelection() {
@@ -72,7 +72,7 @@ public class HistogramChartCanvas extends ChartCanvas {
 			}
 		});
 	}
-	
+
 	@Override
 	protected double transformX(double x) {
 		return xAxis.transform(x);
@@ -92,7 +92,7 @@ public class HistogramChartCanvas extends ChartCanvas {
 	protected double inverseTransformY(double y) {
 		return yAxis.inverseTransform(y);
 	}
-	
+
 	public void setProperty(String name, String value) {
 		Assert.isLegal(name != null);
 		if (debug) Debug.println("HistogramChartCanvas.setProperty: "+name+"='"+value+"'");
@@ -122,17 +122,17 @@ public class HistogramChartCanvas extends ChartCanvas {
 		else 
 			super.setProperty(name, value);
 	}
-	
+
 	public void setXAxisTitle(String value) {
 		xAxis.setTitle(value != null ? value : DEFAULT_X_AXIS_TITLE);
 		chartChanged();
 	}
-	
+
 	public void setYAxisTitle(String value) {
 		yAxis.setTitle(value != null ? value : DEFAULT_Y_AXIS_TITLE);
 		chartChanged();
 	}
-	
+
 	public void setAxisTitleFont(Font value) {
 		if (value != null) {
 			xAxis.setTitleFont(value);
@@ -150,14 +150,14 @@ public class HistogramChartCanvas extends ChartCanvas {
 			chartChanged();
 		}
 	}
-	
+
 	public void setBarType(HistogramBar barType) {
 		if (barType == null)
 			barType = ChartDefaults.DEFAULT_HIST_BAR;
 		plot.setBarType(barType);
 		chartChanged();
 	}
-	
+
 	public void setHistogramDataTransform(HistogramDataType dataTransform) {
 		if (dataTransform == null)
 			dataTransform = ChartDefaults.DEFAULT_HIST_DATA;
@@ -166,7 +166,7 @@ public class HistogramChartCanvas extends ChartCanvas {
 		updateArea();
 		chartChanged();
 	}
-	
+
 	public void setShowOverflowCell(Boolean value) {
 		if (value == null)
 			value = ChartDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
@@ -175,8 +175,8 @@ public class HistogramChartCanvas extends ChartCanvas {
 		updateArea();
 		chartChanged();
 	}
-	
-	
+
+
 	public void setBarBaseline(Double value) {
 		if (value == null)
 			value = DEFAULT_BAR_BASELINE;
@@ -194,14 +194,14 @@ public class HistogramChartCanvas extends ChartCanvas {
 		updateArea();
 		chartChanged();
 	}
-	
+
 	public RGB getHistogramColor(String key) {
 		HistogramProperties histProps = properties.getProperties(key);
 		if (histProps == null || histProps.color == null)
 			histProps = properties.getDefaultProperties();
 		return histProps != null ? histProps.color : null;
 	}
-	
+
 	public void setHistogramColor(String key, RGB color) {
 		HistogramProperties histProps = properties.getOrCreateProperties(key);
 		histProps.color = color;
@@ -218,16 +218,16 @@ public class HistogramChartCanvas extends ChartCanvas {
 		updateArea();
 		chartChanged();
 	}
-	
+
 	IHistogramDataset getDataset() {
 		return dataset;
 	}
-	
+
 	private void updateLegends() {
 		plot.updateLegend(legendTooltip);
 		plot.updateLegend(legend);
 	}
-	
+
 	@Override
 	String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint) {
 		if (plot.getArea().contains(x, y))
@@ -240,7 +240,7 @@ public class HistogramChartCanvas extends ChartCanvas {
 	protected RectangularArea calculatePlotArea() {
 		return plot.calculatePlotArea();
 	}
-	
+
 	Rectangle mainArea; // containing plots and axes
 	Insets axesInsets; // space occupied by axes
 
@@ -253,11 +253,11 @@ public class HistogramChartCanvas extends ChartCanvas {
 			Rectangle remaining = legendTooltip.layout(gc, area);
 			remaining = title.layout(gc, area);
 			remaining = legend.layout(gc, remaining, pass);
-	
+
 			mainArea = remaining.getCopy();
 			axesInsets = xAxis.layout(gc, mainArea, new Insets(), coordsMapping, pass);
 			axesInsets = yAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
-	
+
 			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
 			Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
 			return plotArea;

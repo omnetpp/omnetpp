@@ -34,7 +34,7 @@ public class TextDifferenceUtils {
 					int numberOfLines = document.getNumberOfLines();
 					int startOffset = document.getLineOffset(start);
 					int endOffset = end == numberOfLines ? document.getLength() : document.getLineOffset(end);
-					
+				
 					document.replace(startOffset, endOffset - startOffset, replacement);
 				}
 				catch (BadLocationException e) {
@@ -79,12 +79,12 @@ class LineRangeComparator implements IRangeComparator {
 	private String text;
 
 	private String[] lines;
-	
+
 	public LineRangeComparator(String text) {
 		this.text = text;
 		lines = StringUtils.splitToLines(text);
 	}
-	
+
 	public String getText() {
 		return text;
 	}
@@ -107,12 +107,12 @@ class LineRangeComparator implements IRangeComparator {
 
 	public boolean skipRangeComparison(int length, int maxLength, IRangeComparator other) {
 		return false;
-	}	
+	}
 }
 
 class StringDifferenceApplier implements TextDifferenceUtils.ITextDifferenceApplier {
 	private String text;
-	
+
 	public StringDifferenceApplier(String text) {
 		this.text = text;
 	}

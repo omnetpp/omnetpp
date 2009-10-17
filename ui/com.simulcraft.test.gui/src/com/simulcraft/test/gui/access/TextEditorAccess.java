@@ -19,7 +19,7 @@ public class TextEditorAccess extends EditorPartAccess
 	public TextEditorAccess(ITextEditor editorPart) {
 		super(editorPart);
 	}
-	
+
     @Override
 	public ITextEditor getWorkbenchPart() {
 	    return (ITextEditor)workbenchPart;

@@ -99,7 +99,7 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
             if (sdkVCDir != null) 
                 return new Path(sdkVCDir).append("VC").toOSString();
         }
-    	
+    
     	return null;
     }
 
@@ -124,7 +124,7 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
             if (vsDir != null) 
                 return vsDir;
         }
-    	
+    
         return null;
     }
 }

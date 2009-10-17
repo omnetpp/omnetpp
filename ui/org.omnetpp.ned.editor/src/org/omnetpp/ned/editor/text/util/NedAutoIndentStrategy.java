@@ -43,7 +43,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 //		}
 //	}
 
-	
+
 	/* (non-Javadoc)
 	 * Method declared on IAutoIndentStrategy
 	 */
@@ -55,7 +55,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			smartInsertAfterBracket(doc, command);
 		}
 	}
-	
+
 	/**
 	 * Returns whether or not the given text ends with one of the documents legal line delimiters.
 	 * 
@@ -69,7 +69,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			return TextUtilities.endsWith(delimiters, txt) > -1;
 		return false;
 	}
-	
+
 	/**
 	 * Returns the line number of the next bracket after end.
 	 * 
@@ -98,7 +98,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		}
 		return line;
 	}
-	
+
 	/**
 	 * Returns the bracket value of a section of text. Closing brackets have a value of -1 and 
 	 * open brackets have a value of 1.
@@ -159,7 +159,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		}
 		return bracketcount;
 	}
-	
+
 //XXX	/**
 //	 * Returns the end position of a comment starting at the given <code>position</code>.
 //	 * 
@@ -182,7 +182,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 //		}
 //		return end;
 //	}
-	
+
 	/**
 	 * Returns the content of the given line without the leading whitespace.
 	 * 
@@ -265,7 +265,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		}
 		return end;
 	}
-	
+
 	/**
 	 * Set the indent of a new line based on the command provided in the supplied document.
 	 * @param document - the document being parsed
@@ -306,7 +306,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
             NedEditorPlugin.logError(excp);
 		}
 	}
-	
+
 	/**
 	 * Set the indent of a bracket based on the command provided in the supplied document.
 	 * @param document - the document being parsed

@@ -37,7 +37,7 @@ public class PropertySourceIO {
 			}
 		}
 	}
-	
+
 	private static void saveValue(String id, Object value,
 			IPropertyDescriptor descriptor, XMLWriter writer) throws IOException {
 		writer.writeStartElement(id);
@@ -50,10 +50,10 @@ public class PropertySourceIO {
 			writer.writeText(toString(value, descriptor));
 		writer.writeEndElement(id);
 	}
-	
+
 	public static String toString(Object value, IPropertyDescriptor descriptor) {
 		String str = null;
-		
+
 		if (descriptor instanceof CheckboxPropertyDescriptor ||
 			descriptor instanceof NumberPropertyDescriptor ||
 			descriptor instanceof TextPropertyDescriptor) {
@@ -67,13 +67,13 @@ public class PropertySourceIO {
 			str = (((EnumPropertyDescriptor)descriptor).getName(value));
 		else
 			throw new RuntimeException("Unsupported property descriptor: " + descriptor.getClass().getName());
-		
+
 		return str;
 	}
-	
+
 	public static Object fromString(String str, IPropertyDescriptor descriptor) {
 		Object value = null;
-		
+
 		if (descriptor instanceof CheckboxPropertyDescriptor)
 			value = Boolean.parseBoolean(str);
 		else if (descriptor instanceof NumberPropertyDescriptor)
@@ -88,22 +88,22 @@ public class PropertySourceIO {
 			value = ((EnumPropertyDescriptor)descriptor).getValue(str);
 		else
 			throw new RuntimeException("Unsupported property descriptor: " + descriptor.getClass().getName());
-		
+
 		return value;
 	}
-	
+
 	public static class SAXHandler extends DefaultHandler
 	{
 		PropertySource propertySource;
 		IPropertyDescriptor descriptor;
 		Object value;
-		
+
 		Stack<PropertySource> stack = new Stack<PropertySource>();
-		
+
 		public SAXHandler(PropertySource propertySource) {
 			this.propertySource = propertySource;
 		}
-		
+
 		private IPropertyDescriptor getDescriptor(String id) {
 			for (IPropertyDescriptor descriptor : propertySource.getPropertyDescriptors())
 				if (id.equals(descriptor.getId()))
@@ -117,11 +117,11 @@ public class PropertySourceIO {
 				stack.push(propertySource);
 				return;
 			}
-			
+	
 			descriptor = getDescriptor(qName);
 			if (descriptor == null)
 				throw new SAXException("Unexpected element: " + qName);
-			
+	
 			value = null;
 			if (descriptor.getClass() == PropertyDescriptor.class) {
 				stack.push(propertySource);
@@ -147,7 +147,7 @@ public class PropertySourceIO {
 			 // ignore whitespace
 			if (stack.peek() != null)
 				return;
-			
+	
 			String str = new String(ch, start, length);
 			value = PropertySourceIO.fromString(str, descriptor);
 		}

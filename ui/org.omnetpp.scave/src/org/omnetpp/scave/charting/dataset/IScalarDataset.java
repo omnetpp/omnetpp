@@ -14,14 +14,14 @@ package org.omnetpp.scave.charting.dataset;
  * @author tomi
  */
 public interface IScalarDataset extends IDataset {
-	
+
     /**
      * Returns the row count.
      *
      * @return The row count.
      */
     public int getRowCount();
-	
+
     /**
      * Returns the row key for a given index.
      *

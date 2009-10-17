@@ -17,39 +17,39 @@ import java.util.Scanner;
  * @author tomi
  */
 public class RectangularArea {
-	
+
 	public double minX;
 	public double minY;
 	public double maxX;
 	public double maxY;
-	
+
 	public RectangularArea() {
 	}
-	
+
 	public RectangularArea(double minX, double minY, double maxX, double maxY) {
 		this.minX = minX;
 		this.minY = minY;
 		this.maxX = maxX;
 		this.maxY = maxY;
 	}
-	
+
 	public double width() {
 		return maxX - minX;
 	}
-	
+
 	public double height() {
 		return maxY - minY;
 	}
-	
+
 	public boolean contains(double x, double y) {
 		return minX <= x && x <= maxX && minY <= y && y <= maxY;
 	}
-	
+
 	public boolean isFinite() {
 		return !Double.isInfinite(minX) && !Double.isInfinite(minY) &&
 				!Double.isInfinite(maxX) && !Double.isInfinite(maxY);
 	}
-	
+
 	public RectangularArea unionWith(RectangularArea other) {
 		minX = Math.min(minX, other.minX);
 		minY = Math.min(minY, other.minY);
@@ -70,7 +70,7 @@ public class RectangularArea {
 	public String toString() {
 		return String.format("Area(%s,%s,%s,%s)", minX, minY, maxX, maxY);
 	}
-	
+
 	public static RectangularArea fromString(String str) {
 		Scanner s = new Scanner(str);
 		try {
@@ -88,7 +88,7 @@ public class RectangularArea {
 			s.close();
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

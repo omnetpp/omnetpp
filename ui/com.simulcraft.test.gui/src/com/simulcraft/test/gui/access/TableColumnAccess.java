@@ -31,13 +31,13 @@ public class TableColumnAccess extends ClickableWidgetAccess
     public TableAccess getTable() {
         return (TableAccess) createAccess(getWidget().getParent());
     }
-	
+
 	@UIStep
 	public TableColumnAccess reveal() {
 		//TODO horizontally scroll there
 		return this;
 	}
-	
+
 	@Override
 	protected Point getAbsolutePointToClick() {
 	    getTable().assertHeaderVisible();
@@ -80,7 +80,7 @@ public class TableColumnAccess extends ClickableWidgetAccess
 	    Assert.assertTrue("column is not in the tree", false);
 	    return 0;
 	}
-	
+
 	/**
 	 * Sorts the table by this column in SWT.UP or SWT.DOWN direction.
 	 */
@@ -94,6 +94,6 @@ public class TableColumnAccess extends ClickableWidgetAccess
 		}
 		Assert.assertTrue("failed to sort table by " + getWidget().getText(),
 				table.getSortColumn() == getWidget() && table.getSortDirection() == direction);
-		
+
 	}
 }

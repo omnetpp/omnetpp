@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FileUtils {
-	
+
 	private FileUtils() {
 	}
-	
+
 	/**
 	 * Delete directory and its contents recursively
 	 */
@@ -32,7 +32,7 @@ public class FileUtils {
 			dir.delete();
 		}
 	}
-	
+
 	/**
 	 * Delete the contents of the directory recursively 
 	 */
@@ -43,24 +43,24 @@ public class FileUtils {
 					deleteDir(file);
 		}
 	}
-	
+
 	private static byte[] createBuffer() {
 		return new byte[4096];
 	}
-	
+
 	public static void copyFile(File source, File target) throws IOException {
 		copyFile(source, target, createBuffer());
 	}
-	
+
 	public static void copyFile(File source, File target, byte[] buffer) throws IOException {
 		FileInputStream in = new FileInputStream(source);
 		copy(in, target, buffer);
 	}
-	
+
 	public static void copy(InputStream in, File target) throws IOException {
 		copy(in, target, createBuffer());
 	}
-	
+
 	public static void copy(InputStream in, File target, byte[] buffer) throws IOException
 	{
 		try {
@@ -78,14 +78,14 @@ public class FileUtils {
 			in.close();
 		}
 	}
-	
+
 	public static void copyFilesOf(File sourceDir, final FileFilter filter, File targetDir, final byte[] buffer) throws IOException {
 		File[] files = (filter != null) ? sourceDir.listFiles(filter) : sourceDir.listFiles();
-		
+
 		for (int i = 0; i < files.length; i++) {
 			if (targetDir.exists() == false)
 				targetDir.mkdir();
-			
+	
 			File source = files[i];
 			File target = new File(targetDir, source.getName());
 
@@ -95,11 +95,11 @@ public class FileUtils {
 				copyFile(source, target, buffer);
 		}
 	}
-	
+
 	public static void copyFilesOf(File sourceDir, final FileFilter filter, File targetDir) throws IOException {
 		copyFilesOf(sourceDir, filter, targetDir, new byte[4096]);
 	}
-	
+
 	public static void copyFilesOf(File sourceDir, File targetDir) throws IOException {
 		copyFilesOf(sourceDir, null, targetDir, new byte[4096]);
 	}

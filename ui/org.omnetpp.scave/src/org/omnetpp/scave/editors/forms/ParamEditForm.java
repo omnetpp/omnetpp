@@ -24,7 +24,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author andras
  */
 public class ParamEditForm implements IScaveObjectEditForm {
-	
+
 	/**
 	 * Features edited on this panel.
 	 */
@@ -32,12 +32,12 @@ public class ParamEditForm implements IScaveObjectEditForm {
 		ScaveModelPackage.eINSTANCE.getParam_Name(),
 		ScaveModelPackage.eINSTANCE.getParam_Value(),
 	};
-	
+
 	/**
 	 * The edited Param.
 	 */
 	//private Param param;
-	
+
 	// edit controls of the features
 	private Text nameText;
 	private Text valueText;
@@ -45,7 +45,7 @@ public class ParamEditForm implements IScaveObjectEditForm {
 	public ParamEditForm(Param param, EObject parent) {
 		//this.param = param;
 	}
-	
+
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */
@@ -72,7 +72,7 @@ public class ParamEditForm implements IScaveObjectEditForm {
 	 */
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout(2, false));
-		
+
 		Label label = new Label(panel, SWT.NONE);
 		label.setText("Name:");
 		nameText = new Text(panel, SWT.BORDER);
@@ -82,7 +82,7 @@ public class ParamEditForm implements IScaveObjectEditForm {
 		label.setText("Value:");
 		valueText = new Text(panel, SWT.BORDER);
 		valueText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+
 	}
 
 	/**

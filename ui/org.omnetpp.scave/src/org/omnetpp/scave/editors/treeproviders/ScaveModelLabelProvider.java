@@ -48,18 +48,18 @@ import org.omnetpp.scave.model.SetOperation;
  * @author andras
  */
 public class ScaveModelLabelProvider extends LabelProvider {
-	
+
 	ILabelProvider fallback;
 
 	public ScaveModelLabelProvider(ILabelProvider fallback) {
 		this.fallback = fallback;
 	}
-	
+
 	public void dispose() {
 		if (fallback != null)
 			fallback.dispose();
 	}
-	
+
 	public Image getImage(Object element) {
 		return fallback != null ? fallback.getImage(element) : null;
 	}
@@ -95,7 +95,7 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		else if (element instanceof SetOperation) {
 			// Add, Discard, Select, Deselect
 			SetOperation o = (SetOperation) element;
-			
+	
 			// "select..."
 			String res = "";
 			if (element instanceof Add)
@@ -126,16 +126,16 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		else if (element instanceof ProcessingOp) {
 			ProcessingOp o = (ProcessingOp) element;
 			StringBuilder sb = new StringBuilder();
-			
+	
 			if (element instanceof Apply)
 				sb.append("apply");
 			else if (element instanceof Compute)
 				sb.append("compute");
 			else
 				sb.append("<unknown operation>");
-			
+	
 			sb.append(' ').append(defaultIfEmpty(o.getOperation(), "<undefined>"));
-			
+	
 			List<Param> params = o.getParams();
 			if (!params.isEmpty()) sb.append('(');
 			boolean firstIteration = true;
@@ -147,8 +147,8 @@ public class ScaveModelLabelProvider extends LabelProvider {
 				sb.append(defaultIfEmpty(param.getName(), "<undefined>")).append('=').append(defaultIfEmpty(param.getValue(), ""));
 			}
 			if (!params.isEmpty()) sb.append(')');
-			
-			
+	
+	
 			return sb.toString();
 		}
 		else if (element instanceof Group) {

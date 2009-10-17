@@ -13,7 +13,7 @@ package org.omnetpp.common.editor.text;
  * @author Andras
  */
 public class Keywords {
-	
+
 	public final static String[] DOC_TODO = { "CHECKME", "FIXME", "TBD", "TODO" };
 
 	public final static String[] DOC_TAGS = { "a", "b", "body", "br", "center", "caption", "code",
@@ -27,7 +27,7 @@ public class Keywords {
 	public final static String[] NED_GATE_TYPES = { "inout", "input", "output" };
 
 	public final static String[] NED_PARAM_TYPES = { "bool", "double", "int", "string", "xml" };
-	
+
 	public final static String[] NED_PARAM_TYPE_MODIFIERS = { "volatile" };
 
 	public final static String[] NED_TYPE_KEYWORDS = concat(NED_GATE_TYPES, NED_PARAM_TYPES, NED_PARAM_TYPE_MODIFIERS);
@@ -35,7 +35,7 @@ public class Keywords {
 	public final static String[] NED_SPECIAL_KEYWORDS = { "-->", "<--", "<-->", ".." };
 
 	public final static String[] NED_COMPONENTTYPE_KEYWORDS = { "channel", "channelinterface", "simple", "module", "network", "moduleinterface" };
-	
+
 	public final static String[] NED_SECTION_KEYWORDS = { "parameters", "gates", "types", "submodules", "connections" };
 
 	public final static String[] NED_OTHER_KEYWORDS = { "allowunconnected", "extends", "for", "if", "import", "like", "package", "property" };
@@ -45,14 +45,14 @@ public class Keywords {
 	public final static String[] NED_EXPR_KEYWORDS = { "sizeof", "const", "default", "ask", "this", "index", "typename", "xmldoc" };
 
 	public final static String[] BOOL_CONSTANTS = { "false", "true" };
-	
+
 	public final static String[] MSG_TYPE_KEYWORDS = {"abstract", "readonly", "bool", "char", "short", "int", "long", "double", "unsigned", "string"};
 
 	public final static String[] MSG_KEYWORDS = {"cplusplus", "namespace", "struct", "message", "packet", "class", "noncobject", "enum", "extends"};
 
 	public final static String[] MSG_SECTION_KEYWORDS = { "properties", "fields"};
 
-	
+
 	public final static String[] NED_FUNCTIONS = { "acos", "asin", "atan", "atan2", "bernoulli",
 			"beta", "binomial", "cauchy", "ceil", "chi_square", "cos", "erlang_k", "exp",
 			"exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential",
@@ -62,7 +62,7 @@ public class Keywords {
 			"student_t", "tan", "triang", "truncnormal", "uniform", "weibull" };
 
 	public final static String[] NED_RESERVED_WORDS = concat(NED_TYPE_KEYWORDS, NED_SPECIAL_KEYWORDS, NED_NONEXPR_KEYWORDS, NED_EXPR_KEYWORDS, BOOL_CONSTANTS);
-	
+
 	/**
 	 * Utility function: concatenates string arrays.
 	 */

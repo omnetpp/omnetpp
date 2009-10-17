@@ -21,13 +21,13 @@ import org.omnetpp.scave.model2.RunAttributePayload;
 import org.omnetpp.scave.model2.RunPayload;
 
 public class Sorter {
-	
+
 	public static final Comparator<ResultFile> resultFileComparator = new ResultFileComparator();
 	public static final Comparator<ResultFilePayload> resultFilePayloadComparator = new ResultFilePayloadComparator();
 	public static final Comparator<Run> runComparator = new RunComparator();
 	public static final Comparator<RunPayload> runPayloadComparator = new RunPayloadComparator();
 	public static final Comparator<RunAttributePayload> runAttributeComparator = new RunAttributeComparator();
-	
+
 	private static class ResultFileComparator implements Comparator<ResultFile>, Serializable
 	{
 		private static final long serialVersionUID = 1L;
@@ -36,7 +36,7 @@ public class Sorter {
 			return StringUtils.dictionaryCompare(left.getFileName(), right.getFileName());
 		}
 	}
-	
+
 	private static class ResultFilePayloadComparator implements Comparator<ResultFilePayload>, Serializable
 	{
 		private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class Sorter {
 			return StringUtils.dictionaryCompare(left.getFilePath(), right.getFilePath());
 		}
 	}
-	
+
 	private static class RunComparator implements Comparator<Run>, Serializable
 	{
 		private static final long serialVersionUID = 1L;
@@ -54,7 +54,7 @@ public class Sorter {
 			return StringUtils.dictionaryCompare(left.getRunName(), right.getRunName());
 		}
 	}
-	
+
 	private static class RunPayloadComparator implements Comparator<RunPayload>, Serializable
 	{
 		private static final long serialVersionUID = 1L;
@@ -78,7 +78,7 @@ public class Sorter {
 		Arrays.sort(result, resultFileComparator);
 		return result;
 	}
-	
+
 	public static Run[] sort(RunList runs) {
 		Run[] result = runs.toArray();
 		Arrays.sort(result, runComparator);

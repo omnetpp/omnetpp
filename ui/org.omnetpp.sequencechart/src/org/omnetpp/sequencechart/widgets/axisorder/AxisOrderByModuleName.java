@@ -17,16 +17,16 @@ public class AxisOrderByModuleName {
         Integer[] axisModuleIndexes = new Integer[numberOfAxes];
 		for (int i = 0; i < axisModuleIndexes.length; i++)
 			axisModuleIndexes[i] = i;
-		
+
 		java.util.Arrays.sort(axisModuleIndexes, new java.util.Comparator<Integer>() {
 				public int compare(Integer o1, Integer o2) {
 					return StringUtils.dictionaryCompare(axisModules[o1].getModuleFullPath(), axisModules[o2].getModuleFullPath());
 				}
 			});
-		
+
 		for (int i = 0; i < axisModuleIndexes.length; i++)
 			axisPositions[axisModuleIndexes[i]] = i;
-		
+
 		return axisPositions;
 	}
 }

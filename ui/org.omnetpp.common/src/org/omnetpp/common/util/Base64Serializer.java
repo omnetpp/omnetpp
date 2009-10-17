@@ -41,7 +41,7 @@ public class Base64Serializer {
 			ObjectInputStream stream = classLoader == null ? new ObjectInputStream(data) : new ObjectInputStreamWithClassLoader(data, classLoader);
 			Object object = stream.readObject();
 			stream.close();
-			
+	
 			return object;
 		}
 	}

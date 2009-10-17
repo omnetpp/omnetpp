@@ -7,9 +7,9 @@ class ${smTool.ClassName}: ${modelTool.BaseMachineClassName}
 	public:
 		/* Constructor of state machine $sm.Name */
 		${smTool.ClassName}($modelTool.ClassName& aModel): ${modelTool.BaseMachineClassName}(aModel), iState($smTool.getStateTool($sm.Top).Const) {}
-		
+	
         void HandleL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
-		
+	
 #listHeader($smTool.COAssocs "Controlled objects setters" 8)
 #foreach($assoc in $smTool.COAssocs)
 		void ${smTool.getSetterName($assoc)}($assoc.target.ImplName* ${smTool.getParamName($assoc)}) {${smTool.getInstanceName($assoc)} = ${smTool.getParamName($assoc)};}

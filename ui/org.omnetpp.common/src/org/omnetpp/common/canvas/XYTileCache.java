@@ -25,15 +25,15 @@ public class XYTileCache implements ITileCache {
 	private static final int TILE_WIDTH = 30;
 	private static final int TILE_HEIGHT = 200;
 	private static final int TILE_SIZE_BYTES = TILE_HEIGHT*TILE_WIDTH*4; // assumption: RGBA true color
-	
+
 	private static final boolean debug = false;
-	
+
 	private int memoryUsageLimit = 32*1024*1024; // 32Meg by default
 	private int memoryUsage = 0;
-	
+
 	// use coords of tile's top-left corner as key into the hashmap; "linked" is used for LRU cache mgmt
 	private LinkedHashMap<LargePoint,Tile> cache = new LinkedHashMap<LargePoint,Tile>();
-	
+
 	public int getMemoryUsage() {
 		return memoryUsage;
 	}
@@ -128,7 +128,7 @@ public class XYTileCache implements ITileCache {
 				}
 			}
 		}
-		
+
 		if (debug) {
 			Debug.printf("For rect %s, returning %d tiles", rect.toString(), outCachedTiles.size());
 			if (outMissingAreas.size()>0) {
@@ -164,7 +164,7 @@ public class XYTileCache implements ITileCache {
 		// could not be merged: just add
 		areas.add(r);
 	}
-	
+
 	private long modulo(long a, long b) {
 		return a < 0 ? a % b + b : a % b;
 	}

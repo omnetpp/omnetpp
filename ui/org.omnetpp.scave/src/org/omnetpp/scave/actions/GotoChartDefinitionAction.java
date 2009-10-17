@@ -29,7 +29,7 @@ public class GotoChartDefinitionAction extends AbstractScaveAction {
 		if (chart == null || ScaveModelUtil.isTemporaryChart(chart, editor))
 			return;
 
-		
+
 		editor.showDatasetsPage();
 		editor.setSelection(new StructuredSelection(chart));
 	}

@@ -41,7 +41,7 @@ public class StyledTextAccess extends CompositeAccess
 		Point loc = getControl().toDisplay(getControl().getLocationAtOffset(targetOffset));
 		clickAbsolute(LEFT_MOUSE_BUTTON, loc);
 	}
-	
+
 	@UIStep
 	public void reveal(int offset) {
 	    // FIXME it moves the offset at the top. it would be enough to show only on the screen

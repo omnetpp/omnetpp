@@ -44,11 +44,11 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * @author andras
  */
 public class FilteredDataPanel extends Composite {
-	
+
 	private FilteringPanel filterPanel;
 	private DataTable table;
 	private IDList idlist; // the unfiltered data list
-	
+
 	public FilteredDataPanel(Composite parent, int style, ResultType type) {
 		super(parent, style);
 		initialize(type);
@@ -99,7 +99,7 @@ public class FilteredDataPanel extends Composite {
 			}
 		});
 	}
-	
+
 	protected void configureFilterPanel() {
 		SelectionListener selectionListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -137,7 +137,7 @@ public class FilteredDataPanel extends Composite {
 
 	protected void runFilter() {
 		Assert.isTrue(idlist!=null);
-		
+
 		if (table.getResultFileManager() == null) {
 			// no result file manager, show empty table
 			table.setIDList(new IDList());
@@ -203,7 +203,7 @@ public class FilteredDataPanel extends Composite {
 			MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it first. (Or, just delete the whole text.)");
 			return false;
 		}
-		
+
 		String filterPattern = filterPanel.getAdvancedFilterText().getText();
 		FilterUtil filterUtil = new FilterUtil(filterPattern, true);
 		if (filterUtil.isLossy()) {
@@ -236,7 +236,7 @@ public class FilteredDataPanel extends Composite {
 		filterPanel.showAdvancedFilter();
 		runFilter();
 	}
-	
+
 	/**
 	 * Shows/hides the filter panel.
 	 */
@@ -248,7 +248,7 @@ public class FilteredDataPanel extends Composite {
 			layout(true, true);
 		}
 	}
-	
+
 	/**
 	 * Returns {@code true} iff the filter panel is visible.
 	 */

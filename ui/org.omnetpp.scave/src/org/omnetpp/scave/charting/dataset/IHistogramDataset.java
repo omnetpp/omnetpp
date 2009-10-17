@@ -13,7 +13,7 @@ public interface IHistogramDataset extends IDataset {
 	 * Number of histograms in this dataset.
 	 */
 	int getSeriesCount();
-	
+
 	/**
 	 * Name of the histogram at {@series} index used to
 	 * identify the histogram on the UI.
@@ -22,7 +22,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @return name of the histogram
 	 */
 	String getSeriesKey(int series);
-	
+
 	/**
 	 * Returns true if integers are collected by the histogram.
 	 * 
@@ -30,7 +30,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @return true if integers are collected
 	 */
 	boolean isDiscrete(int series);
-	
+
 	/**
 	 * Returns the number of collected values.
 	 * 
@@ -46,7 +46,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @return least collected value
 	 */
 	double getMinValue(int series);
-	
+
 	/**
 	 * Returns the greatest collected value.
 	 * 
@@ -54,7 +54,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @return greatest collected value
 	 */
 	double getMaxValue(int series);
-	
+
 	/**
 	 * Returns the number of cells.
 	 * 
@@ -62,7 +62,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @return number of cells including underflow/overflow cells
 	 */
 	int getCellsCount(int series);
-	
+
 	/**
 	 * Returns the lower bound of the cell, Double.NEGATIVE_INFINITY
 	 * for the underflow cell.
@@ -72,7 +72,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @return lower bound of the cell
 	 */
 	double getCellLowerBound(int series, int index);
-	
+
 	/**
 	 * Returns the upper bound of the cell, Double.POSITIVE_INFINITY
 	 * for the overflow cell.
@@ -82,7 +82,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @return upper bound of the cell
 	 */
 	double getCellUpperBound(int series, int index);
-	
+
 	/**
 	 * Returns the value of the cell.
 	 * 
@@ -91,7 +91,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @return value of the cell
 	 */
 	double getCellValue(int series, int index);
-	
+
 	/**
 	 * IHistogramDataset null object.
 	 */
@@ -107,11 +107,11 @@ public interface IHistogramDataset extends IDataset {
 		public String getSeriesKey(int series) {
 			throw new IndexOutOfBoundsException();
 		}
-		
+
 		public boolean isDiscrete(int series) {
 			throw new IndexOutOfBoundsException();
 		}
-		
+
 		public int getValueCount(int series) {
 			throw new IndexOutOfBoundsException();
 		}

@@ -20,7 +20,7 @@ import org.jfree.chart.title.TextTitle;
 import org.omnetpp.scave.charting.ChartSWTWrapper;
 
 public class TitlePreferencePage extends PreferencePage {
-	
+
 	private ChartSWTWrapper swtChart;
 	private TitlePreferencePanel panel;
 
@@ -28,14 +28,14 @@ public class TitlePreferencePage extends PreferencePage {
 		super(title);
 		this.swtChart = swtChart;
 	}
-	
+
 	@Override
 	protected Control createContents(Composite parent) {
 		panel = new TitlePreferencePanel(parent, SWT.NONE);
 		fillControls();
 		return panel;
 	}
-	
+
 	@Override
 	protected void performApply() {
 		applyChanges();
@@ -53,7 +53,7 @@ public class TitlePreferencePage extends PreferencePage {
 		if (chart != null) {
 			TextTitle title = chart.getTitle();
 			Plot plot = chart.getPlot();
-			
+	
 			if (title != null)
 				panel.setTitleText(title.getText());
 			if (plot != null && plot instanceof CategoryPlot) {
@@ -67,10 +67,10 @@ public class TitlePreferencePage extends PreferencePage {
 			}
 		}
 	}
-	
+
 	protected void applyChanges() {
 		JFreeChart chart = swtChart.getChart();
-		
+
 		if (chart != null) {
 			TextTitle title = chart.getTitle();
 			Plot plot = chart.getPlot();
@@ -88,6 +88,6 @@ public class TitlePreferencePage extends PreferencePage {
 			}
 		}
 	}
-	
+
 
 }

@@ -6,5 +6,5 @@ ${modelTool.ClassName}::~${modelTool.ClassName}()
 		delete ${modelTool.getInstanceName($sm)};
 		${modelTool.getInstanceName($sm)} = NULL;
 		}
-#end	
+#end
 	}

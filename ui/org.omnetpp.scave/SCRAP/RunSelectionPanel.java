@@ -74,7 +74,7 @@ public class RunSelectionPanel extends Composite {
 		gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
 		this.setLayout(gridLayout);
-	
+
 		gridData = new GridData();
 		gridData.horizontalIndent = 15;
 		useRunNameRadio = new Button(this, SWT.RADIO);

@@ -17,7 +17,7 @@ public class NEDModelReadOnlyEvent extends NEDModelEvent
 		super(source);
 		this.readOnly = editable;
 	}
-	
+
 	public boolean getEditable() {
 		return readOnly;
 	}

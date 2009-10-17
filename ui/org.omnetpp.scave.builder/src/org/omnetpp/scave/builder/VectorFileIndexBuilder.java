@@ -33,7 +33,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 
 	private Queue<IFile> filesToBeIndexed = new ConcurrentLinkedQueue<IFile>();
-	
+
 	@Override @SuppressWarnings("unchecked")
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
@@ -51,7 +51,7 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 	      }
 	      return null;
 	}
-	
+
 	protected void fullBuild(IProgressMonitor monitor) throws CoreException {
 		// collect files to be indexed
 		getProject().accept(new IResourceVisitor() {
@@ -97,7 +97,7 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 		// generate index files
 		doBuild(monitor);
 	}
-	
+
 	protected void doBuild(IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Indexing vector files", filesToBeIndexed.size());
@@ -108,7 +108,7 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 					throw new OperationCanceledException();
 				if (isInterrupted())
 					break;
-				
+		
 				file = filesToBeIndexed.poll();
 				monitor.subTask("Indexing "+file.getName());
 				try {
@@ -131,7 +131,7 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 			monitor.done();
 		}
 	}
-	
+
 	protected boolean toBeIndexed(IFile file) {
 		if (isVectorFile(file) && !file.getParent().isDerived()) {
 			return !isIndexFileUpToDate(file);

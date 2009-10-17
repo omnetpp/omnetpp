@@ -36,7 +36,7 @@ public class OmnetppDirResolver implements IDynamicVariableResolver {
 		if (OMNETPP_LIB_DIR.equalsIgnoreCase(variable.getName())) {
 			return OmnetppMainPlugin.getOmnetppLibDir();
 		}
-		
+
 		return null;
 	}
 

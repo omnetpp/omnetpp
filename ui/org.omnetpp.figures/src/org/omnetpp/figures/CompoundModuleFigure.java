@@ -307,7 +307,7 @@ public class CompoundModuleFigure extends NedFigure
 		int newCumulativeHashCode = dps.cumulativeHashCode();
 		if (newCumulativeHashCode == oldCumulativeHashCode)
 			return;
-	
+
 		this.oldCumulativeHashCode = newCumulativeHashCode;
 
 		// background color / image

@@ -23,12 +23,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.charting.ChartSWTWrapper;
 
 public class ChartPropertyDialog extends PreferenceDialog {
-	
+
 	public ChartPropertyDialog(Shell shell, ChartSWTWrapper chart) {
 		super(shell, createPreferenceManager(chart));
 		setPreferenceStore(new PreferenceStore());
 	}
-	
+
 	protected static PreferenceManager createPreferenceManager(ChartSWTWrapper chart) {
 		PreferenceManager manager = new PreferenceManager();
 		manager.addToRoot(new PreferenceNode("Title", new TitlePreferencePage("Title", chart)));
@@ -38,20 +38,20 @@ public class ChartPropertyDialog extends PreferenceDialog {
 		manager.addToRoot(new PreferenceNode("Plot", new PlotPreferencePage("Plot")));
 		return manager;
 	}
-	
+
 	static class EmptyPreferencePage extends PreferencePage
 	{
 		public EmptyPreferencePage(String title)
 		{
 			super(title);
 		}
-		
+
 		@Override
 		protected Control createContents(Composite parent) {
 			return new Composite(parent, SWT.NULL);
 		}
 	}
-	
+
 	static class PlotPreferencePage extends FieldEditorPreferencePage
 	{
 

@@ -26,11 +26,11 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 public class RawConfigPage extends FormPage {
-	
+
 	public RawConfigPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
 		setLayout(new GridLayout(1,false));
-		
+
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
 		for (ConfigOption e : ConfigRegistry.getEntries()) {
@@ -55,7 +55,7 @@ public class RawConfigPage extends FormPage {
 	public boolean setFocus() {
 		return getChildren()[0].setFocus(); // refine if needed
 	}
-	
+
 	@Override
 	public void reread() {
 		super.reread();
@@ -63,7 +63,7 @@ public class RawConfigPage extends FormPage {
 			if (c instanceof FieldEditor)
 				((FieldEditor) c).reread();
 	}
-	
+
 	@Override
 	public List<ConfigOption> getSupportedKeys() {
 		return new ArrayList<ConfigOption>(); // dummy impl.

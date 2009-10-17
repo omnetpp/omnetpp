@@ -20,18 +20,18 @@ public class XMLWriter {
 	private String encoding;
 	boolean indenting;
 	int indentWidth;
-	
+
 	boolean startElementOpened;
 	Stack<String> elementStack = new Stack<String>();
 	boolean emptyElement;
 	int indentLevel;
 	boolean atLineStart;
-	
-	
+
+
 	public XMLWriter(OutputStream os, String encoding) throws UnsupportedEncodingException {
 		this(os, encoding, -1);
 	}
-	
+
 	public XMLWriter(OutputStream os, String encoding, int indentWidth) throws UnsupportedEncodingException {
 		this(new OutputStreamWriter(os, encoding), encoding, indentWidth);
 	}
@@ -47,21 +47,21 @@ public class XMLWriter {
 		this.indentWidth = indentWidth;
 		this.atLineStart = true;
 	}
-	
+
 	public void writeXMLHeader() throws IOException {
 		write("<?xml version=\"1.0\" encoding=\"");
 		write(escape(encoding));
 		write("\" standalone=\"yes\"?>");
 		writeNewline();
 	}
-	
+
 	public void writeComment(String comment) throws IOException {
 		closeStartElement(false);
 		write("<!--");
 		write(comment);
 		write(" -->");
 	}
-	
+
 	public void writeStartElement(String qname) throws IOException {
 		closeStartElement(true);
 		writeIndent();
@@ -72,16 +72,16 @@ public class XMLWriter {
 		startElementOpened = true;
 		emptyElement = true;
 	}
-	
+
 	public void writeEndElement(String qname) throws IOException {
 		if (elementStack.empty())
 			throw new IOException("no matching XML start tag");
-		
+
 		String expected = elementStack.pop();
 		if (!qname.equals(expected))
 			throw new IOException("start/end tag mismatch " +
 				"(given: "+ qname + " expected: " + expected +")");
-		
+
 		deindent();
 		if (emptyElement) {
 			write("/>");
@@ -97,7 +97,7 @@ public class XMLWriter {
 		}
 		emptyElement = false;
 	}
-	
+
 	private void closeStartElement(boolean addNewLine) throws IOException {
 		if (startElementOpened) {
 			write(">");
@@ -107,7 +107,7 @@ public class XMLWriter {
 			startElementOpened = false;
 		}
 	}
-	
+
 	public void writeAttribute(String name, String value) throws IOException {
 		write(" ");
 		write(name);
@@ -115,48 +115,48 @@ public class XMLWriter {
 		write(escape(value));
 		write("\"");
 	}
-	
+
 	public void writeText(String text) throws IOException {
 		closeStartElement(false);
 		write(escape(text));
 		emptyElement = false;
 	}
-	
+
 	public void close() throws IOException {
 		writer.close();
 	}
-	
+
 	private void writeNewline() throws IOException {
 		if (indenting) {
 			writer.write("\n");
 			atLineStart = true;
 		}
 	}
-	
+
 	private void write(String str) throws IOException {
 		writer.write(str);
 		atLineStart = false;
 	}
-	
+
 	private void indent() throws IOException {
 		if (indenting) {
 			indentLevel += indentWidth;
 		}
 	}
-	
+
 	private void deindent() throws IOException {
 		if (indenting) {
 			indentLevel -= indentWidth;
 		}
 	}
-	
+
 	private static char[] sixteenSpaces = "               ".toCharArray();
-	
+
 	private void writeIndent() throws IOException {
 		if (indenting && atLineStart) {
 			int major = indentLevel / 16;
 			int minor = indentLevel % 16;
-			
+	
 			for (int i = 0; i < major; ++i)
 				writer.write(sixteenSpaces, 0, 16);
 			if (minor > 0)
@@ -164,7 +164,7 @@ public class XMLWriter {
 			atLineStart = false;
 		}
 	}
-	
+
 	private static String escape(String str) {
 		str = str.replace("&", "&amp;");
 		str = str.replace("<", "&lt;");

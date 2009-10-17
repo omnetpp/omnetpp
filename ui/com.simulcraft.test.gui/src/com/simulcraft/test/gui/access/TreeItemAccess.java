@@ -35,13 +35,13 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	public TreeAccess getTree() {
 	    return (TreeAccess) createAccess(getWidget().getParent());
 	}
-	
+
 	@UIStep
 	public TreeItemAccess reveal() {
    		getWidget().getParent().showItem(getWidget());
 		return this;
 	}
-	
+
 	@Override @UIStep
 	protected Point getAbsolutePointToClick() {
 	    Point point = toAbsolute(getCenter(getWidget().getBounds()));
@@ -66,7 +66,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width", bounds.width > 0);
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
 	}
-	
+
 	@Override
 	protected Menu getContextMenu() {
 		return (Menu)getWidget().getParent().getMenu();

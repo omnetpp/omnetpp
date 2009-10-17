@@ -66,14 +66,14 @@ public class CompositeAccess extends ControlAccess
 				}
 				return false;
 			}
-			
+		
 			@Override
 			public String toString() {
 			    return "button with label '"+label+"'";
 			}
 		}));
 	}
-	
+
     @UIStep
     public ButtonAccess findButtonAfterLabel(final String labelText, final String buttonText) {
         final LabelAccess labelAccess = findLabel(labelText);
@@ -160,7 +160,7 @@ public class CompositeAccess extends ControlAccess
 	public StyledTextAccess findStyledText() {
 		return new StyledTextAccess((StyledText)findDescendantControl(StyledText.class));
 	}
-	
+
 	@UIStep
 	public ComboAccess findCombo() {
 		return (ComboAccess)createAccess(findDescendantControl(Combo.class));

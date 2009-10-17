@@ -22,6 +22,6 @@ public class SizeConstraint {
 	public int preferredWidth = SWT.DEFAULT;
 
 	public int preferredHeight = SWT.DEFAULT;
-	
+
 	// may be extended with maximum later
 }

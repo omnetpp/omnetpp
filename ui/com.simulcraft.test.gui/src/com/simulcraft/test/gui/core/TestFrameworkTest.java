@@ -46,7 +46,7 @@ public class TestFrameworkTest extends GUITestCase
 		workbenchWindow.chooseFromMainMenu("File|Open File.*"); // bring up "File Open" dialog
 		workbenchWindow.getShell().assertIsActive(); // now this should fail because dialog is open
 	}
-	
+
 	public void testCloseShellsOnTestFail_1() {
         Access.getWorkbenchWindow().chooseFromMainMenu("Help|About.*");
         throwExceptionFromBackgroundThread();

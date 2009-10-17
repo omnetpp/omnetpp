@@ -203,7 +203,7 @@ public class MakefileTools {
 		    				if (!CDTUtils.isExcluded(resource, srcEntries)
 		    						&& (pattern == null || containsFileMatchingPattern((IContainer)resource, pattern)))
 		    					result.add((IContainer)resource);
-		
+
 		    				return true;
 		    			}
 		    			return false;

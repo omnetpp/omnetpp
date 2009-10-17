@@ -19,7 +19,7 @@ public class SetConnectionDisplayStringAnimation extends AbstractInfiniteAnimati
 	protected ConnectionId connectionId;
 
 	protected IDisplayString displayString;
-	
+
 	protected IDisplayString oldDisplayString; // FIXME: this is a temproray hack to be able to undo changes
 
 	public SetConnectionDisplayStringAnimation(ReplayAnimationController animationController,
@@ -31,13 +31,13 @@ public class SetConnectionDisplayStringAnimation extends AbstractInfiniteAnimati
 		this.displayString = displayString;
 		//System.out.println(displayString);
 	}
-	
+
 	@Override
 	public void redo() {
 		IRuntimeModule module = getSourceModule();
 		if (module != null && module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
-			
+	
 			// FIXME:
 			if (connectionFigure != null) {
 				oldDisplayString = connectionFigure.getLastDisplayString();

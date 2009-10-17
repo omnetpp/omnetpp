@@ -33,17 +33,17 @@ import com.evelopers.unimod.transform.TransformException;
 import com.evelopers.unimod.transform.source.ModelToSource;
 
 public class CppSourceGenerator implements IGenerator {
-	
+
 	public static final String PLUGIN_ID = "org.omnetpp.experimental.unimod.generator.cpp";
 
 	public IFile[] generate(IFile f, GModel m, StateMachine root,
 			IPath outputFolder, Map parameters, IProgressMonitor monitor)
 			throws CoreException {
-		
+
 		if (root == null) {
 			return null;
 		}
-		
+
 		m.setRootStateMachine(root);
 
 		try {
@@ -51,7 +51,7 @@ public class CppSourceGenerator implements IGenerator {
 		} catch (TransformException e) {
 			UniModPlugin.logWarning("Generate Symbian C++ code for model with errors:\n" + e.getMessage());
 		}
-		
+
 		IFile headerFile;
 		IFile implementationFile;
 		try {
@@ -70,13 +70,13 @@ public class CppSourceGenerator implements IGenerator {
 				return new IFile[] {headerFile, implementationFile};
 			}
 
-			
+	
 			generate(headerFile, monitor, modelTool, Boolean.TRUE);
 			generate(implementationFile, monitor, modelTool, Boolean.FALSE);
 		} catch (TransformException e) {
 			throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, -1, e.getChainedMessage(), e));
 		}
-		
+
 		return new IFile[] {headerFile, implementationFile};
 	}
 
@@ -85,7 +85,7 @@ public class CppSourceGenerator implements IGenerator {
 			throws TransformException, CoreException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		OutputStreamWriter osw = new OutputStreamWriter(baos); 
-		
+
 		ModelToSource ms = ModelToSource.create(LogFactory.getLog(CppSourceGenerator.class));
 		Map params = new HashMap();
 		params.put("modelTool", modelTool);

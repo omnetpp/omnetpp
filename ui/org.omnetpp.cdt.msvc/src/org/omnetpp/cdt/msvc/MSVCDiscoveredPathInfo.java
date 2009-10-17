@@ -33,12 +33,12 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 
 	private IPath[] paths;
 	private Map<String, String> symbols = new HashMap<String, String>();
-	
+
 	public MSVCDiscoveredPathInfo(IProject project) {
 		// Include paths
 		String sdkDir = MSVCEnvironmentVariableSupplier.getSDKDir();
 		String vcDir = MSVCEnvironmentVariableSupplier.getVCDir();
-		
+
 		List<IPath> paths = new ArrayList<IPath>(); 
 		if (vcDir != null ) {
 		    paths.add(new Path(vcDir).append("INCLUDE"));
@@ -48,7 +48,7 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 		        paths.add(new Path(sdkDir).append("Include\\gl"));  //FIXME others? atl,mfc,...
 		    }
 		} 
-				
+		
 	    // add include dirs needed for OMNeT++
         try {
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
@@ -60,14 +60,14 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
         }
         
         this.paths = paths.toArray(new IPath[]{});
-		
+
 		// add Visual C++ predefined symbols
 		symbols.put("_M_IX86", "600");
 		symbols.put("_WIN32", "1");
 
 		symbols.put("_MSC_VER", "1400"); // FIXME use correct version number
 	}
-	
+
 	public IPath[] getIncludePaths() {
 		return paths;
 	}

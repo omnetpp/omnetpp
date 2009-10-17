@@ -22,60 +22,60 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.IVectorPlotter;
 
 class LinePlot implements ILinePlot {
-	
+
 	private static final boolean debug = false;
-	
+
 	private VectorChart chart;
 	private Rectangle rect = new Rectangle(0,0,1,1);
 	private boolean smartMode = true; // whether smartModeLimit is enabled
 	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
-	
+
 	public LinePlot(VectorChart chart) {
 		this.chart = chart;
 	}
-	
+
 	public IXYDataset getDataset() {
 		return chart.getDataset();
 	}
-	
+
 	public double transformX(double x) {
 		return chart.transformX(x);
 	}
-	
+
 	public double transformY(double y) {
 		return chart.transformY(y);
 	}
-	
+
 	public double inverseTransformX(double x) {
 		return chart.inverseTransformX(x);
 	}
-	
+
 	public double inverseTransformY(double y) {
 		return chart.inverseTransformY(y);
 	}
-	
-	
+
+
 	public Rectangle getPlotRectangle() {
 		return rect;
 	}
-	
+
 	protected RectangularArea calculatePlotArea() {
 
 		RectangularArea area = new RectangularArea(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
 													Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-		
+
 		IXYDataset dataset = getDataset();
 
 		if (dataset!=null && dataset.getSeriesCount() > 0) {
-			
+	
 			area.minX = dataset.getMinX();
 			area.minY = dataset.getMinY();
 			area.maxX = dataset.getMaxX();
 			area.maxY = dataset.getMaxY();
-			
+	
 			// try to find the area by transforming the dataset range
 			area = chart.transformArea(area);
-			
+	
 			if (!area.isFinite()) {
 				// some bounds are outside of the transformation domain,
 				// so calculate the bounding box by transforming the points and
@@ -101,7 +101,7 @@ class LinePlot implements ILinePlot {
 								area.maxY = Math.max(area.maxY, y);
 							}
 						}
-	
+
 						numOfPoints += n;
 					}
 				}
@@ -111,7 +111,7 @@ class LinePlot implements ILinePlot {
 				}
 			}
 		}
-		
+
 		if (area.minX > area.maxX) {
 			area.minX = 0.0;
 			area.maxX = 1.0;
@@ -120,21 +120,21 @@ class LinePlot implements ILinePlot {
 			area.minY = 0.0;
 			area.maxY = 1.0;
 		}
-		
+
         area.minX = (area.minX>=0 ? 0 : area.minX-area.width()/80);
         area.maxX = (area.maxX<=0 ? 0 : area.maxX+area.width()/80);
         area.minY = (area.minY>=0 ? 0 : area.minY-area.height()/3);
         area.maxY = (area.maxY<=0 ? 0 : area.maxY+area.height()/3);
-		
+
 		return area;
 	}
-	
+
 	protected Rectangle layout(GC gc, Rectangle area) {
 		this.rect = area.getCopy();
 		return area;
 	}
-	
-	
+
+
 	protected void draw(GC gc, ICoordsMapping coordsMapping) {
 		if (getDataset() != null) {
 			IXYDataset dataset = getDataset();

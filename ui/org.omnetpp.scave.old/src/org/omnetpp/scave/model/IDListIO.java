@@ -27,7 +27,7 @@ import static org.omnetpp.scave.model.IDListXMLConsts.*;
 
 
 public class IDListIO {
-	
+
 	public static void save(IDList idlist, XMLWriter writer, IProgressMonitor progressMonitor) {
 		try {
 			ResultFileManager resultFileManager = ScavePlugin.getDefault().resultFileManager;
@@ -45,7 +45,7 @@ public class IDListIO {
 				String fileType = file.getFileType()==File.SCALAR_FILE ?
 						"scalar" : file.getFileType()==File.VECTOR_FILE ?
 								"vector" : "?";
-				
+		
 				writer.writeStartElement(EL_FILE);
 				writer.writeAttribute(ATT_FILENAME, file.getFilePath());
 				writer.writeAttribute(ATT_TYPE, fileType);
@@ -77,14 +77,14 @@ public class IDListIO {
 				writer.writeEndElement(EL_INCLUDE);
 			}
 			writer.writeEndElement(EL_DATASET);
-			
+	
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static  Map<String,ContentHandler> getContentHandlers(IDList result, IProgressMonitor progressMonitor) {
 		Map<String,ContentHandler> handlers = new HashMap<String,ContentHandler>(5);
 		IDListSAXHandler idlistHandler = new IDListSAXHandler(result);

@@ -42,21 +42,21 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 	protected EventLogInput eventLogInput;
 
 	protected INavigationLocation lastLocation;
-	
+
 	protected PropertySheetPage propertySheetPage;
 
 	public IEventLog getEventLog() {
 		return eventLogInput.getEventLog();
 	}
-	
+
 	public EventLogFacade getSequenceChartFacade() {
 		return eventLogInput.getSequenceChartFacade();
 	}
-	
+
 	public IFile getFile() {
 		return eventLogInput.getFile();
 	}
-	
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		locationTimer = new Runnable() {
@@ -68,7 +68,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 		setSite(site);
 		setInput(input);
 		setPartName(input.getName());
-		
+
 		IFile file = null;
 		String logFileName;
 		if (input instanceof IFileEditorInput) {
@@ -135,7 +135,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
                 return super.getTitleToolTip() + " : " + entry.getRunId();
         }
     }
-	
+
 	@Override
 	public void dispose() {
 		super.dispose();
@@ -158,7 +158,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 			}
 		});
 	}
-	
+
 	protected boolean canCreateNavigationLocation() {
 		return !eventLogInput.getEventLog().isEmpty();
 	}
@@ -166,7 +166,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 	public void markLocation() {
 		getSite().getPage().getNavigationHistory().markLocation(this);
 	}
-	
+
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// void

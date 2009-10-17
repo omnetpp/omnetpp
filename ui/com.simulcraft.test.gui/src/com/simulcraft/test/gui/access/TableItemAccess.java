@@ -26,7 +26,7 @@ public class TableItemAccess extends ClickableWidgetAccess
 	public TableItemAccess(TableItem widget) {
 		super(widget);
 	}
-	
+
     @Override
 	public TableItem getWidget() {
 		return (TableItem)widget;
@@ -52,7 +52,7 @@ public class TableItemAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width", getWidget().getBounds().width > 0);
         return point;
 	}
-	
+
 	@Override
 	protected Point toAbsolute(Point point) {
         return getWidget().getParent().toDisplay(point);
@@ -75,7 +75,7 @@ public class TableItemAccess extends ClickableWidgetAccess
 	protected Menu getContextMenu() {
 		return (Menu)getWidget().getParent().getMenu();
 	}
-	
+
     @UIStep
     public void ensureChecked(boolean state) {
         if (getWidget().getChecked() != state) {
@@ -84,7 +84,7 @@ public class TableItemAccess extends ClickableWidgetAccess
             pressKey(' ');
         }
     }
-	
+
     @UIStep
     public void clickColumn(int index) {
         Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getTextBounds(index)));

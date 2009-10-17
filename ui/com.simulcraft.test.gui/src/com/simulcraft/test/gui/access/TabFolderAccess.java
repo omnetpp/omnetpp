@@ -57,14 +57,14 @@ public class TabFolderAccess extends CompositeAccess {
 	public void selectItem(String label) {
 		findItemByText(label).select();
 	}
-	
+
 	public static TabItemAccess[] wrapItems(TabItem[] items) {
     	TabItemAccess[] result = new TabItemAccess[items.length];
     	for (int i = 0; i < result.length; ++i)
     		result[i] = wrapItem(items[i]);
     	return result;
 	}
-	
+
 	public static TabItemAccess wrapItem(TabItem item) {
 		return (TabItemAccess)createAccess(item);
 	}

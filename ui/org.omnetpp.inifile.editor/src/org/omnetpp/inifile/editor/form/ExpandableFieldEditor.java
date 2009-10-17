@@ -37,12 +37,12 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public abstract class ExpandableFieldEditor extends FieldEditor  {
 	private static Image IMAGE_EXPAND = InifileEditorPlugin.getCachedImage("icons/full/elcl16/expand.png");
 	private static Image IMAGE_COLLAPSE = InifileEditorPlugin.getCachedImage("icons/full/elcl16/collapse.png");
-	
+
 	protected String labelText;
 	protected FieldEditor fieldEditor;
 	protected boolean isExpanded;
 	protected ToolItem toggleButton;
-	
+
 	private IInifileChangeListener inifileChangeListener = new IInifileChangeListener() {
 		public void modelChanged() {
 			updateToggleButton();
@@ -58,7 +58,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 
 		isExpanded = (!entry.isGlobal() && !canBeCollapsed());
 		createControl();
-		
+
 		// need to update the toggle button's state on inifile changes
 		inifile.addInifileChangeListener(inifileChangeListener);
 		addDisposeListener(new DisposeListener() {
@@ -78,7 +78,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 	protected void createControl() {
 		fieldEditor = createFieldEditor(isExpanded);
 		fieldEditor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-				
+		
 		toggleButton = createFlatImageButton(this);
 		toggleButton.setImage(isExpanded ? IMAGE_COLLAPSE : IMAGE_EXPAND);
 		toggleButton.setToolTipText(isExpanded ? "Specify value globally, in the [General] section": "Specify values individually for different sections");
@@ -103,11 +103,11 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 			public void widgetDisposed(DisposeEvent e) {
 				cursor.dispose();
 			}
-		});		
+		});
         ToolItem item = new ToolItem(toolBar, SWT.NONE);
         return item;
 	}
-	
+
 	protected boolean canBeCollapsed() {
 	    if (!entry.isPerObject()) {
 	        for (String section : inifile.getSectionNames())
@@ -123,7 +123,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 	    }
 		return true;
 	}
-	
+
 	@Override
 	public void commit() {
 		fieldEditor.commit();
@@ -144,7 +144,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 	public boolean isExpanded() {
 	    return isExpanded;
 	}
-	
+
 	public FieldEditor getInnerFieldEditor() {
 	    return fieldEditor;
 	}

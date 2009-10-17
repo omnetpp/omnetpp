@@ -43,16 +43,16 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 			ScaveModelPackage.eINSTANCE.getChartSheet_Name(),
 			ScaveModelPackage.eINSTANCE.getChartSheet_Charts()
 	};
-	
+
 	/**
 	 * The edited chart sheet.
 	 */
 	//private ChartSheet chartSheet;
-	
+
 	// edit controls
 	private Text nameText;
 	private ListSelectionPanel chartsPanel;
-	
+
 	/**
 	 * List of charts in the analysis sorted by name.
 	 */
@@ -64,27 +64,27 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 			return name1.compareTo(name2);
 		}
 	};
-	
+
 	public ChartSheetEditForm(ChartSheet chartSheet, EObject parent) {
 		//this.chartSheet = chartSheet;
 		allCharts = ScaveModelUtil.findObjects(parent.eResource(), Chart.class);
 		Collections.sort(allCharts, comparator);
 	}
-	
+
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */
 	public String getTitle() {
 		return "Chart sheet";
 	}
-	
+
 	/**
 	 * Returns the description displayed below the title.
 	 */
 	public String getDescription() {
 		return "Modify properties and content of a chart sheet.";
 	}
-	
+
 	/**
 	 * Returns the features edited on this form.
 	 */
@@ -97,7 +97,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 	 */
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout());
-		
+
 		// panel containing the label/text of the name
 		Composite namePanel = new Composite(panel, SWT.NONE);
 		namePanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -119,7 +119,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 		gridData.minimumWidth = 100;
 		chartsPanel.setLayoutData(gridData);
 	}
-	
+
 	private List<String> getChartNames(List<Chart> charts) {
 		ArrayList<String> names = new ArrayList<String>();
 		for (Chart chart : charts) {
@@ -128,7 +128,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 		}
 		return names;
 	}
-	
+
 	private List<Chart> getCharts(String[] names) {
 		List<Chart> charts = new ArrayList<Chart>();
 		Chart chart = ScaveModelFactory.eINSTANCE.createBarChart(); // temp chart object used as search key; concrete type (BarChart) is irrelevant as comparator looks at the name only

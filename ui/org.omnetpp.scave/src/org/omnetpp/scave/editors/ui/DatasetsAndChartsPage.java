@@ -51,7 +51,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		super(parent, SWT.V_SCROLL, scaveEditor);
 		initialize();
 	}
-	
+
 	private void initialize() {
 		// set up UI
 		setPageTitle("Datasets");
@@ -67,7 +67,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		sashform.setWeights(new int[] {2,1});
 
 		Composite palette = createPalette(getBody(), true);
-		
+
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
         scaveEditor.configureTreeViewer(getChartSheetsTreeViewer());
@@ -85,7 +85,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	}
 
 	/**
-	 * This method initializes formToolkit	
+	 * This method initializes formToolkit
 	 */
 	private FormToolkit getFormToolkit() {
 		if (formToolkit == null)
@@ -96,19 +96,19 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	public TreeViewer getDatasetsTreeViewer() {
 		return datasetsTreeViewer;
 	}
-	
+
 	public TreeViewer getChartSheetsTreeViewer() {
 		return chartSheetsTreeViewer;
 	}
-	
+
 	private void createSashForm() {
 		sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
 		sashform.setBackground(this.getBackground());
 		sashform.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
-	
+
 	/**
-	 * This method initializes datasetsSection	
+	 * This method initializes datasetsSection
 	 */
 	private void createDatasetsSection() {
 		Section datasetsSection = getFormToolkit().createSection(sashform,
@@ -121,7 +121,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	}
 
 	/**
-	 * This method initializes chartSheetsSection	
+	 * This method initializes chartSheetsSection
 	 */
 	private void createChartSheetsSection() {
 		// set up UI

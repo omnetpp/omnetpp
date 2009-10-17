@@ -65,9 +65,9 @@ public class EventLogFilterParameters implements Serializable {
 	public long lowerEventNumberLimit = -1;
 
 	public long upperEventNumberLimit = -1;
-	
+
 	public BigDecimal lowerSimulationTimeLimit;
-	
+
 	public BigDecimal upperSimulationTimeLimit;
 
 	public long tracedEventNumber = -1;
@@ -93,15 +93,15 @@ public class EventLogFilterParameters implements Serializable {
 	public String[] moduleNEDTypeNames;
 
 	public int[] moduleIds;
-	
+
 	public int[] moduleNameIds;
-	
+
 	public String[] messageClassNames;
 
 	public String[] messageNames;
 
 	public String messageFilterExpression;
-	
+
 	public EnabledInt[] messageIds;
 
     public EnabledInt[] messageTreeIds;
@@ -113,9 +113,9 @@ public class EventLogFilterParameters implements Serializable {
     public boolean collectMessageReuses = true;
     
     public int maximumNumberOfMessageDependencies = 5;
-	
+
 	public int maximumDepthOfMessageDependencies = 15;
-	
+
     public int maximumMessageDependencyCollectionTime = 100;
 
     public static class EnabledInt implements Serializable {
@@ -134,11 +134,11 @@ public class EventLogFilterParameters implements Serializable {
 	public EventLogFilterParameters(EventLogInput eventLogInput) {
 		this.eventLogInput = eventLogInput;
 	}
-	
+
 	public void setEventLogInput(EventLogInput eventLogInput) {
 		this.eventLogInput = eventLogInput;
 	}
-	
+
     public boolean isAnyEventFilterEnabled() {
         return enableEventNumberFilter || enableSimulationTimeFilter;
     }
@@ -224,7 +224,7 @@ public class EventLogFilterParameters implements Serializable {
 
 		long limit = Math.min(Math.min(upperEventNumberLimit, upperEventNumberForSimulationTimeLimit),
 				             Math.min(upperTraceEventNumberLimit1, upperTraceEventNumberLimit2));
-		
+
 		if (limit == Long.MAX_VALUE)
 			return -1;
 		else
@@ -233,7 +233,7 @@ public class EventLogFilterParameters implements Serializable {
 
 	public IntVector getModuleIds() {
 		IntVector vector = new IntVector();
-		
+
 		if (enableModuleNameFilter)
     		for (int id : moduleNameIds)
     			vector.add(id);
@@ -287,7 +287,7 @@ public class EventLogFilterParameters implements Serializable {
 
 	public IntVector createIntVector(int[] ids) {
 		IntVector vector = new IntVector();
-		
+
 		for (int id : ids)
 			vector.add(id);
 
@@ -296,7 +296,7 @@ public class EventLogFilterParameters implements Serializable {
 
 	public LongVector createLongVector(EnabledInt[] ids) {
 		LongVector vector = new LongVector();
-		
+
 		for (EnabledInt id : ids)
 		    if (id.enabled)
 		        vector.add(id.value);
@@ -306,7 +306,7 @@ public class EventLogFilterParameters implements Serializable {
 
 	public StringVector createStringVector(String[] names) {
 		StringVector vector = new StringVector();
-		
+
 		for (String name : names)
 			vector.add(name);
 

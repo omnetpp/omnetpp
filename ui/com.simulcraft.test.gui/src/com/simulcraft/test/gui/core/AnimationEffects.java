@@ -102,7 +102,7 @@ public class AnimationEffects  {
 
     public static void displayTextBox2(String text, Color textColor, int fontSize, int delayMillis) {
     	System.out.println("SHOWING: " + text); Display.getCurrent().beep();
-    	
+    
         Shell shell = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
         Display display = Display.getCurrent();
 

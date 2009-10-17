@@ -31,7 +31,7 @@ public class DeleteOpenFileTest
 
 		WorkspaceUtils.assertFileExists("/" + projectName + "/" + fileName);
 		WorkspaceUtils.ensureFileNotExists(projectName, fileName);
-		
+
 		WorkbenchUtils.ensureViewActivated("General", "Outline");  // give views a chance to crash
 	}
 }

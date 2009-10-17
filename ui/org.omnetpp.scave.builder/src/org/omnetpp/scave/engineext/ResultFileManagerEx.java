@@ -36,7 +36,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 
 	private ListenerList changeListeners = new ListenerList();
 	private ListenerList disposeListeners = new ListenerList();
-	
+
 	public void addChangeListener(IResultFilesChangeListener listener) {
 		changeListeners.add(listener);
 	}
@@ -44,25 +44,25 @@ public class ResultFileManagerEx extends ResultFileManager {
 	public void removeChangeListener(IResultFilesChangeListener listener) {
 		changeListeners.remove(listener);
 	}
-	
+
 	protected void notifyChangeListeners() {
 		for (Object listener : changeListeners.getListeners())
 			((IResultFilesChangeListener)listener).resultFileManagerChanged(this);
 	}
-	
+
 	public void addDisposeListener(IResultFileManagerDisposeListener listener) {
 		disposeListeners.add(listener);
 	}
-	
+
 	public void removeDisposeListener(IResultFileManagerDisposeListener listener) {
 		disposeListeners.remove(listener);
 	}
-	
+
 	protected void notifyDisposeListeners() {
 		for (Object listener : disposeListeners.getListeners())
 			((IResultFileManagerDisposeListener)listener).resultFileManagerDisposed(this);
 	}
-	
+
 	/*-------------------------------------------
 	 *               Writer methods
 	 *-------------------------------------------*/
@@ -70,7 +70,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		delete();
 		notifyDisposeListeners();
 	}
-	
+
 	@Override
 	public ResultFile loadFile(String filename) {
 		getWriteLock().lock();
@@ -98,7 +98,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 			getWriteLock().unlock();
 		}
 	}
-	
+
 	@Override
 	public ResultFile loadFile(String filename, String osFileName, boolean reload) {
 		getWriteLock().lock();
@@ -112,7 +112,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 			getWriteLock().unlock();
 		}
 	}
-	
+
 	@Override
 	public void unloadFile(ResultFile file) {
 		getWriteLock().lock();
@@ -125,7 +125,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 			getWriteLock().unlock();
 		}
 	}
-	
+
 	@Override
 	public long addComputedVector(int vectorId, String name, String file, StringMap attributes, long computationID, long input, Object processingOp) {
 		checkNotDeleted();
@@ -144,12 +144,12 @@ public class ResultFileManagerEx extends ResultFileManager {
 	/*-------------------------------------------
 	 *               Reader methods
 	 *-------------------------------------------*/
-	
-	
+
+
 	public boolean isDisposed() {
 		return getCPtr(this) == 0;
 	}
-	
+
 	@Override
 	public ILock getReadLock() {
 		checkNotDeleted();
@@ -175,14 +175,14 @@ public class ResultFileManagerEx extends ResultFileManager {
 		IDList idlist = super.getAllVectors();
 		return wrap(idlist);
 	}
-	
+
 	@Override
 	public IDList getAllHistograms() {
 		checkNotDeleted();
 		IDList idlist = super.getAllHistograms();
 		return wrap(idlist);
 	}
-	
+
 	@Override
 	public IDList getAllItems() {
 		checkNotDeleted();
@@ -203,7 +203,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		IDList result = super.filterIDList(idlist, fileAndRunFilter, moduleFilter, nameFilter);
 		return wrap(result);
 	}
-	
+
 	/*
 	 * The rest adds check() calls only.
 	 */
@@ -256,8 +256,8 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkNotDeleted();
 		return super.getModuleFilterHints(idlist);
 	}
-	
-	
+
+
 
 	@Override
 	public StringVector getFilePathFilterHints(ResultFileList fileList) {
@@ -276,7 +276,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkNotDeleted();
 		return super.getNameFilterHints(idlist);
 	}
-	
+
 	@Override
 	public StringVector getModuleParamFilterHints(RunList runList,
 			String paramName) {
@@ -327,7 +327,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkReadLock();
 		return super.getScalar(id);
 	}
-	
+
 	@Override
 	public VectorResult getVector(long id) {
 		checkReadLock();
@@ -363,7 +363,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkReadLock();
 		return super.getUniqueRuns(ids);
 	}
-	
+
 	@Override
 	public StringSet getUniqueAttributeNames(IDList ids) {
 		checkNotDeleted();
@@ -393,7 +393,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkNotDeleted();
 		return super.isFileLoaded(fileName);
 	}
-	
+
 	@Override
 	public long getComputedID(long computationID, long inputID) {
 		checkNotDeleted();
@@ -411,7 +411,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkNotDeleted();
 		return super.isStaleID(id);
 	}
-	
+
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
@@ -436,7 +436,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkNotDeleted();
 		return super.toString();
 	}
-	
+
 	/*-------------------------------------
 	 *            Helpers
 	 *-------------------------------------*/
@@ -444,7 +444,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		if (getCPtr(this) == 0)
 			throw new IllegalStateException("Tried to access a deleted ResultFileManagerEx.");
 	}
-	
+
 	private IDList wrap(IDList obj) {
 		return obj; // TODO eliminate wrap() calls 
 	}

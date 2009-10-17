@@ -24,7 +24,7 @@ public class SimulationDebugLaunchDelegate extends LocalCDILaunchDelegate {
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// check if program name is not provided in this case we should use opp_run as the executable
     	config = OmnetppLaunchUtils.convertLaunchConfig(config, mode);
-		
+
 		super.launch(config, mode, launch, monitor);
 	}
 }

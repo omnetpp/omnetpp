@@ -65,19 +65,19 @@ public class GroupAction extends AbstractScaveAction {
 		RangeSelection range = asRangeSelection(selection);
 		return range != null && ScaveModelUtil.findEnclosingOrSelf(range.owner, Dataset.class) != null;
 	}
-	
+
 	static class RangeSelection {
 		public EObject owner;
 		public EStructuralFeature feature;
 		public int fromIndex;
 		public int toIndex;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static RangeSelection asRangeSelection(IStructuredSelection selection) {
 		if (selection == null || selection.size() == 0 || !containsEObjectsOnly(selection))
 			return null;
-		
+
 		RangeSelection range = new RangeSelection();
 		Iterator<? extends EObject> elements = selection.iterator();
 		while (elements.hasNext()) {
@@ -87,7 +87,7 @@ public class GroupAction extends AbstractScaveAction {
 			if (feature == null || !feature.isMany())
 				return null;
 			int index = ((EList<?>)owner.eGet(feature)).indexOf(element);
-			
+	
 			if (range.owner == null) { // first iteration
 				range.owner = owner;
 				range.feature = feature;
@@ -100,10 +100,10 @@ public class GroupAction extends AbstractScaveAction {
 			else // not sibling
 				return null;
 		}
-		
+
 		if (selection.size() != range.toIndex - range.fromIndex + 1)
 			return null;
-		
+
 		return range;
 	}
 }

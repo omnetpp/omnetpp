@@ -79,7 +79,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 
 			// after "*" or "**" we'll want to add an extra dot
 			String optDot = prefix.endsWith("*") ? "." : ""; 
-			
+	
 			// check every fullPath:
 			PatternMatcher prefixPart1Matcher = new PatternMatcher(prefixPart1, true, true, true);
 			for (String fullPath : fullPaths) {

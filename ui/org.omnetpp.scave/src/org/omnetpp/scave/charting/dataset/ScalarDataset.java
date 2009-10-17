@@ -38,9 +38,9 @@ import org.omnetpp.scave.engine.XYDataset;
  * @author tomi
  */
 public class ScalarDataset implements IAveragedScalarDataset {
-	
+
 	private ResultItemFields rowFields, columnFields;
-	
+
 	/** The row keys. */
     private List<String> rowKeys;
 
@@ -140,7 +140,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
    		List<String> columnFields = new ArrayList<String>();
    		List<String> unusedFields = new ArrayList<String>();
    		unusedFields.addAll(fields);
-   		
+   	
    		if (groupByFields != null) {
    			rowFields.addAll(groupByFields);
    			unusedFields.removeAll(groupByFields);
@@ -158,7 +158,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
 	   		columnFields = addDependentFields(columnFields, unusedFields, dependencies);
 	   		applyDefaults(rowFields, columnFields, unusedFields);
    		}
-   		
+   	
    		//Debug.format("Row fields: %s%n", StringUtils.formatList(rowFields, "%s", ","));
    		//Debug.format("Column fields: %s%n", StringUtils.formatList(columnFields, "%s", ","));
 
@@ -192,7 +192,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
     private static List<String> addDependentFields(List<String> fields, List<String> unusedFields, Map<String,List<String>> dependencies) {
     	if (unusedFields.isEmpty())
     		return fields;
-    	
+    
    		List<String> result = new ArrayList<String>();
     	for (String field1 : fields) {
     		result.add(field1);

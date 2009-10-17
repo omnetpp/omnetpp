@@ -25,14 +25,14 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 	public FontPropertyDescriptor(Object id, String displayName) {
 		super(id, displayName);
 	}
-	
+
 	public CellEditor createPropertyEditor(Composite parent) {
 		CellEditor editor = new FontDialogCellEditor(parent);
 		ICellEditorValidator validator = getValidator();
 		if (validator == null)
 			validator = new ICellEditorValidator() {
 				public String isValid(Object value) {
-					
+			
 					if (value instanceof FontData)
 						return null;
 					else
@@ -42,7 +42,7 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 		editor.setValidator(validator);
 		return editor;
 	}
-	
+
 	public ILabelProvider getLabelProvider() {
 		return new LabelProvider() {
 			public String getText(Object object) {
@@ -50,7 +50,7 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 			}
 		};
 	}
-	
+
 	static class FontDialogCellEditor extends DialogCellEditor {
 
 		protected FontDialogCellEditor(Composite parent) {
@@ -59,19 +59,19 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 
 		protected Object openDialogBox(Control cellEditorWindow) {
 			FontDialog fontDialog = new FontDialog( cellEditorWindow.getShell());
-			
+	
 			FontData value = (FontData)getValue();
-			
+	
 			if (value != null)
 				fontDialog.setFontList(new FontData[] {value});
 			FontData fd = fontDialog.open();
-				
+		
 			if (fd != null) {
 				value = fd;
 			}
 			return value;
 		}
-		
+
 	    @Override
 		protected void updateContents(Object value) {
 	    	Label label = getDefaultLabel();

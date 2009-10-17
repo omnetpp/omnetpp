@@ -24,7 +24,7 @@ import org.omnetpp.scave.engine.ResultItemFields;
  * @author tomi
  */
 public class ResultItemNamePatternField {
-	
+
 	public ResultItemNamePatternField(Text text) {
 		this(text, ResultItemFields.getFieldNames().toArray());
 	}
@@ -39,7 +39,7 @@ public class ResultItemNamePatternField {
 		for (int i = 0; i < proposals.length; ++i)
 			proposals[i] = "{" + fieldNames[i] + "}";
 		SimpleContentProposalProvider proposalProvider = new SimpleContentProposalProvider(proposals);
-		
+	
 		new ContentAssistCommandAdapter(text,
 				new TextContentAdapter(),
 				proposalProvider,

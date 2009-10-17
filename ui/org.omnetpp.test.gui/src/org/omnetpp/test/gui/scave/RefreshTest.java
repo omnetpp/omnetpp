@@ -16,9 +16,9 @@ import org.omnetpp.test.gui.access.InputsPageAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 
 public class RefreshTest extends ScaveFileTestCase {
-	
+
 	DatasetViewAccess datasetView;
-	
+
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
@@ -26,7 +26,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		datasetView = ScaveEditorUtils.ensureDatasetView();
 	}
-	
+
 	public void testInitialContent() {
 		assertFileRunViewContent(buildFileRunViewContent(1, 2));
 		assertRunFileViewContent(buildRunFileViewContent(1, 2));
@@ -36,7 +36,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		assertDatasetViewScalarsTableContent(buildScalarsTableContent(1, 2));
 		assertDatasetViewVectorsTableContent(buildVectorsTableContent(1, 2));
 	}
-	
+
     public void testRemoveFileFromWorkspace() throws Exception {
     	removeFile("test-2.sca");
     	removeFile("test-2.vec");
@@ -55,7 +55,7 @@ public class RefreshTest extends ScaveFileTestCase {
     	createFile("test-3.sca", createScalarFileContent(3));
     	createFile("test-3.vec", createVectorFileContent(3));
     	WorkbenchUtils.refreshProjectFromProjectExplorerView(projectName);
-    	
+    
     	assertFileRunViewContent(buildFileRunViewContent(1, 2, 3));
     	assertRunFileViewContent(buildRunFileViewContent(1, 2, 3));
     	assertLogicalViewContent(buildLogicalViewContent(1, 2, 3));
@@ -126,7 +126,7 @@ public class RefreshTest extends ScaveFileTestCase {
 
 	protected void createFiles() throws Exception {
 		createAnalysisFile();
-		
+
 		for (int runNumber = 1; runNumber <= 4; ++runNumber) {
 			if (runNumber == 3)
 				continue;
@@ -134,7 +134,7 @@ public class RefreshTest extends ScaveFileTestCase {
 			createVectorFile(runNumber);
 		}
 	}
-	
+
 	protected GenericTreeNode[] buildFileRunViewContent(int... runNumbers) {
 		GenericTreeNode[] content = new GenericTreeNode[runNumbers.length * 2];
 		for (int i = 0; i < runNumbers.length; i++) {
@@ -145,7 +145,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		}
 		return content;
 	}
-	
+
 	protected GenericTreeNode[] buildRunFileViewContent(int... runNumbers) {
 		GenericTreeNode[] content = new GenericTreeNode[runNumbers.length];
 		for (int i = 0; i < runNumbers.length; i++) {
@@ -155,7 +155,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		}
 		return content;
 	}
-	
+
 	protected GenericTreeNode[] buildLogicalViewContent(int... runNumbers) {
 		GenericTreeNode[] content = new GenericTreeNode[runNumbers.length];
 		for (int i = 0; i < runNumbers.length; i++) {
@@ -168,7 +168,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		}
 		return content;
 	}
-	
+
 	protected String[][] buildScalarsTableContent(int... runNumbers) {
 		String[][] table = new String[runNumbers.length][];
 		for (int i = 0; i < runNumbers.length; ++i) {
@@ -176,7 +176,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		}
 		return table;
 	}
-	
+
 	protected String[][] buildVectorsTableContent(int... runNumbers) {
 		String[][] table = new String[runNumbers.length][];
 		for (int i = 0; i < runNumbers.length; ++i) {
@@ -184,7 +184,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		}
 		return table;
 	}
-	
+
 	protected GenericTreeNode buildDatasetsTreeContent() {
 		return	n("dataset test-dataset",
 					n("add vectors: all"),
@@ -194,32 +194,32 @@ public class RefreshTest extends ScaveFileTestCase {
 					n("histogram chart test-histogramchart"),
 					n("scatter chart test-scatterchart"));
 	}
-	
+
 	protected void assertFileRunViewContent(GenericTreeNode... content) {
 		InputsPageAccess inputsPage = editor.ensureInputsPageActive();
 		inputsPage.ensureFileRunViewVisible();
 		inputsPage.getFileRunViewTree().assertContent(content);
 	}
-	
+
 	protected void assertRunFileViewContent(GenericTreeNode... content) {
 		InputsPageAccess inputsPage = editor.ensureInputsPageActive();
 		inputsPage.ensureRunFileViewVisible();
 		inputsPage.getRunFileViewTree().assertContent(content);
 	}
-	
+
 	protected void assertLogicalViewContent(GenericTreeNode... content) {
 		InputsPageAccess inputsPage = editor.ensureInputsPageActive();
 		inputsPage.ensureLogicalViewVisible();
 		inputsPage.getLogicalViewTree().assertContent(content);
 	}
-	
+
 	protected void assertBrowseDataPageScalarsTableContent(String[]... content) {
 		BrowseDataPageAccess browseDataPage = editor.ensureBrowseDataPageActive();
 		browseDataPage.ensureScalarsSelected();
 		browseDataPage.sortByTableColumn(BrowseDataPageAccess.FILE_NAME, SWT.UP);
 		browseDataPage.getScalarsTable().assertContent(content);
 	}
-	
+
 	protected void assertBrowseDataPageVectorsTableContent(String[]... content) {
 		BrowseDataPageAccess browseDataPage = editor.ensureBrowseDataPageActive();
 		browseDataPage.ensureVectorsSelected();
@@ -234,7 +234,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		datasetView.sortByTableColumn(DatasetViewAccess.FILE_NAME, SWT.UP);
 		datasetView.getScalarsTable().assertContent(content);
 	}
-	
+
 	protected void assertDatasetViewVectorsTableContent(String[]... content) {
 		editor.ensureDatasetsPageActive().getDatasetsTree().findTreeItemByContent("dataset.*test-dataset.*").click();
 		datasetView.activateWithMouseClick();

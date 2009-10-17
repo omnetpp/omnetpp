@@ -12,9 +12,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 public class EnumCellEditor extends ComboBoxCellEditor {
-	
+
 	Object[] values;
-	
+
 	public EnumCellEditor(Composite parent, String[] names, Object[] values) {
 		super(parent, names, SWT.READ_ONLY);
 		this.values = values;

@@ -19,7 +19,7 @@ public class DatasetViewTest extends ScaveFileTestCase {
 
 	DatasetsAndChartsPageAccess datasetsPage;
 	DatasetViewAccess datasetView;
-	
+
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
@@ -29,13 +29,13 @@ public class DatasetViewTest extends ScaveFileTestCase {
 		datasetView = ScaveEditorUtils.ensureDatasetView();
 		//datasetView.ensureAllColumnsVisible();
 	}
-	
+
 	public void testOpenDatasetView() {
 		MenuAccess menu = datasetsPage.getDatasetsTree().activateContextMenuWithMouseClick();
 		menu.activateMenuItemWithMouse(".*[dD]ataset.*[vV]iew.*");
 		datasetView.assertActivated();
 	}
-	
+
 	public void testDatasetViewContent() {
 		editor.ensureDatasetsPageActive();
 		MenuAccess menu = datasetsPage.getDatasetsTree().activateContextMenuWithMouseClick();
@@ -48,7 +48,7 @@ public class DatasetViewTest extends ScaveFileTestCase {
 		datasetView.ensureVectorsPanelActivated();
 		datasetView.sortByTableColumn(FILE_NAME, SWT.UP);
 		datasetView.getVectorsTable().assertEmpty();
-		
+
 		datasetsPage.getDatasetsTree().findTreeItemByContent("dataset.*vector-dataset.*").click();
 		datasetView.assertVectorsPanelActivated();
 		datasetView.getVectorsTable().assertContent(buildVectorsTableContent());
@@ -56,21 +56,21 @@ public class DatasetViewTest extends ScaveFileTestCase {
 		datasetView.sortByTableColumn(FILE_NAME, SWT.UP);
 		datasetView.getScalarsTable().assertEmpty();
 	}
-	
+
 	protected String[][] buildScalarsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
 			content[i] = buildScalarsTableRow(i+1);
 		return content;
 	}
-	
+
 	protected String[][] buildVectorsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
 			content[i] = buildVectorsTableRow(i+1);
 		return content;
 	}
-	
+
 	@Override
 	protected String createAnalysisFileContent() {
 		return

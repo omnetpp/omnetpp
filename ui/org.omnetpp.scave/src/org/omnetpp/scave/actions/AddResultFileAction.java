@@ -62,13 +62,13 @@ public class AddResultFileAction extends AbstractScaveAction {
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		return true;
 	}
-	
+
 	private static class ResultFileSelectionDialog extends ResourceListSelectionDialog
 	{
 		public ResultFileSelectionDialog(Shell shell, IContainer container, int typeMask) {
 			super(shell, container, typeMask);
 		}
-		
+
 		@Override
 		protected IDialogSettings getDialogBoundsSettings() {
 		    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());

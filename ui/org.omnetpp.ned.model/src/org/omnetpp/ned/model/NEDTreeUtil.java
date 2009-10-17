@@ -120,7 +120,7 @@ public class NEDTreeUtil {
 			NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
 			dtdvalidator.validate(swigTree);
 			dumpSwigErrors(swigErrors); //XXX remove -- debugging only
-			
+	
 			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
 			// additional syntax-related validation
@@ -217,7 +217,7 @@ public class NEDTreeUtil {
             }
         }
     }
-	
+
 	/**
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.
 	 * NOTE: There are two different NEDElement types handled in this function.
@@ -234,10 +234,10 @@ public class NEDTreeUtil {
 				errors.add(severity, pojoTree, getLineFrom(swigErrors.errorLocation(i)), swigErrors.errorText(i));
 			}
 		}
-		
+
 		return pojoTree;
 	}
-	
+
 	protected static INEDElement doSwig2pojo(NEDElement swigNode, INEDElement parent, NEDErrorStore swigErrors, INEDErrorStore errors) {
 		INEDElement pojoNode = NEDElementFactory.getInstance().createElement(swigNode.getTagCode(), parent);
 
@@ -252,7 +252,7 @@ public class NEDTreeUtil {
 			pojoNode.setSourceRegion(new org.omnetpp.ned.model.NEDSourceRegion(
 					swigRegion.getStartLine(), swigRegion.getStartColumn(),
 					swigRegion.getEndLine(), swigRegion.getEndColumn()));
-		
+
 		// take over error messages related to this node
 		if (swigErrors.findFirstErrorFor(swigNode, 0) != -1) {
 			int i = -1;

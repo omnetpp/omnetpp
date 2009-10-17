@@ -36,11 +36,11 @@ import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 
 public class LiveAnimationController extends ReplayAnimationController implements IEnvirCallback {
 	protected Javaenv jenv;
-	
+
 	protected cSimulation liveSimulation;
 
 	protected AnimationPosition lastStopLiveAnimationPosition;
-	
+
 	protected long liveAnimationNumber;
 
 	private boolean isRunningLive;
@@ -51,7 +51,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		jenv = Simkernel.getJavaenv();
 		jenv.setJCallback(null, this);
 	}
-	
+
 	@Override
 	public void restart() {
 		super.restart();
@@ -72,7 +72,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		super.shutdown();
 		jenv.setJCallback(null, null);
 	}
-	
+
 	// simulate state
 
 	public cSimulation getLiveSimulation() {
@@ -86,15 +86,15 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	public double getLiveSimulationTime() {
 		return liveSimulation.getSimTime();
    }
-	
+
 	public double guessNextEventLiveSimulationTime() {
 		return liveSimulation.guessNextSimtime();
 	}
-	
+
 	public long getLiveAnimationNumber() {
 		return liveAnimationNumber;
 	}
-	
+
 	public double getLiveAnimationTime() {
 		return getAnimationTimeForAnimationNumber(getLiveAnimationNumber());
 	}
@@ -104,10 +104,10 @@ public class LiveAnimationController extends ReplayAnimationController implement
 			setAnimationPosition(lastStopLiveAnimationPosition);
 	}
 
-	public boolean isAtLivePosition() {		
+	public boolean isAtLivePosition() {
 		return currentAnimationPosition.equals(lastStopLiveAnimationPosition);
 	}
-	
+
 	// public animation API
 
 	@Override
@@ -115,31 +115,31 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		setRunningLive(false);
 		super.gotoAnimationBegin();
 	}
-	
+
 	@Override
 	public void runAnimationBack() {
 		setRunningLive(false);
 		super.runAnimationBack();
 	}
-	
+
 	@Override
 	public void stepAnimationBack() {
 		setRunningLive(false);
 		super.stepAnimationBack();
 	}
-	
+
 	@Override
 	public void stopAnimation() {
 		setRunningLive(false);
 		super.stopAnimation();
 	}
-	
+
 	@Override
 	public void runAnimation() {
 		setRunningLive(false);
 		super.runAnimation();
 	}
-	
+
 	@Override
 	public void stepAnimation() {
 		setRunningLive(false);
@@ -151,9 +151,9 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		setRunningLive(false);
 		super.gotoAnimationEnd();
 	}
-	
+
 	// public simulation API
-	
+
 	public void restartSimulation() {
 		restart();
 		animateAtCurrentPosition();
@@ -182,7 +182,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public void runSimulationExpress() {
 		setRunningLive(true);
-		// TODO: show a modal dialog with a big stop button		
+		// TODO: show a modal dialog with a big stop button
 	}
 
 	public void stopSimulation() {
@@ -197,7 +197,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 			setLastStopLivePositionAtCurrentPosition();
 			setEndPositionAtLastStopLivePosition();
 			jenv.finishSimulation();
-			
+	
 			controllerStateChanged();
 		}
 	}
@@ -206,23 +206,23 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		return jenv.getSimulationState() == Javaenv.eState.SIM_TERMINATED.swigValue() ||
 			jenv.getSimulationState() == Javaenv.eState.SIM_FINISHCALLED.swigValue();
 	}
-	
+
 	public boolean isRunningLive() {
 		return isRunningLive;
 	}
-	
+
 	public void setRunningLive(boolean isRunningLive) {
 		this.isRunningLive = isRunningLive;
-		
+
 		controllerStateChanged();
 	}
-	
+
 	@Override
 	protected void animateStop() {
 		if (isRunningLive) {
 			setRunningLive(false);
 			setLastStopLivePositionAtCurrentPosition();
-			setEndPositionAtLastStopLivePosition();			
+			setEndPositionAtLastStopLivePosition();	
 		}
 
 		super.animateStop();
@@ -236,12 +236,12 @@ public class LiveAnimationController extends ReplayAnimationController implement
 			while (!isSimulationFinished()) {
 				if (animationPosition.compareTo(getLiveSimulationPosition()) < 0)
 					break;
-	
+
 				jenv.doOneStep();
 				addNextHandleMessageAnimation();
 				//jenv.runSimulation(mode, until_time, until_event);
 			}
-		
+
 		return beginOrderedAnimationPrimitives.size() - count;
 	}
 
@@ -278,10 +278,10 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		replayModule.setName(module.getName());
 		replayModule.setIndex(module.getIndex());
 		replayModule.setSize(!module.isVector() ? -1 : module.getVectorSize());
-		
+
 		return replayModule;
 	}
-	
+
 	protected ReplayMessage toReplayMessage(cMessage msg) {
 		ReplayMessage replayMessage = new ReplayMessage();
 		replayMessage.setName(msg.getName());
@@ -296,7 +296,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	// simulation callbacks
-	
+
 	public void breakpointHit(String lbl, cModule mod) {
 	}
 
@@ -322,7 +322,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public void messageDelivered(cMessage msg) {
 		HandleMessageAnimation handleMessageAnimation = handleMessageAnimationPrimitives.get(handleMessageAnimationPrimitives.size() - 1);
-		
+
 		if (handleMessageAnimation.getEventNumber() != getLiveEventNumber() ||
 			handleMessageAnimation.getBeginSimulationTime() != getLiveSimulationTime() ||
 			handleMessageAnimation.getAnimationNumber() != getLiveAnimationNumber())

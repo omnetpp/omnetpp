@@ -26,5 +26,5 @@ public interface IHoverTextProvider {
 	 * @param outSizeConstraint	a Point object to return the requested size of the tooltip control (out parameter)
 	 */
 	String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint);
-	
+
 }

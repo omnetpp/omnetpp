@@ -64,13 +64,13 @@ public class ChartFactory {
 		else
 			throw new RuntimeException("unknown chart type");
 	}
-	
+
 	public static ScalarChart createScalarChart(Composite parent, BarChart chart, Dataset dataset, ResultFileManager manager) {
 		ScalarChart scalarChart = new ScalarChart(parent, SWT.DOUBLE_BUFFERED);
 		setChartProperties(chart, scalarChart);
 
 		populateScalarChart(chart, manager, scalarChart);
-		
+
 		return scalarChart;
 	}
 
@@ -91,7 +91,7 @@ public class ChartFactory {
 		populateHistogramChart(chart, manager, histogramChart);
 		return histogramChart;
 	}
-	
+
 	public static VectorChart createScatterChart(Composite parent, ScatterChart chart, Dataset dataset, ResultFileManager manager) {
 		final VectorChart scatterChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		scatterChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -163,11 +163,11 @@ public class ChartFactory {
 			}
 		});
 	}
-	
+
 	interface IDatasetCalculation {
 		public IDataset run(IProgressMonitor progressMonitor);
 	}
-	
+
 	protected static void startDatasetEvaluationJob(final ChartCanvas chartCanvas, final IDatasetCalculation calc) {
 		//
 		// FIXME Handle concurrency issues! Model must be locked against modification while 
@@ -189,7 +189,7 @@ public class ChartFactory {
 						setChartStatusText(chartCanvas, "Chart update cancelled.");
 						return Status.CANCEL_STATUS;
 					}
-					
+			
 					// we're a non-UI thread, so we need to use display.asyncExec() to set the results.
 					// Note that the chart page may have been close since, so we need to check isDisposed() too.
 					Display.getDefault().asyncExec(new Runnable() {
@@ -216,13 +216,13 @@ public class ChartFactory {
 					}});
 			}
 		};
-		
+
 		chartCanvas.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				job.cancel();
 			}
 		});
-		
+
 		job.setPriority(Job.INTERACTIVE); // high priority
 		job.schedule();
 	}

@@ -31,7 +31,7 @@ options {
 {
 	private static CppFormulaGenerator instance;
 	private ModelTool modelTool;
-	
+
 	public static String generate(AST ast, ModelTool modelTool) throws RecognitionException {
 		CppFormulaGenerator generator = new CppFormulaGenerator();
 		StringBuffer buffer = new StringBuffer();

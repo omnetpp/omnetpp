@@ -389,11 +389,11 @@ public class MakemakeOptions implements Cloneable {
     private static List<String> makeVariableSubstitution(List<String> args, IProject project) throws CoreException {
 		if (args == null)
 			return null;
-		
+
     	List<String> substedArgs = new ArrayList<String>(); 
     	for(String arg : args) 
 			substedArgs.add(makeVariableSubstitution(arg, project));
-    	
+    
     	return substedArgs;
     }
 
@@ -404,7 +404,7 @@ public class MakemakeOptions implements Cloneable {
 	private static String makeVariableSubstitution(String arg, IProject project) throws CoreException {
 		if (arg == null)
 			return null;
-		
+
 		// resolve macros for this configuration
 		IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
 		arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration());

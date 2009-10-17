@@ -26,17 +26,17 @@ import org.omnetpp.scave.model.ProcessingOp;
  * @author tomi
  */
 public class ComputedResultFileUpdater {
-	
+
 	public static interface CompletionCallback
 	{
 		void completed(CompletionEvent event);
 	}
-	
+
 	public static class CompletionEvent
 	{
 		ProcessingOp operation;
 		IStatus status;
-		
+
 		public CompletionEvent(IStatus status, ProcessingOp operation) {
 			this.status = status;
 			this.operation = operation;
@@ -50,10 +50,10 @@ public class ComputedResultFileUpdater {
 			return status;
 		}
 	}
-	
-	
+
+
 	private static ComputedResultFileUpdater instance = new ComputedResultFileUpdater();
-	
+
 	private GenerateComputedFileJob scheduledJob;
 	private GenerateComputedFileJob waitingJob;
 	private IJobChangeListener jobListener = new JobChangeAdapter() {
@@ -61,11 +61,11 @@ public class ComputedResultFileUpdater {
 			handleJobDone(event);
 		}
 	};
-	
+
 	public static ComputedResultFileUpdater instance() {
 		return instance;
 	}
-	
+
 	public boolean isComputedFileUpToDate(ProcessingOp operation, ResultFileManager manager) {
 		String fileName = operation.getComputedFile();
 		if (fileName == null || !new File(fileName).exists())
@@ -73,7 +73,7 @@ public class ComputedResultFileUpdater {
 		long hash = DatasetManager.getComputationHash(operation, manager);
 		return hash == operation.getComputationHash();
 	}
-	
+
 	public synchronized boolean ensureComputedFile(ProcessingOp operation, ResultFileManager manager, CompletionCallback callback) {
 		if (!isComputedFileUpToDate(operation, manager)) {
 			updateComputedFile(operation, manager, callback);
@@ -85,7 +85,7 @@ public class ComputedResultFileUpdater {
 			return true;
 		}
 	}
-	
+
 	public synchronized void updateComputedFile(ProcessingOp operation, ResultFileManager manager, CompletionCallback callback) {
 		String fileName = ComputedResultFileLocator.instance().getComputedFile(operation);
 		if (fileName == null) {
@@ -95,7 +95,7 @@ public class ComputedResultFileUpdater {
 			}
 			return;
 		}
-		
+
 		GenerateComputedFileJob job = new GenerateComputedFileJob(operation, manager, callback);
 		if (scheduledJob == null) {
 			job.schedule();
@@ -107,18 +107,18 @@ public class ComputedResultFileUpdater {
 			waitingJob = job;
 		}
 	}
-	
+
 	private synchronized void handleJobDone(IJobChangeEvent jobEvent) {
 		Assert.isTrue(jobEvent.getJob() == scheduledJob);
 		Assert.isNotNull(jobEvent.getResult());
-		
+
 		if (scheduledJob.getCallback() != null) {
 			CompletionEvent event = new CompletionEvent(
 											jobEvent.getResult(),
 											scheduledJob.getOperation());
 			scheduledJob.getCallback().completed(event);
 		}
-		
+
 		scheduledJob = null;
 		if (waitingJob != null) {
 			scheduledJob = waitingJob;

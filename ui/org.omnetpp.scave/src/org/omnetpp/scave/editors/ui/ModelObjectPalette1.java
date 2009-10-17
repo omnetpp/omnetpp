@@ -48,7 +48,7 @@ public class ModelObjectPalette1 {
 	// config:
 	private ScaveEditor editor;
 	private HashMap<ToolItem, EObject> toolItems = new HashMap<ToolItem, EObject>();
-	
+
 	// state:
 	private Object objectToDrag = null;
 
@@ -89,7 +89,7 @@ public class ModelObjectPalette1 {
 				objectToDrag = toolItem==null ? null : toolItems.get(toolItem);
 			}
 		});
-		
+
 		ILabelProvider labelProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
@@ -143,7 +143,7 @@ public class ModelObjectPalette1 {
 			target = editor.getAnalysis().getChartSheets();
 		else if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject)
 			target = (EObject) ((IStructuredSelection) sel).getFirstElement();
-		
+
 		if (target != null)	{
 			// add "element" to "target" as child or as sibling.
 			final EObject element = EcoreUtil.copy(elementProtoType);
@@ -159,7 +159,7 @@ public class ModelObjectPalette1 {
 				command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, element, index + 1);
 				command.execute();
 			} 
-			
+	
 			// if it got inserted (has parent now), select it in the viewer.
 			// Note: must be in asyncExec(), otherwise setSelection() has no effect on the TreeViewers! (JFace bug?)
 			if (element.eContainer() != null) {

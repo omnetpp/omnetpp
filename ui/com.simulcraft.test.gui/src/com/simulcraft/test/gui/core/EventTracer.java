@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 public class EventTracer {
-		
+	
 
 	public static void start() {
 		System.out.println("startDumpingEvents: hooking event filters");

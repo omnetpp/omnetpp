@@ -19,7 +19,7 @@ public class ButtonAccess extends ControlAccess
 	public ButtonAccess(Button control) {
 		super(control);
 	}
-	
+
 	@Override
 	public Button getControl() {
 		return (Button)widget;
@@ -30,12 +30,12 @@ public class ButtonAccess extends ControlAccess
 		assertEnabled();
 		click();
 	}
-	
+
 	@UIStep
 	public void assertIsCheckbox() {
 		Assert.assertTrue("Checkbox expected", (getControl().getStyle() & SWT.CHECK) != 0);
 	}
-	
+
     @UIStep
 	public void ensureSelection(boolean selected) {
 		assertIsCheckbox();

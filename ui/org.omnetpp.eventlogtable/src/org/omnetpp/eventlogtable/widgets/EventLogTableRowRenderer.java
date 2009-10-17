@@ -61,13 +61,13 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	private static final Color DARKBLUE = new Color(null, 0, 0, 192);
 
 	private static final Color DARKRED = new Color(null, 127, 0, 85);
-	
+
 	private static final Color RED = new Color(null, 240, 0, 0);
-	
+
 	private static final Color BLACK = new Color(null, 0, 0, 0);
-	
+
 	private static final Color LIGHTGREY = new Color(null, 211, 211, 211);
-	
+
 	private static final Color BOOKMARK_COLOR = ColorFactory.LIGHT_CYAN;
 
 	private static final Color EVENT_ENTRY_EVENT_NUMBER_COLOR = BLACK;
@@ -97,7 +97,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	private static final int INDENT_SPACING = HORIZONTAL_SPACING * 4;
 
 	private static final int VERTICAL_SPACING = 3;
-	
+
 	protected EventLogInput eventLogInput;
 
 	protected EventLogTable eventLogTable;
@@ -110,14 +110,14 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	 * The current GC we are drawing to.
 	 */
 	private GC gc;
-	
+
 	/**
 	 * The next x position where drawing continues.
 	 */
 	private int x;
-	
+
 	private IEvent contextEvent;
-	
+
 	public EventLogTableRowRenderer(EventLogTable eventLogTable) {
 	    this.eventLogTable = eventLogTable;
 	}
@@ -139,7 +139,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
 	public void drawCell(GC gc, EventLogEntryReference eventLogEntryReference, int index) {
 		Assert.isTrue(eventLogEntryReference != null);
-		
+
 		this.x = HORIZONTAL_SPACING;
 		this.gc = gc;
 		gc.setAntialias(SWT.OFF);
@@ -159,7 +159,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 						marked = true;
 						break;
 					}
-				
+		
 				if (marked && 
 					(gc.getBackground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND)) ||
 					 gc.getBackground().equals(BOOKMARK_COLOR))) {
@@ -171,7 +171,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		switch (index) {
 			case 0:
 				drawText("#" + eventNumber, isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_COLOR : EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR, false);
@@ -181,7 +181,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				break;
 			case 2:
 				x += eventLogEntry.getLevel() * INDENT_SPACING;
-				
+		
 				if (!(eventLogEntry instanceof EventEntry))
 					x += INDENT_SPACING;
 
@@ -191,19 +191,19 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				Image image = getEventLogEntryImage(eventLogEntry);
 				gc.drawImage(image, x, 0);
 				x += image.getBounds().width + HORIZONTAL_SPACING;
-				
+		
 				switch (eventLogTable.getDisplayMode()) {
 					case DESCRIPTIVE:
 						if (eventLogEntry instanceof EventEntry) {
 							IMessageDependency cause = contextEvent.getCause();
-				
+		
 							drawText("Event in ", CONSTANT_TEXT_COLOR);
 							drawModuleDescription(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
-							
+					
 							BeginSendEntry beginSendEntry = cause != null ? cause.getBeginSendEntry() : null;
 							if (beginSendEntry != null) {
 								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
-								
+						
 								if (contextEvent.isSelfMessageProcessingEvent())
 									drawText("self ", CONSTANT_TEXT_COLOR);
 
@@ -213,7 +213,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 									drawText(" from ", CONSTANT_TEXT_COLOR);
 									drawModuleDescription(beginSendEntry.getContextModuleId());
 								}
-								
+						
 								IEvent causeEvent = cause.getCauseEvent();
 								if (causeEvent != null && causeEvent.getModuleId() != beginSendEntry.getContextModuleId()) {
 									drawText(" called from ", CONSTANT_TEXT_COLOR);
@@ -242,7 +242,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								ModuleMethodBeginEntry moduleMethodBeginEntry = (ModuleMethodBeginEntry)eventLogEntry;
 								drawText("Begin calling ", CONSTANT_TEXT_COLOR);
 								String method = moduleMethodBeginEntry.getMethod();
-								
+						
 								if (StringUtils.isEmpty(method))
 								    drawText("method", CONSTANT_TEXT_COLOR);
 								else
@@ -318,7 +318,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 									drawModuleDescription(moduleDisplayStringChangedEntry.getModuleId());
 								}
 
-								drawText(" to ", CONSTANT_TEXT_COLOR);							
+								drawText(" to ", CONSTANT_TEXT_COLOR);					
 								drawText(moduleDisplayStringChangedEntry.getDisplayString(), DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof CancelEventEntry) {
@@ -370,7 +370,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawModuleDescription(sendHopEntry.getSenderModuleId());
 								drawText(" ", CONSTANT_TEXT_COLOR);
 								drawGateDescription(sendHopEntry.getSenderModuleId(), sendHopEntry.getSenderGateId());
-								
+						
 								if (sendHopEntry.getTransmissionDelay().doubleValue() != 0) {
     								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
     								drawText(sendHopEntry.getTransmissionDelay() + "s", DATA_COLOR);
@@ -432,7 +432,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
 	public String getTooltipText(EventLogEntryReference eventLogEntryReference, SizeConstraint outSizeConstraint) {
 		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
-		
+
 		if (eventLogEntry instanceof BeginSendEntry) {
 			BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
 			String detail = beginSendEntry.getDetail();
@@ -453,15 +453,15 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	private BeginSendEntry findBeginSendEntry(long previousEventNumber, int messageId) {
 		if (previousEventNumber != -1) {
 			IEvent event = eventLogInput.getEventLog().getEventForEventNumber(previousEventNumber);
-	
+
 			if (event != null) {
 				int index = event.findBeginSendEntryIndex(messageId);
-				
+		
 				if (index != -1)
 					return (BeginSendEntry)event.getEventLogEntry(index);
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -491,9 +491,9 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                     typeName = moduleCreatedEntry.getModuleClassName();
                     break;
 		    }
-			
+	
 		    drawText("(" + typeName + ") ", TYPE_COLOR);
-			
+	
 			switch (nameMode) {
                 case SMART_NAME:
                     if (contextEvent.getModuleId() == moduleCreatedEntry.getModuleId())
@@ -524,7 +524,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	private void drawGateDescription(int moduleId, int gateId) {
         drawGateDescription(eventLogInput.getEventLog().getGateCreatedEntry(moduleId, gateId));
 	}
-	
+
 	private void drawGateDescription(GateCreatedEntry gateCreatedEntry) {
         drawText("gate ", CONSTANT_TEXT_COLOR);
 
@@ -539,7 +539,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
     private void drawConnectionDescription(int sourceModuleId, int sourceGateId) {
         drawConnectionDescription(sourceModuleId, sourceGateId, -1, -1);
     }
-	
+
 	private void drawConnectionDescription(int sourceModuleId, int sourceGateId, int destModuleId, int destGateId) {
         drawText("connection from ", CONSTANT_TEXT_COLOR);
         
@@ -571,7 +571,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		else
 			drawText("<unknown>", NAME_COLOR, true);
 	}
-	
+
 	private void drawMessageArrivalTime(EndSendEntry endSendEntry) {
         BigDecimal arrivalTime = endSendEntry.getArrivalTime();
         BigDecimal simulationTime = endSendEntry.getEvent().getSimulationTime();
@@ -594,11 +594,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 			drawText(eventLogEntry.getAttribute(name) + " ", RAW_VALUE_COLOR);
 		}
 	}
-	
+
 	private void drawText(String text, Color color) {
 		drawText(text, color, false);
 	}
-	
+
 	private void drawText(String text, Color color, boolean bold) {
 	    text = text.replaceAll("\n", "\\\\n");
 		Font oldFont = gc.getFont();
@@ -614,7 +614,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		newFont.dispose();
 		gc.setFont(oldFont);
 	}
-	
+
 	private Image getEventLogEntryImage(EventLogEntry eventLogEntry) {
 		String className = eventLogEntry.getClassName();
 		Event event = eventLogEntry.getEvent();
@@ -624,7 +624,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		else if (eventLogEntry instanceof BeginSendEntry) {
 			int index = eventLogEntry.getEntryIndex();
 			int count = event.getNumEventLogEntries();
-			
+	
 			if (count > index + 1) {
                 EventLogEntry nextEventLogEntry = event.getEventLogEntry(index + 1);
     

@@ -68,7 +68,7 @@ public interface IDisplayString {
     	}
     	private Map<String,Item> specs = new LinkedHashMap<String, Item>();
     	private Item[] specsReversed;
-    	
+    
     	/**
     	 * Format of the specification string: "name=shorthandRegex,shorthand;...".
     	 * Spaces are allowed. The order of items is significant, because shorthand regexes 
@@ -88,14 +88,14 @@ public interface IDisplayString {
         	}
         	specsReversed = specs.values().toArray(new Item[]{});
         	ArrayUtils.reverse(specsReversed);
-        	
+        
         	// sanity checks
         	for (Item spec : specs.values()) {
         		Assert.isTrue(spec.name.equals(getNameFor(spec.name)), "enum name must map to itself");
         		Assert.isTrue(spec.name.equals(getNameFor(spec.shorthand)), "enum shorthand must map to itself");
         	}
     	}
-    	
+    
     	/**
     	 * Returns an array of all names ("dotted", "dashed", etc).
     	 */

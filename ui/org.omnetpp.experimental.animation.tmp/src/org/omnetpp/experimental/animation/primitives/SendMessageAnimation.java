@@ -29,11 +29,11 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 	private ConnectionId connectionId;
 
 	private Ellipse messageEllipse;
-	
+
 	private Polyline messageLine;
-	
+
 	private Label toolTip;
-	
+
 	private Label messageLabel;
 
 	public SendMessageAnimation(ReplayAnimationController animationController,
@@ -44,7 +44,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 								IRuntimeMessage msg) {
 		super(animationController, animationPosition, propagationTime, transmissionTime, msg);
 		this.connectionId = connectionId;
-		
+
 		toolTip = new Label();
 		toolTip.setText("Sending time: " + getBeginSimulationTime() +
 				" arrival time: " + endSimulationTime +
@@ -62,15 +62,15 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 		messageLine.setForegroundColor(color);
 		messageLine.setLineWidth(5);
 		messageLine.setToolTip(toolTip);
-		
+
 		messageLabel = new Label();
 	}
-	
+
 	@Override
 	public void redo() {
 		if (isDisplayed()) {
 			CompoundModuleFigure enclosingModuleFigure = getEnclosingModuleFigure();
-			
+	
 			if (transmissionTime != 0)
 				enclosingModuleFigure.getForegroundDecorationLayer().add(messageLine);
 
@@ -109,7 +109,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 	protected Point getBeginPoint() {
 		return getConnectionFigure().getStart();
 	}
-	
+
 	@Override
 	protected Point getEndPoint() {
 		return getConnectionFigure().getEnd();

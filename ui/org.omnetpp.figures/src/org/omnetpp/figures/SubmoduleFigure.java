@@ -104,9 +104,9 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 
 		this.scale = scale;
 		this.oldCumulativeHashCode = newCumulativeHashCode;
-	
+
 		Rectangle oldShapeBounds = getShapeBounds();  // to compare at the end
-	
+
 		// range support
 		setRange(
 				displayString.getRange(scale),

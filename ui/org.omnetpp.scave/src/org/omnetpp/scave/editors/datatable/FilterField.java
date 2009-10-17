@@ -23,14 +23,14 @@ import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.scave.model2.FilterHints;
 
 public class FilterField {
-	
+
 	Text text;
 	FilterContentProposalProvider proposalProvider;
 
 	public FilterField(Composite parent, int style) {
 		this(new Text(parent, style));
 	}
-	
+
 	public FilterField(Text text) {
 		this.text = text;
 		this.proposalProvider = new FilterContentProposalProvider();
@@ -43,8 +43,8 @@ public class FilterField {
 				proposalProvider,
 				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,   /*commandId. "null" works equally well. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */
 				"( ".toCharArray() /*auto-activation*/);
-		
-		
+	
+	
 		final IControlContentAdapter2 contentAdapter = (IControlContentAdapter2)commandAdapter.getControlContentAdapter();
 
 		commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
@@ -60,15 +60,15 @@ public class FilterField {
 			}
 		});
 	}
-	
+
 	public Text getText() {
 		return text;
 	}
-	
+
 	public Control getLayoutControl() {
 		return text;
 	}
-	
+
 	public void setFilterHints(FilterHints hints) {
 		proposalProvider.setFilterHints(hints);
 	}

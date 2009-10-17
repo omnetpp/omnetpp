@@ -64,7 +64,7 @@ public class TestApplication extends IDEApplication
 
             		super.eventLoopException(exception);
             	}
-            	
+            
             	private boolean isTestException(Throwable t) {
             	    if (t instanceof TestException)
                         return true;

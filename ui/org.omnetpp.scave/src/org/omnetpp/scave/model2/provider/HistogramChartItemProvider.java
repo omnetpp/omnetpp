@@ -27,14 +27,14 @@ public class HistogramChartItemProvider extends
 	public HistogramChartItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
 	}
-	
+
 	/**
 	 * Set the default type of new Select/Deselect children to 'histogram'.
 	 */
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
-		
+	
 		if (object instanceof HistogramChart) {
 			for (Object descriptor : newChildDescriptors) {
 				CommandParameter param = (CommandParameter)descriptor;

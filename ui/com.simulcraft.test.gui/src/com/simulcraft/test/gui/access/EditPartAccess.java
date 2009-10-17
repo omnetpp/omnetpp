@@ -13,11 +13,11 @@ public class EditPartAccess
 	extends Access
 {
 	protected EditPart editPart;
-	
+
 	public EditPartAccess(EditPart editPart) {
 		this.editPart = editPart;
 	}
-	
+
 	public EditPart getEditPart() {
 		return editPart;
 	}

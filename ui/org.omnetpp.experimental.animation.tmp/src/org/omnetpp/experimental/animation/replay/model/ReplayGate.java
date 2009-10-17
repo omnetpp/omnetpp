@@ -43,7 +43,7 @@ public class ReplayGate implements IRuntimeGate {
 	public boolean isVector() {
 		return index!=-1;
 	}
-	
+
 	public int getVectorSize() {
 		return size;
 	}
@@ -63,5 +63,5 @@ public class ReplayGate implements IRuntimeGate {
 	public ReplayModule getOwnerModule() {
 		return ownerModule;
 	}
-	
+
 }

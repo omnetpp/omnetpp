@@ -37,7 +37,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
 	public void assertEnabled() {
     	Assert.assertTrue("menu item '"+getWidget().getText()+"' should be enabled", getWidget().isEnabled());
 	}
-	
+
     @UIStep
     public void assertDisabled() {
         Assert.assertTrue("menu item '"+getWidget().getText()+"' should be disabled", !getWidget().isEnabled());

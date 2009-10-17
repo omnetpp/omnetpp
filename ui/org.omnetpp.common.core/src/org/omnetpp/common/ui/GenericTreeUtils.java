@@ -30,7 +30,7 @@ public class GenericTreeUtils {
 			return false;
 		return internalTreeEquals(root1, root2);
 	}
-	
+
 	private static boolean internalTreeEquals(GenericTreeNode node1, GenericTreeNode node2) {
 		if (!node1.getPayload().equals(node2.getPayload()))
 			return false;
@@ -41,9 +41,9 @@ public class GenericTreeUtils {
 		for (int i=0; i<children1.length; i++) 
 			if (!internalTreeEquals(children1[i], children2[i]))
 				return false;
-		return true;		
+		return true;
 	}
-	
+
 	public static Object findFirstMatchingNode(GenericTreeNode root, IPredicate payloadMatcher) {
 		return root==null ? null : internalFindFirstMatchingNode(root, payloadMatcher);
 	}
@@ -56,7 +56,7 @@ public class GenericTreeUtils {
 			if (foundObject!=null)
 				return foundObject;
 		}
-		return null;		
+		return null;
 	}
 
 }

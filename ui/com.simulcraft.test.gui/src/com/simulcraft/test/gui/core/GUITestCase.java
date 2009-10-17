@@ -53,7 +53,7 @@ public abstract class GUITestCase
 	public static void setTimeScale(double timeScale) {
 	    Access.setTimeScale(timeScale);
 	}
-	
+
     /**
      * The average time between keypresses during typing
      */
@@ -262,7 +262,7 @@ public abstract class GUITestCase
 		while (!hasBeenRunOnce || System.currentTimeMillis() - begin < timeToRun * 1000) {
 			if (hasBeenRunOnce)
 				Access.sleep(0.5);
-				
+			
             Access.log(debug, hasBeenRunOnce ? "Rerunning step" : "Running step");
 			stepThrowables[0] = null;
 
@@ -282,7 +282,7 @@ public abstract class GUITestCase
 
 			Access.log(debug, "Waiting for GUI thread to process events");
 
-			waitUntilEventQueueBecomesEmpty();		
+			waitUntilEventQueueBecomesEmpty();	
 
 			// check if step has been run successfully and return
 			if (stepThrowables[0] == null)
@@ -303,7 +303,7 @@ public abstract class GUITestCase
 		    try {Thread.sleep(200);} catch (InterruptedException e) {}
 		    Thread.yield();
 		}
-		
+	
 		// note: actually, the next line waits until the last UI event *begins* processing not when it finishes processing
 		while (PlatformUtils.hasPendingUIEvents()) {
 		    doPendingAsyncExecs();

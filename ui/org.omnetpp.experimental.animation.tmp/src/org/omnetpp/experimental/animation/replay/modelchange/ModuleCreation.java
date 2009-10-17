@@ -17,7 +17,7 @@ public class ModuleCreation implements IRuntimeModelChange {
 	private String parentFullPath;
 	private String moduleName;
 	private ReplayModule module;
-	
+
 	public ModuleCreation(ReplaySimulation simulation, 
 			int id, String moduleTypeName, 
 			String parentFullPath, String moduleName) {
@@ -27,7 +27,7 @@ public class ModuleCreation implements IRuntimeModelChange {
 		this.parentFullPath = parentFullPath;
 		this.moduleName = moduleName;
 	}
-	
+
 	public void execute() {
 		ReplayModule parent = simulation.getModuleByPath(parentFullPath);
 		ReplayModule mod = new ReplayModule(parent);

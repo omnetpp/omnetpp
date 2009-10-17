@@ -14,7 +14,7 @@ import com.simulcraft.test.gui.access.Access;
  */
 public aspect UIThread {
 	public static boolean debug = false;
-	
+
 	/**
 	 * Surround methods marked with @InUIThread with Display.syncExec() 
 	 * calls. These methods usually operate on SWT widgets, the UI event 
@@ -42,7 +42,7 @@ public aspect UIThread {
 	    	});
 	    }
 	}
-	
+
 	before(): execution(@InBackgroundThread * *(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 		Assert.assertTrue("Must be in a background thread to call: " + method + " (make sure AspectJ advises your test case classes!)", Display.getCurrent()==null);

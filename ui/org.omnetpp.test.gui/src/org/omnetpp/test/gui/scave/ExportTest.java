@@ -22,7 +22,7 @@ import com.simulcraft.test.gui.util.WorkspaceUtils;
 public class ExportTest extends ScaveFileTestCase {
 
 	DatasetsAndChartsPageAccess datasetsPage;
-	
+
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
@@ -30,7 +30,7 @@ public class ExportTest extends ScaveFileTestCase {
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		datasetsPage = editor.ensureDatasetsPageActive();
 	}
-	
+
     public void testCsvExportScalars() throws Exception {
     	testExport(".*scalar-dataset.*", "CSV", "test-scalars.csv",
     			"test-scalars-1.csv",
@@ -51,7 +51,7 @@ public class ExportTest extends ScaveFileTestCase {
     public void testMatlabExportScalars() throws Exception {
     	testExport(".*scalar-dataset.*", "Matlab", "test-scalars.m",
     			"test-scalars.m",
-    			
+    	
     			"scalars.description=\"\"\n" +
     			"scalars._project_test_1_sca_run_1_module_1_scalar_1=[\n" +
     			"1;\n" +
@@ -66,7 +66,7 @@ public class ExportTest extends ScaveFileTestCase {
     public void testMatlabExportVectors() throws Exception {
     	testExport(".*vector-dataset.*", "Matlab", "test-vectors.m",
     			"test-vectors.m",
-    			
+    	
     			"vector_2.description=\"\"\n" +
     			"vector_2.X=[\n" +
     			"0;\n" +
@@ -90,7 +90,7 @@ public class ExportTest extends ScaveFileTestCase {
     public void testOctaveExportScalars() throws Exception {
     	testExport(".*scalar-dataset.*", "Octave", "test-scalars.octave",
     			"test-scalars.octave",
-    			
+    	
     			"# name: scalars\n" +
     			"# type: struct\n" +
     			"# length: 3\n" +
@@ -126,7 +126,7 @@ public class ExportTest extends ScaveFileTestCase {
     public void testOctaveExportVectors() throws Exception {
     	testExport(".*vector-dataset.*", "Octave", "test-vectors.octave",
     			"test-vectors.octave",
-    			
+    	
     			"# name: vector_2\n" +
     			"# type: struct\n" +
     			"# length: 3\n" +
@@ -191,9 +191,9 @@ public class ExportTest extends ScaveFileTestCase {
     
     protected void testExport(String datasetLabel, String fileType, String fileName, String... resultFileAndContentPairs) throws Exception {
     	Assert.assertTrue("Expects event number of parameters after fileName", resultFileAndContentPairs.length % 2 == 0);
-    	
+    
     	String filePath = "/" + projectName + "/" + fileName;
-    		
+    
         TreeAccess tree = datasetsPage.getDatasetsTree();
         tree.findTreeItemByContent(datasetLabel).chooseFromContextMenu("Export to File|" + fileType + ".*");
 
@@ -229,7 +229,7 @@ public class ExportTest extends ScaveFileTestCase {
 			"<chartSheets/>" +
 			"</scave:Analysis>";
 	}
-	
+
 	public String getAbsolutePathForWorkspaceFile(String path) {
 		return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path)).getLocation().toOSString();
 	}

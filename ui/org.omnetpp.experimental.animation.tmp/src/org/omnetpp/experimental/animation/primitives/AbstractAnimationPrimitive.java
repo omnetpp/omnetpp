@@ -24,17 +24,17 @@ import org.omnetpp.figures.SubmoduleFigure;
  */
 public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive {
 	protected IAnimationEnvironment animationEnvironment;
-	
+
 	protected AnimationPosition animationPosition;
 
 	protected boolean isActive;
-	
+
 	public AbstractAnimationPrimitive(IAnimationEnvironment animationEnvironment, AnimationPosition animationPosition) {
 		this.animationEnvironment = animationEnvironment;
 		this.animationPosition = animationPosition;
 		this.isActive = false;
 	}
-	
+
 	public long getEventNumber() {
 		return animationPosition.getEventNumber();
 	}
@@ -42,15 +42,15 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	public double getBeginSimulationTime() {
 		return animationPosition.getSimulationTime();
 	}
-	
+
 	public double getEndSimulationTime() {
 		return animationPosition.getSimulationTime();
 	}
-	
+
 	public long getAnimationNumber() {
 		return animationPosition.getAnimationNumber();
 	}
-	
+
 	public double getBeginAnimationTime() {
 		return animationEnvironment.getAnimationTimeForAnimationNumber(animationPosition.getAnimationNumber());
 	}
@@ -62,7 +62,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	public boolean isActive() {
 		return isActive;
 	}
-	
+
 	public void activate() {
 		if (!isActive) {
 			redo();
@@ -80,7 +80,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		else
 			throw new RuntimeException();
 	}
-	
+
 	public void redo() {
 	}
 
@@ -93,7 +93,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	protected IRuntimeSimulation getSimulation() {
 		return animationEnvironment.getSimulation();
 	}
-	
+
 	protected TimerQueue getTimerQueue() {
 		return animationEnvironment.getTimerQueue();
 	}
@@ -101,7 +101,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	protected IFigure getRootFigure() {
 		return animationEnvironment.getRootFigure();
 	}
-	
+
 	protected LayoutManager getLayoutManager() {
 		return getRootFigure().getLayoutManager();
 	}
@@ -122,18 +122,18 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 
 	protected SubmoduleFigure getSubmoduleFigure(int moduleId) {
 		IRuntimeModule module = getSimulation().getModuleByID(moduleId);
-		
+
 		if (module != null)
 			return (SubmoduleFigure)animationEnvironment.getFigure(module);
 		else
 			return null;
 	}
-	
+
 	protected int getAncestorUnderParentModule(int enclosedModuleId)
 	{
 		IRuntimeModule parentModule = getSimulation().getRootModule();
 		IRuntimeModule module = getSimulation().getModuleByID(enclosedModuleId);
-		
+
 		while (module != null && module.getParentModule() != parentModule) {
 			module = module.getParentModule();
 		}

@@ -39,12 +39,12 @@ import org.omnetpp.scave.engine.ResultItemFields;
  * @author tomi
  */
 public class ResultItemFormatter {
-	
+
 	private static final String fieldSpecifierRE = "(?<!\\\\)\\{([a-zA-Z-]+)\\}";
 	private static final Pattern fsPattern = Pattern.compile(fieldSpecifierRE);
-	
+
 	private static final Map<String,IResultItemFormatter> formatters;
-	
+
 	static {
 		formatters = new HashMap<String,IResultItemFormatter>();
 		for (String field : ResultItemFields.getFieldNames().toArray()) {
@@ -63,7 +63,7 @@ public class ResultItemFormatter {
 				formatters.put(field, formatter);
 		}
 	}
-	
+
 	public static String[] formatResultItems(String format, ResultItem[] items) {
 		return formatResultItems(format, Arrays.asList(items));
 	}
@@ -76,11 +76,11 @@ public class ResultItemFormatter {
 			names[i++] = formatResultItem(formatObjects, item);
 		return names;
 	}
-	
+
 	public static String formatResultItem(String format, ResultItem item) {
 		return formatResultItem(parseFormatString(format), item);
 	}
-	
+
 	private static String formatResultItem(Object[] format, ResultItem item) {
 		StrBuilder sb = new StrBuilder();
 		for (Object formatObj : format) {
@@ -88,11 +88,11 @@ public class ResultItemFormatter {
 		}
 		return sb.toString();
 	}
-	
+
 	public static String formatMultipleResultItem(String format, ResultItem[] items) {
 		return formatMultipleResultItem(parseFormatString(format), Arrays.asList(items));
 	}
-	
+
 	private static String formatMultipleResultItem(Object[] format, Collection<? extends ResultItem> items) {
 		StrBuilder sb = new StrBuilder();
 		for (Object formatObj : format) {
@@ -100,14 +100,14 @@ public class ResultItemFormatter {
 		}
 		return sb.toString();
 	}
-	
+
 	private static void format(Object formatObj, ResultItem item, StrBuilder sb) {
 		if (formatObj instanceof String)
 			sb.append(formatObj);
 		else if (formatObj instanceof IResultItemFormatter)
 			sb.append(((IResultItemFormatter)formatObj).format(item));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static void format(Object formatObj, Collection<? extends ResultItem> items, StrBuilder sb) {
 		if (formatObj instanceof String)
@@ -157,23 +157,23 @@ public class ResultItemFormatter {
 		}
 		return formatObjs.toArray();
 	}
-	
+
 	public static boolean isPlainFormat(String format) {
 		return !fsPattern.matcher(format).find();
 	}
-	
+
 	private static IResultItemFormatter getFormatter(String field) {
 		if ("index".equals(field))
 			return new IndexFormatter();
 		else
 			return formatters.get(field);
 	}
-	
+
 	interface IResultItemFormatter
 	{
 		String format(ResultItem item);
 	}
-	
+
 	static class FileNameFormatter implements IResultItemFormatter
 	{
 		public String format(ResultItem item) {
@@ -187,38 +187,38 @@ public class ResultItemFormatter {
 			return item.getFileRun().getRun().getRunName();
 		}
 	}
-	
+
 	static class ModuleNameFormatter implements IResultItemFormatter
 	{
 		public String format(ResultItem item) {
 			return item.getModuleName();
 		}
 	}
-	
+
 	static class DataNameFormatter implements IResultItemFormatter
 	{
 		public String format(ResultItem item) {
 			return item.getName();
 		}
 	}
-	
+
 	static class RunAttributeFormatter implements IResultItemFormatter
 	{
 		private String attrName;
-		
+
 		public RunAttributeFormatter(String attrName) {
 			this.attrName = attrName;
 		}
-		
+
 		public String format(ResultItem item) {
 			return item.getFileRun().getRun().getAttribute(attrName);
 		}
 	}
-	
+
 	static class IndexFormatter implements IResultItemFormatter
 	{
 		int index;
-		
+
 		public String format(ResultItem item) {
 			return String.valueOf(index++);
 		}

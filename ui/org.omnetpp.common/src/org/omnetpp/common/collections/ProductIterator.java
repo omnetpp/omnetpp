@@ -15,13 +15,13 @@ import org.apache.commons.collections.ResettableIterator;
  * @author tomi
  */
 public class ProductIterator implements ResettableIterator {
-	
+
 	ResettableIterator[] iterators;
 	Object[] current;
 	Object[] next;
 	boolean isEmpty;
 	boolean hasNext;
-	
+
 	public ProductIterator(ResettableIterator... iterators) {
 		this.iterators = iterators;
 		this.current = new Object[iterators.length];
@@ -29,7 +29,7 @@ public class ProductIterator implements ResettableIterator {
 		this.hasNext = init();
 		this.isEmpty = !hasNext;
 	}
-	
+
 	public boolean init() {
 		for(int i = 0; i < iterators.length; ++i) {
 			ResettableIterator iterator = iterators[i];
@@ -62,7 +62,7 @@ public class ProductIterator implements ResettableIterator {
 	public Object next() {
 		if (!hasNext)
 			return null;
-		
+
 		System.arraycopy(next, 0, current, 0, next.length);
 		for (int i = 0; i < iterators.length; ++i) {
 			ResettableIterator iterator = iterators[i];

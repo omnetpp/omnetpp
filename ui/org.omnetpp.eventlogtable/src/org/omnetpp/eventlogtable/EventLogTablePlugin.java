@@ -53,7 +53,7 @@ public class EventLogTablePlugin extends AbstractUIPlugin {
 	 * Logs an exception into the platform log file.
 	 */
 	public void logException(Throwable ex) {
-		getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "An exception occurred", ex));				
+		getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "An exception occurred", ex));		
 	}
 
 	/**

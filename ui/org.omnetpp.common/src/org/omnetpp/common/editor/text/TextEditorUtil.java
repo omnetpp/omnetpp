@@ -30,7 +30,7 @@ public class TextEditorUtil {
 	public static IDocument getDocument(ITextEditor editor) {
 		return editor.getDocumentProvider().getDocument(editor.getEditorInput());
 	}
-	
+
 	/**
 	 * Replaces the given region in the text editor's document, and optionally selects
 	 * the replaced region (if it's more than one line). Includes resetMarkerAnnotations().
@@ -53,7 +53,7 @@ public class TextEditorUtil {
 			editor.selectAndReveal(startOffset, replacement.length());
 		else 
 		    editor.selectAndReveal(selectionOffset +replacement.length()-oldLength, selectionLength);
-		
+
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class TextEditorUtil {
 	public static String get(ITextViewer viewer, IRegion region) throws BadLocationException {
 		return viewer.getDocument().get(region.getOffset(), region.getLength());
 	}
-	
+
 	public static String getWordRegion(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) throws BadLocationException {
 		return get(viewer, detectWordRegion(viewer, documentOffset, wordDetector));
 	}

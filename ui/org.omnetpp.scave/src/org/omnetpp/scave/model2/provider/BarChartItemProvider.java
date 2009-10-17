@@ -34,7 +34,7 @@ public class BarChartItemProvider extends
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
-		
+	
 		if (object instanceof BarChart) {
 			for (Object descriptor : newChildDescriptors) {
 				CommandParameter param = (CommandParameter)descriptor;

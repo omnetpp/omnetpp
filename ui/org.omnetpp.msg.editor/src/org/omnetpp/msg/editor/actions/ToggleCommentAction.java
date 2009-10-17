@@ -54,10 +54,10 @@ public class ToggleCommentAction extends MsgTextEditorAction {
 					for (int i = startLine; i <= endLine; i++)
 						replacement += getLine(doc,i).replaceFirst("//", "");
 				}
-				
+		
 				// put back into the document
 				TextEditorUtil.replaceRangeAndSelect(getTextEditor(), doc.getLineOffset(startLine), doc.getLineOffset(endLine+1), replacement, true);
-				
+		
 			}
 			catch (BadLocationException e) {
 			}

@@ -188,7 +188,7 @@ s	 * before getting presented to the user.
 		}
 		return p;
 	}
-	
+
 	/**
 	 * Overrides the base method to add '.' to word characters,
 	 * because config values (e.g. qualified network names) may
@@ -258,7 +258,7 @@ s	 * before getting presented to the user.
 			addConfigVariableProposals(p);
 
         p.addAll(toProposals(new String[] {"default", "ask"}));
-		
+
 		switch (dataType) {
 		case NEDElementConstants.NED_PARTYPE_BOOL:
 			p.addAll(toProposals(new String[] {"true", "false"}));

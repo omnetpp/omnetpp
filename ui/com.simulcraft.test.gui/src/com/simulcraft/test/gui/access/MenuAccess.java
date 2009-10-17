@@ -53,7 +53,7 @@ public class MenuAccess extends WidgetAccess {
 				String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
 				return menuItemLabel.matches(label);
 			}
-			
+		
 			@Override
 			public String toString() {
 			    return "menu item with label: "+label;
@@ -74,7 +74,7 @@ public class MenuAccess extends WidgetAccess {
 				resultMenuItems.add(menuItem);
 		return resultMenuItems;
 	}
-	
+
     @UIStep
     public void assertMenuItemsEnabled(String[] labels) {
         for (String label : labels) 

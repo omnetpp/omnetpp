@@ -43,7 +43,7 @@ public class ModelTool extends BaseTool {
 	private Map actions = new HashMap();
 	private Map eventsConsts = new HashMap();
 	private Collection events;
-	
+
 	public ModelTool(Model model) {
 		this.model = model;
 	}
@@ -51,28 +51,28 @@ public class ModelTool extends BaseTool {
 	public Model getModel() {
 		return model;
 	}
-	
+
 	public String getClassName() {
 		if (className == null) {
 			className = getClassName("", model.getName(), "_Engine");
 		}
 		return className;
 	}
-	
+
 	public String getFileName() {
 		if (fileName == null) {
 			fileName = getClassName("", model.getName(), "_Engine");
 		}
 		return fileName;
 	}
-	
+
 	public String getBaseMachineClassName() {
 		if (baseMachineClassName == null) {
 			baseMachineClassName = getClassName("", model.getName(), "BaseMachine");
 		}
 		return baseMachineClassName;
 	}
-	
+
 	public StateMachineTool getSMTool(StateMachine stateMachine) {
 		if (! smTools.containsKey(stateMachine)) {
 			StateMachineTool tool = new StateMachineTool(stateMachine);
@@ -89,7 +89,7 @@ public class ModelTool extends BaseTool {
 		}
 		return coHandlers;
 	}
-	
+
 	public Collection getStateMachines() {
 		if (stateMachines == null) {
 			List stateMachines = new ArrayList(model.getStateMachines());
@@ -98,23 +98,23 @@ public class ModelTool extends BaseTool {
 		}
 		return stateMachines;
 	}
-	
+
 	public String getParamName(ClassElement classElement) {
 		if (! paramNames.containsKey(classElement)) {
 			paramNames.put(classElement, createIdentifier(
 					classElement.getName().toLowerCase().startsWith("a") ?
 					"an" : "a", classElement.getName(), "", true, false));
 		}
-		return (String) paramNames.get(classElement);		
+		return (String) paramNames.get(classElement);
 	}
 
 	public String getInstanceName(ClassElement classElement) {
 		if (! instanceNames.containsKey(classElement)) {
 			instanceNames.put(classElement, createIdentifier("i", classElement.getName(), "", true, false));
 		}
-		return (String) instanceNames.get(classElement);		
+		return (String) instanceNames.get(classElement);
 	}
-	
+
 	public String getCOHeaderFileName(ControlledObjectHandler coHandler) {
 		String name = coHandler.getImplName();
 		if (name.charAt(0) == 'C' || name.charAt(0) == 'T') {
@@ -142,7 +142,7 @@ public class ModelTool extends BaseTool {
 						event = e;
 						break;
 					}
-				}				
+				}		
 				invocation.append(event != null ? getEventConst(event) : "ANY_OTHER");
 				invocation.append(", aContext)");
 			} else {
@@ -153,7 +153,7 @@ public class ModelTool extends BaseTool {
 		}
 		return (String) actions.get(action);
 	}
-	
+
 	public Collection getEvents() {
 		if (events == null) {
 			Collection modelTransitions = new LinkedList();

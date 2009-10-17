@@ -26,7 +26,7 @@ public class WidgetAccess
 	public Widget getWidget() {
 		return widget;
 	}
-	
+
 	@UIStep
 	public void assertDisposed() {
 	    Assert.assertTrue("control or widget not yet disposed", getWidget().isDisposed());

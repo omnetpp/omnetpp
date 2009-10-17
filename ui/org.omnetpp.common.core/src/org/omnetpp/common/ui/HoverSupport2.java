@@ -85,10 +85,10 @@ public class HoverSupport2 {
 	protected IHoverTextProvider defaultHoverTextProvider = null;
 	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>(); 
 	protected Point hoverSizeConstaints = new Point(320, 200);
-	
+
 	protected IInformationControl hoverControl;
 	protected IInformationControl informationControl;
-	
+
 
 	private class AllInOneListener implements MouseListener, MouseTrackListener, MouseMoveListener, KeyListener, FocusListener {
 		public void mouseDoubleClick(MouseEvent e) {}
@@ -220,7 +220,7 @@ public class HoverSupport2 {
 	 */
 	public void makeHoverSticky() {
 		removeHover();
-		
+
 		Display.getDefault().getCursorLocation();
 		Control control = Display.getDefault().getCursorControl();
 		Point p = Display.getDefault().getCursorLocation();
@@ -233,7 +233,7 @@ public class HoverSupport2 {
 			informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
 			configureControl(informationControl, hoverText, p);
 			informationControl.setFocus();
-			
+	
 			// it should close on losing the focus 
 			informationControl.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent e) {

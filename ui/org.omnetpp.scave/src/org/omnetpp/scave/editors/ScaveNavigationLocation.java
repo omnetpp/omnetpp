@@ -23,27 +23,27 @@ import org.omnetpp.scave.editors.ui.ScaveEditorPage;
  * @author tomi
  */
 public class ScaveNavigationLocation extends NavigationLocation {
-	
+
 	/* Tags used in the saved state (IMemento format) */
 	public static final String TAG_TEXT = "Text";
 	public static final String TAG_PAGE_ID = "PageID";
 	public static final String TAG_PAGE_MEMENTO = "PageMemento";
-	
+
 	/** Timestamp of the creation of this location. */
 	long timestamp;
-	
+
 	/** Text displayed on the gui. */
 	String text;
-	
+
 	/** Identifier of the active page of the editor. */
 	String pageId;
-	
+
 	/** State of the active page to be saved and restored. */
 	IMemento pageMemento;
-	
+
 	public ScaveNavigationLocation(ScaveEditor editor, boolean empty) {
 		super(editor);
-		
+
 		if (!empty) {
 			ScaveEditorPage page = editor.getActiveEditorPage();
 			timestamp = System.currentTimeMillis();
@@ -57,7 +57,7 @@ public class ScaveNavigationLocation extends NavigationLocation {
 			}
 		}
 	}
-	
+
 	@Override
 	public String getText() {
 		return text;
@@ -112,7 +112,7 @@ public class ScaveNavigationLocation extends NavigationLocation {
 	public void update() {
 		// do nothing
 	}
-	
+
 	protected ScaveEditor getScaveEditor() {
 		IEditorPart editor = getEditorPart();
 		return editor instanceof ScaveEditor ? (ScaveEditor)editor : null;

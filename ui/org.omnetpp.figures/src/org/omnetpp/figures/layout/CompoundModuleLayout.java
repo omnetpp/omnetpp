@@ -196,7 +196,7 @@ public class CompoundModuleLayout extends AbstractLayout {
         	ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
         	Point locationFromAlg = alg.getNodePosition(f);
         	Assert.isNotNull(locationFromAlg);
-        	
+        
         	// we write back the calculated locations
         	constr.setCenterLocation(locationFromAlg);
         }
@@ -234,17 +234,17 @@ public class CompoundModuleLayout extends AbstractLayout {
 			constr.setCenterLocation(null);
 		}
 	}
-	
+
 	// XXX this algorithm is using ONLY the figure bounds. It might be much better to move
 	// it to submoduleLayer.getPreferredSize
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Dimension calculatePreferredSize(IFigure f, int hHint, int wHint) {
 		// if we have a size hint, we always use that for the size
 		if (hHint >= 0 && wHint >= 0)
 			return new Dimension(hHint,wHint);
-		
+
 		layout(f);  //XXX maybe not always needed ??
 	    Rectangle rect = null;
 	    for (IFigure child : (List<IFigure>)f.getChildren()) {

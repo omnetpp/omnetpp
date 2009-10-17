@@ -493,7 +493,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
                 paramElement.setValue(canoncialValue);
 				paramElement.setIsDefault(!canoncialValue.equals(strippedValue));
-				
+			
             }
         }
         

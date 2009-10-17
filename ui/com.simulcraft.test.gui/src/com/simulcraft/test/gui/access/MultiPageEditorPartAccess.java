@@ -25,7 +25,7 @@ public class MultiPageEditorPartAccess
 	public MultiPageEditorPartAccess(MultiPageEditorPart multiPageEditorPart) {
 		super(multiPageEditorPart);
 	}
-	
+
     @Override
 	public MultiPageEditorPart getWorkbenchPart() {
 		return (MultiPageEditorPart)workbenchPart;
@@ -41,7 +41,7 @@ public class MultiPageEditorPartAccess
 		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getItem", pageIndex); 
 		return (CTabItemAccess)createAccess(item); 
 	}
-	
+
 	@UIStep
 	public ControlAccess getControl(int pageIndex) {
 		Control control = (Control)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getControl", pageIndex);
@@ -70,13 +70,13 @@ public class MultiPageEditorPartAccess
 		int activePage = (Integer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActivePage");
 		return activePage >= 0 ? getControl(activePage) : null;
 	}
-	
+
 	@UIStep
 	public CTabItemAccess getActiveCTabItem() {
 		int activePage = (Integer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActivePage");
 		return activePage >= 0 ? getCTabItem(activePage) : null;
 	}
-	
+
 	public void activatePageWithMouseClick(String label) {
 	    getCTabItem(label).click();
 	}
@@ -85,19 +85,19 @@ public class MultiPageEditorPartAccess
 	public CTabItemAccess getCTabItem(String label) {
         return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal(), label));
     }
-	
+
 	@InBackgroundThread
 	public EditorPartAccess activatePageEditor(String label) {
 		activatePageWithMouseClick(label);
 		return getActivePageEditor();
 	}
-	
+
 	@InBackgroundThread
 	public ControlAccess activatePageControl(String label) {
 		activatePageWithMouseClick(label);
 		return getActivePageControl();
 	}
-	
+
 	@InBackgroundThread
 	public EditorPartAccess ensureActiveEditor(String label) {
 		if (!isPageActive(label))

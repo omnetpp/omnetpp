@@ -17,13 +17,13 @@ import org.omnetpp.common.engine.BigDecimal;
  * @author tomi
  */
 public interface IXYDataset extends IDataset {
-	
+
 	public enum Type {
 		Int,
 		Double,
 		Enum
 	}
-	
+
 	public enum InterpolationMode {
 		Unspecified,
 		None,

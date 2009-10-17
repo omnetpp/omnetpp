@@ -11,7 +11,7 @@ import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 
 public class HistogramProperties extends PropertySource {
-	
+
 	public static final String
 		PROP_HIST_COLOR			= "Hist.Color";
 
@@ -26,7 +26,7 @@ public class HistogramProperties extends PropertySource {
 	private String propertyName(String baseName) {
 		return chartProps.propertyName(baseName, histogramId);
 	}
-	
+
 	@org.omnetpp.common.properties.Property(category="Histograms",id=PROP_HIST_COLOR,
 			descriptorClass=ColorPropertyDescriptor.class,optional=true,
 			description="Color of the bar. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.")

@@ -31,19 +31,19 @@ import org.omnetpp.scave.model.ProcessingOp;
  * @author tomi
  */
 public class ComputedResultFileLocator {
-	
+
 	private static final ComputedResultFileLocator instance = new ComputedResultFileLocator();
-	
+
 	protected ComputedResultFileLocator() {	} 
-	
+
 	public static ComputedResultFileLocator instance() {
 		return instance;
 	}
-	
+
 	public String getComputedFile(ProcessingOp operation) {
 		if (operation.getComputedFile() != null)
 			return operation.getComputedFile();
-		
+
 		URI uri = getResourceURI(operation);
 		if (uri != null) {
 			IPath dirPath = getComputedFileDirectory(uri);
@@ -63,7 +63,7 @@ public class ComputedResultFileLocator {
 		}
 		return null;
 	}
-	
+
 	private URI getResourceURI(ProcessingOp operation) {
 		URI uri = operation.eResource().getURI();
 		if (uri != null) {
@@ -73,7 +73,7 @@ public class ComputedResultFileLocator {
 		}
 		return uri;
 	}
-	
+
 	private IPath getComputedFileDirectory(URI uri) {
 		if (uri.isFile()) {
 			try {
@@ -84,7 +84,7 @@ public class ComputedResultFileLocator {
 			}
 			catch (URISyntaxException e) {
 			}
-			
+	
 			// Hmm, file not found in the workspace
 			// save the computed file in the same directory as the analysis file.
 			IPath filePath = new Path(uri.toFileString());
@@ -99,7 +99,7 @@ public class ComputedResultFileLocator {
 		else
 			return null;
 	}
-	
+
 	private IPath getComputedFileDirectory(IFile file) {
 		IFolder folder = file.getProject().getFolder(".computed");
 		if (!folder.exists()) {
@@ -114,7 +114,7 @@ public class ComputedResultFileLocator {
 				throw new RuntimeException("Could not create directory for computed files: "+e.getMessage(), e);
 			}
 		}
-		
+
 		IPath dirPath = null;
 		if (checkFolder(folder))
 			dirPath = folder.getLocation();
@@ -125,11 +125,11 @@ public class ComputedResultFileLocator {
 		}
 		return dirPath;
 	}
-	
+
 	private boolean checkFolder(IFolder folder) {
 		return folder.exists() && checkFolder(folder.getLocation());
 	}
-	
+
 	private boolean checkFolder(IPath folder) {
 		File file = folder.toFile();
 		return file.exists() && file.canWrite();

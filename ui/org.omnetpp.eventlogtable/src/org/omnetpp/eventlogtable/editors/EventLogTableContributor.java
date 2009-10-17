@@ -140,7 +140,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		this.eventLogTable = eventLogTable;
 		eventLogTable.addSelectionChangedListener(this);
 	}
-	
+
 	@Override
 	public void dispose() {
         if (eventLogTable != null) 
@@ -155,13 +155,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private IEventLog getEventLog() {
 		return eventLogTable.getEventLog();
 	}
-	
+
 	public static EventLogTableContributor getDefault() {
 		Assert.isTrue(singleton != null);
 
 		return singleton;
 	}
-	
+
 	/*************************************************************************************
 	 * CONTRIBUTIONS
 	 */
@@ -235,7 +235,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
     	statusLineManager.add(filterStatus);
     }
-	
+
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
 		if (targetEditor instanceof EventLogTableEditor) {
@@ -259,12 +259,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			update();
 		}
 	}
-	
+
 	public void update() {
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
-				
+		
 				if (fieldType == EventLogTableAction.class ||
 					fieldType == EventLogTableMenuAction.class)
 				{
@@ -275,7 +275,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					if (eventLogTable.getEventLogInput().isLongRunningOperationInProgress())
 						fieldValue.setEnabled(false);
 				}
-				
+		
 				if (fieldType == StatusLineContributionItem.class)
 				{
 					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
@@ -345,7 +345,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	/*************************************************************************************
 	 * ACTIONS
 	 */
-	
+
     private CommandContributionItem createFindTextCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.findText", SWT.PUSH);
         parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH);
@@ -477,14 +477,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
                     IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
 					IMessageDependencyList causes = event.getCauses();
-					
+			
 					for (int i = 0; i < causes.size(); i++) {
 						IMessageDependency cause = causes.get(i);
 
 						if (eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(cause.getCPtr()) &&
 							cause.getBeginSendEntry().equals(eventLogEntry)) {
 							IEvent causeEvent = cause.getCauseEvent();
-							
+					
 							if (causeEvent != null)
 								return causeEvent.getEventEntry();
 						}
@@ -514,19 +514,19 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				if (eventLogEntryReference != null) {
                     IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
 					IMessageDependencyList consequences = event.getConsequences();
-					
+			
 					for (int i = 0; i < consequences.size(); i++) {
 						IMessageDependency consequence = consequences.get(i);
 
 						if (eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr())) {
 							BeginSendEntry beginSendEntry = consequence.getConsequenceBeginSendEntry();
-							
+					
 							if (beginSendEntry != null)
 								return beginSendEntry;
 						}
 					}
 				}
-				
+		
 				return null;
 			}
 		};
@@ -671,7 +671,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					public String isValid(String newText) {
 						try {
 							int eventNumber = Integer.parseInt(newText);
-							
+					
 							if (eventNumber >= 0)
 								return null;
 							else
@@ -688,7 +688,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 						int eventNumber = Integer.parseInt(dialog.getValue());
 						IEventLog eventLog = eventLogTable.getEventLog();
 						IEvent event = eventLog.getEventForEventNumber(eventNumber);
-	
+
 						if (event != null)
 							eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
 						else
@@ -719,7 +719,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					public String isValid(String newText) {
 						try {
 							double simulationTime = Double.parseDouble(newText);
-							
+					
 							if (simulationTime >= 0)
 								return null;
 							else
@@ -736,7 +736,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 						BigDecimal simulationTime = BigDecimal.parse(dialog.getValue());
 						IEventLog eventLog = eventLogTable.getEventLog();
 						IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
-	
+
 						if (event != null)
 							eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
 						else
@@ -762,7 +762,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					if (eventLogEntryReference != null) {
 						IEvent event = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput()).getEvent();
 						EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
-						
+				
 						boolean found = false;
 						IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
 
@@ -931,14 +931,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 							addSubMenuItem(menu, "Descriptive", EventLogTable.DisplayMode.DESCRIPTIVE);
 							addSubMenuItem(menu, "Raw", EventLogTable.DisplayMode.RAW);
 						}
-	
+
 						private void addSubMenuItem(Menu menu, String text, final EventLogTable.DisplayMode displayMode) {
 							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 							subMenuItem.setText(text);
 							subMenuItem.addSelectionListener( new SelectionAdapter() {
 								public void widgetSelected(SelectionEvent e) {
 									MenuItem menuItem = (MenuItem)e.widget;
-									
+							
 									if (menuItem.getSelection()) {
 										eventLogTable.setDisplayMode(displayMode);
 										eventLogTable.redraw();
@@ -949,12 +949,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 						}
 					};
 				}
-				
+		
 				return menuCreator;
 			}
 		};
 	}
-	
+
 	private EventLogTableMenuAction createLineFilterModeAction() {
 		return new EventLogTableMenuAction("Line Filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_LINE_FILTER_MODE)) {
 			private AbstractMenuCreator menuCreator;
@@ -969,7 +969,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			protected int getMenuIndex() {
 				return eventLogTable.getLineFilterMode();
 			}
-			
+	
 			@Override
 			public IMenuCreator getMenuCreator() {
 				if (menuCreator == null) {
@@ -983,7 +983,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 							addSubMenuItem(menu, "Custom filter...", new SelectionAdapter() {
 								public void widgetSelected(SelectionEvent e) {
 									MenuItem menuItem = (MenuItem)e.widget;
-									
+							
 									if (menuItem.getSelection()) {
 										InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c(MyMessage))\nSee Event Log Table Raw Mode for other fields and entry types.", null, null) {
 										    @Override
@@ -1013,7 +1013,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     										String pattern = dialog.getValue();
     										if (pattern == null || pattern.equals(""))
     											pattern = "*";
-    		
+    
     										eventLogTable.setCustomFilter(pattern);
     										eventLogTable.setLineFilterMode(4);
     										update();
@@ -1022,12 +1022,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 								}
 							});
 						}
-	
+
 						private void addSubMenuItem(final Menu menu, String text, final int lineFilterMode) {
 							addSubMenuItem(menu, text, new SelectionAdapter() {
 								public void widgetSelected(SelectionEvent e) {
 									MenuItem menuItem = (MenuItem)e.widget;
-									
+							
 									if (menuItem.getSelection()) {
 										eventLogTable.setLineFilterMode(lineFilterMode);
 										update();
@@ -1035,7 +1035,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 								}
 							});
 						}
-	
+
 						private void addSubMenuItem(Menu menu, String text, SelectionListener adapter) {
 							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 							subMenuItem.setText(text);
@@ -1043,7 +1043,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 						}
 					};
 				}
-				
+		
 				return menuCreator;
 			}
 		};
@@ -1110,9 +1110,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				eventLogInput.runWithProgressMonitor(new Runnable() {
 					public void run() {
 						eventLogInput.removeFilter();
-		
+
 						eventLogTable.setInput(eventLogInput);
-		
+
 						update();
 					}
 				});
@@ -1125,9 +1125,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                     eventLogInput.runWithProgressMonitor(new Runnable() {
                         public void run() {
 							eventLogInput.filter();
-							
+					
 							eventLogTable.setInput(eventLogInput);
-		
+
 							update();
                         }
                     });
@@ -1203,27 +1203,27 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		public EventLogTableMenuAction(String text, int style, ImageDescriptor image) {
 			super(text, style, image);
 		}
-		
+
 		@Override
 		public void update() {
 			for (Menu menu : menus)
 				if (!menu.isDisposed())
 					updateMenu(menu);
 		}
-		
+
 		protected void addMenu(Menu menu) {
 			Assert.isTrue(menu != null);
 
 			menus.add(menu);
 			updateMenu(menu);
 		}
-		
+
 		protected void removeMenu(Menu menu) {
 			Assert.isTrue(menu != null);
 
 			menus.remove(menu);
 		}
-		
+
 		protected abstract int getMenuIndex();
 
 		protected void updateMenu(Menu menu) {
@@ -1240,7 +1240,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			private Menu controlMenu;
 
 			private Menu parentMenu;
-		
+
 			public void dispose() {
 				if (controlMenu != null) {
 					controlMenu.dispose();
@@ -1259,7 +1259,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					createMenu(controlMenu);
 					addMenu(controlMenu);
 				}
-				
+		
 				return controlMenu;
 			}
 
@@ -1269,7 +1269,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					createMenu(parentMenu);
 					addMenu(parentMenu);
 				}
-				
+		
 				return parentMenu;
 			}
 

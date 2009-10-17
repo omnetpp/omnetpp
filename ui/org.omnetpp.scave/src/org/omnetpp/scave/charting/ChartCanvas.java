@@ -71,9 +71,9 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
  * @author tomi, andras
  */
 public abstract class ChartCanvas extends ZoomableCachingCanvas {
-	
+
 	private static final boolean debug = false;
-	
+
 	// when displaying confidence intervals, XXX chart parameter?
 	protected static final double CONFIDENCE_LEVEL = 0.95;
 
@@ -83,7 +83,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected String titleText = null;
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
 	protected LegendTooltip legendTooltip;
-	
+
 	private String statusText = "No data available."; // displayed when there's no dataset 
 
 	/* bounds specified by the user*/
@@ -98,29 +98,29 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	private ZoomableCanvasMouseSupport mouseSupport;
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
-	
+
 	protected IChartSelection selection;
 	private ListenerList listeners = new ListenerList();
-	
+
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 	private IDataset dataset;
-	
+
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
 		setCaching(DEFAULT_CANVAS_CACHING);
 		setBackground(backgroundColor);
 		setToolTipText(null); // XXX prevent "Close" tooltip of the TabItem to come up (Linux only) 
-		
+
 		legendTooltip = new LegendTooltip(this);
 
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
-		
+
 		addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				layoutChart();
 			}
 		});
-		
+
 		ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
 		if (contributor != null) {
 			final IAction zoomOutAction = contributor.getZoomOutAction();
@@ -140,7 +140,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the data to be visualized by the chart.
 	 */
@@ -151,20 +151,20 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		updateTitle();
 		updateZoomedArea();
 	}
-	
+
 	abstract void doSetDataset(IDataset dataset);
-	
+
 	abstract String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint);
-	
+
 	protected void layoutChart() {
 		// prevent nasty infinite layout recursions
 		if (layoutDepth>0)
 			return;
-		
+
 		// ignore initial invalid layout request
 		if (getClientArea().isEmpty())
 			return;
-		
+
 		layoutDepth++;
 		if (debug) Debug.println("layoutChart(), level "+layoutDepth);
 		GC gc = new GC(Display.getCurrent());
@@ -172,11 +172,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			// preserve zoomed-out state while resizing
 			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
 			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
-			
+	
 			for (int pass = 1; pass <= 2; ++pass) {
 				Rectangle plotArea = doLayoutChart(gc, pass);
 				setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
-				
+		
 				if (shouldZoomOutX)
 					zoomToFitX();
 				if (shouldZoomOutY)
@@ -194,7 +194,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		// may trigger another layoutChart()
 		updateZoomedArea();
 	}
-	
+
 	/**
 	 * Sets the zoomed area of the chart.
 	 * The change will be applied when the chart is layouted next time.
@@ -219,18 +219,18 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			zoomToArea(area);
 		}
 	}
-	
+
 	/**
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
 	 * @param pass TODO
 	 */
 	abstract protected Rectangle doLayoutChart(GC gc, int pass);
-	
+
 	/*-------------------------------------------------------------------------------------------
 	 *                                      Drawing
 	 *-------------------------------------------------------------------------------------------*/
 	private ICoordsMapping coordsMapping;
-	
+
 	@Override
 	protected void paintCachableLayer(GC gc) {
 		if (debug) {
@@ -240,30 +240,30 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		if (getClientArea().isEmpty())
 			return;
-		
+
 		coordsMapping = getOptimizedCoordinateMapper();
 		resetDrawingStylesAndColors(gc);
 		doPaintCachableLayer(gc, coordsMapping);
 	}
-	
+
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		if (debug) Debug.println("paintNoncachableLayer()");
 		if (getClientArea().isEmpty())
 			return;
-		
+
 		if (coordsMapping == null)
 			coordsMapping = getOptimizedCoordinateMapper();
 		resetDrawingStylesAndColors(gc);
 
 		doPaintNoncachableLayer(gc, coordsMapping);
-		
+
 		if (coordsMapping.getNumCoordinateOverflows() > 0)
 			displayCoordinatesOverflowMessage(gc);
-		
+
 		coordsMapping = null;
 	}
-	
+
 	abstract protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping);
 	abstract protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping);
 
@@ -273,36 +273,36 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 				    "may not be accurate. Please decrease zoom level.", 
 				    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
 	protected abstract RectangularArea calculatePlotArea();
-	
+
 	public IChartSelection getSelection() {
 		return selection;
 	}
-	
+
 	public void setSelection(IChartSelection selection) {
 		this.selection = selection;
 		chartChanged();
 		fireChartSelectionChange(selection);
 	}
-	
+
 	public void addChartSelectionListener(IChartSelectionListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public void removeChartSelectionListener(IChartSelectionListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 	protected void fireChartSelectionChange(IChartSelection selection) {
 		for (Object listener : listeners.getListeners())
 			((IChartSelectionListener)listener).selectionChanged(selection);
 	}
-	
+
 	/**
 	 * Switches between zoom and pan mode. 
 	 * @param mouseMode should be ZoomableCanvasMouseSupport.PAN_MODE or ZoomableCanvasMouseSupport.ZOOM_MODE
@@ -323,11 +323,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		this.statusText = statusText;
 		chartChanged();
 	}
-	
+
 	/*----------------------------------------------------------------------
 	 *                            Properties
 	 *----------------------------------------------------------------------*/
-	
+
 	public void setProperty(String name, String value) {
 		// Titles
 		if (PROP_GRAPH_TITLE.equals(name))
@@ -360,12 +360,12 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		else
 			ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
 	}
-	
+
 	protected String getElementId(String propertyName) {
 		int index = propertyName.indexOf('/');
 		return index >= 0 ? propertyName.substring(index + 1) : null;
 	}
-	
+
 	public boolean getAntialias() {
 		return antialias;
 	}
@@ -374,87 +374,87 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		this.antialias = antialias != null ? antialias : DEFAULT_ANTIALIAS;
 		chartChanged();
 	}
-	
+
 	public void setCaching(Boolean caching) {
 		super.setCaching(caching != null ? caching : DEFAULT_CANVAS_CACHING);
 		chartChanged();
 	}
-	
+
 	public void setBackgroundColor(RGB rgb) {
 		this.backgroundColor = rgb != null ? new Color(null, rgb) : DEFAULT_BACKGROUND_COLOR;
 		chartChanged();
 	}
-	
+
 	public void setTitle(String value) {
 		titleText = value;
 		updateTitle();
 	}
-	
+
 	private void updateTitle() {
 		String newTitle = DEFAULT_TITLE;
 		if (dataset != null)
 			newTitle = StringUtils.defaultString(dataset.getTitle(titleText), DEFAULT_TITLE);
-			
+	
 		if (!ObjectUtils.equals(newTitle, title.getText())) {
 			title.setText(newTitle);
 			chartChanged();
 		}
 	}
-	
+
 	public void setTitleFont(Font value) {
 		if (value == null)
 			value = DEFAULT_TITLE_FONT;
 		title.setFont(value);
 		chartChanged();
 	}
-	
+
 	public void setDisplayLegend(Boolean value) {
 		if (value == null)
 			value = DEFAULT_DISPLAY_LEGEND;
 		legend.setVisible(value);
 		chartChanged();
 	}
-	
+
 	public void setLegendBorder(Boolean value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_BORDER;
 		legend.setDrawBorder(value);
 		chartChanged();
 	}
-	
+
 	public void setLegendFont(Font value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_FONT;
 		legend.setFont(value);
 		chartChanged();
 	}
-	
+
 	public void setLegendPosition(LegendPosition value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_POSITION;
 		legend.setPosition(value);
 		chartChanged();
 	}
-	
+
 	public void setLegendAnchor(LegendAnchor value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_ANCHOR;
 		legend.setAnchor(value);
 		chartChanged();
 	}
-	
+
 	public void setXMin(Double value) {
 		userDefinedArea.minX = value != null ? value : Double.NEGATIVE_INFINITY;
 		updateArea();
 		chartChanged();
 	}
-	
+
 	public void setXMax(Double value) {
 		userDefinedArea.maxX = value != null ? value : Double.POSITIVE_INFINITY;
 		updateArea();
 		chartChanged();
 	}
-	
+
 	public void setYMin(Double value) {
 		userDefinedArea.minY = value != null ? value : Double.NEGATIVE_INFINITY;
 		updateArea();
@@ -466,7 +466,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		updateArea();
 		chartChanged();
 	}
-	
+
 	/**
 	 * Sets the area of the zoomable canvas.
 	 * This method is called when the area changes because
@@ -478,21 +478,21 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected void updateArea() {
 		if (chartArea == null)
 			return;
-		
+
 		RectangularArea area = transformArea(userDefinedArea).intersect(chartArea);
-		
+
 		if (!area.equals(getArea())) {
 			if (debug) Debug.format("Update area: %s --> %s%n", getArea(), area);
 			setArea(area);
 		}
 	}
-	
+
 	protected RectangularArea transformArea(RectangularArea area) {
 		double minX = transformX(area.minX);
 		double minY = transformY(area.minY);
 		double maxX = transformX(area.maxX);
 		double maxY = transformY(area.maxY);
-		
+
 		return new RectangularArea(
 			Double.isNaN(minX) || Double.isInfinite(minX) ? Double.NEGATIVE_INFINITY : minX,
 			Double.isNaN(minY) || Double.isInfinite(minY)? Double.NEGATIVE_INFINITY : minY,
@@ -500,24 +500,24 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			Double.isNaN(maxY) || Double.isInfinite(maxY) ? Double.POSITIVE_INFINITY : maxY
 		);
 	}
-	
+
 	protected double transformX(double x) {
 		return x;
 	}
-	
+
 	protected double transformY(double y) {
 		return y;
 	}
-	
+
 	protected double inverseTransformX(double x) {
 		return x;
 	}
-	
+
 	protected double inverseTransformY(double y) {
 		return y;
 	}
-	
-	
+
+
 	// make public
 	@Override
 	public ICoordsMapping getOptimizedCoordinateMapper() {
@@ -545,12 +545,12 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		//gc.setXORMode(false);
 		gc.setTextAntialias(SWT.DEFAULT);
 	}
-	
+
 	protected void chartChanged() {
 		layoutChart();
 		clearCanvasCacheAndRedraw();
 	}
-	
+
 	protected void paintInsets(GC gc) {
 		// draw insets border
 		Insets insets = getInsets();
@@ -572,11 +572,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			gc.drawText(getStatusText(), rect.x+10, rect.y+10);
 		}
 	}
-	
+
 	protected void drawRubberband(GC gc) {
 		mouseSupport.drawRubberband(gc);
 	}
-	
+
 	protected String formatValue(double value, double halfInterval) {
 		return !Double.isNaN(halfInterval) && halfInterval > 0.0 ?
 				String.format("%.3g\u00b1%.3g", value, halfInterval) :

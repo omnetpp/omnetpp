@@ -30,21 +30,21 @@ abstract class ProcessDatasetSwitch extends ScaveModelSwitch<Object> {
 	protected boolean stopBefore;
 	protected ResultFileManager manager;
 	private boolean finished;
-	
+
 
 	public ProcessDatasetSwitch(EObject target, boolean stopBefore, ResultFileManager manager) {
 		this.target = target;
 		this.stopBefore = stopBefore;
 		this.manager = manager;
 	}
-	
+
 	protected void processBaseDataset(Dataset dataset) {
 		EObject origTarget = target;
 		target = null;
 		doSwitch(dataset);
 		target = origTarget;
 	}
-	
+
 	@Override
 	protected Object doSwitch(int classifierID, EObject object) {
 		Object result = this;
@@ -65,7 +65,7 @@ abstract class ProcessDatasetSwitch extends ScaveModelSwitch<Object> {
 		if (baseDataset != null) {
 			processBaseDataset(baseDataset);
 		}
-		
+
 		for (Object item : dataset.getItems())
 			doSwitch((EObject)item);
 

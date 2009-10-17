@@ -31,6 +31,6 @@ public class PointsVectorPlotter extends VectorPlotter {
 				gc.drawPoint(x, y);
 			}
 		});
-		
+
 	}
 }

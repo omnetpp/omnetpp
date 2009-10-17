@@ -31,12 +31,12 @@ public class ComboAccess extends ControlAccess
     public boolean isEditable() {
     	return (getControl().getStyle() & SWT.READ_ONLY) == 0;
     }
-	
+
     @UIStep
 	public String[] getComboItems() {
 	    return getControl().getItems();
 	}
-	
+
 	@UIStep
 	public String getTextContent() {
 		return getControl().getText();

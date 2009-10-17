@@ -78,26 +78,26 @@ public class SectionsPage extends FormPage {
 
 	private Label label;
 	private TreeViewer treeViewer;
-	
+
 	private IAction addAction = new Action("New...") {
 		public void run() {
 			createNewSection();
-		}	
+		}
 	};
 	private IAction editAction = new Action("Edit...") {
 		public void run() {
 			editSelectedSection();
-		}	
+		}
 	};
 	private IAction removeAction = new Action("Remove") {
 		public void run() {
 			removeSelectedSections();
-		}	
+		}
 	};
 	private IAction gotoParametersAction = new Action("Go To Parameters") {
 		public void run() {
 			gotoSectionParameters();
-		}	
+		}
 	};
 	private IAction addKeysAction = new AddInifileKeysAction();
 
@@ -188,7 +188,7 @@ public class SectionsPage extends FormPage {
 					treeViewer.getTree().selectAll(); //XXX this does not work, because text editor hotkey masks it
 			}
 		});
-		
+
 		// export the tree's selection as editor selection
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -218,7 +218,7 @@ public class SectionsPage extends FormPage {
 		menuManager.add(gotoParametersAction);
 		menuManager.add(addKeysAction);
 		treeViewer.getTree().setMenu(menuManager.createContextMenu(treeViewer.getTree()));
-		
+
 		return treeViewer;
 	}
 
@@ -318,14 +318,14 @@ public class SectionsPage extends FormPage {
 				InifileUtils.addSection(doc, sectionName);
 
 				String description = dialog.getDescription();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);	
 
 				String extendsSection = dialog.getExtendsSection();
 				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);	
 
 				String networkName = dialog.getNetworkName();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);	
 
 				reread();
 			}
@@ -355,14 +355,14 @@ public class SectionsPage extends FormPage {
 					InifileUtils.renameSection(doc, oldSectionName, sectionName);
 
 				String description = dialog.getDescription();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);	
 
 				String extendsSection = dialog.getExtendsSection();
 				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);	
 
 				String networkName = dialog.getNetworkName();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);	
 
 				reread();
 			}
@@ -405,7 +405,7 @@ public class SectionsPage extends FormPage {
 			formEditor.getActiveCategoryPage().gotoSection(section);
 		}
 	}
-	
+
 	/**
 	 * Invoked when the user selects a few sections, and drags them to another section.
 	 */
@@ -500,7 +500,7 @@ public class SectionsPage extends FormPage {
 				return object instanceof SectionData && ((SectionData)object).sectionName.equals(section);
 			}
 		}); 
-		
+
 		if (sectionData!=null)
 			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(sectionData)), true);
 		else
@@ -520,5 +520,5 @@ public class SectionsPage extends FormPage {
 		result.add(ConfigRegistry.CFGID_NETWORK);
 		return result;
 	}
-	
+
 }

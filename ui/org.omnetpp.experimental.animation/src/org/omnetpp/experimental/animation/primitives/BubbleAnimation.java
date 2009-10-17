@@ -19,15 +19,15 @@ import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 public class BubbleAnimation extends AbstractAnimationPrimitive {
 	protected int moduleId;
-	
+
 	protected RoundedRectangle background;
 
 	protected Label label;
-	
+
 	protected Timer bubbleTimer;
 
 	protected String text;
-	
+
 	public BubbleAnimation(ReplayAnimationController animationController,
 						   AnimationPosition animationPosition,
 						   String text,
@@ -48,12 +48,12 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 			}
 		};
 	}
-	
+
 	@Override
 	public void redo() {
 		IRuntimeModule module = getModule();
 		IRuntimeModule parentModule = module.getParentModule();
-		
+
 		if (parentModule == animationEnvironment.getSimulation().getRootModule()) {
 			addFigure(background);
 			addFigure(label);
@@ -69,7 +69,7 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	public void undo() {
 		IRuntimeModule module = getModule();
 		IRuntimeModule parentModule = module.getParentModule();
-		
+
 		if (parentModule == animationEnvironment.getSimulation().getRootModule()) {
 			bubbleTimer.reset();
 			getTimerQueue().addTimer(bubbleTimer);
@@ -79,18 +79,18 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	protected IRuntimeModule getModule() {
 		return animationEnvironment.getSimulation().getModuleByID(moduleId);
 	}
-	
+
 	//FIXME to be replaced by specific calls
 	protected IFigure addFigure(IFigure figure) {
 		getRootFigure().add(figure);
-		
+
 		return figure;
 	}
 
 	//FIXME to be replaced by specific calls
 	protected IFigure removeFigure(IFigure figure) {
 		getRootFigure().remove(figure);
-		
+
 		return figure;
 	}
 }

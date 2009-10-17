@@ -34,7 +34,7 @@ class LegendTooltip implements ILegend
 {
 	Button button;
 	List<Item> items = new ArrayList<Item>();
-	
+
 	static class Item
 	{
 		Color color;
@@ -47,13 +47,13 @@ class LegendTooltip implements ILegend
 			this.imageFile = SymbolImageFactory.getImageFile(color, symbol, drawLine);
 		}
 	}
-	
+
 	public LegendTooltip(ChartCanvas parent) {
 		button = new Button(parent, SWT.FLAT | SWT.CENTER | SWT.NO_FOCUS);
 		Image icon = ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
 		button.setImage(icon);
 		button.setSize(button.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		
+
 		final HoverSupport hoverSupport = new HoverSupport();
 		hoverSupport.setHoverSizeConstaints(320,400);
 		hoverSupport.adapt(button, new IHoverTextProvider() {
@@ -61,7 +61,7 @@ class LegendTooltip implements ILegend
 				return getTooltipText(x, y, preferredSize);
 			}
 		});
-		
+
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 					IInformationControl infoControl = hoverSupport.getInformationControl();
@@ -70,24 +70,24 @@ class LegendTooltip implements ILegend
 			}
 		});
 	}
-	
+
 	public void clearItems() {
 		items.clear();
 	}
-	
+
 	public void addItem(Color color, String label, IChartSymbol symbol, boolean drawLine) {
 		items.add(new Item(color, label, symbol, drawLine));
 	}
-	
+
 	public Rectangle layout(GC gc, Rectangle rect) {
 		button.setLocation(rect.width - button.getSize().x - 2, rect.y + 2);
 		return rect;
 	}
-	
+
 	public void draw(GC gc) {
 		// button is drawn as a child of the canvas
 	}
-	
+
 	public String getTooltipText(int x, int y, SizeConstraint preferredSize) {
 		if (items.size() > 0) {
 			StringBuffer sb = new StringBuffer();
@@ -111,11 +111,11 @@ class LegendTooltip implements ILegend
 		else
 			return null;
 	}
-	
+
 	public String htmlColor(Color color) {
 		return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
 	}
-	
+
 	public String htmlText(String text) {
 		return StringEscapeUtils.escapeHtml(text);
 	}

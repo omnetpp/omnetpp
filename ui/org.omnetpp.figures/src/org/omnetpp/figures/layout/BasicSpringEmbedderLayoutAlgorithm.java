@@ -222,7 +222,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	@Override
 	public void execute() {
         long startMillis = System.currentTimeMillis();
-		
+
 	    if (nodes.isEmpty() || allNodesAreFixed)
 	        return;
 

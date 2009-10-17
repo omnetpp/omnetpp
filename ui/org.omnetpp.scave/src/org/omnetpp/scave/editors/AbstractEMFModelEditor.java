@@ -163,7 +163,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 			handleSelectionChange(selectionChangedEvent.getSelection());
 		}
 	};
-	
+
 	/**
 	 * This keeps track of all the {@link org.eclipse.jface.viewers.ISelectionChangedListener}s that are listening to this editor.
 	 * We need this because we implement ISelectionProvider which includes having to manage a listener list.
@@ -562,7 +562,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	}
 
 	boolean selectionChangeInProgress = false; // to prevent recursive notifications
-	
+
 	/**
 	 * Propagates the selection everywhere. Override if you have more widgets to update!
 	 */
@@ -593,7 +593,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		for (ISelectionChangedListener listener : selectionChangedListeners)
 			listener.selectionChanged(new SelectionChangedEvent(this, selection));
 	}
-	
+
 	/**
 	 * This returns the editing domain as required by the {@link IEditingDomainProvider} interface.
 	 * This is important for implementing the static methods of {@link AdapterFactoryEditingDomain}
@@ -724,7 +724,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 
 		createContextMenuFor(modelViewer);
 		setupDragAndDropSupportFor(modelViewer);
-		
+
 		// on double-click, open (the dataset or chart), or bring up the Properties dialog
 		modelViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -737,8 +737,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 				}
 			}
 		});
-		
-	}	
+
+	}
 
 	/**
 	 * This is how the framework determines which interfaces we implement.
@@ -758,7 +758,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 			return super.getAdapter(key);
 		}
 	}
-	
+
 	// The content outline is just a tree.
 	//
 	class MyContentOutlinePage extends ContentOutlinePage {
@@ -775,7 +775,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 					new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
 			initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
 			contentOutlineViewer.expandToLevel(3);
-			
+	
 			// Make sure our popups work.
 			//
 			createContextMenuFor(contentOutlineViewer);
@@ -899,7 +899,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		updateProblemIndication = true;
 		updateProblemIndication();
 	}
-	
+
 	protected boolean isSaveable(Resource resource) {
 		return true;
 	}

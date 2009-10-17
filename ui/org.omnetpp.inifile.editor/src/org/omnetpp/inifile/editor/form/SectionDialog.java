@@ -48,7 +48,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 //FIXME sectionTypeCombo is not finished! to be used everywhere!!!!
 public class SectionDialog extends TitleAreaDialog {
 	private IInifileDocument doc;
-	
+
 	// dialog config
 	private String dialogTitle;
 	private String dialogMessage;
@@ -82,7 +82,7 @@ public class SectionDialog extends TitleAreaDialog {
 		this.dialogTitle = dialogTitle;
 		this.dialogMessage = dialogMessage;
 		this.sectionName = this.originalSectionName = sectionName;
-		
+
 		// if we are editing an existing section, initialize dialog fields from the inifile
 		if (sectionName != null && doc.containsSection(sectionName)) {
 			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getName());
@@ -119,7 +119,7 @@ public class SectionDialog extends TitleAreaDialog {
         
 		// section name field
 		createLabel(group1, "Section Name:", parent.getFont());
-		
+
 		configNameText = new Text(group1, SWT.SINGLE | SWT.BORDER);
 		configNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -153,13 +153,13 @@ public class SectionDialog extends TitleAreaDialog {
 		}
 
 		// fill network combo
-		IProject contextProject = doc.getDocumentFile().getProject();		
+		IProject contextProject = doc.getDocumentFile().getProject();
 		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames(contextProject);
 		String[] networkNames = networkNameSet.toArray(new String[]{});
 		Arrays.sort(networkNames);
 		networkCombo.setItems(networkNames);
 		networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
-		
+
 		// fill dialog fields with initial contents
 		if (sectionName!=null) 
 			configNameText.setText(sectionName.replaceFirst(CONFIG_+" *", ""));
@@ -238,7 +238,7 @@ public class SectionDialog extends TitleAreaDialog {
 		// prevent notification loops
 		if (insideValidation) return;
 		insideValidation = true;
-		
+
 		// when a base section with "network=" is selected, make it impossible to override it here
         extendsSection = extendsCombo.getText();
         String ownNetworkName = doc.getValue(originalSectionName, ConfigRegistry.CFGID_NETWORK.getName());
@@ -256,7 +256,7 @@ public class SectionDialog extends TitleAreaDialog {
 		setErrorMessage(errorMessage);
 		if (okButton != null)  // it is initially null
 			okButton.setEnabled(errorMessage==null);
-		
+
 		insideValidation = false;
 	}
 
@@ -277,12 +277,12 @@ public class SectionDialog extends TitleAreaDialog {
 
 		return null;
 	}
-	
+
 	private String assembleSectionName() {
 		String configName = configNameText.getText().trim();
 		return configName.equals(GENERAL) ? GENERAL : CONFIG_+configName;
 	}
-	
+
     @Override
 	@SuppressWarnings("unchecked")
 	protected void okPressed() {
@@ -332,5 +332,5 @@ public class SectionDialog extends TitleAreaDialog {
 	public void setNetworkName(String networkName) {
 		this.networkName = networkName;
 	}
-	
+
 }

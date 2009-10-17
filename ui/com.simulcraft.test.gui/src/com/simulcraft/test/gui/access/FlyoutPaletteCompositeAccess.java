@@ -34,11 +34,11 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 	public FlyoutPaletteCompositeAccess(FlyoutPaletteComposite flyoutPaletteComposite) {
 		super(flyoutPaletteComposite);
 	}
-	
+
 	public FlyoutPaletteComposite getFlyoutPaletteComposite() {
 		return (FlyoutPaletteComposite)widget;
 	}
-	
+
 	@UIStep
 	public void clickButtonFigureWithLabel(final String label) {
         FigureAccess fig = findButtonFigureWithLabel(label);
@@ -56,7 +56,7 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
         }
         getPaletteViewer().reveal(editpart);
     }
-	
+
     @UIStep
     public void ensureButtonFigureWithLabelSelected(final String label) {
         reveal(findButtonFigureWithLabel(label).getFigure());

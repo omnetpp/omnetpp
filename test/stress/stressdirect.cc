@@ -27,7 +27,7 @@ void RandomModuleSelector::visit(cObject *object)
 	if (module && module->hasGate("directIn")) {
 		numberOfVisitedModules++;
 
-		// this will result in a uniform distribution between modules	
+		// this will result in a uniform distribution between modules
 		if (uniform(0, 1) <= 1.0 / numberOfVisitedModules)
 			selectedModule = module;
 	}

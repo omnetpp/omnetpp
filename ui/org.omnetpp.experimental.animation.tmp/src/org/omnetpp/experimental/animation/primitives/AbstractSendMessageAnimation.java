@@ -17,7 +17,7 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 	protected IRuntimeMessage msg; //FIXME should not be here...
 
 	protected double propagationTime;
-	
+
 	protected double transmissionTime;
 
 	protected double endSimulationTime;
@@ -38,7 +38,7 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 	public double getEndSimulationTime() {
 		return endSimulationTime;
 	}
-	
+
 	@Override
 	public double getEndAnimationTime() {
 		if (endSimulationTime == getBeginSimulationTime())
@@ -47,9 +47,9 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 			return animationEnvironment.getAnimationTimeForSimulationTime(endSimulationTime);
 		}
 	}
-	
+
 	protected abstract Point getBeginPoint();
-	
+
 	protected abstract Point getEndPoint();
 
 	protected Point[] getMessageSendPoints(AnimationPosition animationPosition, int orthogonalTranslation) {
@@ -71,10 +71,10 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 		else
 			alpha = (animationPosition.getAnimationTime() - getBeginAnimationTime()) / (getEndAnimationTime() - getBeginAnimationTime());
 		alpha = Math.max(0, Math.min(alpha, 1));
-		
+
 		Point pAlpha; 
 		Point pBeta;
-		
+
 		if (transmissionTime == 0)
 			pAlpha = pBeta = getConvexCombination(p1, p2, alpha);
 		else {

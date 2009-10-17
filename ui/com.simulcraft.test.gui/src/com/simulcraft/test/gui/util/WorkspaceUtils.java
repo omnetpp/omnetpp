@@ -75,14 +75,14 @@ public class WorkspaceUtils
 		String actualContent = FileUtils.readTextFile(file.getContents());
 		Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, actualContent.equals(expectedContent));
 	}
-	
+
     @UIStep
     public static void assertFileExistsWithContentIgnoringWhiteSpace(String path, String expectedContent) throws Exception {
         IFile file = assertFileExists(path);
         String actualContent = FileUtils.readTextFile(file.getContents());
         Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, StringUtils.areEqualIgnoringWhiteSpace(actualContent, expectedContent));
     }
-	
+
     @UIStep
     public static void assertFileExistsWithRegexpContent(String path, String expectedRegexpContent) throws Exception {
         IFile file = assertFileExists(path);

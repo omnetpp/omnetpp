@@ -37,7 +37,7 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 		this.editor = editor;
 		this.synchronizer = new FoldingRegionSynchronizer(editor);
 	}
-	
+
 	public void setDocument(IDocument document) {
 	}
 
@@ -70,7 +70,7 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 					addPosition(doc, element, NEDElementTags.NED_CONNECTIONS, key+"#c", newAnnotationPositions);
 				}
 			}
-		
+
 			// synchronize with the text editor
 			synchronizer.updateFoldingRegions(newAnnotationPositions);
 

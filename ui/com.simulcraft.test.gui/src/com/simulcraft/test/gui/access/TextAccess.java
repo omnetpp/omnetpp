@@ -24,7 +24,7 @@ public class TextAccess extends ControlAccess
 	public Text getControl() {
 		return (Text)widget;
 	}
-	
+
 	@UIStep
 	public String getTextContent() {
 		return getControl().getText();
@@ -57,7 +57,7 @@ public class TextAccess extends ControlAccess
         else
             typeIn(content);
     }
-	
+
 	public void clickAndTypeOver(String content) {
 		click();
 		typeOver(content);

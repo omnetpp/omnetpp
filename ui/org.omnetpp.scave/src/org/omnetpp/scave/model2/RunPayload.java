@@ -6,17 +6,17 @@ import org.omnetpp.scave.engine.Run;
 public class RunPayload {
 	private String runName;
 	private int runNumber;
-	
+
 	public RunPayload(Run run) {
 		Assert.isNotNull(run.getRunName());
 		this.runName = run.getRunName();
 		this.runNumber = run.getRunNumber();
 	}
-	
+
 	public String getRunName() {
 		return runName;
 	}
-	
+
 	public int getRunNumber() {
 		return runNumber;
 	}

@@ -54,7 +54,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 			String key = doc.getKeyForLine(lineNumber);
 			if (key==null)
 				return null;
-			
+	
 			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 			if (InifileAnalyzer.getKeyType(key) == KeyType.CONFIG) {
 				if (key.equals(ConfigRegistry.CFGID_NETWORK.getName())) {

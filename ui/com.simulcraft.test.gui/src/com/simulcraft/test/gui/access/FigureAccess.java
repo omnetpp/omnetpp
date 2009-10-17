@@ -29,11 +29,11 @@ public class FigureAccess
 	extends ClickableAccess
 {
 	protected IFigure figure;
-	
+
 	public FigureAccess(IFigure figure) {
 		this.figure = figure;
 	}
-	
+
 	public IFigure getFigure() {
         return figure;
     }
@@ -90,7 +90,7 @@ public class FigureAccess
                 return;
             }
 	}
-	
+
     @UIStep
     public void click(int button, org.eclipse.swt.graphics.Point point) {
         click(button, point.x, point.y);
@@ -104,7 +104,7 @@ public class FigureAccess
     @UIStep
     public void click(int button, int x, int y) {
         clickAbsolute(button, getCanvas().toDisplay(x, y));
-    }	
+    }
 
     public Rectangle getAbsoluteBounds() {
         Rectangle r = figure.getBounds().getCopy();
@@ -115,7 +115,7 @@ public class FigureAccess
 	protected org.eclipse.swt.graphics.Point toDisplay(Point point) {
 		return toDisplay(point.x, point.y);
 	}
-	
+
 	protected org.eclipse.swt.graphics.Point toDisplay(org.eclipse.swt.graphics.Point point) {
 		return toDisplay(point.x, point.y);
 	}
@@ -125,8 +125,8 @@ public class FigureAccess
 		figure.translateToAbsolute(point);
 		return getCanvas().toDisplay(point.x, point.y);
 	}
-	
-	
+
+
 	@UIStep
 	public void reveal() {
 	    // TODO rather call the viewer's reveal (see. FlyoutPaletteCompositeAccess.reveal()

@@ -37,13 +37,13 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		
+
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		IViewSite viewSite = (IViewSite)getSite();
 		viewSite.setSelectionProvider(eventLogTable);
 		IContextService contextService = (IContextService)viewSite.getService(IContextService.class);
 		contextService.activateContext("org.omnetpp.context.EventLogTable");
-		
+
 		// contribute to toolbar
 		eventLogTableContributor = new EventLogTableContributor(eventLogTable);
 		eventLogTable.setEventLogTableContributor(eventLogTableContributor);
@@ -86,19 +86,19 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
 		// bootstrap with current selection
 		selectionListener.selectionChanged(null, getActiveEditorSelection());
 	}
-	
+
 	@Override
 	public IEventLog getEventLog() {
 	    return eventLogTable.getEventLog();
 	}
-	
+
 	@Override
 	public void dispose() {
 		IViewSite viewSite = (IViewSite)getSite();
-		
+
 		if (selectionListener != null)
 			viewSite.getPage().removeSelectionListener(selectionListener);
-		
+
 		if (partListener != null)
 			viewSite.getPage().removePartListener(partListener);
 
@@ -116,11 +116,11 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
 
 		return eventLogTable;
 	}
-	
+
 	private void updateSelectionFromActiveEditor() {
 	    updateSelection(getActiveEditorSelection());
 	}
-		
+
     private void updateSelection(ISelection selection) {
 		if (selection instanceof IEventLogSelection) {
 			hideMessage();

@@ -24,7 +24,7 @@ public class Activator extends Plugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -38,7 +38,7 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
+
         Display.getDefault().asyncExec(new Runnable() {
             public void run() {
                 GUIRecorder recorder = new GUIRecorder();

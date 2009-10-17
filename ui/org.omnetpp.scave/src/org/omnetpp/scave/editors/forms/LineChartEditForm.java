@@ -29,7 +29,7 @@ import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class LineChartEditForm extends BaseLineChartEditForm {
-	
+
 	/**
 	 * Features edited on this form.
 	 */
@@ -38,20 +38,20 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 		pkg.getLineChart_LineNameFormat(),
 		pkg.getChart_Properties(),
 	};
-	
+
 	private Text lineNamePattern;
-	
+
 
 	public LineChartEditForm(LineChart chart, EObject parent,
 			Map<String, Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
 		updateLineNames(getChart().getLineNameFormat());
 	}
-	
+
 	private LineChart getChart() {
 		return (LineChart)chart;
 	}
-	
+
 
 	@Override
 	protected void populateTabItem(final TabItem item) {
@@ -79,7 +79,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 			});
 		}
 	}
-	
+
 	protected void updateLineNames(String formatString) {
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		IXYDataset xydataset = DatasetManager.createVectorDataset((LineChart)chart, dataset, formatString, false, manager, null);

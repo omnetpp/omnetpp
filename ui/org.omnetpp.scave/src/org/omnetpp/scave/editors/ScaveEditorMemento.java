@@ -36,7 +36,7 @@ public class ScaveEditorMemento implements IMemento
 
 	/* Name of the root element of the XML memento */
 	private static final String ROOT_ELEMENT = "ScaveState";
-	
+
 	/* Names and keys used for persistent properties*/
 	private static final String SCAVE_STATE = "ScaveState";
 	private static final String CHUNK_COUNT = "ScaveStateChunkCount";
@@ -48,14 +48,14 @@ public class ScaveEditorMemento implements IMemento
 	private String[] mementoKeys = {ZOOM, ScaveNavigationLocation.TAG_PAGE_ID, 
 			ScaveNavigationLocation.TAG_TEXT, ScaveNavigationLocation.TAG_PAGE_MEMENTO,
 			ScaveEditor.PAGE, ScaveEditor.PAGE_ID, ScaveEditor.ACTIVE_PAGE };
-	
+
 	/* The IMemento methods are delegated to this XMLMemento */
 	private XMLMemento memento;
-	
+
 	public ScaveEditorMemento() {
 		memento = XMLMemento.createWriteRoot(ROOT_ELEMENT);
 	}
-	
+
 	public ScaveEditorMemento(IFile file) throws CoreException {
 		load(file);
 	}
@@ -119,7 +119,7 @@ public class ScaveEditorMemento implements IMemento
 	public void putBoolean(String key, boolean value) {
 		memento.putBoolean(key, value);
 	}
-	
+
 	public void putMemento(IMemento memento) {
 		memento.putMemento(memento);
 	}
@@ -153,11 +153,11 @@ public class ScaveEditorMemento implements IMemento
 			throw new CoreException(error);
 		}
 	}
-	
+
 	protected void load(IFile file) throws CoreException {
 		try {
 			String state = file.getPersistentProperty(KEY_SCAVE_STATE);
-			
+	
 			if (state == null) {
 				int count = getPersistentIntProperty(file, KEY_CHUNK_COUNT);
 				if (count >= 0 && count < 100) { // limit state to ~200k
@@ -183,7 +183,7 @@ public class ScaveEditorMemento implements IMemento
 					"Cannot load Scave editor state.", e);
 			throw new CoreException(error);
 		}
-		
+
 		if (memento == null) {
 			IStatus warning = new Status(IStatus.WARNING, ScavePlugin.PLUGIN_ID, 0,
 					String.format("No Scave editor state was saved for file: %s.", file.getLocation().toOSString()), null);
@@ -194,7 +194,7 @@ public class ScaveEditorMemento implements IMemento
 	public String toString() {
 		return memento.toString();
 	}
-	
+
 	private int getPersistentIntProperty(IFile file, QualifiedName key) throws CoreException {
 		try {
 			return Integer.parseInt(file.getPersistentProperty(key));

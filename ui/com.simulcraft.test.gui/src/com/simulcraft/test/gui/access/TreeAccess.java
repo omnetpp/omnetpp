@@ -89,7 +89,7 @@ public class TreeAccess extends ControlAccess
         	pressKey(SWT.KEYPAD_MULTIPLY, SWT.NONE); // fully expands the subtree (right arrow or Plus only expands this node)
     	}
     }
-	
+
     @UIStep
 	public TreeItemAccess findTreeItemByPath(String path) {
         TreeItemAccess parentTreeItem = null;
@@ -134,7 +134,7 @@ public class TreeAccess extends ControlAccess
 				String treeItemContent = treeItem.getText();
 				return treeItemContent.matches(content);
 			}
-			
+		
 			public String toString() {
 			    return "a TreeItem with content: " + content;
 			}
@@ -163,18 +163,18 @@ public class TreeAccess extends ControlAccess
 				resultTreeItems.add(treeItem);
 		}
 	}
-	
+
 	@UIStep
 	protected boolean compareContent(TreeItem[] treeItems, GenericTreeNode[] expectedItems) {
 		if (treeItems.length != expectedItems.length) {
             System.out.format("Tree content mismatch. Expected %d children, found %d", expectedItems.length, treeItems.length);
 			return false;
 		}
-			
+		
 		for (int i = 0; i < treeItems.length; ++i) {
 			TreeItem item = treeItems[i];
 			GenericTreeNode expected = expectedItems[i];
-			
+		
 			if (!item.getText().matches((String)expected.getPayload())) {
 				System.out.format("Tree content mismatch. Expected regex: %s, found: %s%n", expected.getPayload(), item.getText());
 				return false;
@@ -182,7 +182,7 @@ public class TreeAccess extends ControlAccess
 			if (!compareContent(item.getItems(), expected.getChildren()))
 				return false;
 		}
-		
+	
 		return true;
 	}
 

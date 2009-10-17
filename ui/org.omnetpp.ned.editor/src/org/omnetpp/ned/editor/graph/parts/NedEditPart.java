@@ -83,7 +83,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 					return StringUtils.strip(message);
 				}
 			};
-			
+		
 			((IProblemDecorationSupport)getFigure()).setProblemDecoration(getNedModel().getMaxProblemSeverity(), textProvider);
 		}
 	}
@@ -169,7 +169,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	 */
 	protected abstract INEDElement getNEDElementToOpen();
 
-	
+
     @Override
     @SuppressWarnings("unchecked")
 	public Object getAdapter(Class key) {

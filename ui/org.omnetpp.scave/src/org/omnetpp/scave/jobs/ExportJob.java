@@ -42,7 +42,7 @@ public class ExportJob extends WorkspaceJob
 	private Dataset dataset;
 	private DatasetItem datasetItem;
 	private ResultItemFields scalarsGroupBy;
-	
+
 	public ExportJob(ScaveExport exporter,
 			IDList scalars, IDList vectors, IDList histograms,
 			Dataset dataset, DatasetItem datasetItem,
@@ -61,10 +61,10 @@ public class ExportJob extends WorkspaceJob
 	@Override
 	public IStatus runInWorkspace(final IProgressMonitor monitor)
 			throws CoreException {
-		
+
 		if (exporter == null || manager == null)
 			return Status.OK_STATUS;
-		
+
 		IStatus status = Status.CANCEL_STATUS;
 
 		try {
@@ -75,19 +75,19 @@ public class ExportJob extends WorkspaceJob
 					IStatus status = exportVectors(exporter, monitor);
 					if (status.getSeverity() != IStatus.OK)
 						return status;
-		
+
 					status = exportScalars(exporter, monitor);
 					if (status.getSeverity() != IStatus.OK)
 						return status;
-					
+			
 					status = exportHistograms(exporter, monitor);
 					if (status.getSeverity() != IStatus.OK)
 						return status;
-					
+			
 					return Status.OK_STATUS;
 				}
 			});
-			
+	
 			return status;
 		}
 		catch (Exception e) {
@@ -114,7 +114,7 @@ public class ExportJob extends WorkspaceJob
 			exporter.delete();
 		}
 	}
-	
+
 	protected int calculateTotalWork() {
 		int work = 0;
 		if (scalars != null && scalars.size() > 0)
@@ -125,7 +125,7 @@ public class ExportJob extends WorkspaceJob
 			++work;
 		return work;
 	}
-	
+
 	protected IStatus exportScalars(ScaveExport exporter, IProgressMonitor monitor) {
 		if (scalars != null && scalars.size() > 0) {
 			if (monitor.isCanceled())
@@ -148,7 +148,7 @@ public class ExportJob extends WorkspaceJob
 		else {
 			data = DatasetManager.getDataOfVectors(manager, vectors, subMonitor);
 		}
-		
+
 		if (monitor.isCanceled())
 			return Status.CANCEL_STATUS;
 

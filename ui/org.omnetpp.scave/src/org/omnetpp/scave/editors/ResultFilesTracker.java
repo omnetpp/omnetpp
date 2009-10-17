@@ -48,7 +48,7 @@ import org.omnetpp.scave.model.Inputs;
  * @author andras, tomi
  */
 public class ResultFilesTracker implements INotifyChangedListener, IResourceChangeListener {
-	
+
 	private static final boolean debug = true;
 
 	private ResultFileManager manager; //backreference to the manager it operates on, the manager is owned by the editor
@@ -62,7 +62,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		this.baseDir = baseDir;
 		this.updaterJob = new ResultFileManagerUpdaterJob(manager);
 	}
-	
+
 	public boolean deactivate()
 	{
 		manager = null;
@@ -75,7 +75,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	public void notifyChanged(Notification notification) {
 		if (manager == null)
 			return;
-		
+
 		if (notification.isTouch())
 			return;
 
@@ -92,7 +92,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				synchronize();
 		}
 	}
-	
+
 	/**
 	 * Listen to workspace changes. We want to keep our result files in
 	 * sync with the workspace. In addition to changes in file contents,
@@ -102,7 +102,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	public void resourceChanged(IResourceChangeEvent event) {
 		if (manager == null)
 			return;
-		
+
 		try {
 			IResourceDelta delta = event.getDelta();
 			if (delta != null)
@@ -121,10 +121,10 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			IFile file = (IFile)resource;
 			IFile resultFile = IndexFile.isIndexFile(file) ? IndexFile.getVectorFileFor(file) :
 								isResultFile(file) ? file : null;
-			
+	
 			if (resultFile == null || isDerived(resultFile) || !inputsMatches(resultFile))
 				return false;
-			
+	
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 					if (debug) Debug.format("File added: %s%n", file);
@@ -152,7 +152,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	public void synchronize() {
 		if (manager == null)
 			return;
-		
+
 		if (debug) Debug.println("ResultFileTracker.synchronize()");
 		Set<String> loadedFiles = 
 		ResultFileManager.callWithReadLock(manager, new Callable<Set<String>>() {
@@ -163,7 +163,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				return loadedFiles;
 			}
 		});
-		
+
 		Set<String> filesToBeLoaded = new HashSet<String>();
 		List<InputFile> files = new ArrayList<InputFile>();
 		List<InputFile> wildcards = new ArrayList<InputFile>();
@@ -181,12 +181,12 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					if (matchFile(file, wildcard))
 						filesToBeLoaded.add(file.getFullPath().toString());
 		}
-		
+
 		Set<String> filesToBeUnloaded = new HashSet<String>(loadedFiles);
 		filesToBeUnloaded.removeAll(filesToBeLoaded);
 		for (String file : filesToBeUnloaded)
 			unloadFile(file);
-		
+
 		filesToBeLoaded.removeAll(loadedFiles);
 		for (String file : filesToBeLoaded)
 			loadFile(file);
@@ -265,7 +265,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	private void unloadFile(final IFile file) {
 		updaterJob.unload(file);
 	}
-	
+
 	private IFile findResultFileInWorkspace(String resourcePath) {
 		IPath path = new Path(resourcePath);
 		if (!path.isAbsolute())
@@ -279,7 +279,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns true iff <code>file</code> is a result file (scalar or vector).
 	 */
@@ -296,7 +296,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns true if the resource or one of its parents is derived.
 	 * 
@@ -307,7 +307,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			resource = resource.getParent();
 		return resource.isDerived();
 	}
-	
+
 	/**
 	 * Return true iff the <code>file</code> matches any of the input files.
 	 */

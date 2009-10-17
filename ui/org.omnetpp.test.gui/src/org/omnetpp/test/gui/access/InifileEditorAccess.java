@@ -20,7 +20,7 @@ public class InifileEditorAccess
 	public InifileEditorAccess(InifileEditor multiPageNedEditor) {
 		super(multiPageNedEditor);
 	}
-	
+
     @Override
 	public InifileEditor getWorkbenchPart() {
 	    return (InifileEditor)workbenchPart;

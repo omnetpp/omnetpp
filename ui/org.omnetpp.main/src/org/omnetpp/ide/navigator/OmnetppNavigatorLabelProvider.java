@@ -29,9 +29,9 @@ public class OmnetppNavigatorLabelProvider extends WorkbenchLabelProvider implem
 		}
 		return null;
 	}
-	
+
 	public void restoreState(IMemento aMemento) { 
-		
+
 	}
 
 	public void saveState(IMemento aMemento) { 

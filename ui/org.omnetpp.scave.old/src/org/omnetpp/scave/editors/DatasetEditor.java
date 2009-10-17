@@ -88,19 +88,19 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 
 	/** The dataset being edited (the MVC model) */
 	private IDListModel dataset = new IDListModel();
-	
+
 	private IDatasetStrategy strategy;
 
 	/** Set to true by the pages */
 	private boolean isDirty = false;
-	
+
 	/** Page for the Outline view */
 	private DatasetContentOutlinePage outlinePage;
-	
+
 	private IDatasetEditorPage[] pages;
-	
+
 	private FilterPanelPage filterPanelPage;
-	
+
 	private IDatasetEditorPage activePage;
 
 	/**
@@ -111,7 +111,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 
 		this.pages = pages;
 		this.strategy = strategy;
-		
+
 		filterPanelPage = null;
 		for (IDatasetEditorPage page : pages) {
 			page.setEditor(this);
@@ -119,11 +119,11 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 				filterPanelPage = (FilterPanelPage)page;
 		}
 	}
-	
+
 	public IDListModel getDataset() {
 		return dataset;
 	}
-	
+
 	/**
 	 * The <code>MultiPageEditorExample</code> implementation of this method
 	 * checks that the input is an instance of <code>IFileEditorInput</code>.
@@ -131,19 +131,19 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 	public void init(IEditorSite site, IEditorInput editorInput)
 	throws PartInitException {
 		System.out.println("Editor.init() with "+editorInput.toString());
-		
+
 		if (!(editorInput instanceof NonExistingFileEditorInput) &&
 			!(editorInput instanceof IFileEditorInput))
 			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
-			
+	
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
-		
+
 		for (IDatasetEditorPage page : pages) {
 			page.init();
 		}
 	}
-	
+
 	/**
 	 * The <code>MultiPageEditorPart</code> implementation of this
 	 * <code>IWorkbenchPart</code> method disposes all nested editors.
@@ -153,12 +153,12 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 		for (IDatasetEditorPage page : pages) {
 			page.dispose();
 		}
-		
+
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		super.dispose();
 	}
 
-	
+
 	/**
 	 * Creates the pages of the multi-page editor.
 	 */
@@ -167,27 +167,27 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 			int index = addPage(page.createPageControl(getContainer()));
 			setPageText(index, page.getPageTitle());
 		}
-		
+
 		IEditorInput editorInput = getEditorInput();
 		if (editorInput != null &&
 			!(editorInput instanceof NonExistingFileEditorInput))
 			openDoc(editorInput);
-		
+
 		for (IDatasetEditorPage page : pages)
 			page.finalizePage();
-		
+
 		int lastPageIndex = getPageCount() - 1;
 		if (lastPageIndex >= 0)
 			setActivePage(lastPageIndex);
 	}
-	
+
 
 	protected void openDoc(IEditorInput editorInput) {
 		// if it's an "Untitled" document, don't try to load it
 		if (editorInput instanceof IFileEditorInput) {
 			IFileEditorInput fileInput = (IFileEditorInput)editorInput;
 			final java.io.File file = fileInput.getFile().getLocation().toFile();
-	
+
 			SafeRunnable.run(new SafeRunnable("Error opening file "+file.getName()) {
 				public void run() {
 					loadFromXml(file, getProgressMonitor());
@@ -195,21 +195,21 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 			});
 		}
 	}
-	
+
 	public void pageChange(int newPageIndex) {
 		if (activePage != null)
 			activePage.deactivate();
 		activePage = pages[newPageIndex];
 		activePage.activate();
 	}
-	
+
 	/**
 	 * Override MultiPageEditor's version
 	 */
 	public boolean isDirty() {
 		return isDirty;
 	}
-	
+
 	/*
 	 * Persistency interface
 	 */
@@ -245,7 +245,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 	 */
 	public void doSaveAs() {
 		IProgressMonitor progressMonitor = getProgressMonitor(); 
-		
+
 		Shell shell= getSite().getShell();
 		IEditorInput input = getEditorInput();
 
@@ -300,11 +300,11 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 		if (progressMonitor != null)
 			progressMonitor.setCanceled(!success);
 	}
-	
+
 	/*
 	 * Persistency implementation
 	 */
-	
+
 	private boolean saveToXml(String fileName, IProgressMonitor progressMonitor) {
 		// FIXME use progressmonitor AND implement as "long running task"!
 		Exception exception = null;
@@ -336,7 +336,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 						errorMsg + fileName + " (" + exception.getMessage() + ")");
 		}
 	}
-	
+
 	private void loadFromXml(java.io.File file, IProgressMonitor progressMonitor) {
 		try {
 			// TODO use progressMonitor
@@ -349,7 +349,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 			for (IDatasetEditorPage page : pages)
 				handlers.putAll(page.getLoader(progressMonitor));
 			handler.addContentHandlers(handlers);
-			
+	
 			parser.parse(file, handler);
 			System.out.println("loading "+file.getName()+": " + (System.currentTimeMillis()-t0));
 		} catch (ParserConfigurationException e) {
@@ -360,7 +360,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * Method declared on IEditorPart.
 	 */
@@ -426,7 +426,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 				}
 			}
 		}
-			
+	
 
 		return super.getAdapter(required);
 	}
@@ -464,13 +464,13 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 
 		return actionBars.getStatusLineManager();
 	}
-	
+
 	public FilterPanel getFilterPanel() {
 		if (filterPanelPage != null)
 			return filterPanelPage.getFilterPanel();
 		return null;
 	}
-	
+
 	public void setupDropTarget(Control dropTargetControl) {
 		// make panel d&d target for IDLists and files (FIXME find better place for this code)
 		DropTarget dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
@@ -508,7 +508,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 			}
 		});
 	}
-	
+
 	/**
 	 * Load a result file (.vec or .sca), and add its contents to the current panel.
 	 * (The contents of the loaded file will be available for all other

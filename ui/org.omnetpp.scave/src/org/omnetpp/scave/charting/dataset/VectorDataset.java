@@ -27,7 +27,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 // TODO bounds should be read from the vector files
 public class VectorDataset extends XYDatasetSupport implements IStringValueXYDataset {
-	
+
 	private static class SeriesData
 	{
 		String key;
@@ -37,12 +37,12 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 		ResultItemValueFormatter formatter;
 		XYArray xyarray;
 	}
-	
+
 	private String title;
 	private IDList idlist;
 	private ResultFileManager manager;
 	private SeriesData[] data;
-	
+
 
 	/**
 	 * Creates an empty dataset.
@@ -50,7 +50,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	public VectorDataset() {
 		this.data = new SeriesData[] {};
 	}
-	
+
 	/**
 	 * Creates a dataset containing vectors from {@code idlist}.
 	 * The data of the vectors are not loaded/computed, so
@@ -93,7 +93,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 			series.xyarray = seriesData[i];
 		}
 	}
-		
+	
 	public String getTitle(String format) {
 		if (StringUtils.isEmpty(format))
 			return title;
@@ -111,7 +111,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	public String getSeriesKey(int series) {
 		return data[series].key;
 	}
-	
+
 	@Override
 	public Type getSeriesType(int series) {
 		return data[series].type;
@@ -129,16 +129,16 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	public double getX(int series, int item) {
 		return data[series].xyarray.getX(item);
 	}
-	
+
 	public BigDecimal getPreciseX(int series, int item) {
 		return data[series].xyarray.getPreciseX(item);
 	}
-	
+
 	public String getXAsString(int series, int item) {
 		BigDecimal xp = getPreciseX(series, item);
 		return xp != null ? xp.toString() : String.format("%g", getX(series, item)); 
 	}
-	
+
 	public double getY(int series, int item) {
 		return data[series].xyarray.getY(item);
 	}
@@ -146,12 +146,12 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	public BigDecimal getPreciseY(int series, int item) {
 		return new BigDecimal(getY(series, item));
 	}
-	
+
 	public String getYAsString(int series, int item) {
 		ResultItemValueFormatter formatter = data[series].formatter;
 		return formatter.format(getY(series, item));
 	}
-	
+
 	public long getID(int series) {
 		return data[series].id;
 	}
@@ -165,7 +165,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 		else
 			return Type.Double;
 	}
-	
+
 	@SuppressWarnings("static-access")
 	private static InterpolationMode getInterpolationMode(VectorResult vector) {
 		org.omnetpp.scave.engine.InterpolationMode mode = vector.getInterpolationMode();

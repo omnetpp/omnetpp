@@ -33,33 +33,33 @@ public class ExceptEditForm implements IScaveObjectEditForm {
 	protected static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getExcept_FilterPattern(),
 	};
-	
+
 	/**
 	 * The edited Except node.
 	 */
 	protected Except except;
-	
+
 	/**
 	 * The parent of the Except node.
 	 * It is always included in the model.
 	 */
 	protected EObject parent;
-	
+
 	/**
 	 * ResultFileManager used to get the filter hints.
 	 */
 	protected ResultFileManager manager;
-	
+
 	// controls
 	private FilterField filterField;
 	private Text filterText;
-	
+
 	public ExceptEditForm(Except except, EObject parent, ResultFileManager manager) {
 		this.except = except;
 		this.parent = parent;
 		this.manager = manager;
 	}
-	
+
 	public String getTitle() {
 		return String.format("Except operation");
 	}
@@ -76,7 +76,7 @@ public class ExceptEditForm implements IScaveObjectEditForm {
 		Label label;
 
 		panel.setLayout(new GridLayout(2, false));
-		
+	
 		label = new Label(panel, SWT.NONE);
 		label.setText("Filter pattern:");
 		label.setLayoutData(new GridData());
@@ -87,7 +87,7 @@ public class ExceptEditForm implements IScaveObjectEditForm {
 		filterText.setFocus();
 		updateFilterHints();
 	}
-	
+
 	private void updateFilterHints() {
 		if (parent instanceof SetOperation) {
 			ResultType datatype = ((SetOperation)parent).getType();
@@ -95,7 +95,7 @@ public class ExceptEditForm implements IScaveObjectEditForm {
 				filterField.setFilterHints(new FilterHints(manager, datatype));
 		}
 	}
-	
+
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
@@ -103,7 +103,7 @@ public class ExceptEditForm implements IScaveObjectEditForm {
 		default:
 			throw new IllegalArgumentException("Unexpected feature: " + feature.getName());
 		}
-		
+	
 	}
 
 	public void setValue(EStructuralFeature feature, Object value) {

@@ -28,16 +28,16 @@ import org.omnetpp.scave.model2.IsoLineData;
  * @author tomi
  */
 public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAveragedXYDataset {
-	
+
 	private XYDataset scalars;      // first rows contains X values,
 	                        		// other rows contain Y values (NaN if missing)
 	private String[] keys;
-	
+
 	public ScalarScatterPlotDataset(XYDataset scalars, IsoLineData[] isoLineId) {
 		this.scalars = scalars;
 		this.keys = computeKeys(this.scalars, isoLineId);
 	}
-	
+
 	public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;
@@ -58,7 +58,7 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 	public double getX(int series, int item) {
 		return scalars.getValue(0, item).getMean();
 	}
-	
+
 	public BigDecimal getPreciseX(int series, int item) {
 		return new BigDecimal(getX(series, item));
 	}
@@ -78,10 +78,10 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 	public Statistics getYStatistics(int series, int item) {
 		return scalars.getValue(series+1, item);
 	}
-	
+
 	private static final ResultItemField MODULE = new ResultItemField(ResultItemField.MODULE);
 	private static final ResultItemField NAME = new ResultItemField(ResultItemField.NAME);
-	
+
 	private static String[] computeKeys(XYDataset data, IsoLineData[] isoLineId) {
 		// each row has the same value of the iso scalars
 		StringBuilder sb = new StringBuilder();
@@ -106,7 +106,7 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 			}
 		}
 		String isoScalarValues = sb.toString();
-		
+	
 		// first row contains the common X coordinates
 		// name the lines after their Y data
 		String[] keys = new String[data.getRowCount()-1];

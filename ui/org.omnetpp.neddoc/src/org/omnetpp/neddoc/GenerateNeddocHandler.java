@@ -54,14 +54,14 @@ public class GenerateNeddocHandler extends AbstractHandler {
 	@SuppressWarnings("unchecked")
     private List<IProject> getSelectedOpenProjects(ExecutionEvent event) {
 		List<IProject> projects = new ArrayList<IProject>();
-	
+
 		EvaluationContext context = (EvaluationContext)event.getApplicationContext();
 		if (context == null)
 			return projects;
 		List selection = (List)context.getDefaultVariable();
 		if (!(selection instanceof List))
 			return projects;
-	
+
 		// collect the projects that are open
 		for (Object element : selection) {
 			IProject project = null;
@@ -72,7 +72,7 @@ public class GenerateNeddocHandler extends AbstractHandler {
 			if (project != null && project.isOpen())
 				projects.add(project);
 		}
-	
+
         return projects;
     }
 }

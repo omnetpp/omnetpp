@@ -15,11 +15,11 @@ import org.omnetpp.figures.SubmoduleFigure;
 
 public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 	protected int moduleId;
-	
+
 	protected IDisplayString displayString;
-	
+
 	protected IDisplayString oldDisplayString; // FIXME: this is a temproray hack to be able to undo changes
-	
+
 	public SetModuleDisplayStringAnimation(ReplayAnimationController animationController,
 										   AnimationPosition animationPosition,
 										   int moduleId,
@@ -29,7 +29,7 @@ public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 		this.displayString = displayString;
 		//System.out.println("SetModuleDisplayStringAnimation: "+displayString);
 	}
-	
+
 	@Override
 	public void redo() {
 		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
@@ -39,7 +39,7 @@ public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 			submoduleConstraint.setVectorName(module.getFullPath());
 			submoduleConstraint.setVectorSize(module.getVectorSize());
 			submoduleConstraint.setVectorIndex(module.getIndex());
-			
+	
 			oldDisplayString = moduleFigure.getLastDisplayString();
 
 			moduleFigure.setConstraint(submoduleConstraint);

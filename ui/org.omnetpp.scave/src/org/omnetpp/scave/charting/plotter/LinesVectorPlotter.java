@@ -32,7 +32,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 
 		// Note: for performance (this is most commonly used plotter), we don't use plotSymbols() 
 		// from the base class, but draw lines and symbols in a single loop instead
-		
+
 		// dataset index range to iterate over 
 		int[] range = indexRange(plot, series, gc, mapping);
 		int first = range[0], last = range[1];
@@ -40,8 +40,8 @@ public class LinesVectorPlotter extends VectorPlotter {
 		// chart y range in canvas coordinates 
 		int[] yrange = canvasYRange(gc, symbol);
 		int top = yrange[0], bottom = yrange[1];  // top < bottom
-		
-		
+
+
 		// Performance optimization: avoid painting the same pixels over and over 
 		// when drawing vertical lines. This results in magnitudes faster
 		// execution for large datasets.
@@ -53,11 +53,11 @@ public class LinesVectorPlotter extends VectorPlotter {
 
 		// turn off antialias for vertical lines
 		int origAntialias = gc.getAntialias();
-		
+
 		// used for preventing painting the same symbol on the same pixels over and over.
 		HashSet<Integer> yset = new HashSet<Integer>();
 		int prevSymbolX = Integer.MIN_VALUE;
-		
+
 		for (int i = first; i <= last; i++) {
 			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
 			int y = mapping.toCanvasY(plot.transformY(dataset.getY(series, i))); // note: this maps +-INF to +-MAXPIX, which works out just fine here
@@ -65,7 +65,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 			// for testing: 
 			// if (i%5==0) y = NANPIX;
 			// if (i%5==2 && prevX!=Integer.MIN_VALUE) x = prevX;
-			
+	
  			// draw line
 			if (y != NAN_PIX) {
 				if (x != prevX) {
@@ -91,7 +91,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 				prevX = Integer.MIN_VALUE; // invalidate minX/maxX
 			}
 			prevY = y;
-			
+	
   			// draw symbol (see VectorPlotter.plotSymbols() for explanation on yset-based optimization)
 			// note: top <= y <= bottom condition also filters out NaNs
 			if (symbol != null && top <= y && y <= bottom) {

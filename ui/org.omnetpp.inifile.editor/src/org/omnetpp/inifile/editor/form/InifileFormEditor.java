@@ -238,7 +238,7 @@ public class InifileFormEditor extends Composite {
 
 		// collect keys supported by the editor forms
 		Set<ConfigOption> supportedKeys = new HashSet<ConfigOption>();
-		
+
 		List<String> categories = new ArrayList<String>();
 		categories.add(PARAMETERS_PAGE);
 		categories.add(SECTIONS_PAGE);
@@ -249,7 +249,7 @@ public class InifileFormEditor extends Composite {
 			for (ConfigOption key : page.getSupportedKeys())
 				supportedKeys.add(key);
 		}
-		
+
 		// see which keys are not supported anywhere
 		for (ConfigOption key : ConfigRegistry.getEntries())
 			if (!supportedKeys.contains(key))

@@ -23,21 +23,21 @@ import org.omnetpp.scave.model2.DatasetManager;
 public class ScalarChartProperties extends ChartProperties
 {
 	private static final String DEFAULT_BAR_PROPERTIES_ID = "default";
-	
+
 	public static final String
 		// Titles
 		PROP_WRAP_LABELS		= "X.Label.Wrap",
 		// Bars
 		PROP_BAR_BASELINE		= "Bars.Baseline",
 		PROP_BAR_PLACEMENT		= "Bar.Placement";
-	
+
 	public enum BarPlacement {
 		Aligned,
 		Overlap,
 		InFront,
 		Stacked,
 	}
-	
+
 	public ScalarChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
 		super(chart, properties, manager);
 	}
@@ -65,7 +65,7 @@ public class ScalarChartProperties extends ChartProperties
 	public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
 	public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
 	public BarPlacement defaultBarPlacement() { return ChartDefaults.DEFAULT_BAR_PLACEMENT; }
-	
+
 	@org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars",
 			description="Properties of individual bars. Default is applied to all properties not set individually.")
 	public IPropertySource getBarProperties() {

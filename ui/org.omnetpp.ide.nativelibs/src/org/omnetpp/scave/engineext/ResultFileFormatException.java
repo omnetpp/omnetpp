@@ -18,11 +18,11 @@ public class ResultFileFormatException extends RuntimeException {
 
 	private String fileName;
 	private int lineNo;
-	
+
 	public ResultFileFormatException(String msg) {
 		super(msg);
 	}
-	
+
 	public ResultFileFormatException(String msg, String fileName, int lineNo) {
 		super(msg);
 		this.fileName = fileName;

@@ -33,7 +33,7 @@ class IntegerCellEditor extends TextCellEditor
 		super(parent);
 		setValidator(IntegerCellEditorValidator.instance());
 	}
-	
+
 	@Override
 	protected Object doGetValue() {
 		return Converter.stringToInteger((String)super.doGetValue());
@@ -48,7 +48,7 @@ class IntegerCellEditor extends TextCellEditor
 class IntegerCellEditorValidator implements ICellEditorValidator
 {
 	private static IntegerCellEditorValidator instance;
-	
+
 	public static IntegerCellEditorValidator instance() {
 		if (instance == null)
 			instance = new IntegerCellEditorValidator();
@@ -58,14 +58,14 @@ class IntegerCellEditorValidator implements ICellEditorValidator
 	public String isValid(Object value) {
 		if (value instanceof Integer)
 			return null;
-		
+
 		if (value != null && !(value instanceof String))
 			return "Unexpected type: " + value.getClass().getName();
-		
+
 		String strValue = (String)value;
 		if (StringUtils.isEmpty(strValue))
 			return null;
-		
+
 		try {
 			Integer.parseInt(strValue);
 			return null;

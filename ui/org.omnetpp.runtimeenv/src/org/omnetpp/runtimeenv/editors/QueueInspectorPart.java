@@ -30,7 +30,7 @@ public class QueueInspectorPart extends InspectorPart {
 	private Map<cObject,IFigure> objectToFigureMap = new HashMap<cObject, IFigure>();
 	private Map<IFigure,cObject> figureToObjectMap = new HashMap<IFigure, cObject>();
 	private cObject[] prevObjects = null; // just to detect changes...
-	
+
 	public QueueInspectorPart(cObject object) {
 		super(object);
 		figure = new QueueInspectorFigure();
@@ -80,7 +80,7 @@ public class QueueInspectorPart extends InspectorPart {
 			}
 		}
 	}
-	
+
     public IFigure findQueueItemFigureAt(int x, int y) {
         for (IFigure f = figure.findFigureAt(x, y); f!=null && f!=figure; f=f.getParent())
         	if (figureToObjectMap.containsKey(f))
@@ -88,7 +88,7 @@ public class QueueInspectorPart extends InspectorPart {
         return null;
     }
 
-	
+
 	//@Override
 	public boolean isMaximizable() {
 		return false;

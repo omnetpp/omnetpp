@@ -30,7 +30,7 @@ import org.omnetpp.scave.charting.properties.ScalarChartProperties.BarPlacement;
  */
 class BarPlot {
 	private Rectangle rect = new Rectangle(0,0,1,1);
-	
+
 	double barBaseline = DEFAULT_BAR_BASELINE;
 	BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
 	Color barOutlineColor = DEFAULT_BAR_OUTLINE_COLOR;
@@ -38,28 +38,28 @@ class BarPlot {
 	// rows are sorted according to the x coordinate
 	// y coordinates might be logarithmic
 	private RectangularArea[][] bars;
-	
+
 	private ScalarChart chart;
-	
+
 	public BarPlot(ScalarChart chart) {
 		this.chart = chart;
 	}
-	
+
 	public Rectangle getRectangle() {
 		return rect;
 	}
-	
+
 	public Rectangle layout(GC gc, Rectangle rect) {
 		this.rect = rect.getCopy();
 		return rect;
 	}
-	
+
 	public void draw(GC gc, ICoordsMapping coordsMapping) {
 
 		if (bars != null && bars.length > 0 && bars[0].length > 0) {
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
-			
+	
 			Rectangle clip = graphics.getClip(new Rectangle());
 			int cColumns = bars[0].length;
 			int[] indices = getRowColumnsInRectangle(clip);
@@ -72,22 +72,22 @@ class BarPlot {
 			graphics.dispose();
 		}
 	}
-	
+
 	public void drawBaseline(GC gc, ICoordsMapping coordsMapping) {
 		double baseline = getTransformedBaseline();
 		if (!Double.isInfinite(baseline)) {
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
-			
+	
 			int y = coordsMapping.toCanvasY(baseline);
 			graphics.setForegroundColor(ChartDefaults.DEFAULT_BAR_BASELINE_COLOR);
 			graphics.drawLine(rect.x + 1, y, rect.x + rect.width - 1, y);
-			
+	
 			graphics.popState();
 			graphics.dispose();
 		}
 	}
-	
+
 	protected void drawBar(Graphics graphics, int row, int column, ICoordsMapping coordsMapping) {
 		Rectangle rect = getBarRectangle(row, column, coordsMapping);
 		rect.width = Math.max(rect.width, 1);
@@ -99,14 +99,14 @@ class BarPlot {
 			graphics.drawRectangle(rect.getCropped(new Insets(0,0,0,0)));
 		}
 	}
-	
+
 	protected int[] getRowColumnsInRectangle(org.eclipse.draw2d.geometry.Rectangle rect) {
 		int[] result = new int[2];
 		result[0] = getRowColumn(rect.x, true);
 		result[1] = getRowColumn(rect.x + rect.width, false);
 		return result;
 	}
-	
+
 	private int getRowColumn(double x, boolean before) {
 		int cRows = chart.getDataset().getRowCount();
 		int cColumns = chart.getDataset().getColumnCount();
@@ -119,16 +119,16 @@ class BarPlot {
 			return -1;
 		int cRows = chart.getDataset().getRowCount();
 		int cColumns = chart.getDataset().getColumnCount();
-		
+
 		for (int row = 0; row < cRows; ++row)
 			// search columns in Z-order
 			for (int column = 0; column < cColumns; ++column)
 				if (bars[row][column].contains(x, y))
 					return row * cColumns + column;
-		
+
 		return -1;
 	}
-	
+
 	protected Color getBarColor(int column) {
 		RGB color = chart.getBarColor(chart.getKeyFor(column));
 		if (color != null)
@@ -136,42 +136,42 @@ class BarPlot {
 		else
 			return ColorFactory.getGoodDarkColor(column);
 	}
-	
+
 	protected Rectangle getBarRectangle(int row, int column, ICoordsMapping coordsMapping) {
 		RectangularArea bar = bars[row][column];
 		double top =  bar.maxY;
 		double bottom = bar.minY;
 		double left = bar.minX;
 		double right = bar.maxX;
-		
+
 		if (Double.isInfinite(top))
 			top = top < 0.0 ? chart.chartArea.minY : chart.chartArea.maxY;
 		if (Double.isInfinite(bottom))
 			bottom = bottom < 0.0 ? chart.chartArea.minY : chart.chartArea.maxY;
-		
+
 		int x = coordsMapping.toCanvasX(left);
 		int y = coordsMapping.toCanvasY(top);
 		int width = coordsMapping.toCanvasDistX(right - left);
 		int height = coordsMapping.toCanvasDistY(top - bottom);
 		return new Rectangle(x, y, width, height);
 	}
-	
+
 	protected RectangularArea calculatePlotArea() {
 		final double widthBar = 1.0;
 		final double hgapMinor = 0.5;
 		final double hgapMajor = 0.25;
 		final double horizontalInset = 1.0;   // left/right inset relative to the bars' width 
 		final double verticalInset = 0.1; 	// top inset relative to the height of the highest bar
-		
+
 		IScalarDataset dataset = chart.getDataset();
 		bars = null;
 		if (dataset == null)
 			return new RectangularArea(0, 0, 1, 1);
-		
+
 		int cRows = dataset.getRowCount();
 		int cColumns = dataset.getColumnCount();
 		double baseline = getTransformedBaseline();
-		
+
 		if (Double.isInfinite(baseline)) {
 			double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
 			for (int row = 0; row < cRows; ++row)
@@ -188,9 +188,9 @@ class BarPlot {
 			if (Double.isInfinite(baseline))
 				return new RectangularArea(0, 0, 1, 1);
 		}
-		
+
 		RectangularArea plotArea = new RectangularArea(0, baseline, 0, baseline);
-		
+
 		double x = horizontalInset * widthBar;
 		double y = 0;
 		bars = new RectangularArea[cRows][];
@@ -200,7 +200,7 @@ class BarPlot {
 			for (int column = 0; column < cColumns; ++column) {
 				RectangularArea bar = bars[row][column] = new RectangularArea();
 				double value = chart.getDataset().getValue(row, column);
-				
+		
 				// calculate x coordinates
 				switch (barPlacement) {
 				case Aligned:
@@ -226,7 +226,7 @@ class BarPlot {
 						x += widthBar * cColumns + hgapMajor * widthBar * cColumns;
 					break;
 				}
-				
+		
 				// calculate y coordinates
 				switch (barPlacement) {
 				case Aligned:
@@ -251,15 +251,15 @@ class BarPlot {
 					y += value;
 					break;
 				}
-				
+		
 				// extend plot area with the new bar
 				addRectangle(plotArea, bar);
 			}
 		}
-		
+
 		if (plotArea.minY > plotArea.maxY)
 			return new RectangularArea(0, 0, 1, 1);
-		
+
 		// set minimum height (empty plot, or each value == barBaseline)
 		if (plotArea.minY == plotArea.maxY) {
 			plotArea.minY -= 0.5;
@@ -274,7 +274,7 @@ class BarPlot {
 			plotArea.maxY += verticalInset * height;
 		return plotArea;
 	}
-	
+
 	private void addRectangle(RectangularArea area, RectangularArea rect) {
 		if (!Double.isNaN(rect.minX) && !Double.isInfinite(rect.minX))
 			area.minX = Math.min(area.minX, rect.minX);
@@ -285,11 +285,11 @@ class BarPlot {
 		if (!Double.isNaN(rect.maxY) && !Double.isInfinite(rect.maxY))
 			area.maxY = Math.max(area.maxY, rect.maxY);
 	}
-	
+
 	protected double transformValue(double y) {
 		return chart.transformY(y);
 	}
-	
+
 	protected double getTransformedBaseline() {
 		double baseline = barPlacement == BarPlacement.Stacked ? 0.0 : barBaseline;
 		baseline = transformValue(baseline);

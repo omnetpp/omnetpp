@@ -30,7 +30,7 @@ import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
  * @author tomi
  */
 public class Legend implements ILegend {
-	
+
 	class Item {
 		String text;
 		Color color;
@@ -38,20 +38,20 @@ public class Legend implements ILegend {
 		boolean drawLine;
 		int x, y;	// location relative to the legend top-left
 		int width, height;
-		
+
 		public Item(Color color, String text, IChartSymbol symbol, boolean drawLine) {
 			this.color = color;
 			this.text = text;
 			this.symbol = symbol;
 			this.drawLine = drawLine;
 		}
-		
+
 		public void calculateSize(GC gc) {
 			Point size = gc.textExtent(text);
 			width = size.x + 17; // place for symbol
 			height = size.y;
 		}
-		
+
 		public void draw(GC gc, int x, int y) {
 			gc.setAntialias(SWT.ON);
 			gc.setForeground(color);
@@ -74,14 +74,14 @@ public class Legend implements ILegend {
 					symbol.setSizeHint(size);
 				}
 			}
-			
+	
 			// draw text
 			if (font != null) gc.setFont(font);
 			gc.setForeground(ColorFactory.BLACK);
 			gc.drawText(text, x + 17, y, true);
 		}
 	}
-	
+
 	private boolean visible;
 	private boolean drawBorder;
 	private Font font;
@@ -96,10 +96,10 @@ public class Legend implements ILegend {
 	private List<Item> items = new ArrayList<Item>();
 	private Rectangle bounds; // rectangle of the legend in canvas coordinates
 	int visibleItemCount;
-	
+
 	public Legend() {
 	}
-	
+
 	public Legend(boolean visible, boolean drawBorder, Font font, LegendPosition position, LegendAnchor anchor) {
 		this.visible = visible;
 		this.drawBorder = drawBorder;
@@ -107,59 +107,59 @@ public class Legend implements ILegend {
 		this.position = position;
 		this.anchor = anchor;
 	}
-	
+
 	public void clearItems() {
 		items.clear();
 	}
-	
+
 	public void addItem(Color color, String text, IChartSymbol symbol, boolean drawLine) {
 		items.add(new Item(color, text, symbol, drawLine));
 	}
-	
+
 	public boolean isVisible() {
 		return visible;
 	}
-	
+
 	public void setVisible(boolean flag) {
 		visible = flag;
 	}
-	
+
 	public boolean getDrawBorder() {
 		return drawBorder;
 	}
-	
+
 	public void setDrawBorder(boolean flag) {
 		drawBorder = flag;
 	}
-	
+
 	public Font getFont() {
 		return font;
 	}
-	
+
 	public void setFont(Font font) {
 		this.font = font;
 	}
-	
+
 	public LegendPosition getPosition() {
 		return position;
 	}
-	
+
 	public void setPosition(LegendPosition position) {
 		this.position = position;
 	}
-	
+
 	public LegendAnchor getAnchor() {
 		return anchor;
 	}
-	
+
 	public void setAnchor(LegendAnchor anchor) {
 		this.anchor = anchor;
 	}
-	
+
 	public Rectangle getBounds() {
 		return bounds;
 	}
-	
+
 	/**
 	 * Calculates the position and size of the legend and its items.
 	 * Returns the remaining space.
@@ -247,7 +247,7 @@ public class Legend implements ILegend {
 		else {
 			if (!visible || position != LegendPosition.Inside)
 				return parent;
-			
+	
 			int dx, dy;
 			switch (anchor) {
 			case North:		dx = 0; dy = -1; break;
@@ -260,17 +260,17 @@ public class Legend implements ILegend {
 			case NorthWest:	dx = -1; dy = -1; break;
 			default: throw new IllegalStateException();
 			}
-			
+	
 			bounds.width = Math.min(bounds.width, Math.max(0, parent.width - 2 * horizontalMargin));
 			bounds.height = Math.min(bounds.height, Math.max(0, parent.height - 2 * verticalMargin));
 			bounds.x = parent.x + horizontalMargin + (parent.width - bounds.width - 2 * horizontalMargin) * (dx + 1) / 2;
 			bounds.y = parent.y + verticalMargin + (parent.height - bounds.height - 2 * verticalMargin) * (dy + 1) / 2;
 			updateVisibleItemCount();
-			
+	
 			return parent;
 		}
 	}
-	
+
 	private void positionItems(Point maxSize, boolean horizontal) {
 		if (horizontal) {
 			// calculate initial number of columns
@@ -305,7 +305,7 @@ public class Legend implements ILegend {
 					bounds.width += columnWidths[i];
 				for (int i = 0; i < rows; ++i)
 					bounds.height += rowHeights[i];
-				
+		
 
 				// retry with fewer columns if too wide
 				if (columns > 1 && bounds.width > maxSize.x)
@@ -319,7 +319,7 @@ public class Legend implements ILegend {
 					Item item = items.get(i);
 					int row = i / columns;
 					int col = i % columns;
-					
+			
 					if (col == 0) {
 						if(y + rowHeights[row] + verticalPadding > maxSize.y) {
 							bounds.height = y + verticalPadding;
@@ -331,10 +331,10 @@ public class Legend implements ILegend {
 					else { // col > 0
 						x += horizontalSpacing;
 					}
-					
+			
 					item.x = x;
 					item.y = y;
-					
+			
 					if (col == columns - 1) {
 						x = horizontalPadding;
 						y += rowHeights[row];
@@ -356,23 +356,23 @@ public class Legend implements ILegend {
 			int y = verticalPadding;
 			for (int i = 0; i < items.size(); ++i) {
 				Item item = items.get(i);
-				
+		
 				if (y + item.height + verticalPadding > maxSize.y) {
 					break;
 				}
-				
+		
 				item.x = x;
 				item.y = y;
-				
+		
 				bounds.width = Math.max(bounds.width, item.width + 2 * horizontalPadding);
 				bounds.height = Math.max(bounds.height, y + item.height + verticalPadding);
-				
+		
 				y += item.height + verticalSpacing;
 				++visibleItemCount;
 			}
 		}
 	}
-	
+
 	public void updateVisibleItemCount() {
 		int count = 0;
 		Item lastVisibleItem = null;
@@ -382,7 +382,7 @@ public class Legend implements ILegend {
 			count++;
 			lastVisibleItem = item;
 		}
-		
+
 		if (count != visibleItemCount) {
 			visibleItemCount = count;
 			if (lastVisibleItem == null)
@@ -391,7 +391,7 @@ public class Legend implements ILegend {
 				bounds.height = Math.max(0, lastVisibleItem.y + lastVisibleItem.height + verticalPadding);
 		}
 	}
-	
+
 	/**
 	 * Draws the legend to the canvas.
 	 */

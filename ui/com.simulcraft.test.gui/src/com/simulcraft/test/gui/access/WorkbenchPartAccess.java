@@ -30,7 +30,7 @@ public class WorkbenchPartAccess
 	public IWorkbenchPart getWorkbenchPart() {
 		return workbenchPart;
 	}
-	
+
 	protected PartSite getPartSite() {
 		IWorkbenchPartSite site = workbenchPart.getSite();
 
@@ -42,14 +42,14 @@ public class WorkbenchPartAccess
 		Assert.fail("Unknown site " + site);
 		return null;
 	}
-	
+
 	/**
 	 * Returns the name of the part. This is the name visible on tabs.
 	 */
 	public String getPartName() {
 		return getPartSite().getPartReference().getPartName();
 	}
-	
+
 	public CompositeAccess getComposite() {
 		return (CompositeAccess)createAccess(getCompositeInternal());
 	}

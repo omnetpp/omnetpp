@@ -29,7 +29,7 @@ public abstract class PinnableView2 extends ViewWithMessagePart {
 	private boolean isPinned = false;
 	private ISelection associatedSelection = null;
 	private IAction pinAction;
-	
+
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
 
@@ -112,7 +112,7 @@ public abstract class PinnableView2 extends ViewWithMessagePart {
 			};
 		} 
 		return pinAction;
-	}	
+	}
 
 	/**
 	 * Returns the associated selection, or null if there is none
@@ -120,7 +120,7 @@ public abstract class PinnableView2 extends ViewWithMessagePart {
 	protected ISelection getAssociatedSelection() {
 		return associatedSelection;
 	}
-	
+
 	/**
 	 * Pin the view to the current editor's current selection.
 	 */

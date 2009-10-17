@@ -31,11 +31,11 @@ import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class WorkbenchWindowAccess extends Access {
 	private IWorkbenchWindow workbenchWindow;
-	
+
 	public WorkbenchWindowAccess(IWorkbenchWindow workbenchWindow) {
 		this.workbenchWindow = workbenchWindow;
 	}
-	
+
     @UIStep
 	public ShellAccess getShell() {
 		return new ShellAccess(workbenchWindow.getShell());
@@ -45,7 +45,7 @@ public class WorkbenchWindowAccess extends Access {
 	public MenuAccess getMenuBar() {
 		return getShell().getMenuBar();
 	}
-	
+
     @UIStep
     public IPerspectiveDescriptor getPerspective() {
         return workbenchWindow.getWorkbench().getActiveWorkbenchWindow().getActivePage().getPerspective();
@@ -55,7 +55,7 @@ public class WorkbenchWindowAccess extends Access {
 	public void chooseFromMainMenu(String labelPath) {
 	    getShell().chooseFromMainMenu(labelPath);
 	}
-	
+
 	@UIStep
 	public EditorPartAccess getActiveEditorPart() {
 		return new EditorPartAccess(workbenchWindow.getPages()[0].getActiveEditor());
@@ -118,12 +118,12 @@ public class WorkbenchWindowAccess extends Access {
 	public EditorPartAccess findEditorPartByTitle(String title) {
 		return findEditorPartByTitle(title, true);
 	}
-	
+
 	@UIStep
 	public MultiPageEditorPartAccess findMultiPageEditorPartByTitle(String title) {
 		return (MultiPageEditorPartAccess)findEditorPartByTitle(title, true);
 	}
-	
+
 	@UIStep
 	public EditorPartAccess findEditorPartByTitle(final String title, boolean restore) {
 	    IPredicate predicate = getEditorPartsByTitlePredicate(title);

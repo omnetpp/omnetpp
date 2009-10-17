@@ -41,18 +41,18 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		ScaveModelPackage.eINSTANCE.getSetOperation_SourceDataset(),
 		ScaveModelPackage.eINSTANCE.getSetOperation_Type(),
 	};
-	
+
 	/**
 	 * The edited SetOperation.
 	 */
 	protected SetOperation setOperation;
-	
+
 	/**
 	 * The parent of the setOperation.
 	 * It is always included in the model.
 	 */
 	protected EObject parent;
-	
+
 	/**
 	 * List of datasets that can be the source of this operation.
 	 * First elements is <code>null</code> corresponding to "All".
@@ -63,18 +63,18 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	 * ResultFileManager used to get the filter hints.
 	 */
 	protected ResultFileManager manager;
-	
+
 	// controls
 	private Combo sourceDatasetCombo;
 	private Combo datatypeCombo;
 	private FilterField filterField;
 	private Text filterText;
-	
+
 	public SetOperationEditForm(SetOperation setOperation, EObject parent, ResultFileManager manager) {
 		this.setOperation = setOperation;
 		this.parent = parent;
 		this.manager = manager;
-		
+
 		sourceDatasets = new java.util.ArrayList<Dataset>();
 		sourceDatasets.add(null);
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
@@ -83,7 +83,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 			if (!ds.equals(dataset))
 				sourceDatasets.add(ds);
 	}
-	
+
 	public String getTitle() {
 		return String.format("%s operation", setOperation.eClass().getName());
 	}
@@ -100,7 +100,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		Label label;
 
 		panel.setLayout(new GridLayout(2, false));
-		
+
 		// source dataset
 		label = new Label(panel, SWT.NONE);
 		label.setText("Source dataset:");
@@ -113,14 +113,14 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		for (int i = 1; i < sourceDatasets.size(); ++i)
 			datasetNames[i] = sourceDatasets.get(i).getName();
 		sourceDatasetCombo.setItems(datasetNames);
-		
+
 		label = new Label(panel, SWT.NONE);
 		label.setText("Data type:");
 		label.setLayoutData(new GridData());
 		datatypeCombo = new Combo(panel, SWT.BORDER | SWT.READ_ONLY);
 		datatypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		datatypeCombo.setItems(ScaveModelUtil.getResultTypeNames());
-		
+
 		label = new Label(panel, SWT.NONE);
 		label.setText("Filter pattern:");
 		label.setLayoutData(new GridData());
@@ -129,7 +129,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		filterText = filterField.getText();
 
 		filterText.setFocus();
-		
+
 		// update the filter hints when the type selection changes
 		datatypeCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -142,7 +142,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 				ScaveModelUtil.getDataTypesOfChart((Chart)parent)[0] : ResultType.SCALAR_LITERAL);
 		selectDatatype(datatype);
 	}
-	
+
 	private void selectDatatype(ResultType datatype) {
 		int index = datatypeCombo.indexOf(datatype.getName());
 		if (index >= 0) {
@@ -151,13 +151,13 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 			updateFilterHints();
 		}
 	}
-	
+
 	private void updateFilterHints() {
 		String datatypeName = datatypeCombo.getText();
 		ResultType datatype = datatypeName != null ? ResultType.getByName(datatypeName) : ResultType.SCALAR_LITERAL;
 		filterField.setFilterHints(new FilterHints(manager, datatype));
 	}
-	
+
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
@@ -171,7 +171,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		default:
 			throw new IllegalArgumentException("Unexpected feature: " + feature.getName());
 		}
-		
+
 	}
 
 	public void setValue(EStructuralFeature feature, Object value) {

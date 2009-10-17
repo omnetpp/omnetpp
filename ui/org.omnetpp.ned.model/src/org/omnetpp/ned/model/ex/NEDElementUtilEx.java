@@ -155,10 +155,10 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	public static void setNetworkProperty(IModuleTypeElement node, boolean isNetwork) {
 		// look for the "parameters" block
 		INEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
-		
+
 		if (paramsNode == null) {
 			if (!isNetwork) return;  // do nothing if node is not a network and no parameters section is present
-			
+	
 			paramsNode = NEDElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
             ((ParametersElement)paramsNode).setIsImplicit(true);
 			node.appendChild(paramsNode);
@@ -178,7 +178,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 			paramsNode.appendChild(isNetworkPropertyNode);
 		}
 	}
-	
+
     /**
      * Returns the name of the first "extends" node (or null if none present)
      */
@@ -323,7 +323,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
         
 		ImportElement theImport = null;
 		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
-		
+
 		if (effectiveType.contains(".")) {
 			String fullyQualifiedTypeName = effectiveType;
         	String simpleTypeName = StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
@@ -363,7 +363,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	public static String importToRegex(String importSpec) {
 		return importSpec.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
 	}
-	
+
 	public interface INEDElementVisitor {
 		void visit(INEDElement element);
 	}

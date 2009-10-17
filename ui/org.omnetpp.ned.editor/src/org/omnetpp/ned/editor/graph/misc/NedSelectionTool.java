@@ -22,7 +22,7 @@ public class NedSelectionTool extends PanningSelectionTool {
 
 	@Override
 	protected EditPartViewer.Conditional getTargetingConditional() {
-		
+	
 		return new EditPartViewer.Conditional() {
 			public boolean evaluate(EditPart editpart) {
 				// if the selection target is a CompoundModule, allow selection ONLY using it's borders
@@ -33,7 +33,7 @@ public class NedSelectionTool extends PanningSelectionTool {
 					if (getCurrentInput().isMouseButtonDown(1))
 						return cmep.isOnBorder(getLocation().x, getLocation().y);
 				}
-				
+			
 				return editpart.isSelectable();
 			}
 		};

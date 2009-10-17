@@ -44,7 +44,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	// UI elements
 	private Label label;
 	private TabFolder tabfolder;
-	
+
 	private TabItem vectorsTab;
 	private TabItem scalarsTab;
 	private TabItem histogramsTab;
@@ -54,7 +54,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 
 	private IResultFilesChangeListener fileChangeListener;
 	private Runnable scheduledUpdate;
-	
+
 	private SetFilterAction2 setFilterAction = new SetFilterAction2();
 
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
@@ -135,7 +135,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		scalarsPanel.setResultFileManager(manager);
 		vectorsPanel.setResultFileManager(manager);
 		histogramsPanel.setResultFileManager(manager);
-		
+
 		//refreshPage(manager);
 	}
 
@@ -189,7 +189,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		}
 		// XXX call getSite().registerContexMenu() ?
 	}
-	
+
 	/**
 	 * Utility function configure data panel to display selection count in the status bar.
 	 */
@@ -309,7 +309,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		vectorsPanel.setIDList(vectors);
 		histogramsPanel.setIDList(histograms);
 	}
-	
+
 	/**
 	 * Sets the editor selection to the selection of table of the active panel.
 	 */

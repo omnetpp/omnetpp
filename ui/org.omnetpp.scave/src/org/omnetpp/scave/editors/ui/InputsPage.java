@@ -51,34 +51,34 @@ public class InputsPage extends ScaveEditorPage {
 	private Section inputFilesSection = null;
 	private Section dataSection = null;
 	private SashForm sashform = null;
-	
+
 	private Runnable scheduledUpdate;
 
 	public InputsPage(Composite parent, ScaveEditor scaveEditor) {
 		super(parent, SWT.V_SCROLL, scaveEditor);
 		initialize();
 	}
-	
+
 	public TreeViewer getInputFilesTreeViewer() {
 		InputFilesPanel panel = (InputFilesPanel)inputFilesSection.getClient();
 		return panel.getTreeViewer();
 	}
-	
+
 	public TreeViewer getFileRunTreeViewer() {
 		DataPanel panel = (DataPanel)dataSection.getClient();
 		return panel.getFileRunTreeViewer();
 	}
-	
+
 	public TreeViewer getRunFileTreeViewer() {
 		DataPanel panel = (DataPanel)dataSection.getClient();
 		return panel.getRunFileTreeViewer();
 	}
-	
+
 	public TreeViewer getLogicalDataTreeViewer() {
 		DataPanel panel = (DataPanel)dataSection.getClient();
 		return panel.getLogicalTreeViewer();
 	}
-	
+
 	private void initialize() {
 		// set up UI
 		setPageTitle("Inputs"); 
@@ -154,9 +154,9 @@ public class InputsPage extends ScaveEditorPage {
 	}
 
 	/**
-	 * This method initializes formToolkit	
-	 * 	
-	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
+	 * This method initializes formToolkit
+	 * 
+	 * @return org.eclipse.ui.forms.widgets.FormToolkit
 	 */
 	private FormToolkit getFormToolkit() {
 		if (formToolkit == null)
@@ -172,9 +172,9 @@ public class InputsPage extends ScaveEditorPage {
 											GridData.GRAB_VERTICAL |
 											GridData.FILL_BOTH));
 	}
-	
+
 	/**
-	 * This method initializes inputFilesSection	
+	 * This method initializes inputFilesSection
 	 */
 	private void createInputFilesSection() {
 		inputFilesSection = getFormToolkit().createSection(sashform,
@@ -206,7 +206,7 @@ public class InputsPage extends ScaveEditorPage {
 	}
 
 	/**
-	 * This method initializes dataSection	
+	 * This method initializes dataSection
 	 */
 	private void createDataSection() {
 		dataSection = getFormToolkit().createSection(sashform, 
@@ -240,7 +240,7 @@ public class InputsPage extends ScaveEditorPage {
 		else if (object instanceof Inputs) {
 			return true;
 		}
-			
+	
 		return false;
 	}
 

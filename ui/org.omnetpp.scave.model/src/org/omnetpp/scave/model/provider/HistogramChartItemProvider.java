@@ -39,11 +39,11 @@ import org.omnetpp.scave.model.HistogramChart;
  */
 public class HistogramChartItemProvider
     extends ChartItemProvider
-    implements	
-        IEditingDomainItemProvider,	
-        IStructuredItemContentProvider,	
-        ITreeItemContentProvider,	
-        IItemLabelProvider,	
+    implements
+        IEditingDomainItemProvider,
+        IStructuredItemContentProvider,
+        ITreeItemContentProvider,
+        IItemLabelProvider,
         IItemPropertySource {
 	/**
 	 * This constructs an instance from a factory and a notifier.

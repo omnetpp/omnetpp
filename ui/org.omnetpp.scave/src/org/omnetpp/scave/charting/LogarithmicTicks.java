@@ -24,24 +24,24 @@ import org.eclipse.core.runtime.Assert;
  * @author tomi
  */
 public class LogarithmicTicks implements ITicks {
-	
+
 	private static BigInteger ONE = BigInteger.ONE;
 	private static BigInteger TWO = BigInteger.valueOf(2);
 	private static BigInteger FIVE = BigInteger.valueOf(5);
-	
+
 	BigDecimal start;
 	BigDecimal end;
-	
+
 	public LogarithmicTicks(double start, double end) {
 		Assert.isLegal(start > 0.0 && end > 0.0);
 		this.start = asTickValue(start, RoundingMode.FLOOR);
 		this.end = asTickValue(end, RoundingMode.CEILING);
 	}
-	
+
 	private BigDecimal asTickValue(double value, RoundingMode rounding) {
 		int scale = -(int)Math.floor(Math.log10(value));
 		BigInteger unscaledValue = new BigDecimal(value).scaleByPowerOfTen(scale).setScale(0, rounding).unscaledValue();
-		
+
 		if (rounding == RoundingMode.FLOOR) {
 			switch (unscaledValue.intValue()) {
 			case 0:
@@ -75,9 +75,9 @@ public class LogarithmicTicks implements ITicks {
 
 	public Iterator<BigDecimal> iterator() {
 		class TickIterator implements Iterator<BigDecimal> {
-			
+	
 			BigDecimal current;
-			
+	
 			public TickIterator() {
 				current = start;
 			}

@@ -87,17 +87,17 @@ public class ChartProperties extends PropertySource {
 		West,
 		NorthWest,
 	}
-	
+
 	public enum ShowGrid {
 		None,
 		Major,
 		All,
 	}
-	
+
 	public static ChartProperties createPropertySource(Chart chart, ResultFileManager manager) {
 		return createPropertySource(chart, chart.getProperties(), manager);
 	}
-	
+
 	public static ChartProperties createPropertySource(Chart chart, List<Property> properties, ResultFileManager manager) {
 		if (chart instanceof BarChart)
 			return new ScalarChartProperties(chart, properties, manager);
@@ -187,7 +187,7 @@ public class ChartProperties extends PropertySource {
 	public FontData getLabelsFont() { return getFontProperty(PROP_LABEL_FONT); }
 	public void setLabelsFont(FontData font) { setProperty(PROP_LABEL_FONT, font); }
 	public FontData defaultLabelsFont() { return getDefaultFontProperty(PROP_LABEL_FONT); }
-	
+
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_LABELS_ROTATE_BY,displayName="x labels rotated by",
 			description="Rotates the tick labels of the horizontal axis by the given angle (in degrees).")
 	public Double getXLabelsRotate() { return getDoubleProperty(PROP_X_LABELS_ROTATE_BY); }
@@ -255,7 +255,7 @@ public class ChartProperties extends PropertySource {
 	/*---------------------------------------------------------------
 	 *                   Helpers
 	 *---------------------------------------------------------------*/
-	
+
 	public Property getProperty(String propertyName) {
 		for (Property property : properties)
 			if (property.getName().equals(propertyName))
@@ -286,13 +286,13 @@ public class ChartProperties extends PropertySource {
 		return property != null ? Converter.stringToFontdata(property.getValue()) :
 			                      getDefaultFontProperty(propertyName);
 	}
-	
+
 	public RGB getColorProperty(String propertyName) {
 		Property property = getProperty(propertyName);
 		return property != null ? Converter.stringToRGB(property.getValue()) :
 								  getDefaultColorProperty(propertyName);
 	}
-	
+
 	public Integer getIntegerProperty(String propertyName) {
 		Property property = getProperty(propertyName);
 		return property != null ? Converter.stringToInteger(property.getValue()) :
@@ -341,7 +341,7 @@ public class ChartProperties extends PropertySource {
 					RemoveCommand.create(domain, chart, model.getChart_Properties(), property));
 		}
 	}
-	
+
 	public void setProperty(String propertyName, String propertyValue) {
 		String defaultValue = getDefaultStringProperty(propertyName);
 		if (defaultValue != null && defaultValue.equals(propertyValue))
@@ -370,14 +370,14 @@ public class ChartProperties extends PropertySource {
 			propertyValue = null;
 		doSetProperty(propertyName, Converter.fontdataToString(propertyValue));
 	}
-	
+
 	public void setProperty(String propertyName, RGB propertyValue) {
 		RGB defaultValue = getDefaultColorProperty(propertyName);
 		if (defaultValue != null && defaultValue.equals(propertyValue))
 			propertyValue = null;
 		doSetProperty(propertyName, Converter.rgbToString(propertyValue));
 	}
-	
+
 	public void setProperty(String propertyName, Integer propertyValue) {
 		Integer defaultValue = getDefaultIntegerProperty(propertyName);
 		if (defaultValue != null && defaultValue.equals(propertyValue))
@@ -399,7 +399,7 @@ public class ChartProperties extends PropertySource {
 		else
 			return StringUtils.EMPTY;
 	}
-	
+
 	public boolean getDefaultBooleanProperty(String propertyName) {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
 		if (defaultValue instanceof Boolean)
@@ -407,7 +407,7 @@ public class ChartProperties extends PropertySource {
 		else
 			return false;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T extends Enum<T>> T getDefaultEnumProperty(String propertyName, Class<T> type) {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
@@ -416,7 +416,7 @@ public class ChartProperties extends PropertySource {
 		else
 			return null;
 	}
-	
+
 	public FontData getDefaultFontProperty(String propertyName) {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
 		if (defaultValue instanceof FontData)
@@ -424,7 +424,7 @@ public class ChartProperties extends PropertySource {
 		else
 			return null;
 	}
-	
+
 	public RGB getDefaultColorProperty(String propertyName) {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
 		if (defaultValue instanceof RGB)
@@ -432,7 +432,7 @@ public class ChartProperties extends PropertySource {
 		else
 			return null;
 	}
-	
+
 	public Integer getDefaultIntegerProperty(String propertyName) {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
 		if (defaultValue instanceof Integer)
@@ -448,20 +448,20 @@ public class ChartProperties extends PropertySource {
 		else
 			return null;
 	}
-	
+
 	protected IPropertyDescriptor[] createDescriptors(Object defaultId, String[] ids, String[] names) {
 		if (ids == null || names == null)
 			return new IPropertyDescriptor[0];
 		Assert.isTrue(ids.length == names.length);
-		
+
 		IPropertyDescriptor[] descriptors = new IPropertyDescriptor[ids.length+1];
 		descriptors[0] = new PropertyDescriptor(defaultId, "default");
 		for (int i= 0; i < ids.length; ++i)
 			descriptors[i+1] = new PropertyDescriptor(ids[i], names[i]);
-		
+
 		return descriptors;
 	}
-	
+
 	String propertyName(String baseName, String elementId) {
 		return elementId == null ? baseName : baseName + "/" + elementId;
 	}

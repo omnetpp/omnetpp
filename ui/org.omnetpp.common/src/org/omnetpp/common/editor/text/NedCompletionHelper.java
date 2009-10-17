@@ -87,13 +87,13 @@ public final class NedCompletionHelper {
     	makeShortTemplate("hypot(${x},${y})", "function"),
     	makeShortTemplate("log(${x})", "function"),
     	makeShortTemplate("log10(${x})", "function"),
-    	
+    
     	// unit
     	makeShortTemplate("dropUnit(${quantity})", "function"),
     	makeShortTemplate("replaceUnit(${quantity}, ${string})", "function"),
     	makeShortTemplate("convertUnit(${quantity}, ${string})", "function"),
     	makeShortTemplate("unitOf(${quantity})", "function"),
-    	
+    
     	// string
     	makeShortTemplate("length(${string})", "function"),
     	makeShortTemplate("contains(${string}, ${string})", "function"),
@@ -115,12 +115,12 @@ public final class NedCompletionHelper {
     	makeShortTemplate("choose(${int}, ${string})", "function"),
     	makeShortTemplate("toUpper(${string})", "function"),
     	makeShortTemplate("toLower(${string})", "function"),
-    	
+    
     	// conversion
     	makeShortTemplate("int(${x})", "function"),
     	makeShortTemplate("double(${x})", "function"),
     	makeShortTemplate("string(${x})", "function"),
-    	
+    
     	// reflection
     	makeShortTemplate("fullPath()", "function"),
     	makeShortTemplate("fullName()", "function"),

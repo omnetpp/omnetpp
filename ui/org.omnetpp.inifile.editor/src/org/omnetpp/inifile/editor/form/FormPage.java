@@ -46,7 +46,7 @@ public abstract class FormPage extends Composite {
 	private static Font titleFont = JFaceResources.getBannerFont();
 	private InifileEditor inifileEditor;
 	private HoverSupport hoverSupport = new HoverSupport();
-	
+
 	// IMPLEMENTATION NOTE: HOW TO KEEP FORM PAGES UP-TO-DATE.
 	//
 	// Form pages should keep themselves up-to-date (e.g. by invoking their 
@@ -78,7 +78,7 @@ public abstract class FormPage extends Composite {
 		    }
 		}
 	};
-	
+
 	public FormPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, SWT.NONE);
 		this.inifileEditor = inifileEditor;
@@ -90,7 +90,7 @@ public abstract class FormPage extends Composite {
 		getInifileDocument().removeInifileChangeListener(delayedRereadListener);
 		super.dispose();
 	}
-	
+
 	protected InifileEditorData getEditorData() {
 		return inifileEditor.getEditorData();
 	}
@@ -113,7 +113,7 @@ public abstract class FormPage extends Composite {
 	 * in the form editor's tree.
 	 */
 	public abstract String getPageCategory();
-	
+
 	/**
 	 * Reads data from the document into the current page.
 	 * FormPage's implementation does nothing except canceling the delayed-reread timer --
@@ -150,11 +150,11 @@ public abstract class FormPage extends Composite {
 		titleArea.setLayout(new GridLayout(3, false));
 		((GridLayout)titleArea.getLayout()).horizontalSpacing = 12;
 		((GridLayout)titleArea.getLayout()).marginWidth = 10;
-		
+
 		Label imageLabel = new Label(titleArea, SWT.NONE);
 		imageLabel.setImage(BANNER_IMAGE);
 		imageLabel.setBackground(ColorFactory.WHITE);
-		
+
 		Label title = new Label(titleArea, SWT.NONE);
 		title.setText(category);
 		title.setFont(titleFont);
@@ -170,7 +170,7 @@ public abstract class FormPage extends Composite {
 	public void layoutForm() {
 		layout(true);
 	}
-	
+
 	/**
 	 * Add tooltip (hover) support to the given control. Call this instead of instantiating
 	 * HoverSupport for each control or field editor, otherwise "F2 to focus" will only
@@ -179,7 +179,7 @@ public abstract class FormPage extends Composite {
 	protected void addTooltipSupport(Control control, IHoverTextProvider hoverTextProvider) {
 		hoverSupport.adapt(control, hoverTextProvider);
 	}
-	
+
 	/**
 	 * Position the cursor on the given section inside the form page (as far as possible or makes sense)
 	 */

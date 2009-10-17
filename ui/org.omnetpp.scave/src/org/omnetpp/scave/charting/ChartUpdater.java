@@ -41,21 +41,21 @@ public class ChartUpdater {
 			updateDataset();
 		}
 	};
-	
+
 	public ChartUpdater(Chart chart, ChartCanvas view, ResultFileManager manager) {
 		this.chart = chart;
 		this.view = view;
 		this.manager = manager;
 	}
-	
+
 	public ResultFileManager getResultFileManager() {
 		return manager;
 	}
-	
+
 	public Chart getChart() {
 		return chart;
 	}
-	
+
 	public ChartCanvas getChartView() {
 		return view;
 	}
@@ -69,17 +69,17 @@ public class ChartUpdater {
 			return;
 
 		EObject notifier = (EObject)notification.getNotifier();
-		
+
 		// add/remove or change input file
 		if (notifier instanceof Inputs || notifier instanceof InputFile) {
 			// TODO should be checked that visible items are affected
 			scheduleDatasetUpdate();
 			return;
 		}
-		
+
 		if (notifier.eResource() != chart.eResource())
 			return;
-		
+
 		// add/remove chart property 
 		if (notifier instanceof Chart && notifier == chart) {
 			switch (notification.getFeatureID(Chart.class)) {
@@ -157,7 +157,7 @@ public class ChartUpdater {
 			Dataset changedDataset = ScaveModelUtil.findEnclosingOrSelf(notifier, Dataset.class);
 			if (changedDataset == null)
 				return;
-			
+	
 			Dataset chartDataset = ScaveModelUtil.findEnclosingDataset(chart);
 			while (chartDataset != null && chartDataset != changedDataset)
 				chartDataset = chartDataset.getBasedOn();
@@ -172,7 +172,7 @@ public class ChartUpdater {
 		if (!view.isDisposed())
 			view.setProperty(name, value);
 	}
-	
+
 	private void scheduleDatasetUpdate() {
 		startUpdateJob.restartTimer();
 	}

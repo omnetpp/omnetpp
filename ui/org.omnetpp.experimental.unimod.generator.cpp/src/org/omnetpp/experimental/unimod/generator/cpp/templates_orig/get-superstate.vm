@@ -9,7 +9,7 @@ $smTool.ClassName::EState $smTool.ClassName::GetSuperstate($smTool.ClassName::ES
 #if(! $state.Top)
 	    case $smTool.getStateTool($state).Const:
 		    return $smTool.getStateTool($state.Superstate).Const;
-#end			
+#end		
 #end
         default:
 			// For top and unexisting states

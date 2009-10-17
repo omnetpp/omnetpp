@@ -35,22 +35,22 @@ public class DataPanel extends Composite {
 		getFormToolkit().adapt(this);
 		initialize();
 	}
-	
+
 	public TreeViewer getFileRunTreeViewer() {
 		return fileRunView;
 	}
-	
+
 	public TreeViewer getRunFileTreeViewer() {
 		return runFileView;
 	}
-	
+
 	public TreeViewer getLogicalTreeViewer() {
 		return logicalView;
 	}
 
 	private void initialize() {
 		this.setLayout(new FillLayout());
-		
+
 		CTabFolder tabfolder = new CTabFolder(this, SWT.TOP | SWT.BORDER);
 		getFormToolkit().adapt(tabfolder);
 
@@ -58,22 +58,22 @@ public class DataPanel extends Composite {
 		fileRunView = createLabelAndTree(tabfolder, "Physical: by file and run");
 		runFileView = createLabelAndTree(tabfolder, "Physical: by run and file");
 		logicalView = createLabelAndTree(tabfolder, "Logical: by experiment, measurement, replication");
-		
+
 		tabfolder.setSelection(0);
 	}
 
 	private TreeViewer createLabelAndTree(CTabFolder parent, String text) {
 		Tree tree = getFormToolkit().createTree(parent, SWT.NONE);
-		
+
 		CTabItem tabitem = new CTabItem(parent, SWT.NONE);
 		tabitem.setText(text);
 		tabitem.setControl(tree);
-		
+
 		return new TreeViewer(tree);
 	}
-	
+
 	/**
-	 * This method initializes formToolkit	
+	 * This method initializes formToolkit
 	 */
 	private FormToolkit getFormToolkit() {
 		if (formToolkit == null)

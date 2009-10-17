@@ -121,7 +121,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		// if the position is invalid return no proposals
 		if (info == null || info.linePrefix == null || info.linePrefixTrimmed == null)
 		    return new ICompletionProposal[0];
-		
+	
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 		NedFileElementEx nedFileElement = res.getNedFileElement(file);
@@ -137,7 +137,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		    if (nedTypeInfo != null && nedTypeInfo.getNEDElement() instanceof CompoundModuleElementEx)
 		        context = (CompoundModuleElementEx)nedTypeInfo.getNEDElement();
 		}
-		
+	
 		INEDTypeInfo nedEnclosingTypeInfo = null;
 		if (info.enclosingNedTypeName != null) { // we are inside an inner type
 		    nedEnclosingTypeInfo = res.lookupNedType(info.enclosingNedTypeName, nedFileElement);
@@ -464,7 +464,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
     		// detect if we are inside an inner type
     		if (source.matches("(?s).*\\btypes\\b.*\\btypes\\b.*"))
     		    return null;      // inner types within inner types are not supported
-    		
+    	
     		// handle inner types
     		boolean insideInnertype = source.matches("(?s).*\\btypes\\b\\s*:[^:]*\\{.*"); 
     		String enclosingNedTypeName = null;
@@ -498,12 +498,12 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 				sectionType = SECT_PARAMETERS;
 			else
 				sectionType = SECT_GLOBAL;
-		
+	
 			// detect module name: identifier after last "simple", "module", etc.
 			String nedTypeName = source.replaceFirst("(?s)^.*\\b(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]+).*\\{.*$", "$2");
 			if (nedTypeName.equals(source)) 
 			    nedTypeName = null;  // replace failed
-			
+		
 			// detect submodule type: last occurrence of "identifier {"
 			String submoduleTypeName = null;
 			if (sectionType == SECT_SUBMODULE_GATES || sectionType == SECT_SUBMODULE_PARAMETERS) {
@@ -515,7 +515,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			if (sectionType == SECT_GLOBAL)
 			    nedTypeName = enclosingNedTypeName = submoduleTypeName = null;
-			
+		
 //			Debug.println(">>>"+source+"<<<");
 //			Debug.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
 //			Debug.println("PREFIX: >>"+prefix+"<<");

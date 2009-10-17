@@ -50,19 +50,19 @@ public class EventLogTable
 	private static final boolean debug = true;
 
 	public static final String STATE_PROPERTY = "EventLogTableState";
-	
+
 	private boolean paintHasBeenFinished = false;
-	
+
 	private boolean internalErrorHappenedDuringPaint = false;
 
 	private boolean followEnd = false; // when the eventlog changes should we follow it or not?
 
 	private EventLogInput eventLogInput;
-	
+
 	private IEventLog eventLog;
 
 	private EventLogTableFacade eventLogTableFacade;
-	
+
 	private EventLogTableContributor eventLogTableContributor;
 
     public enum TypeMode {
@@ -80,11 +80,11 @@ public class EventLogTable
 	    DESCRIPTIVE,
 	    RAW
 	}
-	
+
 	private TypeMode typeMode = TypeMode.CPP;
-	
+
 	private NameMode nameMode = NameMode.SMART_NAME;
-	
+
 	private DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
 
 	/*************************************************************************************
@@ -108,7 +108,7 @@ public class EventLogTable
 		tableColumn = createColumn();
 		tableColumn.setWidth(2000);
 		tableColumn.setText("Details");
-		
+
 		addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				if (eventLogInput != null) {
@@ -165,7 +165,7 @@ public class EventLogTable
 				}
 			});
 	}
-	
+
 	@Override
 	public void refresh() {
         internalErrorHappenedDuringPaint = false;
@@ -201,7 +201,7 @@ public class EventLogTable
 			if (selectionElements != null)
     			for (EventLogEntryReference selectionElement : selectionElements)
     				selectionEvents.add(selectionElement.getEventNumber());
-	
+
 			return new EventLogSelection(eventLogInput, selectionEvents);
 		}
 	}
@@ -220,7 +220,7 @@ public class EventLogTable
 
 		super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
 	}
-	
+
 	@Override
 	public void setInput(Object input) {
 		// store current settings
@@ -233,7 +233,7 @@ public class EventLogTable
 		eventLogInput = (EventLogInput)input;
 		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
 		eventLogTableFacade = eventLogInput == null ? null : eventLogInput.getEventLogTableFacade();
-		
+
 		// clear state
 		followEnd = false;
 
@@ -247,25 +247,25 @@ public class EventLogTable
 				scrollToBegin();
 		}
 	}
-	
+
 	@Override
 	protected void relocateFixPoint(EventLogEntryReference element, int distance) {
 		Assert.isTrue(element == null || eventLog.getEventForEventNumber(element.getEventNumber()) != null);
 		super.relocateFixPoint(element, distance);
 	}
-	
+
 	@Override
 	public void scroll(int numberOfElements) {
 		super.scroll(numberOfElements);
 		followEnd = false;
 	}
-	
+
 	@Override
 	public void scrollToElement(EventLogEntryReference element) {
 		super.scrollToElement(element);
 		followEnd = false;
 	}
-	
+
 	@Override
 	public void scrollToEnd() {
 		super.scrollToEnd();
@@ -275,9 +275,9 @@ public class EventLogTable
 	/*************************************************************************************
 	 * GETTERS & SETTERS
 	 */
-	
+
 	public EventLogInput getEventLogInput() {
-		return eventLogInput;		
+		return eventLogInput;
 	}
 
 	public IEventLog getEventLog() {
@@ -300,7 +300,7 @@ public class EventLogTable
 		eventLogTableFacade.setFilterMode(i);
 		stayNear();
 	}
-	
+
     public String getCustomFilter() {
         return eventLogTableFacade.getCustomFilter();
     }
@@ -377,7 +377,7 @@ public class EventLogTable
 		else
 			redraw();
     }
-	
+
 	public void eventLogFiltered() {
 		eventLog = eventLogInput.getEventLog();
 
@@ -386,12 +386,12 @@ public class EventLogTable
 		else if (fixPointElement != null) {
 			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLog;
 			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), false);
-			
+	
 			if (closestEvent != null)
 				relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
 			else {
 				closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), true);
-	
+
 				if (closestEvent != null)
 					relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
 				else
@@ -404,11 +404,11 @@ public class EventLogTable
         for (EventLogEntryReference eventLogEntryReference : new ArrayList<EventLogEntryReference>(selectionElements))
             if (eventLog.getEventForEventNumber(eventLogEntryReference.getEventNumber()) == null)
                 selectionElements.remove(eventLogEntryReference);
-		
+
         eventLogTableContributor.update();
 		redraw();
 	}
-	
+
 	public void eventLogFilterRemoved() {
 		eventLog = eventLogInput.getEventLog();
         eventLogTableContributor.update();
@@ -467,7 +467,7 @@ public class EventLogTable
 		try {
 			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
 			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
-	
+
 			if (eventLogEntryReference == null)
 				manager.removeProperty(resource, STATE_PROPERTY);
 			else {
@@ -478,7 +478,7 @@ public class EventLogTable
                 eventLogTableState.typeMode = getTypeMode();
                 eventLogTableState.nameMode = getNameMode();
 				eventLogTableState.displayMode = getDisplayMode();
-				
+		
 				manager.setProperty(resource, STATE_PROPERTY, eventLogTableState);
 			}
 		}

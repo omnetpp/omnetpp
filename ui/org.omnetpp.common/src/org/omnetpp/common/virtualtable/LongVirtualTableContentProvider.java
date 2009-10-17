@@ -20,14 +20,14 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 	protected double sleepScale = 0.1;
 
 	protected long maxValue;
-	
+
 	protected long sleep(long value) {
 		try {
 			Thread.sleep((int)(value * sleepScale));
 		}
-		catch (Exception e) {			
+		catch (Exception e) {	
 		}
-		
+
 		return value;
 	}
 
@@ -65,7 +65,7 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 			Debug.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
 
 		long value = element;
-		
+
 		if (value > limit)
 			return sleep(limit);
 		else
@@ -77,7 +77,7 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 			Debug.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
 
 		long value = element;
-		
+
 		if (maxValue - value > limit)
 			return sleep(limit);
 		else
@@ -89,13 +89,13 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 			Debug.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
 
 		long value = element;
-		
+
 		if (value + distance < 0)
 			distance = -value;
-		
+
 		if (value + distance > maxValue)
 			distance = maxValue - value;
-		
+
 		sleep(distance);
 
 		long result = value + distance;

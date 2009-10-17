@@ -129,12 +129,12 @@ public class TableAccess extends ControlAccess
     public TableItemAccess findTableItemByContent(String content) {
 		return findTableItemByContent(0, content);
 	}
-	
+
 	@UIStep
 	public TableItemAccess findTableItemByContent(String columnName, String content) {
 		return findTableItemByContent(getTableColumnIndex(columnName), content);
 	}
-	
+
     @UIStep
 	public TableItemAccess findTableItemByContent(int columnIndex, final String content) {
 		return new TableItemAccess((TableItem)findObject(getControl().getItems(), new IPredicate() {
@@ -149,7 +149,7 @@ public class TableAccess extends ControlAccess
 						return true;
 				return false;
 			}
-			
+		
 			public String toString() {
 			    return "a TableItem with content: " + content;
 			}

@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Widget;
 
 //XXX as it turns out, there's PredicateUtils in apache.commons.collections which does something like this...
 public class Predicate {
-	
+
 	public static final String WIDGET_ID = "com.simulcraft.test.gui.WidgetID";
     
     public static IPredicate and(final IPredicate ... args) {
@@ -77,7 +77,7 @@ public class Predicate {
 
 	public static IPredicate hasID(final String id) {
 		Assert.isLegal(id != null);
-		
+
 		return new IPredicate() {
 			public boolean matches(Object object) {
 				if (object instanceof Widget) {
@@ -100,7 +100,7 @@ public class Predicate {
 
 	public static IPredicate itemWithText(final String text) {
 		Assert.isLegal(text != null);
-		
+
 		return new IPredicate() {
 			public boolean matches(Object object) {
 				return object instanceof Item &&
@@ -108,7 +108,7 @@ public class Predicate {
 			}
 		};
 	}
-	
+
 	public static IPredicate buttonWithText(final String text) {
 	    return new IPredicate() {
 	        public boolean matches(Object object) {

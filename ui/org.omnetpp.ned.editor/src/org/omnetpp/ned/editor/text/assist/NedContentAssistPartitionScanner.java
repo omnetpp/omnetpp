@@ -47,7 +47,7 @@ public class NedContentAssistPartitionScanner extends RuleBasedPartitionScanner 
 
         // Add rule for single line private comments.
         rules.add(new EndOfLineRule("//#", nedPrivateDocToken)); 
-		
+	
         // Add rule for single line comments.
 		rules.add(new EndOfLineRule("//", nedDocToken)); 
 

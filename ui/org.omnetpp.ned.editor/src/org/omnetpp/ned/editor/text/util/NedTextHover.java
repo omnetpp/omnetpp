@@ -44,7 +44,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 		if (info.referredElement instanceof INedTypeElement)
 		    return getHoverTextFor(((INedTypeElement)info.referredElement).getNEDTypeInfo());
-		
+	
 		return HoverSupport.addHTMLStyleSheet("<pre>" + info.referredElement.getNEDSource() + "</pre>"); //FIXME refine!!! ie docu, etc
 	}
 

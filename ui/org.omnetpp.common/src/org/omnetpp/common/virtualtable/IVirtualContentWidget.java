@@ -27,7 +27,7 @@ public interface IVirtualContentWidget<T> {
 	/**
 	 * Scroll to the given element making it visible with as little scrolling as possible.
 	 */
-	public void scrollToElement(T element);	
+	public void scrollToElement(T element);
 
 	/**
 	 * Scroll to the first selection element making it visible.

@@ -6,14 +6,14 @@ class ${modelTool.BaseMachineClassName}
 	public:
 		/* Constructor of base state machine */
 		${modelTool.BaseMachineClassName}($modelTool.ClassName& aModel): iModel(aModel) {}
-				
+			
         virtual void HandleL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext) = 0;
 
 	protected:
 		$modelTool.ClassName& iModel;
-		
+	
 		virtual const TDesC& MachineName() const = 0;
-		
+	
 		/**
 		 * Logging methods
 		 */

@@ -83,9 +83,9 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		treeViewer = new CheckboxTreeViewer(composite, SWT.BORDER);
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		((GridData)treeViewer.getTree().getLayoutData()).heightHint = 300;
-		
+
 		treeViewer.setLabelProvider(new WorkbenchLabelProvider());
-		
+
 		treeViewer.setContentProvider(new WorkbenchContentProvider() {
 	        @Override
 	        public Object[] getChildren(Object element) {
@@ -97,7 +97,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 	            return filteredChildren.toArray();
 	        }
 	    });
-	
+
 		treeViewer.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				if (event.getChecked()) {
@@ -114,7 +114,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		treeViewer.setInput(project.getParent());
 
 		loadNedFoldersFile();
-		
+
 		return composite;
 	}
 
@@ -139,7 +139,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		IProject project = getProject();
 		treeViewer.setChecked(project, true);
 	}
-	
+
 	public boolean performOk() {
 		saveNedFoldersFile();
 		return true;
@@ -163,7 +163,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		} catch (CoreException e) {
 			errorDialog("Cannot read NED Source Paths: ", e);
 		}
-		
+
 	}
 
 	private void saveNedFoldersFile() {

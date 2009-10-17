@@ -42,7 +42,7 @@ public class NonnotifyingReparentCommand extends CompoundCommand {
 		append(RemoveCommand.create(editingDomain, element));
 		append(AddCommand.create(editingDomain, newParent, null, element));
 	}
-	
+
 	@Override
 	public void execute() {
 		boolean oldEDeliver = oldParent.eDeliver();

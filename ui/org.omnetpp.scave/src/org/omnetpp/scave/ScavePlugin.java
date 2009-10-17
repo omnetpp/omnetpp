@@ -128,7 +128,7 @@ public class ScavePlugin extends AbstractUIPlugin {
 	}
 
 	public static IStatus getErrorStatus(int errorCode, String message, Throwable exception) {
-		return getStatus(IStatus.ERROR, errorCode, message, exception);	
+		return getStatus(IStatus.ERROR, errorCode, message, exception);
 	}
 
 	public static IStatus getStatus(int severity, int code, String message, Throwable exception) {

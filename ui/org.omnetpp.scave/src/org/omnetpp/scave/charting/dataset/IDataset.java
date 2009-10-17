@@ -13,7 +13,7 @@ package org.omnetpp.scave.charting.dataset;
  * @author tomi
  */
 public interface IDataset {
-	
+
 	/**
 	 * The short description of the dataset displayed as the 
 	 * default title of the chart.

@@ -64,7 +64,7 @@ display <- function(dist, data) {
 	x <- data[[1]];
 	experimental <- data[[3]];
 	theoretical <- theoreticalValues(dist, x);
-	
+
 	plot(x, experimental, main=dist);
 	lines(x, theoretical)
 }

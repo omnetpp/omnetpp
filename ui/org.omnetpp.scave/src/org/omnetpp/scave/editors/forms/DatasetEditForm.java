@@ -29,7 +29,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * @author tomi
  */
 public class DatasetEditForm implements IScaveObjectEditForm {
-	
+
 	/**
 	 * Features edited on this panel.
 	 */
@@ -37,12 +37,12 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 		ScaveModelPackage.eINSTANCE.getDataset_Name(),
 		ScaveModelPackage.eINSTANCE.getDataset_BasedOn()
 	};
-	
+
 	/**
 	 * The edited dataset.
 	 */
 	//private Dataset dataset;
-	
+
 	/**
 	 * List of datasets that the edited dataset can be the based on.
 	 * First element is null.
@@ -52,13 +52,13 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 	// edit controls of the features
 	private Text nameText;
 	private Combo basedOnCombo;
-	
+
 	/**
 	 * Number of visible items in combos.
 	 */
 	private static final int VISIBLE_ITEM_COUNT = 15;
 
-	
+
 	public DatasetEditForm(Dataset dataset, EObject parent) {
 		//this.dataset = dataset;
 		// collect datasets that can be the base of this dataset
@@ -69,7 +69,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 			if (ds != dataset)
 				baseDatasets.add(ds);
 	}
-	
+
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */
@@ -96,13 +96,13 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 	 */
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout(2, false));
-		
+
 		Label nameLabel = new Label(panel, SWT.NONE);
 		nameLabel.setText("Name:");
 		nameLabel.setLayoutData(new GridData());
 		nameText = new Text(panel, SWT.BORDER);
 		nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+
 		Label basedOnLabel = new Label(panel, SWT.NONE);
 		basedOnLabel.setText("Based on:");
 		basedOnLabel.setLayoutData(new GridData());
@@ -116,7 +116,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 		}
 		basedOnCombo.setItems(datasetNames);
 	}
-	
+
 	/**
 	 * Reads the value of the specified feature from the corresponding control.
 	 */

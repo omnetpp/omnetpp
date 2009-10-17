@@ -268,7 +268,7 @@ public class ChartSWTWrapper extends Canvas {
 		}
 		else {
 			 // adjust background
-		
+
 			 // if sizes differ, we should redraw it sometime
 			 Rectangle b = getBounds();
 			 Rectangle ib = image.getBounds();

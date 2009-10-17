@@ -29,12 +29,12 @@ public class SetFilterAction2 extends Action
 	FilteredDataPanel panel;
 	String fieldName;
 	String fieldValue;
-	
+
 	public SetFilterAction2() {
 		setDescription("Sets the filter according to the clicked table cell.");
 		update(null);
 	}
-	
+
 	/**
 	 * This method is called when the active panel or
 	 * the selected cell of the table changed.
@@ -51,7 +51,7 @@ public class SetFilterAction2 extends Action
 						ResultItemField field = new ResultItemField(table.getSelectedField());
 						fieldName = field.getName();
 						fieldValue = field.getFieldValue(item);
-						
+				
 						if (fieldValue != null) {
 							setText(String.format("Set filter: %s=%s", field.getName(), fieldValue));
 							setEnabled(true);
@@ -68,7 +68,7 @@ public class SetFilterAction2 extends Action
 		setText("Set filter");
 		setEnabled(false);
 	}
-	
+
 	@Override
 	public void run() {
 		if (panel != null && fieldName != null && fieldValue != null) {

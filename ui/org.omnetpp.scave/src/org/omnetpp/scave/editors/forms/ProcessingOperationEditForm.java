@@ -62,36 +62,36 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		ScaveModelPackage.eINSTANCE.getProcessingOp_GroupBy(),
 		ScaveModelPackage.eINSTANCE.getProcessingOp_Params()
 	};
-	
+
 	// the edited value
 	private ProcessingOp processingOp;
-	
+
 	// operation types
 	private NodeType[] operationTypes;
 	// operation names (to fill the combo)
 	private String[] operationNames;
 	// result item fields selectable for groupBy
 	private ResultItemField[] fields;
-	
+
 	// controls
 	private Combo operationCombo;
 	private Label description;
 	private ResultItemFieldsSelectorPanel groupByFieldsPanel;
 	private Table paramsTable;
 	private TableEditor tableEditor;
-	
+
 	/**
 	 * Number of visible items in combos.
 	 */
 	private static final int VISIBLE_ITEM_COUNT = 15;
-	
-	
+
+
 	// columns in the params table
 	private static final int
 		COLUMN_NAME = 0,
 		COLUMN_VALUE = 1,
 		COLUMN_DESC = 2;
-	
+
 	public ProcessingOperationEditForm(ProcessingOp processingOp, EObject parent, ResultFileManager manager) {
 		this.processingOp = processingOp;
 		NodeTypeVector types = NodeTypeRegistry.getInstance().getNodeTypes();
@@ -110,7 +110,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		// TODO add run attributes too
 		this.fields = DatasetManager.getSelectableGroupByFields(processingOp, manager);
 	}
-	
+
 	public String getTitle() {
 		return processingOp instanceof Apply ? "Apply" : "Compute";
 	}
@@ -124,14 +124,14 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout());
-		
+
 		Group group;
-		
+
 		group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		group.setLayout(new GridLayout());
 		group.setText("Operation");
-		
+
 		operationCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
 		operationCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		operationCombo.setItems(operationNames);
@@ -141,25 +141,25 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 				handleOperationTypeChanged();
 			}
 		});
-		
+
 		description = new Label(group, SWT.WRAP);
 		description.setText("");
 		description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+
 		group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		group.setLayout(new GridLayout());
 		group.setText("Input grouping");
-		
+
 		groupByFieldsPanel = new ResultItemFieldsSelectorPanel(group, SWT.NONE);
 		groupByFieldsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		groupByFieldsPanel.setSelectableResultItemFields(Arrays.asList(fields));
-		
+
 		group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setLayout(new GridLayout());
 		group.setText("Parameters");
-		
+
 		paramsTable = new Table(group, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 		paramsTable.setHeaderVisible(true);
 		paramsTable.setLinesVisible(true);
@@ -175,7 +175,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		column = new TableColumn(paramsTable, SWT.NONE);
 		column.setText("Description");
 		column.setWidth(200);
-		
+
 		tableEditor = new TableEditor(paramsTable);
 		tableEditor.horizontalAlignment = SWT.LEFT;
 		tableEditor.grabHorizontal = true;
@@ -186,13 +186,13 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 			}
 		});
 	}
-	
+
 	private void handleOperationTypeChanged() {
 		updateDescription();
 		updateGroupingPanel();
 		updateTable();
 	}
-	
+
 	private void handleParamsTableSelectionChange(SelectionEvent e) {
 		// Clean up any previous editor control
 		Control oldEditor = tableEditor.getEditor();
@@ -215,14 +215,14 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		newEditor.setFocus();
 		tableEditor.setEditor(newEditor, item, COLUMN_VALUE);
 	}
-	
+
 	private void updateDescription() {
 		int index = operationCombo.getSelectionIndex();
 		NodeType type = index >= 0 ? operationTypes[index] : null;
 		description.setText(type != null ? type.getDescription() : "");
 		description.getParent().getParent().layout();
 	}
-	
+
 	private void updateGroupingPanel() {
 		int index = operationCombo.getSelectionIndex();
 		if (index >= 0) {
@@ -234,7 +234,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		}
 		showGridCell(groupByFieldsPanel.getParent(), false);
 	}
-	
+
 	private void showGridCell(Control control, boolean show) {
 		GridData data = (GridData)control.getLayoutData();
 		if (data != null) {
@@ -250,13 +250,13 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 			control.getParent().layout(true, true);
 		}
 	}
-	
+
 	private void updateTable() {
 		if (tableEditor.getEditor() != null) {
 			tableEditor.getEditor().dispose();
 			tableEditor.setEditor(null);
 		}
-		
+
 		int index = operationCombo.getSelectionIndex();
 		NodeType type = index >= 0 ? operationTypes[index] : null;
 		paramsTable.removeAll();
@@ -278,7 +278,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		}
 		paramsTable.getParent().getParent().layout(true, true);
 	}
-	
+
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.PROCESSING_OP__OPERATION:

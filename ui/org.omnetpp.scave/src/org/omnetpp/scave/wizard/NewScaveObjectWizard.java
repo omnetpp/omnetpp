@@ -76,7 +76,7 @@ public class NewScaveObjectWizard extends Wizard {
 
 		newChildDescriptor = new CommandParameter(parent, null, element, index);
 	}
-	
+
 	/**
 	 * This is result of the wizard.
 	 */
@@ -90,7 +90,7 @@ public class NewScaveObjectWizard extends Wizard {
 			editFieldsPage.clearControl();
 		}
 	}
-	
+
 	@Override
 	public void addPages() {
 		if (newChildDescriptor == null) {
@@ -102,7 +102,7 @@ public class NewScaveObjectWizard extends Wizard {
 				newChildDescriptor = childDescriptors[0];
 			}
 		}
-		
+
 		editFieldsPage = new EditFieldsWizardPage("Set Attributes");
 		addPage(editFieldsPage);
 	}
@@ -188,7 +188,7 @@ public class NewScaveObjectWizard extends Wizard {
 				setNewChildDescriptor(childrenDescriptors[index]);
 			setPageComplete(radio.getSelection());
 		}
-		
+
 	}
 
 	/**

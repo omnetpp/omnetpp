@@ -108,7 +108,7 @@ public class PlatformUtils {
        				break;
 
        		//System.out.printf("MODIFIERS: char '%c' --> keysym %x --> keyCode %x --> column %d\n", ch, keysym, keyCode, column);
-       		
+       
        		// 4. devise modifiers from the column
        		int modeSwitch = 0; //FIXME ask Xlib somehow...
        		switch(column) {

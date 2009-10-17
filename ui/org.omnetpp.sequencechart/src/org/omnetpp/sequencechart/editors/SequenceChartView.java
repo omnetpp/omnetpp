@@ -90,19 +90,19 @@ public class SequenceChartView extends EventLogView implements ISequenceChartPro
 		// bootstrap with current selection
 		selectionListener.selectionChanged(null, getActiveEditorSelection());
 	}
-	
+
 	@Override
 	public IEventLog getEventLog() {
 	    return sequenceChart.getEventLog();
 	}
-	
+
 	@Override
 	public void dispose() {
 		IViewSite viewSite = (IViewSite)getSite();
-		
+
 		if (selectionListener != null)
 			viewSite.getPage().removeSelectionListener(selectionListener);
-		
+
 		if (partListener != null)
 			viewSite.getPage().removePartListener(partListener);
 

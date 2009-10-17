@@ -65,12 +65,12 @@ public class WorkbenchUtils
 		tree.assertHasFocus();
 		return tree.findTreeItemByPath(path);
 	}
-	
+
 	public static ShellAccess openProjectPropertiesFromProjectExplorerView(String projectName) {
         findInProjectExplorerView(projectName).activateContextMenuWithMouseClick().findMenuItemByLabel(".*Properties.*").activateWithMouseClick();
         return WorkbenchWindowAccess.findShellWithTitle("Properties.*" + projectName + ".*");
 	}
-	
+
 	public static void refreshProjectFromProjectExplorerView(String projectName) {
 		findInProjectExplorerView(projectName).reveal().chooseFromContextMenu("Refresh.*");;
 	}
@@ -110,7 +110,7 @@ public class WorkbenchUtils
 	        GUITestCase.setRetryTimeout(oldRetryTimeout);
 	    }
 	}
-	
+
     @UIStep
     private static void ensureNoSuchLabel(CompositeAccess composite, String label) {
         Assert.assertTrue(composite.collectDescendantControls(Predicate.labelWithText(label)).isEmpty());

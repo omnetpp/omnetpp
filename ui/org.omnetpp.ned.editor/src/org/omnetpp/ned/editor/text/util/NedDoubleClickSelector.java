@@ -33,7 +33,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 	 public NedDoubleClickSelector() {
 		super();
 	}
-	
+
 	/* (non-Javadoc)
 	 * Method declared on ITextDoubleClickStrategy
 	 */
@@ -49,7 +49,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 		if (!selectBracketBlock())
 			selectWord();
 	}
-	
+
 	/**
 	 * Match the brackets at the current selection. Return <code>true</code> if successful,
 	 * <code>false</code> otherwise.
@@ -107,7 +107,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 
 		return false;
 	}
-	
+
 	/**
 	 * Select the word at the current selection location. Return <code>true</code> if successful,
 	 * <code>false</code> otherwise.
@@ -151,7 +151,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 
 		return false;
 	}
-	
+
 	/**
 	 * Returns the position of the closing bracket after <code>startPosition</code>.
 	 * 
@@ -182,7 +182,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 		return -1;
 
 	}
-	
+
 	/**
 	 * Returns the position of the open bracket before <code>startPosition</code>.
 	 * 
@@ -211,7 +211,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 			return openPos + 1;
 		return -1;
 	}
-	
+
 	/**
 	 * Select the area between the selected bracket and the closing bracket.
 	 * 
@@ -229,7 +229,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Select the word at the current selection. 
 	 */

@@ -46,35 +46,35 @@ public class ChartPage implements IDatasetEditorPage, IAdaptable {
 	private IDatasetStrategy strategy;
 
 	private DatasetEditor editor;
-	
+
 	/** The (optional) chart page only gets updated if (when) visible */
 	private boolean chartNeedsUpdate = false;
-	
+
 	private boolean isActive;
 
 	/** The Chart which appears on the page */
 	private InteractiveChart chartWrapper;
 	private JFreeChart chart;
-	
+
 	private ISelectionProvider selectionProvider = new SelectionProvider();
-	
-	
+
+
 	public ChartPage(IDatasetStrategy strategy) {
 		this.strategy = strategy;
 	}
-	
+
 	public String getPageTitle() {
 		return "Chart";
 	}
-	
+
 	public IDListModel getDataset() {
 		return editor.getDataset();
 	}
-	
+
 	public void setEditor(DatasetEditor editor) {
 		this.editor = editor;
 	}
-	
+
 	public void init() {
 		editor.getSite().setSelectionProvider(selectionProvider);
 	}
@@ -102,12 +102,12 @@ public class ChartPage implements IDatasetEditorPage, IAdaptable {
 		chart = strategy.createEmptyChart();
 		return panel;
 	}
-	
+
 	public void finalizePage() {
 		editor.setupDropTarget(chartWrapper);
 		chartWrapper.setChart(chart);
 		strategy.updateDataset(chart, getDataset().get());
-		
+
 		chart.addChangeListener(new ChartChangeListener() {
 			public void chartChanged(ChartChangeEvent event) {
 				editor.markDirty();
@@ -123,14 +123,14 @@ public class ChartPage implements IDatasetEditorPage, IAdaptable {
 			}
 		});
 	}
-	
+
 	public void activate() {
 		isActive = true;
 		selectionProvider.setSelection(new StructuredSelection(chartWrapper));
 		if (chartNeedsUpdate)
 			updateChart();
 	}
-	
+
 	public void deactivate() {
 		isActive = false;
 		selectionProvider.setSelection(StructuredSelection.EMPTY);
@@ -143,9 +143,9 @@ public class ChartPage implements IDatasetEditorPage, IAdaptable {
 		}
 		chartNeedsUpdate = false;
 	}
-	
 
-	
+
+
 	public Object getAdapter(Class required) {
 		if (required == IPropertySheetPage.class)
 		{
@@ -165,7 +165,7 @@ public class ChartPage implements IDatasetEditorPage, IAdaptable {
 
 		return null;
 	}
-	
+
 	public void save(XMLWriter writer, IProgressMonitor progressMonitor) throws IOException {
 		if (chartWrapper != null) {
 			writer.writeStartElement("chart");
@@ -177,7 +177,7 @@ public class ChartPage implements IDatasetEditorPage, IAdaptable {
 
 	public Map<String, ContentHandler> getLoader(IProgressMonitor progressMonitor) {
 		Map<String,ContentHandler> handlers = new HashMap<String,ContentHandler>(2);
-		
+
 		PropertySourceIO.SAXHandler chartHandler =
 			new PropertySourceIO.SAXHandler(new ChartProperties(chart));
 		handlers.put("chart", chartHandler);
