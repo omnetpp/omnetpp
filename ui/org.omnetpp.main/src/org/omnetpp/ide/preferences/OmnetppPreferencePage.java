@@ -96,7 +96,7 @@ public class OmnetppPreferencePage
 	    addField(editor);
 	    //editor.fillIntoGrid(parent, numColumns); -- apparently gets called the dialog or the page automatically
 	}
-	
+
 	// from SWTFactory
 	protected static Group createGroup(Composite parent, String text, int columns, int hspan, int fill) {
 	    Group g = new Group(parent, SWT.NONE);
@@ -108,7 +108,7 @@ public class OmnetppPreferencePage
 	    g.setLayoutData(gd);
 	    return g;
 	}
-	
+
     // from SWTFactory
 	protected static Composite createComposite(Composite parent, int columns, int hspan, int fill) {
 	    Composite g = new Composite(parent, SWT.NONE);

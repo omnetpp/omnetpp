@@ -33,33 +33,33 @@ public class DataItemsPanel extends Composite {
 	private Button useFilterRadio = null;
 	private DataItemsPanelFilterPanel filterParamsPanel = null;
 	private RunSelectionPanel selectIdentifierPanel = null;
-	
+
 	public DataItemsPanel(Composite parent, int style) {
 		super(parent, style);
 		initialize();
 	}
-	
+
 	public boolean useFilter() {
 		return useFilterRadio.getSelection();
 	}
-	
+
 	public void setUseFilter(boolean flag) {
 		useFilterRadio.setSelection(flag);
 		useSelectionRadio.setSelection(!flag);
 	}
-	
+
 	public Filter getFilterParams() {
 		return filterParamsPanel.getFilterParams();
 	}
-	
+
 	public void setFilterParams(Filter params) {
 		filterParamsPanel.setFilterParams(params);
 	}
-	
+
 	public void setFilterHints(FilterHints hints) {
 		filterParamsPanel.setFilterHints(hints);
 	}
-	
+
 	public String[] getRunIdFields() {
 		return selectIdentifierPanel.getRunIdFields();
 	}
@@ -73,7 +73,7 @@ public class DataItemsPanel extends Composite {
 	}
 
 	/**
-	 * This method initializes group	
+	 * This method initializes group
 	 *
 	 */
 	private void createGroup() {
@@ -108,9 +108,9 @@ public class DataItemsPanel extends Composite {
 		});
 		createFilterPanel();
 	}
-	
+
 	/**
-	 * This method initializes composite2	
+	 * This method initializes composite2
 	 *
 	 */
 	private void createSelectIdentifierPanel() {
@@ -120,7 +120,7 @@ public class DataItemsPanel extends Composite {
 		selectIdentifierPanel = new RunSelectionPanel(group, SWT.NONE);
 		selectIdentifierPanel.setLayoutData(gridData);
 	}
-	
+
 	private void createFilterPanel() {
 		filterParamsPanel = new DataItemsPanelFilterPanel(group, SWT.NONE);
 		GridData gridData = new GridData();

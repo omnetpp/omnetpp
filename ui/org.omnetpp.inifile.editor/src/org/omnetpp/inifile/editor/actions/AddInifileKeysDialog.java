@@ -58,7 +58,7 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 public class AddInifileKeysDialog extends TitleAreaDialog {
 	private String title;
 	private InifileAnalyzer analyzer;
-	
+
 	// widgets
     private Combo sectionsCombo;
     private Label networkNameLabel;
@@ -111,7 +111,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     protected Control createDialogArea(Composite parent) {
         setTitle("Add Inifile Keys");
         setMessage("Generate parameter assignment keys into the ini file.");
-    	
+    
         // page group
         Composite dialogArea = (Composite) super.createDialogArea(parent);
 
@@ -138,7 +138,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 				buildTableContents();
 			}
 		});
-		
+	
 		// radiobutton group
         Group group = new Group(composite, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -186,7 +186,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
                 buildTableContents();
             }
         });
-		
+	
         // table and buttons
 		listViewer = CheckboxTableViewer.newCheckList(group2, SWT.BORDER);
         GridData data = new GridData(GridData.FILL_BOTH);
@@ -294,7 +294,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName)+"  ");
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > "))+"  ");
 		sectionChainLabel.getParent().layout();
-		
+	
 		// get list of unassigned parameters
 		List<ParamResolution> params = new ArrayList<ParamResolution>();
 		if (filterCombo.getSelectionIndex() == FilterType.ALL.ordinal())
@@ -331,7 +331,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 			listViewer.setInput(params.toArray());
 			listViewer.setAllChecked(true);
 		}
-	
+
 		listViewer.refresh();
 	}
     
@@ -351,7 +351,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 			default: return null;
 		}
 	}
-	
+
 	protected void okPressed() {
     	// save dialog state into variables, so that client can retrieve them after 
     	// the dialog was disposed
@@ -361,7 +361,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     	this.keysToAdd = result.toArray(new String[]{});
         super.okPressed();
     }
-	
+
 	/**
 	 * Returns the list of keys to be inserted into the file.
 	 */

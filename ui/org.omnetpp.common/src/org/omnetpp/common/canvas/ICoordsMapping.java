@@ -25,7 +25,7 @@ public interface ICoordsMapping {
 	 * We use this to return NaN as a pixel coordinate.
 	 */
 	public static final int NAN_PIX = Integer.MAX_VALUE;  
-	
+
 	public double fromCanvasX(int x);
 
 	public double fromCanvasY(int y);

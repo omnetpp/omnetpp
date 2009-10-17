@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
  * Value object, stores the result of a parameter resolution.
  */
 public class ParamResolution {
-	
+
 	public enum ParamResolutionType {
 		UNASSIGNED, // unassigned parameter
 		NED, // parameter assigned in NED
@@ -27,7 +27,7 @@ public class ParamResolution {
 		INI_NEDDEFAULT, // inifile sets param to a value that's identical to the NED default value
 		IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
 	}
-	
+
 	// fullPath and param name (from paramDeclaration or paramAssignment) identify the NED parameter. 
 	// For vector elementPath, fullPath contains "[*]".
 	// elementPath[] relates fullPath to NEDElements. The network is elementPath[1]'s
@@ -51,7 +51,7 @@ public class ParamResolution {
 	//XXX add IFile ?   
 	public String section;
 	public String key;
-	
+
 	// for convenience
 	public ParamResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath, 
 			               ParamElementEx paramDeclaration, ParamElementEx paramAssignment, ParamResolutionType type, 

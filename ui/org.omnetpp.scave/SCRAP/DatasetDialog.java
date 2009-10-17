@@ -23,22 +23,22 @@ import org.omnetpp.scave.model2.FilterHints;
  * @author tomi
  */
 public abstract class DatasetDialog extends Dialog {
-	
+
 	public static final int SHOW_SELECTION = 0x01;
 	public static final int SHOW_FILTER = 0x02;
-	
+
 	private int style;
-	
+
 	private String dialogTitle;
-	
+
 	private boolean useFilter;
 	private Filter filterParams;
 	private FilterHints filterHints;
 	private String[] runidFields;
-	
+
 	private DataItemsPanel panel;
 	private RunSelectionPanel selectionPanel;
-	
+
 	public DatasetDialog(Shell parent, String title) {
 		this(parent, SHOW_SELECTION | SHOW_FILTER, title);
 	}
@@ -48,31 +48,31 @@ public abstract class DatasetDialog extends Dialog {
 		this.style = style;
 		this.dialogTitle = dialogTitle;
 	}
-	
+
 	public void setFilterParams(Filter params) {
 		filterParams = params;
 	}
-	
+
 	public void setFilterHints(FilterHints hints) {
 		filterHints = hints;
 	}
-	
+
 	public boolean useFilter() {
 		return useFilter;
 	}
-	
+
 	public void setUseFilter(boolean flag) {
 		useFilter = flag;
 	}
-	
+
 	public Filter getFilterParams() {
 		return filterParams;
 	}
-	
+
 	public String[] getRunIdFields() {
 		return runidFields;
 	}
-	
+
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
@@ -111,7 +111,7 @@ public abstract class DatasetDialog extends Dialog {
 		applyChanges();
 		super.okPressed();
 	}
-	
+
 	protected void applyChanges() {
 		if (panel != null) {
 			useFilter = panel.useFilter();

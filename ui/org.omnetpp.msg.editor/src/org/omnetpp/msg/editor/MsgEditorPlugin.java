@@ -23,7 +23,7 @@ public class MsgEditorPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static MsgEditorPlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */

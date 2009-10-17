@@ -46,7 +46,7 @@ public class LinearAxis {
 	private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
 	private Font tickFont = DEFAULT_LABELS_FONT;
 
-	
+
 	/* Layout parameters */
 	private int gap = 2;  // space between axis line and plot area (usually 0)
 	private int majorTickLength = 4;
@@ -64,11 +64,11 @@ public class LinearAxis {
 	public double transform(double coord) {
 		return logarithmic ? Math.log10(coord) : coord;
 	}
-	
+
 	public double inverseTransform(double coord) {
 		return logarithmic ? Math.pow(10.0, coord) : coord;
 	}
-	
+
 	/**
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience. 
@@ -128,7 +128,7 @@ public class LinearAxis {
 			for (BigDecimal tick : ticks) {
 				if (ticks.isMajorTick(tick)) {
 					labelWidth = Math.max(labelWidth, gc.textExtent(tick.toPlainString()).x);
-				}						
+				}					
 			}
 		}
 		return labelWidth;
@@ -166,7 +166,7 @@ public class LinearAxis {
 
 	public void drawAxis(GC gc, ICoordsMapping mapping) {
 		Rectangle plotArea = bounds.getCopy().crop(insets);
-		
+	
 		// draw axis line and title
 		gc.setLineWidth(1);
 		gc.setLineStyle(SWT.LINE_SOLID);
@@ -254,7 +254,7 @@ public class LinearAxis {
 	public Insets getInsets() {
 		return insets;  // note: no setter! use setLayout()
 	}
-	
+
 	public boolean isVertical() {
 		return vertical;
 	}
@@ -262,7 +262,7 @@ public class LinearAxis {
 	public void setVertical(boolean vertical) {
 		this.vertical = vertical;
 	}
-	
+
 	public boolean isLogarithmic() {
 		return logarithmic;
 	}

@@ -82,7 +82,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
 	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the label provider
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-	
+
 	// hashmap to save/restore view's state when switching across editors 
 	private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
 
@@ -100,7 +100,7 @@ public class ModuleParametersView extends AbstractModuleView {
 
 		// add actions
  		createActions();
-		
+	
 		return container;
 	}
 
@@ -209,7 +209,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				rebuildContent();
 			}
 		};
-		
+	
 		final ActionExt gotoInifileAction = new ActionExt("Show in Ini File") {
 			@Override
 			public void run() {
@@ -225,7 +225,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				setEnabled(sel!=null);
 			}
 		};
-		
+	
 		class GotoNedFileAction extends ActionExt {
 			boolean gotoDecl;
 			GotoNedFileAction(String text, ImageDescriptor image, boolean gotoDecl) {
@@ -257,18 +257,18 @@ public class ModuleParametersView extends AbstractModuleView {
 		};
 		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Open NED Declaration", null, true); 
 		ActionExt gotoNedValueAction = new GotoNedFileAction("Open NED Value", null, false); 
-	
+
 		tableViewer.addSelectionChangedListener(gotoInifileAction);
 		tableViewer.addSelectionChangedListener(gotoNedValueAction);
 		tableViewer.addSelectionChangedListener(gotoNedDeclarationAction);
-	
+
 		// add double-click support to the table
         tableViewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
 				gotoInifileAction.run();
 			}
 		});
-	
+
 		// build menus and toolbar
 		contextMenuManager.add(gotoInifileAction);
 		contextMenuManager.add(gotoNedValueAction);
@@ -276,11 +276,11 @@ public class ModuleParametersView extends AbstractModuleView {
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(toggleModeAction);
 		contextMenuManager.add(pinAction);
-	
+
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		toolBarManager.add(toggleModeAction);
 		toolBarManager.add(pinAction);
-	
+
 		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
 		menuManager.add(toggleModeAction);
 		menuManager.add(pinAction);
@@ -326,7 +326,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		}
 		return null;
 	}
-	
+
 	@Override
 	protected void showMessage(String text) {
 		inifileAnalyzer = null;
@@ -384,7 +384,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			if (section==null)
 				section = GENERAL;
 			hideMessage();
-			
+		
 			// update table contents
 			inifileAnalyzer = analyzer;
 			inifileDocument = analyzer.getDocument();

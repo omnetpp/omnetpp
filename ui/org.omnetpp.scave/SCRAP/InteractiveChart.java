@@ -48,7 +48,7 @@ public class InteractiveChart extends ChartSWTWrapper {
 			//refresh();
 		}
 	}
-	
+
 	/**
 	 * Zoom in when the chart gets clicked.
 	 */

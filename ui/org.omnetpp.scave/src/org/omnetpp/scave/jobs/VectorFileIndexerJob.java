@@ -31,12 +31,12 @@ import org.omnetpp.scave.engineext.IndexFile;
  * @author tomi
  */
 public class VectorFileIndexerJob extends WorkspaceJob {
-	
+
 	private List<IFile> filesToBeIndexed;
 
 	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
 		super(name);
-		
+	
 		ArrayList<ISchedulingRule> rule = new ArrayList<ISchedulingRule>();
 		this.filesToBeIndexed = new ArrayList<IFile>();
 		for (IFile file : filesToBeIndexed)
@@ -45,7 +45,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 				rule.add(file);
 				rule.add(IndexFile.getIndexFileFor(file));
 			}
-		
+	
 		setRule(MultiRule.combine(rule.toArray(new ISchedulingRule[rule.size()])));
 		setPriority(Job.LONG);
 	}

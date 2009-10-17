@@ -19,7 +19,7 @@ public class ChartSheetItemProvider extends
 	public ChartSheetItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
 	}
-	
+
 	/**
 	 * Override default implementation to wrap the values of the 
 	 * 'charts' reference.

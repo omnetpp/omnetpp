@@ -16,24 +16,24 @@ import org.omnetpp.scave.engine.ResultItemField;
  * @author tomi
  */
 public class FilterField implements Comparable<FilterField> {
-	
+
 	public enum Kind
 	{
 		ItemField,
 		RunAttribute,
 		ModuleParam,
 	}
-	
+
 	public static final FilterField
 		FILE = new FilterField(Kind.ItemField, ResultItemField.FILE),
 		RUN = new FilterField(Kind.ItemField, ResultItemField.RUN),
 		MODULE = new FilterField(Kind.ItemField, ResultItemField.MODULE),
 		NAME = new FilterField(Kind.ItemField, ResultItemField.NAME);
-	
-	
+
+
 	private Kind kind;
 	private String name;
-	
+
 	public FilterField(Kind kind, String name) {
 		Assert.isNotNull(kind);
 		Assert.isNotNull(name);
@@ -48,7 +48,7 @@ public class FilterField implements Comparable<FilterField> {
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getFullName() {
 		switch (kind) {
 		case ItemField:		return name;
@@ -58,7 +58,7 @@ public class FilterField implements Comparable<FilterField> {
 		Assert.isTrue(false, "Never happens.");
 		return name;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

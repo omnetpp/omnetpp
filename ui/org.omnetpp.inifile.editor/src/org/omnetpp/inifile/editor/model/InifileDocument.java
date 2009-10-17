@@ -125,7 +125,7 @@ public class InifileDocument implements IInifileDocument {
         documentListener = new IDocumentListener() {
             public void documentAboutToBeChanged(DocumentEvent event) {}
             public void documentChanged(DocumentEvent event) {
-                markAsChanged();				
+                markAsChanged();			
             }
         };
         document.addDocumentListener(documentListener);

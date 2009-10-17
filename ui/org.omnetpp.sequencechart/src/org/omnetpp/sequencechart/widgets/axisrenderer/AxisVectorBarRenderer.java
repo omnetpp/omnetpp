@@ -30,9 +30,9 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	private static final Font VALUE_NAME_FONT = new Font(null, "Courier New", 8, 0);
 
 	private static final Color VALUE_NAME_COLOR = ColorFactory.BLACK;
-	
+
 	private static final Color NO_VALUE_COLOR = ColorFactory.WHITE;
-	
+
 	private SequenceChart sequenceChart;
 
     private String vectorFileName;
@@ -104,7 +104,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.setBackgroundColor(NO_VALUE_COLOR);
 		graphics.fillRectangle(rect.x, 0, rect.right() - rect.x, getHeight());
-		
+	
 		SequenceChartFacade sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
 		long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
 
@@ -117,7 +117,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 				if (eventNumber == -1 || nextEventNumber == -1)
 					continue;
-			
+		
 				long eventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(eventNumber);
 				long nextEventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(nextEventNumber);
 
@@ -146,13 +146,13 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 					if (nextEventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, true))
 						x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(nextEventTimelineCoordinate);
 				}
-				
+			
 				if (x1 == Integer.MAX_VALUE || x2 == Integer.MAX_VALUE)
 					continue;
 
 				int colorIndex = getValueIndex(i);
 				graphics.setBackgroundColor(ColorFactory.getGoodLightColor(colorIndex));
-				
+			
 				if (phase == 0) {
 					graphics.fillRectangle(x1, 0, x2 - x1, getHeight());
 					graphics.setForegroundColor(AXIS_COLOR);
@@ -295,7 +295,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	{
 		return data.getPreciseX(index);
 	}
-	
+
 	public long getEventNumber(int index)
 	{
 		return data.getEventNumber(index);

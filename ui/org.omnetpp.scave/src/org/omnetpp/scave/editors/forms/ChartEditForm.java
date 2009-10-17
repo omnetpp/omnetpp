@@ -164,11 +164,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout(1, false));
 		TabFolder tabfolder = createTabFolder(panel);
-		
+	
 		populateTabFolder(tabfolder);
 		for (int i=0; i < tabfolder.getItemCount(); ++i)
 			populateTabItem(tabfolder.getItem(i));
-		
+	
 		// switch to the requested page 
 		String defaultPage = formParameters==null ? null : (String) formParameters.get(PROP_DEFAULT_TAB);
 		if (defaultPage != null)
@@ -178,7 +178,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 					break;
 				}
 	}
-	
+
 	/**
 	 * Creates the tabs of the dialog.
 	 */
@@ -188,7 +188,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		createTab(TAB_AXES, tabfolder, 2);
 		createTab(TAB_LEGEND, tabfolder, 1);
 	}
-	
+
 	/**
 	 * Creates the controls of the given tab.
 	 */
@@ -196,7 +196,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		Group group;
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
-		
+	
 		if (TAB_MAIN.equals(name)) {
 			nameGroup = createGroup("Names", panel);
 			nameText = createTextField("Chart name:", nameGroup);
@@ -250,11 +250,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			updateLegendPanelEnabled();
 		}
 	}
-	
+
 	protected Group getAxisBoundsGroup() {
 		return axisBoundsGroup;
 	}
-	
+
 	protected Label getMaxBoundLabel() {
 		return maxBoundLabel;
 	}
@@ -282,11 +282,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected Group createGroup(String text, Composite parent, int numOfColumns) {
 		return createGroup(text, parent, 1, numOfColumns);
 	}
-	
+
 	protected Group createGroup(String text, Composite parent, int colSpan, int numOfColumns) {
 		return createGroup(text, parent, colSpan, numOfColumns, false);
 	}
-	
+
 	protected Group createGroup(String text, Composite parent,
 			int colSpan, int numOfColumns, boolean grabExcessVerticalSpace) {
 		Group group = new Group(parent, SWT.NONE);
@@ -301,7 +301,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		label.setText(text);
 		return label;
 	}
-	
+
 	protected Text createTextField(String labelText, Composite parent) {
 		if (labelText != null)
 			createLabel(labelText, parent);
@@ -309,14 +309,14 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		return text;
 	}
-	
+
 	protected Text createTextField(String labelText, Composite parent, Control prevSibling) {
 		Label label = null;
 		if (labelText != null)
 			label = createLabel(labelText, parent);
 		Text text = new Text(parent, SWT.BORDER);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+	
 		if (label != null) {
 			label.moveBelow(prevSibling);
 			text.moveBelow(label);
@@ -354,7 +354,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected Button createCheckboxField(String labelText, Composite parent) {
 		return createCheckboxField(labelText, parent, null);
 	}
-	
+
 	protected Button createCheckboxField(String labelText, Composite parent, Object value) {
 		Button checkbox = new Button(parent, SWT.CHECK);
 		checkbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -388,7 +388,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		}
 		return radios;
 	}
-	
+
 	protected void updateLegendPanelEnabled() {
 		if (displayLegendCheckbox != null && !displayLegendCheckbox.isDisposed()) {
 			setEnabledDescendants(
@@ -397,11 +397,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 				displayLegendCheckbox);
 		}
 	}
-	
+
 	protected static class ColorEdit {
 		Text text;
 		Label label;
-		
+	
 		public ColorEdit(final Text text, final Label label) {
 			this.text = text;
 			this.label = label;
@@ -411,16 +411,16 @@ public class ChartEditForm implements IScaveObjectEditForm {
 				}
 			});
 		}
-		
+	
 		public String getText() {
 			return StringUtils.trimToEmpty(text.getText());
 		}
-		
+	
 		public void setText(String color) {
 			text.setText(color);
 			updateImageLabel();
 		}
-		
+	
 		private void updateImageLabel() {
 			Image image = ColorFactory.createColorImage(text.getText(), true);
 			Image oldImage = label.getImage();
@@ -429,7 +429,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 				oldImage.dispose();
 		}
 	}
-	
+
 	protected ColorEdit createColorField(String labelText, Composite parent) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
@@ -462,7 +462,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		});
 		return colorField;
 	}
-	
+
 	protected Text createFontField(String labelText, Composite parent) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
@@ -480,7 +480,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			public void widgetSelected(SelectionEvent event) {
 				if (!text.isDisposed()) {
 					FontDialog dialog = new FontDialog(text.getShell());
-					
+				
 					FontData font = Converter.stringToFontdata(text.getText());
 					if (font != null)
 						dialog.setFontList(new FontData[] {font});
@@ -507,7 +507,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Sets the value of the given feature in the corresponding control.
 	 */
@@ -605,7 +605,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		setSelection(legendAnchorRadios, props.getLegendAnchoring());
 		updateLegendPanelEnabled();
 	}
-	
+
 	private static String asString(FontData fontData) {
 		String str = Converter.fontdataToString(fontData);
 		return str != null ? str : "";
@@ -618,7 +618,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		for (int i = 0; i < radios.length; ++i)
 			radios[i].setSelection(radios[i].getData(USER_DATA_KEY) == value);
 	}
-	
+
 	/**
 	 * Sets the enabled state of the controls under {@code composite}
 	 * except the given {@code control} to {@code enabled}.

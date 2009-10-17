@@ -53,7 +53,7 @@ public class ChartPage extends ScaveEditorPage {
 		this.updater = new ChartUpdater(chart, chartView, scaveEditor.getResultFileManager());
 		hookListeners();
 	}
-	
+
 	@Override
 	public void dispose() {
 		unhookListeners();
@@ -63,20 +63,20 @@ public class ChartPage extends ScaveEditorPage {
 	public Chart getChart() {
 		return chart;
 	}
-	
+
 	public ChartCanvas getChartView() {
 		return chartView;
 	}
-	
+
 	public ChartUpdater getChartUpdater() {
 		return updater;
 	}
-	
+
 	public void updateChart() {
 		if (updater != null)
 			updater.updateDataset();
 	}
-	
+
 	/**
 	 * The only chart on this page is always active.
 	 */
@@ -88,7 +88,7 @@ public class ChartPage extends ScaveEditorPage {
 	public void updatePage(Notification notification) {
 		if (notification.isTouch() || !(notification.getNotifier() instanceof EObject))
 			return;
-		
+	
 		ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 		if (pkg.getChart_Name().equals(notification.getFeature())) {
 			setPageTitle("Chart: " + getChartName(chart));
@@ -112,11 +112,11 @@ public class ChartPage extends ScaveEditorPage {
 
 		chartView = (ChartCanvas) ChartFactory.createChart(getBody(), this.chart, scaveEditor.getResultFileManager());
 		chartView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		
+	
 		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor); 
 		chartView.setMenu(menuManager.createContextMenu(chartView));
 	}
-	
+
 	private void hookListeners() {
 		if (chartSelectionListener == null) {
 			chartSelectionListener = new IChartSelectionListener() {
@@ -168,9 +168,9 @@ public class ChartPage extends ScaveEditorPage {
 			chartView.addPropertyChangeListener(chartPropertyChangeListener);
 		}
 	}
-	
-	
-	
+
+
+
 	@Override
 	public boolean setFocus() {
 		if (chartView != null)
@@ -211,7 +211,7 @@ public class ChartPage extends ScaveEditorPage {
 	public void saveState(IMemento memento) {
 		memento.putString(ScaveEditorMemento.ZOOM, chartView.getZoomedArea().toString());
 	}
-	
+
 	@Override
 	public void restoreState(IMemento memento) {
 		String areaStr = memento.getString("Zoom");

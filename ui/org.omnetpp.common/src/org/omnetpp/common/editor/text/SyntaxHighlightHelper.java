@@ -71,7 +71,7 @@ public class SyntaxHighlightHelper {
 	    public boolean isWordStart(char character) {
 	        return Character.isLetter(character) || character == '_' || character == '@';
 	    }
-	
+
 	    public boolean isWordPart(char character) {
 	        return Character.isLetterOrDigit(character) || character == '_';
 	    }
@@ -84,7 +84,7 @@ public class SyntaxHighlightHelper {
 	    public boolean isWordStart(char character) {
 	        return Character.isLetter(character) || character == '_' || character == '@';
 	    }
-	
+
 	    public boolean isWordPart(char character) {
 	        return Character.isLetterOrDigit(character) || character == '_' || character == '.';
 	    }
@@ -97,12 +97,12 @@ public class SyntaxHighlightHelper {
 	    public boolean isWordStart(char c) {
 	        return Character.isLetter(c) || c == '-' || c == '<' || c == '>' || c == '.';
 	    }
-	
+
 	    public boolean isWordPart(char c) {
 	        return isWordStart(c) || c == ':';
 	    }
 	}
-	
+
 	/**
 	 * Detects keywords that are starting with @ and continuing with letters only.
 	 */
@@ -110,12 +110,12 @@ public class SyntaxHighlightHelper {
 	    public boolean isWordStart(char c) {
 	        return (c == '@');
 	    }
-	
+
 	    public boolean isWordPart(char c) {
 	        return Character.isLetter(c);
 	    }
 	}
-	
+
 	/**
 	 * Detects keywords that look like an XML tag.
 	 */
@@ -123,7 +123,7 @@ public class SyntaxHighlightHelper {
 	    public boolean isWordStart(char c) {
 	        return (c == '<');
 	    }
-	
+
 	    public boolean isWordPart(char c) {
 	        return Character.isLetter(c) || c == '/' || c == '>';
 	    }

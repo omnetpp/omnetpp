@@ -139,7 +139,7 @@ public interface IInifileDocument {
 	 * Renames the given key. Throws error if key doesn't exist, or the entry is readonly.
 	 */
 	void renameKey(String section, String oldKey, String newKey);
-	
+
 	/** 
 	 * Removes the given key from the given section. Nothing happens if it's not there.
 	 * Throws an error if this entry is not editable (readonly).
@@ -159,7 +159,7 @@ public interface IInifileDocument {
 	 * @param beforeKey may be null (meaning append) 
 	 */
 	void moveKey(String section, String key, String beforeKey);
-	
+
 	/** 
 	 * Returns keys in the given section, in the order they appear. 
 	 * Returns null if section does not exist, and zero-length array if it 
@@ -191,7 +191,7 @@ public interface IInifileDocument {
 	 * not skipped, and an exception is thrown at the end of the operation. 
 	 */
 	void removeSection(String section);
-	
+
 	/** 
 	 * Adds a section. Throws an error if such section already exists. 
 	 * (This effectively means that this interface does not support creating 
@@ -212,7 +212,7 @@ public interface IInifileDocument {
 	 * Returns null if section does not exist.  
 	 */
 	LineInfo getSectionLineDetails(String section); 
-	
+
 	/**
      * Returns comment on the section heading's line, or null if there's no comment.
      * The comment is returned without the leading "# " or "#".
@@ -257,7 +257,7 @@ public interface IInifileDocument {
 	 * positions above the first section heading.
 	 */
 	String getSectionForLine(int lineNumber);
-	
+
 	/**
 	 * Interprets lineNumber as a position into the primary (edited) file,
 	 * and returns the key on which the cursor is positioned, or null if
@@ -278,19 +278,19 @@ public interface IInifileDocument {
 	 * @return null if no problem, otherwise the description of the problem
 	 */
 	String validateKey(String key);
-	
+
 	/**
 	 * Returns the included files at the top of the primary (edited) file.
 	 * Other includes are not returned.
 	 */ 
 	String[] getTopIncludes();
-	
+
 	/**
 	 * Adds an include at the top of the file.
 	 * @param beforeInclude specify null to append
 	 */
 	void addTopInclude(String include, String beforeInclude);
-	
+
 	/**
 	 * Removes the given include. Throws error if include does not exist.
 	 */
@@ -332,7 +332,7 @@ public interface IInifileDocument {
 	 * Attach a (single, unnamed) user data object to the given section.
 	 */
 	void setSectionData(String section, Object data);
-	
+
 	/**
      * Adds a listener to this document 
      */
@@ -352,5 +352,5 @@ public interface IInifileDocument {
 	 * Returns all included files, including indirectly referenced ones
 	 */
 	IFile[] getIncludedFiles();
-	
+
 }

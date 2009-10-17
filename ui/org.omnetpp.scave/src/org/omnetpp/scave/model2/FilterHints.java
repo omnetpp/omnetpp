@@ -32,9 +32,9 @@ import org.omnetpp.scave.model2.FilterField.Kind;
  * @author tomi
  */
 public class FilterHints {
-	
+
 	private static final String[] EMPTY = new String[0];
-	
+
 	private Map<FilterField,String[]> hints = new HashMap<FilterField, String[]>();
 
 	public FilterHints() {
@@ -48,7 +48,7 @@ public class FilterHints {
 			}
 		});
 	}
-	
+
 	public FilterHints(final ResultFileManager manager, final IDList idlist) {
 		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
 			public Object call() throws Exception {
@@ -57,7 +57,7 @@ public class FilterHints {
 			}
 		});
 	}
-	
+
 	private void init(ResultFileManager manager, IDList idlist) {
 		manager.checkReadLock();
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
@@ -74,14 +74,14 @@ public class FilterHints {
 		for (String paramName : manager.getUniqueModuleParamNames(runList).keys().toArray())
 			setHints(Kind.ModuleParam, paramName, manager.getModuleParamFilterHints(runList, paramName).toArray());
 	}
-	
+
 	public FilterField[] getFields() {
 		Set<FilterField> keys = hints.keySet();
 		FilterField[] fields = keys.toArray(new FilterField[keys.size()]);
 		Arrays.sort(fields);
 		return fields;
 	}
-	
+
 	public String[] getHints(FilterField field) {
 		if (hints.containsKey(field))
 			return hints.get(field);

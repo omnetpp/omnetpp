@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Display;
  */
 abstract public class RecurringJob implements Runnable {
 	private int delayMillis;
-	
+
 	private Runnable internalRunnable;
 
 	/**

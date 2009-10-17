@@ -12,7 +12,7 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
 	 * Specifies if the timer should be executed periodically or only once.
 	 */
 	protected boolean recurring;
-	
+
 	/**
 	 * True means it is allowed to skip timer executions if time passed due to system load.
 	 */
@@ -23,17 +23,17 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
 	 * For other timers it is the time between the timer is created and the only one execution.
 	 */
 	protected long sleepTime;
-	
+
 	/**
 	 * The time when this timer was created.
 	 */
 	protected long creationTime;
-	
+
 	/**
 	 * The first time this timer should be executed.
 	 */
 	protected long firstExecutionTime;
-	
+
 	/**
 	 * The time when this timer was first actually executed.
 	 */
@@ -48,49 +48,49 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
 	 * The last time when this timer was actually executed.
 	 */
 	protected long lastActualExecutionTime = -1;
-	
+
 	/**
 	 * The number of times this timer was actually executed.
 	 */
 	protected long numberOfActualExecutions;
-	
+
 	public Timer(long sleepTime) {
 		this.sleepTime = sleepTime;
 		reset();
 	}
-	
+
 	public Timer(long sleepTime, boolean recurring, boolean allowSkipping) {
 		this(sleepTime);
 		this.recurring = recurring;
 		this.allowSkipping = allowSkipping;
 	}
-	
+
 	public void reset() {
 		this.creationTime = System.currentTimeMillis();
 		this.firstExecutionTime = creationTime + sleepTime;
 		this.nextExecutionTime = firstExecutionTime;
 	}
-	
+
 	public double getSleepTime() {
 		return sleepTime;
 	}
-	
+
 	public boolean isRecurring() {
 		return recurring;
 	}
-	
+
 	public boolean isAllowSkipping() {
 		return allowSkipping;
 	}
-	
+
 	public long getNextExecutionTime() {
 		return nextExecutionTime;
 	}
-	
+
 	public long getFirstActualExecutionTime() {
 		return firstActualExecutionTime;
 	}
-	
+
 	public long getLastActualExecutionTime() {
 		return lastActualExecutionTime;
 	}
@@ -98,14 +98,14 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
 	public long getNumberOfActualExecutions() {
 		return numberOfActualExecutions;
 	}
-	
+
 	public long getNumberOfExecutions() {
 		long currentTime = System.currentTimeMillis();
 		long numberOfExecutions = (currentTime - creationTime) / sleepTime;
 
 		return recurring ? numberOfExecutions : Math.min(1, numberOfExecutions);
 	}
-	
+
     public int compareTo(Timer other) {
     	return ((Long)nextExecutionTime).compareTo(other.nextExecutionTime);
     }
@@ -115,9 +115,9 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
 
     	if (firstActualExecutionTime == -1)
     		firstActualExecutionTime = lastActualExecutionTime;
-    	
+    
     	run();
-    	
+    
     	numberOfActualExecutions++;
     	calculateNextExecution();
     }

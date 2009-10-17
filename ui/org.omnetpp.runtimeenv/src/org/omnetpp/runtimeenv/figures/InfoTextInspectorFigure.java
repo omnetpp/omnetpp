@@ -34,18 +34,18 @@ public class InfoTextInspectorFigure extends RoundedRectangle implements IInspec
 
 		setSelectionBorder(false);
 	}
-	
+
 	@Override
 	public Insets getInsets() {
 		return insets;
 	}
-	
+
 	public void setTexts(String name, String info) {
 		nameLabel.setText(name);
 		infoStringLabel.setText(info);
 		//XXX re-layout if size changed?
 	}
-	
+
 	//@Override
 	public IInspectorPart getInspectorPart() {
 		return inspectorPart;

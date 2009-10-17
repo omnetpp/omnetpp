@@ -36,7 +36,7 @@ public class PersistentResourcePropertyManager {
 		this.pluginId = pluginId;
 		this.classLoader = classLoader;
 	}
-	
+
 	public boolean hasProperty(IResource resource, String key) {
 		String fileName = getPropertyFileName(resource, key);
 		if (fileName == null)
@@ -52,7 +52,7 @@ public class PersistentResourcePropertyManager {
 		String fileName = getPropertyFileName(resource, key);
 		if (fileName == null)
 		    return null;
-		
+	
 		FileInputStream fileStream = null;
 		ObjectInputStream stream = null;
 		try {
@@ -76,7 +76,7 @@ public class PersistentResourcePropertyManager {
 		String fileName = getPropertyFileName(resource, key);
 		if (fileName == null)
 		    throw new FileNotFoundException(resource.getProject().getFullPath().toString());
-		
+	
 		ObjectOutputStream stream = null;
 		try {
     		stream = new ObjectOutputStream(new FileOutputStream(fileName));
@@ -97,7 +97,7 @@ public class PersistentResourcePropertyManager {
 		if (file.exists() && !file.delete())
 			throw new RuntimeException("Unable to delete file: " + fileName);
 	}
-	
+
 	/**
 	 * Returns null if the project does not exist (may happens e.g. when a project gets
 	 * deleted, a NED editor learns it and wants to close, and closing wants to save stuff). 
@@ -106,7 +106,7 @@ public class PersistentResourcePropertyManager {
 		IProject project = resource.getProject();
 		if (!project.exists())  // usually, just got deleted
 		    return null;
-		
+	
 		String fileNameKey = resource.getFullPath().toPortableString() + "?" + key;
 		return project.getWorkingLocation(pluginId).append(String.valueOf(fileNameKey.hashCode())).toPortableString();
 	}

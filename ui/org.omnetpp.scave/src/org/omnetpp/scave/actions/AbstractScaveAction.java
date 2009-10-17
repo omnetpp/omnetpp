@@ -30,7 +30,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	 * If set, then the target of the action is the selection of the viewer.
 	 */
 	protected Viewer viewer;
-	
+
 	public AbstractScaveAction() {
 	}
 
@@ -44,7 +44,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	public void setViewer(Viewer viewer) {
 		this.viewer = viewer;
 	}
-	
+
 	/**
 	 * Delegate work to doRun() if the editor is ScaveEditor and selection is
 	 * an IStructuredSelection; otherwise ignore the request.
@@ -82,7 +82,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 		if (isEnabled()!=isApplicable)
 			setEnabled(isApplicable);
 	}
-	
+
 	/**
 	 * Updates the Enabled property of this action.
 	 * To be called when some state changed which the enabled property
@@ -98,7 +98,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 				setEnabled(isApplicable);
 		}
 	}
-	
+
 	/**
 	 * Redefine this method to control when the action should be enabled.
 	 */

@@ -296,7 +296,7 @@ public class CompoundModuleFigure extends NedFigure
 	public float getScale() {
 		return scale;
 	}
-	
+
 	/**
 	 * Adjusts the figure properties using a displayString object
 	 * @param dps The display string object containing the properties
@@ -307,7 +307,7 @@ public class CompoundModuleFigure extends NedFigure
 		int newCumulativeHashCode = dps.cumulativeHashCode();
 		if (newCumulativeHashCode == oldCumulativeHashCode)
 			return;
-		
+
 		this.oldCumulativeHashCode = newCumulativeHashCode;
 
 		// background color / image

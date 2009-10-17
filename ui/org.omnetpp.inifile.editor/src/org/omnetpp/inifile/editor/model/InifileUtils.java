@@ -75,7 +75,7 @@ public class InifileUtils {
     public static final Image ICON_KEY_EQUALS_ASK = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_ask.png");
     
     public static final Image ICON_INIPARMISC = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inimisc.png");
-	
+
 	/**
 	 * Looks up a configuration value in the given section or its fallback sections.
 	 * Returns null if not found.
@@ -129,7 +129,7 @@ public class InifileUtils {
 	public static String removeSectionNamePrefix(String sectionName) {
 		return sectionName.replaceFirst(".+ +", "");
 	}
-	
+
 	/**
 	 * Resolves the run-time NED type of a "like" submodule, using the parameter
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
@@ -285,7 +285,7 @@ public class InifileUtils {
         int rank2 = getKeyRank(key2);
         return rank1 == rank2 ? key1.compareToIgnoreCase(key2) < 0 : rank1 < rank2;
 	}
-	
+
 	private static int getKeyRank(String key) {
 		if (key.equals(CFGID_EXTENDS.getName())) return 1;
 		if (key.equals(CFGID_DESCRIPTION.getName())) return 2;
@@ -392,13 +392,13 @@ public class InifileUtils {
 					(!containsIteration && containsRepeat) ? ICON_SECTION_REPEAT :
 						(!containsIteration && !containsRepeat) ? ICON_SECTION_SINGLE :
 						ICON_SECTION; // never happens
-		
+	
 		// error/warning decoration
 		IMarker[] markers = getProblemMarkersForWholeSection(sectionName, doc);
 		int maxProblemSeverity = getMaximumSeverity(markers);
 		Image overlayImage = maxProblemSeverity == IMarker.SEVERITY_ERROR ? ICON_OVR_ERROR : 
 			maxProblemSeverity == IMarker.SEVERITY_WARNING ? ICON_OVR_WARNING : null; // note: ignore Infos
-		
+	
 		// return decorated image
 		String key = "section:"+exists+":"+containsIteration+":"+containsRepeat+":"+maxProblemSeverity;
 		return InifileEditorPlugin.getDecoratedImage(sectionImage, overlayImage, SWT.BEGINNING|SWT.BOTTOM, key);

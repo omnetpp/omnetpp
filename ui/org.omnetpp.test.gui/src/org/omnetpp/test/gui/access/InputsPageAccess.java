@@ -29,21 +29,21 @@ public class InputsPageAccess extends CompositeAccess {
 	public InputsPageAccess(Composite control) {
 		super(control);
 	}
-	
+
 	public TreeAccess getInputFilesViewTree() {
 		return (TreeAccess)createAccess(
 					findDescendantControl(
 							getControl(),
 							Predicate.hasID(INPUT_FILES_TREE)));
 	}
-	
+
 	public TreeAccess getFileRunViewTree() {
 		return (TreeAccess)createAccess(
 				findDescendantControl(
 						getControl(),
 						Predicate.hasID(FILE_RUN_VIEW_TREE_ID)));
 	}
-	
+
 	public TreeAccess getRunFileViewTree() {
 		return (TreeAccess)createAccess(
 				findDescendantControl(
@@ -57,43 +57,43 @@ public class InputsPageAccess extends CompositeAccess {
 						getControl(),
 						Predicate.hasID(LOGICAL_VIEW_TREE_ID)));
 	}
-	
+
 	@UIStep
 	public CTabItem findTab(String label) {
 		return Access.findDescendantCTabItemByLabel(getControl(), label);
 	}
-	
+
 	@UIStep
 	public boolean isTabSelected(String label) {
 		CTabItem item = findTab(label);
 		return item.getParent().getSelection() == item;
 	}
-	
+
 	public void selectTab(String label) {
 		CTabItemAccess item = (CTabItemAccess)createAccess(findTab(label));
 		item.click();
 	}
-	
+
 	public void ensureTabSelected(String label) {
 		if (!isTabSelected(label))
 			selectTab(label);
 	}
-	
+
 	public TreeAccess ensureFileRunViewVisible() {
 		ensureTabSelected(".*file.*run.*");
 		return getFileRunViewTree();
 	}
-	
+
 	public TreeAccess ensureRunFileViewVisible() {
 		ensureTabSelected(".*run.*file.*");
 		return getRunFileViewTree();
 	}
-	
+
 	public TreeAccess ensureLogicalViewVisible() {
 		ensureTabSelected(".*[lL]ogical.*");
 		return getLogicalViewTree();
 	}
-	
+
 	public InputsPageAccess addFileWithWildcard(String wildcard) {
         findButtonWithLabel("Wildcard.*").selectWithMouseClick();
         ShellAccess dialog = Access.findShellWithTitle("Add files with wildcard"); 
@@ -101,7 +101,7 @@ public class InputsPageAccess extends CompositeAccess {
         dialog.pressKey(SWT.CR);
         return this;
 	}
-	
+
 	public InputsPageAccess removeInputFile(String pattern) {
     	TreeAccess inputFilesTree = getInputFilesViewTree();
         inputFilesTree.findTreeItemByContent("file " + pattern).click();

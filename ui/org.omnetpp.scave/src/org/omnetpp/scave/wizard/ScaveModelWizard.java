@@ -145,7 +145,7 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 	public void setDefaultAnalysisFileName(String defaultAnalysisFileName) {
 		this.defaultAnalysisFileName = defaultAnalysisFileName;
 	}
-	
+
 	/**
 	 * Get the file from the page.
 	 */

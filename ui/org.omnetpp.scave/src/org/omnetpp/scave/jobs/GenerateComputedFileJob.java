@@ -35,12 +35,12 @@ import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionCallback;
 public class GenerateComputedFileJob extends WorkspaceJob
 {
 	private static final boolean debug = true;
-	
+
 	ProcessingOp operation;
 	ResultFileManager manager;
 	CompletionCallback callback;
-	
-	
+
+
 	public GenerateComputedFileJob(ProcessingOp operation, ResultFileManager manager, CompletionCallback callback) {
 		super("Generate computed file");
 		Assert.isNotNull(operation.getComputedFile());
@@ -48,11 +48,11 @@ public class GenerateComputedFileJob extends WorkspaceJob
 		this.manager = manager;
 		this.callback = callback;
 	}
-	
+
 	public ProcessingOp getOperation() {
 		return operation;
 	}
-	
+
 	public CompletionCallback getCallback() {
 		return callback;
 	}
@@ -62,18 +62,18 @@ public class GenerateComputedFileJob extends WorkspaceJob
 		long startTime = 0;
 		if (debug)
 			startTime = System.currentTimeMillis();
-		
+	
 		try {
 			if (monitor != null)
 				monitor.beginTask("Generate computed file", 100);
-			
+		
 			final Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
 			if (dataset == null)
 				return ScavePlugin.getErrorStatus(0, "Operation removed from the dataset.", null);
-			
+		
 			if (monitor != null)
 				monitor.subTask("Build dataflow network");
-			
+		
 			final long[] computationHash = new long[1];
 			DataflowManager network = ResultFileManager.callWithReadLock(manager, new Callable<DataflowManager>() {
 				public DataflowManager call() {
@@ -84,14 +84,14 @@ public class GenerateComputedFileJob extends WorkspaceJob
 			});
 
 			if (debug) network.dump();
-			
+		
 			IProgressMonitor subMonitor = null;
 			if (monitor != null) {
 				monitor.worked(10);
 				monitor.subTask("Execute dataflow network");
 				subMonitor = new SubProgressMonitor(monitor, 90);
 			}
-			
+		
 			try {
 				network.execute(subMonitor);
 			}
@@ -99,10 +99,10 @@ public class GenerateComputedFileJob extends WorkspaceJob
 				network.delete();
 				network = null;
 			}
-			
+		
 			if (monitor != null && monitor.isCanceled())
 				return Status.CANCEL_STATUS;
-			
+		
 			operation.setComputationHash(computationHash[0]);
 			return Status.OK_STATUS;
 		} catch (Exception e) {

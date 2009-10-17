@@ -68,7 +68,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 
 		return result;
 	}
-	
+
 	@Override
 	public void fireModelEvent(NEDModelEvent event) {
 	    // note: the following assert is technically correct; it is commented out because 
@@ -80,7 +80,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	public String getQNameAsPrefix() {
 		return StringUtils.isEmpty(getPackage()) ? "" : getPackage() + ".";
 	}
-	
+
 	/**
 	 * Returns the package name (from the PackageElement child), or null
 	 */
@@ -130,7 +130,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 		INEDElement insertionPoint = lastImport!=null ? lastImport.getNextSibling() : 
 			getFirstPackageChild()!=null ? getFirstPackageChild().getNextSibling() :
 				getFirstChild();
-		
+	
 		insertChildBefore(insertionPoint, importElement);
 		return importElement;
 	}

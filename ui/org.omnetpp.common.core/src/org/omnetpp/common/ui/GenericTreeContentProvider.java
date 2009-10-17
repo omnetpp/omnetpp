@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.Viewer;
  * @author andras
  */
 public class GenericTreeContentProvider implements ITreeContentProvider {
-	
+
 	public Object[] getChildren(Object parentElement) {
 		Assert.isTrue(parentElement instanceof GenericTreeNode); // by contract, element MUST be a GenericTreeNode
 		GenericTreeNode parent = (GenericTreeNode)parentElement; 
@@ -41,5 +41,5 @@ public class GenericTreeContentProvider implements ITreeContentProvider {
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
-	
+
 }

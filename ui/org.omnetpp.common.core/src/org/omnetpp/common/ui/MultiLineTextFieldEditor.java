@@ -112,7 +112,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 		errorMessage = "Validation error";
 		createControl(parent);
 	}
-	
+
 	/**
 	 * Creates a string field editor of unlimited width.
 	 * Use the method <code>setTextLimit</code> to limit the text.
@@ -121,7 +121,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	 * @param labelText the label text of the field editor
 	 * @param parent the parent of the field editor's control
 	 */
-	public MultiLineTextFieldEditor(String name, String labelText, Composite parent) {		
+	public MultiLineTextFieldEditor(String name, String labelText, Composite parent) {	
 		this(name, labelText, VALIDATE_ON_KEY_STROKE, parent);
 	}
 
@@ -217,7 +217,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 		textField.setLayoutData(gd);
 
 	}
-	
+
 	/**
 	 * Initializes this field editor with the preference value from
 	 * the preference store.
@@ -234,7 +234,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 			oldValue = value;
 		}
 	}
-	
+
 	/**
 	 * Initializes this field editor with the default preference value from
 	 * the preference store.
@@ -260,7 +260,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	protected void doStore() {
 		getPreferenceStore().setValue(getPreferenceName(), textField.getText());
 	}
-	
+
 	/**
 	 * Returns the error message that will be displayed when and if 
 	 * an error occurs.
@@ -289,7 +289,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 			return textField.getText();
 		return getPreferenceStore().getString(getPreferenceName());
 	}
-	
+
 	/**
 	 * Returns this field editor's text control.
 	 * @return the text control, or <code>null</code> if no
@@ -298,7 +298,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	protected Text getTextControl() {
 		return textField;
 	}
-	
+
 	/**
 	 * Returns this field editor's text control.
 	 * <p>
@@ -369,7 +369,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 		}
 		return textField;
 	}
-	
+
 	/**
 	 * Returns whether an empty string is a valid value.
 	 *
@@ -380,7 +380,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	public boolean isEmptyStringAllowed() {
 		return emptyStringAllowed;
 	}
-	
+
 	/**
 	 * Returns whether this field editor contains a valid value.
 	 * <p>
@@ -398,7 +398,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	public boolean isValid() {
 		return isValid;
 	}
-	
+
 	/**
 	 * Refreshes this field editor's valid state after a value change
 	 * and fires an <code>IS_VALID</code> property change event if
@@ -413,7 +413,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	protected void refreshValidState() {
 		isValid = checkState();
 	}
-	
+
 	/**
 	 * Sets whether the empty string is a valid value or not.
 	 *
@@ -423,7 +423,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	public void setEmptyStringAllowed(boolean b) {
 		emptyStringAllowed = b;
 	}
-	
+
 	/**
 	 * Sets the error message that will be displayed when and if 
 	 * an error occurs.
@@ -433,7 +433,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	public void setErrorMessage(String message) {
 		errorMessage = message;
 	}
-	
+
 	/**
 	 * Sets the focus to this field editor.
 	 * <p>
@@ -447,7 +447,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 			textField.setFocus();
 		}
 	}
-	
+
 	/**
 	 * Sets this field editor's value.
 	 *
@@ -464,7 +464,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets this text field's text limit.
 	 *
@@ -476,7 +476,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 		if (textField != null)
 			textField.setTextLimit(limit);
 	}
-	
+
 	/**
 	 * Sets the strategy for validating the text.
 	 * <p>
@@ -494,14 +494,14 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 		Assert.isTrue(value == VALIDATE_ON_FOCUS_LOST || value == VALIDATE_ON_KEY_STROKE);
 		validateStrategy = value;
 	}
-	
+
 	/**
 	 * Shows the error message set via <code>setErrorMessage</code>.
 	 */
 	public void showErrorMessage() {
 		showErrorMessage(errorMessage);
 	}
-	
+
 	/**
 	 * Informs this field editor's listener, if it has one, about a change
 	 * to the value (<code>VALUE</code> property) provided that the old and

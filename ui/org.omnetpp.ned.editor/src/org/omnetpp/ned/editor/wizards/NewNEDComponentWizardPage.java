@@ -199,8 +199,8 @@ public class NewNEDComponentWizardPage extends WizardPage {
 		button.setFont(parent.getFont());
 		button.setText(label);
 		GridData gd = new GridData(fill);
-		button.setLayoutData(gd);	
-		return button;	
+		button.setLayoutData(gd);
+		return button;
 	}
 
 
@@ -230,7 +230,7 @@ public class NewNEDComponentWizardPage extends WizardPage {
 			if (license==null || !LicenseUtils.isAcceptedLicense(license))
 			    license = LicenseUtils.getDefaultLicense();
 			String bannerComment = LicenseUtils.getBannerComment(license, "//");
-			
+		
 			// create NED file
 			contents = bannerComment + contents;
 			newNedFile.create(new ByteArrayInputStream(contents.getBytes()), true, null);

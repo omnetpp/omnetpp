@@ -57,11 +57,11 @@ public class SequenceChartEditor
 	private SequenceChart sequenceChart;
 
 	private ISelectionListener selectionListener;
-	
+
 	public SequenceChart getSequenceChart() {
 		return sequenceChart;
 	}
-	
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
@@ -77,7 +77,7 @@ public class SequenceChartEditor
 				site.getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
 		}
 		catch (PartInitException e) {
-			SequenceChartPlugin.getDefault().logException(e);					
+			SequenceChartPlugin.getDefault().logException(e);				
 		}
 	}
 
@@ -85,7 +85,7 @@ public class SequenceChartEditor
 	public void dispose() {
 		if (resourceChangeListener != null)
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-		
+	
 		if (selectionListener != null)
 			getSite().getPage().removeSelectionListener(selectionListener);
 
@@ -108,7 +108,7 @@ public class SequenceChartEditor
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != SequenceChartEditor.this && selection instanceof IEventLogSelection) {
 					IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
-					
+				
 					if (eventLogSelection.getEventLogInput() == sequenceChart.getInput()) {
 						sequenceChart.setSelection(selection);
 						markLocation();
@@ -123,13 +123,13 @@ public class SequenceChartEditor
 	public void setFocus() {
 		sequenceChart.setFocus();
 	}
-	
+
 	public class SequenceChartLocation implements INavigationLocation {
 		// TODO: ambiguous when restored
 		private org.omnetpp.common.engine.BigDecimal startSimulationTime;
 
 		private org.omnetpp.common.engine.BigDecimal endSimulationTime;
-		
+	
 		public SequenceChartLocation(org.omnetpp.common.engine.BigDecimal startSimulationTime, org.omnetpp.common.engine.BigDecimal endSimulationTime) {
 			this.startSimulationTime = startSimulationTime;
 			this.endSimulationTime = endSimulationTime;
@@ -270,7 +270,7 @@ public class SequenceChartEditor
             	throw new RuntimeException(e);
             }
 		}
-		
+	
         public boolean visit(IResourceDelta delta) {
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
             	Display.getDefault().asyncExec(new Runnable() {
@@ -282,7 +282,7 @@ public class SequenceChartEditor
             }
 
             return true;
-        }	
+        }
 	}
 
     /* (non-Javadoc)

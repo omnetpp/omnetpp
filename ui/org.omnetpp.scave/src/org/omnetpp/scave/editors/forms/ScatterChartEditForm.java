@@ -145,7 +145,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			scalars.setText("scalars");
 			TreeItem attributes = new TreeItem(isoLineSelectionTree, SWT.NONE);
 			attributes.setText("run attributes");
-			
+		
 			isoLineSelectionTreeItems = new ArrayList<TreeItem>();
 			for (int i = 0; i < isoData.length; ++i) {
 				TreeItem parent = isoData[i].getModuleName() != null && isoData[i].getDataName() != null ?
@@ -176,7 +176,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		label.setText(text);
 		return label;
 	}
-	
+
 	@Override
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {

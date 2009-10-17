@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.INEDElement;
 public interface IHasName extends INEDElement {
 
 	static String DEFAULT_TYPE_NAME = "Unnamed";
-	
+
 	/**
 	 * Returns name attribute
 	 */

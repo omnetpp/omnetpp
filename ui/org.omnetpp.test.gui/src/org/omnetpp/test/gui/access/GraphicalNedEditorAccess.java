@@ -45,12 +45,12 @@ public class GraphicalNedEditorAccess
 	public GraphicalNedEditorAccess(GraphicalNedEditor editorPart) {
 		super(editorPart);
 	}
-	
+
     @Override
 	public GraphicalNedEditor getWorkbenchPart() {
 		return (GraphicalNedEditor)workbenchPart;
 	}
-	
+
 	public FlyoutPaletteCompositeAccess getFlyoutPaletteComposite() {
 		return new FlyoutPaletteCompositeAccess((FlyoutPaletteComposite)ReflectionUtils.getFieldValue(getWorkbenchPart(), "splitter"));
 	}

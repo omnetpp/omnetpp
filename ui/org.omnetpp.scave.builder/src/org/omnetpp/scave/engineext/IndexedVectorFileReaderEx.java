@@ -25,7 +25,7 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 	public IndexedVectorFileReaderEx(String filename, int vectorId) {
 		super(filename, vectorId);
 	}
-	
+
 	public OutputVectorEntry getEntryBySerial(int serial) {
 		return copy(super.getEntryBySerial((int)serial));
 	}
@@ -39,7 +39,7 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 	public OutputVectorEntry getEntryBySimtime(BigDecimal simtime, boolean after) {
 		return copy(super.getEntryBySimtime(simtime, after));
 	}
-	
+
 	private static OutputVectorEntry copy(OutputVectorEntry entry) {
 		if (entry == null)
 			return null;

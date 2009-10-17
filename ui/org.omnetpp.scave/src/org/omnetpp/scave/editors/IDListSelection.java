@@ -33,11 +33,11 @@ public class IDListSelection implements IStructuredSelection {
 	Long[] elements;
 	ResultFileManager manager;
 	ResultType type;
-	
+
 	public IDListSelection(IDList idlist, ResultFileManager manager) {
 		Assert.isNotNull(idlist);
 		Assert.isNotNull(manager);
-		
+	
 		this.elements = idlist.toArray();
 		this.manager = manager;
 		if (idlist.areAllScalars())
@@ -47,7 +47,7 @@ public class IDListSelection implements IStructuredSelection {
 		else if (idlist.areAllHistograms())
 			type = ResultType.HISTOGRAM_LITERAL;
 	}
-	
+
 	public IDListSelection(long id, ResultFileManager manager) {
 		Assert.isNotNull(manager);
 
@@ -61,11 +61,11 @@ public class IDListSelection implements IStructuredSelection {
 		else if (internalType == ResultFileManager.HISTOGRAM)
 			type = ResultType.HISTOGRAM_LITERAL;
 	}
-	
+
 	public ResultFileManager getResultFileManager() {
 		return manager;
 	}
-	
+
 	public VectorResult getFirstAsVector() {
 		if (elements.length > 0) {
 			ResultItem item = manager.getItem(elements[0]);
@@ -78,15 +78,15 @@ public class IDListSelection implements IStructuredSelection {
 	public Long[] getScalarIDs() {
 		return getIDs(ResultType.SCALAR_LITERAL);
 	}
-	
+
 	public Long[] getVectorIDs() {
 		return getIDs(ResultType.VECTOR_LITERAL);
 	}
-	
+
 	public Long[] getHistogramIDs() {
 		return getIDs(ResultType.HISTOGRAM_LITERAL);
 	}
-	
+
 	private Long[] getIDs(ResultType type) {
 		if (this.type == type)
 			return elements;
@@ -99,11 +99,11 @@ public class IDListSelection implements IStructuredSelection {
 			return ids.toArray(new Long[ids.size()]);
 		}
 	}
-	
+
 	public int getScalarsCount() {
 		return getCount(ResultType.SCALAR_LITERAL);
 	}
-	
+
 	public int getVectorsCount() {
 		return getCount(ResultType.VECTOR_LITERAL);
 	}
@@ -124,7 +124,7 @@ public class IDListSelection implements IStructuredSelection {
 			return c;
 		}
 	}
-	
+
 	public Object getFirstElement() {
 		return elements.length > 0 ? elements[0] : null;
 	}
@@ -144,7 +144,7 @@ public class IDListSelection implements IStructuredSelection {
 	public List<Long> toList() {
 		return Arrays.asList(elements);
 	}
-	
+
 	public IDList toIDList() {
 		return IDList.fromArray(elements);
 	}
@@ -152,7 +152,7 @@ public class IDListSelection implements IStructuredSelection {
 	public boolean isEmpty() {
 		return elements.length == 0;
 	}
-	
+
 	public boolean equals(Object other) {
 		if (this == other)
 			return true;
@@ -161,7 +161,7 @@ public class IDListSelection implements IStructuredSelection {
 		IDListSelection otherSelection = (IDListSelection)other;
 		return manager == otherSelection.manager && Arrays.equals(elements, otherSelection.elements);
 	}
-	
+
 	public int hashCode() {
 		return 31 * manager.hashCode() + Arrays.hashCode(elements);
 	}

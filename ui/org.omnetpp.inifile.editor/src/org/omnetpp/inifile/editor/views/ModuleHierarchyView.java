@@ -82,7 +82,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider
 	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the hover
-	
+
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
 	// hashmap to save/restore view's state when switching across editors 
@@ -179,13 +179,13 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				   typeElement == other.typeElement;
 		}
 	}
-	
+
 	private static class ParamAssignmentGroupNode extends GenericTreeNode {
 	    public ParamAssignmentGroupNode(Object payload) {
             super(payload);
         }
 	}
-	
+
 	private static class ParamAssignmentGroupElementNode extends GenericTreeNode {
         public ParamAssignmentGroupElementNode(Object payload) {
             super(payload);
@@ -263,7 +263,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
-		
+	
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IEditorPart editor = getAssociatedEditor();
@@ -283,7 +283,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		// create context menu
  		getViewSite().registerContextMenu(contextMenuManager, treeViewer);
  		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
- 		
+ 	
  		// add tooltip support to the tree
  		new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
@@ -309,7 +309,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 	private void createActions() {
 		IAction pinAction = getOrCreatePinAction();
-		
+	
 		//XXX this is (almost) the same code as in ModuleParametersView
 		final ActionExt gotoInifileAction = new ActionExt("Show in Ini File") {
 			@Override
@@ -326,7 +326,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				setEnabled(sel!=null);
 			}
 		};
-		
+	
 		class GotoNedFileAction extends ActionExt {
 			boolean gotoDecl;
 			GotoNedFileAction(boolean gotoDecl) {
@@ -380,18 +380,18 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		};
  		final ActionExt gotoNedAction = new GotoNedFileAction(false); 
 		ActionExt gotoNedDeclAction = new GotoNedFileAction(true); 
-	
+
 		treeViewer.addSelectionChangedListener(gotoInifileAction);
 		treeViewer.addSelectionChangedListener(gotoNedAction);
 		treeViewer.addSelectionChangedListener(gotoNedDeclAction);
-	
+
 		// add double-click support to the tree
 		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
                 gotoInifileAction.run();
             }
 		});
-	
+
 		// build menus and toolbar
 		contextMenuManager.add(gotoInifileAction);
 		contextMenuManager.add(gotoNedAction);
@@ -401,11 +401,11 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		toolBarManager.add(pinAction);
-	
+
 		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
 		menuManager.add(pinAction);
 	}
-	
+
 	protected SectionKey getSectionKeyFromSelection() {
 		Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
 		if (element instanceof GenericTreeNode)
@@ -417,7 +417,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		}
 		return null;
 	}
-	
+
 	@Override
 	protected void showMessage(String text) {
 		super.showMessage(text);
@@ -515,7 +515,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				String moduleFullPath = StringUtils.join(fullPathStack.toArray(), ".");
 				return InifileUtils.resolveLikeParam(moduleFullPath, element, section, analyzer, inifileDocument);
     		}
-    		
+    	
             private String resolveParamValue(String fullPath, Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
                 String[] sectionChain = InifileUtils.resolveSectionChain(inifileDocument, section);
@@ -552,7 +552,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
 			treeViewer.setInput(root);
-			
+		
 			// open root node (useful in case preserving the selection fails)
 			treeViewer.expandToLevel(2);  
 
@@ -564,7 +564,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 		// refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
 		treeViewer.refresh();
-		
+	
 		// update label
 		String text = "";
 		if (elementWithParameters != null) {
@@ -586,7 +586,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		String moduleText = moduleFullName+"  ("+typeInfo.getName()+")";
 		GenericTreeNode treeNode = new GenericTreeNode(new SubmoduleOrConnectionNode(moduleText, elementPath.lastElement(), typeInfo.getNEDElement()));
 		parent.addChild(treeNode);
-		
+	
 		if (analyzer == null) {
 			// no inifile available, we only have NED info
 		    ArrayList<ParamResolution> list = new ArrayList<ParamResolution>(); 

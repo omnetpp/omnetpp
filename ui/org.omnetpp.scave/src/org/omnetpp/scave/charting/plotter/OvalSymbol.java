@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.GC;
  */
 public class OvalSymbol extends ChartSymbol {
 	private int size;
-	
+
 	public OvalSymbol() {
 	}
 
@@ -30,8 +30,8 @@ public class OvalSymbol extends ChartSymbol {
 		size = (sizeHint*113+50)/100;  // make same area as square; 1.13=2/sqrt(pi)
 		size |= 1;  // make an odd number
 	}
-	
-	
+
+
 	public void drawSymbol(GC gc, int x, int y) {
 		if (size<=0) {
 			// nothing

@@ -23,7 +23,7 @@ public class InifileSelectionItem {
 	private InifileAnalyzer analyzer;
 	private String section;
 	private String key;
-	
+
 	public InifileSelectionItem(IInifileDocument document, InifileAnalyzer analyzer, String section, String key) {
 		this.document = document;
 		this.analyzer = analyzer;
@@ -58,7 +58,7 @@ public class InifileSelectionItem {
 	public String getKey() {
 		return key;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "doc="+document+" section="+section+" key="+key;

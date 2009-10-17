@@ -23,7 +23,7 @@ public class ShowOutputVectorViewAction extends AbstractScaveAction {
 		setText("Show Output Vector View");
 		setToolTipText("Show Output Vector View");
 	}
-	
+
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		try {

@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class AxesPreferencePage extends PreferencePage {
-	
+
 	public AxesPreferencePage(String title)
 	{
 		super(title);

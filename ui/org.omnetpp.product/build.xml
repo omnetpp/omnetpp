@@ -1,7 +1,7 @@
 <project name="org.omnetpp.product" default="omnetpp">
     <property environment="env" /> 
 	<property file="build.properties" />
-	
+
 	<target name="clean">
 		<delete dir="${buildDirectory}" />
 	</target>
@@ -29,7 +29,7 @@
 			</fileset>
 		</copy>
 	</target>
-	
+
 	<!--
 		This target actually executes the PDE Build process by launching the 
 		Eclipse antRunner application.
@@ -43,7 +43,7 @@
 			<include name="**/MANIFEST.MF"/>
 			<include name="**/*.properties"/>
 			<include name="**/*.product"/>
-	    </replace>	
+	    </replace>
 	    <replace dir="${buildDirectory}" token="##VERSION##" value="${env.VERSION}">
 		  	<include name="**/*.java"/>
 		  	<include name="**/*.htm" />
@@ -52,7 +52,7 @@
 			<include name="**/MANIFEST.MF"/>
 			<include name="**/*.properties"/>
 			<include name="**/*.product"/>
-	    </replace>	
+	    </replace>
 		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
 			<arg value="-application" />
 			<arg value="org.eclipse.ant.core.antRunner" />
@@ -80,7 +80,7 @@
 		</delete>
 	</target>
 
-	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->	
+	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->
 	<target name="init-omnest" depends="init">
 	    <replace dir="${buildDirectory}" token="OMNeT++" value="OMNEST">
 		  	<include name="**/*.java"/>
@@ -90,33 +90,33 @@
 			<include name="**/MANIFEST.MF"/>
 			<include name="**/*.properties"/>
 			<include name="**/*.product"/>
-	    </replace>	
+	    </replace>
 	    <replace dir="${buildDirectory}" token="Academic Edition, not for commercial use" value="Commercial Edition">
 			<include name="**/*.xml"/>
-	    </replace>	
+	    </replace>
 		<replace dir="${buildDirectory}" token="IS_COMMERCIAL = false;" value="IS_COMMERCIAL = true;">
 			<include name="**/*.java"/>
-	    </replace>	
+	    </replace>
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
 	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-omnest.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-image.png"/>
     </target>
-	
-	<!-- prepare for academic build / throw out commercial features etc. -->	
+
+	<!-- prepare for academic build / throw out commercial features etc. -->
 	<target name="init-omnetpp" depends="init">
 		<replace dir="${buildDirectory}" token="IS_COMMERCIAL = true;" value="IS_COMMERCIAL = false;">
 			<include name="**/*.java"/>
-	    </replace>	
+	    </replace>
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
 	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-omnetpp.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-image.png"/>
    	</target>
-	
+
 	<target name="omnetpp" depends="clean, init-omnetpp, pde-build" >
 	    <!-- special handling of the 64 bit linux executable -->
 	    <copy file="${eclipseLocation}/eclipse64" tofile="${buildDirectory}/tmp/${archivePrefix}/omnetpp64"/>
 	    <chmod file="${buildDirectory}/tmp/${archivePrefix}/omnetpp64" perm="755"/>
 	    <delete file="${buildDirectory}/tmp/${archivePrefix}/libcairo-swt.so" />
 	</target>
-	
+
 	<target name="omnest" depends="clean, init-omnest, pde-build" >
 	    <!-- special handling of the 64 bit linux executable -->
 	    <copy file="${eclipseLocation}/eclipse64" tofile="${buildDirectory}/tmp/${archivePrefix}/omnest64"/>

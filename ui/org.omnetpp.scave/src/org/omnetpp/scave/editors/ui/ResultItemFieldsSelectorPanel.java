@@ -20,16 +20,16 @@ import static org.omnetpp.scave.engine.ResultItemField.*;
  * @author tomi
  */
 public class ResultItemFieldsSelectorPanel extends Composite {
-	
+
 	private List<ResultItemField> selectableFields;
 	private Tree tree;
 	private List<TreeItem> treeItems;
-	
+
 	public ResultItemFieldsSelectorPanel(Composite parent, int style) {
 		super(parent, style);
 		setLayout(new GridLayout());
 	}
-	
+
 	public void setSelectableResultItemFields(List<ResultItemField> fields) {
 		Assert.isNotNull(fields);
 		if (!fields.equals(selectableFields)) {
@@ -39,7 +39,7 @@ public class ResultItemFieldsSelectorPanel extends Composite {
 			tree = createTree();
 		}
 	}
-	
+
 	public void setSelectedResultItemFields(List<ResultItemField> data) {
 		if (tree != null) {
 			for (TreeItem item : treeItems) {
@@ -47,7 +47,7 @@ public class ResultItemFieldsSelectorPanel extends Composite {
 			}
 		}
 	}
-	
+
 	public void setSelectedResultItemFieldsByName(List<String> names) {
 		if (tree != null) {
 			for (TreeItem item : treeItems) {
@@ -56,7 +56,7 @@ public class ResultItemFieldsSelectorPanel extends Composite {
 			}
 		}
 	}
-	
+
 	public List<ResultItemField> getSelectedResultItemFields() {
 		List<ResultItemField> fields = new ArrayList<ResultItemField>();
 		if (tree != null) {
@@ -93,7 +93,7 @@ public class ResultItemFieldsSelectorPanel extends Composite {
 		createTreeItems("module parameters", RUN_PARAM_ID, false);
 		return tree;
 	}
-	
+
 	private TreeItem createTreeItems(String name, int fieldID, boolean expanded) {
 		List<ResultItemField> fields = filterFieldsByID(selectableFields, fieldID);
 		if (fields.isEmpty())
@@ -111,7 +111,7 @@ public class ResultItemFieldsSelectorPanel extends Composite {
 		toplevelItem.setExpanded(expanded);
 		return toplevelItem;
 	}
-	
+
 	private static List<ResultItemField> filterFieldsByID(List<ResultItemField> fields, int fieldID) {
 		List<ResultItemField> result = new ArrayList<ResultItemField>();
 		for (ResultItemField field : fields) {

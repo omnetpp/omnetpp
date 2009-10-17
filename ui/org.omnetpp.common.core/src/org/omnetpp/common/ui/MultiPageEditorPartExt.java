@@ -43,7 +43,7 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 				client.dispose();
 			}
 		});
-	
+
 	}
 
 	/**
@@ -67,7 +67,7 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 				return i;
 		return -1;
 	}
-	
+
 	/**
 	 * Called back when a closable page gets closed in the editor.
 	 * @param control  the page control (typically some composite)

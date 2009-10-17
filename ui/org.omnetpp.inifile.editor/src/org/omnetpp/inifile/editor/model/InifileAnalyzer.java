@@ -422,7 +422,7 @@ public class InifileAnalyzer {
 		START_END_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)"),
 		ANY_VALUE_PATTERN = Pattern.compile("(.*)");
 
-	
+
 	protected boolean validateValueWithIterationVars(String section, String key, String value) {
 		Matcher iterationVarMatcher = DOLLAR_BRACES_PATTERN.matcher(value);
 
@@ -440,7 +440,7 @@ public class InifileAnalyzer {
 				validateValues = false; // because references are not followed
 			}
 		}
-		
+	
 		// validate the first 100 values that come from iterating the constants in the variable definitions
 		if (foundAny && validateValues) {
 			IterationVariablesIterator values = new IterationVariablesIterator(value);
@@ -452,10 +452,10 @@ public class InifileAnalyzer {
 				count++;
 			}
 		}
-		
+	
 		return foundAny;
 	}
-	
+
 	protected boolean isValidIterationVariable(String section, String varName) {
 	    // is it a predefined variable like ${configname}?
 	    if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(varName))
@@ -470,7 +470,7 @@ public class InifileAnalyzer {
         }
         return false;
     }
-	
+
 	/**
 	 * Iterates on the values, that comes from the substitutions of iteration variables
 	 * with the constants found in their definition.
@@ -486,12 +486,12 @@ public class InifileAnalyzer {
 		List<Object> format;
 		ResettableIterator iterator;
 		StringBuilder sb;
-		
+	
 		public IterationVariablesIterator(String value) {
 			this.value = value;
 			this.format = new ArrayList<Object>();
 			this.sb = new StringBuilder(100);
-			
+		
 			List<String> tokens = StringUtils.splitPreservingSeparators(value, DOLLAR_BRACES_PATTERN);
 			List<ResettableIterator> valueIterators = new ArrayList<ResettableIterator>();
 			int i = 0;
@@ -537,7 +537,7 @@ public class InifileAnalyzer {
 			iterator.remove();
 		}
 	}
-	
+
 	/**
 	 * Iterates on the constants in one iteration variable.
 	 * 
@@ -549,12 +549,12 @@ public class InifileAnalyzer {
 		StrTokenizer tokenizer;
 		Matcher matcher;
 		int groupIndex;
-		
+	
 		public IterationVariableIterator(String iteration) {
 			Matcher m = DOLLAR_BRACES_PATTERN.matcher(iteration);
 			if (!m.matches())
 				throw new IllegalArgumentException("Illegal iteration");
-			
+		
 			String content = m.group(1);
 			String values;
 			if ((m = VARIABLE_DEFINITION_PATTERN.matcher(content)).matches())
@@ -566,7 +566,7 @@ public class InifileAnalyzer {
 				values = content;
 			tokenizer = StrTokenizer.getCSVInstance(values);
 		}
-		
+	
 		public void reset() {
 			tokenizer.reset();
 			matcher = null;
@@ -595,7 +595,7 @@ public class InifileAnalyzer {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-		
+	
 		private boolean match(String token) {
 			if (matcher == null)
 				matcher = START_END_STEP_VALUE_PATTERN.matcher(token);
@@ -615,7 +615,7 @@ public class InifileAnalyzer {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Validate a configuration entry's value.
 	 */
@@ -664,7 +664,7 @@ public class InifileAnalyzer {
 		}
 		return null;
 	}
-	
+
 	protected void validateParamKey(String section, String key, INEDTypeResolver ned) {
 		String value = doc.getValue(section, key).trim();
 		validateParamKey(section, key, value);
@@ -770,7 +770,7 @@ public class InifileAnalyzer {
         }
 	}
 
-	
+
 	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
 		Assert.isTrue(key.lastIndexOf('.') > 0);
 		String configName = key.substring(key.lastIndexOf('.')+1);

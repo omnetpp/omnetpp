@@ -34,7 +34,7 @@ import org.omnetpp.scave.model.provider.ScaveEditPlugin;
  * @author tomi
  */
 public class SetOperationPropertySource extends PropertySource {
-	
+
 	ResultFileManager manager;
 
 	public SetOperationPropertySource(Object object,
@@ -56,10 +56,10 @@ public class SetOperationPropertySource extends PropertySource {
 			if (descriptor.getId().equals(filterPatternPropertyId))
 				descriptors[i] = new FilterPatternPropertyDescriptor(descriptor);
 		}
-				
+			
 		return descriptors;
 	}
-	
+
 	class FilterPatternPropertyDescriptor extends PropertyDescriptor
 	{
 		public FilterPatternPropertyDescriptor(IPropertyDescriptor descriptor) {
@@ -73,7 +73,7 @@ public class SetOperationPropertySource extends PropertySource {
 			return new FilterPatternCellEditor(parent);
 		}
 	}
-	
+
 	class FilterPatternCellEditor extends TextCellEditor
 	{
 		public FilterPatternCellEditor(Composite parent) {

@@ -27,7 +27,7 @@ public class OpenAction extends AbstractScaveAction {
 		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_OPEN));
 		setToolTipText("Open item in a separate page");
 	}
-	
+
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		for (Object element : selection.toArray()) {

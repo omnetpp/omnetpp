@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.GC;
  */
 public class CrossSymbol extends ChartSymbol {
 	private int size;
-	
+
 	public CrossSymbol() {
 	}
 
