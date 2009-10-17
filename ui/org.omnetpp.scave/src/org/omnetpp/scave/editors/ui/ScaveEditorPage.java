@@ -56,10 +56,10 @@ public class ScaveEditorPage extends ScrolledForm {
 	//private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253); 
 	private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
 	private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
-	
+
 	protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
 	private String pageTitle = "untitled";
-	
+
 	public ScaveEditorPage(Composite parent, int style, ScaveEditor scaveEditor) {
 		super(parent, style);
 		this.scaveEditor = scaveEditor;
@@ -70,14 +70,14 @@ public class ScaveEditorPage extends ScrolledForm {
 		setForeground(new Color(null, 0, 128, 255));
 		setText(title);
 	}
-	
+
 	/**
 	 * Return the text that should appear on the page's tab.
 	 */
 	public String getPageTitle() {
 		return pageTitle;
 	}
-	
+
 	/**
 	 * Sets the text that should appear on the page's tab.
 	 */
@@ -85,14 +85,14 @@ public class ScaveEditorPage extends ScrolledForm {
 		pageTitle = title;
 		scaveEditor.setPageTitle(this, title);
 	}
-	
+
 	/**
 	 * Updates the page title, etc.
 	 * Called when the model changed.
 	 */
 	public void updatePage(Notification notification) {
 	}
-	
+
 	/**
 	 * Creates palette for model object creation
 	 */
@@ -110,7 +110,7 @@ public class ScaveEditorPage extends ScrolledForm {
 		return scrolledComposite;
 	}
 
-	
+
 	/**
 	 * Sets up the given control so that when a file is drag-dropped into it,
 	 * it will be added to Inputs unless it's already in there.
@@ -189,7 +189,7 @@ public class ScaveEditorPage extends ScrolledForm {
 		button.setToolTipText(action.getToolTipText());
 		if (action.getImageDescriptor() != null)
 			button.setImage(action.getImageDescriptor().createImage());
-		
+	
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				action.run();
@@ -229,7 +229,7 @@ public class ScaveEditorPage extends ScrolledForm {
 			}
 		});
 	}
-	
+
 	/**
 	 * Like <code>configureViewerButton</code>, but action will also run
 	 * on double-clicking in the viewer.
@@ -238,7 +238,7 @@ public class ScaveEditorPage extends ScrolledForm {
 		configureViewerButton(button, viewer, action);
 		configureViewerDefaultAction(viewer, action);
 	}
-	
+
 	/**
 	 * Connects the double-click in the viewer with the action.
 	 */
@@ -250,20 +250,20 @@ public class ScaveEditorPage extends ScrolledForm {
 			}
 		});
 	}
-	
+
 	public void showStatusMessage(String message) {
 		IWorkbenchWindow window = scaveEditor.getSite().getWorkbenchWindow();
 		if (window instanceof ApplicationWindow)
 			((ApplicationWindow)window).setStatus(message);
 	}
-	
+
 	/**
 	 * Notification about the activation of the page of the
 	 * multipage editor.
 	 */
 	public void pageActivated() {
 	}
-	
+
 	/**
 	 * Notification about the change of the workbench selection.
 	 * Pages are synchronizing their selection of their viewers
@@ -271,18 +271,18 @@ public class ScaveEditorPage extends ScrolledForm {
 	 */
 	public void selectionChanged(ISelection selection) {
 	}
-	
+
 	protected void setViewerSelectionNoNotify(Viewer viewer, ISelection selection) {
 		scaveEditor.setViewerSelectionNoNotify(viewer, selection);
 	}
-	
+
 	/**
 	 * Returns the active chart on this page.
 	 */
 	public ChartCanvas getActiveChartCanvas() {
 		return null;
 	}
-	
+
 	public boolean gotoObject(Object object) {
 		return false;
 	}

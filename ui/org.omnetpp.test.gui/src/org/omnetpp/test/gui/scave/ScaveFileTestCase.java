@@ -21,7 +21,7 @@ public class ScaveFileTestCase
     extends ProjectFileTestCase
 {
 	protected ScaveEditorAccess editor;
-	
+
     public ScaveFileTestCase() {
         super("test.anf");
     }
@@ -35,18 +35,18 @@ public class ScaveFileTestCase
 		WorkspaceUtils.assertFileExists(filePath);
 		WorkspaceUtils.ensureFileNotExists(filePath);
 	}
-	
+
 	protected static GenericTreeNode[] forest(GenericTreeNode... trees) {
 		return trees;
 	}
-	
+
 	protected static GenericTreeNode n(String label, GenericTreeNode... children) {
 		GenericTreeNode node = new GenericTreeNode(Pattern.quote(label));
 		for (GenericTreeNode child : children)
 			node.addChild(child);
 		return node;
 	}
-	
+
 	protected GenericTreeNode[] remove(GenericTreeNode[] array, int index) {
 		return (GenericTreeNode[])ArrayUtils.remove(array, index);
 	}
@@ -54,22 +54,22 @@ public class ScaveFileTestCase
 	protected String[][] remove(String[][] array, int index) {
 		return (String[][])ArrayUtils.remove(array, index);
 	}
-	
+
 	protected GenericTreeNode[] add(GenericTreeNode[] array, GenericTreeNode... elements) {
 		GenericTreeNode[] result = array;
 		for (GenericTreeNode element : elements)
 			result = (GenericTreeNode[])ArrayUtils.add(result, element); 
 		return result;
 	}
-	
+
 	protected String[][] table(String[]... rows) {
 		return rows;
 	}
-	
+
 	protected String[] row(String... row) {
 		return row;
 	}
-	
+
 	protected String[] buildVectorsTableRow(int rowIndex) {
 		return row(
 				"/project/",								// directory
@@ -106,7 +106,7 @@ public class ScaveFileTestCase
 				String.format("%d", rowIndex),			// replication
 				String.format("%s", (double)rowIndex));	// value
 	}
-	
+
 	protected String[] buildHistogramsTableRow(int rowIndex) {
 		return row(
 				"/project/",							// directory
@@ -125,7 +125,7 @@ public class ScaveFileTestCase
 				String.format("%s", 0.0),			 	// min
 				String.format("%s", 0.0));				// max
 	}
-	
+
 	protected String[][] buildStatisticScalarRows(int runNumber) {
 		return table(
 				buildStatisticScalarRow(runNumber, "count", 1),
@@ -136,7 +136,7 @@ public class ScaveFileTestCase
 				buildStatisticScalarRow(runNumber, "stddev", Double.NaN),
 				buildStatisticScalarRow(runNumber, "sum", 0.0));
 	}
-	
+
 	protected String[] buildStatisticScalarRow(int runNumber, String field, double value) {
 		return row(
 				"/project/",								// directory
@@ -151,9 +151,9 @@ public class ScaveFileTestCase
 				String.format("%d", runNumber),				// replication
 				String.format("%s", value));				// value
 	}
-	
-	
-	
+
+
+
 	protected void createFiles(int numOfRuns) throws Exception {
 		createAnalysisFile();
 		for (int runNumber = 1; runNumber <= numOfRuns; ++runNumber) {
@@ -162,13 +162,13 @@ public class ScaveFileTestCase
 			createVectorFile(runNumber);
 		}
 	}
-	
+
 	protected void createAnalysisFile() throws Exception {
 		createFile(
 				fileName,
 				createAnalysisFileContent());
 	}
-	
+
 	protected String createAnalysisFileContent() {
 		return 	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 				"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">" +
@@ -181,7 +181,7 @@ public class ScaveFileTestCase
 				"<chartSheets/>" +
 				"</scave:Analysis>";
 	}
-	
+
 	protected String createRun(int runNumber) {
 		return String.format(
 				"run run-%1$d\n" +
@@ -193,7 +193,7 @@ public class ScaveFileTestCase
 				"attr seedset %1$d\n",
 				runNumber);
 	}
-	
+
 	protected void createScalarFile(int runNumber) throws Exception {
 		createFile(
 				String.format("test-%d.sca", runNumber),
@@ -204,13 +204,13 @@ public class ScaveFileTestCase
 		return 	createRun(runNumber) +
 				String.format("scalar module-%1$d scalar-%1$d %1$d\n", runNumber);
 	}
-	
+
 	protected void createHistogramFile(int runNumber) throws Exception {
 		createFile(
 				String.format("testh-%d.sca", runNumber),
 				createHistogramFileContent(runNumber));
 	}
-	
+
 	protected String createHistogramFileContent(int runNumber) throws Exception {
 		return	createRun(runNumber) + 
 				String.format(
@@ -228,7 +228,7 @@ public class ScaveFileTestCase
 				"bin	0.5	0\n",
 				runNumber);
 	}
-	
+
 	protected void createVectorFile(int runNumber) throws Exception {
 		createFile(
 				String.format("test-%d.vec", runNumber),

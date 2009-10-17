@@ -101,7 +101,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
 	}
     
     // parameter query support
-	
+
     public Map<String, ParamElementEx> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }

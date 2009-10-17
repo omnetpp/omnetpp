@@ -380,7 +380,7 @@ public class GraphicalNedEditor
 
 		// generic system tooltip support for error markers
 		FigureUtils.addTooltipSupport(getFigureCanvas(), root.getFigure());
-		
+	
         // add hover tooltip support for help and documentation tooltips
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(600, 200);

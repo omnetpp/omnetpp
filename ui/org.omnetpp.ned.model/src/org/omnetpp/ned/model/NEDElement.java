@@ -374,7 +374,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		fireChildRemoved(node);
 		return node;
 	}
-	
+
     public void removeAllChildren() {
         while (firstchild != null)
             removeChild(firstchild);

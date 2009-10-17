@@ -36,7 +36,7 @@ public class HistogramChartEditForm extends ChartEditForm {
 	private Combo barTypeCombo;
 	private Combo dataTypeCombo;
 	private Button showOverflowCellCheckbox;
-	
+
 	public HistogramChartEditForm(HistogramChart chart, EObject parent,
 			Map<String, Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
@@ -47,7 +47,7 @@ public class HistogramChartEditForm extends ChartEditForm {
 		super.populateTabFolder(tabfolder);
 		createTab(TAB_PLOT, tabfolder, 2);
 	}
-	
+
 	@Override
 	public void populateTabItem(TabItem item) {
 		super.populateTabItem(item);
@@ -61,7 +61,7 @@ public class HistogramChartEditForm extends ChartEditForm {
 			showOverflowCellCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		}
 	}
-	
+
 	@Override
 	protected void collectProperties(ChartProperties newProps) {
 		super.collectProperties(newProps);

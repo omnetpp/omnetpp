@@ -35,28 +35,28 @@ class ObjectInputStreamWithClassLoader extends ObjectInputStream {
 		switch (c) {
 			case 66: // 'B'
 				return Byte.TYPE;
-	
+
 			case 67: // 'C'
 				return Character.TYPE;
-	
+
 			case 68: // 'D'
 				return Double.TYPE;
-	
+
 			case 70: // 'F'
 				return Float.TYPE;
-	
+
 			case 73: // 'I'
 				return Integer.TYPE;
-	
+
 			case 74: // 'J'
 				return Long.TYPE;
-	
+
 			case 83: // 'S'
 				return Short.TYPE;
-	
+
 			case 90: // 'Z'
 				return Boolean.TYPE;
-	
+
 			case 69: // 'E'
 			case 71: // 'G'
 			case 72: // 'H'

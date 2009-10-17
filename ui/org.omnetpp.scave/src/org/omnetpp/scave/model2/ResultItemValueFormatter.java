@@ -15,14 +15,14 @@ import org.omnetpp.scave.engine.ResultItem.Type;
 public class ResultItemValueFormatter {
 	private Type type;
 	private EnumType enumType;
-	
+
 	public ResultItemValueFormatter() {
 	}
-	
+
 	public ResultItemValueFormatter(ResultItem resultItem) {
 		setResultItem(resultItem);
 	}
-	
+
 	public void setResultItem(ResultItem resultItem) {
 		if (resultItem != null) {
 			type = resultItem.getType();
@@ -33,11 +33,11 @@ public class ResultItemValueFormatter {
 			enumType = null;
 		}
 	}
-	
+
 	public void setResultItem(ResultItemRef resultItemRef) {
 		setResultItem(resultItemRef.resolve());
 	}
-	
+
 	public String format(double value) {
 		if (type == Type.TYPE_DOUBLE) {
 			return String.valueOf(value);
@@ -52,7 +52,7 @@ public class ResultItemValueFormatter {
 		else
 			return "?";
 	}
-	
+
 	public String format(BigDecimal value) {
 		if (type == Type.TYPE_DOUBLE) {
 			return String.valueOf(value);

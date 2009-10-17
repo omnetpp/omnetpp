@@ -128,7 +128,7 @@ public class ScaveModelUtil {
 		chart.setName(name);
 		return chart;
 	}
-	
+
 	public static Add createAdd(String filterString, ResultType type) {
 		Add add = factory.createAdd();
 		add.setFilterPattern(filterString);
@@ -139,7 +139,7 @@ public class ScaveModelUtil {
 	public static Add createAdd(Filter filter, ResultType type) {
 		return createAdd(filter.getFilterPattern(), type);
 	}
-	
+
 	/**
 	 * Generates an Add command with filter pattern to identify item.
 	 * @param filterFields may be null (meaning run/module/name)
@@ -155,7 +155,7 @@ public class ScaveModelUtil {
 	public static Collection<Add> createAdds(ResultItem[] items, String[] runidFields) {
 		return createAddsWithFields(items, getFilterFieldsFor(runidFields));
 	}
-	
+
 	public static Collection<Add> createAdds(IDList ids, String[] runidFields, ResultFileManager manager, boolean cacheIDs) {
 		String[] filterFields = getFilterFieldsFor(runidFields);
 		List<Add> adds = new ArrayList<Add>(ids.size());
@@ -171,14 +171,14 @@ public class ScaveModelUtil {
 		}
 		return adds;
 	}
-	
+
 	public static Collection<Add> createAddsWithFields(ResultItem[] items, String[] filterFields) {
 		List<Add> adds = new ArrayList<Add>(items.length);
 		for (ResultItem item : items)
 			adds.add(createAdd(item, filterFields));
 		return adds;
 	}
-	
+
 	private static String[] getFilterFieldsFor(String[] runidFields) {
 		String[] filterFields = null;
 		if (runidFields != null) {
@@ -206,7 +206,7 @@ public class ScaveModelUtil {
 		else
 			throw new IllegalArgumentException("Unknown chart type: " + chart.getClass().getName());
 	}
-	
+
 	/**
 	 * Returns the names of result types.
 	 */
@@ -253,7 +253,7 @@ public class ScaveModelUtil {
 				return chartsheet;
 		return null;
 	}
-	
+
 	public static EObject getPreviousSibling(EObject eobject) {
 		EObject parent = eobject.eContainer();
 		EStructuralFeature feature = eobject.eContainingFeature();
@@ -431,7 +431,7 @@ public class ScaveModelUtil {
 			idlist.merge(manager.getAllHistograms());
 			return idlist;
 		}
-		
+	
 		switch (type.getValue()) {
 		case ResultType.SCALAR: return manager.getAllScalars();
 		case ResultType.VECTOR:	return manager.getAllVectors();
@@ -453,7 +453,7 @@ public class ScaveModelUtil {
 		Assert.isTrue(filter.getFilterPattern()!=null);
 		return manager.filterIDList(idlist, filter.getFilterPattern());
 	}
-	
+
 	/**
 	 * Returns an ordered array of distinct values of the {@code field} attribute
 	 * of the result items found in {@code idlist}. 
@@ -471,7 +471,7 @@ public class ScaveModelUtil {
 		Arrays.sort(result);
 		return result;
 	}
-	
+
 
 	public static IsoLineData[] getModuleAndDataPairs(IDList idlist, ResultFileManager manager, boolean addRunAttributes) {
 		manager.checkReadLock();
@@ -491,12 +491,12 @@ public class ScaveModelUtil {
 			for (int i = 0; i < runAttributes.size(); ++i)
 				values.add(new IsoLineData(runAttributes.get(i)));
 		}
-		
+	
 		IsoLineData[] result = values.toArray(new IsoLineData[values.size()]);
 		Arrays.sort(result);
 		return result;
 	}
-	
+
 	public static List<String> getResultItemFields(IDList idlist, ResultFileManager manager) {
 		List<String> fields = new ArrayList<String>();
 		fields.add(ResultItemField.FILE);
@@ -506,12 +506,12 @@ public class ScaveModelUtil {
 		fields.addAll(getRunAttributeNames(idlist, manager));
 		return fields;
 	}
-	
+
 	public static List<String> getRunAttributeNames(IDList idlist, ResultFileManager manager) {
 		StringVector runAttributes = manager.getUniqueRunAttributeNames(manager.getUniqueRuns(idlist)).keys();
 		return Arrays.asList(runAttributes.toArray());
 	}
-	
+
 
 	/**
 	 * Returns the default chart sheet.
@@ -556,7 +556,7 @@ public class ScaveModelUtil {
 			});
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -568,7 +568,7 @@ public class ScaveModelUtil {
 		default: Assert.isTrue(false, "Unknown ResultType:"+type); return 0;
 		}
 	}
-	
+
 	public static ResultType asResultType(int internalResultType) {
 		if (internalResultType == ResultFileManager.SCALAR)
 			return ResultType.SCALAR_LITERAL;
@@ -581,7 +581,7 @@ public class ScaveModelUtil {
 			return null;
 		}
 	}
-	
+
 	public static ResultType getTypeOf(ResultItem item) {
 		if (item instanceof ScalarResult)
 			return ResultType.SCALAR_LITERAL;
@@ -594,7 +594,7 @@ public class ScaveModelUtil {
 			return null;
 		}
 	}
-	
+
 	public static boolean isFilterOperation(ProcessingOp operation) {
 		String op = operation.getOperation();
 		return op != null && isFilterOperation(op);
@@ -604,7 +604,7 @@ public class ScaveModelUtil {
 		NodeType nodeType = getNodeType(operation);
 		return nodeType != null && isFilterOperation(nodeType);
 	}
-	
+
 	public static boolean isFilterOperation(NodeType nodeType) {
 		return hasCategory(nodeType, "filter");
 	}
@@ -613,7 +613,7 @@ public class ScaveModelUtil {
 		String op = operation.getOperation();
 		return op != null && isMergerOperation(op);
 	}
-	
+
 	public static boolean isMergerOperation(String operation) {
 		NodeType nodeType = getNodeType(operation);
 		return nodeType != null && isMergerOperation(nodeType);
@@ -622,29 +622,29 @@ public class ScaveModelUtil {
 	public static boolean isMergerOperation(NodeType nodeType) {
 		return hasCategory(nodeType, "merger");
 	}
-	
+
 	public static NodeType getNodeType(String name) {
 		Assert.isNotNull(name);
 		NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
 		return registry.exists(name) ? registry.getNodeType(name) : null;
 	}
-	
+
 	public static boolean hasCategory(String nodeTypeName, String category) {
 		Assert.isNotNull(nodeTypeName);
 		Assert.isNotNull(category);
 		NodeType nodeType = getNodeType(nodeTypeName);
 		return nodeType != null ? hasCategory(nodeType, category) : null;
 	}
-	
+
 	public static boolean hasCategory(NodeType nodeType, String category) {
 		Assert.isNotNull(nodeType);
 		Assert.isNotNull(category);
 		return nodeType.getCategory().equals(category);
 	}
-	
+
 	private static final StringVector MODULE_AND_NAME =
 		StringVector.fromArray(new String[] {ResultItemField.MODULE, ResultItemField.NAME});
-	
+
 	public static ResultItemFields getGroupByFields(ProcessingOp operation) {
 		if (isFilterOperation(operation)) {
 			Assert.isTrue(false, "Should not be called for filters.");

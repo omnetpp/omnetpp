@@ -57,7 +57,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 		}
 		return sort(result);
 	}
-	
+
 	/**
 	 * Generate help text for the given config entry, to be displayed by the content assistant.
 	 */

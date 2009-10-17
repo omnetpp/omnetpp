@@ -27,7 +27,7 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static InifileEditorPlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -62,7 +62,7 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 	public static void logError(Throwable exception) {
 		logError(exception.toString(), exception);
 	}
-	
+
 	public static void logError(String message, Throwable exception) {
 		if (plugin != null) {
 			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
@@ -80,7 +80,7 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
-	
+
 	/**
 	 * Creates an image. IMPORTANT: The image is NOT cached! Callers 
 	 * are responsible for disposal of the image. 
@@ -102,7 +102,7 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 		}
 		return image;
 	}
-	
+
 	/**
 	 * Decorates the given image with the overlay image (either can be null),
 	 * and caches and returns the result. Key is a key which will be used to 
@@ -133,5 +133,5 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 		}
 		return result;
 	}
-	
+
 }

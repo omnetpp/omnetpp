@@ -16,9 +16,9 @@ import org.omnetpp.test.gui.access.DatasetsAndChartsPageAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 
 public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
-	
+
 	DatasetsAndChartsPageAccess datasetsPage;
-	
+
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
@@ -26,11 +26,11 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		datasetsPage = editor.ensureDatasetsPageActive();
 	}
-	
+
 	public void testDatasetsTreeContent() {
 		datasetsPage.getDatasetsTree().assertContent(buildDatasetsTreeContent());
 	}
-	
+
 	public void testOpenPagesFromMenu() {
 		testOpenPageFromMenu(".*test-dataset.*", "Dataset.*test-dataset.*");
 		testOpenPageFromMenu(".*test-barchart.*", "Chart.*test-barchart.*");
@@ -38,7 +38,7 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 		//testOpenPageFromMenu(".*test-histogramchart.*", "Chart.*test-histogramchart.*");
 		testOpenPageFromMenu(".*test-scatterchart.*", "Chart.*test-scatterchart.*");
 	}
-	
+
 	public void testOpenPagesWithDoubleClick() {
 		testOpenPageWithDoubleClick(".*test-dataset.*", "Dataset.*test-dataset.*");
 		testOpenPageWithDoubleClick(".*test-barchart.*", "Chart.*test-barchart.*");
@@ -46,21 +46,21 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 		//testOpenPageWithDoubleClick(".*test-histogramchart.*", "Chart.*test-histogramchart.*");
 		testOpenPageWithDoubleClick(".*test-scatterchart.*", "Chart.*test-scatterchart.*");
 	}
-	
+
 	protected void testOpenPageFromMenu(String nodeLabel, String pageLabel) {
 		datasetsPage.getDatasetsTree().findTreeItemByContent(nodeLabel).reveal().chooseFromContextMenu("Open.*");
 		editor.assertActivePage(pageLabel);
 		editor.closePage(pageLabel);
 		editor.assertActivePage("Datasets");
 	}
-	
+
 	protected void testOpenPageWithDoubleClick(String nodeLabel, String pageLabel) {
 		datasetsPage.getDatasetsTree().findTreeItemByContent(nodeLabel).reveal().doubleClick();
 		editor.assertActivePage(pageLabel);
 		editor.closePage(pageLabel);
 		editor.assertActivePage("Datasets");
 	}
-	
+
     public void testGroup() {
         TreeAccess tree = datasetsPage.getDatasetsTree();
         tree.findTreeItemByContent("bar chart test-barchart").reveal().click();
@@ -88,8 +88,8 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
         editor.executeUndo();
         tree.assertContent(buildDatasetsTreeContent());
     }
-	
-	
+
+
 	@Override
 	protected String createAnalysisFileContent() {
 		return
@@ -119,7 +119,7 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 			"  </chartSheets>\n" +
 			"</scave:Analysis>\n";
 	}
-	
+
 	protected GenericTreeNode buildDatasetsTreeContent() {
 		return	n("dataset test-dataset",
 					n("add vectors: all"),
@@ -132,25 +132,25 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 					n("histogram chart test-histogramchart"),
 					n("scatter chart test-scatterchart"));
 	}
-	
+
 	protected static void groupNodes(GenericTreeNode[] children, GenericTreeNode wrapper) {
 		GenericTreeNode parent = children[0].getParent();
 		int index = children[0].indexInParent();
-		
+	
 		for (GenericTreeNode child : children) {
 			child.unlink();
 			wrapper.addChild(child);
 		}
-		
+	
 		parent.addChild(index, wrapper);
 	}
-	
+
 	protected static void ungroupNode(GenericTreeNode node) {
 		Assert.assertTrue(node.getParent() != null);
-		
+	
 		GenericTreeNode parent = node.getParent();
 		int index = node.indexInParent();
-		
+	
 		node.unlink();
 		int count = node.getChildCount();
 		for (int i = 0; i < count; ++i) {

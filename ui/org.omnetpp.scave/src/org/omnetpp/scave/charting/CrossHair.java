@@ -232,7 +232,7 @@ class CrossHair {
 			gc.drawText(coordinates, left + 2, top + 1, false); // XXX set as tooltip, rather than draw it on the canvas!
 		}
 	}
-	
+
 	private String getHoverText(int x, int y, SizeConstraint preferredSize, ICoordsMapping coordsMapping) {
 		ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT, coordsMapping);
@@ -244,7 +244,7 @@ class CrossHair {
 					return StringUtils.dictionaryCompare(key1, key2);
 				}
 			});
-			
+		
 			StringBuilder htmlText = new StringBuilder();
 			StringBuilder plainText  = new StringBuilder();
 			int maxTextLength = 0;
@@ -274,18 +274,18 @@ class CrossHair {
 			if (totalFound > dataPoints.size())
 				htmlText.append(String.format("<tr><td></td><td>... and %d more</td></tr>", totalFound - dataPoints.size()));
 			htmlText.append("</table>");
-			
+		
 			TextLayout textLayout = new TextLayout(chart.getDisplay());
 			textLayout.setText(plainText.toString());
 			textLayout.setWidth(320); // comes from HoverSupport
 			org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
 			preferredSize.preferredWidth = 20 + bounds.width;
 			preferredSize.preferredHeight = 25 + bounds.height + (lineNo > 1 ? (lineNo - 1) * 6 : 0);
-			
+		
 //			Point preferredSize2 = computePreferedSize(htmlText.toString(), 320);
 //			preferredSize.preferredWidth =  preferredSize2.x; //20 + maxTextLength * 7;
 //			preferredSize.preferredHeight = preferredSize2.y; //25 + dataPoints.size() * 12;
-			
+		
 			return HoverSupport.addHTMLStyleSheet(htmlText.toString());
 		}
 		else
@@ -325,7 +325,7 @@ class CrossHair {
 		//seriesStr = StringUtils.abbreviate(series, series.length(), 25);
 		return String.format("%s, %s - %s", xStr, yStr, seriesStr);
 	}
-	
+
 	// XXX move this method into a VectorPlot class
 	protected int dataPointsNear(int x, int y, int d, List<DataPoint> result, int maxCount, ICoordsMapping coordsMapping) {
 		IXYDataset dataset = chart.getDataset();

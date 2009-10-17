@@ -77,7 +77,7 @@ public class InifileTextEditor extends TextEditor {
         // redefine the main context menu id so we can contribute to it from the outside
         setEditorContextMenuId(ID);
 	}
-	
+
     @Override
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
         super.editorContextMenuAboutToShow(menu);
@@ -159,7 +159,7 @@ public class InifileTextEditor extends TextEditor {
 		// do not include editor input menus like Debug As, Compare and numerous unrelated CDT build menus
 		return false;
 	}
-	
+
 	/**
 	 * Installs a function to be called after the cursor rests at one place for 600ms.
 	 * @param runnable  contains the function

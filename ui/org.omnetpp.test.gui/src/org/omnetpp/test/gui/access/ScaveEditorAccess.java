@@ -19,25 +19,25 @@ public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 	public ScaveEditorAccess(MultiPageEditorPart scaveEditor) {
 		super(scaveEditor);
 	}
-	
+
 	public InputsPageAccess ensureInputsPageActive() {
 		return (InputsPageAccess)ensureActivePage("Inputs");
 	}
-	
+
 	public BrowseDataPageAccess ensureBrowseDataPageActive() {
 		return (BrowseDataPageAccess)ensureActivePage("Browse data");
 	}
-	
+
 	public DatasetsAndChartsPageAccess ensureDatasetsPageActive() {
 		return (DatasetsAndChartsPageAccess)ensureActivePage("Datasets");
 	}
-	
+
 	@UIStep
 	public void closePage(String label) {
 		CTabItemAccess item = getCTabItem(label);
 		item.clickOnCloseIcon();
 	}
-	
+
 	public void executeUndo() {
 		assertActivated();
         pressKey('z', SWT.CTRL);

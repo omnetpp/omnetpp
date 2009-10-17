@@ -18,7 +18,7 @@ public class TriangleSymbol extends ChartSymbol {
 	private int height;
 	private int[] poly;
 	private int[] work = new int[6];
-	
+
 	public TriangleSymbol() {
 	}
 
@@ -35,7 +35,7 @@ public class TriangleSymbol extends ChartSymbol {
 		int off = (84*sizeHint+50)/100;
 		poly = new int[] {-halfside, (height-off), 0, -off, halfside, (height-off)};
 	}
-	
+
 	public void drawSymbol(GC gc, int x, int y) {
 		if (sizeHint<=0) {
 			// nothing

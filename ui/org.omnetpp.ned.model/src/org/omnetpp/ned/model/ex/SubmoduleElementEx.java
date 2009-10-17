@@ -196,7 +196,7 @@ public class SubmoduleElementEx extends SubmoduleElement
 
         if (submoduleType != null)
         	result.putAll(submoduleType.getParamAssignments());
-    	
+    
         // add local parameter assignments
         for (ParamElementEx ownParam : getOwnParams())
             result.put(ownParam.getName(), ownParam);

@@ -23,7 +23,7 @@ import org.omnetpp.scave.editors.ui.ScaveEditorPage;
  * @author tomi
  */
 public class RefreshChartAction extends AbstractScaveAction {
-	
+
 	public RefreshChartAction() {
 		setText("Refresh");
 		setDescription("Refresh the content of the current chart");

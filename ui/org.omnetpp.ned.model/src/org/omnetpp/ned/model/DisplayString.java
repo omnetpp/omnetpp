@@ -542,7 +542,7 @@ public class DisplayString implements IDisplayString {
     }
     
 //    static {
-//      dumpSupportedTagsInTex();	
+//      dumpSupportedTagsInTex();
 //    };
 }
 

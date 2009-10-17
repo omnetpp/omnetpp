@@ -57,7 +57,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
 	    String gateType = addGateLabels.gate.getAttribute("type");
         return typeInfo.getName() + "." + gateName + " (" + gateType + ")" + labels + "          " + packageName;
 	}
-	
+
 	@Override
 	public void run() {
 	    TextualNedEditor textEditor = (TextualNedEditor)getTextEditor();

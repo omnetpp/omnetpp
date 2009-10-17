@@ -26,30 +26,30 @@ public class ChartLine {
 	private String key;
 	// the reference to the result item that the line represents
 	private ResultItemRef itemRef;
-	
+
 	public ChartLine(Chart chart, int series, String key, long id, ResultFileManager manager) {
 		this.chart = chart;
 		this.series = series;
 		this.key = key;
 		this.itemRef = id != -1L && manager != null ? new ResultItemRef(id, manager) : null;
 	}
-	
+
 	public Chart getChart() {
 		return chart;
 	}
-	
+
 	public int getSeries() {
 		return series;
 	}
-	
+
 	public String getKey() {
 		return key;
 	}
-	
+
 	public ResultItemRef getResultItemRef() {
 		return itemRef;
 	}
-	
+
 	public String toString() {
 		return "Line \""+key+"\"";
 	}

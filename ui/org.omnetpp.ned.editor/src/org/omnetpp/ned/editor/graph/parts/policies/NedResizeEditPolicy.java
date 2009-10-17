@@ -52,7 +52,7 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
         Rectangle childBounds = part.getFigure() instanceof ISelectionHandleBounds ? 
         				((ISelectionHandleBounds)part.getFigure()).getHandleBounds().getCopy() 
         				: part.getFigure().getBounds().getCopy(); 
-        	
+        
         IFigure walker = part.getFigure().getParent();
         while (walker != ((GraphicalEditPart) part.getParent()).getFigure()) {
             walker.translateToParent(childBounds);

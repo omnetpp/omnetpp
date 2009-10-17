@@ -32,7 +32,7 @@ public interface IConstants {
 	public static final String EVENTLOG_VIEW_ID = "org.omnetpp.eventlogtable.editors.EventLogTableView";
 
 	public static final String PROJECT_EXPLORER_ID = "org.eclipse.ui.navigator.ProjectExplorer"; // ID missing from the Eclipse API
-	
+
     // wizards
     public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.simplemodule";
     public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.compoundmodule";

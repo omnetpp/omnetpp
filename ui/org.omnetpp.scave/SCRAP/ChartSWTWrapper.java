@@ -54,7 +54,7 @@ public class ChartSWTWrapper extends Canvas {
 		public void chartChanged(ChartChangeEvent arg0) {
 			//refresh();
 	}};
-	
+
 	private Runnable scheduledRefresh = null;
 
 
@@ -83,15 +83,15 @@ public class ChartSWTWrapper extends Canvas {
 			   }
 			});
 	}
-	
-	
+
+
 	public void setSize(int width, int height) {
 		if (width != SWT.DEFAULT || height != SWT.DEFAULT) {
 			Point size = getSize();
 			super.setSize(width != SWT.DEFAULT ? width : size.x, height != SWT.DEFAULT ? height : size.y);
 		}
 	}
-	
+
 	/**
 	 * Called when an area was dragged out in the chart.
 	 * This default implementation does nothing.
@@ -235,7 +235,7 @@ public class ChartSWTWrapper extends Canvas {
 		renderChart();
 		redraw();
 	}
-	
+
 	private void renderChart() {
 		final Rectangle b = getBounds();
 
@@ -268,7 +268,7 @@ public class ChartSWTWrapper extends Canvas {
 		}
 		else {
 			 // adjust background
-			
+	
 			 // if sizes differ, we should redraw it sometime
 			 Rectangle b = getBounds();
 			 Rectangle ib = image.getBounds();

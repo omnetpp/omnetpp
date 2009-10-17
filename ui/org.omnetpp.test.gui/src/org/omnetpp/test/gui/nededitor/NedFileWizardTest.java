@@ -19,7 +19,7 @@ public class NedFileWizardTest
         NedEditorUtils.createNewNedFileByWizard(projectName, fileName, null);
 	    WorkspaceUtils.assertFileExistsWithContentIgnoringWhiteSpace(filePath, "//\n// TODO Place comment here\n//\n\n");
 	}
-	
+
     public void testNewSimpleModuleFile() throws Throwable {
         NedEditorUtils.createNewNedFileByWizard(projectName, fileName, ".*new Simple.*");
         String moduleName = StringUtils.substringBefore(fileName, ".");

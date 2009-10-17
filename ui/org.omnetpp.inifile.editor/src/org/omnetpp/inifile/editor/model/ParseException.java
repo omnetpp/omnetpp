@@ -17,7 +17,7 @@ public class ParseException extends RuntimeException {
 
 	private int line;
 	private int column;
-	
+
     /**
      * Constructor.
      */
@@ -40,7 +40,7 @@ public class ParseException extends RuntimeException {
     public int getLineNumber() {
         return line;
     }
-	
+
     /**
      * Returns the column where the error was found.
      */

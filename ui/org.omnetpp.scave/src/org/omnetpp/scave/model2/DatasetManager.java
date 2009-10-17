@@ -83,7 +83,7 @@ import org.omnetpp.scave.model.SetOperation;
  * @author tomi
  */
 public class DatasetManager {
-	
+
 	private static final boolean debug = false;
 
 	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastItemToProcess, ResultType type) {
@@ -118,7 +118,7 @@ public class DatasetManager {
 		public IDList getIDList() {
 			return idlist != null ? idlist : new IDList();
 		}
-		
+	
 		public Object caseAdd(Add add) {
 			if (type == null || add.getType() == type) {
 				idlist.merge(select(null, add));
@@ -141,7 +141,7 @@ public class DatasetManager {
 			caseProcessingOp(compute, false);
 			return this;
 		}
-		
+	
 		private Object caseProcessingOp(ProcessingOp op, boolean removeInputs) {
 			if (op.getOperation() != null) {
 				IDList selectedVectors = select(idlist, op.getFilters(), ResultType.VECTOR_LITERAL);
@@ -180,7 +180,7 @@ public class DatasetManager {
 		}
 		return result;
 	}
-	
+
 	public static XYArray[] getDataOfVectors(ResultFileManager manager, IDList idlist, IProgressMonitor monitor) {
 		checkReadLock(manager);
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
@@ -195,7 +195,7 @@ public class DatasetManager {
 		}
 		return result;
 	}
-	
+
 	private static XYArray[] executeDataflowNetwork(DataflowManager manager, List<Node> arrayBuilders, IProgressMonitor monitor) {
 		long startTime = System.currentTimeMillis();
 		if (arrayBuilders.size() > 0) // XXX DataflowManager crashes when there are no sinks
@@ -216,18 +216,18 @@ public class DatasetManager {
  		return new ScalarDataset(idlist, chart.getGroupByFields(), chart.getBarFields(),
  										chart.getAveragedFields(), manager);
 	}
-	
+
 	public static VectorDataset createVectorDataset(LineChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		checkReadLock(manager);
 		return createVectorDataset(chart, null, chart.getLineNameFormat(), true, manager, progressMonitor);
 	}
-	
+
 	public static VectorDataset createVectorDataset(LineChart chart, Dataset dataset,
 			String lineNameFormat, boolean computeData, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		checkReadLock(manager);
 		if (dataset == null)
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		
+	
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(dataset, chart, computeData);
 		IDList idlist = builder.getDisplayedIDs();
@@ -244,21 +244,21 @@ public class DatasetManager {
 				dataflowManager = null;
 			}
 		}
-		
+	
 		if (progressMonitor != null && progressMonitor.isCanceled())
 			return null;
-		
+	
 		String title = defaultTitle(ScaveModelUtil.getResultItems(idlist, manager));
-		
+	
 		return dataValues != null ?
 				new VectorDataset(title, idlist, dataValues, lineNameFormat, manager) :
 				new VectorDataset(title, idlist, lineNameFormat, manager);
 	}
-	
+
 	public static Pair<IDList,XYArray[]> readAndComputeVectorData(Dataset dataset, DatasetItem target, ResultFileManager manager, IProgressMonitor monitor) {
 		Assert.isNotNull(dataset);
 		checkReadLock(manager);
-		
+	
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(dataset, target, true);
 		IDList idlist = builder.getDisplayedIDs();
@@ -272,42 +272,42 @@ public class DatasetManager {
 		finally {
 			dataflowManager.delete();
 		}
-		
+	
 		return new Pair<IDList, XYArray[]>(idlist, dataValues);
 	}
-	
+
 	public static IXYDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
 		checkReadLock(manager);
 		return createScatterPlotDataset(chart, null, manager, monitor);
 	}
-	
+
 	public static IXYDataset createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor monitor) {
 		checkReadLock(manager);
-		
+	
 		//TODO update progressMonitor
 		if (dataset == null)
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
 			IDList scalars = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 			IDList vectors = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
-			
+		
 			// process scalars
 			XYDatasetVector xyScalars = null;
 			List<IsoLineData[]> isoLineIds = null;
 			if (!scalars.isEmpty()) {
 				IsoLineData xData = IsoLineData.fromFilterPattern(chart.getXDataPattern());
 				Assert.isLegal(xData != null && xData.getModuleName() != null && xData.getDataName() != null, "X data is not selected.");
-				
+			
 				String xModuleName = xData.getModuleName();
 				String xScalarName = xData.getDataName();
 				List<String> isoPatterns = chart.getIsoDataPattern();
 				boolean averageReplications = chart.isAverageReplications();
-				
+			
 				StringVector isoModuleNames = new StringVector();
 				StringVector isoScalarNames = new StringVector();
 				StringVector isoAttrNames = new StringVector();
 				collectIsoParameters(isoPatterns, isoModuleNames, isoScalarNames, isoAttrNames);
-				
+			
 				DataSorter sorter = new DataSorter(manager);
 				ResultItemFields rowFields = new ResultItemFields(MODULE, NAME);
 				ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT, MEASUREMENT) :
@@ -319,7 +319,7 @@ public class DatasetManager {
 				isoLineIds = collectIsoLineIds(scalars, isoModuleNames, isoScalarNames, isoAttrNames, xyScalars, manager);
 				// assertOrdered(xyScalars);
 			}
-			
+		
 			// process vectors
 			XYArray[] xyVectors = null;
 			IDList yVectors = null;
@@ -344,7 +344,7 @@ public class DatasetManager {
 					}
 				}
 			}
-			
+		
 			// compose results
 			if (xyScalars != null && xyVectors == null)
 				return createScatterPlotDataset(xyScalars, isoLineIds, manager);
@@ -354,11 +354,11 @@ public class DatasetManager {
 				return new CompoundXYDataset(
 						createScatterPlotDataset(xyScalars, isoLineIds, manager),
 						new VectorScatterPlotDataset(yVectors, xyVectors, manager));
-			
+		
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Collect the module/scalar names or attribute names from the filter patterns. 
 	 */
@@ -378,7 +378,7 @@ public class DatasetManager {
 			}
 		}
 	}
-	
+
 	private static List<IsoLineData[]> collectIsoLineIds(IDList scalars,
 			StringVector isoModuleNames, StringVector isoScalarNames, StringVector isoAttrNames,
 			XYDatasetVector xyScalars, ResultFileManager manager) {
@@ -413,10 +413,10 @@ public class DatasetManager {
 			}
 			isoLineIds.add(isoLineId.toArray(new IsoLineData[isoLineId.size()])); 
 		}
-		
+	
 		return isoLineIds;
 	}
-	
+
 	public static void assertOrdered(XYDatasetVector xyDatasets) {
 		for(int i = 0; i < xyDatasets.size(); ++i) {
 			XYDataset ds = xyDatasets.get(i);
@@ -431,20 +431,20 @@ public class DatasetManager {
 			}
 		}
 	}
-	
+
 	public static IXYDataset createScatterPlotDataset(XYDatasetVector xydatasets, List<IsoLineData[]> isoLineIds, ResultFileManager manager) {
 		Assert.isTrue(isoLineIds == null || xydatasets.size() == isoLineIds.size());
 		checkReadLock(manager);
-		
+	
 		IXYDataset[] datasets = new IXYDataset[(int)xydatasets.size()];
 		for (int i = 0; i < datasets.length; ++i)
 			datasets[i] = new ScalarScatterPlotDataset(xydatasets.get(i), isoLineIds == null ? null : isoLineIds.get(i));
 		return new CompoundXYDataset(datasets);
 	}
-	
+
 	public static IXYDataset createXYDataset(Chart chart, Dataset dataset, boolean computeData, ResultFileManager manager, IProgressMonitor monitor) {
 		checkReadLock(manager);
-		
+	
 		if (chart instanceof LineChart) {
 			LineChart lineChart = (LineChart)chart;
 			return createVectorDataset(lineChart, dataset, lineChart.getLineNameFormat(), computeData, manager, monitor);
@@ -454,21 +454,21 @@ public class DatasetManager {
 		else
 			return null;
 	}
-	
+
 	public static IHistogramDataset createHistogramDataset(HistogramChart chart, ResultFileManager manager, IProgressMonitor monitor) {
 		checkReadLock(manager);
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		IDList idlist = dataset != null ? getIDListFromDataset(manager, dataset, chart, ResultType.HISTOGRAM_LITERAL): new IDList(); 
 		return new HistogramDataset(idlist, manager);
 	}
-	
+
 	public static String[] getResultItemNames(IDList idlist, String nameFormat, ResultFileManager manager) {
 		checkReadLock(manager);
 		ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
 		String format = StringUtils.defaultIfEmpty(nameFormat, defaultNameFormat(items));
 		return ResultItemFormatter.formatResultItems(format, items);
 	}
-	
+
 	private static final ResultItemField
 		FLD_FILE = new ResultItemField(FILE),
 		FLD_RUN = new ResultItemField(RUN),
@@ -478,20 +478,20 @@ public class DatasetManager {
 		FLD_EXPERIMENT = new ResultItemField(EXPERIMENT),
 		FLD_MEASUREMENT = new ResultItemField(MEASUREMENT),
 		FLD_REPLICATION = new ResultItemField(REPLICATION);
-	
+
 	private static final ResultItemField[] FIELDS_OF_LINENAMES = new ResultItemField[] {
 		FLD_FILE, FLD_RUN,
 		FLD_RUNNUMBER, FLD_MODULE,
 		FLD_NAME, FLD_EXPERIMENT,
 		FLD_MEASUREMENT, FLD_REPLICATION
 	};
-	
+
 	private static final List<ResultItemField> complement(List<ResultItemField> fields) {
 		List<ResultItemField> result = new ArrayList<ResultItemField>(Arrays.asList(FIELDS_OF_LINENAMES));
 		result.removeAll(fields);
 		return result;
 	}
-	
+
 	/**
 	 * Returns the default format string for names of the {@code items}.
 	 * It is "{file} {run} {run-number} {module} {name} {experiment} {measurement} {replication}",
@@ -503,22 +503,22 @@ public class DatasetManager {
 
 		if (items.length <= 1)
 			return "{module} {name}";
-		
+	
 		List<ResultItemField> differentFields = complement(getCommonFields(items, FIELDS_OF_LINENAMES));
 		if (differentFields.isEmpty())
 			return "{module} {name} - {index}";
 		else
 			return nameFormatUsingFields(differentFields);
 	}
-	
+
 	private static final ResultItemField[] titleFields = new ResultItemField[] {
 		FLD_NAME, FLD_MODULE, FLD_EXPERIMENT, FLD_MEASUREMENT, FLD_REPLICATION
 	};
-	
+
 	private static String defaultTitle(ResultItem[] items) {
 		if (items.length <= 1)
 			return null;
-		
+	
 		List<ResultItemField> fields = getCommonFields(items, titleFields);
 		// remove computed file name
 		if (fields.contains(FLD_NAME) || fields.contains(FLD_MODULE)) {
@@ -531,7 +531,7 @@ public class DatasetManager {
 				null :
 				ResultItemFormatter.formatResultItem(nameFormatUsingFields(fields), items[0]);
 	}
-	
+
 	/**
 	 * Returns the fields from {@code fields} that has the same value
 	 * in {@code items}.
@@ -539,7 +539,7 @@ public class DatasetManager {
 	private static List<ResultItemField> getCommonFields(ResultItem[] items, ResultItemField[] fields) {
 		List<ResultItemField> commonFields = new ArrayList<ResultItemField>();
 		int itemCount = items.length;
-		
+	
 		if (itemCount > 0) {
 			for (ResultItemField field : fields) {
 				String firstValue = field.getFieldValue(items[0]);
@@ -553,10 +553,10 @@ public class DatasetManager {
 					commonFields.add(field);
 			}
 		}
-		
+	
 		return commonFields;
 	}
-	
+
 	/**
 	 * Generates a format string from the specified fields 
 	 * for formatting result items.
@@ -572,7 +572,7 @@ public class DatasetManager {
 		}
 		return sbFormat.toString();
 	}
-	
+
 	/**
 	 * Selects ids from a {@code source} IDList.
 	 * If no filters given or the first filter is a Deselect, then a "Select all" is implicitly 
@@ -582,7 +582,7 @@ public class DatasetManager {
 		Assert.isNotNull(source);
 		Assert.isNotNull(filters);
 		checkReadLock(manager);
-		
+	
 		// Select all if no select at the beginning
 		IDList result = new IDList();
 		if (filters.isEmpty() || filters.get(0) instanceof Deselect) {
@@ -611,7 +611,7 @@ public class DatasetManager {
 			if (cachedIDs.size() > 0 && !manager.hasStaleID(cachedIDs))
 				return cachedIDs;
 		}
-		
+	
 		// select IDs by the filter
 		Dataset sourceDataset = op.getSourceDataset();
 		ResultType type = op.getType();
@@ -631,7 +631,7 @@ public class DatasetManager {
 		if (excepts != null)
 			for (Except except : excepts)
 				idlist.substract(selectInternal(idlist, sourceDataset, type, except.getFilterPattern(), manager));
-		
+	
 		// update cached IDs
 		if (op.getCachedIDs() != null)
 			op.setCachedIDs(idlist);
@@ -646,7 +646,7 @@ public class DatasetManager {
 
 		return ScaveModelUtil.filterIDList(sourceIDList, new Filter(filterPattern), manager);
 	}
-	
+
 	/*
 	 * Computed vectors
 	 */
@@ -667,7 +667,7 @@ public class DatasetManager {
 		}
 		return id;
 	}
-	
+
 	private static String calculateComputedVectorName(ProcessingOp operation, IDList input, ResultFileManager manager) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(operation.getOperation()).append("(");
@@ -686,11 +686,11 @@ public class DatasetManager {
 		sb.append(")");
 		return sb.toString();
 	}
-	
+
 	private static long getFilterNodeID(ProcessingOp operation) {
 		return operation.hashCode();
 	}
-	
+
 	static StringMap mapVectorAttributes(VectorResult input, ProcessingOp processingOp, /*out*/List<IStatus> warnings) {
 		String operation = processingOp.getOperation();
 		StringMap inputAttrs = input.getAttributes();
@@ -699,7 +699,7 @@ public class DatasetManager {
 			return outAttrs;
 		for (String key : inputAttrs.keys().toArray()) // TODO use clone()
 			outAttrs.set(key, inputAttrs.get(key));
-		
+	
 		NodeType type = NodeTypeRegistry.getInstance().getNodeType(operation);
 		StringVector warningList = new StringVector();
 		type.mapVectorAttributes(outAttrs, warningList);
@@ -707,7 +707,7 @@ public class DatasetManager {
 			warnings.add(ScavePlugin.getWarningStatus(warningList.get(i)));
 		return outAttrs;
 	}
-	
+
 	public static long getComputationHash(ProcessingOp processingOp, ResultFileManager manager) {
 		checkReadLock(manager);
 		long hash = 1;
@@ -715,13 +715,13 @@ public class DatasetManager {
 		if (inputIDs != null)
 			for (int i = 0; i < inputIDs.size(); ++i)
 				hash = 31 * hash + inputIDs.get(i);
-		
+	
 		String operation = processingOp.getOperation();
 		hash = 31 * hash + (operation == null ? 0 : operation.hashCode());
-		
+	
 		List<String> groupByFields = processingOp.getGroupBy();
 		hash = 31 * hash + (groupByFields == null ? 0 : groupByFields.hashCode());
-		
+	
 		List<Param> params = processingOp.getParams();
 		if (params != null)
 			for (Param param : params) {
@@ -732,7 +732,7 @@ public class DatasetManager {
 			}
 		return hash;
 	}
-	
+
 	public static IDList getComputationInput(ProcessingOp processingOp, ResultFileManager manager) {
 		checkReadLock(manager);
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(processingOp);
@@ -740,7 +740,7 @@ public class DatasetManager {
 			return null;
 		return getIDListFromDataset(manager, dataset, processingOp, true, ResultType.VECTOR_LITERAL);
 	}
-	
+
 	public static List<IDList> groupIDs(ProcessingOp operation, IDList idlist, ResultFileManager manager) {
 		List<IDList> result = new ArrayList<IDList>();
 		if (ScaveModelUtil.isFilterOperation(operation)) {
@@ -765,7 +765,7 @@ public class DatasetManager {
 		}
 		return result;
 	}
-	
+
 	public static ResultItemField[] getSelectableGroupByFields(ProcessingOp operation, ResultFileManager manager) {
 		List<ResultItemField> fields = new ArrayList<ResultItemField>();
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
@@ -777,7 +777,7 @@ public class DatasetManager {
 		}
 		return fields.toArray(new ResultItemField[fields.size()]);
 	}
-	
+
 	private static void checkReadLock(ResultFileManager manager) {
 		if (manager != null)
 			manager.checkReadLock();

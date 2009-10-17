@@ -21,7 +21,7 @@ import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
  * @author rhornig
  */
 public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {
-	
+
 	public void setup(IDocument document) {
 		if (document instanceof IDocumentExtension3) {
 			IDocumentExtension3 extension3= (IDocumentExtension3) document;

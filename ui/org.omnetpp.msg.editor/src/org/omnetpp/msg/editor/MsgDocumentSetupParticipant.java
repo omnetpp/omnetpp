@@ -21,7 +21,7 @@ import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
  * @author rhornig
  */
 public class MsgDocumentSetupParticipant implements IDocumentSetupParticipant {
-	
+
 	public void setup(IDocument document) {
 		if (document instanceof IDocumentExtension3) {
 			IDocumentExtension3 extension3 = (IDocumentExtension3) document;

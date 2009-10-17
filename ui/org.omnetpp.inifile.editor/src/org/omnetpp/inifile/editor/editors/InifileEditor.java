@@ -80,7 +80,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	private ResourceTracker resourceTracker = new ResourceTracker();
 	private InifileContentOutlinePage outlinePage;
 	private DelayedJob postSelectionChangedJob;
-	
+
 	/**
 	 * Creates the ini file editor.
 	 */
@@ -128,7 +128,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 
 		// assert page constants are OK
 		Assert.isTrue(getControl(FORMEDITOR_PAGEINDEX)==formEditor && getEditor(TEXTEDITOR_PAGEINDEX)==textEditor);
-		
+	
 		// set up editorData (the InifileDocument)
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
 		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
@@ -138,14 +138,14 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		// replace original MultiPageSelectionProvider with our own, as we want to
 		// publish our own selection (with InifileSelectionItem) for both pages.
 		getSite().setSelectionProvider(new SelectionProvider());
-		
+	
 		// propagate property changes (esp. PROP_DIRTY) from our text editor
 		textEditor.addPropertyListener(new IPropertyListener() {
 			public void propertyChanged(Object source, int propertyId) {
 				firePropertyChange(propertyId);
 			}
 		});
-		
+	
 //		//XXX experimental
 //		// see registration of InformationDispatchAction in AbstractTextEditor
 //		IAction action = new Action("F2!!!") {
@@ -156,21 +156,21 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 //		action.setActionDefinitionId(ITextEditorActionDefinitionIds.SHOW_INFORMATION);
 ////		IKeyBindingService keyBindingService = getEditorSite().getKeyBindingService();
 ////		keyBindingService.registerAction(action);
-//		
+//	
 //		//IWorkbench workbench = PlatformUI.getWorkbench();
 //		//IHandlerService handlerService = (IHandlerService)workbench.getAdapter(IHandlerService.class);
 //		//IHandlerService handlerService = (IHandlerService)getEditorSite().getService(IHandlerService.class);
 //		IHandlerService handlerService = (IHandlerService)textEditor.getEditorSite().getService(IHandlerService.class);
 //		IHandler actionHandler = new ActionHandler(action);
 //		handlerService.activateHandler(ITextEditorActionDefinitionIds.SHOW_INFORMATION, actionHandler);
-		
+	
 		// this DelayedJob will, after a delay, publish a new editor selection towards the workbench
 		postSelectionChangedJob = new DelayedJob(600) {
 			public void run() {
 				updateSelection();
 			}
 		};
-		
+	
 		// we want to update the selection whenever the document changes, or the cursor position in the text editor changes
 		editorData.getInifileDocument().addInifileChangeListener(new IInifileChangeListener() {
 			public void modelChanged() {
@@ -190,7 +190,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 				InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 				doc.parse();
 				analyzer.analyze();
-				
+			
 				// open the "Module Parameters" view
 				try {
 					IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -204,7 +204,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 
 				// if the file is in the old format, offer upgrading it
 				convertOldInifile();
-				
+			
 				// publish an initial selection (select first section)
 				String[] sectionNames = doc.getSectionNames();
 				if (sectionNames.length > 0)
@@ -261,7 +261,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	public void doSave(IProgressMonitor monitor) {
 		textEditor.doSave(monitor);
 	}
-	
+
 	/**
 	 * Saves the multi-page editor's document as another file.
 	 * Also updates the text for page 0's tab, and updates this multi-page editor's input
@@ -272,7 +272,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		textEditor.doSaveAs();
 		setInput(textEditor.getEditorInput());
 	}
-	
+
 	/**
 	 * The <code>MultiPageEditorExample</code> implementation of this method
 	 * checks that the input is an instance of <code>IFileEditorInput</code>.
@@ -313,7 +313,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	public boolean isFormPageDisplayed() {
 		return getActivePage()==FORMEDITOR_PAGEINDEX;
 	}
-	
+
 	/**
 	 * Detect when the file is in the old format, and offer converting it.
 	 */
@@ -346,7 +346,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		}
 		return super.getAdapter(required);
 	}
-	
+
     /**
      * This class listens to changes to the file system in the workspace, and
      * makes changes accordingly.
@@ -411,7 +411,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
             return false;
         }
     }
-	
+
 	protected void inputFileDeletedFromDisk() {
 		closeEditor(false);
 	}
@@ -419,7 +419,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	protected void inputFileMovedOrRenamedOnDisk(IFile newFile) {
 		closeEditor(false);
 	}
-	
+
 	protected void inputFileModifiedOnDisk() {
 		// TODO ask the user to keep/throw away change
 	}
@@ -452,7 +452,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	public void gotoEntry(String section, String key, Mode mode) {
 		gotoSectionOrEntry(section, key, mode);
 	}
-	
+
 	private void gotoSectionOrEntry(String section, String key, Mode mode) {
 		// switch to the requested page. If mode==AUTO, stay where we are.
 		// Note: setActivePage() gives focus to the editor, so don't call it with AUTO mode.
@@ -460,7 +460,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 			setActivePage(FORMEDITOR_PAGEINDEX); 
 		else if (mode==IGotoInifile.Mode.FORM)
 			setActivePage(TEXTEDITOR_PAGEINDEX);
-		
+	
 		// perform "go to" on whichever page is displayed
 		if (getActivePage()==FORMEDITOR_PAGEINDEX) {
 			// form editor

@@ -40,7 +40,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	private boolean doCaching = true;
 	private ITileCache tileCache = new XYTileCache();
 	private boolean debug = false;
-	
+
 
 	/**
 	 * Constructor. 
@@ -54,7 +54,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			}
 		});
 	}
-	
+
 	/**
 	 * Override base method to limit the size of the virtual canvas.
 	 * This is necessary because of arithmetic overflows could
@@ -66,7 +66,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		super.setVirtualSize(width, height);
 	}
 
-	
+
 
 	/**
 	 * Returns whether caching is on.
@@ -151,7 +151,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			clip = clip.intersection(viewportRect);
 			gc.setClipping(clip);
 			LargeRect lclip = canvasToVirtualRect(clip);
-			
+		
 			ArrayList<Tile> cachedTiles = new ArrayList<Tile>();
 			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
 

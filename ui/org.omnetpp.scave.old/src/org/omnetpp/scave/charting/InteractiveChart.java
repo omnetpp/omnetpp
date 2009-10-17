@@ -62,7 +62,7 @@ public class InteractiveChart extends ChartSWTWrapper {
 			//refresh();
 		}
 	}
-	
+
 	/**
 	 * Zoom in when the chart gets clicked.
 	 */
@@ -80,11 +80,11 @@ public class InteractiveChart extends ChartSWTWrapper {
 		System.out.println("SELECTED: " + r.toString());
 		// TODO zoom
 	}
-	
+
 	public void showPropertyDialog()
 	{
 		PreferenceDialog dialog = new ChartPropertyDialog(getShell(), this);
 		dialog.open();
-		
+	
 	}
 }

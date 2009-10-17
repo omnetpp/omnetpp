@@ -67,7 +67,7 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 			ScavePlugin.logError(e);
 		}
 	}
-	
+
 	/**
 	 * Returns the analysis file belongs to <code>resultFile</code>.
 	 * If the analysis file does not exists, a "New Analysis" wizard
@@ -78,7 +78,7 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 		// ignore files which are not "vec" or "sca"
 		if (!"vec".equals(path.getFileExtension()) && !"sca".equals(path.getFileExtension()))
 			return null; 
-		
+	
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IFile[] resultFiles = root.findFilesForLocation(path);
 
@@ -90,7 +90,7 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 			IContainer container = resultFile.getParent() instanceof IProject ? resultFile.getParent() : resultFile.getParent().getParent(); 
 			IPath analysisFileName = new Path(suffixPattern.matcher(baseName.lastSegment()).replaceFirst("")).addFileExtension("anf"); 
 			IFile analysisFile = container.getFile(analysisFileName);
-			
+		
 			if (analysisFile.getLocation().toFile().exists()) {
 				return analysisFile; // return existing
 			}
@@ -103,9 +103,9 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 		else
 			return null;
 	}
-	
+
 	private static final Pattern suffixPattern = Pattern.compile("-[0-9]+$");
-	
+
 	/**
 	 * Opens the "New Analysis" wizard. The new analysis file will
 	 * contain the specified <code>resultFile</code>.
@@ -121,7 +121,7 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 		wizard.init(workbench, selection);
 		wizard.setDefaultAnalysisFileName(analysisFile.getName());
 		wizard.setInitialInputFiles(initialInputFiles);
-		
+	
 		WizardDialog dialog = new WizardDialog(workbenchWindow.getShell(), wizard);
 		return dialog.open() == Window.OK;
 	}

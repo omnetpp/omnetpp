@@ -29,7 +29,7 @@ import org.omnetpp.scave.wizard.NewScaveObjectWizard;
 public class NewAction extends AbstractScaveAction {
 	private EObject defaultParent;
 	private boolean createChild;
-	
+
 	public NewAction() {
 		this(null, true);
 	}
@@ -58,7 +58,7 @@ public class NewAction extends AbstractScaveAction {
 					return dialog.open();
 				}
 			});
-			
+		
 			if (returnCode == Window.OK) {
 				Command command = CreateChildCommand.create(
 						editor.getEditingDomain(),
@@ -80,7 +80,7 @@ public class NewAction extends AbstractScaveAction {
 		}
 		return false;
 	}
-	
+
 	private EObject getParent(IStructuredSelection selection) {
 		if (selection!=null && selection.size()==1 && selection.getFirstElement() instanceof EObject) {
 			EObject object = (EObject)selection.getFirstElement();

@@ -69,7 +69,7 @@ public class InifileParser {
 			Debug.println(lineNumber+": PARSE ERROR: "+message);
 		}
 	}
-	
+
 	/**
 	 * Parses an IFile.
 	 */
@@ -110,7 +110,7 @@ public class InifileParser {
 					concatenatedLines.append(rawLine);
 				line = concatenatedLines.toString();
 			}
-			
+		
 			// process the line
 			line = line.trim();
 			char lineStart = line.length()==0 ? 0 : line.charAt(0);

@@ -48,7 +48,7 @@ public class SubmoduleFigureEx extends SubmoduleFigure implements HandleBounds,
 	        translateToAbsolute(labelBounds);
 	        text.setBounds(labelBounds.x + (labelBounds.width - editorSize.x)/2 , labelBounds.y-1, editorSize.x, editorSize.y + 1);
 		}
-    	
+    
     }
     
     // Direct edit support

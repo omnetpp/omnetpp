@@ -35,7 +35,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = layout.marginHeight = 0;
 		parent.setLayout(layout);
-	
+
 		viewControl = createViewControl(parent);
 		viewControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
@@ -72,11 +72,11 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	public boolean isShowingMessage() {
 		return !isVisible(viewControl);
 	}
-	
+
 	protected boolean isDisposed() {
 		return viewControl.isDisposed();
 	}
-	
+
 	/**
 	 * Displays the part control.
 	 */
@@ -105,7 +105,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		control.setVisible(visible);
 		control.getParent().layout(true, true);
 	}
-	
+
 	/**
 	 * Utility method: Returns the active editor, or null.
 	 */
@@ -114,7 +114,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		IWorkbenchPage activePage = site==null ? null : site.getWorkbenchWindow().getActivePage();
 		return activePage==null ? null : activePage.getActiveEditor();
 	}
-	
+
 	/**
 	 * Utility method: Returns the active part, or null.
 	 */
@@ -132,7 +132,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		ISelectionProvider selectionProvider = editor==null ? null : editor.getSite().getSelectionProvider();
 		return selectionProvider==null ? null : selectionProvider.getSelection();
 	}
-	
+
 	/**
 	 * Utility method: Return the selection of the active 
 	 * workbench part (editor OR view!), or null.

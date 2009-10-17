@@ -5,12 +5,12 @@ import org.omnetpp.scave.engine.ResultFile;
 
 public class ResultFilePayload {
 	private String filePath;
-	
+
 	public ResultFilePayload(ResultFile resultFile) {
 		Assert.isNotNull(resultFile.getFilePath());
 		this.filePath = resultFile.getFilePath();
 	}
-	
+
 	public String getFilePath() {
 		return filePath;
 	}
@@ -23,7 +23,7 @@ public class ResultFilePayload {
 			return false;
 		return filePath.equals(((ResultFilePayload)other).filePath);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return filePath.hashCode();

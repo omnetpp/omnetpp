@@ -15,7 +15,7 @@ public class ReplaySimulation implements IRuntimeSimulation {
 	private ReplayModule rootModule;
 	private HashMap<Integer,ReplayModule> idToModuleMap = new HashMap<Integer, ReplayModule>();
 	private HashMap<String,ReplayModule> pathToModuleMap = new HashMap<String, ReplayModule>();
-	
+
 	public ReplaySimulation(ReplayModule rootModule) {
 		this.rootModule = rootModule;
 	}
@@ -31,7 +31,7 @@ public class ReplaySimulation implements IRuntimeSimulation {
 		idToModuleMap.remove(id);
 		pathToModuleMap.remove(module.getFullPath());
 	}
-	
+
 	public ReplayModule getRootModule() {
 		return rootModule;
 	}

@@ -58,7 +58,7 @@ public class ZoomableCanvasMouseSupport {
 	protected static final Cursor ZOOMOUT_CURSOR = CustomCursors.ZOOMOUT;
 
 	protected RubberbandSupport rubberBand;
-	
+
 	public static final int PAN_MODE = 0;
 	public static final int ZOOM_MODE = 1;
 	private int mouseMode;
@@ -98,7 +98,7 @@ public class ZoomableCanvasMouseSupport {
 		canvas.setCursor(mouseMode == ZOOM_MODE ? ZOOMIN_CURSOR : null);
 		rubberBand.setModifierKeys(mouseMode==ZOOM_MODE ? SWT.NONE : SWT.MOD1);
 	}
-	
+
 	/**
 	 * Calculates and sets the new mouse cursor.
 	 * To be called when the mouseMode changed, a mouse button pressed/released or
@@ -111,7 +111,7 @@ public class ZoomableCanvasMouseSupport {
 //				(mouseMode == PAN_MODE ? "pan" : "zoom"),
 //				(mouseButton == 0 ? "no button pressed" : "button pressed"),
 //				(shift && ctrl ? "ctrl+shift" :	ctrl ? "ctrl" :	shift ? "shift" : "none"));
-		
+	
 		Cursor cursor;
 		boolean zoomCursor = (mouseMode == PAN_MODE) && ctrl || (mouseMode == ZOOM_MODE) && !ctrl;
 		if (zoomCursor) {
@@ -165,7 +165,7 @@ public class ZoomableCanvasMouseSupport {
 				}
 			}
 		});
-		
+	
 		// mouse button down / up
 		canvas.addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent event) {}
@@ -228,7 +228,7 @@ public class ZoomableCanvasMouseSupport {
 			}
 		});
 	}
-	
+
 	public void drawRubberband(GC gc) {
 		rubberBand.drawRubberband(gc);
 	}

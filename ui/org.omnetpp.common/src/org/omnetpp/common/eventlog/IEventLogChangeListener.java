@@ -17,12 +17,12 @@ public interface IEventLogChangeListener {
      * Called when the event log file content has been overwritten by the simulation runtime environment.
      */
     public void eventLogOverwritten();
-	
+
 	/**
 	 * Called when the event log has been filtered by the user.
 	 */
 	public void eventLogFiltered();
-	
+
 	/**
 	 * Called when the event log filter has been removed by the user.
 	 */

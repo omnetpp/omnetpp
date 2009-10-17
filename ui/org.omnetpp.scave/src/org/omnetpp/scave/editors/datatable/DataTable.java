@@ -123,7 +123,7 @@ public class DataTable extends Table {
 		COL_VECTOR_ID = new Column("Vector id", null, 60, false),
 		COL_MIN_TIME = new Column("Min time", null, 60, false),
 		COL_MAX_TIME = new Column("Max time", null, 60, false);
-	
+
 	private static final Column[] allScalarColumns = new Column[] {
 		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
@@ -152,9 +152,9 @@ public class DataTable extends Table {
 
 	// holds actions for the context menu for this data table
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-	
+
 	private static final ResultItem[] NULL_SELECTION = new ResultItem[0];
-	
+
 	private TableItem selectedItem;
 	private TableColumn selectedColumn;
 
@@ -217,7 +217,7 @@ public class DataTable extends Table {
 		refresh();
 		fireContentChangedEvent();
 	}
-	
+
 	public IDList getIDList() {
 		return idlist;
 	}
@@ -225,7 +225,7 @@ public class DataTable extends Table {
 	public IMenuManager getContextMenuManager() {
 		return contextMenuManager;
 	}
-	
+
 	protected Column[] getAllColumns() {
 		switch (type.getValue()) {
 		case ResultType.SCALAR:		return allScalarColumns;
@@ -242,21 +242,21 @@ public class DataTable extends Table {
 			columnNames[i] = columns[i].text;
 		return columnNames;
 	}
-	
+
 	public String[] getVisibleColumnNames() {
 		String[] columnNames = new String[visibleColumns.size()];
 		for (int i = 0; i < visibleColumns.size(); ++i)
 			columnNames[i] = visibleColumns.get(i).text;
 		return columnNames;
 	}
-	
+
 	public void setVisibleColumns(String[] columnTexts) {
 		List<String> visibleColumnTexts = Arrays.asList(columnTexts);
 
 		visibleColumns.clear();
 		for (TableColumn column : getColumns())
 			column.dispose();
-		
+	
 		for (Column column : getAllColumns()) {
 			boolean visible = visibleColumnTexts.indexOf(column.text) >= 0;
 			if (visible)
@@ -273,14 +273,14 @@ public class DataTable extends Table {
 
 		for (int i = 0; i < selectionIndices.length; ++i)
 			items.add(idlist.get(selectionIndices[i]));
-		
+	
 		return items;
 	}
 
 	public ResultItem[] getSelectedItems() {
 		if (manager == null)
 			return NULL_SELECTION;
-		
+	
 		int[] selectionIndices = getSelectionIndices();
 		ResultItem[] items = new ResultItem[selectionIndices.length];
 
@@ -295,7 +295,7 @@ public class DataTable extends Table {
 		setItemCount((int)idlist.size());
 		clearAll();
 	}
-	
+
 	protected void initColumns() {
 		visibleColumns = new ArrayList<Column>();
 		loadState();
@@ -309,7 +309,7 @@ public class DataTable extends Table {
 		}
 		return null;
 	}
-	
+
 	protected void addColumn(Column newColumn) {
 		visibleColumns.add(newColumn);
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
@@ -331,7 +331,7 @@ public class DataTable extends Table {
 			}
 		});
 	}
-	
+
 	private void restoreSortOrder() {
 		TableColumn sortColumn = getSortColumn();
 		int sortDirection = getSortDirection();
@@ -341,11 +341,11 @@ public class DataTable extends Table {
 				sortBy(column, sortDirection);
 		}
 	}
-	
+
 	private void sortBy(Column column, int direction) {
 		if (manager == null)
 			return;
-		
+	
 		boolean ascending = direction == SWT.UP;
 		if (COL_DIRECTORY.equals(column))
 			idlist.sortByDirectory(manager, ascending);
@@ -408,7 +408,7 @@ public class DataTable extends Table {
 	protected void fillTableLine(TableItem item, int lineNumber) {
 		if (manager == null)
 			return;
-		
+	
 		long id = idlist.get(lineNumber);
 		item.setData(ITEM_KEY, (Long)id);
 
@@ -422,7 +422,7 @@ public class DataTable extends Table {
 	protected void toCSV(CsvWriter writer, int lineNumber) {
 		if (manager == null)
 			return;
-		
+	
 		for (int i = 0; i < visibleColumns.size(); ++i) {
 			Column column = visibleColumns.get(i);
 			writer.addField(getCellValue(lineNumber, column));
@@ -430,11 +430,11 @@ public class DataTable extends Table {
 
 		writer.endRecord();
 	}
-	
+
 	protected String getCellValue(int row, Column column) {
 		if (manager == null)
 			return "";
-		
+	
 		try {
 
 			long id = idlist.get(row);
@@ -539,7 +539,7 @@ public class DataTable extends Table {
 			// stale ID?
 			return "";
 		}
-		
+	
 		return "";
 	}
 
@@ -576,7 +576,7 @@ public class DataTable extends Table {
 				((IDataTableListener)listener).contentChanged(this);
 		}
 	}
-	
+
 	/*
 	 * Save/load state
 	 */
@@ -592,7 +592,7 @@ public class DataTable extends Table {
 			}
 		}
 	}
-	
+
 	protected void loadState() {
 		if (preferences != null) {
 			visibleColumns.clear();
@@ -603,7 +603,7 @@ public class DataTable extends Table {
 			}
 		}
 	}
-	
+
 	protected void saveState() {
 		if (preferences != null) {
 			for (Column column : getAllColumns()) {
@@ -612,7 +612,7 @@ public class DataTable extends Table {
 			}
 		}
 	}
-	
+
 	/*
 	 * Select cells. 
 	 */
@@ -657,12 +657,12 @@ public class DataTable extends Table {
 		}
 		setSelectedCell(item, newColumn);
 	}
-	
+
 	private void setSelectedCell(TableItem item, TableColumn column) {
 		selectedItem = item;
 		selectedColumn = column;
 	}
-	
+
 	public String getSelectedField() {
 		if (selectedColumn != null && !selectedColumn.isDisposed()) {
 			Column column = (Column)selectedColumn.getData(COLUMN_KEY);
@@ -671,7 +671,7 @@ public class DataTable extends Table {
 		}
 		return null;
 	}
-	
+
 	public ResultItem getSelectedItem() {
 		if (selectedItem != null && !selectedItem.isDisposed()) {
 			long id = (Long)selectedItem.getData(ITEM_KEY);
@@ -680,7 +680,7 @@ public class DataTable extends Table {
 		}
 		return null;
 	}
-	
+
 	public void setSelectionByID(long id) {
 		int index = idlist.indexOf(id);
 		if (index >= 0)

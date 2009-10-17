@@ -27,10 +27,10 @@ StressQueue::~StressQueue()
 void StressQueue::handleMessage(cMessage *msg)
 {
 	cMessage *sendOutMsg = NULL;
-	
+
 	if (msg == timer) {
 		if (!queue.empty()) {
-			sendOutMsg = (cMessage*)queue.pop();	
+			sendOutMsg = (cMessage*)queue.pop();
 
 			ev << "Sending out queued message: "  << sendOutMsg << "\n";;
 		}
