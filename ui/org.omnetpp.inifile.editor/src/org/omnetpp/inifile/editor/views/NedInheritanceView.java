@@ -62,7 +62,7 @@ import org.omnetpp.ned.model.pojo.InterfaceNameElement;
 //XXX add tooltip (see fixme below)
 public class NedInheritanceView extends AbstractModuleView {
 	private TreeViewer treeViewer;
-	
+
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
 	// hashmap to save/restore view's state when switching across editors 
@@ -98,7 +98,7 @@ public class NedInheritanceView extends AbstractModuleView {
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
-		
+	
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IEditorPart editor = getAssociatedEditor();
@@ -112,7 +112,7 @@ public class NedInheritanceView extends AbstractModuleView {
 		// create context menu
  		getViewSite().registerContextMenu(contextMenuManager, treeViewer);
  		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
- 		
+ 	
  		// add tooltip support to the tree
  		new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
@@ -124,12 +124,12 @@ public class NedInheritanceView extends AbstractModuleView {
 				return null;
 			}
  		});
- 		
+ 	
 	}
 
 	private void createActions() {
 		IAction pinAction = getOrCreatePinAction();
-		
+	
 		class GotoNedFileAction extends ActionExt {
 			GotoNedFileAction() {
 			    setText("Open NED Declaration");
@@ -154,25 +154,25 @@ public class NedInheritanceView extends AbstractModuleView {
 
 		final ActionExt gotoNedAction = new GotoNedFileAction(); 
 		treeViewer.addSelectionChangedListener(gotoNedAction);
-	
+
 		// add double-click support to the tree
         treeViewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
 				gotoNedAction.run();
 			}
 		});
-	
+
 		// build menus and toolbar
 		contextMenuManager.add(gotoNedAction);
 		contextMenuManager.add(pinAction);
 
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		toolBarManager.add(pinAction);
-	
+
 		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
 		menuManager.add(pinAction);
 	}
-	
+
 	@Override
 	protected void showMessage(String text) {
 		super.showMessage(text);
@@ -214,7 +214,7 @@ public class NedInheritanceView extends AbstractModuleView {
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
 			treeViewer.setInput(root);
-			
+		
 			// open root node (useful in case preserving the selection fails)
 			treeViewer.expandToLevel(2);  
 
@@ -226,7 +226,7 @@ public class NedInheritanceView extends AbstractModuleView {
 
 		// refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
 		treeViewer.refresh();
-		
+	
 		// update label
 		String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNEDElement().getReadableTagName()); 
 		if (getPinnedToEditor() != null)

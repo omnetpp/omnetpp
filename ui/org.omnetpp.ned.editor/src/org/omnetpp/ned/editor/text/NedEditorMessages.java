@@ -31,7 +31,7 @@ public class NedEditorMessages {
 			return "!" + key + "!"; 
 		}
 	}
-	
+
 	public static ResourceBundle getResourceBundle() {
 		return fgResourceBundle;
 	}

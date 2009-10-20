@@ -28,27 +28,27 @@ import org.omnetpp.scave.panel.FilterPanel;
 import org.xml.sax.ContentHandler;
 
 public class FilterPanelPage implements IDatasetEditorPage {
-	
+
 	private DatasetEditor editor;
-	
+
 	/** Allows us common handling of scalars and vectors */
 	private IDatasetStrategy strategy;
 
 	/** The Data panel that appears on the first page */
 	private FilterPanel filterPanel;
-	
+
 	public FilterPanelPage(IDatasetStrategy strategy) {
 		this.strategy = strategy;
 	}
-	
+
 	public String getPageTitle() {
 		return "Data";
 	}
-	
+
 	public FilterPanel getFilterPanel() {
 		return filterPanel;
 	}
-	
+
 	public IDListModel getDataset() {
 		return editor.getDataset();
 	}
@@ -72,7 +72,7 @@ public class FilterPanelPage implements IDatasetEditorPage {
 		editor.setupDropTarget(filterPanel.getPanel());
 		return filterPanel.getPanel();
 	}
-	
+
 	public void finalizePage() {
 		// add change listener that updates the dirty flag
 		getDataset().addListener(new IModelChangeListener() {
@@ -88,7 +88,7 @@ public class FilterPanelPage implements IDatasetEditorPage {
 
 	public void deactivate() {
 	}
-	
+
 	public void save(XMLWriter writer, IProgressMonitor progressMonitor) {
 		IDListIO.save(getDataset().get(), writer, progressMonitor);
 	}
@@ -96,7 +96,7 @@ public class FilterPanelPage implements IDatasetEditorPage {
 	public Map<String, ContentHandler> getLoader(IProgressMonitor progressMonitor) {
 		return IDListIO.getContentHandlers(getDataset().get(), progressMonitor);
 	}
-	
+
 	protected void setupDragSource(Control dragSourceControl) {
 		// make table d&d source for IDLists
 		DragSource dragSrc = new DragSource(dragSourceControl, DND.DROP_DEFAULT | DND.DROP_COPY);

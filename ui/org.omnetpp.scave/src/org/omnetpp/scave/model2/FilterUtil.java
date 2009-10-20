@@ -119,7 +119,7 @@ public class FilterUtil {
 	public boolean isLossy() {
 		return lossy;
 	}
-	
+
 	public String getField(String name) {
 		String value = fields.get(name);
 		return value != null ? value : "";
@@ -140,7 +140,7 @@ public class FilterUtil {
 				return false;
 		return true;
 	}
-	
+
 	private String buildPattern() {
 		StringBuffer sb = new StringBuffer();
 		for (String name : fields.keySet())
@@ -158,11 +158,11 @@ public class FilterUtil {
 			sb.append(quoteStringIfNeeded(attrName)).append("(").append(quoteStringIfNeeded(attrPattern)).append(")");
 		}
 	}
-	
+
 	public static boolean needsQuotes(String pattern) {
 		return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()") >= 0;
 	}
-	
+
 	public static String quoteStringIfNeeded(String str) {
 		return needsQuotes(str) ? Common.quoteString(str) : str;
 	}
@@ -184,7 +184,7 @@ public class FilterUtil {
 		node.accept(visitor);
 		return visitor.isANDPattern;
 	}
-	
+
 	private void parseFields(String pattern) {
 		// Note: here we allow non-AND patterns which cannot be represented, but 
 		// at least the fields can be extracted.

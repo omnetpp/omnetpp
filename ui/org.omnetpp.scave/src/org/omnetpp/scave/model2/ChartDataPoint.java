@@ -17,12 +17,12 @@ import org.omnetpp.scave.model.Chart;
  * @author tomi
  */
 public class ChartDataPoint extends ChartLine {
-	
+
 	private int index;
 	private long eventNum;
 	private BigDecimal preciseX;
 	private double x,y;
-	
+
 	public ChartDataPoint(Chart chart, int series, String seriesKey, long id, int index, long eventNum,
 			BigDecimal preciseX, double x, double y, ResultFileManager manager) {
 		super(chart, series, seriesKey, id, manager);

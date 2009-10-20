@@ -40,16 +40,16 @@ public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
 	    Assert.isTrue(context != null);
 		return new MSVCDiscoveredPathInfo(context.getProject());
 	}
-	
+
 	public void setInfoContext(InfoContext context) {
 	    this.context = context;
 	}
-	
+
 	public void setProject(IProject project) {
 	    // CDT apparently never invokes this
 	}
-	
+
 	public void updateScannerConfiguration(IProgressMonitor monitor) throws CoreException {
 	}
-	
+
 }

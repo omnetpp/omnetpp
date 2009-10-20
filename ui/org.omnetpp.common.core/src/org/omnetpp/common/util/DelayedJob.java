@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Display;
  */
 abstract public class DelayedJob implements Runnable {
 	private int delayMillis;
-	
+
 	private boolean scheduled;
 
 	/**
@@ -29,7 +29,7 @@ abstract public class DelayedJob implements Runnable {
 	public DelayedJob(int delayMillis) {
 		this.delayMillis = delayMillis;
 	}
-	
+
 	public boolean isScheduled() {
         return scheduled;
     }

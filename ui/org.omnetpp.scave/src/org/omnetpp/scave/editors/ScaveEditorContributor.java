@@ -75,15 +75,15 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //	public IAction addToDatasetAction;
 //	public IAction createDatasetAction;
 //	public IAction createChartAction;
-	
+
 	// global retarget actions
 	private RetargetAction undoRetargetAction;
 	private RetargetAction redoRetargetAction;
 	private RetargetAction deleteRetargetAction;
-	
+
 	// container of conditional toolbar actions (delete/open/edit)
 	private SubToolBarManager optionalToolbarActions;
-	
+
 	// generic actions
 	private IAction openAction;
 	private IAction editAction;
@@ -241,7 +241,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
     	manager.add(undoRetargetAction);
     	manager.add(redoRetargetAction);
-    	
+    
     	optionalToolbarActions = new SubToolBarManager(manager);
     	optionalToolbarActions.add(deleteRetargetAction);
     	optionalToolbarActions.add(openAction);
@@ -310,7 +310,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());
 		menuManager.insertAfter("ui-actions", refreshViewerAction);
 	}
-	
+
 	protected void showOptionalToolbarActions(boolean visible) {
 		if (optionalToolbarActions != null) {
 			optionalToolbarActions.setVisible(visible);

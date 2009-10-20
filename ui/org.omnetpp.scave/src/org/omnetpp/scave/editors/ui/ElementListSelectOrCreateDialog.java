@@ -28,7 +28,7 @@ public class ElementListSelectOrCreateDialog extends ElementListSelectionDialog 
 	public interface ICallback {
 		public Object createNewObject(); 
 	}
-	
+
 	public ElementListSelectOrCreateDialog(Shell parent, ILabelProvider renderer) {
 		super(parent, renderer);
 	}

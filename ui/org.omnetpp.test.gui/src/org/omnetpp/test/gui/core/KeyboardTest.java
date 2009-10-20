@@ -32,5 +32,5 @@ public class KeyboardTest extends GUITestCase
 	    }
 	    text.pressKey(SWT.ESC);
 	}
-	
+
 }

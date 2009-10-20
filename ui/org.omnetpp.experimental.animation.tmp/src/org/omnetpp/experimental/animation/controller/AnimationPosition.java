@@ -19,17 +19,17 @@ package org.omnetpp.experimental.animation.controller;
  */
 public class AnimationPosition implements Comparable {
 	protected long eventNumber;
-	
+
 	protected double simulationTime;
-	
+
 	protected long animationNumber;
-	
+
 	protected double animationTime;
 
 	public AnimationPosition() {
 		this(-1, -1, -1, -1);
 	}
-	
+
 	public AnimationPosition(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		setAnimationPosition(eventNumber, simulationTime, animationNumber, animationTime);
 	}
@@ -52,7 +52,7 @@ public class AnimationPosition implements Comparable {
 	protected void setEventNumber(long eventNumber) {
 		if (eventNumber != -1 && eventNumber < 0)
 			throw new RuntimeException("Invalid event number");
-		
+	
 		this.eventNumber = eventNumber;
 	}
 
@@ -63,7 +63,7 @@ public class AnimationPosition implements Comparable {
 	protected void setSimulationTime(double simulationTime) {
 		if (simulationTime != -1 && simulationTime < 0)
 			throw new RuntimeException("Invalid event number");
-		
+	
 		this.simulationTime = simulationTime;
 	}
 
@@ -74,7 +74,7 @@ public class AnimationPosition implements Comparable {
 	protected void setAnimationNumber(long animationNumber) {
 		if (animationNumber != -1 && animationNumber < 0)
 			throw new RuntimeException("Invalid event number");
-		
+	
 		this.animationNumber = animationNumber;
 	}
 
@@ -85,17 +85,17 @@ public class AnimationPosition implements Comparable {
 	protected void setAnimationTime(double animationTime) {
 		if (animationTime != -1 && animationTime < 0)
 			throw new RuntimeException("Invalid event number");
-		
+	
 		this.animationTime = animationTime;
 	}
-	
+
 	public boolean isValid() {
 		return eventNumber != -1 &&
 			simulationTime != -1 &&
 			animationNumber != -1 &&
 			animationTime != -1;
 	}
-	
+
 	public boolean isPartiallyValid() {
 		return eventNumber != -1 ||
 			simulationTime != -1 ||
@@ -164,7 +164,7 @@ public class AnimationPosition implements Comparable {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "event number: " + eventNumber + ", simulation time: " + simulationTime + ", animation number: " + animationNumber + ", animationTime: " + animationTime;

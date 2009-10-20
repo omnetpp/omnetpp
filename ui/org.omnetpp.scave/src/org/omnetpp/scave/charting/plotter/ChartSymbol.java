@@ -39,5 +39,5 @@ public abstract class ChartSymbol implements IChartSymbol {
 	public void setSizeHint(int sizeHint) {
 		this.sizeHint = sizeHint;
 	}
-	
+
 }

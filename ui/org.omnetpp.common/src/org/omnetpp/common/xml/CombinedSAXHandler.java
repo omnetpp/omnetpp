@@ -20,15 +20,15 @@ public class CombinedSAXHandler extends DefaultHandler {
 
 	Map<String,ContentHandler> mapTagToHandler = new HashMap<String,ContentHandler>(5);
 	Stack<ContentHandler> handlers = new Stack<ContentHandler>();
-	
+
 	public CombinedSAXHandler() {
 		handlers.push(new DefaultHandler());
 	}
-	
+
 	public void addContentHandler(String tagName, ContentHandler handler) {
 		mapTagToHandler.put(tagName, handler);
 	}
-	
+
 	public void addContentHandlers(Map<String,ContentHandler> map) {
 		mapTagToHandler.putAll(map);
 	}
@@ -36,13 +36,13 @@ public class CombinedSAXHandler extends DefaultHandler {
 	private ContentHandler currentHandler() {
 		return handlers.peek();
 	}
-	
+
 	private void enterHandler(String tag) {
 		ContentHandler handler = mapTagToHandler.get(tag);
 		if (handler != null)
 			handlers.push(handler);
 	}
-	
+
 	private void leaveHandler(String tag) {
 		if (mapTagToHandler.containsKey(tag))
 			handlers.pop();

@@ -21,7 +21,7 @@ public class AnimationPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static AnimationPlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */

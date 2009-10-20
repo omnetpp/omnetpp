@@ -32,7 +32,7 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 	public CompoundModuleEditPartAccess(CompoundModuleEditPart compoundModuleeditPart) {
 		super(compoundModuleeditPart);
 	}
-	
+
 	public CompoundModuleEditPart getCompoundModuleEditPart() {
 		return (CompoundModuleEditPart)editPart;
 	}

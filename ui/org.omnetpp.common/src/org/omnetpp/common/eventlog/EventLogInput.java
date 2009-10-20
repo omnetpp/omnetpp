@@ -34,27 +34,27 @@ public class EventLogInput extends FileEditorInput
 	private static final boolean debug = false;
 
 	public static final String STATE_PROPERTY = "EventLogInputState";
-	
+
 	/**
 	 * The C++ wrapper around the event log reader.
 	 */
 	protected IEventLog eventLog;
-	
+
 	/**
 	 * Manages long running operations for the event log.
 	 */
 	protected EventLogProgressManager eventLogProgressManager;
-	
+
 	/**
 	 * The filter parameters applied to the event log last time.
 	 */
 	protected EventLogFilterParameters eventLogFilterParameters;
-	
+
 	/**
 	 * A C++ wrapper around a helpful facade.
 	 */
 	protected EventLogTableFacade eventLogTableFacade;
-	
+
 	/**
 	 * A C++ wrapper around a helpful facade.
 	 */
@@ -87,7 +87,7 @@ public class EventLogInput extends FileEditorInput
 	 * True indicates a long running operation was canceled by the user.
 	 */
 	private boolean canceled;
-	
+
 	/**
 	 * True means a long running operation is in progress and the progress dialog is already shown.
 	 */
@@ -96,7 +96,7 @@ public class EventLogInput extends FileEditorInput
 	/*************************************************************************************
 	 * CONSTRUCTION
 	 */
-	
+
 	public EventLogInput(IFile file, IEventLog eventLog) {
 		super(file);
 		this.eventLogProgressManager = new EventLogProgressManager();
@@ -111,7 +111,7 @@ public class EventLogInput extends FileEditorInput
 	            });
 			}
 		};
-		
+	
 		setEventLog(eventLog);
 		restoreState();
 	}
@@ -148,7 +148,7 @@ public class EventLogInput extends FileEditorInput
 	public void dispose() {
 		if (eventLogWatcher != null)
 			eventLogWatcher.stop();
-		
+	
 		if (eventLog != null)
 		    eventLog.getFileReader().ensureFileClosed();
 	}
@@ -162,11 +162,11 @@ public class EventLogInput extends FileEditorInput
 		if (eventLogWatcher != null)
 			eventLogWatcher.stop();
 	}
-	
+
 	/*************************************************************************************
 	 * GETTERS
 	 */
-	
+
 	private void setEventLog(IEventLog eventLog) {
 		this.eventLog = eventLog;
 	}
@@ -174,7 +174,7 @@ public class EventLogInput extends FileEditorInput
 	public IEventLog getEventLog() {
 		return eventLog;
 	}
-	
+
     public EventLogFindTextDialog getFindTextDialog() {
         return findTextDialog;
     }
@@ -190,14 +190,14 @@ public class EventLogInput extends FileEditorInput
 
 		return eventLogFilterParameters;
 	}
-	
+
 	public EventLogTableFacade getEventLogTableFacade() {
 		if (eventLogTableFacade == null)
 			eventLogTableFacade = new EventLogTableFacade(eventLog);
 
 		return eventLogTableFacade;
 	}
-	
+
 	public SequenceChartFacade getSequenceChartFacade() {
 		if (sequenceChartFacade == null)
 			sequenceChartFacade = new SequenceChartFacade(eventLog);
@@ -261,17 +261,17 @@ public class EventLogInput extends FileEditorInput
 		if (eventLog instanceof FilteredEventLog) {
 			setEventLog(((FilteredEventLog)eventLog).getEventLog());
 			eventLog.own();
-	
+
 			/// store event log
 			getEventLogTableFacade().setEventLog(eventLog);
 			getSequenceChartFacade().setEventLog(eventLog);
-			
+		
 			eventLogFilterRemoved();
 
 			storeState();
 		}
 	}
-	
+
 	public void filter() {
 		// remove old filter
 		if (eventLog instanceof FilteredEventLog)
@@ -280,7 +280,7 @@ public class EventLogInput extends FileEditorInput
 
 		// create new filter
 		FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
-		
+	
 		// collection limits
 		if (eventLogFilterParameters.enableCollectionLimits) {
             filteredEventLog.setCollectMessageReuses(eventLogFilterParameters.collectMessageReuses);
@@ -317,7 +317,7 @@ public class EventLogInput extends FileEditorInput
 		}
 		else
 			filteredEventLog.setTracedEventNumber(-1);
-		
+	
 		filteredEventLog.setEnableMessageFilter(eventLogFilterParameters.enableMessageFilter);
 		if (eventLogFilterParameters.enableMessageFilter) {
 		    if (eventLogFilterParameters.enableMessageExpressionFilter)
@@ -346,7 +346,7 @@ public class EventLogInput extends FileEditorInput
 		setEventLog(filteredEventLog);
 		getEventLogTableFacade().setEventLog(filteredEventLog);
 		getSequenceChartFacade().setEventLog(filteredEventLog);
-		
+	
 		eventLogFiltered();
 
 		storeState();
@@ -371,7 +371,7 @@ public class EventLogInput extends FileEditorInput
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private void storeState() {
 		try {
 			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(CommonPlugin.PLUGIN_ID);
@@ -400,7 +400,7 @@ public class EventLogInput extends FileEditorInput
 
 	public void removeEventLogChangedListener(IEventLogChangeListener listener) {
 		eventLogChangeListeners.remove(listener);
-		
+	
 		if (eventLogChangeListeners.size() == 0)
 			eventLogWatcher.stop();
 	}
@@ -469,11 +469,11 @@ public class EventLogInput extends FileEditorInput
 	/*************************************************************************************
 	 * PROGRESS MONITORING OF LONG RUNNING OPERATIONS
 	 */
-	
+
 	public boolean isCanceled() {
 		return canceled;
 	}
-	
+
 	public void resetCanceled() {
 		canceled = false;
 	}
@@ -506,7 +506,7 @@ public class EventLogInput extends FileEditorInput
             }
         }
 	}
-	
+
 	private boolean isLongRunningOperationCanceledException(Throwable t) {
 	    if (t instanceof LongRunningOperationCanceled)
 	        return true;
@@ -517,7 +517,7 @@ public class EventLogInput extends FileEditorInput
 	    else
 	        return t.getMessage() != null && t.getMessage().contains("LongRunningOperationCanceled");
 	}
-	
+
     public boolean isEventLogChangedException(Throwable t) {
         if (t instanceof InvocationTargetException)
             return isEventLogChangedException(((InvocationTargetException)t).getTargetException());
@@ -538,24 +538,24 @@ public class EventLogInput extends FileEditorInput
 			eventLog.setProgressCallInterval(0.5);
 
 			while (Display.getCurrent().readAndDispatch());
-	
+
 			eventLogProgress();
 
 			if (eventLogProgressManager.isCanceled())
 				throw new LongRunningOperationCanceled("A long running operation was cancelled by the user from the progress monitor");
 		}
 	}
-	
+
 	public boolean isLongRunningOperationInProgress() {
 		return longRunningOperationInProgress;
 	}
-	
+
 	private static class LongRunningOperationCanceled extends RuntimeException
 	{
 		private static final long serialVersionUID = 1L;
 
 		public LongRunningOperationCanceled(String string) {
 			super(string);
-		}	
+		}
 	}
 }

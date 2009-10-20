@@ -65,7 +65,7 @@ public class VectorDatasetStrategy implements IDatasetStrategy {
 	public TableContentSorter createTableSorter() {
 		return new VectorTableContentSorter();
 	}
-	
+
 	/**
 	 * Create empty line chart.
 	 */
@@ -92,7 +92,7 @@ public class VectorDatasetStrategy implements IDatasetStrategy {
 		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		return jfreechart;
 	}
-	
+
 	public void updateDataset(JFreeChart chart, IDList idlist) {
 		XYDataset ds = ChartHelper.createXYDataSet(idlist);
 		chart.getXYPlot().setDataset(ds);

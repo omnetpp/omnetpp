@@ -53,11 +53,11 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		if (activePanel == null)
 			return;
-		
+	
 		final DataTable table = activePanel.getTable();
 		String filterPattern = activePanel.getFilter().getFilterPattern();
 		ResultType type = editor.getBrowseDataPage().getActivePanelType();
-		
+	
 		boolean addByFilter = false;
 		if (table.getSelectionCount() == table.getItemCount()) {
 			addByFilter = MessageDialog.openQuestion(editor.getSite().getShell(),
@@ -67,7 +67,7 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 							"than adding them one-by-one.\n\n" +
 							"Would you like to use the current filter expression?");
 		}
-		
+	
 		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor);
 		if (dlg.open() == Window.OK) {
 			Dataset dataset = (Dataset) dlg.getFirstResult();

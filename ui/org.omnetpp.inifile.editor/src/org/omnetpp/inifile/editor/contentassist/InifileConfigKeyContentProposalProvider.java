@@ -68,7 +68,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		}
 		return sort(result);
 	}
-	
+
 	/**
 	 * Generate help text for the given config entry, to be displayed by the content assistant.
 	 */
@@ -87,7 +87,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 				if (doc.containsKey(sec, key))
 					text += "<!> Set in ["+sec+"] to "+doc.getValue(sec, key)+"; set here to override it.\n\n";
 		}
-		
+	
 		// generate "standard" documentation for it
 		text += key + " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
 		if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
@@ -99,5 +99,5 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 
 		return text;
 	}
-	
+
 }

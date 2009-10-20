@@ -22,12 +22,12 @@ import org.omnetpp.scave.model2.DatasetManager;
 public class VectorChartProperties extends ChartProperties
 {
 	private static final String DEFAULT_LINE_PROPERTIES_ID = "default";
-	
+
 	public static final String
 		PROP_X_AXIS_MIN			= "X.Axis.Min",
 		PROP_X_AXIS_MAX			= "X.Axis.Max";
-	
-	
+
+
 	public VectorChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
 		super(chart, properties, manager);
 	}

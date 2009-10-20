@@ -20,22 +20,22 @@ import org.eclipse.swt.widgets.Composite;
  * @author tomi
  */
 public interface IScaveObjectEditForm {
-	
+
 	/**
 	 * Key for accessing the selected object as a form parameter.
 	 */
 	final String PARAM_SELECTED_OBJECT = "SelectedObject";
-	
+
 	/**
 	 * Returns the string displayed in the title are of the dialog.
 	 */
 	String getTitle();
-	
+
 	/**
 	 * Returns the string displayed below the title.
 	 */
 	String getDescription();
-	
+
 	/**
 	 * Adds the controls of the form to the panel.
 	 */
@@ -46,12 +46,12 @@ public interface IScaveObjectEditForm {
 	 * Do not modify the returned array.
 	 */
 	EStructuralFeature[] getFeatures();
-	
+
 	/**
 	 * Returns the value of the control associated with the specified feature. 
 	 */
 	Object getValue(EStructuralFeature feature);
-	
+
 	/**
 	 * Sets the value of the control associated with the specified feature. 
 	 */

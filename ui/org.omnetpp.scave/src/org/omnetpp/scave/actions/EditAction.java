@@ -29,7 +29,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
  */
 public class EditAction extends AbstractScaveAction {
 	private Map<String,Object> formParameters = null;
-	
+
 	public EditAction() {
         setText("Properties...");
         setToolTipText("Edit the properties of the selected item");
@@ -41,7 +41,7 @@ public class EditAction extends AbstractScaveAction {
         setToolTipText("Edit the properties of the selected item");
 		this.formParameters = formParameters;
 	}
-	
+
 	public void setFormParameter(String paramName, Object paramValue) {
 		if (formParameters == null)
 			formParameters = new HashMap<String,Object>();
@@ -74,7 +74,7 @@ public class EditAction extends AbstractScaveAction {
 			}
 		});
 	}
-	
+
 	 //TODO edit several objects together?
 	private EObject getEditedObject(ScaveEditor editor, IStructuredSelection selection) {
 		if (selection.size() == 1) {

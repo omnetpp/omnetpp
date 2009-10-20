@@ -52,14 +52,14 @@ public class CTabFolderAccess extends CompositeAccess {
 	public void selectItemWithMouseClick(String label) {
 		findItemByText(label).reveal().click();
 	}
-	
+
 	protected static CTabItemAccess[] wrapItems(CTabItem[] items) {
     	CTabItemAccess[] result = new CTabItemAccess[items.length];
     	for (int i = 0; i < result.length; ++i)
     		result[i] = wrapItem(items[i]);
     	return result;
 	}
-	
+
 	protected static CTabItemAccess wrapItem(CTabItem item) {
 		return (CTabItemAccess)createAccess(item);
 	}

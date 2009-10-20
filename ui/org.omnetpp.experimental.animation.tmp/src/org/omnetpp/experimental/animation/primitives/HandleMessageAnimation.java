@@ -18,11 +18,11 @@ import org.omnetpp.figures.SubmoduleFigure;
 
 public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	protected IRuntimeMessage message;
-	
+
 	protected Ellipse ellipse;
 
 	protected int moduleId;
-	
+
 	public HandleMessageAnimation(ReplayAnimationController animationController,
 								  AnimationPosition animationPosition,
 								  int moduleId,
@@ -33,13 +33,13 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 		this.ellipse = new Ellipse();
 		this.ellipse.setBackgroundColor(new Color(null, 0, 128, 0));
 	}
-	
+
 	@Override
 	public double getEndAnimationTime() {
 		return getBeginAnimationTime();
 // FIXME: this does not return the correct value during loading		return animationEnvironment.getAnimationTimeForEventNumber(eventNumber + 1);
 	}
-	
+
 	@Override
 	public void redo() {
 //		if (getModule().getParentModule() == animationEnvironment.getSimulation().getRootModule())  //FIXME 
@@ -60,7 +60,7 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 			setConstraint(ellipse, new Rectangle(submoduleFigure.getLocation().x + 3, submoduleFigure.getLocation().y + 3, 7, 7));
 		}
 	}
-	
+
 	public IRuntimeMessage getMessage() {
 		return message;
 	}

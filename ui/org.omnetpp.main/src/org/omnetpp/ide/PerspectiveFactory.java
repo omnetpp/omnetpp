@@ -33,7 +33,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
  		IFolderLayout leftFolder = layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
 		leftFolder.addView(IConstants.PROJECT_EXPLORER_ID);
 		leftFolder.addPlaceholder(IPageLayout.ID_RES_NAV);
-		
+
         IFolderLayout leftBottomFolder = layout.createFolder("leftbottom", IPageLayout.BOTTOM, (float)0.50, "left"); //$NON-NLS-1$
         leftBottomFolder.addView(IPageLayout.ID_PROP_SHEET);
         leftBottomFolder.addView(IPageLayout.ID_OUTLINE);
@@ -43,7 +43,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		bottomFolder.addView(IConstants.MODULEHIERARCHY_VIEW_ID);
 		bottomFolder.addView(IConstants.MODULEPARAMETERS_VIEW_ID);
 		bottomFolder.addView(IConstants.NEDINHERITANCE_VIEW_ID);
-		
+
 		// note: placeholders for our other views don't need to be listed here,
 		// because they are contributed via perspectiveExtension extensions
 		// in their plugin.xml's.

@@ -199,7 +199,7 @@ public class ModelObjectPalette {
 		ScaveModelPackage e = ScaveModelPackage.eINSTANCE;
 		if (c == e.getAnalysis()) 
 			return "";
-		
+	
 		if (c == e.getInputs()) 
 			return "Contains the input files of the analysis.";
 		if (c == e.getInputFile()) 

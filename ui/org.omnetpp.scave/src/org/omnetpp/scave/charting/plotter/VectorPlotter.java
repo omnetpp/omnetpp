@@ -23,7 +23,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  * @author andras
  */
 public abstract class VectorPlotter implements IVectorPlotter {
-	
+
 	public int[] indexRange(ILinePlot plot, int series, GC gc, ICoordsMapping mapping) {
 		IXYDataset dataset = plot.getDataset();
 		int n = dataset.getItemCount(series);
@@ -64,7 +64,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 	protected void plotSymbols(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		if (symbol == null)
 			return;
-		
+	
 		// dataset index range to iterate over 
 		IXYDataset dataset = plot.getDataset();
 		int[] range = indexRange(plot, series, gc, mapping);
@@ -73,7 +73,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		// value range on the chart
 		double[] valueRange = valueRange(gc, mapping, symbol);
 		double lo = valueRange[0], hi = valueRange[1];
-		
+	
 		//
 		// Performance optimization: with large datasets it occurs that the same symbol
 		// on the screen is painted over and over. We eliminate this by keeping track of
@@ -86,11 +86,11 @@ public abstract class VectorPlotter implements IVectorPlotter {
 			double y = plot.transformY(dataset.getY(series, i));
 			if (y < lo || y > hi || Double.isNaN(y))  // even skip coord transform for off-screen values 
 				continue;
-			
+		
 			double x = plot.transformX(dataset.getX(series, i));
 			int canvasX = mapping.toCanvasX(x);
 			int canvasY = mapping.toCanvasY(y);
-			
+		
 			if (prevCanvasX != canvasX) {
 				yset.clear();
 				prevCanvasX = canvasX;

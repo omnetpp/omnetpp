@@ -22,20 +22,20 @@ public class TreeWithButtonsPanel extends Composite {
 	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
 	private TreeViewer treeviewer = null;
 	private Composite buttonPanel = null;
-	
+
 	public TreeWithButtonsPanel(Composite parent, int style) {
 		super(parent, style);
 		initialize();
 	}
-	
+
 	public Composite getButtonPanel() {
 		return buttonPanel;
 	}
-	
+
 	public TreeViewer getTreeViewer() {
 		return treeviewer;
 	}
-	
+
 	private void initialize() {
 		setBackground(getParent().getBackground());
 		GridData gridData1 = new GridData();
@@ -54,9 +54,9 @@ public class TreeWithButtonsPanel extends Composite {
 	}
 
 	/**
-	 * This method initializes formToolkit	
-	 * 	
-	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
+	 * This method initializes formToolkit
+	 * 
+	 * @return org.eclipse.ui.forms.widgets.FormToolkit
 	 */
 	protected FormToolkit getFormToolkit() {
 		if (formToolkit == null)
@@ -65,7 +65,7 @@ public class TreeWithButtonsPanel extends Composite {
 	}
 
 	/**
-	 * This method initializes buttonPanel	
+	 * This method initializes buttonPanel
 	 *
 	 */
 	private void createButtonPanel() {

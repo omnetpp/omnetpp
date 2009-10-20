@@ -23,7 +23,7 @@ import org.omnetpp.eventlog.engine.EventLogTableFacade;
  */
 public class EventLogTableContentProvider implements IVirtualTableContentProvider<EventLogEntryReference> {
 	protected static boolean debug = false;
-	
+
 	protected EventLogTableFacade eventLogTableFacade;
 
 	protected EventLogInput eventLogInput;
@@ -140,7 +140,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 	public EventLogEntryReference getClosestElement(EventLogEntryReference element) {
 		if (element == null)
 			throw new IllegalArgumentException();
-		
+	
 		return toEventLogEntryReference(eventLogTableFacade.getClosestEntryInEvent(element.getEventLogEntry(eventLogInput)));
 	}
 
@@ -149,7 +149,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		eventLogInput = (EventLogInput)newInput;
-		
+	
 		if (eventLogInput == null)
 			eventLogTableFacade = null;
 		else

@@ -11,7 +11,7 @@ public class GateId {
 	private int moduleId;
 
 	private int gateId;
-	
+
 	public GateId(int moduleId, int gateId) {
 		this.moduleId = moduleId;
 		this.gateId = gateId;
@@ -32,7 +32,7 @@ public class GateId {
 	public void setGateId(int gateId) {
 		this.gateId = gateId;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int PRIME = 31;

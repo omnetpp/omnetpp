@@ -16,9 +16,9 @@ import org.omnetpp.scave.model.ScalarDatasetStrategy;
  * Editor for scalar datasets.
  */
 public class ScalarChartEditor extends DatasetEditor {
-	
+
 	private static IDatasetStrategy strategy = new ScalarDatasetStrategy();
-	
+
 	public ScalarChartEditor() {
 		super(strategy, 
 			new IDatasetEditorPage[] {

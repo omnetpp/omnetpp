@@ -17,24 +17,24 @@ import org.omnetpp.common.xml.XMLWriter;
 import org.xml.sax.ContentHandler;
 
 public interface IDatasetEditorPage {
-	
+
 	String getPageTitle();
-	
+
 	void setEditor(DatasetEditor editor);
-	
+
 	void init();
-	
+
 	void dispose();
-	
+
 	Control createPageControl(Composite parent);
-	
+
 	void finalizePage();
-	
+
 	void activate();
-	
+
 	void deactivate();
-	
+
 	void save(XMLWriter writer, IProgressMonitor progressMonitor) throws IOException;
-	
+
 	Map<String,ContentHandler> getLoader(IProgressMonitor progressMonitor);
 }

@@ -16,7 +16,7 @@ public class CheckboxPropertyDescriptor extends PropertyDescriptor
 	public CheckboxPropertyDescriptor(Object id, String displayName) {
 		super(id, displayName);
 	}
-	
+
 	public CellEditor createPropertyEditor(Composite parent) {
 		CellEditor editor = new CheckboxControlCellEditor(parent);
 		if (getValidator() != null)

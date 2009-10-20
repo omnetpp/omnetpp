@@ -53,10 +53,10 @@ public class CreateConnectionAnimation extends AbstractInfiniteAnimation {
 			animationEnvironment.setFigure(connectionId, null);
 		}
 	}
-	
+
 	protected GateAnchor getGateAnchor(GateId gateId) {
 		GateAnchor gateAnchor = (GateAnchor)animationEnvironment.getFigure(gateId);
-		
+	
 		if (gateAnchor == null) {
 			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(animationEnvironment.getSimulation().getModuleByID(gateId.getModuleId()));
 			// TODO: use gate name

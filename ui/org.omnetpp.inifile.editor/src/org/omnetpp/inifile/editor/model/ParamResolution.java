@@ -14,7 +14,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * Value object, stores the result of a parameter resolution.
  */
 public class ParamResolution {
-	
+
 	public enum ParamResolutionType {
 		UNASSIGNED, // unassigned parameter
 		NED, // parameter assigned in NED
@@ -25,7 +25,7 @@ public class ParamResolution {
 		INI_NEDDEFAULT, // inifile sets param to a value that's identical to the NED default value
 		IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
 	}
-	
+
 	// moduleFullPath and param name (from paramDeclNode or paramValueNode) identify the NED parameter. 
 	// For vector submodules, moduleFullPath contains "[*]".
 	// pathModules[] relates moduleFullPath to NEDElements. The network is pathModules[1]'s
@@ -49,7 +49,7 @@ public class ParamResolution {
 	//XXX add IFile ?   
 	public String section;
 	public String key;
-	
+
 	// for convenience
 	public ParamResolution(String moduleFullPath, SubmoduleElement[] pathModules, 
 			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type, 

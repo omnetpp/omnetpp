@@ -45,7 +45,7 @@ public class InifileEditorData {
 	public InifileAnalyzer getInifileAnalyzer() {
 		return analyzer;
 	}
-	
+
 	/**
 	 * Unfortunately, at some places we still need the editor reference...
 	 */

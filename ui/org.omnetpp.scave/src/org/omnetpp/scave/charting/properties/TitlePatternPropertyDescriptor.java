@@ -16,7 +16,7 @@ import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 
 public class TitlePatternPropertyDescriptor extends PropertyDescriptor
 {
-	
+
 	public TitlePatternPropertyDescriptor(Object id, String displayName) {
 		super(id, displayName);
 	}

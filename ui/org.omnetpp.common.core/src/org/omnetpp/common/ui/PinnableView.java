@@ -32,7 +32,7 @@ public abstract class PinnableView extends ViewWithMessagePart {
     private IEditorPart pinnedToEditor = null;
 	private ISelection pinnedToEditorSelection = null;
 	private IAction pinAction;
-	
+
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
     private DelayedJob rebuildContentJob = new DelayedJob(200) {
@@ -155,7 +155,7 @@ public abstract class PinnableView extends ViewWithMessagePart {
 			};
 		} 
 		return pinAction;
-	}	
+	}
 
 	/**
 	 * Returns the editor the view is pinned to, or the active editor if the view is not pinned.
@@ -171,7 +171,7 @@ public abstract class PinnableView extends ViewWithMessagePart {
 	protected ISelection getAssociatedEditorSelection() {
 		return pinnedToEditorSelection != null ? pinnedToEditorSelection : getActiveEditorSelection();
 	}
-	
+
 	/**
 	 * Pin the view to the current editor's current selection.
 	 */

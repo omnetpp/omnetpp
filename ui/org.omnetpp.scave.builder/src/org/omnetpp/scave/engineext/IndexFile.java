@@ -31,7 +31,7 @@ import org.omnetpp.scave.engine.VectorFileIndexer;
  * @author tomi
  */
 public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
-	
+
 	/**
 	 * Returns true, if <code>file</code> is an index file.
 	 * The file need not exist.
@@ -39,7 +39,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	public static boolean isIndexFile(IFile file) {
 		return isIndexFile(file.getLocation().toOSString());
 	}
-	
+
 	/**
 	 * Returns true, if <code>file</code> is an vector file.
 	 * The file need not exist.
@@ -47,7 +47,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	public static boolean isVectorFile(IFile file) {
 		return isVectorFile(file.getLocation().toOSString());
 	}
-	
+
 	/**
 	 * Returns true, if the index file of <code>file</code> exists
 	 * and up-to-date. 
@@ -57,7 +57,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	public static boolean isIndexFileUpToDate(IFile file) {
 		return isIndexFileUpToDate(file.getLocation().toOSString());
 	}
-	
+
 	/**
 	 * Returns true, if the index file of <code>file</code> exists
 	 * and up-to-date. 
@@ -67,7 +67,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	public static boolean isIndexFileUpToDate(String file) {
 		return org.omnetpp.scave.engine.IndexFile.isIndexFileUpToDate(file);
 	}
-	
+
 	/**
 	 * Returns the index file belongs to the specified vector file.
 	 * 
@@ -80,7 +80,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 		String path = getIndexFileName(vectorFile.getLocation().toOSString());
 		return getWorkspaceFileForOsPath(container, path); 
 	}
-	
+
 	/**
 	 * Returns the index file belongs to the specified vector file.
 	 * 
@@ -91,7 +91,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 		Assert.isLegal(isVectorFile(vectorFile.getAbsolutePath()));
 		return new File(getIndexFileName(vectorFile.getAbsolutePath()));
 	}
-	
+
 	/**
 	 * Returns the vector file belongs to the specified index file.
 	 * 

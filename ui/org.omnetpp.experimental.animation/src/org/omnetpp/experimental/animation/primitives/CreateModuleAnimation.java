@@ -18,7 +18,7 @@ import org.omnetpp.ned.model.DisplayString;
 
 public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 	protected ReplayModule module;
-	
+
 	protected int parentModuleId;
 
 	public CreateModuleAnimation(ReplayAnimationController animationController,
@@ -29,7 +29,7 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 		this.module = module;
 		this.parentModuleId = parentModuleId;
 	}
-	
+
 	@Override
 	public void redo() {
 		ReplayModule parentModule = getParentModule();
@@ -67,7 +67,7 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 			getCompoundModuleFigure(parentModule).removeSubmoduleFigure(submoduleFigure);
 		}
 
-		
+	
 		if (parentModule != null)
 			parentModule.removeSubmodule(getReplayModule());
 
@@ -78,7 +78,7 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 	protected ReplaySimulation getReplaySimulation() {
 		return (ReplaySimulation)animationEnvironment.getSimulation();
 	}
-	
+
 	protected ReplayModule getReplayModule() {
 		return (ReplayModule)module;
 	}

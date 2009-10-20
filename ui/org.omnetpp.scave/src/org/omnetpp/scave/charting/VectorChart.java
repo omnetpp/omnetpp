@@ -69,9 +69,9 @@ import org.omnetpp.scave.charting.properties.LineProperties.SymbolType;
  * Line chart.
  */
 public class VectorChart extends ChartCanvas {
-	
+
 	private static final boolean debug = false;
-	
+
 	private IXYDataset dataset = null;
 	private List<LineProperties> lineProperties;
 	private LineProperties defaultProperties;
@@ -80,7 +80,7 @@ public class VectorChart extends ChartCanvas {
 	private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, true);
 	private CrossHair crosshair;
 	private LinePlot plot;
-	
+
 	/**
 	 * Class representing the properties of one line of the chart.
 	 * There is one instance for each series of the dataset + one extra for the default properties.
@@ -95,7 +95,7 @@ public class VectorChart extends ChartCanvas {
 		Integer symbolSize;
 		LineType lineType;
 		RGB lineColor;
-		
+	
 		/**
 		 * Constructor for the defaults.
 		 */
@@ -106,37 +106,37 @@ public class VectorChart extends ChartCanvas {
 			this.series = -1;
 			this.lineId = null;
 		}
-		
+	
 		public LineProperties(String lineId, int series) {
 			Assert.isLegal(lineId != null);
 			this.lineId = lineId;
 			this.series = series;
 			fallback = defaultProperties;
 		}
-		
+	
 		public String getLineId() {
 			return lineId;
 		}
-		
+	
 		public boolean getDisplayLine() {
 			if (displayLine == null && fallback != null)
 				return fallback.getDisplayLine();
 			Assert.isTrue(displayLine != null);
 			return displayLine;
 		}
-		
+	
 		public void setDisplayLine(Boolean displayLine) {
 			if (displayLine == null && this == defaultProperties)
 				displayLine = DEFAULT_DISPLAY_LINE;
 			this.displayLine = displayLine;
 		}
-		
+	
 		public SymbolType getSymbolType() {
 			SymbolType symbolType = this.symbolType;
-			
+		
 			if (symbolType == null && fallback != null)
 				symbolType = fallback.getSymbolType();
-			
+		
 			if (symbolType == null) {
 				switch (series % 6) {
 				case 0: symbolType = SymbolType.Square; break;
@@ -151,61 +151,61 @@ public class VectorChart extends ChartCanvas {
 			//Assert.isTrue(symbolType != null);
 			return symbolType;
 		}
-		
+	
 		public void setSymbolType(SymbolType symbolType) {
 			this.symbolType = symbolType;
 		}
-		
+	
 		public int getSymbolSize() {
 			if (symbolSize == null && fallback != null)
 				return fallback.getSymbolSize();
 			Assert.isTrue(symbolSize != null);
 			return symbolSize;
 		}
-		
+	
 		public void setSymbolSize(Integer symbolSize) {
 			if (symbolSize == null && this == defaultProperties)
 				symbolSize = DEFAULT_SYMBOL_SIZE;
 			this.symbolSize = symbolSize;
 		}
-		
+	
 		public LineType getLineType() {
 			if (lineType == null && fallback != null && fallback.lineType != null)
 				return fallback.lineType;
 			//Assert.isTrue(lineType != null);
 			return lineType == null ? lineTypeFromInterpolationMode() : lineType;
 		}
-		
+	
 		public void setLineType(LineType lineType) {
 			if (lineType == null && this == defaultProperties)
 				lineType = DEFAULT_LINE_STYLE;
 			this.lineType = lineType;
 		}
-		
+	
 		public RGB getLineColor() {
 			if (lineColor == null && fallback != null)
 				return fallback.getLineColor();
 			return lineColor;
 		}
-		
+	
 		public void setLineColor(RGB lineColor) {
 			this.lineColor = lineColor;
 		}
-		
+	
 		public IVectorPlotter getPlotter() {
 			Assert.isTrue(this != defaultProperties);
 			LineType type = getLineType();
 			IVectorPlotter plotter = VectorPlotterFactory.createVectorPlotter(type);
 			return plotter; 
 		}
-		
+	
 		public IChartSymbol getSymbol() {
 			Assert.isTrue(this != defaultProperties);
 			SymbolType type = getSymbolType();
 			int size = getSymbolSize();
 			return ChartSymbolFactory.createChartSymbol(type, size);
 		}
-		
+	
 		public Color getColor() {
 			Assert.isTrue(this != defaultProperties);
 			RGB color = getLineColor();
@@ -214,7 +214,7 @@ public class VectorChart extends ChartCanvas {
 			else
 				return ColorFactory.getGoodDarkColor(series);
 		}
-		
+	
 		private LineType lineTypeFromInterpolationMode() {
 			if (series < 0)
 				return LineType.Linear;
@@ -222,7 +222,7 @@ public class VectorChart extends ChartCanvas {
 			return getLineTypeForInterpolationMode(mode);
 		}
 	}
-	
+
 	public static LineType getLineTypeForInterpolationMode(InterpolationMode mode) {
 		switch (mode) {
 		case None: return LineType.Points;
@@ -232,7 +232,7 @@ public class VectorChart extends ChartCanvas {
 		}
 		return LineType.Linear;
 	}
-	
+
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
 		// important: add the CrossHair to the chart AFTER the ZoomableCanvasMouseSupport added
@@ -253,15 +253,15 @@ public class VectorChart extends ChartCanvas {
 			}
 		});
 	}
-	
+
 	public VectorChartSelection getSelection() {
 		return (VectorChartSelection)selection;
 	}
-	
+
 	public Rectangle getPlotRectangle() {
 		return plot != null ? plot.getPlotRectangle() : Rectangle.SINGLETON;
 	}
-	
+
 	@Override
 	protected double transformX(double x) {
 		return xAxis.transform(x);
@@ -287,7 +287,7 @@ public class VectorChart extends ChartCanvas {
 				String.format("Received series=%d, series count=%d", series, dataset!=null?dataset.getSeriesCount():0));
 		return lineProperties.get(series); // index 0 is the default
 	}
-	
+
 	public LineProperties getLineProperties(String lineId) {
 		if (lineId == null)
 			return defaultProperties;
@@ -296,7 +296,7 @@ public class VectorChart extends ChartCanvas {
 				return props;
 		return null;
 	}
-	
+
 	public LineProperties getOrCreateLineProperties(String lineId) {
 		LineProperties props = getLineProperties(lineId);
 		if (props == null) {
@@ -305,13 +305,13 @@ public class VectorChart extends ChartCanvas {
 		}
 		return props;
 	}
-	
+
 	public void updateLineProperties() {
 		if (debug) Debug.println("updateLineProperties()");
-		
+	
 		int seriesCount = dataset != null ? dataset.getSeriesCount() : 0;
 		List<LineProperties> newProps = new ArrayList<LineProperties>(seriesCount);
-		
+	
 		// create an index for the current line properties
 		Map<String,LineProperties> map = new HashMap<String,LineProperties>();
 		for (LineProperties props : lineProperties) {
@@ -337,10 +337,10 @@ public class VectorChart extends ChartCanvas {
 			props.series = -1;
 			newProps.add(props);
 		}
-		
+	
 		lineProperties = newProps;
 	}
-	
+
 	public IXYDataset getDataset() {
 		return dataset;
 	}
@@ -357,12 +357,12 @@ public class VectorChart extends ChartCanvas {
 		updateArea();
 		chartChanged();
 	}
-	
+
 	private void updateLegends() {
 		updateLegend(legend);
 		updateLegend(legendTooltip);
 	}
-	
+
 	private void updateLegend(ILegend legend) {
 		legend.clearItems();
 		if (dataset != null) {
@@ -370,7 +370,7 @@ public class VectorChart extends ChartCanvas {
 			for (int i = 0; i < keys.length; ++i)
 				keys[i] = dataset.getSeriesKey(i);
 			Arrays.sort(keys, StringUtils.dictionaryComparator);
-			
+		
 			for (String key : keys) {
 				LineProperties props = getLineProperties(key);
 				if (props.getDisplayLine()) {
@@ -381,7 +381,7 @@ public class VectorChart extends ChartCanvas {
 			}
 		}
 	}
-	
+
 	/*==================================
 	 *          Properties
 	 *==================================*/
@@ -422,17 +422,17 @@ public class VectorChart extends ChartCanvas {
 		else
 			super.setProperty(name, value);
 	}
-	
+
 	public void setXAxisTitle(String value) {
 		xAxis.setTitle(value != null ? value : DEFAULT_X_AXIS_TITLE);
 		chartChanged();
 	}
-	
+
 	public void setYAxisTitle(String value) {
 		yAxis.setTitle(value != null ? value : DEFAULT_Y_AXIS_TITLE);
 		chartChanged();
 	}
-	
+
 	public void setAxisTitleFont(Font value) {
 		if (value != null) {
 			xAxis.setTitleFont(value);
@@ -447,13 +447,13 @@ public class VectorChart extends ChartCanvas {
 		updateLegends();
 		chartChanged();
 	}
-	
+
 	public void setLineStyle(String key, LineType type) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.setLineType(type);
 		chartChanged();
 	}
-	
+
 	public void setLineColor(String key, RGB color) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.setLineColor(color);
@@ -467,13 +467,13 @@ public class VectorChart extends ChartCanvas {
 		updateLegends();
 		chartChanged();
 	}
-	
+
 	public void setSymbolSize(String key, Integer size) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.setSymbolSize(size);
 		chartChanged();
 	}
-	
+
 	public void setLogarithmicY(Boolean value) {
 		boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
 		yAxis.setLogarithmic(logarithmic);
@@ -481,14 +481,14 @@ public class VectorChart extends ChartCanvas {
 		updateArea();
 		chartChanged();
 	}
-	
+
 	public void setShowGrid(ShowGrid value) {
 		ShowGrid showGrid = value != null ? value : DEFAULT_SHOW_GRID;
 		xAxis.setShowGrid(showGrid);
 		yAxis.setShowGrid(showGrid);
 		chartChanged();
 	}
-	
+
 	public void setTickLabelFont(Font font) {
 		if (font == null)
 			font = DEFAULT_LABELS_FONT;
@@ -498,14 +498,14 @@ public class VectorChart extends ChartCanvas {
 			chartChanged();
 		}
 	}
-	
+
 	protected RectangularArea calculatePlotArea() {
 		return plot.calculatePlotArea();
 	}
-	
+
 	Rectangle mainArea; // containing plots and axes
 	Insets axesInsets; // space occupied by axes
-	
+
 	@Override
 	protected Rectangle doLayoutChart(GC gc, int pass) {
 		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
@@ -516,11 +516,11 @@ public class VectorChart extends ChartCanvas {
 			Rectangle remaining = legendTooltip.layout(gc, area);
 			remaining = title.layout(gc, area);
 			remaining = legend.layout(gc, remaining, pass);
-	
+
 			mainArea = remaining.getCopy();
 			axesInsets = xAxis.layout(gc, mainArea, new Insets(), coordsMapping, pass);
 			axesInsets = yAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
-	
+
 			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
 			Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
 			return plotArea;
@@ -539,7 +539,7 @@ public class VectorChart extends ChartCanvas {
 		else
 			return null;
 	}
-	
+
 	@Override
 	protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping) {
 		gc.fillRectangle(gc.getClipping());
@@ -547,7 +547,7 @@ public class VectorChart extends ChartCanvas {
 		yAxis.drawGrid(gc, coordsMapping);
 		plot.draw(gc, coordsMapping);
 	}
-	
+
 	@Override
 	protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping) {
 		paintInsets(gc);

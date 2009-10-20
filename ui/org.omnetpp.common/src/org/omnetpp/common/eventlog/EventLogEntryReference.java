@@ -27,7 +27,7 @@ public class EventLogEntryReference {
 	public long getEventNumber() {
 		return eventNumber;
 	}
-	
+
 	public int getEventEntryIndex() {
 		return eventEntryIndex;
 	}
@@ -47,7 +47,7 @@ public class EventLogEntryReference {
 	public EventLogEntry getEventLogEntry(IEventLog eventLog) {
 		return eventLog.getEventForEventNumber(eventNumber).getEventLogEntry(eventEntryIndex);
 	}
-	
+
 	public boolean isPresent(IEventLog eventLog) {
 	    return eventLog.getEventForEventNumber(eventNumber) != null;
 	}

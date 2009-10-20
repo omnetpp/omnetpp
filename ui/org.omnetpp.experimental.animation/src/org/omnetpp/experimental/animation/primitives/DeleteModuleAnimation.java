@@ -12,24 +12,24 @@ import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 public class DeleteModuleAnimation extends AbstractAnimationPrimitive {
 	protected int moduleId;
-	
+
 	public DeleteModuleAnimation(ReplayAnimationController animationController,
 								 AnimationPosition animationPosition,
 								 int moduleId) {
 		super(animationController, animationPosition);
 		this.moduleId = moduleId;
 	}
-	
+
 	@Override
 	public double getEndSimulationTime() {
 		return Double.MAX_VALUE;
 	}
-	
+
 	@Override
 	public double getEndAnimationTime() {
 		return Double.MAX_VALUE;
 	}
-	
+
 	@Override
 	public void redo() {
 /*		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);

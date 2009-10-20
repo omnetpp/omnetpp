@@ -26,14 +26,14 @@ import org.omnetpp.scave.model2.FilterHints;
  * @author tomi
  */
 public class DataItemsPanelFilterPanel extends Composite {
-	
+
 	public static final int
 		MODULE_NAME_ROW = 1,
 		FILE_RUN_ROW = 2,
 		EXPERIMENT_MEASUREMENT_REPLICATION_ROW = 4;
 	public static final int
 		ALL_ROWS = MODULE_NAME_ROW | FILE_RUN_ROW | EXPERIMENT_MEASUREMENT_REPLICATION_ROW;
-	
+
 	/**
 	 * Number of visible items in combos.
 	 */
@@ -57,17 +57,17 @@ public class DataItemsPanelFilterPanel extends Composite {
 	private Combo replicationCombo = null;
 	private Combo moduleCombo = null;
 	private Combo dataCombo = null;
-	
+
 	public DataItemsPanelFilterPanel(Composite parent, int style) {
 		this(parent, style, ALL_ROWS);
 	}
-	
+
 	private DataItemsPanelFilterPanel(Composite parent, int style, int rows) { // TODO
 		super(parent, style);
 		this.rows = rows;
 		initialize();
 	}
-	
+
 	public Combo getDataCombo() {
 		return dataCombo;
 	}
@@ -106,7 +106,7 @@ public class DataItemsPanelFilterPanel extends Composite {
 				moduleCombo != null ? moduleCombo.getText() : null,
 				dataCombo != null ? dataCombo.getText() : null);
 	}
-	
+
 	public void setFilterParams(Filter params) {
 		if (fileCombo != null) fileCombo.setText(params.getField(Filter.FIELD_FILENAME));
 		if (runCombo != null) runCombo.setText(params.getField(Filter.FIELD_RUNNAME));
@@ -116,7 +116,7 @@ public class DataItemsPanelFilterPanel extends Composite {
 		if (moduleCombo != null) moduleCombo.setText(params.getField(Filter.FIELD_MODULENAME));
 		if (dataCombo != null) dataCombo.setText(params.getField(Filter.FIELD_DATANAME));
 	}
-	
+
 	public void setFilterHints(FilterHints hints) {
 		if (fileCombo != null) fileCombo.setItems(hints.getHints(Filter.FIELD_FILENAME));
 		if (runCombo != null) runCombo.setItems(hints.getHints(Filter.FIELD_RUNNAME));
@@ -141,9 +141,9 @@ public class DataItemsPanelFilterPanel extends Composite {
 		if ((rows & EXPERIMENT_MEASUREMENT_REPLICATION_ROW) != 0)
 			createComposite3();
 	}
-	
+
 	/**
-	 * This method initializes composite3	
+	 * This method initializes composite3
 	 *
 	 */
 	private void createComposite1() {
@@ -176,7 +176,7 @@ public class DataItemsPanelFilterPanel extends Composite {
 	}
 
 	/**
-	 * This method initializes composite1	
+	 * This method initializes composite1
 	 *
 	 */
 	private void createComposite2() {
@@ -209,7 +209,7 @@ public class DataItemsPanelFilterPanel extends Composite {
 	}
 
 	/**
-	 * This method initializes composite	
+	 * This method initializes composite
 	 *
 	 */
 	private void createComposite3() {

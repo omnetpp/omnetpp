@@ -59,7 +59,7 @@ public class ImageCellEditor extends TextCellEditorEx {
 
         return result;
 	}
-	
+
 	@Override
 	protected Object openDialogBox(Control cellEditorWindow) {
 		ImageSelectionDialog cellDialog = 
@@ -71,5 +71,5 @@ public class ImageCellEditor extends TextCellEditorEx {
 		// dialog cancelled
 		return null;
 	}
-	
+
 }

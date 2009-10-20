@@ -138,7 +138,7 @@
         		<test property="org.eclipse.core.resources.name" value="*.vci"/>
         		<test property="org.eclipse.core.resources.name" value="*_m.cc"/>
         		<test property="org.eclipse.core.resources.name" value="*_m.h"/>
-        	  </or>	
+        	  </or>
         	</adapt>	            
          </filterExpression>
       </commonFilter>
@@ -165,7 +165,7 @@
 	        	 </not>
 	        	 <test property="org.eclipse.core.resources.name" value="*_m.h"/>
 	         	 <test property="org.eclipse.core.resources.name" value="*_m.cc"/>
-        	 </or>	
+        	 </or>
         	</adapt>	            
          </filterExpression>
       </commonFilter>

@@ -15,7 +15,7 @@ package org.omnetpp.scave.editors.ui;
  */
 public interface IDialogConstants extends
 		org.eclipse.jface.dialogs.IDialogConstants {
-	
+
 	int START = org.eclipse.jface.dialogs.IDialogConstants.CLIENT_ID;
 
 	/**

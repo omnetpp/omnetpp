@@ -23,13 +23,13 @@ import org.eclipse.ui.dialogs.ListSelectionDialog;
 public class ChooseTableColumnsAction extends Action {
 
 	private DataTable table;
-	
+
 	public ChooseTableColumnsAction(DataTable table) {
 		setText("Choose table columns...");
 		setToolTipText("Choose table columns");
 		this.table = table;
 	}
-	
+
 	@Override
 	public void run() {
 		chooseTableColumns(table);

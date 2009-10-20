@@ -45,7 +45,7 @@ public class InputsViewLabelProvider extends LabelProvider {
 			else if (payload != null && !payload.equals(""))
 				return payload.toString();
 		}
-		
+	
 		return null;
 	}
 }

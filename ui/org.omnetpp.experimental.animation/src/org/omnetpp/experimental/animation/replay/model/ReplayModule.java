@@ -15,7 +15,7 @@ import org.omnetpp.ned.model.DisplayString;
 
 
 public class ReplayModule implements IRuntimeModule {
-	
+
 	private int id;
 	private String name;
 	private int index;
@@ -33,12 +33,12 @@ public class ReplayModule implements IRuntimeModule {
 		if (parent != null)
 			parent.addSubmodule(this);
 	}
-	
+
 	public ReplayModule(ReplayModule parent, int id) {
 		this(parent);
 		this.id = id;
 	}
-	
+
 	public void addSubmodule(ReplayModule module) {
 		if (module.getParentModule()!=null)
 			throw new RuntimeException("submodule already has a parent");
@@ -54,7 +54,7 @@ public class ReplayModule implements IRuntimeModule {
 		submodules.remove(module);
 		module.parent = null;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -82,7 +82,7 @@ public class ReplayModule implements IRuntimeModule {
 	public boolean isVector() {
 		return size!=-1;
 	}
-	
+
 	public int getVectorSize() {
 		return size;
 	}
@@ -148,7 +148,7 @@ public class ReplayModule implements IRuntimeModule {
 			for (ReplayModule submodule : submodules)
 				if (submodule.getId() == id)
 					return submodule;
-		
+	
 		return null;
 	}
 
@@ -156,7 +156,7 @@ public class ReplayModule implements IRuntimeModule {
 	public void addGate(ReplayGate gate) {
 		gates.add(gate);
 	}
-	
+
 	public ReplayGate getGate(int i) {
 		return gates.get(index);
 	}

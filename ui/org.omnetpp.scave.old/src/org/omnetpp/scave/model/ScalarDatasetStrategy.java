@@ -61,7 +61,7 @@ public class ScalarDatasetStrategy implements IDatasetStrategy {
 	public TableContentSorter createTableSorter() {
 		return new ScalarTableContentSorter();
 	}
-	
+
 	public JFreeChart createEmptyChart() {
 		// create dataset
 		DefaultCategoryDataset categorydataset = new DefaultCategoryDataset();
@@ -78,7 +78,7 @@ public class ScalarDatasetStrategy implements IDatasetStrategy {
 		barrenderer.setMaximumBarWidth(0.05D);
 		return jfreechart;
 	}
-	
+
 	public void updateDataset(JFreeChart chart, IDList idlist) {
 		CategoryDataset ds = ChartHelper.createChartWithRunsOnXAxis(idlist);
 		chart.getCategoryPlot().setDataset(ds);

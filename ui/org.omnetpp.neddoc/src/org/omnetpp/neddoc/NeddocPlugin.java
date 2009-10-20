@@ -24,9 +24,9 @@ public class NeddocPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static NeddocPlugin plugin;
-	
+
 	private GeneratorConfiguration generatorConfiguration;
-	
+
 	/**
 	 * The constructor
 	 */

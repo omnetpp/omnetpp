@@ -24,26 +24,26 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author tomi
  */
 public class InputFileEditForm implements IScaveObjectEditForm {
-	
+
 	/**
 	 * Features edited on this panel.
 	 */
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getInputFile_Name(),
 	};
-	
+
 	/**
 	 * The edited input file.
 	 */
 	//private InputFile inputFile;
-	
+
 	// edit controls of the features
 	private Text nameText;
 
 	public InputFileEditForm(InputFile inputFile, EObject parent) {
 		//this.inputFile = inputFile;
 	}
-	
+
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */

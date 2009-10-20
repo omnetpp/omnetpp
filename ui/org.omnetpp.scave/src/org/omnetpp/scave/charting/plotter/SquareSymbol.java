@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.GC;
  */
 public class SquareSymbol extends ChartSymbol {
 	private int size;
-	
+
 	public SquareSymbol() {
 	}
 
@@ -29,8 +29,8 @@ public class SquareSymbol extends ChartSymbol {
 		super.setSizeHint(sizeHint);
 		size = sizeHint|1; // make odd number
 	}
-	
-	
+
+
 	public void drawSymbol(GC gc, int x, int y) {
 		if (size<=0) {
 			// nothing

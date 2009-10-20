@@ -36,7 +36,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			smartInsertAfterBracket(doc, command);
 		} 
 	}
-	
+
 	/**
 	 * Returns whether or not the given text ends with one of the documents legal line delimiters.
 	 * 
@@ -50,7 +50,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			return TextUtilities.endsWith(delimiters, txt) > -1;
 		return false;
 	}
-	
+
 	/**
 	 * Returns the line number of the next bracket after end.
 	 * 
@@ -79,7 +79,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		}
 		return line;
 	}
-	
+
 	/**
 	 * Returns the bracket value of a section of text. Closing brackets have a value of -1 and 
 	 * open brackets have a value of 1.
@@ -140,7 +140,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		}
 		return bracketcount;
 	}
-	
+
 	/**
 	 * Returns the content of the given line without the leading whitespace.
 	 * 
@@ -222,7 +222,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		}
 		return end;
 	}
-	
+
 	/**
 	 * Set the indent of a new line based on the command provided in the supplied document.
 	 * @param document - the document being parsed
@@ -263,7 +263,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
             MsgEditorPlugin.logError(excp);
 		}
 	}
-	
+
 	/**
 	 * Set the indent of a bracket based on the command provided in the supplied document.
 	 * @param document - the document being parsed

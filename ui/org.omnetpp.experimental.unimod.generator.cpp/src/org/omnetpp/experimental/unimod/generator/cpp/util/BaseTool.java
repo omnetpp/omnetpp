@@ -14,7 +14,7 @@ public abstract class BaseTool {
 	public String getClassName(String prefix, String name, String suffix) {
 		return createIdentifier(prefix, name, suffix, true, false);
 	}
-	
+
 	/**
 	 * Turns given name to valid C++ identifier.
 	 * <br>
