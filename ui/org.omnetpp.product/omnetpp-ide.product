@@ -1,40 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="OMNeT++ IDE" uid="org.omnetpp.ide" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.1.0.qualifier" useFeatures="true" includeLaunchers="true">
-
-   <aboutInfo>
-      <image path="/org.omnetpp.main.omnetpp/icons/about-image.png"/>
-      <text>
-         OMNeT++ Integrated Development Environment\n\
-
-Version: ##VERSION##
-Build id: ##BUILDID##
-
-Copyright (C) 2005, 2009 OpenSim Ltd.
-For more info, please visit http://www.omnetpp.org/license
-      </text>
-   </aboutInfo>
+<product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.1.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
-      <linux>/org.omnetpp.main/config.ini</linux>
-      <macosx>/org.omnetpp.main/config.ini</macosx>
-      <solaris>/org.omnetpp.main/config.ini</solaris>
-      <win32>/org.omnetpp.main/config.ini</win32>
+      <linux>/org.omnetpp.product/config.ini</linux>
+      <macosx>/org.omnetpp.product/config_macosx.ini</macosx>
+      <solaris>/org.omnetpp.product/config.ini</solaris>
+      <win32>/org.omnetpp.product/config.ini</win32>
    </configIni>
 
    <launcherArgs>
-      <programArgs>-configuration
-configuration</programArgs>
+      <programArgs>-configuration</programArgs>
       <vmArgs>-Xms64m 
 -Xmx368m
 -XX:MaxPermSize=128m</vmArgs>
    </launcherArgs>
 
-   <windowImages i16="/org.omnetpp.main/icons/logo16.png" i32="/org.omnetpp.main/icons/logo32.png" i48="/org.omnetpp.main/icons/logo48.png" i64="/org.omnetpp.main/icons/logo64.png" i128="/org.omnetpp.main/icons/logo128.png"/>
+   <windowImages/>
 
    <splash
-      location="org.omnetpp.main"
+      location="org.omnetpp.main.omnetpp"
       startupProgressRect="10,10,298,10"
       startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
@@ -48,8 +34,6 @@ configuration</programArgs>
       </win>
    </launcher>
 
-   <intro introId="org.eclipse.ui.intro.universal"/>
-
    <vm>
    </vm>
 
@@ -58,7 +42,7 @@ configuration</programArgs>
         <text>
    ACADEMIC PUBLIC LICENSE
 
-Copyright (C) 2003, 2008 Andras Varga
+Copyright (C) 2003, 2009 Andras Varga
 
 Preamble
 
