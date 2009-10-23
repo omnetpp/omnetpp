@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.common.project.ProjectUtils;
 
 import freemarker.template.Configuration;
 
@@ -28,10 +29,12 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	public static final String DESCRIPTION = "description";
 	public static final String CATEGORY = "category";
 	public static final String IMAGE = "image";
+	public static final String DEPENDENT = "dependent";
 	
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
 	protected Set<IResource> nontemplateResources = new HashSet<IResource>();
+	protected boolean markAsDependentProject;
 
 	public WorkspaceBasedProjectTemplate(IFolder folder) throws CoreException {
 		super(null, null, null, null);
@@ -49,20 +52,22 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(DESCRIPTION), "Template loaded from " + folder.getFullPath()));
 		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(CATEGORY), folder.getProject().getName()));
 		//TODO: setImage(properties.getProperty("image"), ...);
+
+		markAsDependentProject = StringUtils.defaultIfEmpty(properties.getProperty(DEPENDENT), "true").equals("true");
 		
 		nontemplateResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
 		
-		//TODO property that defines whether to add defining project as dependency?
-		
+		// TODO Properties (or rather, resolved/edited properties) should be available as template vars too
+		// TODO probably template var names and property names should be the same (see "templateName" vs "name")
 	}
 
 	@Override
 	protected void doConfigure() throws CoreException {
 		IProject project = getProject();
 		substituteNestedVariables();
-
+		if (markAsDependentProject)
+			ProjectUtils.addReferencedProject(project, templateFolder.getProject(), getProgressMonitor());
 		copy(templateFolder, project);
-	
 	}
 
 	protected void copy(IFolder parent, IContainer dest) throws CoreException {

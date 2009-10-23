@@ -356,7 +356,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             Throwable t = e.getTargetException();
             Activator.logError(t);
             String msg = StringUtils.defaultIfEmpty(t.getMessage(), t.getClass().getSimpleName());
-            MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + msg);
+            MessageDialog.openError(getShell(), "Creation problems", "Error: " + msg);
             return false;
         }
         return true;
