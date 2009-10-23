@@ -27,7 +27,6 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.cdt.cache.DependencyCache;
-import org.omnetpp.cdt.wizard.ProjectTemplateStore;
 import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
 
@@ -44,8 +43,6 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     // The shared instance
     private static Activator plugin;
 
-    private ProjectTemplateStore projectTemplateStore;
-    
     /**
      * The constructor
      */
@@ -191,12 +188,6 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
         return getDefault().dependencyCache;
     }
     
-    public static ProjectTemplateStore getProjectTemplateStore() {
-        if (getDefault().projectTemplateStore == null)
-            getDefault().projectTemplateStore = new ProjectTemplateStore();
-        return getDefault().projectTemplateStore;
-    }
-
     /**
      * Reread include paths when folder gets created or removed
      */

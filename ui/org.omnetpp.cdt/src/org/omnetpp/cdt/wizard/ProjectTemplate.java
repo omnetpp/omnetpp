@@ -70,19 +70,35 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         return name;
     }
 
+    public void setName(String name) {
+    	this.name = name;
+    }
+    
+    public String getCategory() {
+    	return category;
+    }
+    
+    public void setCategory(String category) {
+    	this.category = category;
+    }
+
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+    	this.description = description;
+    }
+    
     public Image getImage() {
         return image;
     }
 
-    public String getCategory() {
-        return category;
+    public void setImage(Image image) {
+    	this.image = image;
     }
-
-    /**
+    
+	/**
      * Valid only during configuring a project.
      */
     public IProject getProject() {

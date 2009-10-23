@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.ui.CUIPlugin;
@@ -20,11 +21,14 @@ import org.eclipse.cdt.ui.newui.UIMessages;
 import org.eclipse.cdt.ui.wizards.CDTCommonProjectWizard;
 import org.eclipse.cdt.ui.wizards.CDTMainWizardPage;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -167,8 +171,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         public void updateTemplateList() {
             // categorize and add templates into the tree
             // NOTE: gets called from first page's getNextPage() method             
-            ProjectTemplateStore templateStore = Activator.getProjectTemplateStore();
-            List<IProjectTemplate> templates = supportCpp() ? templateStore.getCppTemplates() : templateStore.getNoncppTemplates();
+            List<IProjectTemplate> templates = getTemplates();
             GenericTreeNode root = new GenericTreeNode("root");
             Set<String> categories = new LinkedHashSet<String>(); 
             for (IProjectTemplate template : templates)
@@ -352,7 +355,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             Activator.logError(t);
-            MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
+            String msg = StringUtils.defaultIfEmpty(t.getMessage(), t.getClass().getSimpleName());
+            MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + msg);
             return false;
         }
         return true;
@@ -361,7 +365,49 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     public boolean supportCpp() {
         return ((NewOmnetppCppProjectCreationPage)projectPage).supportCpp();
     }
-   
+
+	protected List<IProjectTemplate> getTemplates() {
+		List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
+		
+		// built-in templates
+        if (supportCpp())
+        	result.addAll(BuiltinProjectTemplates.getCppTemplates());
+        else 
+        	result.addAll(BuiltinProjectTemplates.getNoncppTemplates());
+        
+        // templates loaded from workspace projects
+        result.addAll(loadTemplatesFromWorkspace());
+
+        // TODO: templates defined via (future) extension point
+        
+		return result;
+	}
+
+	protected List<IProjectTemplate> loadTemplatesFromWorkspace() {
+		// check the "templates/project" subdirectory of each OMNeT++ project
+		List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
+		for (IProject project : ProjectUtils.getOmnetppProjects()) {
+			IFolder rootFolder = project.getFolder(new Path("templates/project"));
+			if (rootFolder.exists()) {
+				try {
+					// each template is a folder which contains a "template.properties" file
+					for (IResource resource : rootFolder.members()) {
+						if (resource instanceof IFolder && ((IFolder)resource).getFile(WorkspaceBasedProjectTemplate.TEMPLATE_PROPERTIES_FILENAME).exists())
+							result.add(loadTemplateFrom((IFolder)resource));
+					}
+				} catch (CoreException e) {
+					Activator.logError("Error loading project templates from " + rootFolder.toString(), e);
+				}
+			}
+		}
+		return result;
+	}
+
+	protected IProjectTemplate loadTemplateFrom(IFolder folder) throws CoreException {
+		return new WorkspaceBasedProjectTemplate(folder);
+	}
+
+    
 }
 
 

@@ -15,67 +15,24 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
 
 /**
- * Stores project templates
+ * Provides built-in project templates
  * @author Andras
  */
-public class ProjectTemplateStore {
-    private List<IProjectTemplate> cppTemplates = new ArrayList<IProjectTemplate>();
-    private List<IProjectTemplate> noncppTemplates = new ArrayList<IProjectTemplate>();
-
+public class BuiltinProjectTemplates {
     public static final Image ICON_TEMPLATE = Activator.getCachedImage("icons/full/obj16/template.png");
     
-    public ProjectTemplateStore() {
-        createTemplates();
-    }
+    /**
+     * Creates and returns built-in C++ project templates.
+     */
+    public static List<IProjectTemplate> getCppTemplates() {
+        List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
 
-    public List<IProjectTemplate> getCppTemplates() {
-        return cppTemplates;
-    }
-    
-    public List<IProjectTemplate> getNoncppTemplates() {
-        return noncppTemplates;
-    }
-
-    protected void createTemplates() {
         final String DEFAULT_SRCFOLDER_OPTIONS = "--deep --meta:recurse --meta:auto-include-path --meta:export-library --meta:use-exported-libs";
         final String DEFAULT_ROOTFOLDER_OPTIONS = "--nolink --meta:recurse";
         
-        // non-C++ projects
-        final String NONCPP_SINGLEDIR = "Single-directory project";
-        noncppTemplates.add(new ProjectTemplate("Empty project", NONCPP_SINGLEDIR, null, ICON_TEMPLATE) {
-            @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createFileFromResource("package.ned", "templates/simulationsPackage.ned");
-            }
-        });
-        final String NONCPP_SIMULATIONS = "Project with a \"simulations\" folder";
-        noncppTemplates.add(new ProjectTemplate("Empty project", NONCPP_SIMULATIONS, null, ICON_TEMPLATE) {
-            @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createAndSetNedSourceFolders(new String[] {"simulations"});
-                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
-            }
-        });
-        noncppTemplates.add(new ProjectTemplate("Empty project with packages", NONCPP_SIMULATIONS, null, ICON_TEMPLATE) {
-            @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("simulationspackage", "org.example.${projectname}.simulations");
-                substituteNestedVariables();
-                createAndSetNedSourceFolders(new String[] {"simulations"});
-                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
-            }
-        });
-
-        // C++ projects
         final String SINGLE_DIR = "Single-directory project, for small simulations";
-        cppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR, null, ICON_TEMPLATE) {
+        
+        result.add(new ProjectTemplate("Empty project", SINGLE_DIR, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -86,7 +43,8 @@ public class ProjectTemplateStore {
                 createFileFromResource("package.ned", "templates/package.ned");
             }
         });
-        cppTemplates.add(new ProjectTemplate("Tictoc example", SINGLE_DIR, null, ICON_TEMPLATE) {
+        
+        result.add(new ProjectTemplate("Tictoc example", SINGLE_DIR, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -101,8 +59,9 @@ public class ProjectTemplateStore {
                 createFileFromResource("Tictoc.ned", "templates/Tictoc.ned");
                 createFileFromResource("omnetpp.ini", "templates/Tictoc.ini");
             }
-        }) ;
-        cppTemplates.add(new ProjectTemplate("Source-sink example", SINGLE_DIR, null, ICON_TEMPLATE) {
+        });
+        
+        result.add(new ProjectTemplate("Source-sink example", SINGLE_DIR, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -123,7 +82,8 @@ public class ProjectTemplateStore {
         }) ;
 
         final String SRC_AND_SIMULATIONS = "Project with \"src\" and \"simulations\" folders";
-        cppTemplates.add(new ProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
+        
+        result.add(new ProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -137,7 +97,8 @@ public class ProjectTemplateStore {
                 createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
             }
         });
-        cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
+        
+        result.add(new ProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -155,8 +116,9 @@ public class ProjectTemplateStore {
                 createFileFromResource("simulations/Tictoc.ned", "templates/Tictoc.ned");
                 createFileFromResource("simulations/omnetpp.ini", "templates/Tictoc.ini");
             }
-        }) ;
-        cppTemplates.add(new ProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
+        });
+        
+        result.add(new ProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "${projectname}");
@@ -177,10 +139,54 @@ public class ProjectTemplateStore {
                 createFileFromResource("simulations/Network.ned", "templates/SourceSink.ned");
                 createFileFromResource("simulations/omnetpp.ini", "templates/SourceSink.ini");
             }
-        }) ;
+        });
 
         //final String SRC_AND_EXAMPLES = "Project with \"src\" and \"examples\" folders";
         //TODO like the above!
+        
+        return result;
+    }
+
+    /**
+     * Creates and returns built-in non-C++ project templates.
+     */
+    public static List<IProjectTemplate> getNoncppTemplates() {
+    	List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
+
+    	final String NONCPP_SINGLEDIR = "Single-directory project";
+        result.add(new ProjectTemplate("Empty project", NONCPP_SINGLEDIR, null, ICON_TEMPLATE) {
+            @Override
+            public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("simulationspackage", "");
+                substituteNestedVariables();
+                createFileFromResource("package.ned", "templates/simulationsPackage.ned");
+            }
+        });
+
+        final String NONCPP_SIMULATIONS = "Project with a \"simulations\" folder";
+        result.add(new ProjectTemplate("Empty project", NONCPP_SIMULATIONS, null, ICON_TEMPLATE) {
+            @Override
+            public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("simulationspackage", "");
+                substituteNestedVariables();
+                createAndSetNedSourceFolders(new String[] {"simulations"});
+                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
+            }
+        });
+
+        result.add(new ProjectTemplate("Empty project with packages", NONCPP_SIMULATIONS, null, ICON_TEMPLATE) {
+            @Override
+            public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("simulationspackage", "org.example.${projectname}.simulations");
+                substituteNestedVariables();
+                createAndSetNedSourceFolders(new String[] {"simulations"});
+                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
+            }
+        });
+        return result;
     }
     
 }
