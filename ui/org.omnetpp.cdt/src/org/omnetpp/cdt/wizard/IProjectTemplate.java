@@ -12,6 +12,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -24,5 +25,6 @@ public interface IProjectTemplate {
     Image getImage();
     String getDescription();
     String getCategory();
-    void configure(IProject project, Map<String, String> variables, IProgressMonitor monitor) throws CoreException;
+    IWizardPage[] createCustomPages(); 
+    void configure(IProject project, IWizardPage[] customPages, Map<String, String> variables, IProgressMonitor monitor) throws CoreException;
 }

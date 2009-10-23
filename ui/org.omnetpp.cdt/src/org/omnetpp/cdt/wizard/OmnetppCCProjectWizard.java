@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CProjectNature;
@@ -24,6 +25,7 @@ import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -76,6 +78,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     private CCProjectWizard nestedWizard;
     private TemplateSelectionPage templatePage;
+    private IWizardPage[] templateCustomPages = new IWizardPage[0]; // never null
+    private IProjectTemplate creatorOfCustomPages;
     
     public class NewOmnetppCppProjectCreationPage extends NewOmnetppProjectCreationPage {
         private Button supportCppButton;
@@ -106,13 +110,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             return supportCppButton.getSelection();
         }
 
-        @Override
-        public IWizardPage getNextPage() {
-            // Note: when template page needs to be skipped, use this instead: 
-            // return supportCpp() ? nestedWizard.getStartingPage() : null;
-            templatePage.updateTemplateList();  // obey supportsCpp() option
-            return templatePage;
-        }
     }
 
     
@@ -187,11 +184,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             treeViewer.expandAll();
         }
 
-        @Override
-        public IWizardPage getNextPage() {
-            return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
-        }
-        
         public IProjectTemplate getSelectedTemplate() {
             Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
             element = element == null ? null : ((GenericTreeNode)element).getPayload();
@@ -307,9 +299,46 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     public void addPages() {
         addPage(projectPage = new NewOmnetppCppProjectCreationPage());
         addPage(templatePage = new TemplateSelectionPage());
-        nestedWizard.addPages();
+        nestedWizard.addPages(); // this actually adds pages to the *nested* wizard, not this one!
     }
 
+    @Override
+    public IWizardPage getNextPage(IWizardPage page) {
+		int indexInTemplateCustomPages = ArrayUtils.indexOf(templateCustomPages, page);
+    	if (page == projectPage) {
+            templatePage.updateTemplateList();  // so that it can adapt to the withCplusplusSupport setting
+            return templatePage;
+    	}
+    	else if (page == templatePage) {
+    		// if there is a template selected, return its first custom page (if it has one)
+    		IProjectTemplate selectedTemplate = templatePage.getSelectedTemplate();
+    		if (selectedTemplate != null) {
+    			if (selectedTemplate != creatorOfCustomPages) {
+    				templateCustomPages = selectedTemplate.createCustomPages();
+    				Assert.isNotNull(templateCustomPages);
+    				for (IWizardPage customPage : templateCustomPages)
+    					addPage(customPage);
+    				creatorOfCustomPages = selectedTemplate;
+    			}
+				if (templateCustomPages.length > 0)
+					return templateCustomPages[0];
+    		}
+    		// or go right to the first CDT page
+    		return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
+    	}
+    	else if (indexInTemplateCustomPages != -1) {
+    		// return next custom page, or first CDT page if we are on the last custom page
+    		if (indexInTemplateCustomPages < templateCustomPages.length-1)
+    			return templateCustomPages[indexInTemplateCustomPages+1];
+    		else
+    			return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
+    	}
+    	else {
+    		return super.getNextPage(page);
+    	}
+    }
+    
+    
     @Override
     public boolean performFinish() {
         // if we are on the first page, the CDT wizard is not yet created and its perform finish 
@@ -341,7 +370,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
                 // apply template: this may create files, set project properties, configure the CDT project, etc.
                 if (template != null)
-                    template.configure(project, null, monitor);
+                    template.configure(project, templateCustomPages, null, monitor);
             }
         };
 

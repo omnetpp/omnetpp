@@ -14,6 +14,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
 
@@ -60,6 +65,26 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		// TODO Properties (or rather, resolved/edited properties) should be available as template vars too
 		// TODO probably template var names and property names should be the same (see "templateName" vs "name")
 	}
+	
+    public IWizardPage[] createCustomPages() {
+    	class TmpWizardPage extends WizardPage {
+    		public TmpWizardPage(String name) {
+    			super(name);
+    		}
+    		
+			public void createControl(Composite parent) {
+				Button button = new Button(parent, SWT.PUSH);
+				button.setText(getName());
+				setControl(button);
+			}
+    	};
+		return new IWizardPage[] { new TmpWizardPage(getName()+" - 1"), new TmpWizardPage(getName()+" - 2") };
+    }
+
+	@Override
+	protected void extractVariablesFromPages(IWizardPage[] customPages) {
+		// TODO Auto-generated method stub
+	}
 
 	@Override
 	protected void doConfigure() throws CoreException {
@@ -98,6 +123,5 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		String templateName = templateFile.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount()).toString();
         createFile(file, cfg, templateName, suppressIfBlank);
     }
-    
 
 }

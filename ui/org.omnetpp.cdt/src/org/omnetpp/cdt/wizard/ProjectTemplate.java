@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
@@ -96,13 +97,13 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     	this.image = image;
     }
     
-	/**
+    /**
      * Valid only during configuring a project.
      */
     public IProject getProject() {
         return project;
     }
-    
+
     /**
      * Valid only during configuring a project.
      */
@@ -110,7 +111,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         return monitor;
     }
 
-    public void configure(IProject project, Map<String, String> variables, IProgressMonitor monitor) throws CoreException {
+    public void configure(IProject project, IWizardPage[] customPages, Map<String, String> variables, IProgressMonitor monitor) throws CoreException {
         this.project = project;
         this.monitor = monitor;
         vars.clear();
@@ -132,10 +133,14 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         setVariable("license", licenseProperty); // for @license in package.ned
         setVariable("bannercomment", LicenseUtils.getBannerComment(license, "//"));
         
+        // extract variables from template custom wizard pages
+        extractVariablesFromPages(customPages);
+
         // add user-defined variables (they may overwrite the defaults above)
         if (variables != null)
             for (String var : variables.keySet())
                 setVariable(var, variables.get(var));
+        
         
         // do it!
         doConfigure();
@@ -146,6 +151,21 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     }
 
     /**
+     * Create custom wizard pages    
+     */
+    abstract public IWizardPage[] createCustomPages();
+
+    /**
+     * Called just before doConfigure(). It should extract variables from the wizard pages.
+     */
+    abstract protected void extractVariablesFromPages(IWizardPage[] customPages);
+
+    /**
+     * Configure the project.
+     */
+    protected abstract void doConfigure() throws CoreException;
+
+	/**
      * Resolves references to other variables. Should be called from doConfigure() before
      * actually processing the templates.
      * 
@@ -184,11 +204,6 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 	}
     
     /**
-     * Configure the project.
-     */
-    protected abstract void doConfigure() throws CoreException;
-    
-    /**
      * Sets (creates or overwrites) a variable to be substituted into files 
      * created with createFile(). Pass value==null to remove an existing variable.
      */
@@ -197,17 +212,6 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             vars.remove(name);
         else 
             vars.put(name, value);
-    }
-
-    protected void createFileFromPluginResource(String projectRelativePath, String templateName) throws CoreException {
-        createFileFromPluginResource(projectRelativePath, templateName, true);
-    }
-
-    protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank) throws CoreException {
-        Configuration cfg = new Configuration();
-        cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
-        IFile file = project.getFile(new Path(projectRelativePath));
-        createFile(file, cfg, templateName, suppressIfBlank);
     }
 
     /**
@@ -231,8 +235,8 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 		content = content.replaceAll("\n\n\n+", "\n\n");
 		content = content.trim() + "\n";
 
+		// save file (unless it's blank)
 		if (!suppressIfBlank || !StringUtils.isBlank(content)) {
-            // save it
             byte[] bytes = content.getBytes(); 
             if (!file.exists())
                 file.create(new ByteArrayInputStream(bytes), true, monitor);
