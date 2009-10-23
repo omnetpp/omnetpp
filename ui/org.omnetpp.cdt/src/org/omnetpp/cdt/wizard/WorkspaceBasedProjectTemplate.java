@@ -2,10 +2,13 @@ package org.omnetpp.cdt.wizard;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -17,10 +20,14 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
+
+import com.swtworkbench.community.xswt.XSWT;
+import com.swtworkbench.community.xswt.XSWTException;
 
 import freemarker.template.Configuration;
 
@@ -65,25 +72,71 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		// TODO Properties (or rather, resolved/edited properties) should be available as template vars too
 		// TODO probably template var names and property names should be the same (see "templateName" vs "name")
 	}
+
+	/**
+	 * XSWT-based wizard page.
+	 * @author Andras
+	 */
+	class XSWTWizardPage extends WizardPage {
+		protected IFile xswtFile;
+		protected Map<String,Control> widgetMap;
+		
+		public XSWTWizardPage(String name, IFile xswtFile) {
+			super(name);
+			this.xswtFile = xswtFile;
+		}
+		
+		@SuppressWarnings("unchecked")
+		public void createControl(Composite parent) {
+	    	try {
+	    		Composite composite = new Composite(parent, SWT.NONE);
+	    		composite.setLayout(new GridLayout());
+	    		widgetMap = (Map<String,Control>) XSWT.create(composite, xswtFile.getContents()); 
+	    		setControl(composite);
+	    	} catch (XSWTException e) {
+	    	   e.printStackTrace(); //XXX 
+	    	} catch (CoreException e) {
+	    		e.printStackTrace(); //XXX 
+			}
+		}
+		
+		public Map<String, Control> getWidgetMap() {
+			return widgetMap;
+		}
+	};
 	
     public IWizardPage[] createCustomPages() {
-    	class TmpWizardPage extends WizardPage {
-    		public TmpWizardPage(String name) {
-    			super(name);
-    		}
-    		
-			public void createControl(Composite parent) {
-				Button button = new Button(parent, SWT.PUSH);
-				button.setText(getName());
-				setControl(button);
-			}
-    	};
-		return new IWizardPage[] { new TmpWizardPage(getName()+" - 1"), new TmpWizardPage(getName()+" - 2") };
+    	// collect page IDs from property file ("page.1", "page.2" etc keys)
+    	int[] pageIDs = new int[0];
+    	for (Object key : properties.keySet())
+    		if (((String)key).matches("page\\.[0-9]+"))
+    			pageIDs = ArrayUtils.add(pageIDs, Integer.parseInt(((String)key).replaceFirst("^.*\\.", "")));
+    	Arrays.sort(pageIDs);
+    	
+    	// create pages
+    	IWizardPage[] result = new IWizardPage[pageIDs.length];
+		for (int i=0; i<pageIDs.length; i++) {
+			int pageID = pageIDs[i];
+			String xswtFileName = properties.getProperty("page."+pageID);
+			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName)); //FIXME error if not exists
+			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile);
+		}
+		//FIXME form files must not be copied into the project!
+		
+		return result;
     }
 
-	@Override
+    @Override
 	protected void extractVariablesFromPages(IWizardPage[] customPages) {
-		// TODO Auto-generated method stub
+    	// extract data from the XSWT forms, and set them as template variables
+		for (IWizardPage page : customPages) {
+			Map<String,Control> widgetMap = ((XSWTWizardPage)page).getWidgetMap();
+			for (String widgetName : widgetMap.keySet()) {
+				Control control = widgetMap.get(widgetName);
+				String value = control.toString(); //FIXME this is somewhat more complicated
+				setVariable(widgetName, value);
+			}
+		}
 	}
 
 	@Override

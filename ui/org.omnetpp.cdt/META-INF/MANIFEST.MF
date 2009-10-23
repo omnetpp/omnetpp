@@ -25,7 +25,9 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.4.0",
  org.omnetpp.main;bundle-version="4.0.0",
  org.omnetpp.launch;bundle-version="4.0.0",
  org.omnetpp.ned.core;bundle-version="4.0.0",
- org.omnetpp.ned.model;bundle-version="4.0.0"
+ org.omnetpp.ned.model;bundle-version="4.0.0",
+ com.swtworkbench.community.xswt;bundle-version="1.1.2",
+ org.kxml;bundle-version="1.1.2"
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.cdt,
