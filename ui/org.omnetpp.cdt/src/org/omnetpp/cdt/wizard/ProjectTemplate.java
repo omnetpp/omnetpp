@@ -8,7 +8,6 @@
 package org.omnetpp.cdt.wizard;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Calendar;
@@ -35,7 +34,6 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -201,35 +199,26 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             vars.put(name, value);
     }
 
-    /**
-     * Reads a resource to a string.
-     */
-    protected String readResource(String resourcePath) throws CoreException {
-        try {
-            return FileUtils.readTextFile(getClass().getResourceAsStream(resourcePath));
-        } 
-        catch (IOException e) {
-            throw Activator.wrapIntoCoreException(e);
-        }
+    protected void createFileFromPluginResource(String projectRelativePath, String templateName) throws CoreException {
+        createFileFromPluginResource(projectRelativePath, templateName, true);
     }
 
-    protected void createFileFromResource(String projectRelativePath, String resourcePath) throws CoreException {
-        createFileFromResource(projectRelativePath, resourcePath, false);
+    protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank) throws CoreException {
+        Configuration cfg = new Configuration();
+        cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
+        IFile file = project.getFile(new Path(projectRelativePath));
+        createFile(file, cfg, templateName, suppressIfBlank);
     }
 
     /**
      * Utility method for doConfigure. Copies a resource into the project,  
      * performing variable substitutions in it. 
-     * evenIfBlank==false: do not save the file if contents would be blank (i.e. whitespace only). 
-     * evenIfBlank==true: always save. 
      */
-    protected void createFileFromResource(String projectRelativePath, String resourcePath, boolean evenIfBlank) throws CoreException {
+    protected void createFile(IFile file, Configuration templateCfg, String templateName, boolean suppressIfBlank) throws CoreException {
         // substitute variables
     	String content;    	
-        Configuration cfg = new Configuration();
-        cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
         try {
-			Template template = cfg.getTemplate(resourcePath, "utf8");
+			Template template = templateCfg.getTemplate(templateName, "utf8");
 			StringWriter writer = new StringWriter();
 			template.process(vars, writer);
 			content = writer.toString();
@@ -242,10 +231,9 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 		content = content.replaceAll("\n\n\n+", "\n\n");
 		content = content.trim() + "\n";
 
-		if (evenIfBlank || !StringUtils.isBlank(content)) {
+		if (!suppressIfBlank || !StringUtils.isBlank(content)) {
             // save it
             byte[] bytes = content.getBytes(); 
-            IFile file = project.getFile(new Path(projectRelativePath));
             if (!file.exists())
                 file.create(new ByteArrayInputStream(bytes), true, monitor);
             else

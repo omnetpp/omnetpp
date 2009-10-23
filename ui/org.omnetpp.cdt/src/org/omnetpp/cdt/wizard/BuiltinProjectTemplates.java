@@ -40,7 +40,7 @@ public class BuiltinProjectTemplates {
                 setVariable("simulationspackage", "");
                 substituteNestedVariables();
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromResource("package.ned", "templates/package.ned");
+                createFileFromPluginResource("package.ned", "templates/package.ned");
             }
         });
         
@@ -52,12 +52,12 @@ public class BuiltinProjectTemplates {
                 setVariable("simulationspackage", "");
                 substituteNestedVariables();
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromResource("package.ned", "templates/package.ned");
-                createFileFromResource("Txc.ned", "templates/Txc.ned");
-                createFileFromResource("Txc.h", "templates/Txc.h");
-                createFileFromResource("Txc.cc", "templates/Txc.cc");
-                createFileFromResource("Tictoc.ned", "templates/Tictoc.ned");
-                createFileFromResource("omnetpp.ini", "templates/Tictoc.ini");
+                createFileFromPluginResource("package.ned", "templates/package.ned");
+                createFileFromPluginResource("Txc.ned", "templates/Txc.ned");
+                createFileFromPluginResource("Txc.h", "templates/Txc.h");
+                createFileFromPluginResource("Txc.cc", "templates/Txc.cc");
+                createFileFromPluginResource("Tictoc.ned", "templates/Tictoc.ned");
+                createFileFromPluginResource("omnetpp.ini", "templates/Tictoc.ini");
             }
         });
         
@@ -69,15 +69,15 @@ public class BuiltinProjectTemplates {
                 setVariable("simulationspackage", "");
                 substituteNestedVariables();
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromResource("package.ned", "templates/package.ned");
-                createFileFromResource("Source.ned", "templates/Source.ned");
-                createFileFromResource("Source.cc", "templates/Source.cc");
-                createFileFromResource("Source.h", "templates/Source.h");
-                createFileFromResource("Sink.ned", "templates/Sink.ned");
-                createFileFromResource("Sink.cc", "templates/Sink.cc");
-                createFileFromResource("Sink.h", "templates/Sink.h");
-                createFileFromResource("Network.ned", "templates/SourceSink.ned");
-                createFileFromResource("omnetpp.ini", "templates/SourceSink.ini");
+                createFileFromPluginResource("package.ned", "templates/package.ned");
+                createFileFromPluginResource("Source.ned", "templates/Source.ned");
+                createFileFromPluginResource("Source.cc", "templates/Source.cc");
+                createFileFromPluginResource("Source.h", "templates/Source.h");
+                createFileFromPluginResource("Sink.ned", "templates/Sink.ned");
+                createFileFromPluginResource("Sink.cc", "templates/Sink.cc");
+                createFileFromPluginResource("Sink.h", "templates/Sink.h");
+                createFileFromPluginResource("Network.ned", "templates/SourceSink.ned");
+                createFileFromPluginResource("omnetpp.ini", "templates/SourceSink.ini");
             }
         }) ;
 
@@ -93,8 +93,8 @@ public class BuiltinProjectTemplates {
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromResource("src/package.ned", "templates/package.ned");
-                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
+                createFileFromPluginResource("src/package.ned", "templates/package.ned");
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
             }
         });
         
@@ -108,13 +108,13 @@ public class BuiltinProjectTemplates {
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createFileFromResource("src/package.ned", "templates/package.ned");
-                createFileFromResource("src/Txc.ned", "templates/Txc.ned");
-                createFileFromResource("src/Txc.h", "templates/Txc.h");
-                createFileFromResource("src/Txc.cc", "templates/Txc.cc");
-                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
-                createFileFromResource("simulations/Tictoc.ned", "templates/Tictoc.ned");
-                createFileFromResource("simulations/omnetpp.ini", "templates/Tictoc.ini");
+                createFileFromPluginResource("src/package.ned", "templates/package.ned");
+                createFileFromPluginResource("src/Txc.ned", "templates/Txc.ned");
+                createFileFromPluginResource("src/Txc.h", "templates/Txc.h");
+                createFileFromPluginResource("src/Txc.cc", "templates/Txc.cc");
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
+                createFileFromPluginResource("simulations/Tictoc.ned", "templates/Tictoc.ned");
+                createFileFromPluginResource("simulations/omnetpp.ini", "templates/Tictoc.ini");
             }
         });
         
@@ -128,16 +128,16 @@ public class BuiltinProjectTemplates {
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});
-                createFileFromResource("src/package.ned", "templates/package.ned");
-                createFileFromResource("src/Source.ned", "templates/Source.ned");
-                createFileFromResource("src/Source.cc", "templates/Source.cc");
-                createFileFromResource("src/Source.h", "templates/Source.h");
-                createFileFromResource("src/Sink.ned", "templates/Sink.ned");
-                createFileFromResource("src/Sink.cc", "templates/Sink.cc");
-                createFileFromResource("src/Sink.h", "templates/Sink.h");
-                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
-                createFileFromResource("simulations/Network.ned", "templates/SourceSink.ned");
-                createFileFromResource("simulations/omnetpp.ini", "templates/SourceSink.ini");
+                createFileFromPluginResource("src/package.ned", "templates/package.ned");
+                createFileFromPluginResource("src/Source.ned", "templates/Source.ned");
+                createFileFromPluginResource("src/Source.cc", "templates/Source.cc");
+                createFileFromPluginResource("src/Source.h", "templates/Source.h");
+                createFileFromPluginResource("src/Sink.ned", "templates/Sink.ned");
+                createFileFromPluginResource("src/Sink.cc", "templates/Sink.cc");
+                createFileFromPluginResource("src/Sink.h", "templates/Sink.h");
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
+                createFileFromPluginResource("simulations/Network.ned", "templates/SourceSink.ned");
+                createFileFromPluginResource("simulations/omnetpp.ini", "templates/SourceSink.ini");
             }
         });
 
@@ -160,7 +160,7 @@ public class BuiltinProjectTemplates {
                 setVariable("namespace", "");
                 setVariable("simulationspackage", "");
                 substituteNestedVariables();
-                createFileFromResource("package.ned", "templates/simulationsPackage.ned");
+                createFileFromPluginResource("package.ned", "templates/simulationsPackage.ned");
             }
         });
 
@@ -172,7 +172,7 @@ public class BuiltinProjectTemplates {
                 setVariable("simulationspackage", "");
                 substituteNestedVariables();
                 createAndSetNedSourceFolders(new String[] {"simulations"});
-                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
             }
         });
 
@@ -183,7 +183,7 @@ public class BuiltinProjectTemplates {
                 setVariable("simulationspackage", "org.example.${projectname}.simulations");
                 substituteNestedVariables();
                 createAndSetNedSourceFolders(new String[] {"simulations"});
-                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
             }
         });
         return result;
