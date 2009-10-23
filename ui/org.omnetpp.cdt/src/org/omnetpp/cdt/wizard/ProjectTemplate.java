@@ -9,10 +9,14 @@ package org.omnetpp.cdt.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -36,6 +40,7 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.velocity.VelocityUtil;
 
 /**
  * The default implementation of IProjectTemplate
@@ -119,7 +124,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         
         // do it!
         doConfigure();
-        
+
         project = null;
         monitor = null;
         vars.clear();
@@ -164,23 +169,23 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      * evenIfBlank==true: always save. 
      */
     protected void createFileFromResource(String projectRelativePath, String resourcePath, boolean evenIfBlank) throws CoreException {
-        String content = readResource(resourcePath);
+        // substitute variables
+    	String content = "";
+        try {
+        	VelocityEngine ve = VelocityUtil.createEngine(getClass().getClassLoader(), new String[] {"/org/omnetpp/cdt/wizard"}, true);
+        	Template t = ve.getTemplate(resourcePath);
+            VelocityContext context = new VelocityContext(vars);
+
+            StringWriter writer = new StringWriter();
+            t.merge(context, writer);
+            content = writer.toString();    
+
+        } catch (Exception e) {
+        	// TODO: handle exception
+        	e.printStackTrace();
+		}
+
         content = content.replace("\r\n", "\n");
-        createFile(projectRelativePath, content, evenIfBlank);
-    }
-
-    /**
-     * Utility method for doConfigure. Saves the given text into the project as a file, 
-     * performing variable substitutions in it.
-     */
-    protected void createFile(String projectRelativePath, String content, boolean evenIfBlank) throws CoreException {
-        // substitute variables (recursively)
-        String oldContent = "";
-        while (!content.equals(oldContent)) {
-            oldContent = content;
-            content = StringUtils.substituteIntoTemplate(content, vars, "{{", "}}");
-        }
-
         if (evenIfBlank || !StringUtils.isBlank(content)) {
             content = content.trim() + "\n";
 

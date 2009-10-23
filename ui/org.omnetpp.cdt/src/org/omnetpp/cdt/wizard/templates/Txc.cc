@@ -1,8 +1,8 @@
-{{bannercomment}}
+${bannercomment}
 
 #include "Txc.h"
 
-{{namespace:}}namespace {{namespace}} {
+#if($namespace!="")namespace ${namespace} {#end
 
 Define_Module(Txc);
 
@@ -21,5 +21,5 @@ void Txc::handleMessage(cMessage *msg)
     send(msg, "out");
 }
 
-{{namespace:}}}; // namespace
+#if($namespace!="")}; // namespace#end
 

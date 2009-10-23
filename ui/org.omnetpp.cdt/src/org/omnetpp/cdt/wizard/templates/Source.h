@@ -1,11 +1,11 @@
-{{bannercomment}}
+${bannercomment}
 
-#ifndef __{{PROJECTNAME}}_SOURCE_H
-#define __{{PROJECTNAME}}_SOURCE_H
+#ifndef __${PROJECTNAME}_SOURCE_H
+#define __${PROJECTNAME}_SOURCE_H
 
 #include <omnetpp.h>
 
-{{namespace:}}namespace {{namespace}} {
+#if($namespace!="")namespace ${namespace} {#end
 
 /**
  * Generates messages; see NED file for more info.
@@ -24,7 +24,7 @@ class Source : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-{{namespace:}}}; // namespace
+#if($namespace!="")}; // namespace#end
 
 #endif
 

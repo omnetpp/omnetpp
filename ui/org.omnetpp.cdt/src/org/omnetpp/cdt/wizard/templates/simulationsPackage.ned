@@ -1,4 +1,4 @@
-{{simulationspackage:}}// designate the NED package of this folder
-{{simulationspackage:}}package {{simulationspackage}};
+#if($simulationspackage!="")// designate the NED package of this folder#end
+#if($simulationspackage!="")package ${simulationspackage};#end
 
-{{license:}}@license({{license}});
+#if($license!="")@license(${license});#end

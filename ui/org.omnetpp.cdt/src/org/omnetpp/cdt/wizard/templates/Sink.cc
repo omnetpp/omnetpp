@@ -1,8 +1,8 @@
-{{bannercomment}}
+${bannercomment}
 
 #include "Sink.h"
 
-{{namespace:}}namespace {{namespace}} {
+#if($namespace!="")namespace ${namespace} {#end
 
 Define_Module(Sink);
 
@@ -31,5 +31,5 @@ void Sink::finish()
     recordStatistic(&iaTimeHistogram);
 }
 
-{{namespace:}}}; // namespace
+#if($namespace!="")}; // namespace#end
 

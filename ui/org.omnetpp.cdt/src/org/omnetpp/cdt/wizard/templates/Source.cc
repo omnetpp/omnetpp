@@ -1,8 +1,8 @@
-{{bannercomment}}
+${bannercomment}
 
 #include "Source.h"
 
-{{namespace:}}namespace {{namespace}} {
+#if($namespace!="")namespace ${namespace} {#end
 
 Define_Module(Source);
 
@@ -32,5 +32,5 @@ void Source::handleMessage(cMessage *msg)
     scheduleAt(simTime()+par("sendInterval").doubleValue(), timerMessage);
 }
 
-{{namespace:}}}; // namespace
+#if($namespace!="")}; // namespace#end
 

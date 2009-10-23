@@ -1,11 +1,11 @@
-{{bannercomment}}
+${bannercomment}
 
-#ifndef __{{PROJECTNAME}}_SINK_H
-#define __{{PROJECTNAME}}_SINK_H
+#ifndef __${PROJECTNAME}_SINK_H
+#define __${PROJECTNAME}_SINK_H
 
 #include <omnetpp.h>
 
-{{namespace:}}namespace {{namespace}} {
+#if($namespace!="")namespace ${namespace} {#end
 
 /**
  * Message sink; see NED file for more info.
@@ -26,7 +26,7 @@ class Sink : public cSimpleModule
     virtual void finish();
 };
 
-{{namespace:}}}; // namespace
+#if($namespace!="")}; // namespace#end
 
 #endif
 

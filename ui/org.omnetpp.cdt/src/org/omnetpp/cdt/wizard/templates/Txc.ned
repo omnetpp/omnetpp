@@ -1,6 +1,6 @@
-{{bannercomment}}
+${bannercomment}
 
-{{rootpackage:}}package {{rootpackage}};
+#if($rootpackage!="")package ${rootpackage};#end
 
 //
 // Immediately sends out any message it receives. It can optionally generate

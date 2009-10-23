@@ -1,11 +1,11 @@
-{{bannercomment}}
+${bannercomment}
 
-#ifndef __{{PROJECTNAME}}_TCX_H
-#define __{{PROJECTNAME}}_TCX_H
+#ifndef __${PROJECTNAME}_TCX_H
+#define __${PROJECTNAME}_TCX_H
 
 #include <omnetpp.h>
 
-{{namespace:}}namespace {{namespace}} {
+#if($namespace!="")namespace ${namespace} {#end
 
 /**
  * Implements the Txc simple module. See the NED file for more information.
@@ -17,7 +17,7 @@ class Txc : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-{{namespace:}}}; // namespace
+#if($namespace!="")}; // namespace#end
 
 #endif
 

@@ -11,6 +11,8 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/org.omnetpp.common/misc/commons-collections-3.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta-oro-2.0.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/velocity-1.6.2.jar" sourcepath="misc/velocity-1.6.2.zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins">
 		<accessrules>
