@@ -102,7 +102,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             });
         }
 
-        public boolean supportCpp() {
+        public boolean withCplusplusSupport() {
             return supportCppButton.getSelection();
         }
 
@@ -189,7 +189,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
         @Override
         public IWizardPage getNextPage() {
-            return supportCpp() ? nestedWizard.getStartingPage() : null;
+            return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
         }
         
         public IProjectTemplate getSelectedTemplate() {
@@ -314,7 +314,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     public boolean performFinish() {
         // if we are on the first page, the CDT wizard is not yet created and its perform finish 
         // will not be called, so we have to do it manually
-        final boolean withCPlusPlus = supportCpp();
+        final boolean withCPlusPlus = withCplusplusSupport();
         if (getContainer().getCurrentPage() == projectPage || getContainer().getCurrentPage() == templatePage) {
             if (withCPlusPlus) {
                 // show it manually (and create) and do it
@@ -362,20 +362,21 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         return true;
     }
 
-    public boolean supportCpp() {
-        return ((NewOmnetppCppProjectCreationPage)projectPage).supportCpp();
+    public boolean withCplusplusSupport() {
+        return ((NewOmnetppCppProjectCreationPage)projectPage).withCplusplusSupport();
     }
 
 	protected List<IProjectTemplate> getTemplates() {
 		List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
 		
 		// built-in templates
-        if (supportCpp())
+        if (withCplusplusSupport())
         	result.addAll(BuiltinProjectTemplates.getCppTemplates());
         else 
         	result.addAll(BuiltinProjectTemplates.getNoncppTemplates());
         
         // templates loaded from workspace projects
+        //TODO C++ or not C++ projects? (i.e. some templates may require C++ support)
         result.addAll(loadTemplatesFromWorkspace());
 
         // TODO: templates defined via (future) extension point
