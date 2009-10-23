@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -186,7 +187,18 @@ public class MakefileTools {
     public static List<IContainer> collectDirs(ICProjectDescription projectDescription, String pattern) throws CoreException {
         Assert.isNotNull(projectDescription);
 		List<IContainer> result = new ArrayList<IContainer>();
+		
+		// collect dirs from this project
 		collectDirs(projectDescription, result, pattern);
+		
+		// collect directories from referenced projects too
+        IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(projectDescription.getProject());
+        for (IProject refProj : referencedProjects) {
+        	ICProjectDescription refProjDesc = CoreModel.getDefault().getProjectDescription(refProj);
+        	if (refProjDesc != null)
+        		collectDirs(refProjDesc, result, pattern);
+        }
+
 		return result; 
 	}
 
@@ -211,13 +223,6 @@ public class MakefileTools {
 		    	});
     		}
     	}
-
-    	// collect directories from referenced projects too (recursively)
-    	for(IProject refProj : project.getReferencedProjects()) {
-            ICProjectDescription refProjDesc = CoreModel.getDefault().getProjectDescription(refProj);
-            if (refProjDesc != null)
-                collectDirs(refProjDesc, result, pattern);
-        }
     }
 
     /**
