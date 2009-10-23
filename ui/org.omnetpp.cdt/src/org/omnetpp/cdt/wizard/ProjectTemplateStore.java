@@ -47,6 +47,7 @@ public class ProjectTemplateStore {
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
                 setVariable("simulationspackage", "");
+                substituteNestedVariables();
                 createFileFromResource("package.ned", "templates/simulationsPackage.ned");
             }
         });
@@ -56,6 +57,7 @@ public class ProjectTemplateStore {
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
                 setVariable("simulationspackage", "");
+                substituteNestedVariables();
                 createAndSetNedSourceFolders(new String[] {"simulations"});
                 createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
             }
@@ -64,7 +66,8 @@ public class ProjectTemplateStore {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
-                setVariable("simulationspackage", "org.example.{{projectname}}.simulations");
+                setVariable("simulationspackage", "org.example.${projectname}.simulations");
+                substituteNestedVariables();
                 createAndSetNedSourceFolders(new String[] {"simulations"});
                 createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
             }
@@ -78,6 +81,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
+                substituteNestedVariables();
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
                 createFileFromResource("package.ned", "templates/package.ned");
             }
@@ -88,6 +92,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
+                substituteNestedVariables();
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
                 createFileFromResource("package.ned", "templates/package.ned");
                 createFileFromResource("Txc.ned", "templates/Txc.ned");
@@ -103,6 +108,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
+                substituteNestedVariables();
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
                 createFileFromResource("package.ned", "templates/package.ned");
                 createFileFromResource("Source.ned", "templates/Source.ned");
@@ -123,6 +129,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
+                substituteNestedVariables();
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
@@ -136,6 +143,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
+                substituteNestedVariables();
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
@@ -151,12 +159,13 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
-                setVariable("namespace", "{{projectname}}");
-                setVariable("rootpackage", "org.example.{{projectname}}");
-                setVariable("simulationspackage", "{{rootpackage}}.simulations");
+                setVariable("namespace", "${projectname}");
+                setVariable("rootpackage", "org.example.${projectname}");
+                setVariable("simulationspackage", "${rootpackage}.simulations");
+                substituteNestedVariables();
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});
                 createFileFromResource("src/package.ned", "templates/package.ned");
                 createFileFromResource("src/Source.ned", "templates/Source.ned");
                 createFileFromResource("src/Source.cc", "templates/Source.cc");

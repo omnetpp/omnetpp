@@ -1,6 +1,6 @@
 ${bannercomment}
 
-#if($rootpackage!="")package ${rootpackage};#end
+<#if rootpackage!="">package ${rootpackage};</#if>
 
 //
 // Consumes received messages and collects statistics

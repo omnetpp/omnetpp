@@ -1,6 +1,6 @@
 ${bannercomment}
 
-#if($rootpackage!="")package ${rootpackage};#end
+<#if rootpackage!="">package ${rootpackage};</#if>
 
 //
 // Generates messages with a configurable interarrival time.

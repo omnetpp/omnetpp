@@ -1,4 +1,4 @@
-#if($simulationspackage!="")// designate the NED package of this folder#end
-#if($simulationspackage!="")package ${simulationspackage};#end
+<#if simulationspackage!="">// designate the NED package of this folder</#if>
+<#if simulationspackage!="">package ${simulationspackage};</#if>
 
-#if($license!="")@license(${license});#end
+<#if license!="">@license(${license});</#if>

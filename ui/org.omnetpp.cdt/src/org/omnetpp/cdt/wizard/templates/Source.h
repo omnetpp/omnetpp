@@ -5,7 +5,7 @@ ${bannercomment}
 
 #include <omnetpp.h>
 
-#if($namespace!="")namespace ${namespace} {#end
+<#if namespace!="">namespace ${namespace} {</#if>
 
 /**
  * Generates messages; see NED file for more info.
@@ -24,7 +24,7 @@ class Source : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-#if($namespace!="")}; // namespace#end
+<#if namespace!="">}; // namespace</#if>
 
 #endif
 

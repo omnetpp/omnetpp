@@ -2,7 +2,7 @@ ${bannercomment}
 
 #include "Txc.h"
 
-#if($namespace!="")namespace ${namespace} {#end
+<#if namespace!="">namespace ${namespace} {</#if>
 
 Define_Module(Txc);
 
@@ -21,5 +21,5 @@ void Txc::handleMessage(cMessage *msg)
     send(msg, "out");
 }
 
-#if($namespace!="")}; // namespace#end
+<#if namespace!="">}; // namespace</#if>
 

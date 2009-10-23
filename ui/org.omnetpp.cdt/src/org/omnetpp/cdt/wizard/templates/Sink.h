@@ -5,7 +5,7 @@ ${bannercomment}
 
 #include <omnetpp.h>
 
-#if($namespace!="")namespace ${namespace} {#end
+<#if namespace!="">namespace ${namespace} {</#if>
 
 /**
  * Message sink; see NED file for more info.
@@ -26,7 +26,7 @@ class Sink : public cSimpleModule
     virtual void finish();
 };
 
-#if($namespace!="")}; // namespace#end
+<#if namespace!="">}; // namespace</#if>
 
 #endif
 

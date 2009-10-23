@@ -1,10 +1,10 @@
 ${bannercomment}
 
-#if($simulationspackage!="")package ${simulationspackage};#end
-#if($rootpackage!="")
+<#if simulationspackage!="">package ${simulationspackage};</#if>
+<#if rootpackage!="">
 import ${rootpackage}.Source;
 import ${rootpackage}.Sink;
-#end
+</#if>
 
 //
 // Sample network, consisting of a source and a sink.

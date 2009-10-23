@@ -2,7 +2,7 @@ ${bannercomment}
 
 #include "Sink.h"
 
-#if($namespace!="")namespace ${namespace} {#end
+<#if namespace!="">namespace ${namespace} {</#if>
 
 Define_Module(Sink);
 
@@ -31,5 +31,5 @@ void Sink::finish()
     recordStatistic(&iaTimeHistogram);
 }
 
-#if($namespace!="")}; // namespace#end
+<#if namespace!="">}; // namespace</#if>
 

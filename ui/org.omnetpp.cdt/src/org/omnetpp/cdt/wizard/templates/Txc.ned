@@ -1,6 +1,6 @@
 ${bannercomment}
 
-#if($rootpackage!="")package ${rootpackage};#end
+<#if rootpackage!="">package ${rootpackage};</#if>
 
 //
 // Immediately sends out any message it receives. It can optionally generate

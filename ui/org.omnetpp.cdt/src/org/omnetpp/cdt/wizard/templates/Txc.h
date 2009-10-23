@@ -5,7 +5,7 @@ ${bannercomment}
 
 #include <omnetpp.h>
 
-#if($namespace!="")namespace ${namespace} {#end
+<#if namespace!="">namespace ${namespace} {</#if>
 
 /**
  * Implements the Txc simple module. See the NED file for more information.
@@ -17,7 +17,7 @@ class Txc : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-#if($namespace!="")}; // namespace#end
+<#if namespace!="">}; // namespace</#if>
 
 #endif
 

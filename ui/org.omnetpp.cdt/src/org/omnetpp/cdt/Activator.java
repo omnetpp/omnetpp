@@ -10,6 +10,7 @@ package org.omnetpp.cdt;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -97,7 +98,8 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     }
 
     public static CoreException wrapIntoCoreException(Throwable exception) {
-        return wrapIntoCoreException(exception.getMessage(), exception);
+        String msg = StringUtils.defaultIfEmpty(exception.getMessage(), exception.getClass().getSimpleName());
+		return wrapIntoCoreException(msg, exception);
     }
 
     public static CoreException wrapIntoCoreException(String message, Throwable exception) {
