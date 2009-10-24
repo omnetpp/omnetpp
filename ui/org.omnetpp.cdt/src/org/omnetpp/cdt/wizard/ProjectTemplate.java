@@ -209,8 +209,13 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         // substitute variables
     	String content;    	
         try {
-        	//FIXME also the "statics" stuff!
+        	// make Math and static methods of other classes available to the template
+        	// see chapter "Bean wrapper" in the FreeMarker manual 
         	vars.put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
+        	vars.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
+            templateCfg.setNumberFormat("computer"); // prevent digit grouping with comma
+        	
+        	// perform template substitution
 			Template template = templateCfg.getTemplate(templateName, "utf8");
 			StringWriter writer = new StringWriter();
 			template.process(vars, writer);

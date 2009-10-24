@@ -17,7 +17,9 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -122,7 +124,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 	};
 
-	public IWizardPage[] createCustomPages() {
+	public IWizardPage[] createCustomPages() throws CoreException {
     	// collect page IDs from property file ("page.1", "page.2" etc keys)
     	int[] pageIDs = new int[0];
     	for (Object key : properties.keySet())
@@ -133,13 +135,27 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
     	// create pages
     	IWizardPage[] result = new IWizardPage[pageIDs.length];
 		for (int i=0; i<pageIDs.length; i++) {
+			// create page
 			int pageID = pageIDs[i];
 			String xswtFileName = properties.getProperty("page."+pageID);
-			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName)); //FIXME error if not exists
-			//FIXME page title, description, etc
+			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName));
+			if (!xswtFile.exists())
+				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Template file not found: "+xswtFile.getFullPath()));
 			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile);
+
+			// set title and description
+			String title = StringUtils.defaultIfEmpty(
+					properties.getProperty("page."+pageID+".title"),
+					getName());
+			String description = StringUtils.defaultIfEmpty(
+					properties.getProperty("page."+pageID+".title"),
+					"Page "+(i+1)+" of "+pageIDs.length);
+			result[i].setTitle(title);
+			result[i].setDescription(description);
+			
+			// do not copy forms into the new project
+			nontemplateResources.add(xswtFile);
 		}
-		//FIXME form files must not be copied into the project!
 		
 		return result;
     }
@@ -255,7 +271,6 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
     protected void createFileFromWorkspaceResource(IFile file, IFile templateFile, boolean suppressIfBlank) throws CoreException {
         Configuration cfg = new Configuration();
-        cfg.setNumberFormat("computer"); // prevent digit grouping with comma
         cfg.setTemplateLoader(new WorkspaceTemplateLoader(templateFolder));
 		String templateName = templateFile.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount()).toString();
         createFile(file, cfg, templateName, suppressIfBlank);

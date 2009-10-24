@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -315,7 +316,13 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     		IProjectTemplate selectedTemplate = templatePage.getSelectedTemplate();
     		if (selectedTemplate != null) {
     			if (selectedTemplate != creatorOfCustomPages) {
-    				templateCustomPages = selectedTemplate.createCustomPages();
+    				try {
+						templateCustomPages = selectedTemplate.createCustomPages();
+					} catch (CoreException e) {
+						ErrorDialog.openError(getShell(), "Error", "Error creating wizard pages", e.getStatus());
+						Activator.logError(e);
+						templateCustomPages = new IWizardPage[0];
+					}
     				Assert.isNotNull(templateCustomPages);
     				for (IWizardPage customPage : templateCustomPages)
     					addPage(customPage);

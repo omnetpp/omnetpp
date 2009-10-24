@@ -49,7 +49,7 @@ public interface IProjectTemplate {
      * Create custom wizard pages. Should never return null (may return an 
      * empty array though).    
      */
-    IWizardPage[] createCustomPages();
+    IWizardPage[] createCustomPages() throws CoreException;
 
     /**
      * Extract variables from the wizard pages.
