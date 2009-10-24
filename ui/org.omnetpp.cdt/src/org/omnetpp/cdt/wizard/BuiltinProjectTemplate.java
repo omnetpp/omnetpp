@@ -1,5 +1,8 @@
 package org.omnetpp.cdt.wizard;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
@@ -15,14 +18,12 @@ public abstract class BuiltinProjectTemplate extends ProjectTemplate {
 		super(name, category, description, image);
 	}
 
-	@Override
 	public IWizardPage[] createCustomPages() {
 		return new IWizardPage[0];
 	}
 
-	@Override
-	protected void extractVariablesFromPages(IWizardPage[] customPages) {
-		// nothing
+	public Map<String, Object> extractVariablesFromPages(IWizardPage[] customPages) {
+		return new HashMap<String, Object>();
 	}
 
     protected void createFileFromPluginResource(String projectRelativePath, String templateName) throws CoreException {

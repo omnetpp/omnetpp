@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -344,7 +345,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         // if we are on the first page, the CDT wizard is not yet created and its perform finish 
         // will not be called, so we have to do it manually
         final boolean withCPlusPlus = withCplusplusSupport();
-        if (getContainer().getCurrentPage() == projectPage || getContainer().getCurrentPage() == templatePage) {
+        IWizardPage lastPage = getContainer().getCurrentPage();
+		if (lastPage == projectPage || lastPage == templatePage || ArrayUtils.contains(templateCustomPages, lastPage)) {
             if (withCPlusPlus) {
                 // show it manually (and create) and do it
                 getContainer().showPage(nestedWizard.getStartingPage());
@@ -359,6 +361,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         // define the operation for configuring the new project
         final IProject project = projectPage.getProjectHandle();
         final IProjectTemplate template = templatePage.getSelectedTemplate();
+        final Map<String, Object> vars = template.extractVariablesFromPages(templateCustomPages);
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
                 // add OMNeT++ nature
@@ -370,7 +373,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
                 // apply template: this may create files, set project properties, configure the CDT project, etc.
                 if (template != null)
-                    template.configure(project, templateCustomPages, null, monitor);
+                    template.configure(project, vars, monitor);
             }
         };
 

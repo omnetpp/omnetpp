@@ -3,6 +3,7 @@ package org.omnetpp.cdt.wizard;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -20,9 +21,24 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
 
@@ -100,12 +116,13 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			}
 		}
 		
+		/** The widgets that have id attributes in the form. May return null (if the page was never shown). */
 		public Map<String, Control> getWidgetMap() {
 			return widgetMap;
 		}
 	};
-	
-    public IWizardPage[] createCustomPages() {
+
+	public IWizardPage[] createCustomPages() {
     	// collect page IDs from property file ("page.1", "page.2" etc keys)
     	int[] pageIDs = new int[0];
     	for (Object key : properties.keySet())
@@ -119,6 +136,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			int pageID = pageIDs[i];
 			String xswtFileName = properties.getProperty("page."+pageID);
 			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName)); //FIXME error if not exists
+			//FIXME page title, description, etc
 			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile);
 		}
 		//FIXME form files must not be copied into the project!
@@ -126,17 +144,81 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		return result;
     }
 
-    @Override
-	protected void extractVariablesFromPages(IWizardPage[] customPages) {
-    	// extract data from the XSWT forms, and set them as template variables
+	public Map<String, Object> extractVariablesFromPages(IWizardPage[] customPages) {
+    	// extract data from the XSWT forms
+    	Map<String, Object> result = new HashMap<String, Object>();
 		for (IWizardPage page : customPages) {
 			Map<String,Control> widgetMap = ((XSWTWizardPage)page).getWidgetMap();
-			for (String widgetName : widgetMap.keySet()) {
-				Control control = widgetMap.get(widgetName);
-				String value = control.toString(); //FIXME this is somewhat more complicated
-				setVariable(widgetName, value);
+			if (widgetMap != null) {
+				for (String widgetName : widgetMap.keySet()) {
+					Control control = widgetMap.get(widgetName);
+					Object value = getValueFromControl(control);
+					result.put(widgetName, value);
+				}
 			}
 		}
+		return result;
+	}
+
+	protected Object getValueFromControl(Control control) {
+		if (control instanceof Button)
+			return ((Button) control).getSelection(); // -> Boolean
+		if (control instanceof CCombo)
+			return ((CCombo) control).getText();
+		if (control instanceof Combo)
+			return ((Combo) control).getText();
+		if (control instanceof DateTime) {
+			DateTime d = (DateTime) control;
+			return d.getYear()+"-"+d.getMonth()+"-"+d.getDay()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		}
+		if (control instanceof Label)
+			return ((Label) control).getText(); // not very useful
+		if (control instanceof List)
+			return ((List) control).getSelection(); // -> String[] 
+		if (control instanceof Link)
+			return ((Link) control).getText(); // not very useful 
+		if (control instanceof Scale)
+			return ((Scale) control).getSelection(); // -> Integer 
+		if (control instanceof Slider)
+			return ((Slider) control).getSelection(); // -> Integer 
+		if (control instanceof Spinner)
+			return ((Spinner) control).getSelection(); // -> Integer 
+		if (control instanceof StyledText)
+			return ((StyledText) control).getText(); 
+		if (control instanceof Text)
+			return ((Text) control).getText();
+		if (control instanceof Table) {
+			Table t = (Table)control;
+			int rows = t.getItemCount();
+			int cols = t.getColumnCount();
+			if (cols == 1) {
+				String[] data = new String[rows];
+				TableItem[] items = t.getItems();
+				for (int i=0; i<rows; i++)
+					data[i] = items[i].getText();
+				return data; // -> String[]
+			}
+			else {
+				String[][] data = new String[rows][cols];
+				TableItem[] items = t.getItems();
+				for (int i=0; i<rows; i++)
+					for (int j=0; j<cols; j++)
+						data[i][j] = items[i].getText(j);
+				return data;  // -> String[][]
+			}
+		}
+		if (control instanceof Tree) {
+			Tree t = (Tree)control;
+			int cols = t.getColumnCount();
+			if (cols == 1) {
+				return null; //TODO
+			}
+			else {
+				return null;  //TODO
+			}
+		}
+		//TODO implement some adapterproviderfactoryvisitorproxy so that custom widgets can be supported
+		return null;
 	}
 
 	@Override

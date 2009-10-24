@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
@@ -111,7 +110,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         return monitor;
     }
 
-    public void configure(IProject project, IWizardPage[] customPages, Map<String, String> variables, IProgressMonitor monitor) throws CoreException {
+    public void configure(IProject project, Map<String, Object> variables, IProgressMonitor monitor) throws CoreException {
         this.project = project;
         this.monitor = monitor;
         vars.clear();
@@ -133,14 +132,10 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         setVariable("license", licenseProperty); // for @license in package.ned
         setVariable("bannercomment", LicenseUtils.getBannerComment(license, "//"));
         
-        // extract variables from template custom wizard pages
-        extractVariablesFromPages(customPages);
-
-        // add user-defined variables (they may overwrite the defaults above)
+        // set variables that come from custom wizard pages (they may overwrite the defaults above)
         if (variables != null)
             for (String var : variables.keySet())
                 setVariable(var, variables.get(var));
-        
         
         // do it!
         doConfigure();
@@ -149,16 +144,6 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         monitor = null;
         vars.clear();
     }
-
-    /**
-     * Create custom wizard pages    
-     */
-    abstract public IWizardPage[] createCustomPages();
-
-    /**
-     * Called just before doConfigure(). It should extract variables from the wizard pages.
-     */
-    abstract protected void extractVariablesFromPages(IWizardPage[] customPages);
 
     /**
      * Configure the project.
