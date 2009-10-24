@@ -138,8 +138,8 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
     	// collect page IDs from property file ("page.1", "page.2" etc keys)
     	int[] pageIDs = new int[0];
     	for (Object key : properties.keySet())
-    		if (((String)key).matches("page\\.[0-9]+"))
-    			pageIDs = ArrayUtils.add(pageIDs, Integer.parseInt(((String)key).replaceFirst("^.*\\.", "")));
+    		if (((String)key).matches("page\\.[0-9]+\\.file"))
+    			pageIDs = ArrayUtils.add(pageIDs, Integer.parseInt(((String)key).replaceFirst("^page\\.([0-9]+)\\.file$", "$1")));
     	Arrays.sort(pageIDs);
     	
     	// create pages
@@ -147,7 +147,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		for (int i=0; i<pageIDs.length; i++) {
 			// create page
 			int pageID = pageIDs[i];
-			String xswtFileName = properties.getProperty("page."+pageID);
+			String xswtFileName = properties.getProperty("page."+pageID+".file");
 			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName));
 			if (!xswtFile.exists())
 				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Template file not found: "+xswtFile.getFullPath()));
@@ -158,7 +158,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 					properties.getProperty("page."+pageID+".title"),
 					getName());
 			String description = StringUtils.defaultIfEmpty(
-					properties.getProperty("page."+pageID+".title"),
+					properties.getProperty("page."+pageID+".description"),
 					"Page "+(i+1)+" of "+pageIDs.length);
 			result[i].setTitle(title);
 			result[i].setDescription(description);
