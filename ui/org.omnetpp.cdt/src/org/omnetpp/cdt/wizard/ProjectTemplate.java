@@ -38,6 +38,7 @@ import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 
 import freemarker.cache.ClassTemplateLoader;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
@@ -159,6 +160,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      */
 	protected void substituteNestedVariables() throws CoreException {
         Configuration cfg = new Configuration();
+        cfg.setNumberFormat("computer"); // prevent digit grouping with comma
         cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
         try {
         	int k = 0;
@@ -207,6 +209,8 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         // substitute variables
     	String content;    	
         try {
+        	//FIXME also the "statics" stuff!
+        	vars.put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
 			Template template = templateCfg.getTemplate(templateName, "utf8");
 			StringWriter writer = new StringWriter();
 			template.process(vars, writer);

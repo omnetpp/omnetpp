@@ -146,6 +146,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
 	public Map<String, Object> extractVariablesFromPages(IWizardPage[] customPages) {
     	// extract data from the XSWT forms
+		//TODO force createControl() of those pages somehow, so that widgets get created and fields initialized with default values!
     	Map<String, Object> result = new HashMap<String, Object>();
 		for (IWizardPage page : customPages) {
 			Map<String,Control> widgetMap = ((XSWTWizardPage)page).getWidgetMap();
@@ -254,6 +255,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
     protected void createFileFromWorkspaceResource(IFile file, IFile templateFile, boolean suppressIfBlank) throws CoreException {
         Configuration cfg = new Configuration();
+        cfg.setNumberFormat("computer"); // prevent digit grouping with comma
         cfg.setTemplateLoader(new WorkspaceTemplateLoader(templateFolder));
 		String templateName = templateFile.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount()).toString();
         createFile(file, cfg, templateName, suppressIfBlank);

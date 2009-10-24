@@ -32,6 +32,7 @@ public abstract class BuiltinProjectTemplate extends ProjectTemplate {
 
     protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank) throws CoreException {
         Configuration cfg = new Configuration();
+        cfg.setNumberFormat("computer"); // prevent digit grouping with comma
         cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
         IFile file = getProject().getFile(new Path(projectRelativePath));
         createFile(file, cfg, templateName, suppressIfBlank);
