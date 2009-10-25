@@ -53,6 +53,9 @@ public class LicenseUtils {
     public static final String DEFAULT_CUSTOM_LICENSE_HEADER =
         "This program is property of its copyright holder. All rights reserved.";
     
+    /**
+     * Returns the list of recognized license codes.
+     */
     public static String[] getLicenses() {
         if (IConstants.IS_COMMERCIAL)
             return new String[] {NONE,CUSTOM,GPL,LGPL,BSD};
@@ -60,29 +63,41 @@ public class LicenseUtils {
             return new String[] {GPL,LGPL,BSD};
     }
 
-    public static boolean isAcceptedLicense(String license) {
-        return ArrayUtils.contains(getLicenses(), license);
+    /**
+     * Returns true if the given string is a recognized license code; see getLicenses().
+     */
+    public static boolean isAcceptedLicense(String licenseCode) {
+        return ArrayUtils.contains(getLicenses(), licenseCode);
     }
     
+    /**
+     * Returns the license code configured as default in the preferences.
+     */
     public static String getDefaultLicense() {
         return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_DEFAULT_LICENSE);
     }
 
-    public static String getLicenseNotice(String license) {
-        if (license.equals(GPL))
+    /**
+     * Returns the notice text for the given license code.
+     */
+    public static String getLicenseNotice(String licenseCode) {
+        if (licenseCode.equals(GPL))
             return GNU_HEADER.replace("@KIND@", "General").replace("@VERSION@", "3");
-        else if (license.equals(LGPL))
+        else if (licenseCode.equals(LGPL))
             return GNU_HEADER.replace("@KIND@", "Lesser General").replace("@VERSION@", "3");
-        else if (license.equals(BSD))
+        else if (licenseCode.equals(BSD))
             return BSD_HEADER;
-        else if (license.equals(CUSTOM))
+        else if (licenseCode.equals(CUSTOM))
             return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_CUSTOM_LICENSE_HEADER);
-        else if (license.equals(NONE))
+        else if (licenseCode.equals(NONE))
             return "";
         else
-            throw new IllegalArgumentException("unrecognized license identifier: "+ license);
+            throw new IllegalArgumentException("unrecognized license identifier: "+ licenseCode);
     }
 
+    /**
+     * Returns the configured copyright line from the preferences.
+     */
     public static String getCopyrightLine() {
         return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_COPYRIGHT_LINE);
     }
@@ -92,8 +107,8 @@ public class LicenseUtils {
      * Includes copyright line and license notice as well. commentChars 
      * should be "//" for C++, NED and Java files.  
      */
-    public static String getBannerComment(String license, String commentChars) {
-        String txt = getCopyrightLine().trim() + "\n\n" + getLicenseNotice(license).trim();
+    public static String getBannerComment(String licenseCode, String commentChars) {
+        String txt = getCopyrightLine().trim() + "\n\n" + getLicenseNotice(licenseCode).trim();
         txt = txt.trim();
         if (!txt.equals("")) {
             txt = "\n" + txt + "\n";

@@ -25,8 +25,9 @@ The following variables are predefined:
   date                  current date in yyyy-mm-dd format
   year                  year in yyyy format
   author                user name ("user.name" Java system property)
-  license               license identifier for the @license NED property
-  bannercomment         banner comment for source files; includes license text
+  licenseCode           license identifier for the @license NED property
+  licenseText           copyright notice for the given license
+  bannerComment         banner comment for source files; includes license text
 
 Other variables may come from custom template pages, see later.
 
@@ -36,23 +37,27 @@ and various other options.
 
 Recognized property file keys:
 
-  name          Template's display name; defaults to the folder name.
+  templateName  The template's display name; defaults to the folder name.
                 This is the name that appears in the wizard's template selection
                 page.
-  description   Description of the template. This may appear as a tooltip
+  templateDescription
+                Description of the template. This may appear as a tooltip
                 or in a description pane in the wizard.
-  category      Template category is used for organizing the templates into a
-                tree in the wizard's template selection page.
-  image         Name of the icon that appears with the name in the wizard's
+  templateCategory
+                Template category is used for organizing the templates into a
+                tree in the wizard's template selection page. Defaults to the
+                name of the project that provides the template.
+  templateImage
+                Name of the icon that appears with the name in the wizard's
                 template selection page.
-  dependent     True or false; defaults to true. If true, the template's project
+  addProjectReference
+                True or false; defaults to true. If true, the template's project
                 will be added to the referenced projects list of the new project.
-                be marked as make project as dependent on this one
   nontemplates  Space-separated list of non-template files or folders; those files
                 won't get copied over to the new project. Wildcards are NOT accepted.
                 The template.properties file and custom wizard page files
                 automatically count as nontemplates, so they don't have to be listed.
-  optionalfiles Space-separated list of files that should be suppressed (i.e. not
+  optionalFiles Space-separated list of files that should be suppressed (i.e. not
                 created) if they would be empty after template processing.
                 Wildcards are NOT accepted.
 

@@ -137,10 +137,11 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         setVariable("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
         setVariable("year", ""+cal.get(Calendar.YEAR));
         setVariable("author", System.getProperty("user.name"));
-        String license = LicenseUtils.getDefaultLicense();
-        String licenseProperty = license.equals(LicenseUtils.NONE) ? "" : license; // @license(custom) is needed, so that wizards know when to create banners
-        setVariable("license", licenseProperty); // for @license in package.ned
-        setVariable("bannercomment", LicenseUtils.getBannerComment(license, "//"));
+        String licenseCode = LicenseUtils.getDefaultLicense();
+        String licenseProperty = licenseCode.equals(LicenseUtils.NONE) ? "" : licenseCode; // @license(custom) is needed, so that wizards knows whether to create banners
+        setVariable("licenseCode", licenseProperty); // for @license in package.ned
+        setVariable("licenseText", LicenseUtils.getLicenseNotice(licenseCode));
+        setVariable("bannerComment", LicenseUtils.getBannerComment(licenseCode, "//"));
         
         // set variables that come from custom wizard pages (they may overwrite the defaults above)
         if (variables != null)

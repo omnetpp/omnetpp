@@ -1,4 +1,4 @@
-${bannercomment}
+${bannerComment}
 
 #ifndef __${PROJECTNAME}_TCX_H
 #define __${PROJECTNAME}_TCX_H

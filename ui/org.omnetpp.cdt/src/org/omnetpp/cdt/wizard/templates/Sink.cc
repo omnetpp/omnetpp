@@ -1,4 +1,4 @@
-${bannercomment}
+${bannerComment}
 
 #include "Sink.h"
 

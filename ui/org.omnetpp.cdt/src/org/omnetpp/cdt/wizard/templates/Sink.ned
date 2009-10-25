@@ -1,4 +1,4 @@
-${bannercomment}
+${bannerComment}
 
 <#if rootpackage!="">package ${rootpackage};</#if>
 

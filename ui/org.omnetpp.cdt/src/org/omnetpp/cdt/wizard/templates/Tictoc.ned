@@ -1,4 +1,4 @@
-${bannercomment}
+${bannerComment}
 
 <#if simulationspackage!="">package ${simulationspackage};</#if>
 <#if rootpackage!="">import ${rootpackage}.Txc;</#if>

@@ -1,4 +1,4 @@
-${bannercomment}
+${bannerComment}
 
 #ifndef __${PROJECTNAME}_SOURCE_H
 #define __${PROJECTNAME}_SOURCE_H

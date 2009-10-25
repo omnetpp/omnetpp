@@ -1,4 +1,4 @@
-${bannercomment}
+${bannerComment}
 
 #ifndef __${PROJECTNAME}_SINK_H
 #define __${PROJECTNAME}_SINK_H

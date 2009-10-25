@@ -65,19 +65,19 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	public static final Image MISSING_IMAGE = ImageDescriptor.getMissingImageDescriptor().createImage();
 	
 	// property names:
-	public static final String NAME = "name"; // template display name
-	public static final String DESCRIPTION = "description"; // template description
-	public static final String CATEGORY = "category"; // template category (parent tree node)
-	public static final String IMAGE = "image"; // template icon name
-	public static final String DEPENDENT = "dependent"; // boolean: if true, make project as dependent on this one
-	private static final String NONTEMPLATES = "nontemplates"; // list of non-template files: won't get copied over
-	private static final String OPTIONALFILES = "optionalfiles"; // list of files to be suppressed if they'd be blank
+	public static final String PROP_TEMPLATENAME = "templateName"; // template display name
+	public static final String PROP_TEMPLATEDESCRIPTION = "templateDescription"; // template description
+	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
+	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
+	public static final String PROP_ADDPRJECTREFERENCE = "addProjectReference"; // boolean: if true, make project as dependent on this one
+	private static final String PROP_NONTEMPLATES = "nontemplates"; // list of non-template files: won't get copied over
+	private static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank
 	
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
 	protected Set<IResource> nontemplateResources = new HashSet<IResource>();
 	protected Set<IFile> suppressIfBlankFiles = new HashSet<IFile>();
-	protected boolean markAsDependentProject;
+	protected boolean addProjectReference;
 
 	public WorkspaceBasedProjectTemplate(IFolder folder) throws CoreException {
 		super();
@@ -91,12 +91,12 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			throw Activator.wrapIntoCoreException(e);
 		}
 		
-		setName(StringUtils.defaultIfEmpty(properties.getProperty(NAME), folder.getName()));
-		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(DESCRIPTION), "Template loaded from " + folder.getFullPath()));
-		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(CATEGORY), folder.getProject().getName()));
+		setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), folder.getName()));
+		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + folder.getFullPath()));
+		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), folder.getProject().getName()));
 
 		// load image
-		String imageFileName = properties.getProperty(IMAGE);
+		String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
 		if (imageFileName != null) {
 			IFile file = templateFolder.getFile(new Path(imageFileName));
 			nontemplateResources.add(file); // do not copy image file to dest project
@@ -117,13 +117,13 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 		
 		// other options
-		markAsDependentProject = StringUtils.defaultIfEmpty(properties.getProperty(DEPENDENT), "true").equals("true");
+		addProjectReference = StringUtils.defaultIfEmpty(properties.getProperty(PROP_ADDPRJECTREFERENCE), "true").equals("true");
 
 		nontemplateResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
-		for (String item : StringUtils.defaultString(properties.getProperty(NONTEMPLATES)).split(" +"))
+		for (String item : StringUtils.defaultString(properties.getProperty(PROP_NONTEMPLATES)).split(" +"))
 			nontemplateResources.add(folder.getFile(new Path(item)));
 
-		for (String item : StringUtils.defaultString(properties.getProperty(OPTIONALFILES)).split(" +"))
+		for (String item : StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES)).split(" +"))
 			suppressIfBlankFiles.add(folder.getFile(new Path(item)));
 		
 		// TODO Properties (or rather, resolved/edited properties) should be available as template vars too
@@ -309,7 +309,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	protected void doConfigure() throws CoreException {
 		IProject project = getProject();
 		substituteNestedVariables();
-		if (markAsDependentProject)
+		if (addProjectReference)
 			ProjectUtils.addReferencedProject(project, templateFolder.getProject(), getProgressMonitor());
 		copy(templateFolder, project);
 	}
