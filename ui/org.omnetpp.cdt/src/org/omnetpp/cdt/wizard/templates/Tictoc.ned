@@ -1,7 +1,7 @@
 ${bannerComment}
 
-<#if simulationspackage!="">package ${simulationspackage};</#if>
-<#if rootpackage!="">import ${rootpackage}.Txc;</#if>
+<#if simulationsPackage!="">package ${simulationsPackage};</#if>
+<#if rootPackage!="">import ${rootPackage}.Txc;</#if>
 
 //
 // Two instances (tic and toc) of Txc connected.

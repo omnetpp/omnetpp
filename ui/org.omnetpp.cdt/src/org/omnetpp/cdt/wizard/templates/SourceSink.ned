@@ -1,9 +1,9 @@
 ${bannerComment}
 
-<#if simulationspackage!="">package ${simulationspackage};</#if>
-<#if rootpackage!="">
-import ${rootpackage}.Source;
-import ${rootpackage}.Sink;
+<#if simulationsPackage!="">package ${simulationsPackage};</#if>
+<#if rootPackage!="">
+import ${rootPackage}.Source;
+import ${rootPackage}.Sink;
 </#if>
 
 //
