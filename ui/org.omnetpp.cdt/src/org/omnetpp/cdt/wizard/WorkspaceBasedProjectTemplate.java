@@ -98,7 +98,9 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		// load image
 		String imageFileName = properties.getProperty(IMAGE);
 		if (imageFileName != null) {
-			IPath locPath = templateFolder.getFile(new Path(imageFileName)).getLocation();
+			IFile file = templateFolder.getFile(new Path(imageFileName));
+			nontemplateResources.add(file); // do not copy image file to dest project
+			IPath locPath = file.getLocation();
 			String loc = locPath==null ? "<unknown>" : locPath.toOSString();
 			ImageRegistry imageRegistry = Activator.getDefault().getImageRegistry();
 			Image image = imageRegistry.get(loc);
@@ -149,6 +151,9 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	    		composite.setLayout(new GridLayout());
 	    		widgetMap = (Map<String,Control>) XSWT.create(composite, xswtFile.getContents()); 
 	    		setControl(composite);
+	    		
+	    		//TODO fill up controls with values from the property file!!! 
+	    		
 	    	} catch (XSWTException e) {
 	    		displayError(parent, composite, e); 
 	    	} catch (CoreException e) {
@@ -225,7 +230,6 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
 	public Map<String, Object> extractVariablesFromPages(IWizardPage[] customPages) {
     	// extract data from the XSWT forms
-		//TODO force createControl() of those pages somehow, so that widgets get created and fields initialized with default values!
     	Map<String, Object> result = new HashMap<String, Object>();
 		for (IWizardPage page : customPages) {
 			Map<String,Control> widgetMap = ((XSWTWizardPage)page).getWidgetMap();

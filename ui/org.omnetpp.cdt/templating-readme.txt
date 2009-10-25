@@ -89,3 +89,27 @@ For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
 (Java type "String"), while checkboxes and radio buttons provide a boolean
 (Java type "Boolean").
 
+XSWT also allows filling up the widgets with default values, but this feature
+should be used with care, because the defaults set in XSWT may not make it
+to the file templates! This is so because if the user clicks Finish early,
+the rest of the wizard pages (and their widgets) may not be created at all,
+so values set in the XSWT will take no effect.
+
+For this reason, defaults should ALWAYS be set in the property file. To do so,
+simply use a key with the ID of the widget; those values will be written
+into the wizard page when the page is created. For example, if you have a
+text widget with id="numNodes" and a checkbox with id="generateTraffic", then
+the following lines
+
+  numNodes = 100
+  generateTraffic = true
+
+will fill in the text widget with "100" and select the checkbox. Widgets that
+do not have such lines in the propery file will be left alone.
+
+---
+TODO decide: maybe template files should have the ".ftl" extension, so that
+they get edited as FreeMarker template and not as NED/INI/C++ files?
+
+TODO: special markup in the template: "<?redirect-to="bubu.txt"> ... </?redirect>
+to support creation of files with runtime-decided names.
