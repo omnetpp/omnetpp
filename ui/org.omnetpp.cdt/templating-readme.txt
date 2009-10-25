@@ -28,6 +28,9 @@ The following variables are predefined:
   licenseCode           license identifier for the @license NED property
   licenseText           copyright notice for the given license
   bannerComment         banner comment for source files; includes license text
+  templateFolderName    name of the folder in which the template files are
+  templateFolderPath    workspace path of the folder in which the template files are
+  templateProject       name of the project that defines the template
 
 Other variables may come from custom template pages, see later.
 
@@ -60,6 +63,10 @@ Recognized property file keys:
   optionalFiles Space-separated list of files that should be suppressed (i.e. not
                 created) if they would be empty after template processing.
                 Wildcards are NOT accepted.
+  sourceFolders
+                C++ source folders to be created and configured. By default, none.
+  nedSourceFolders
+                NED source folders to be created and configured. By default, none.
 
 The following properties can be used to define custom pages in the wizard. <i> is
 an integer page ID; their ordering defines the order of wizard pages.
@@ -118,3 +125,4 @@ they get edited as FreeMarker template and not as NED/INI/C++ files?
 
 TODO: special markup in the template: "<?redirect-to="bubu.txt"> ... </?redirect>
 to support creation of files with runtime-decided names.
+

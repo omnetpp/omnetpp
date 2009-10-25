@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -67,15 +68,16 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	public static final String PROP_TEMPLATEDESCRIPTION = "templateDescription"; // template description
 	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
 	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
-	public static final String PROP_ADDPRJECTREFERENCE = "addProjectReference"; // boolean: if true, make project as dependent on this one
-	private static final String PROP_NONTEMPLATES = "nontemplates"; // list of non-template files: won't get copied over
-	private static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank
+	public static final String PROP_ADDPROJECTREFERENCE = "addProjectReference"; // boolean: if true, make project as dependent on this one
+	public static final String PROP_NONTEMPLATES = "nontemplates"; // list of non-template files: won't get copied over
+	public static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank
+	public static final String PROP_SOURCEFOLDERS = "sourceFolders"; // source folders to be created and configured
+	public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
 	
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
 	protected Set<IResource> nontemplateResources = new HashSet<IResource>();
-	protected Set<IFile> suppressIfBlankFiles = new HashSet<IFile>();
-	protected boolean addProjectReference;
+	protected Set<IFile> optionalFiles = new HashSet<IFile>(); // files not to be generated if they'd be blank
 
 	public WorkspaceBasedProjectTemplate(IFolder folder) throws CoreException {
 		super();
@@ -115,19 +117,31 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 		
 		// other options
-		addProjectReference = StringUtils.defaultIfEmpty(properties.getProperty(PROP_ADDPRJECTREFERENCE), "true").equals("true");
-
 		nontemplateResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
 		for (String item : StringUtils.defaultString(properties.getProperty(PROP_NONTEMPLATES)).split(" +"))
 			nontemplateResources.add(folder.getFile(new Path(item)));
 
 		for (String item : StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES)).split(" +"))
-			suppressIfBlankFiles.add(folder.getFile(new Path(item)));
-		
-		// TODO Properties (or rather, resolved/edited properties) should be available as template vars too
-		// TODO probably template var names and property names should be the same (see "templateName" vs "name")
+			optionalFiles.add(folder.getFile(new Path(item)));
 	}
 
+	@Override
+	public CreationContext createContext(IProject project) {
+		CreationContext context = super.createContext(project);
+
+		// add property file entries as template variables
+		for (Object key : properties.keySet())
+			if (key instanceof String)
+				context.getVariables().put((String)key, properties.get(key));
+
+		// add more predefined variables
+		context.getVariables().put("templateFolderName", templateFolder.getName());
+		context.getVariables().put("templateFolderPath", templateFolder.getFullPath().toString());
+		context.getVariables().put("templateProject", templateFolder.getProject().getName());
+		
+		return context;
+	}
+	
 	/**
 	 * XSWT-based wizard page.
 	 * @author Andras
@@ -135,22 +149,30 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	class XSWTWizardPage extends WizardPage {
 		protected IFile xswtFile;
 		protected Map<String,Control> widgetMap;
+		protected CreationContext context;
 		
-		public XSWTWizardPage(String name, IFile xswtFile) {
+		public XSWTWizardPage(String name, IFile xswtFile, CreationContext context) {
 			super(name);
 			this.xswtFile = xswtFile;
+			this.context = context;
 		}
 		
 		@SuppressWarnings("unchecked")
 		public void createControl(Composite parent) {
 			Composite composite = null;
 	    	try {
+	    		// instantiate XSWT form
 	    		composite = new Composite(parent, SWT.NONE);
 	    		composite.setLayout(new GridLayout());
 	    		widgetMap = (Map<String,Control>) XSWT.create(composite, xswtFile.getContents()); 
 	    		setControl(composite);
 	    		
-	    		//TODO fill up controls with values from the property file!!! 
+	    		// fill up controls with values from the property file
+	    		for (String key : widgetMap.keySet()) {
+	    			Object value = context.getVariables().get(key);
+	    			if (value != null)
+	    				writeValueIntoControl(widgetMap.get(key), value);
+	    		}
 	    		
 	    	} catch (XSWTException e) {
 	    		displayError(parent, composite, e); 
@@ -160,7 +182,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 		
 		public void displayError(final Composite parent, Composite composite, Throwable e) {
-			String msg = "Error loading form from "+xswtFile.getFullPath();
+			String msg = "Error creating form from "+xswtFile.getFullPath();
 			Activator.logError(msg, e);
 			composite.dispose();
 			
@@ -207,7 +229,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName));
 			if (!xswtFile.exists())
 				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Template file not found: "+xswtFile.getFullPath()));
-			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile);
+			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile, context);
 
 			// set title and description
 			String title = StringUtils.defaultIfEmpty(
@@ -268,6 +290,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		if (control instanceof Text)
 			return ((Text) control).getText();
 		if (control instanceof Table) {
+			//TODO checkbox table?
 			Table t = (Table)control;
 			int rows = t.getItemCount();
 			int cols = t.getColumnCount();
@@ -286,26 +309,39 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 						data[i][j] = items[i].getText(j);
 				return data;  // -> String[][]
 			}
+			//TODO TableItem
 		}
 		if (control instanceof Tree) {
-			Tree t = (Tree)control;
-			int cols = t.getColumnCount();
-			if (cols == 1) {
-				return null; //TODO
-			}
-			else {
-				return null;  //TODO
-			}
+			//TODO tree, checkbox tree, treeItem, etc
 		}
 		//TODO implement some adapterproviderfactoryvisitorproxy so that custom widgets can be supported
 		return null;
 	}
 
+	public void writeValueIntoControl(Control control, Object value) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	protected void doConfigure(CreationContext context) throws CoreException {
 		substituteNestedVariables(context);
-		if (addProjectReference)
+		
+		Object addProjRef = context.getVariables().get(PROP_ADDPROJECTREFERENCE);
+		if (addProjRef == null || addProjRef.equals("true"));
 			ProjectUtils.addReferencedProject(context.getProject(), templateFolder.getProject(), context.getProgressMonitor());
+
+		Object sourceFolders = context.getVariables().get(PROP_SOURCEFOLDERS);
+		if (sourceFolders instanceof String)
+			createAndSetSourceFolders(((String) sourceFolders).split(" +"), context);
+		
+		Object nedSourceFolders = context.getVariables().get(PROP_NEDSOURCEFOLDERS);
+		if (nedSourceFolders instanceof String)
+			createAndSetNedSourceFolders(((String) nedSourceFolders).split(" +"), context);
+
+		//TODO: createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);
+
+	    // copy over files and folders, with template substitution
 		copy(templateFolder, context.getProject(), context);
 	}
 
@@ -316,7 +352,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 					// copy w/ template substitution
 					IFile file = (IFile)resource;
 					IFile destFile = dest.getFile(new Path(file.getName()));
-					createFileFromWorkspaceResource(destFile, file, suppressIfBlankFiles.contains(file), context);
+					createFileFromWorkspaceResource(destFile, file, optionalFiles.contains(file), context);
 				}
 				else if (resource instanceof IFolder) {
 					// create
