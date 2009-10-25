@@ -56,17 +56,22 @@ Recognized property file keys:
   addProjectReference
                 True or false; defaults to true. If true, the template's project
                 will be added to the referenced projects list of the new project.
-  nontemplates  Space-separated list of non-template files or folders; those files
+  nontemplates  Comma-separated list of non-template files or folders; those files
                 won't get copied over to the new project. Wildcards are NOT accepted.
                 The template.properties file and custom wizard page files
                 automatically count as nontemplates, so they don't have to be listed.
-  optionalFiles Space-separated list of files that should be suppressed (i.e. not
+  optionalFiles Comma-separated list of files that should be suppressed (i.e. not
                 created) if they would be empty after template processing.
                 Wildcards are NOT accepted.
   sourceFolders
-                C++ source folders to be created and configured. By default, none.
+                Comma-separated list of C++ source folders to be created and
+                configured. By default, none.
   nedSourceFolders
-                NED source folders to be created and configured. By default, none.
+                Comma-separated list of NED source folders to be created and
+                configured. By default, none.
+  makemakeOptions
+                Comma-separated list of items in the syntax "folder:options";
+                it sets opp_makemake options for the given folders. No default.
 
 The following properties can be used to define custom pages in the wizard. <i> is
 an integer page ID; their ordering defines the order of wizard pages.
@@ -80,7 +85,9 @@ an integer page ID; their ordering defines the order of wizard pages.
                 Description of the wizard page, shown in the dialog's title area
                 below the title. Defaults to text in the format "Page 1 of 3".
 
-TODO all fields in the property file should be available in the templates too!
+All property file entries are available as template variables too. Also, most
+property values may refer to other property values or template variables, using
+the ${name} syntax.
 
 Custom wizard pages are defined in XSWT (http://xswt.sourceforge.net,
 http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home).
@@ -120,6 +127,88 @@ will fill in the text widget with "100" and select the checkbox. Widgets that
 do not have such lines in the propery file will be left alone.
 
 The property file takes precedence over values in the XSWT file.
+
+This is the way how values get transferred between widgets and template
+variables (R=read, W=write):
+
+  Button        This SWT class represents buttons, checkboxes and radio
+                buttons, depending on its style attribute (SWT.PUSH,
+                SWT.CHECK, SWT.RADIO).
+
+                W: the string "true" selects the checkbox/radiobutton,
+                   everything else clears it.
+                R: returns a Boolean.
+
+  Combo, CCombo Represent a combo box and a custom combo box. It can be
+                made read-only (with the SWT.READ_ONLY style); a read-only
+                combo only allows list selection but no manual editing.
+                The list items can be specified from XSWT. Variables only
+                work with the textedit part (cannot add/remove list items).
+
+                W: the string value gets written into the combo. If the combo
+                   is read-only and contains no such item, nothing happens.
+                R: returns the currently selected item as string.
+
+  DateTime      A widget for editing date/time.
+
+                W: accepts a string in the following format: "yyyy-mm-dd hh:mm:ss".
+                   If the string is not in the right format, an error occurs.
+                R: returns a string in the same format, "yyyy-mm-dd hh:mm:ss".
+
+  Label         Label widget (not interactive).
+
+                W: sets the label to the string
+                R: returns the label
+
+  List          A listbox widget that allows selection of one or more items,
+                depending on the style attribute (SWT.SINGLE or SWT.MULTI).
+                List items can be specified from XSWT. Template variables only
+                work with the selection (cannot add/remove list items).
+
+                W: accepts a string with comma-separated items, and selects the
+                   corresponding item(s) in the listbox. Items that are not
+                   among the listbox items are ignored.
+                R: Returns a string array object (String[]) that can be
+                   iterated over in the template.
+
+  Link          A label with hyperlink-like functionality; not very useful for
+                our purposes. Handled similarly to Label.
+
+  Scale         A graphical widget for selecting a numeric value.
+
+                W: accepts strings with an integer value. Non-numeric strings
+                   will cause an error (a message dialog will be displayed).
+                R: returns an Integer which can be used in arithmetic
+                   expressions in the template.
+
+  Slider        A scrollbar-like widget for selecting a positive numeric value.
+                Handled in a similar way as Scale.
+
+  Spinner       Similar to a textedit, but contains little up and down arrows,
+                and can be used to input an integer number.
+                Handled in a similar way as Scale.
+
+  StyledText    A textedit widget which allows displaying and editing of
+                styled text. Handled similarly to Text.
+
+  Text          A textedit widget. It can be single-line or multi-line,
+                depending on the style attribute (SWT.SINGLE, SWT.MULTI).
+
+                W: accepts a (potentially multi-line) string.
+                R: returns the edited text as a string.
+
+Table and tree widgets are currently not supported in a useful way, the main
+reason being that SWT Tables and Trees are not editable by default.
+
+Some non-interactive widgets which cannot be connected to template variables
+but are useful in forms as structuring elements: Composite, Group, Sash,
+TabFolder/TabItem.
+
+An XSWT tuturial and documentation can be found at:
+http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
+
+Documentation for the FreeMarker template language:
+http://freemarker.org/docs/index.html
 
 ---
 TODO decide: maybe template files should have the ".ftl" extension, so that

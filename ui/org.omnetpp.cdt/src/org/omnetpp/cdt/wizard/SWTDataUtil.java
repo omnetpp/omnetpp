@@ -162,7 +162,7 @@ public class SWTDataUtil {
 			return sv;
 		}
 		else { 
-			return value.toString().split(" +");
+			return value.toString().trim().split(" *, *");
 		}
 	}
 

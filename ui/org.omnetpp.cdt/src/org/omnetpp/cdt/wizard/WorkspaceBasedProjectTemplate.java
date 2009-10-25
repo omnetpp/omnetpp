@@ -59,7 +59,8 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	public static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank
 	public static final String PROP_SOURCEFOLDERS = "sourceFolders"; // source folders to be created and configured
 	public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
-	
+	public static final String PROP_MAKEMAKEOPTIONS = "makemakeOptions"; // makemake options, as "folder1:options1,folder2:options2,..."
+
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
 	protected Set<IResource> nontemplateResources = new HashSet<IResource>();
@@ -104,10 +105,10 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		
 		// other options
 		nontemplateResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
-		for (String item : StringUtils.defaultString(properties.getProperty(PROP_NONTEMPLATES)).split(" +"))
+		for (String item : StringUtils.defaultString(properties.getProperty(PROP_NONTEMPLATES)).trim().split(" *, *"))
 			nontemplateResources.add(folder.getFile(new Path(item)));
 
-		for (String item : StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES)).split(" +"))
+		for (String item : StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES)).trim().split(" *, *"))
 			optionalFiles.add(folder.getFile(new Path(item)));
 	}
 
@@ -266,13 +267,22 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
 		Object sourceFolders = context.getVariables().get(PROP_SOURCEFOLDERS);
 		if (sourceFolders instanceof String)
-			createAndSetSourceFolders(((String) sourceFolders).split(" +"), context);
+			createAndSetSourceFolders(((String) sourceFolders).trim().split(" *, *"), context);
 		
 		Object nedSourceFolders = context.getVariables().get(PROP_NEDSOURCEFOLDERS);
 		if (nedSourceFolders instanceof String)
-			createAndSetNedSourceFolders(((String) nedSourceFolders).split(" +"), context);
+			createAndSetNedSourceFolders(((String) nedSourceFolders).trim().split(" *, *"), context);
 
-		//TODO: createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);
+		Object makemakeOptions = context.getVariables().get(PROP_MAKEMAKEOPTIONS);
+		if (makemakeOptions instanceof String) {
+			String[] items = ((String) makemakeOptions).trim().split(" *, *"); // each item should be "folder:options"
+			String[] args = new String[items.length*2];
+			for (int i=0; i<items.length; i++) {
+				args[2*i] = StringUtils.substringBefore(items[i], ":").trim();
+				args[2*i+1] = StringUtils.substringAfter(items[i], ":").trim();
+			}
+			createBuildSpec(args, context);
+		}
 
 	    // copy over files and folders, with template substitution
 		copy(templateFolder, context.getProject(), context);
