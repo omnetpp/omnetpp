@@ -1,12 +1,33 @@
 package org.omnetpp.cdt.wizard;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public class CreationContext {
-	public IProject project = null;
-	public Map<String,Object> variables = null;
-	public IProgressMonitor progressMonitor = null;
+	private IProject project;
+	private Map<String,Object> variables = new HashMap<String, Object>();
+	private IProgressMonitor progressMonitor;
+	
+	public CreationContext(IProject project) {
+		this.project = project;
+	}
+
+	public IProject getProject() {
+		return project;
+	}
+	
+	public Map<String,Object> getVariables() {
+		return variables;
+	}
+
+	public void setProgressMonitor(IProgressMonitor progressMonitor) {
+		this.progressMonitor = progressMonitor;
+	}
+	
+	public IProgressMonitor getProgressMonitor() {
+		return progressMonitor;
+	}
 }

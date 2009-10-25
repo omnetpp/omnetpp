@@ -11,7 +11,6 @@ import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.cdt.core.model.CoreModel;
@@ -101,11 +100,10 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     }
     
     public CreationContext createContext(IProject project) {
-    	CreationContext context = new CreationContext();
-    	context.project = project;
+    	CreationContext context = new CreationContext(project);
     	
     	// pre-register some potentially useful template variables
-    	Map<String, Object> variables = new HashMap<String, Object>();
+    	Map<String, Object> variables = context.getVariables();
         variables.put("templateName", name);
         variables.put("templateDescription", description);
         variables.put("templateCategory", category);
@@ -122,8 +120,6 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         variables.put("licenseCode", licenseProperty); // for @license in package.ned
         variables.put("licenseText", LicenseUtils.getLicenseNotice(licenseCode));
         variables.put("bannerComment", LicenseUtils.getBannerComment(licenseCode, "//"));
-        
-        context.variables = variables;
 
         return context;
     }
@@ -147,7 +143,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      * "org.example.${projectname}"); substitute them.
      */
 	protected void substituteNestedVariables(CreationContext context) throws CoreException {
-		Map<String, Object> variables = context.variables;
+		Map<String, Object> variables = context.getVariables();
         Configuration cfg = new Configuration();
         cfg.setNumberFormat("computer"); // prevent digit grouping with comma
         cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
@@ -189,14 +185,14 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         try {
         	// make Math and static methods of other classes available to the template
         	// see chapter "Bean wrapper" in the FreeMarker manual 
-        	context.variables.put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
-        	context.variables.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
+        	context.getVariables().put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
+        	context.getVariables().put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
             templateCfg.setNumberFormat("computer"); // prevent digit grouping with comma
         	
         	// perform template substitution
 			Template template = templateCfg.getTemplate(templateName, "utf8");
 			StringWriter writer = new StringWriter();
-			template.process(context.variables, writer);
+			template.process(context.getVariables(), writer);
 			content = writer.toString();
 		} catch (Exception e) {
 			throw Activator.wrapIntoCoreException(e);
@@ -211,9 +207,9 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 		if (!suppressIfBlank || !StringUtils.isBlank(content)) {
             byte[] bytes = content.getBytes(); 
             if (!file.exists())
-                file.create(new ByteArrayInputStream(bytes), true, context.progressMonitor);
+                file.create(new ByteArrayInputStream(bytes), true, context.getProgressMonitor());
             else
-                file.setContents(new ByteArrayInputStream(bytes), true, false, context.progressMonitor);
+                file.setContents(new ByteArrayInputStream(bytes), true, false, context.getProgressMonitor());
         }
     }
 
@@ -221,11 +217,11 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      * Creates a folder. If the parent folder(s) do not exist, they are created.
      */
     protected void createFolder(String projectRelativePath, CreationContext context) throws CoreException {
-        IFolder folder = context.project.getFolder(new Path(projectRelativePath));
+        IFolder folder = context.getProject().getFolder(new Path(projectRelativePath));
         if (!folder.getParent().exists())
             createFolder(folder.getParent().getProjectRelativePath().toString(), context);
         if (!folder.exists())
-            folder.create(true, true, context.progressMonitor);
+            folder.create(true, true, context.getProgressMonitor());
     }
     
     /**
@@ -236,8 +232,8 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             createFolder(path, context);
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
-            folders[i] = context.project.getFolder(new Path(projectRelativePaths[i]));
-        ProjectUtils.saveNedFoldersFile(context.project, folders);
+            folders[i] = context.getProject().getFolder(new Path(projectRelativePaths[i]));
+        ProjectUtils.saveNedFoldersFile(context.getProject(), folders);
     }
 
     /**
@@ -248,7 +244,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             createFolder(path, context);
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
-            folders[i] = context.project.getFolder(new Path(projectRelativePaths[i]));
+            folders[i] = context.getProject().getFolder(new Path(projectRelativePaths[i]));
         setSourceLocations(folders, context);
     }
     
@@ -260,7 +256,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         if (System.getProperty("org.omnetpp.test.unit.running") != null)
             return; // in the test case we don't create a full CDT project, so the code below would throw NPE
 
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(context.project, true);
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(context.getProject(), true);
         int n = folders.length;
         for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
             ICSourceEntry[] entries = new CSourceEntry[n];
@@ -275,14 +271,14 @@ public abstract class ProjectTemplate implements IProjectTemplate {
                 Activator.logError(e); // should not happen, as we called getProjectDescription() with write=true
             }
         }
-        CoreModel.getDefault().setProjectDescription(context.project, projectDescription);
+        CoreModel.getDefault().setProjectDescription(context.getProject(), projectDescription);
     }
 
     /**
      * Creates a default build spec (project root being makemake folder)
      */
     protected void createDefaultBuildSpec(CreationContext context) throws CoreException {
-        BuildSpecification.createInitial(context.project).save();
+        BuildSpecification.createInitial(context.getProject()).save();
     }
 
     /**
@@ -291,7 +287,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      */
     protected void createBuildSpec(String[] pathsAndMakemakeOptions, CreationContext context) throws CoreException {
         Assert.isTrue(pathsAndMakemakeOptions.length%2 == 0);
-        IProject project = context.project;
+        IProject project = context.getProject();
         BuildSpecification buildSpec = BuildSpecification.createBlank(project);
         for (int i=0; i<pathsAndMakemakeOptions.length; i+=2) {
             String folderPath = pathsAndMakemakeOptions[i];

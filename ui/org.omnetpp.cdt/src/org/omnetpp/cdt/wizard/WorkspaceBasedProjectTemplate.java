@@ -234,7 +234,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 				for (String widgetName : widgetMap.keySet()) {
 					Control control = widgetMap.get(widgetName);
 					Object value = getValueFromControl(control);
-					context.variables.put(widgetName, value);
+					context.getVariables().put(widgetName, value);
 				}
 			}
 		}
@@ -305,8 +305,8 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	protected void doConfigure(CreationContext context) throws CoreException {
 		substituteNestedVariables(context);
 		if (addProjectReference)
-			ProjectUtils.addReferencedProject(context.project, templateFolder.getProject(), context.progressMonitor);
-		copy(templateFolder, context.project, context);
+			ProjectUtils.addReferencedProject(context.getProject(), templateFolder.getProject(), context.getProgressMonitor());
+		copy(templateFolder, context.getProject(), context);
 	}
 
 	protected void copy(IFolder parent, IContainer dest, CreationContext context) throws CoreException {
@@ -323,7 +323,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 					IFolder folder = (IFolder)resource;
 					IFolder newFolder = dest.getFolder(new Path(folder.getName()));
 					if (!newFolder.exists())
-						newFolder.create(true, true, context.progressMonitor);
+						newFolder.create(true, true, context.getProgressMonitor());
 					copy(folder, newFolder, context);
 				}
 			}

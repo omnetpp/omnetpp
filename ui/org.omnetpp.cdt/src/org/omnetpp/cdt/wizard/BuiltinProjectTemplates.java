@@ -32,9 +32,9 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Empty project", SINGLE_DIR, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "");
-                context.variables.put("rootpackage", "");
-                context.variables.put("simulationspackage", "");
+                context.getVariables().put("namespace", "");
+                context.getVariables().put("rootpackage", "");
+                context.getVariables().put("simulationspackage", "");
                 substituteNestedVariables(context);
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
                 createFileFromPluginResource("package.ned", "templates/package.ned", context);
@@ -44,9 +44,9 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Tictoc example", SINGLE_DIR, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "");
-                context.variables.put("rootpackage", "");
-                context.variables.put("simulationspackage", "");
+                context.getVariables().put("namespace", "");
+                context.getVariables().put("rootpackage", "");
+                context.getVariables().put("simulationspackage", "");
                 substituteNestedVariables(context);
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
                 createFileFromPluginResource("package.ned", "templates/package.ned", context);
@@ -61,9 +61,9 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Source-sink example", SINGLE_DIR, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "");
-                context.variables.put("rootpackage", "");
-                context.variables.put("simulationspackage", "");
+                context.getVariables().put("namespace", "");
+                context.getVariables().put("rootpackage", "");
+                context.getVariables().put("simulationspackage", "");
                 substituteNestedVariables(context);
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
                 createFileFromPluginResource("package.ned", "templates/package.ned", context);
@@ -83,9 +83,9 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "");
-                context.variables.put("rootpackage", "");
-                context.variables.put("simulationspackage", "");
+                context.getVariables().put("namespace", "");
+                context.getVariables().put("rootpackage", "");
+                context.getVariables().put("simulationspackage", "");
                 substituteNestedVariables(context);
                 createAndSetSourceFolders(new String[]{"src"}, context);
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"}, context);
@@ -98,9 +98,9 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "");
-                context.variables.put("rootpackage", "");
-                context.variables.put("simulationspackage", "");
+                context.getVariables().put("namespace", "");
+                context.getVariables().put("rootpackage", "");
+                context.getVariables().put("simulationspackage", "");
                 substituteNestedVariables(context);
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);                
                 createAndSetSourceFolders(new String[]{"src"}, context);
@@ -118,9 +118,9 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "${projectname}");
-                context.variables.put("rootpackage", "org.example.${projectname}");
-                context.variables.put("simulationspackage", "${rootpackage}.simulations");
+                context.getVariables().put("namespace", "${projectname}");
+                context.getVariables().put("rootpackage", "org.example.${projectname}");
+                context.getVariables().put("simulationspackage", "${rootpackage}.simulations");
                 substituteNestedVariables(context);
                 createAndSetSourceFolders(new String[]{"src"}, context);
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"}, context);
@@ -154,8 +154,8 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SINGLEDIR, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "");
-                context.variables.put("simulationspackage", "");
+                context.getVariables().put("namespace", "");
+                context.getVariables().put("simulationspackage", "");
                 substituteNestedVariables(context);
                 createFileFromPluginResource("package.ned", "templates/simulationsPackage.ned", context);
             }
@@ -165,8 +165,8 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SIMULATIONS, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "");
-                context.variables.put("simulationspackage", "");
+                context.getVariables().put("namespace", "");
+                context.getVariables().put("simulationspackage", "");
                 substituteNestedVariables(context);
                 createAndSetNedSourceFolders(new String[] {"simulations"}, context);
                 createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
@@ -176,8 +176,8 @@ public class BuiltinProjectTemplates {
         result.add(new BuiltinProjectTemplate("Empty project with packages", NONCPP_SIMULATIONS, null) {
             @Override
             public void doConfigure(CreationContext context) throws CoreException {
-                context.variables.put("namespace", "");
-                context.variables.put("simulationspackage", "org.example.${projectname}.simulations");
+                context.getVariables().put("namespace", "");
+                context.getVariables().put("simulationspackage", "org.example.${projectname}.simulations");
                 substituteNestedVariables(context);
                 createAndSetNedSourceFolders(new String[] {"simulations"}, context);
                 createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);

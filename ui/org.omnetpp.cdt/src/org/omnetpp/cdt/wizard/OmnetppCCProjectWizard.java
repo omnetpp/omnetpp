@@ -364,7 +364,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     		template = null;
     	else
         	template = templatePage.getSelectedTemplate();
-		Assert.isTrue(context.project.equals(project));
+		Assert.isTrue(context.getProject().equals(project));
 
     	// if we are on the template selection page, create a fresh context with the selected template
     	if (finishingPage == templatePage) {
@@ -408,11 +408,11 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                 // apply template: this may create files, set project properties, configure the CDT project, etc.
                 if (template != null) {
                 	try {
-                		context.progressMonitor = monitor;
-                		Assert.isTrue(context.project == project);
+                		context.setProgressMonitor(monitor);
+                		Assert.isTrue(context.getProject() == project);
                 		template.configureProject(context);
                 	} finally {
-                    	context.progressMonitor = null;
+                    	context.setProgressMonitor(null);
                 	}
                 }
             }
