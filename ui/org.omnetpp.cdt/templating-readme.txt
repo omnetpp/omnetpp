@@ -119,6 +119,8 @@ the following lines
 will fill in the text widget with "100" and select the checkbox. Widgets that
 do not have such lines in the propery file will be left alone.
 
+The property file takes precedence over values in the XSWT file.
+
 ---
 TODO decide: maybe template files should have the ".ftl" extension, so that
 they get edited as FreeMarker template and not as NED/INI/C++ files?
@@ -126,3 +128,5 @@ they get edited as FreeMarker template and not as NED/INI/C++ files?
 TODO: special markup in the template: "<?redirect-to="bubu.txt"> ... </?redirect>
 to support creation of files with runtime-decided names.
 
+TODO: check if XSWT 2.0 could be brought to work? Because it changed the file
+format a bit, and we want future OMNET++ versions to be backward compatible!!!
