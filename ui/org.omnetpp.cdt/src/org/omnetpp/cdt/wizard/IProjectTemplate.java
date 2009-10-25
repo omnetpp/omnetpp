@@ -7,11 +7,9 @@
 
 package org.omnetpp.cdt.wizard;
 
-import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 
@@ -46,19 +44,25 @@ public interface IProjectTemplate {
     Image getImage();
 
     /**
+     * Creates an initial context with the project and some initial variables set.
+     */
+    CreationContext createContext(IProject project);
+    
+    /**
      * Create custom wizard pages. Should never return null (may return an 
      * empty array though).    
      */
-    IWizardPage[] createCustomPages() throws CoreException;
+    IWizardPage[] createCustomPages(CreationContext context) throws CoreException;
 
     /**
-     * Extract variables from the wizard pages.
+     * Update variables based on the contents of custom wizard pages.
      */
-    Map<String,Object> extractVariablesFromPages(IWizardPage[] customPages);
+    void updateVariablesFromCustomPages(IWizardPage[] customPages, CreationContext context);
 
     /**
-     * Configure the project (add files, etc) using the variables.
-     * The variables will come from the wizard pages.
+     * Configure the project (add files, etc) using the variables, both in the context.
+     * This method is usually called from a background thread, so it can no longer
+     * access the GUI (e.g. custom wizard pages).
      */
-    void configure(IProject project, Map<String, Object> vars, IProgressMonitor monitor) throws CoreException;
+    void configureProject(CreationContext context) throws CoreException;
 }

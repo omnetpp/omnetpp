@@ -3,7 +3,6 @@ package org.omnetpp.cdt.wizard;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -14,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -192,7 +190,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 	};
 
-	public IWizardPage[] createCustomPages() throws CoreException {
+	public IWizardPage[] createCustomPages(CreationContext context) throws CoreException {
     	// collect page IDs from property file ("page.1", "page.2" etc keys)
     	int[] pageIDs = new int[0];
     	for (Object key : properties.keySet())
@@ -228,20 +226,18 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		return result;
     }
 
-	public Map<String, Object> extractVariablesFromPages(IWizardPage[] customPages) {
+	public void updateVariablesFromCustomPages(IWizardPage[] customPages, CreationContext context) {
     	// extract data from the XSWT forms
-    	Map<String, Object> result = new HashMap<String, Object>();
 		for (IWizardPage page : customPages) {
 			Map<String,Control> widgetMap = ((XSWTWizardPage)page).getWidgetMap();
 			if (widgetMap != null) {
 				for (String widgetName : widgetMap.keySet()) {
 					Control control = widgetMap.get(widgetName);
 					Object value = getValueFromControl(control);
-					result.put(widgetName, value);
+					context.variables.put(widgetName, value);
 				}
 			}
 		}
-		return result;
 	}
 
 	protected Object getValueFromControl(Control control) {
@@ -306,40 +302,39 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	}
 
 	@Override
-	protected void doConfigure() throws CoreException {
-		IProject project = getProject();
-		substituteNestedVariables();
+	protected void doConfigure(CreationContext context) throws CoreException {
+		substituteNestedVariables(context);
 		if (addProjectReference)
-			ProjectUtils.addReferencedProject(project, templateFolder.getProject(), getProgressMonitor());
-		copy(templateFolder, project);
+			ProjectUtils.addReferencedProject(context.project, templateFolder.getProject(), context.progressMonitor);
+		copy(templateFolder, context.project, context);
 	}
 
-	protected void copy(IFolder parent, IContainer dest) throws CoreException {
+	protected void copy(IFolder parent, IContainer dest, CreationContext context) throws CoreException {
 		for (IResource resource : parent.members()) {
 			if (!nontemplateResources.contains(resource)) {
 				if (resource instanceof IFile) {
 					// copy w/ template substitution
 					IFile file = (IFile)resource;
 					IFile destFile = dest.getFile(new Path(file.getName()));
-					createFileFromWorkspaceResource(destFile, file, suppressIfBlankFiles.contains(file));
+					createFileFromWorkspaceResource(destFile, file, suppressIfBlankFiles.contains(file), context);
 				}
 				else if (resource instanceof IFolder) {
 					// create
 					IFolder folder = (IFolder)resource;
 					IFolder newFolder = dest.getFolder(new Path(folder.getName()));
 					if (!newFolder.exists())
-						newFolder.create(true, true, getProgressMonitor());
-					copy(folder, newFolder);
+						newFolder.create(true, true, context.progressMonitor);
+					copy(folder, newFolder, context);
 				}
 			}
 		}
 	}
 
-    protected void createFileFromWorkspaceResource(IFile file, IFile templateFile, boolean suppressIfBlank) throws CoreException {
+    protected void createFileFromWorkspaceResource(IFile file, IFile templateFile, boolean suppressIfBlank, CreationContext context) throws CoreException {
         Configuration cfg = new Configuration();
         cfg.setTemplateLoader(new WorkspaceTemplateLoader(templateFolder));
 		String templateName = templateFile.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount()).toString();
-        createFile(file, cfg, templateName, suppressIfBlank);
+        createFile(file, cfg, templateName, suppressIfBlank, context);
     }
 
 }

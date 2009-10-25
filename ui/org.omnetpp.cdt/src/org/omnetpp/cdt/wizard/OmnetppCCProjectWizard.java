@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -82,6 +81,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     private TemplateSelectionPage templatePage;
     private IWizardPage[] templateCustomPages = new IWizardPage[0]; // never null
     private IProjectTemplate creatorOfCustomPages;
+    private CreationContext context;
     
     public class NewOmnetppCppProjectCreationPage extends NewOmnetppProjectCreationPage {
         private Button supportCppButton;
@@ -314,10 +314,14 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     	else if (page == templatePage) {
     		// if there is a template selected, return its first custom page (if it has one)
     		IProjectTemplate selectedTemplate = templatePage.getSelectedTemplate();
-    		if (selectedTemplate != null) {
+    		if (selectedTemplate == null) {
+    			context = null;
+    		}
+    		else {
     			if (selectedTemplate != creatorOfCustomPages) {
     				try {
-						templateCustomPages = selectedTemplate.createCustomPages();
+    					context = selectedTemplate.createContext(projectPage.getProjectHandle());
+						templateCustomPages = selectedTemplate.createCustomPages(context);
 					} catch (CoreException e) {
 						ErrorDialog.openError(getShell(), "Error", "Error creating wizard pages", e.getStatus());
 						Activator.logError(e);
@@ -349,11 +353,37 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     
     @Override
     public boolean performFinish() {
-        // if we are on the first page, the CDT wizard is not yet created and its perform finish 
-        // will not be called, so we have to do it manually
-        final boolean withCPlusPlus = withCplusplusSupport();
-        IWizardPage lastPage = getContainer().getCurrentPage();
-		if (lastPage == projectPage || lastPage == templatePage || ArrayUtils.contains(templateCustomPages, lastPage)) {
+    	// first, make sure we have good template, context and templateCustomPages 
+    	// variables, depending on the page the user pressed Finish on
+    	IWizardPage finishingPage = getContainer().getCurrentPage();
+    	final IProject project = projectPage.getProjectHandle();
+    	
+    	// if we are on the first page, we use no template at all, otherwise we use the selected one
+    	final IProjectTemplate template;
+    	if (finishingPage == projectPage)
+    		template = null;
+    	else
+        	template = templatePage.getSelectedTemplate();
+		Assert.isTrue(context.project.equals(project));
+
+    	// if we are on the template selection page, create a fresh context with the selected template
+    	if (finishingPage == templatePage) {
+    		if (template != null)
+    			context = template.createContext(project);
+    		templateCustomPages = new IWizardPage[0]; // no pages (yet)
+    	}
+
+    	// if there is no template selected, no context needed (discard existing one)
+    	if (template == null)
+    		context = null;
+    	
+    	if (template != null)
+			template.updateVariablesFromCustomPages(templateCustomPages, context);
+    	
+    	// if we are not yet on a CDT page, the CDT wizard is not yet created and 
+    	// its performFinish() would not be called, so we have to do it manually
+    	final boolean withCPlusPlus = withCplusplusSupport();
+		if (finishingPage == projectPage || finishingPage == templatePage || ArrayUtils.contains(templateCustomPages, finishingPage)) {
             if (withCPlusPlus) {
                 // show it manually (and create) and do it
                 getContainer().showPage(nestedWizard.getStartingPage());
@@ -364,11 +394,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                 super.performFinish();
             }
         }
-        
+
         // define the operation for configuring the new project
-        final IProject project = projectPage.getProjectHandle();
-        final IProjectTemplate template = templatePage.getSelectedTemplate();
-        final Map<String, Object> vars = template.extractVariablesFromPages(templateCustomPages);
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
                 // add OMNeT++ nature
@@ -379,8 +406,15 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                     BuildSpecification.createInitial(project).save();
 
                 // apply template: this may create files, set project properties, configure the CDT project, etc.
-                if (template != null)
-                    template.configure(project, vars, monitor);
+                if (template != null) {
+                	try {
+                		context.progressMonitor = monitor;
+                		Assert.isTrue(context.project == project);
+                		template.configureProject(context);
+                	} finally {
+                    	context.progressMonitor = null;
+                	}
+                }
             }
         };
 

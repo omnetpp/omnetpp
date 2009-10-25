@@ -27,7 +27,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
@@ -54,11 +53,6 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     private String category;
     private Image image = DEFAULT_ICON;
     
-    // fields set by and used during configure():   
-    private IProject project; // the project being configured
-    private IProgressMonitor monitor;
-    private Map<String,Object> vars = new HashMap<String, Object>(); // variables to be substituted into generated text files
-
     public ProjectTemplate() {
     }
 
@@ -106,60 +100,44 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     	this.image = image;
     }
     
-    /**
-     * Valid only during configuring a project.
-     */
-    public IProject getProject() {
-        return project;
-    }
-
-    /**
-     * Valid only during configuring a project.
-     */
-    public IProgressMonitor getProgressMonitor() {
-        return monitor;
-    }
-
-    public void configure(IProject project, Map<String, Object> variables, IProgressMonitor monitor) throws CoreException {
-        this.project = project;
-        this.monitor = monitor;
-        vars.clear();
-
-        // pre-register some potentially useful template variables
-        setVariable("templateName", name);
-        setVariable("templateDescription", description);
-        setVariable("templateCategory", category);
-        setVariable("rawProjectName", project.getName());
-        setVariable("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(project.getName())));
-        setVariable("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(project.getName())));
-        setVariable("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(project.getName())));
+    public CreationContext createContext(IProject project) {
+    	CreationContext context = new CreationContext();
+    	context.project = project;
+    	
+    	// pre-register some potentially useful template variables
+    	Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("templateName", name);
+        variables.put("templateDescription", description);
+        variables.put("templateCategory", category);
+		variables.put("rawProjectName", project);
+		variables.put("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(project.getName())));
+		variables.put("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(project.getName())));
+		variables.put("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(project.getName())));
         Calendar cal = Calendar.getInstance();
-        setVariable("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
-        setVariable("year", ""+cal.get(Calendar.YEAR));
-        setVariable("author", System.getProperty("user.name"));
+        variables.put("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
+        variables.put("year", ""+cal.get(Calendar.YEAR));
+        variables.put("author", System.getProperty("user.name"));
         String licenseCode = LicenseUtils.getDefaultLicense();
         String licenseProperty = licenseCode.equals(LicenseUtils.NONE) ? "" : licenseCode; // @license(custom) is needed, so that wizards knows whether to create banners
-        setVariable("licenseCode", licenseProperty); // for @license in package.ned
-        setVariable("licenseText", LicenseUtils.getLicenseNotice(licenseCode));
-        setVariable("bannerComment", LicenseUtils.getBannerComment(licenseCode, "//"));
+        variables.put("licenseCode", licenseProperty); // for @license in package.ned
+        variables.put("licenseText", LicenseUtils.getLicenseNotice(licenseCode));
+        variables.put("bannerComment", LicenseUtils.getBannerComment(licenseCode, "//"));
         
-        // set variables that come from custom wizard pages (they may overwrite the defaults above)
-        if (variables != null)
-            for (String var : variables.keySet())
-                setVariable(var, variables.get(var));
+        context.variables = variables;
+
+        return context;
+    }
+    
+    public void configureProject(CreationContext context) throws CoreException {
         
         // do it!
-        doConfigure();
-
-        project = null;
-        monitor = null;
-        vars.clear();
+        doConfigure(context);
     }
 
     /**
      * Configure the project.
      */
-    protected abstract void doConfigure() throws CoreException;
+    protected abstract void doConfigure(CreationContext context) throws CoreException;
 
 	/**
      * Resolves references to other variables. Should be called from doConfigure() before
@@ -168,7 +146,8 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      * Some variables contain references to other variables (e.g. 
      * "org.example.${projectname}"); substitute them.
      */
-	protected void substituteNestedVariables() throws CoreException {
+	protected void substituteNestedVariables(CreationContext context) throws CoreException {
+		Map<String, Object> variables = context.variables;
         Configuration cfg = new Configuration();
         cfg.setNumberFormat("computer"); // prevent digit grouping with comma
         cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
@@ -177,18 +156,18 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         	boolean again;
         	do {
         		again = false;
-        		for (String key : vars.keySet()) {
-        			Object value = vars.get(key);
+        		for (String key : variables.keySet()) {
+        			Object value = variables.get(key);
         			if (value instanceof String) {
         				// substitute variables into value
         				Template template = new Template("tmp" + k++, new StringReader((String)value), cfg, "utf8");
         				StringWriter writer = new StringWriter();
-        				template.process(vars, writer);
+        				template.process(context, writer);
         				String newValue = writer.toString();
         				
         				// write back new value
         				if (!value.equals(newValue)) {
-        					vars.put(key, newValue);
+        					variables.put(key, newValue);
         					again = true;
         				}
         			}
@@ -201,34 +180,23 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 	}
     
     /**
-     * Sets (creates or overwrites) a variable to be substituted into files 
-     * created with createFile(). Pass value==null to remove an existing variable.
-     */
-    protected void setVariable(String name, Object value) {
-        if (value == null)
-            vars.remove(name);
-        else 
-            vars.put(name, value);
-    }
-
-    /**
      * Utility method for doConfigure. Copies a resource into the project,  
      * performing variable substitutions in it. 
      */
-    protected void createFile(IFile file, Configuration templateCfg, String templateName, boolean suppressIfBlank) throws CoreException {
+    protected void createFile(IFile file, Configuration templateCfg, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
         // substitute variables
     	String content;    	
         try {
         	// make Math and static methods of other classes available to the template
         	// see chapter "Bean wrapper" in the FreeMarker manual 
-        	vars.put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
-        	vars.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
+        	context.variables.put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
+        	context.variables.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
             templateCfg.setNumberFormat("computer"); // prevent digit grouping with comma
         	
         	// perform template substitution
 			Template template = templateCfg.getTemplate(templateName, "utf8");
 			StringWriter writer = new StringWriter();
-			template.process(vars, writer);
+			template.process(context.variables, writer);
 			content = writer.toString();
 		} catch (Exception e) {
 			throw Activator.wrapIntoCoreException(e);
@@ -243,61 +211,61 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 		if (!suppressIfBlank || !StringUtils.isBlank(content)) {
             byte[] bytes = content.getBytes(); 
             if (!file.exists())
-                file.create(new ByteArrayInputStream(bytes), true, monitor);
+                file.create(new ByteArrayInputStream(bytes), true, context.progressMonitor);
             else
-                file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
+                file.setContents(new ByteArrayInputStream(bytes), true, false, context.progressMonitor);
         }
     }
 
     /**
      * Creates a folder. If the parent folder(s) do not exist, they are created.
      */
-    protected void createFolder(String projectRelativePath) throws CoreException {
-        IFolder folder = getProject().getFolder(new Path(projectRelativePath));
+    protected void createFolder(String projectRelativePath, CreationContext context) throws CoreException {
+        IFolder folder = context.project.getFolder(new Path(projectRelativePath));
         if (!folder.getParent().exists())
-            createFolder(folder.getParent().getProjectRelativePath().toString());
+            createFolder(folder.getParent().getProjectRelativePath().toString(), context);
         if (!folder.exists())
-            folder.create(true, true, monitor);
+            folder.create(true, true, context.progressMonitor);
     }
     
     /**
      * Creates the given folders, and a folder. If the parent folder(s) do not exist, they are created.
      */
-    protected void createAndSetNedSourceFolders(String[] projectRelativePaths) throws CoreException {
+    protected void createAndSetNedSourceFolders(String[] projectRelativePaths, CreationContext context) throws CoreException {
         for (String path : projectRelativePaths)
-            createFolder(path);
+            createFolder(path, context);
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
-            folders[i] = getProject().getFolder(new Path(projectRelativePaths[i]));
-        ProjectUtils.saveNedFoldersFile(getProject(), folders);
+            folders[i] = context.project.getFolder(new Path(projectRelativePaths[i]));
+        ProjectUtils.saveNedFoldersFile(context.project, folders);
     }
 
     /**
      * Sets C++ source folders to the given list.
      */
-    protected void createAndSetSourceFolders(String[] projectRelativePaths) throws CoreException {
+    protected void createAndSetSourceFolders(String[] projectRelativePaths, CreationContext context) throws CoreException {
         for (String path : projectRelativePaths)
-            createFolder(path);
+            createFolder(path, context);
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
-            folders[i] = getProject().getFolder(new Path(projectRelativePaths[i]));
-        setSourceLocations(project, folders);
+            folders[i] = context.project.getFolder(new Path(projectRelativePaths[i]));
+        setSourceLocations(folders, context);
     }
     
     /**
      * Sets the project's source locations list to the given list of folders, in all configurations. 
      * (Previous source entries get overwritten.)  
      */
-    protected static void setSourceLocations(IProject project, IContainer[] folders) throws CoreException {
+    protected static void setSourceLocations(IContainer[] folders, CreationContext context) throws CoreException {
         if (System.getProperty("org.omnetpp.test.unit.running") != null)
             return; // in the test case we don't create a full CDT project, so the code below would throw NPE
 
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project, true);
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(context.project, true);
         int n = folders.length;
         for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
             ICSourceEntry[] entries = new CSourceEntry[n];
             for (int i=0; i<n; i++) {
-                Assert.isTrue(folders[i].getProject().equals(project));
+                Assert.isTrue(folders[i].getProject().equals(context));
                 entries[i] = new CSourceEntry(folders[i].getProjectRelativePath(), new IPath[0], 0);
             }
             try {
@@ -307,23 +275,23 @@ public abstract class ProjectTemplate implements IProjectTemplate {
                 Activator.logError(e); // should not happen, as we called getProjectDescription() with write=true
             }
         }
-        CoreModel.getDefault().setProjectDescription(project, projectDescription);
+        CoreModel.getDefault().setProjectDescription(context.project, projectDescription);
     }
 
     /**
      * Creates a default build spec (project root being makemake folder)
      */
-    protected void createDefaultBuildSpec() throws CoreException {
-        BuildSpecification.createInitial(getProject()).save();
+    protected void createDefaultBuildSpec(CreationContext context) throws CoreException {
+        BuildSpecification.createInitial(context.project).save();
     }
 
     /**
      * Sets the makemake options on the given project. Array must contain folderPath1, options1, 
      * folderPath2, options2, etc.
      */
-    protected void createBuildSpec(String[] pathsAndMakemakeOptions) throws CoreException {
+    protected void createBuildSpec(String[] pathsAndMakemakeOptions, CreationContext context) throws CoreException {
         Assert.isTrue(pathsAndMakemakeOptions.length%2 == 0);
-        IProject project = getProject();
+        IProject project = context.project;
         BuildSpecification buildSpec = BuildSpecification.createBlank(project);
         for (int i=0; i<pathsAndMakemakeOptions.length; i+=2) {
             String folderPath = pathsAndMakemakeOptions[i];

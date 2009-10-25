@@ -1,8 +1,5 @@
 package org.omnetpp.cdt.wizard;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
@@ -28,23 +25,23 @@ public abstract class BuiltinProjectTemplate extends ProjectTemplate {
 		super(name, category, description, image);
 	}
 
-	public IWizardPage[] createCustomPages() {
+	public IWizardPage[] createCustomPages(CreationContext context) {
 		return new IWizardPage[0];
 	}
 
-	public Map<String, Object> extractVariablesFromPages(IWizardPage[] customPages) {
-		return new HashMap<String, Object>();
+	public void updateVariablesFromCustomPages(IWizardPage[] customPages, CreationContext context) {
+		// nothing
 	}
 
-    protected void createFileFromPluginResource(String projectRelativePath, String templateName) throws CoreException {
-        createFileFromPluginResource(projectRelativePath, templateName, true);
+    protected void createFileFromPluginResource(String projectRelativePath, String templateName, CreationContext context) throws CoreException {
+        createFileFromPluginResource(projectRelativePath, templateName, true, context);
     }
 
-    protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank) throws CoreException {
+    protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
         Configuration cfg = new Configuration();
         cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
-        IFile file = getProject().getFile(new Path(projectRelativePath));
-        createFile(file, cfg, templateName, suppressIfBlank);
+        IFile file = context.project.getFile(new Path(projectRelativePath));
+        createFile(file, cfg, templateName, suppressIfBlank, context);
     }
 
 }

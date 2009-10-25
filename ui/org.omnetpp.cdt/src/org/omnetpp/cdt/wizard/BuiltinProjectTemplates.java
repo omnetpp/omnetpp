@@ -31,50 +31,50 @@ public class BuiltinProjectTemplates {
         
         result.add(new BuiltinProjectTemplate("Empty project", SINGLE_DIR, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("rootpackage", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromPluginResource("package.ned", "templates/package.ned");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "");
+                context.variables.put("rootpackage", "");
+                context.variables.put("simulationspackage", "");
+                substituteNestedVariables(context);
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
+                createFileFromPluginResource("package.ned", "templates/package.ned", context);
             }
         });
         
         result.add(new BuiltinProjectTemplate("Tictoc example", SINGLE_DIR, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("rootpackage", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromPluginResource("package.ned", "templates/package.ned");
-                createFileFromPluginResource("Txc.ned", "templates/Txc.ned");
-                createFileFromPluginResource("Txc.h", "templates/Txc.h");
-                createFileFromPluginResource("Txc.cc", "templates/Txc.cc");
-                createFileFromPluginResource("Tictoc.ned", "templates/Tictoc.ned");
-                createFileFromPluginResource("omnetpp.ini", "templates/Tictoc.ini");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "");
+                context.variables.put("rootpackage", "");
+                context.variables.put("simulationspackage", "");
+                substituteNestedVariables(context);
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
+                createFileFromPluginResource("package.ned", "templates/package.ned", context);
+                createFileFromPluginResource("Txc.ned", "templates/Txc.ned", context);
+                createFileFromPluginResource("Txc.h", "templates/Txc.h", context);
+                createFileFromPluginResource("Txc.cc", "templates/Txc.cc", context);
+                createFileFromPluginResource("Tictoc.ned", "templates/Tictoc.ned", context);
+                createFileFromPluginResource("omnetpp.ini", "templates/Tictoc.ini", context);
             }
         });
         
         result.add(new BuiltinProjectTemplate("Source-sink example", SINGLE_DIR, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("rootpackage", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromPluginResource("package.ned", "templates/package.ned");
-                createFileFromPluginResource("Source.ned", "templates/Source.ned");
-                createFileFromPluginResource("Source.cc", "templates/Source.cc");
-                createFileFromPluginResource("Source.h", "templates/Source.h");
-                createFileFromPluginResource("Sink.ned", "templates/Sink.ned");
-                createFileFromPluginResource("Sink.cc", "templates/Sink.cc");
-                createFileFromPluginResource("Sink.h", "templates/Sink.h");
-                createFileFromPluginResource("Network.ned", "templates/SourceSink.ned");
-                createFileFromPluginResource("omnetpp.ini", "templates/SourceSink.ini");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "");
+                context.variables.put("rootpackage", "");
+                context.variables.put("simulationspackage", "");
+                substituteNestedVariables(context);
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
+                createFileFromPluginResource("package.ned", "templates/package.ned", context);
+                createFileFromPluginResource("Source.ned", "templates/Source.ned", context);
+                createFileFromPluginResource("Source.cc", "templates/Source.cc", context);
+                createFileFromPluginResource("Source.h", "templates/Source.h", context);
+                createFileFromPluginResource("Sink.ned", "templates/Sink.ned", context);
+                createFileFromPluginResource("Sink.cc", "templates/Sink.cc", context);
+                createFileFromPluginResource("Sink.h", "templates/Sink.h", context);
+                createFileFromPluginResource("Network.ned", "templates/SourceSink.ned", context);
+                createFileFromPluginResource("omnetpp.ini", "templates/SourceSink.ini", context);
             }
         }) ;
 
@@ -82,59 +82,59 @@ public class BuiltinProjectTemplates {
         
         result.add(new BuiltinProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("rootpackage", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createAndSetSourceFolders(new String[]{"src"});
-                createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromPluginResource("src/package.ned", "templates/package.ned");
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "");
+                context.variables.put("rootpackage", "");
+                context.variables.put("simulationspackage", "");
+                substituteNestedVariables(context);
+                createAndSetSourceFolders(new String[]{"src"}, context);
+                createAndSetNedSourceFolders(new String[] {"src", "simulations"}, context);
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);                
+                createFileFromPluginResource("src/package.ned", "templates/package.ned", context);
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
             }
         });
         
         result.add(new BuiltinProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("rootpackage", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
-                createAndSetSourceFolders(new String[]{"src"});
-                createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createFileFromPluginResource("src/package.ned", "templates/package.ned");
-                createFileFromPluginResource("src/Txc.ned", "templates/Txc.ned");
-                createFileFromPluginResource("src/Txc.h", "templates/Txc.h");
-                createFileFromPluginResource("src/Txc.cc", "templates/Txc.cc");
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
-                createFileFromPluginResource("simulations/Tictoc.ned", "templates/Tictoc.ned");
-                createFileFromPluginResource("simulations/omnetpp.ini", "templates/Tictoc.ini");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "");
+                context.variables.put("rootpackage", "");
+                context.variables.put("simulationspackage", "");
+                substituteNestedVariables(context);
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);                
+                createAndSetSourceFolders(new String[]{"src"}, context);
+                createAndSetNedSourceFolders(new String[] {"src", "simulations"}, context);
+                createFileFromPluginResource("src/package.ned", "templates/package.ned", context);
+                createFileFromPluginResource("src/Txc.ned", "templates/Txc.ned", context);
+                createFileFromPluginResource("src/Txc.h", "templates/Txc.h", context);
+                createFileFromPluginResource("src/Txc.cc", "templates/Txc.cc", context);
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
+                createFileFromPluginResource("simulations/Tictoc.ned", "templates/Tictoc.ned", context);
+                createFileFromPluginResource("simulations/omnetpp.ini", "templates/Tictoc.ini", context);
             }
         });
         
         result.add(new BuiltinProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "${projectname}");
-                setVariable("rootpackage", "org.example.${projectname}");
-                setVariable("simulationspackage", "${rootpackage}.simulations");
-                substituteNestedVariables();
-                createAndSetSourceFolders(new String[]{"src"});
-                createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});
-                createFileFromPluginResource("src/package.ned", "templates/package.ned");
-                createFileFromPluginResource("src/Source.ned", "templates/Source.ned");
-                createFileFromPluginResource("src/Source.cc", "templates/Source.cc");
-                createFileFromPluginResource("src/Source.h", "templates/Source.h");
-                createFileFromPluginResource("src/Sink.ned", "templates/Sink.ned");
-                createFileFromPluginResource("src/Sink.cc", "templates/Sink.cc");
-                createFileFromPluginResource("src/Sink.h", "templates/Sink.h");
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
-                createFileFromPluginResource("simulations/Network.ned", "templates/SourceSink.ned");
-                createFileFromPluginResource("simulations/omnetpp.ini", "templates/SourceSink.ini");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "${projectname}");
+                context.variables.put("rootpackage", "org.example.${projectname}");
+                context.variables.put("simulationspackage", "${rootpackage}.simulations");
+                substituteNestedVariables(context);
+                createAndSetSourceFolders(new String[]{"src"}, context);
+                createAndSetNedSourceFolders(new String[] {"src", "simulations"}, context);
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);
+                createFileFromPluginResource("src/package.ned", "templates/package.ned", context);
+                createFileFromPluginResource("src/Source.ned", "templates/Source.ned", context);
+                createFileFromPluginResource("src/Source.cc", "templates/Source.cc", context);
+                createFileFromPluginResource("src/Source.h", "templates/Source.h", context);
+                createFileFromPluginResource("src/Sink.ned", "templates/Sink.ned", context);
+                createFileFromPluginResource("src/Sink.cc", "templates/Sink.cc", context);
+                createFileFromPluginResource("src/Sink.h", "templates/Sink.h", context);
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
+                createFileFromPluginResource("simulations/Network.ned", "templates/SourceSink.ned", context);
+                createFileFromPluginResource("simulations/omnetpp.ini", "templates/SourceSink.ini", context);
             }
         });
 
@@ -153,34 +153,34 @@ public class BuiltinProjectTemplates {
     	final String NONCPP_SINGLEDIR = "Single-directory project";
         result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SINGLEDIR, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createFileFromPluginResource("package.ned", "templates/simulationsPackage.ned");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "");
+                context.variables.put("simulationspackage", "");
+                substituteNestedVariables(context);
+                createFileFromPluginResource("package.ned", "templates/simulationsPackage.ned", context);
             }
         });
 
         final String NONCPP_SIMULATIONS = "Project with a \"simulations\" folder";
         result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SIMULATIONS, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("simulationspackage", "");
-                substituteNestedVariables();
-                createAndSetNedSourceFolders(new String[] {"simulations"});
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "");
+                context.variables.put("simulationspackage", "");
+                substituteNestedVariables(context);
+                createAndSetNedSourceFolders(new String[] {"simulations"}, context);
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
             }
         });
 
         result.add(new BuiltinProjectTemplate("Empty project with packages", NONCPP_SIMULATIONS, null) {
             @Override
-            public void doConfigure() throws CoreException {
-                setVariable("namespace", "");
-                setVariable("simulationspackage", "org.example.${projectname}.simulations");
-                substituteNestedVariables();
-                createAndSetNedSourceFolders(new String[] {"simulations"});
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned");
+            public void doConfigure(CreationContext context) throws CoreException {
+                context.variables.put("namespace", "");
+                context.variables.put("simulationspackage", "org.example.${projectname}.simulations");
+                substituteNestedVariables(context);
+                createAndSetNedSourceFolders(new String[] {"simulations"}, context);
+                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
             }
         });
         return result;
