@@ -20,6 +20,10 @@ import freemarker.template.Configuration;
  */
 public abstract class BuiltinProjectTemplate extends ProjectTemplate {
 
+	public BuiltinProjectTemplate(String name, String category, String description) {
+		super(name, category, description);
+	}
+	
 	public BuiltinProjectTemplate(String name, String category, String description, Image image) {
 		super(name, category, description, image);
 	}

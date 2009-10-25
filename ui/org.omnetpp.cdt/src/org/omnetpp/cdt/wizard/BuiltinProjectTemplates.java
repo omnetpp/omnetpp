@@ -11,16 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.swt.graphics.Image;
-import org.omnetpp.cdt.Activator;
 
 /**
  * Provides built-in project templates
  * @author Andras
  */
 public class BuiltinProjectTemplates {
-    public static final Image ICON_TEMPLATE = Activator.getCachedImage("icons/full/obj16/template.png");
-    
+   
     /**
      * Creates and returns built-in C++ project templates.
      */
@@ -32,7 +29,7 @@ public class BuiltinProjectTemplates {
         
         final String SINGLE_DIR = "Single-directory project, for small simulations";
         
-        result.add(new BuiltinProjectTemplate("Empty project", SINGLE_DIR, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Empty project", SINGLE_DIR, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -44,7 +41,7 @@ public class BuiltinProjectTemplates {
             }
         });
         
-        result.add(new BuiltinProjectTemplate("Tictoc example", SINGLE_DIR, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Tictoc example", SINGLE_DIR, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -61,7 +58,7 @@ public class BuiltinProjectTemplates {
             }
         });
         
-        result.add(new BuiltinProjectTemplate("Source-sink example", SINGLE_DIR, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Source-sink example", SINGLE_DIR, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -83,7 +80,7 @@ public class BuiltinProjectTemplates {
 
         final String SRC_AND_SIMULATIONS = "Project with \"src\" and \"simulations\" folders";
         
-        result.add(new BuiltinProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -98,7 +95,7 @@ public class BuiltinProjectTemplates {
             }
         });
         
-        result.add(new BuiltinProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -118,7 +115,7 @@ public class BuiltinProjectTemplates {
             }
         });
         
-        result.add(new BuiltinProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "${projectname}");
@@ -154,7 +151,7 @@ public class BuiltinProjectTemplates {
     	List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
 
     	final String NONCPP_SINGLEDIR = "Single-directory project";
-        result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SINGLEDIR, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SINGLEDIR, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -165,7 +162,7 @@ public class BuiltinProjectTemplates {
         });
 
         final String NONCPP_SIMULATIONS = "Project with a \"simulations\" folder";
-        result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SIMULATIONS, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SIMULATIONS, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
@@ -176,7 +173,7 @@ public class BuiltinProjectTemplates {
             }
         });
 
-        result.add(new BuiltinProjectTemplate("Empty project with packages", NONCPP_SIMULATIONS, null, ICON_TEMPLATE) {
+        result.add(new BuiltinProjectTemplate("Empty project with packages", NONCPP_SIMULATIONS, null) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");

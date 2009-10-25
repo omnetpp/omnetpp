@@ -17,14 +17,19 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -32,6 +37,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.List;
@@ -56,6 +62,7 @@ import freemarker.template.Configuration;
  */
 public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	public static final String TEMPLATE_PROPERTIES_FILENAME = "template.properties";
+	public static final Image MISSING_IMAGE = ImageDescriptor.getMissingImageDescriptor().createImage();
 	
 	// property names:
 	public static final String NAME = "name"; // template display name
@@ -73,7 +80,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	protected boolean markAsDependentProject;
 
 	public WorkspaceBasedProjectTemplate(IFolder folder) throws CoreException {
-		super(null, null, null, null);
+		super();
 		this.templateFolder = folder;
 
 		try {
@@ -87,8 +94,27 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		setName(StringUtils.defaultIfEmpty(properties.getProperty(NAME), folder.getName()));
 		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(DESCRIPTION), "Template loaded from " + folder.getFullPath()));
 		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(CATEGORY), folder.getProject().getName()));
-		//TODO: setImage(properties.getProperty("image"), ...);
 
+		// load image
+		String imageFileName = properties.getProperty(IMAGE);
+		if (imageFileName != null) {
+			IPath locPath = templateFolder.getFile(new Path(imageFileName)).getLocation();
+			String loc = locPath==null ? "<unknown>" : locPath.toOSString();
+			ImageRegistry imageRegistry = Activator.getDefault().getImageRegistry();
+			Image image = imageRegistry.get(loc);
+			if (image==null) {
+				try {
+					image = new Image(Display.getDefault(), loc);
+					imageRegistry.put(loc, image);
+				} catch (SWTException e) {
+					Activator.logError("Error loading image for project template in "+templateFolder.getFullPath(), e);
+					image = MISSING_IMAGE;
+				}
+			}
+			setImage(image);
+		}
+		
+		// other options
 		markAsDependentProject = StringUtils.defaultIfEmpty(properties.getProperty(DEPENDENT), "true").equals("true");
 
 		nontemplateResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));

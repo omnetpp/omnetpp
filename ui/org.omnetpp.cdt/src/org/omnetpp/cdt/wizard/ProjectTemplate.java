@@ -47,22 +47,31 @@ import freemarker.template.Template;
  * @author Andras
  */
 public abstract class ProjectTemplate implements IProjectTemplate {
+    public static final Image DEFAULT_ICON = Activator.getCachedImage("icons/full/obj16/template.png");
+
     private String name;
     private String description;
     private String category;
-    private Image image;
+    private Image image = DEFAULT_ICON;
     
     // fields set by and used during configure():   
     private IProject project; // the project being configured
     private IProgressMonitor monitor;
     private Map<String,Object> vars = new HashMap<String, Object>(); // variables to be substituted into generated text files
 
-    public ProjectTemplate(String name, String category, String description, Image image) {
+    public ProjectTemplate() {
+    }
+
+    public ProjectTemplate(String name, String category, String description) {
         super();
         this.name = name;
         this.category = category;
         this.description = description;
-        this.image = image;
+    }
+
+    public ProjectTemplate(String name, String category, String description, Image image) {
+    	this(name, category, description);
+    	this.image = image;
     }
 
     public String getName() {
