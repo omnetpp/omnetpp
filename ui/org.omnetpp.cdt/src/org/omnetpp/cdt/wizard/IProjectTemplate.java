@@ -10,7 +10,6 @@ package org.omnetpp.cdt.wizard;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -52,12 +51,7 @@ public interface IProjectTemplate {
      * Create custom wizard pages. Should never return null (may return an 
      * empty array though).    
      */
-    IWizardPage[] createCustomPages(CreationContext context) throws CoreException;
-
-    /**
-     * Update variables based on the contents of custom wizard pages.
-     */
-    void updateVariablesFromCustomPages(IWizardPage[] customPages, CreationContext context);
+    ICustomWizardPage[] createCustomPages() throws CoreException;
 
     /**
      * Configure the project (add files, etc) using the variables, both in the context.

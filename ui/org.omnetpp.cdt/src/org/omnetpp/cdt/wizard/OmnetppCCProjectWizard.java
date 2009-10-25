@@ -79,7 +79,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     private CCProjectWizard nestedWizard;
     private TemplateSelectionPage templatePage;
-    private IWizardPage[] templateCustomPages = new IWizardPage[0]; // never null
+    private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
     private IProjectTemplate creatorOfCustomPages;
     private CreationContext context;
     
@@ -305,6 +305,14 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     }
 
     @Override
+    public IWizardPage getPreviousPage(IWizardPage page) {
+    	// store page content before navigating away
+		if (ArrayUtils.contains(templateCustomPages, page))
+			((ICustomWizardPage)page).extractPageContent(context);
+    	return super.getPreviousPage(page);
+    }
+    
+    @Override
     public IWizardPage getNextPage(IWizardPage page) {
 		int indexInTemplateCustomPages = ArrayUtils.indexOf(templateCustomPages, page);
     	if (page == projectPage) {
@@ -312,7 +320,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             return templatePage;
     	}
     	else if (page == templatePage) {
-    		// if there is a template selected, return its first custom page (if it has one)
+    		// if there is a template selected, return its first enabled custom page (if it has one)
     		IProjectTemplate selectedTemplate = templatePage.getSelectedTemplate();
     		if (selectedTemplate == null) {
     			context = null;
@@ -321,35 +329,52 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     			if (selectedTemplate != creatorOfCustomPages) {
     				try {
     					context = selectedTemplate.createContext(projectPage.getProjectHandle());
-						templateCustomPages = selectedTemplate.createCustomPages(context);
+						templateCustomPages = selectedTemplate.createCustomPages();
 					} catch (CoreException e) {
 						ErrorDialog.openError(getShell(), "Error", "Error creating wizard pages", e.getStatus());
 						Activator.logError(e);
-						templateCustomPages = new IWizardPage[0];
+						templateCustomPages = new ICustomWizardPage[0];
 					}
     				Assert.isNotNull(templateCustomPages);
     				for (IWizardPage customPage : templateCustomPages)
     					addPage(customPage);
     				creatorOfCustomPages = selectedTemplate;
     			}
-				if (templateCustomPages.length > 0)
-					return templateCustomPages[0];
+
+    			ICustomWizardPage firstCustomPage = getNextEnabledCustomPage(templateCustomPages, 0, context);
+    			if (firstCustomPage != null) {
+    				firstCustomPage.populatePage(context);
+    				return firstCustomPage;
+    			}
     		}
     		// or go right to the first CDT page
     		return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
     	}
     	else if (indexInTemplateCustomPages != -1) {
-    		// return next custom page, or first CDT page if we are on the last custom page
-    		if (indexInTemplateCustomPages < templateCustomPages.length-1)
-    			return templateCustomPages[indexInTemplateCustomPages+1];
-    		else
-    			return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
+        	// store page content before navigating away
+    		((ICustomWizardPage)page).extractPageContent(context);
+    		
+    		// return next custom page if there is one
+			ICustomWizardPage nextPage = getNextEnabledCustomPage(templateCustomPages, indexInTemplateCustomPages+1, context);
+			if (nextPage != null) {
+				nextPage.populatePage(context);
+				return nextPage;
+			}
+			
+			// otherwise go to the first CDT page
+			return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
     	}
     	else {
     		return super.getNextPage(page);
     	}
     }
     
+    protected static ICustomWizardPage getNextEnabledCustomPage(ICustomWizardPage[] pages, int start, CreationContext context) {
+    	for (int k = start; k < pages.length; k++)
+    		if (pages[k].isEnabled(context))
+    			return pages[k];
+    	return null;
+    }
     
     @Override
     public boolean performFinish() {
@@ -360,25 +385,27 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     	
     	// if we are on the first page, we use no template at all, otherwise we use the selected one
     	final IProjectTemplate template;
-    	if (finishingPage == projectPage)
+    	if (finishingPage == projectPage) {
     		template = null;
-    	else
+    		context = null;
+    		templateCustomPages = new ICustomWizardPage[0];
+    	}
+    	else {
         	template = templatePage.getSelectedTemplate();
-		Assert.isTrue(context.getProject().equals(project));
+    	}
 
     	// if we are on the template selection page, create a fresh context with the selected template
     	if (finishingPage == templatePage) {
-    		if (template != null)
-    			context = template.createContext(project);
-    		templateCustomPages = new IWizardPage[0]; // no pages (yet)
+    		context = template!=null ? template.createContext(project) : null;
+    		templateCustomPages = new ICustomWizardPage[0]; // no pages (yet)
     	}
-
-    	// if there is no template selected, no context needed (discard existing one)
-    	if (template == null)
-    		context = null;
     	
-    	if (template != null)
-			template.updateVariablesFromCustomPages(templateCustomPages, context);
+    	// sanity check
+    	Assert.isTrue(context==null || context.getProject().equals(project));
+    	
+    	// store custom page content before navigating away
+    	if (ArrayUtils.contains(templateCustomPages, finishingPage))
+    		((ICustomWizardPage)finishingPage).extractPageContent(context);
     	
     	// if we are not yet on a CDT page, the CDT wizard is not yet created and 
     	// its performFinish() would not be called, so we have to do it manually

@@ -3,7 +3,6 @@ package org.omnetpp.cdt.wizard;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 
 import freemarker.cache.ClassTemplateLoader;
@@ -25,12 +24,8 @@ public abstract class BuiltinProjectTemplate extends ProjectTemplate {
 		super(name, category, description, image);
 	}
 
-	public IWizardPage[] createCustomPages(CreationContext context) {
-		return new IWizardPage[0];
-	}
-
-	public void updateVariablesFromCustomPages(IWizardPage[] customPages, CreationContext context) {
-		// nothing
+	public ICustomWizardPage[] createCustomPages() {
+		return new ICustomWizardPage[0];
 	}
 
     protected void createFileFromPluginResource(String projectRelativePath, String templateName, CreationContext context) throws CoreException {

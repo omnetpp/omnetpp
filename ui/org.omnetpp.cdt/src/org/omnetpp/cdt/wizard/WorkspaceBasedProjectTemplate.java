@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -23,7 +24,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -133,15 +133,14 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	 * XSWT-based wizard page.
 	 * @author Andras
 	 */
-	class XSWTWizardPage extends WizardPage {
+	class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 		protected IFile xswtFile;
 		protected Map<String,Control> widgetMap;
-		protected CreationContext context;
+		protected CreationContext context; // to transfer context from populatePage() to createControl()
 		
-		public XSWTWizardPage(String name, IFile xswtFile, CreationContext context) {
+		public XSWTWizardPage(String name, IFile xswtFile) {
 			super(name);
 			this.xswtFile = xswtFile;
-			this.context = context;
 		}
 		
 		@SuppressWarnings("unchecked")
@@ -154,21 +153,10 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	    		widgetMap = (Map<String,Control>) XSWT.create(composite, xswtFile.getContents()); 
 	    		setControl(composite);
 	    		
-	    		// fill up controls with values from the property file
-	    		for (String key : widgetMap.keySet()) {
-	    			Control control = widgetMap.get(key);
-	    			Object value = context.getVariables().get(key);
-	    			if (value != null) {
-	    				try {
-	    					SWTDataUtil.writeValueIntoControl(control, value);
-	    				}
-	    				catch (Exception e) {
-	    					// NumberFormatException, ParseException (for date/time), something like that
-	    					String message = "Cannot put value "+value+" into "+control.getClass().getSimpleName()+" control "+key;
-	    					MessageDialog.openError(getShell(), "Error", "Wizard page: "+message);
-	    					Activator.logError(message, e);
-	    				}
-	    			}
+	    		if (context != null) {
+	    			// do deferred populatePage() call
+	    			populatePage(context);
+	    			context = null; // to be safe
 	    		}
 	    		
 	    	} catch (Exception e) {
@@ -201,13 +189,48 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			setControl(errorText);
 		}
 		
-		/** The widgets that have id attributes in the form. May return null (if the page was never shown). */
-		public Map<String, Control> getWidgetMap() {
-			return widgetMap;
+		public void populatePage(CreationContext context) {
+			if (widgetMap == null) {
+				// call too early -- defer it to createControl()
+				this.context = context; 
+			}
+			else {
+				// fill up controls with values from the context
+				for (String key : widgetMap.keySet()) {
+					Control control = widgetMap.get(key);
+					Object value = context.getVariables().get(key);
+					if (value != null) {
+						try {
+							SWTDataUtil.writeValueIntoControl(control, value);
+						}
+						catch (Exception e) {
+							// NumberFormatException, ParseException (for date/time), something like that
+							String message = "Cannot put value "+value+" into "+control.getClass().getSimpleName()+" control "+key;
+							MessageDialog.openError(getShell(), "Error", "Wizard page: "+message);
+							Activator.logError(message, e);
+						}
+					}
+				}
+			}
 		}
+
+		public void extractPageContent(CreationContext context) {
+			// extract data from the XSWT form
+			Assert.isNotNull(widgetMap);
+			for (String widgetName : widgetMap.keySet()) {
+				Control control = widgetMap.get(widgetName);
+				Object value = SWTDataUtil.getValueFromControl(control);
+				context.getVariables().put(widgetName, value);
+			}
+		}
+
+		public boolean isEnabled(CreationContext context) {
+			return true; //FIXME
+		}
+
 	};
 
-	public IWizardPage[] createCustomPages(CreationContext context) throws CoreException {
+	public ICustomWizardPage[] createCustomPages() throws CoreException {
     	// collect page IDs from property file ("page.1", "page.2" etc keys)
     	int[] pageIDs = new int[0];
     	for (Object key : properties.keySet())
@@ -216,7 +239,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
     	Arrays.sort(pageIDs);
     	
     	// create pages
-    	IWizardPage[] result = new IWizardPage[pageIDs.length];
+    	ICustomWizardPage[] result = new ICustomWizardPage[pageIDs.length];
 		for (int i=0; i<pageIDs.length; i++) {
 			// create page
 			int pageID = pageIDs[i];
@@ -224,7 +247,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName));
 			if (!xswtFile.exists())
 				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Template file not found: "+xswtFile.getFullPath()));
-			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile, context);
+			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile);
 
 			// set title and description
 			String title = StringUtils.defaultIfEmpty(
@@ -242,20 +265,6 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		
 		return result;
     }
-
-	public void updateVariablesFromCustomPages(IWizardPage[] customPages, CreationContext context) {
-    	// extract data from the XSWT forms
-		for (IWizardPage page : customPages) {
-			Map<String,Control> widgetMap = ((XSWTWizardPage)page).getWidgetMap();
-			if (widgetMap != null) {
-				for (String widgetName : widgetMap.keySet()) {
-					Control control = widgetMap.get(widgetName);
-					Object value = SWTDataUtil.getValueFromControl(control);
-					context.getVariables().put(widgetName, value);
-				}
-			}
-		}
-	}
 
 	@Override
 	protected void doConfigure(CreationContext context) throws CoreException {
