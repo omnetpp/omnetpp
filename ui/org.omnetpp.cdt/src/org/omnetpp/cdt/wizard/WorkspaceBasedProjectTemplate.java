@@ -25,6 +25,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -116,16 +117,42 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		
 		@SuppressWarnings("unchecked")
 		public void createControl(Composite parent) {
+			Composite composite = null;
 	    	try {
-	    		Composite composite = new Composite(parent, SWT.NONE);
+	    		composite = new Composite(parent, SWT.NONE);
 	    		composite.setLayout(new GridLayout());
 	    		widgetMap = (Map<String,Control>) XSWT.create(composite, xswtFile.getContents()); 
 	    		setControl(composite);
 	    	} catch (XSWTException e) {
-	    	   e.printStackTrace(); //XXX 
+	    		displayError(parent, composite, e); 
 	    	} catch (CoreException e) {
-	    		e.printStackTrace(); //XXX 
+	    		displayError(parent, composite, e); 
 			}
+		}
+		
+		public void displayError(final Composite parent, Composite composite, Throwable e) {
+			String msg = "Error loading form from "+xswtFile.getFullPath();
+			Activator.logError(msg, e);
+			composite.dispose();
+			
+			// create error text widget
+    		Text errorText = new Text(parent, SWT.MULTI|SWT.READ_ONLY|SWT.WRAP) {
+    			@Override
+    			public Point computeSize(int whint, int hhint, boolean changed) {
+    				// Prevent text from blowing up the window horizontally.
+    				// This solution looks a bit harsh, but others like setting
+    				// GridData.widthHint don't work.
+    				Point size = super.computeSize(whint, hhint, changed);
+    				size.x = parent.getSize().x;
+					return size;
+    			}
+    			@Override
+    			protected void checkSubclass() {
+    			}
+    		};
+    		
+			errorText.setText(msg + ":\n\n" + StringUtils.defaultIfEmpty(e.getMessage(), e.getClass().getSimpleName()));
+			setControl(errorText);
 		}
 		
 		/** The widgets that have id attributes in the form. May return null (if the page was never shown). */
