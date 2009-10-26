@@ -189,7 +189,7 @@ public class PaletteManager {
         if (submodulesFilter == null)
             return true;
         else {
-            String regexp = ".*?" + submodulesFilter + ".*?";
+            String regexp = "(?i).*?" + submodulesFilter + ".*?";
             String fullyQualifiedName = element.getNEDTypeInfo().getFullyQualifiedName();
     
             for (String label : NEDElementUtilEx.getLabels(element))
