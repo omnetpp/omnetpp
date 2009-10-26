@@ -127,7 +127,13 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     }
     
     public void configureProject(CreationContext context) throws CoreException {
-        
+    	// The following is needed to make classes from this plugin and dependencies 
+    	// (e.g. ned.core) available to templates via BeanWrapper. If not done,
+    	// templates only have access to classes from org.omnetpp.core and its
+    	// dependencies, because freemarker.jar is loaded from that plugin.
+    	// See freemarker.template.utility.ClassUtil.forName(String)
+    	Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+    	
         // do it!
         doConfigure(context);
     }
@@ -205,7 +211,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         	// make Math and static methods of other classes available to the template
         	// see chapter "Bean wrapper" in the FreeMarker manual 
         	context.getVariables().put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
-        	context.getVariables().put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
+        	context.getVariables().put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
             templateCfg.setNumberFormat("computer"); // prevent digit grouping with comma
         	
         	// perform template substitution

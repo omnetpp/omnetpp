@@ -247,6 +247,11 @@ Documentation for the FreeMarker template language:
 http://freemarker.org/docs/index.html
 
 ---
+TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
+JARs in the templates)
+
+TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())
+
 TODO decide: maybe template files should have the ".ftl" extension, so that
 they get edited as FreeMarker template and not as NED/INI/C++ files?
 

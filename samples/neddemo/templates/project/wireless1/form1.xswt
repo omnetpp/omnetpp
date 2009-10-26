@@ -24,17 +24,5 @@
         <add x:p0="DSDV"/>
         <add x:p0="DYMO"/>
     </combo>
-    <group text="Grid Settings">
-        <layoutData x:class="GridData" x:horizontalSpan="2"/>
-        <layout x:class="GridLayout" x:numColumns="2"/>
-        <x:children>
-            <label text="Columns:"/>
-            <spinner x:id="columns" x:style="BORDER"/>
-            <label text="Horizontal spacing:"/>
-            <scale x:id="hspacing"/>
-            <label text="Vertical spacing:"/>
-            <scale x:id="vspacing"/>
-        </x:children>
-    </group>  
   </x:children>
 </xswt>
