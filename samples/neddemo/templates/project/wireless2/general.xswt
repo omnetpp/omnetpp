@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="2"/>
+  <x:children>
+    <label text="Number of nodes:"/>
+    <spinner x:id="numNodes" x:style="BORDER" textLimit="4"/>
+    <label text="Placement:"/>
+    <combo x:id="placement" x:style="BORDER|READ_ONLY">
+        <add x:p0="grid"/>
+        <add x:p0="random"/> 
+        <add x:p0="sinewave"/>
+        <add x:p0="unpinned"/>
+    </combo>  
+    <button x:id="wantRouting" text="configure routing protocols" x:style="CHECK"/>
+  </x:children>
+</xswt>
