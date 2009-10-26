@@ -1,3 +1,6 @@
+TODO: mire szolgal; kinek kellene ilyet csinalni es mi celbol...
+
+
 
 Project templates are read from the templates/project folder of OMNeT++ projects.
 
@@ -84,6 +87,18 @@ an integer page ID; their ordering defines the order of wizard pages.
   page.<i>.description
                 Description of the wizard page, shown in the dialog's title area
                 below the title. Defaults to text in the format "Page 1 of 3".
+  page.<i>.condition
+                A condition for showing the page. If it evaluates to false, the
+                page will be skipped when it would normally come in the page
+                sequence of the wizard. This makes it possible not only to skip
+                pages, but also to show different pages based on some choice
+                or choices the user made earlier in the wizard (decision tree).
+                The condition will be evaluated by the template engine, so any
+                valid FreeMarker expression that can produce true or "true" as
+                a result will do. The expression must be supplied without the
+                ${ and } marks: the string you enter will be substituted into
+                "${( <condition> )?string}" string (will replace "<condition>"),
+                and evaluate as such. An example will be provided later.
 
 All property file entries are available as template variables too. Also, most
 property values may refer to other property values or template variables, using
@@ -201,8 +216,29 @@ Table and tree widgets are currently not supported in a useful way, the main
 reason being that SWT Tables and Trees are not editable by default.
 
 Some non-interactive widgets which cannot be connected to template variables
-but are useful in forms as structuring elements: Composite, Group, Sash,
+but are useful in forms as structuring elements are: Composite, Group, Sash,
 TabFolder/TabItem.
+
+Now that templating and XSWT were covered, we can revisit how one can use page
+conditions. Consider the following practical example:
+
+Suppose a wizard for wireless networks. On the first page of the wizard there
+is a "[] configure routing" checkbox with the ID "wantRouting". If this
+checkbox gets selected, you want to display a second page where the user can
+select a routing protocol, then further configuration pages depending on
+the particular routing protocol the user chose. To achieve this, you would
+add the following lines to template.properties:
+
+  page.1.title = General   <-- page with the "wantRouting" checkbox
+  page.2.title = Choose Routing Protocol  <-- page with the "protocol" combobox
+  page.3.title = AODV Options
+  page.4.title = DSDV Options
+
+  page.2.condition = wantRouting
+  page.3.condition = wantRouting && protocol=="AODV"
+  page.4.condition = wantRouting && protocol=="DSDV"
+
+You get the idea.
 
 An XSWT tuturial and documentation can be found at:
 http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home

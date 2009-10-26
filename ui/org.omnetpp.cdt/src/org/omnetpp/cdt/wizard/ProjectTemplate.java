@@ -8,6 +8,7 @@
 package org.omnetpp.cdt.wizard;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Calendar;
@@ -35,10 +36,11 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 
-import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.StringTemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 /**
  * The default implementation of IProjectTemplate
@@ -146,35 +148,52 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 		Map<String, Object> variables = context.getVariables();
         Configuration cfg = new Configuration();
         cfg.setNumberFormat("computer"); // prevent digit grouping with comma
-        cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
+        cfg.setTemplateLoader(new StringTemplateLoader()); // effectively, no template loading
+
         try {
-        	int k = 0;
-        	boolean again;
-        	do {
-        		again = false;
-        		for (String key : variables.keySet()) {
-        			Object value = variables.get(key);
-        			if (value instanceof String) {
-        				// substitute variables into value
-        				Template template = new Template("tmp" + k++, new StringReader((String)value), cfg, "utf8");
-        				StringWriter writer = new StringWriter();
-        				template.process(context, writer);
-        				String newValue = writer.toString();
-        				
-        				// write back new value
-        				if (!value.equals(newValue)) {
-        					variables.put(key, newValue);
-        					again = true;
-        				}
-        			}
+        	for (String key : variables.keySet()) {
+        		Object value = variables.get(key);
+        		if (value instanceof String) {
+        			String newValue = doEvaluate((String)value, variables, cfg);
+        			variables.put(key, newValue);
         		}
-        	} while (again);
-        	
+        	}
         } catch (Exception e) {
         	throw Activator.wrapIntoCoreException(e);
         }
 	}
-    
+
+	/** 
+	 * Performs template processing on the given string, and returns the result.
+	 */
+	protected String evaluate(String text, CreationContext context) throws TemplateException {
+		Map<String, Object> variables = context.getVariables();
+        Configuration cfg = new Configuration();
+        cfg.setNumberFormat("computer"); // prevent digit grouping with comma
+        cfg.setTemplateLoader(new StringTemplateLoader()); // effectively, no template loading
+        return doEvaluate(text, variables, cfg);
+	}
+
+	private String doEvaluate(String value, Map<String, Object> variables, Configuration cfg) throws TemplateException {
+		try {
+			int k = 0;
+			while (true) {
+				Template template = new Template("text" + k++, new StringReader(value), cfg, "utf8");
+				StringWriter writer = new StringWriter();
+				template.process(variables, writer);
+				String newValue = writer.toString();
+				if (value.equals(newValue))
+					return value;
+				value = newValue;
+			}
+		} 
+		catch (IOException e) {
+			Activator.logError(e); 
+			return ""; // cannot happen, we work with string reader/writer only
+		}
+		
+	}
+
     /**
      * Utility method for doConfigure. Copies a resource into the project,  
      * performing variable substitutions in it. 

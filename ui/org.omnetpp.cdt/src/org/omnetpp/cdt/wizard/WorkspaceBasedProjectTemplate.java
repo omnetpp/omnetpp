@@ -136,12 +136,14 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	 */
 	class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 		protected IFile xswtFile;
+		protected String condition; // FreeMarker expr, use as isEnabled() condition
 		protected Map<String,Control> widgetMap;
 		protected CreationContext context; // to transfer context from populatePage() to createControl()
 		
-		public XSWTWizardPage(String name, IFile xswtFile) {
+		public XSWTWizardPage(String name, IFile xswtFile, String condition) {
 			super(name);
 			this.xswtFile = xswtFile;
+			this.condition = condition;
 		}
 		
 		@SuppressWarnings("unchecked")
@@ -206,7 +208,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 						}
 						catch (Exception e) {
 							// NumberFormatException, ParseException (for date/time), something like that
-							String message = "Cannot put value "+value+" into "+control.getClass().getSimpleName()+" control "+key;
+							String message = "Cannot put value '"+value+"' into "+control.getClass().getSimpleName()+" control "+key;
 							MessageDialog.openError(getShell(), "Error", "Wizard page: "+message);
 							Activator.logError(message, e);
 						}
@@ -226,7 +228,21 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 
 		public boolean isEnabled(CreationContext context) {
-			return true; //FIXME
+			if (StringUtils.isBlank(condition))
+				return true;
+			
+			// evaluate as FreeMarker expression
+			try {
+				String macro = "${(" + condition + ")?string}";
+				String result = evaluate(macro, context);
+				return result.equals("true");
+			} 
+			catch (Exception e) {
+				String message = "Cannot evaluate condition '"+condition+"' for page "+getName();
+				MessageDialog.openError(getShell(), "Error", "Wizard: "+message+": " + e.getMessage());
+				Activator.logError(message, e);
+				return true;
+			}
 		}
 
 		@Override
@@ -251,10 +267,11 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			// create page
 			int pageID = pageIDs[i];
 			String xswtFileName = properties.getProperty("page."+pageID+".file");
+			String condition = properties.getProperty("page."+pageID+".condition");
 			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName));
 			if (!xswtFile.exists())
 				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Template file not found: "+xswtFile.getFullPath()));
-			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile);
+			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile, condition);
 
 			// set title and description
 			String title = StringUtils.defaultIfEmpty(
