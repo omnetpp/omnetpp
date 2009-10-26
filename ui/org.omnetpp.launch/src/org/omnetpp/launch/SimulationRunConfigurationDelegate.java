@@ -8,6 +8,8 @@
 package org.omnetpp.launch;
 
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -21,6 +23,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 
@@ -73,5 +76,19 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
         job.schedule();
         monitor.done();
     }
+    
+    @Override
+    protected IProject[] getProjectsForProblemSearch(ILaunchConfiguration configuration, String mode) throws CoreException {
+        // NOTE: we need to do this twice: here and in launch() which is kind of superfluous
+        //       but it is unclear whether those two incoming configurations are the same or not
+        configuration = OmnetppLaunchUtils.convertLaunchConfig(configuration, mode);
+        String projectName = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
 
+        if (StringUtils.isEmpty(projectName))
+            return ProjectUtils.getOpenProjects();
+        else {
+            IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+            return ProjectUtils.getAllReferencedProjects(project, false, true);
+        }
+    }
 }
