@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -228,6 +229,12 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			return true; //FIXME
 		}
 
+		@Override
+		public IWizardPage getPreviousPage() {
+			if (getWizard() != null)
+				getWizard().getPreviousPage(this); // as required by ICustomWizardPage
+			return super.getPreviousPage();
+		}
 	};
 
 	public ICustomWizardPage[] createCustomPages() throws CoreException {

@@ -307,6 +307,10 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     @Override
     public IWizardPage getPreviousPage(IWizardPage page) {
     	// store page content before navigating away
+    	//
+    	// NOTE: THIS DOES NOT ALWAYS GET CALLED BY THE DEFAULT WizardPage IMPLEMENTATION 
+    	// WHEN 'BACK' IS CLICKED! ICustomWizardPage MUST OVERRIDE THAT IMPLEMENTATION
+    	// TO CALL THIS METHOD EVERY TIME, EVENIF IT DOESN'T USE THE RETURN VALUE.
 		if (ArrayUtils.contains(templateCustomPages, page))
 			((ICustomWizardPage)page).extractPageContent(context);
     	return super.getPreviousPage(page);

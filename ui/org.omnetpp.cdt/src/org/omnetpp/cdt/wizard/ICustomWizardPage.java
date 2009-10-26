@@ -5,6 +5,11 @@ import org.eclipse.jface.wizard.IWizardPage;
 /**
  * Custom wizard page for use with IProjectTemplate.
  * 
+ * IMPORTANT: Implementation must override getPreviousPage() to
+ * call the wizard's similar function every time, even if it doesn't use
+ * the return value! This is the only way the wizard gets a chance to
+ * extract and store page contents when 'Back' is clicked.
+ * 
  * @author Andras
  */
 public interface ICustomWizardPage extends IWizardPage {
@@ -33,4 +38,8 @@ public interface ICustomWizardPage extends IWizardPage {
      */
     boolean isEnabled(CreationContext context);
 
+    /**
+     * Needs to override the default WizardPage implementation! See class doc. 
+     */
+    IWizardPage getPreviousPage();
 }
