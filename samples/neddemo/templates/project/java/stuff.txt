@@ -51,3 +51,7 @@ All NED types:
 <#list nedResources.getNedTypesFromAllProjects() as nedTypeInfo>
     ${nedTypeInfo.getName()} (${nedTypeInfo.getFullyQualifiedName()}), in ${nedTypeInfo.getNEDFile().getFullPath().toString()})  
 </#list>
+
+<#assign someType = nedResources.getNedTypesFromAllProjects()[0]>
+The source of ${someType.getFullyQualifiedName()}:
+${someType.getNEDElement().getNEDSource()}

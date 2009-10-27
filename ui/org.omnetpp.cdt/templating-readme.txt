@@ -250,6 +250,10 @@ http://freemarker.org/docs/index.html
 TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
 JARs in the templates)
 
+TODO pelda: "[] make new project dependent on this one" checkbox
+TODO pelda: "Name of examples folder", "Name of source" folder
+TODO Util: hasMethod(), hasField(), instanceof(), newInstance()
+
 TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())
 
 TODO decide: maybe template files should have the ".ftl" extension, so that
