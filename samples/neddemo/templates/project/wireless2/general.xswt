@@ -11,13 +11,19 @@
   <x:children>
     <label text="Number of nodes:"/>
     <spinner x:id="numNodes" x:style="BORDER" textLimit="4"/>
-    <label text="Placement:"/>
+    <label text="Node placement:"/>
     <combo x:id="placement" x:style="BORDER|READ_ONLY">
         <add x:p0="grid"/>
         <add x:p0="random"/> 
         <add x:p0="sinewave"/>
         <add x:p0="unpinned"/>
     </combo>  
-    <button x:id="wantRouting" text="configure routing protocols" x:style="CHECK"/>
+    <label/> <!-- filler -->
+    <label text="Note: if you choose 'grid', you'll get a 'Grid Options' page later"/>
+    <button x:id="wantRouting" text="Configure routing protocols" x:style="CHECK">
+        <layoutData x:class="GridData" x:horizontalSpan="2"/>
+    </button>
+    <label/> <!-- filler -->
+    <label text="Note: if you check it, you'll get configuration pages later"/>
   </x:children>
 </xswt>

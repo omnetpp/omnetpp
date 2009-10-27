@@ -3,6 +3,7 @@ package org.omnetpp.cdt.wizard;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -176,6 +177,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	    		}
 	    		
 	    	} catch (Exception e) {
+	    		widgetMap = new HashMap<String, Control>(); // fake it
 	    		displayError(parent, composite, e); 
 			}
 		}
@@ -201,7 +203,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
     			}
     		};
     		
-			errorText.setText(msg + ":\n\n" + StringUtils.defaultIfEmpty(e.getMessage(), e.getClass().getSimpleName()));
+			errorText.setText(msg + ":\n\n" + e.getClass().getSimpleName()+": "+e.getMessage());
 			setControl(errorText);
 		}
 		

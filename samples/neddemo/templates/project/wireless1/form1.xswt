@@ -11,7 +11,7 @@
   <x:children>
     <label text="Number of nodes:"/>
     <spinner x:id="numNodes" x:style="BORDER" textLimit="4"/>
-    <label text="Placement:"/>
+    <label text="Node placement:"/>
     <combo x:id="placement" x:style="BORDER|READ_ONLY">
         <add x:p0="grid"/>
         <add x:p0="random"/> 

@@ -9,6 +9,17 @@
   </import>
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
-    <label text="Configure DSDV options:"/>
+    <group text="Configure DSDV options:">
+        <layout x:class="GridLayout" x:numColumns="2"/>
+        <layoutData x:class="GridData" x:horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        <x:children>
+            <label text="Dummy DSDV option:"/>   
+            <text x:style="BORDER"/>
+            <label text="Dummy DSDV option 2:"/>   
+            <text x:style="BORDER"/>
+            <label text="Dummy DSDV option 3:"/>   
+            <text x:style="BORDER"/>
+        </x:children>
+    </group>  
   </x:children>
 </xswt>
