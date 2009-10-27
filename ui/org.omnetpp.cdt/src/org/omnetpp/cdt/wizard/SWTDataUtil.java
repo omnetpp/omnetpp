@@ -23,7 +23,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 
 /**
- * Rudimentary data binding: get/set data from/to SWT controls
+ * Rudimentary data binding: get/set data from/to SWT controls. Support for 
+ * the basic widgets are built in. Other widget classes can be supported via
+ * IWidgetAdapter, which must be implemented either by the control class or 
+ * by a class with the similar name with the suffix "Adapter" (i.e. for 
+ * org.foo.FancyTable, the adapter would be looked for as org.foo.FancyTableAdapter.)
  * 
  * @author Andras
  */
@@ -81,7 +85,20 @@ public class SWTDataUtil {
 		if (control instanceof Tree) {
 			//TODO tree, checkbox tree, treeItem, etc
 		}
-		//TODO implement some adapterproviderfactoryvisitorproxy so that custom widgets can be supported
+		
+		// try dynamic resolution: the control or its "~Adapter" may implement IWidgetAdapter
+		if (control instanceof IWidgetAdapter && ((IWidgetAdapter)control).supportsControl(control)) {
+			return ((IWidgetAdapter)control).getValueFromControl(control);
+		}
+		Object adapter = null;
+		try {
+			Class<?> adapterClass = Class.forName(control.getClass().getCanonicalName() + "Adapter");
+			adapter = adapterClass.newInstance();
+		} catch (Exception e) {}
+		
+		if (adapter instanceof IWidgetAdapter && ((IWidgetAdapter)adapter).supportsControl(control)) {
+			return ((IWidgetAdapter)adapter).getValueFromControl(control);
+		}
 		return null;
 	}
 
@@ -129,7 +146,20 @@ public class SWTDataUtil {
 		if (control instanceof Tree) {
 			//TODO tree, checkbox tree, treeItem, etc
 		}
-		//TODO implement some adapterproviderfactoryvisitorproxy so that custom widgets can be supported
+
+		// try dynamic resolution: the control or its "~Adapter" may implement IWidgetAdapter
+		if (control instanceof IWidgetAdapter && ((IWidgetAdapter)control).supportsControl(control)) {
+			((IWidgetAdapter)control).writeValueIntoControl(control, value);
+		}
+		Object adapter = null;
+		try {
+			Class<?> adapterClass = Class.forName(control.getClass().getCanonicalName() + "Adapter");
+			adapter = adapterClass.newInstance();
+		} catch (Exception e) {}
+		
+		if (adapter instanceof IWidgetAdapter && ((IWidgetAdapter)adapter).supportsControl(control)) {
+			((IWidgetAdapter)adapter).writeValueIntoControl(control, value);
+		}
 	}
 
 	private static boolean toBoolean(Object value) {

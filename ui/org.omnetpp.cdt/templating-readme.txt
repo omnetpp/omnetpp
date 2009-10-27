@@ -59,22 +59,25 @@ Recognized property file keys:
   addProjectReference
                 True or false; defaults to true. If true, the template's project
                 will be added to the referenced projects list of the new project.
-  nontemplates  Comma-separated list of non-template files or folders; those files
-                won't get copied over to the new project. Wildcards are NOT accepted.
-                The template.properties file and custom wizard page files
-                automatically count as nontemplates, so they don't have to be listed.
-  optionalFiles Comma-separated list of files that should be suppressed (i.e. not
-                created) if they would be empty after template processing.
-                Wildcards are NOT accepted.
+  ignorableResources
+                Space-separated or JSON-syntax list of non-template files or
+                folders; those files won't get copied over to the new project.
+                Wildcards are NOT accepted. The template.properties file and
+                custom wizard page files automatically count as nontemplates,
+                so they don't have to be listed.
+  optionalFiles Space-separated or JSON-syntax list of files that should be
+                suppressed (i.e. not created) if they would be empty after
+                template processing. Wildcards are NOT accepted.
   sourceFolders
-                Comma-separated list of C++ source folders to be created and
-                configured. By default, none.
+                Space-separated or JSON-syntax list of C++ source folders
+                to be created and configured. By default, none.
   nedSourceFolders
-                Comma-separated list of NED source folders to be created and
-                configured. By default, none.
+                Space-separated or JSON-syntax list of NED source folders
+                to be created and configured. By default, none.
   makemakeOptions
-                Comma-separated list of items in the syntax "folder:options";
-                it sets opp_makemake options for the given folders. No default.
+                Comma-separated list of items in the syntax "folder:options",
+                or a JSON-syntax map of strings; it sets opp_makemake options
+                for the given folders. There is no default.
 
 The following properties can be used to define custom pages in the wizard. <i> is
 an integer page ID; their ordering defines the order of wizard pages.
@@ -140,6 +143,14 @@ the following lines
 
 will fill in the text widget with "100" and select the checkbox. Widgets that
 do not have such lines in the propery file will be left alone.
+
+Compound data structures (arrays, maps, and any combination of them) can be
+specified in the JSON syntax (http://json.org). They can be iterated over
+in the templates, and can be used as input/output for custom compound widgets.
+Examples:
+
+  apps = ["ftp", "smtp", "news"]
+  layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}
 
 The property file takes precedence over values in the XSWT file.
 
@@ -251,7 +262,6 @@ TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widget
 JARs in the templates)
 
 TODO pelda: "[] make new project dependent on this one" checkbox
-TODO pelda: "Name of examples folder", "Name of source" folder
 TODO Util: hasMethod(), hasField(), instanceof(), newInstance()
 
 TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())
@@ -259,8 +269,9 @@ TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())
 TODO decide: maybe template files should have the ".ftl" extension, so that
 they get edited as FreeMarker template and not as NED/INI/C++ files?
 
-TODO: special markup in the template: "<?redirect-to="bubu.txt"> ... </?redirect>
+TODO: special markup in the template: "<?output="bubu.txt"> ... </?output>
 to support creation of files with runtime-decided names.
+TODO pelda: "Name of examples folder", "Name of source" folder
 
 TODO: check if XSWT 2.0 could be brought to work? Because it changed the file
 format a bit, and we want future OMNET++ versions to be backward compatible!!!

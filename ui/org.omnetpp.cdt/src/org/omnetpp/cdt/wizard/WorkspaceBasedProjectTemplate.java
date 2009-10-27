@@ -36,6 +36,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.common.json.ExceptionErrorListener;
+import org.omnetpp.common.json.JSONValidatingReader;
 import org.omnetpp.common.project.ProjectUtils;
 
 import com.swtworkbench.community.xswt.XSWT;
@@ -56,7 +58,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
 	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
 	public static final String PROP_ADDPROJECTREFERENCE = "addProjectReference"; // boolean: if true, make project as dependent on this one
-	public static final String PROP_NONTEMPLATES = "nontemplates"; // list of non-template files: won't get copied over
+	public static final String PROP_IGNORABLERESOURCES = "ignorableResources"; // list of non-template files: won't get copied over
 	public static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank
 	public static final String PROP_SOURCEFOLDERS = "sourceFolders"; // source folders to be created and configured
 	public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
@@ -64,7 +66,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
-	protected Set<IResource> nontemplateResources = new HashSet<IResource>();
+	protected Set<IResource> ignorableResources = new HashSet<IResource>();
 	protected Set<IFile> optionalFiles = new HashSet<IFile>(); // files not to be generated if they'd be blank
 
 	public WorkspaceBasedProjectTemplate(IFolder folder) throws CoreException {
@@ -87,7 +89,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
 		if (imageFileName != null) {
 			IFile file = templateFolder.getFile(new Path(imageFileName));
-			nontemplateResources.add(file); // do not copy image file to dest project
+			ignorableResources.add(file); // do not copy image file to dest project
 			IPath locPath = file.getLocation();
 			String loc = locPath==null ? "<unknown>" : locPath.toOSString();
 			ImageRegistry imageRegistry = Activator.getDefault().getImageRegistry();
@@ -105,9 +107,9 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 		
 		// other options
-		nontemplateResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
-		for (String item : StringUtils.defaultString(properties.getProperty(PROP_NONTEMPLATES)).trim().split(" *, *"))
-			nontemplateResources.add(folder.getFile(new Path(item)));
+		ignorableResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
+		for (String item : StringUtils.defaultString(properties.getProperty(PROP_IGNORABLERESOURCES)).trim().split(" *, *"))
+			ignorableResources.add(folder.getFile(new Path(item)));
 
 		for (String item : StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES)).trim().split(" *, *"))
 			optionalFiles.add(folder.getFile(new Path(item)));
@@ -118,9 +120,11 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		CreationContext context = super.createContext(project);
 
 		// add property file entries as template variables
-		for (Object key : properties.keySet())
-			if (key instanceof String)
-				context.getVariables().put((String)key, properties.get(key));
+		for (Object key : properties.keySet()) {
+			Object value = properties.get(key);
+			Assert.isTrue(key instanceof String && value instanceof String);
+				context.getVariables().put((String)key, parseJSON((String)value));
+		}
 
 		// add more predefined variables
 		context.getVariables().put("templateFolderName", templateFolder.getName());
@@ -284,12 +288,33 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			result[i].setDescription(description);
 			
 			// do not copy forms into the new project
-			nontemplateResources.add(xswtFile);
+			ignorableResources.add(xswtFile);
 		}
 		
 		return result;
     }
 
+	/**
+	 * Parse text as JSON. Returns Boolean, String, Number, List or Map. If the
+	 * text does not look like JSON, treats it as an unquoted literal string, and
+	 * returns it as String.
+	 *  
+	 * @throws IllegalArgumentException on JSON parse error.
+	 */
+	public static Object parseJSON(String text) {
+		String numberRegex = "\\s*[+-]?[0-9.]+([eE][+-]?[0-9]+)?\\s*"; // sort of
+		if (text.equals("true") || text.equals("false") || text.matches(numberRegex) || 
+				text.trim().startsWith("[") || text.trim().startsWith("{")) {
+			// looks like JSON -- parse as such
+			JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
+			return reader.read(text); // throws IllegalArgumentException on parse errors
+		} 
+		else {
+			// apparently not JSON -- take it as a literal string with missing quotes
+			return text.trim();
+		}
+	}
+	
 	@Override
 	protected void doConfigure(CreationContext context) throws CoreException {
 		substituteNestedVariables(context);
@@ -323,8 +348,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
 	protected void copy(IFolder folder, IContainer destFolder, CreationContext context) throws CoreException {
 		for (IResource resource : folder.members()) {
-			//TODO: remove .ftl, and check that in nontemplateresources too!!! resource.getWorkspace().getRoot().getFile(resource.getFileExtension())
-			if (!nontemplateResources.contains(resource)) {
+			if (!ignorableResources.contains(resource)) {
 				if (resource instanceof IFile) {
 					// copy w/ template substitution
 					IFile file = (IFile)resource;

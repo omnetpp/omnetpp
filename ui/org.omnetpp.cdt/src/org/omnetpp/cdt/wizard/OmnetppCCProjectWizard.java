@@ -183,7 +183,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                         categoryNode.addChild(new GenericTreeNode(template));
             }                
             treeViewer.setInput(root);
-            treeViewer.expandAll();
         }
 
         public IProjectTemplate getSelectedTemplate() {
