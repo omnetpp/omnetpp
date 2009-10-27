@@ -286,7 +286,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
             ICSourceEntry[] entries = new CSourceEntry[n];
             for (int i=0; i<n; i++) {
-                Assert.isTrue(folders[i].getProject().equals(context));
+                Assert.isTrue(folders[i].getProject().equals(context.getProject()));
                 entries[i] = new CSourceEntry(folders[i].getProjectRelativePath(), new IPath[0], 0);
             }
             try {

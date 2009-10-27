@@ -4,7 +4,7 @@ The value of PI: ${classes["java.lang.Math"].PI}
 
 <#-- May also remember the classes[<classname>] part in a variable, for easier access -->
 <#assign System = classes["java.lang.System"]>
-Days since the Unix epoch: ${System.currentTimeMillis() / 1000 / 60 / 60 / 24 }
+Days since the Unix epoch: ${System.currentTimeMillis() / 1000 / 86400 }
 
 <#assign SWT = classes["org.eclipse.swt.SWT"]>
 SWT version: ${SWT.getVersion()}
@@ -52,6 +52,6 @@ All NED types:
     ${nedTypeInfo.getName()} (${nedTypeInfo.getFullyQualifiedName()}), in ${nedTypeInfo.getNEDFile().getFullPath().toString()})  
 </#list>
 
-<#assign someType = nedResources.getNedTypesFromAllProjects()[0]>
+<#assign someType = nedResources.getNedTypesFromAllProjects()[0]>  <#-- Note: stops with error if there are no NED types -->
 The source of ${someType.getFullyQualifiedName()}:
 ${someType.getNEDElement().getNEDSource()}

@@ -37,7 +37,7 @@ public class BuiltinProjectTemplates {
                 context.getVariables().put("simulationsPackage", "");
                 substituteNestedVariables(context);
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
-                createFileFromPluginResource("package.ned", "templates/package.ned", context);
+                createFileFromPluginResource("package.ned", "package.ned.ftl", context);
             }
         });
         
@@ -49,12 +49,12 @@ public class BuiltinProjectTemplates {
                 context.getVariables().put("simulationsPackage", "");
                 substituteNestedVariables(context);
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
-                createFileFromPluginResource("package.ned", "templates/package.ned", context);
-                createFileFromPluginResource("Txc.ned", "templates/Txc.ned", context);
-                createFileFromPluginResource("Txc.h", "templates/Txc.h", context);
-                createFileFromPluginResource("Txc.cc", "templates/Txc.cc", context);
-                createFileFromPluginResource("Tictoc.ned", "templates/Tictoc.ned", context);
-                createFileFromPluginResource("omnetpp.ini", "templates/Tictoc.ini", context);
+                createFileFromPluginResource("package.ned", "package.ned.ftl", context);
+                createFileFromPluginResource("Txc.ned", "Txc.ned.ftl", context);
+                createFileFromPluginResource("Txc.h", "Txc.h.ftl", context);
+                createFileFromPluginResource("Txc.cc", "Txc.cc.ftl", context);
+                createFileFromPluginResource("Tictoc.ned", "Tictoc.ned.ftl", context);
+                createFileFromPluginResource("omnetpp.ini", "Tictoc.ini.ftl", context);
             }
         });
         
@@ -66,15 +66,15 @@ public class BuiltinProjectTemplates {
                 context.getVariables().put("simulationsPackage", "");
                 substituteNestedVariables(context);
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS}, context);                
-                createFileFromPluginResource("package.ned", "templates/package.ned", context);
-                createFileFromPluginResource("Source.ned", "templates/Source.ned", context);
-                createFileFromPluginResource("Source.cc", "templates/Source.cc", context);
-                createFileFromPluginResource("Source.h", "templates/Source.h", context);
-                createFileFromPluginResource("Sink.ned", "templates/Sink.ned", context);
-                createFileFromPluginResource("Sink.cc", "templates/Sink.cc", context);
-                createFileFromPluginResource("Sink.h", "templates/Sink.h", context);
-                createFileFromPluginResource("Network.ned", "templates/SourceSink.ned", context);
-                createFileFromPluginResource("omnetpp.ini", "templates/SourceSink.ini", context);
+                createFileFromPluginResource("package.ned", "package.ned.ftl", context);
+                createFileFromPluginResource("Source.ned", "Source.ned.ftl", context);
+                createFileFromPluginResource("Source.cc", "Source.cc.ftl", context);
+                createFileFromPluginResource("Source.h", "Source.h.ftl", context);
+                createFileFromPluginResource("Sink.ned", "Sink.ned.ftl", context);
+                createFileFromPluginResource("Sink.cc", "Sink.cc.ftl", context);
+                createFileFromPluginResource("Sink.h", "Sink.h.ftl", context);
+                createFileFromPluginResource("Network.ned", "SourceSink.ned.ftl", context);
+                createFileFromPluginResource("omnetpp.ini", "SourceSink.ini.ftl", context);
             }
         }) ;
 
@@ -90,8 +90,8 @@ public class BuiltinProjectTemplates {
                 createAndSetSourceFolders(new String[]{"src"}, context);
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"}, context);
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);                
-                createFileFromPluginResource("src/package.ned", "templates/package.ned", context);
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
+                createFileFromPluginResource("src/package.ned", "package.ned.ftl", context);
+                createFileFromPluginResource("simulations/package.ned", "simulationsPackage.ned.ftl", context);
             }
         });
         
@@ -105,13 +105,13 @@ public class BuiltinProjectTemplates {
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);                
                 createAndSetSourceFolders(new String[]{"src"}, context);
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"}, context);
-                createFileFromPluginResource("src/package.ned", "templates/package.ned", context);
-                createFileFromPluginResource("src/Txc.ned", "templates/Txc.ned", context);
-                createFileFromPluginResource("src/Txc.h", "templates/Txc.h", context);
-                createFileFromPluginResource("src/Txc.cc", "templates/Txc.cc", context);
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
-                createFileFromPluginResource("simulations/Tictoc.ned", "templates/Tictoc.ned", context);
-                createFileFromPluginResource("simulations/omnetpp.ini", "templates/Tictoc.ini", context);
+                createFileFromPluginResource("src/package.ned", "package.ned.ftl", context);
+                createFileFromPluginResource("src/Txc.ned", "Txc.ned.ftl", context);
+                createFileFromPluginResource("src/Txc.h", "Txc.h.ftl", context);
+                createFileFromPluginResource("src/Txc.cc", "Txc.cc.ftl", context);
+                createFileFromPluginResource("simulations/package.ned", "simulationsPackage.ned.ftl", context);
+                createFileFromPluginResource("simulations/Tictoc.ned", "Tictoc.ned.ftl", context);
+                createFileFromPluginResource("simulations/omnetpp.ini", "Tictoc.ini.ftl", context);
             }
         });
         
@@ -125,16 +125,16 @@ public class BuiltinProjectTemplates {
                 createAndSetSourceFolders(new String[]{"src"}, context);
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"}, context);
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS}, context);
-                createFileFromPluginResource("src/package.ned", "templates/package.ned", context);
-                createFileFromPluginResource("src/Source.ned", "templates/Source.ned", context);
-                createFileFromPluginResource("src/Source.cc", "templates/Source.cc", context);
-                createFileFromPluginResource("src/Source.h", "templates/Source.h", context);
-                createFileFromPluginResource("src/Sink.ned", "templates/Sink.ned", context);
-                createFileFromPluginResource("src/Sink.cc", "templates/Sink.cc", context);
-                createFileFromPluginResource("src/Sink.h", "templates/Sink.h", context);
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
-                createFileFromPluginResource("simulations/Network.ned", "templates/SourceSink.ned", context);
-                createFileFromPluginResource("simulations/omnetpp.ini", "templates/SourceSink.ini", context);
+                createFileFromPluginResource("src/package.ned", "package.ned.ftl", context);
+                createFileFromPluginResource("src/Source.ned", "Source.ned.ftl", context);
+                createFileFromPluginResource("src/Source.cc", "Source.cc.ftl", context);
+                createFileFromPluginResource("src/Source.h", "Source.h.ftl", context);
+                createFileFromPluginResource("src/Sink.ned", "Sink.ned.ftl", context);
+                createFileFromPluginResource("src/Sink.cc", "Sink.cc.ftl", context);
+                createFileFromPluginResource("src/Sink.h", "Sink.h.ftl", context);
+                createFileFromPluginResource("simulations/package.ned", "simulationsPackage.ned.ftl", context);
+                createFileFromPluginResource("simulations/Network.ned", "SourceSink.ned.ftl", context);
+                createFileFromPluginResource("simulations/omnetpp.ini", "SourceSink.ini.ftl", context);
             }
         });
 
@@ -157,7 +157,7 @@ public class BuiltinProjectTemplates {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("simulationsPackage", "");
                 substituteNestedVariables(context);
-                createFileFromPluginResource("package.ned", "templates/simulationsPackage.ned", context);
+                createFileFromPluginResource("package.ned", "simulationsPackage.ned.ftl", context);
             }
         });
 
@@ -169,7 +169,7 @@ public class BuiltinProjectTemplates {
                 context.getVariables().put("simulationsPackage", "");
                 substituteNestedVariables(context);
                 createAndSetNedSourceFolders(new String[] {"simulations"}, context);
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
+                createFileFromPluginResource("simulations/package.ned", "simulationsPackage.ned.ftl", context);
             }
         });
 
@@ -180,7 +180,7 @@ public class BuiltinProjectTemplates {
                 context.getVariables().put("simulationsPackage", "org.example.${projectname}.simulations");
                 substituteNestedVariables(context);
                 createAndSetNedSourceFolders(new String[] {"simulations"}, context);
-                createFileFromPluginResource("simulations/package.ned", "templates/simulationsPackage.ned", context);
+                createFileFromPluginResource("simulations/package.ned", "simulationsPackage.ned.ftl", context);
             }
         });
         return result;

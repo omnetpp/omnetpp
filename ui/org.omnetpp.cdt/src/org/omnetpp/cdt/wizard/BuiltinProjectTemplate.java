@@ -34,7 +34,7 @@ public abstract class BuiltinProjectTemplate extends ProjectTemplate {
 
     protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
         Configuration cfg = new Configuration();
-        cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/org/omnetpp/cdt/wizard"));
+        cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/template"));
         IFile file = context.getProject().getFile(new Path(projectRelativePath));
         createFile(file, cfg, templateName, suppressIfBlank, context);
     }

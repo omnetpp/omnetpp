@@ -4,5 +4,5 @@
 <#if namespace!="">// namespace of module C++ classes</#if>
 <#if namespace!="">@namespace(${namespace});</#if>
 
-<#if license!="">@license(${license});</#if>
+<#if licenseCode!="">@license(${licenseCode});</#if>
 

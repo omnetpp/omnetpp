@@ -321,32 +321,40 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		copy(templateFolder, context.getProject(), context);
 	}
 
-	protected void copy(IFolder parent, IContainer dest, CreationContext context) throws CoreException {
-		for (IResource resource : parent.members()) {
+	protected void copy(IFolder folder, IContainer destFolder, CreationContext context) throws CoreException {
+		for (IResource resource : folder.members()) {
+			//TODO: remove .ftl, and check that in nontemplateresources too!!! resource.getWorkspace().getRoot().getFile(resource.getFileExtension())
 			if (!nontemplateResources.contains(resource)) {
 				if (resource instanceof IFile) {
 					// copy w/ template substitution
 					IFile file = (IFile)resource;
-					IFile destFile = dest.getFile(new Path(file.getName()));
-					createFileFromWorkspaceResource(destFile, file, optionalFiles.contains(file), context);
+					IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount());
+					if (file.getFileExtension().equals("ftl")) {
+						IFile newFile = destFolder.getFile(relativePath.removeFileExtension());
+						createFileFromWorkspaceResource(newFile, relativePath.toString(), optionalFiles.contains(file), context);
+					}
+					else {
+						IPath newFile = destFolder.getFullPath().append(relativePath);
+						//FIXME: "file already exists" error!!!
+						file.copy(newFile, false, context.getProgressMonitor());
+					}
 				}
 				else if (resource instanceof IFolder) {
 					// create
-					IFolder folder = (IFolder)resource;
-					IFolder newFolder = dest.getFolder(new Path(folder.getName()));
-					if (!newFolder.exists())
-						newFolder.create(true, true, context.getProgressMonitor());
-					copy(folder, newFolder, context);
+					IFolder subfolder = (IFolder)resource;
+					IFolder newSubfolder = destFolder.getFolder(new Path(subfolder.getName()));
+					if (!newSubfolder.exists())
+						newSubfolder.create(true, true, context.getProgressMonitor());
+					copy(subfolder, newSubfolder, context);
 				}
 			}
 		}
 	}
 
-    protected void createFileFromWorkspaceResource(IFile file, IFile templateFile, boolean suppressIfBlank, CreationContext context) throws CoreException {
+    protected void createFileFromWorkspaceResource(IFile file, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
         Configuration cfg = new Configuration();
         cfg.setTemplateLoader(new WorkspaceTemplateLoader(templateFolder));
-		String templateName = templateFile.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount()).toString();
-        createFile(file, cfg, templateName, suppressIfBlank, context);
+		createFile(file, cfg, templateName, suppressIfBlank, context);
     }
 
 }
