@@ -105,14 +105,6 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			}
 			setImage(image);
 		}
-		
-		// other options
-		ignorableResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
-		for (String item : StringUtils.defaultString(properties.getProperty(PROP_IGNORABLERESOURCES)).trim().split(" *, *"))
-			ignorableResources.add(folder.getFile(new Path(item)));
-
-		for (String item : StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES)).trim().split(" *, *"))
-			optionalFiles.add(folder.getFile(new Path(item)));
 	}
 
 	@Override
@@ -318,21 +310,32 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	@Override
 	protected void doConfigure(CreationContext context) throws CoreException {
 		substituteNestedVariables(context);
+
+		ignorableResources.add(templateFolder.getFile(TEMPLATE_PROPERTIES_FILENAME));
+		Object ignorableResourcesSetting = context.getVariables().get(PROP_IGNORABLERESOURCES);
+		if (ignorableResourcesSetting instanceof String)  //TODO recognize string array too
+			for (String item : ((String)ignorableResourcesSetting).trim().split(" +"))
+				ignorableResources.add(templateFolder.getFile(new Path(item)));
+
+		Object optionalFilesSetting = context.getVariables().get(PROP_OPTIONALFILES);
+		if (optionalFilesSetting instanceof String)  //TODO recognize string array too
+			for (String item : ((String)optionalFilesSetting).trim().split(" +"))
+				optionalFiles.add(templateFolder.getFile(new Path(item)));
 		
 		Object addProjRef = context.getVariables().get(PROP_ADDPROJECTREFERENCE);
-		if (addProjRef == null || addProjRef.equals("true"));
-			ProjectUtils.addReferencedProject(context.getProject(), templateFolder.getProject(), context.getProgressMonitor());
-
+		if (addProjRef == null || addProjRef.equals(true) || addProjRef.equals("true"));
+		ProjectUtils.addReferencedProject(context.getProject(), templateFolder.getProject(), context.getProgressMonitor());
+		
 		Object sourceFolders = context.getVariables().get(PROP_SOURCEFOLDERS);
-		if (sourceFolders instanceof String)
-			createAndSetSourceFolders(((String) sourceFolders).trim().split(" *, *"), context);
+		if (sourceFolders instanceof String)  //TODO recognize string array too
+			createAndSetSourceFolders(((String) sourceFolders).trim().split(" +"), context);
 		
 		Object nedSourceFolders = context.getVariables().get(PROP_NEDSOURCEFOLDERS);
-		if (nedSourceFolders instanceof String)
-			createAndSetNedSourceFolders(((String) nedSourceFolders).trim().split(" *, *"), context);
+		if (nedSourceFolders instanceof String) //TODO recognize string array too
+			createAndSetNedSourceFolders(((String) nedSourceFolders).trim().split(" +"), context);
 
 		Object makemakeOptions = context.getVariables().get(PROP_MAKEMAKEOPTIONS);
-		if (makemakeOptions instanceof String) {
+		if (makemakeOptions instanceof String) { //TODO recognize JSON hash too
 			String[] items = ((String) makemakeOptions).trim().split(" *, *"); // each item should be "folder:options"
 			String[] args = new String[items.length*2];
 			for (int i=0; i<items.length; i++) {

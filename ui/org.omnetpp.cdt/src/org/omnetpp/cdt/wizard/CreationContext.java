@@ -6,6 +6,12 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+/**
+ * Stores the project handle, template variables etc during the lifetime
+ * of the New Project wizard.
+ * 
+ * @author Andras
+ */
 public class CreationContext {
 	private IProject project;
 	private Map<String,Object> variables = new HashMap<String, Object>();

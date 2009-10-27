@@ -7,9 +7,17 @@ Project templates are read from the templates/project folder of OMNeT++ projects
 In that folder, every subfolder that contains a template.properties file is
 treated as a project template. (Other folders are ignored.)
 
-Unless specified otherwise, all files and subdirectories in a template folder
-are considered template files, and will be copied over into the new project
-after template substitution, preserving file names and the directory structure.
+When the template is used, the contents of the template folder (and subfolders)
+will be copied over into the new project preserving the directory structure,
+with the exception of template.properties and other known special-purpose files.
+(It is also possible to specify other files and folders to ignore during copying.)
+
+Files with the ".ftl" extension are regarded as templates, and they will undergo
+template processing (and the ".ftl" extension gets chopped off) before copying.
+Other files are copied verbatim.
+
+
+TEMPLATE PROCESSING
 
 Template processing uses the FreeMarker library (http://freemarker.org), and
 all template syntax supported by FreeMarker can be used. Especially, variable
@@ -36,6 +44,9 @@ The following variables are predefined:
   templateProject       name of the project that defines the template
 
 Other variables may come from custom template pages, see later.
+
+
+THE TEMPLATE.PROPERTIES FILE
 
 The template.properties file is a standard Java property file (key=value syntax).
 That file can be used to supply a template name, a template description,
@@ -79,6 +90,11 @@ Recognized property file keys:
                 or a JSON-syntax map of strings; it sets opp_makemake options
                 for the given folders. There is no default.
 
+There are additinal options for adding custom pages into the wizard, see below.
+
+
+CUSTOM WIZARD PAGES
+
 The following properties can be used to define custom pages in the wizard. <i> is
 an integer page ID; their ordering defines the order of wizard pages.
 
@@ -120,6 +136,9 @@ http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
         http://www.coconut-palm-software.com/~xswt/integration/plugins/
         did not work out well.
 
+
+BINDING OF TEMPLATE VARIABLES TO WIDGETS
+
 XSWT allows one to tag widgets with id attributes. Widget IDs will become the
 names of template variables, with the values being the content of widgets.
 For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
@@ -153,6 +172,9 @@ Examples:
   layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}
 
 The property file takes precedence over values in the XSWT file.
+
+
+XSWT DATA BINDING
 
 This is the way how values get transferred between widgets and template
 variables (R=read, W=write):
@@ -230,6 +252,9 @@ Some non-interactive widgets which cannot be connected to template variables
 but are useful in forms as structuring elements are: Composite, Group, Sash,
 TabFolder/TabItem.
 
+
+CONDITIONAL CUSTOM PAGES
+
 Now that templating and XSWT were covered, we can revisit how one can use page
 conditions. Consider the following practical example:
 
@@ -251,6 +276,36 @@ add the following lines to template.properties:
 
 You get the idea.
 
+
+USING CUSTOM WIDGET CLASSES
+
+Since XSWT works via Java reflection, your own custom widgets can be used
+the forms very much like normal SWT widgets. No glue or registration code
+is needed, just add their package to the <import> tags at the top of the XSWT
+file.
+
+However, some Java code is needed so that the wizard knows how to write
+template variables into your wigets and how to extract them after editing.
+This functionality can be added via the org.omnetpp.cdt.wizard.IWidgetAdapter
+interface. This interface must be implemented either by the widget class
+itself, or by a class named <widgetclass>Adapter in the same package.
+The interface has methods to tell whether the adapter supports a given widget,
+to read the value out of the widget, and to write a value into the widget.
+
+In addition to basic data types (Boolean, Integer, Double, String, etc),
+it is possible to use compound data types as well, i.e. those composed of
+the List and Map interfaces of the Java Collections API. The default values
+can be given in the template.properties file in the JSON notation, and the
+result can be used in the templates (iteration via <#list>, etc).
+
+
+USING EXTERNAL JAVA CODE
+
+Adding custom Java code: TODO
+
+
+REFERENCES
+
 An XSWT tuturial and documentation can be found at:
 http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
 
@@ -265,9 +320,6 @@ TODO pelda: "[] make new project dependent on this one" checkbox
 TODO Util: hasMethod(), hasField(), instanceof(), newInstance()
 
 TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())
-
-TODO decide: maybe template files should have the ".ftl" extension, so that
-they get edited as FreeMarker template and not as NED/INI/C++ files?
 
 TODO: special markup in the template: "<?output="bubu.txt"> ... </?output>
 to support creation of files with runtime-decided names.
