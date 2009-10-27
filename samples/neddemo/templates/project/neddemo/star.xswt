@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+    <group text="Star">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" x:numColumns="2"/>
+      <x:children>
+        <label text="Number of perimeter nodes:"/>
+        <spinner x:id="nodes" x:minimum="1" x:maximum="100" x:style="BORDER"/>
+      </x:children>
+    </group>  
+    <group text="Options">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" x:numColumns="2"/>
+      <x:children>
+        <button x:id="wantPositions" x:style="CHECK" x:text="Generate coordinates"/>
+      </x:children>
+    </group>  
+  </x:children>
+</xswt>

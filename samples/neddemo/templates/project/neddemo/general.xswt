@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+    <group text="Select layout">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" x:numColumns="1"/>
+       <x:children>
+         <button x:id="star" text="Star" x:style="RADIO"/>
+         <button x:id="ring" text="Ring" x:style="RADIO"/>
+         <button x:id="grid" text="Square grid" x:style="RADIO"/>
+         <button x:id="torus" text="Torus" x:style="RADIO"/>
+         <button x:id="bintree" text="Binary tree" x:style="RADIO"/>
+         <button x:id="ktree" text="k-ary tree" x:style="RADIO"/>
+       </x:children>
+    </group> 
+    <group text="NED code">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" x:numColumns="1"/>
+       <x:children>
+         <button x:id="parametricNED" text="Parametric topology" x:style="RADIO"/>
+         <button x:id="staticNED" text="Static topology" x:style="RADIO"/>
+       </x:children>
+    </group> 
+  </x:children>
+</xswt>
