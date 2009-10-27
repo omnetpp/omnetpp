@@ -48,6 +48,7 @@ import freemarker.template.Configuration;
  * Project template loaded from a workspace project.
  * @author Andras
  */
+//FIXME: freemarker logging currently goes to stdout
 public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	public static final String TEMPLATE_PROPERTIES_FILENAME = "template.properties";
 	public static final Image MISSING_IMAGE = ImageDescriptor.getMissingImageDescriptor().createImage();
@@ -105,24 +106,40 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			}
 			setImage(image);
 		}
+
+		// the following options may not be modified via the wizard, so they are initialized here
+		ignorableResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
+		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORABLERESOURCES))," +"))
+			ignorableResources.add(folder.getFile(new Path(item)));
+
+		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES))," +"))
+			optionalFiles.add(folder.getFile(new Path(item)));
 	}
 
 	@Override
 	public CreationContext createContext(IProject project) {
 		CreationContext context = super.createContext(project);
 
+		// default values of recognized options (will be overwritten from property file)
+		context.getVariables().put(PROP_ADDPROJECTREFERENCE, "true");
+		context.getVariables().put(PROP_IGNORABLERESOURCES, "");
+		context.getVariables().put(PROP_OPTIONALFILES, "");
+		context.getVariables().put(PROP_SOURCEFOLDERS, "");
+		context.getVariables().put(PROP_NEDSOURCEFOLDERS, "");
+		context.getVariables().put(PROP_MAKEMAKEOPTIONS, "");
+		
 		// add property file entries as template variables
 		for (Object key : properties.keySet()) {
 			Object value = properties.get(key);
 			Assert.isTrue(key instanceof String && value instanceof String);
 				context.getVariables().put((String)key, parseJSON((String)value));
 		}
-
-		// add more predefined variables
+		
+		// add more predefined variables (these ones cannot be overwritten from the property file, would make no sense)
 		context.getVariables().put("templateFolderName", templateFolder.getName());
 		context.getVariables().put("templateFolderPath", templateFolder.getFullPath().toString());
 		context.getVariables().put("templateProject", templateFolder.getProject().getName());
-		
+
 		return context;
 	}
 	
@@ -270,12 +287,8 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile, condition);
 
 			// set title and description
-			String title = StringUtils.defaultIfEmpty(
-					properties.getProperty("page."+pageID+".title"),
-					getName());
-			String description = StringUtils.defaultIfEmpty(
-					properties.getProperty("page."+pageID+".description"),
-					"Page "+(i+1)+" of "+pageIDs.length);
+			String title = StringUtils.defaultIfEmpty(properties.getProperty("page."+pageID+".title"), getName());
+			String description = StringUtils.defaultIfEmpty(properties.getProperty("page."+pageID+".description"),"Select options below"); // "1 of 5" not good as default, because of conditional pages
 			result[i].setTitle(title);
 			result[i].setDescription(description);
 			
@@ -311,59 +324,42 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	protected void doConfigure(CreationContext context) throws CoreException {
 		substituteNestedVariables(context);
 
-		ignorableResources.add(templateFolder.getFile(TEMPLATE_PROPERTIES_FILENAME));
-		Object ignorableResourcesSetting = context.getVariables().get(PROP_IGNORABLERESOURCES);
-		if (ignorableResourcesSetting instanceof String)  //TODO recognize string array too
-			for (String item : ((String)ignorableResourcesSetting).trim().split(" +"))
-				ignorableResources.add(templateFolder.getFile(new Path(item)));
+		if (SWTDataUtil.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
+			ProjectUtils.addReferencedProject(context.getProject(), templateFolder.getProject(), context.getProgressMonitor());
+		
+		String[] srcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " +");
+		if (srcFolders.length > 0)
+			createAndSetSourceFolders(srcFolders, context);
 
-		Object optionalFilesSetting = context.getVariables().get(PROP_OPTIONALFILES);
-		if (optionalFilesSetting instanceof String)  //TODO recognize string array too
-			for (String item : ((String)optionalFilesSetting).trim().split(" +"))
-				optionalFiles.add(templateFolder.getFile(new Path(item)));
-		
-		Object addProjRef = context.getVariables().get(PROP_ADDPROJECTREFERENCE);
-		if (addProjRef == null || addProjRef.equals(true) || addProjRef.equals("true"));
-		ProjectUtils.addReferencedProject(context.getProject(), templateFolder.getProject(), context.getProgressMonitor());
-		
-		Object sourceFolders = context.getVariables().get(PROP_SOURCEFOLDERS);
-		if (sourceFolders instanceof String)  //TODO recognize string array too
-			createAndSetSourceFolders(((String) sourceFolders).trim().split(" +"), context);
-		
-		Object nedSourceFolders = context.getVariables().get(PROP_NEDSOURCEFOLDERS);
-		if (nedSourceFolders instanceof String) //TODO recognize string array too
-			createAndSetNedSourceFolders(((String) nedSourceFolders).trim().split(" +"), context);
+		String[] nedSrcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_NEDSOURCEFOLDERS), " +");
+		if (nedSrcFolders.length > 0)
+			createAndSetNedSourceFolders(nedSrcFolders, context);
 
-		Object makemakeOptions = context.getVariables().get(PROP_MAKEMAKEOPTIONS);
-		if (makemakeOptions instanceof String) { //TODO recognize JSON hash too
-			String[] items = ((String) makemakeOptions).trim().split(" *, *"); // each item should be "folder:options"
-			String[] args = new String[items.length*2];
-			for (int i=0; i<items.length; i++) {
-				args[2*i] = StringUtils.substringBefore(items[i], ":").trim();
-				args[2*i+1] = StringUtils.substringAfter(items[i], ":").trim();
-			}
-			createBuildSpec(args, context);
-		}
+		Map<String,String> makemakeOptions = SWTDataUtil.toStringMap(context.getVariables().get(PROP_MAKEMAKEOPTIONS));
+		if (!makemakeOptions.isEmpty())
+			createBuildSpec(makemakeOptions, context);
 
 	    // copy over files and folders, with template substitution
 		copy(templateFolder, context.getProject(), context);
 	}
-
+	
 	protected void copy(IFolder folder, IContainer destFolder, CreationContext context) throws CoreException {
 		for (IResource resource : folder.members()) {
 			if (!ignorableResources.contains(resource)) {
 				if (resource instanceof IFile) {
-					// copy w/ template substitution
 					IFile file = (IFile)resource;
 					IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount());
 					if (file.getFileExtension().equals("ftl")) {
+						// copy it with template substitution
 						IFile newFile = destFolder.getFile(relativePath.removeFileExtension());
 						createFileFromWorkspaceResource(newFile, relativePath.toString(), optionalFiles.contains(file), context);
 					}
 					else {
-						IPath newFile = destFolder.getFullPath().append(relativePath);
-						//FIXME: "file already exists" error!!!
-						file.copy(newFile, false, context.getProgressMonitor());
+						// copy it verbatim
+						IFile newFile = destFolder.getFile(relativePath);
+						if (newFile.exists())
+							newFile.delete(true, context.getProgressMonitor());
+						file.copy(newFile.getFullPath(), true, context.getProgressMonitor());
 					}
 				}
 				else if (resource instanceof IFolder) {

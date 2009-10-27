@@ -4,7 +4,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Button;
@@ -126,7 +129,7 @@ public class SWTDataUtil {
 		if (control instanceof Label)
 			((Label) control).setText(toString(value));
 		if (control instanceof List)
-			((List) control).setSelection(toStringList(value));
+			((List) control).setSelection(toStringArray(value));
 		if (control instanceof Link)
 			((Link) control).setText(toString(value));
 		if (control instanceof Scale)
@@ -162,26 +165,30 @@ public class SWTDataUtil {
 		}
 	}
 
-	private static boolean toBoolean(Object value) {
-		return value.equals(true) || value.equals("true");
+	public static boolean toBoolean(Object value) {
+		return value.equals(true) || value.toString().equals("true");
 	}
 
-	private static String toString(Object value) {
+	public static String toString(Object value) {
 		return value.toString().trim();
 	}
 
 	/**
 	 * May throw NumberFormatException.
 	 */
-	private static int toInt(Object value) {
+	public static int toInt(Object value) {
 		if (value instanceof Number)
 			return ((Number) value).intValue();
 		else 
 			return Integer.parseInt(value.toString().trim());
 	}
 
+	public static String[] toStringArray(Object value) {
+		return toStringArray(value, null);
+	}
+
 	@SuppressWarnings("unchecked")
-	private static String[] toStringList(Object value) {
+	public static String[] toStringArray(Object value, String splitRegex) {
 		if (value instanceof String[])
 			return (String[])value;
 		else if (value instanceof Object[] || value instanceof Collection) {
@@ -191,10 +198,35 @@ public class SWTDataUtil {
 				sv[i] = v[i].toString();
 			return sv;
 		}
-		else { 
-			return value.toString().trim().split(" *, *");
+		else {
+			String str = value.toString().trim();
+			if (str.isEmpty())
+				return new String[0]; 
+			else if (splitRegex != null)  
+				return str.split(splitRegex);
+			else
+				return new String[] { str }; 
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static Map<String,String> toStringMap(Object value) {
+		if (value instanceof Map) {
+			Map<String,String> result = new HashMap<String, String>();
+			for (Object key : ((Map) value).keySet())
+				result.put(key.toString(), value.toString());
+			return result;
+		}
+		else {
+			String[] items = toStringArray(value, " *, *");
+			Map<String,String> result = new HashMap<String, String>();
+			for (int i=0; i<items.length; i++) {
+				String key = StringUtils.substringBefore(items[i], ":").trim();
+				String val = StringUtils.substringAfter(items[i], ":").trim();
+				result.put(key, val);
+			}
+			return result;
+		}
+	}
 
 }

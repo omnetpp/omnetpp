@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.cdt.core.model.CoreModel;
@@ -307,17 +308,27 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     }
 
     /**
+     * Sets the makemake options on the given project. Array must contain folderPaths 
+     * as keys, and options as values.
+     */
+    	
+    protected void createBuildSpec(String[] pathsAndMakemakeOptions, CreationContext context) throws CoreException {
+    	Assert.isTrue(pathsAndMakemakeOptions.length%2 == 0);
+    	Map<String, String> tmp = new HashMap<String, String>();
+    	for (int i=0; i<pathsAndMakemakeOptions.length; i+=2)
+    		tmp.put(pathsAndMakemakeOptions[i], pathsAndMakemakeOptions[i+1]);
+    	createBuildSpec(tmp, context);    
+    }
+    
+    /**
      * Sets the makemake options on the given project. Array must contain folderPath1, options1, 
      * folderPath2, options2, etc.
      */
-    protected void createBuildSpec(String[] pathsAndMakemakeOptions, CreationContext context) throws CoreException {
-        Assert.isTrue(pathsAndMakemakeOptions.length%2 == 0);
+    protected void createBuildSpec(Map<String,String> pathsAndMakemakeOptions, CreationContext context) throws CoreException {
         IProject project = context.getProject();
         BuildSpecification buildSpec = BuildSpecification.createBlank(project);
-        for (int i=0; i<pathsAndMakemakeOptions.length; i+=2) {
-            String folderPath = pathsAndMakemakeOptions[i];
-            String args = pathsAndMakemakeOptions[i+1];
-            
+        for (String folderPath: pathsAndMakemakeOptions.keySet()) {
+            String args = pathsAndMakemakeOptions.get(folderPath);
             IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
             buildSpec.setFolderMakeType(folder, BuildSpecification.MAKEMAKE);
             MakemakeOptions options = new MakemakeOptions(args);
