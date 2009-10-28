@@ -236,6 +236,10 @@ public class DocumentationGenerator {
         neddocRelativeRootPath = getReversePath(rootRelativeNeddocPath);
     }
 
+    public void setCustomCssPath(IPath customCssPath) {
+        this.customCssPath = customCssPath;
+    }
+
     public void setConfiguration(GeneratorConfiguration configuration) {
         this.configuration = configuration;
     }
@@ -738,7 +742,10 @@ public class DocumentationGenerator {
     }
 
     protected void generateCSS() throws Exception {
-        generateFileFromResource("style.css");
+        if (customCssPath == null)
+            generateFileFromResource("style.css");
+        else
+            FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
     }
 
     protected void generateTreeJavaScript() throws Exception {

@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 
@@ -353,6 +354,10 @@ public class GeneratorConfigurationDialog
                 generator.setRootRelativeDoxyPath(new Path(DocumentationGeneratorPropertyPage.getDoxyPath(project)));
                 generator.setRootRelativeNeddocPath(new Path(DocumentationGeneratorPropertyPage.getNeddocPath(project)));
                 generator.setAbsoluteDoxyConfigFilePath(project.getFile(DocumentationGeneratorPropertyPage.getDoxyConfigFilePath(project)).getLocation());
+
+                String customCssPath = DocumentationGeneratorPropertyPage.getCustomCssPath(project);
+                if (!StringUtils.isEmpty(customCssPath))
+                    generator.setCustomCssPath(project.getFile(DocumentationGeneratorPropertyPage.getCustomCssPath(project)).getLocation());
             }
             catch (CoreException e) {
                 throw new RuntimeException(e);
