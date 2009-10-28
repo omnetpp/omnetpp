@@ -70,20 +70,20 @@ Recognized property file keys:
   addProjectReference
                 True or false; defaults to true. If true, the template's project
                 will be added to the referenced projects list of the new project.
-  ignorableResources
-                Space-separated or JSON-syntax list of non-template files or
+  ignoreResources
+                Comma-separated or JSON-syntax list of non-template files or
                 folders; those files won't get copied over to the new project.
                 Wildcards are NOT accepted. The template.properties file and
                 custom wizard page files automatically count as nontemplates,
                 so they don't have to be listed.
-  optionalFiles Space-separated or JSON-syntax list of files that should be
+  optionalFiles Comma-separated or JSON-syntax list of files that should be
                 suppressed (i.e. not created) if they would be empty after
                 template processing. Wildcards are NOT accepted.
   sourceFolders
-                Space-separated or JSON-syntax list of C++ source folders
+                Comma-separated or JSON-syntax list of C++ source folders
                 to be created and configured. By default, none.
   nedSourceFolders
-                Space-separated or JSON-syntax list of NED source folders
+                Comma-separated or JSON-syntax list of NED source folders
                 to be created and configured. By default, none.
   makemakeOptions
                 Comma-separated list of items in the syntax "folder:options",

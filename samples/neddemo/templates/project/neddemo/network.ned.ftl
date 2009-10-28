@@ -19,11 +19,12 @@ TODO handle: generateCoordinates
 
 <#-- pull in the correct template to do the actual work -->
 <#if star>
-   <#include "star.inc.ftl">
+   <#include "star.ned.ftl">
 <#elseif ring>
-   <#include "ring.inc.ftl">
+   <#include "ring.ned.ftl">
 <#elseif grid || torus>
-   <#include "gridtorus.inc.ftl">
+   <#include "gridtorus.ned.ftl">
 <#elseif bintree || ktree>
-   <#include "ktree.inc.ftl">
+   <#if bintree> <#assign treeK=2> </#if>
+   <#include "ktree.ned.ftl">
 </#if>

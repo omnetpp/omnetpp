@@ -60,7 +60,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
 	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
 	public static final String PROP_ADDPROJECTREFERENCE = "addProjectReference"; // boolean: if true, make project as dependent on this one
-	public static final String PROP_IGNORABLERESOURCES = "ignorableResources"; // list of non-template files: won't get copied over
+	public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of non-template files: won't get copied over
 	public static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank
 	public static final String PROP_SOURCEFOLDERS = "sourceFolders"; // source folders to be created and configured
 	public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
@@ -68,7 +68,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
-	protected Set<IResource> ignorableResources = new HashSet<IResource>();
+	protected Set<IResource> ignoreResources = new HashSet<IResource>();
 	protected Set<IFile> optionalFiles = new HashSet<IFile>(); // files not to be generated if they'd be blank
 
 	public WorkspaceBasedProjectTemplate(IFolder folder) throws CoreException {
@@ -91,7 +91,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
 		if (imageFileName != null) {
 			IFile file = templateFolder.getFile(new Path(imageFileName));
-			ignorableResources.add(file); // do not copy image file to dest project
+			ignoreResources.add(file); // do not copy image file to dest project
 			IPath locPath = file.getLocation();
 			String loc = locPath==null ? "<unknown>" : locPath.toOSString();
 			ImageRegistry imageRegistry = Activator.getDefault().getImageRegistry();
@@ -109,11 +109,11 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 
 		// the following options may not be modified via the wizard, so they are initialized here
-		ignorableResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
-		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORABLERESOURCES))," +"))
-			ignorableResources.add(folder.getFile(new Path(item)));
+		ignoreResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
+		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORERESOURCES))," *, *"))
+			ignoreResources.add(folder.getFile(new Path(item)));
 
-		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES))," +"))
+		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES))," *, *"))
 			optionalFiles.add(folder.getFile(new Path(item)));
 	}
 
@@ -123,7 +123,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 
 		// default values of recognized options (will be overwritten from property file)
 		context.getVariables().put(PROP_ADDPROJECTREFERENCE, "true");
-		context.getVariables().put(PROP_IGNORABLERESOURCES, "");
+		context.getVariables().put(PROP_IGNORERESOURCES, "");
 		context.getVariables().put(PROP_OPTIONALFILES, "");
 		context.getVariables().put(PROP_SOURCEFOLDERS, "");
 		context.getVariables().put(PROP_NEDSOURCEFOLDERS, "");
@@ -295,7 +295,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			result[i].setDescription(description);
 			
 			// do not copy forms into the new project
-			ignorableResources.add(xswtFile);
+			ignoreResources.add(xswtFile);
 		}
 		
 		return result;
@@ -329,11 +329,11 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		if (SWTDataUtil.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
 			ProjectUtils.addReferencedProject(context.getProject(), templateFolder.getProject(), context.getProgressMonitor());
 		
-		String[] srcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " +");
+		String[] srcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
 		if (srcFolders.length > 0)
 			createAndSetSourceFolders(srcFolders, context);
 
-		String[] nedSrcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_NEDSOURCEFOLDERS), " +");
+		String[] nedSrcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_NEDSOURCEFOLDERS), " *, *");
 		if (nedSrcFolders.length > 0)
 			createAndSetNedSourceFolders(nedSrcFolders, context);
 
@@ -347,7 +347,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	
 	protected void copy(IFolder folder, IContainer destFolder, CreationContext context) throws CoreException {
 		for (IResource resource : folder.members()) {
-			if (!ignorableResources.contains(resource)) {
+			if (!ignoreResources.contains(resource)) {
 				if (resource instanceof IFile) {
 					IFile file = (IFile)resource;
 					IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount());
