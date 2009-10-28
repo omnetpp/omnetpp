@@ -61,6 +61,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int vectorIndex;
 	protected VectorArrangement vectorArrangement;
 	protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
+	protected int alpha;
 
 	// result of layouting
 	protected Point centerLoc;
@@ -184,6 +185,10 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 			updateBounds();  // note: re-layouting does not guarantee that updateBounds() gets called!
 		repaint();
 	}
+
+    public void setAlpha(int alpha) {
+        this.alpha = alpha;
+    }
 
 	protected void setTooltipText(String tooltipText) {
 		this.tooltipText = tooltipText;
@@ -626,6 +631,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 
 	@Override
 	public void paint(Graphics graphics) {
+	    graphics.setAlpha(alpha);
 		super.paint(graphics);
 //		System.out.println(this+": paint(): centerLoc==" + centerLoc);
 		Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");

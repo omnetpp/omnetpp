@@ -20,9 +20,9 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
 import org.omnetpp.ned.model.interfaces.IHasType;
-import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CommentElement;
@@ -149,15 +149,15 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	}
 
 	/**
-	 * Sets the value of the isNetwork boolean property on a module. If value is true adds it to the tree otherwise removes it.
-	 * @param isNetwork
+	 * Sets the value of the given boolean property on a node. If value is true adds it to the tree otherwise removes it.
+	 * @param value
 	 */
-	public static void setNetworkProperty(IModuleTypeElement node, boolean isNetwork) {
+	public static void setBooleanProperty(IHasParameters node, String propertyName, boolean value) {
 		// look for the "parameters" block
 		INEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
 
 		if (paramsNode == null) {
-			if (!isNetwork) return;  // do nothing if node is not a network and no parameters section is present
+			if (value == false) return; // optimize away property node for default value 
 	
 			paramsNode = NEDElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
             ((ParametersElement)paramsNode).setIsImplicit(true);
@@ -165,17 +165,17 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		}
 
 		// look for the first property parameter named "display"
-		INEDElement isNetworkPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, IModuleTypeElement.IS_NETWORK_PROPERTY);
+		INEDElement isBooleanPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, propertyName);
 
 		// first we always remove the original node (so all its children will be discarded)
-		if (isNetworkPropertyNode !=null)
-			paramsNode.removeChild(isNetworkPropertyNode);
+		if (isBooleanPropertyNode !=null)
+			paramsNode.removeChild(isBooleanPropertyNode);
 		// create and add a new node if needed
-		if (isNetwork) {
-			isNetworkPropertyNode = NEDElementFactoryEx.getInstance().createElement(NED_PROPERTY);
-			((PropertyElement)isNetworkPropertyNode).setIsImplicit(node instanceof CompoundModuleElement);
-			((PropertyElement)isNetworkPropertyNode).setName(IModuleTypeElement.IS_NETWORK_PROPERTY);
-			paramsNode.appendChild(isNetworkPropertyNode);
+		if (value) {
+			isBooleanPropertyNode = NEDElementFactoryEx.getInstance().createElement(NED_PROPERTY);
+			((PropertyElement)isBooleanPropertyNode).setIsImplicit(node instanceof CompoundModuleElement);
+			((PropertyElement)isBooleanPropertyNode).setName(propertyName);
+			paramsNode.appendChild(isBooleanPropertyNode);
 		}
 	}
 

@@ -68,8 +68,8 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
         return !StringUtils.equalsIgnoreCase("false", propValue); 
     }
 
-    public void setIsNetwork(boolean val) {
-        NEDElementUtilEx.setNetworkProperty(this, val);
+    public void setIsNetwork(boolean value) {
+        NEDElementUtilEx.setBooleanProperty(this, IModuleTypeElement.IS_NETWORK_PROPERTY, value);
     }
 
     public DisplayString getDisplayString() {

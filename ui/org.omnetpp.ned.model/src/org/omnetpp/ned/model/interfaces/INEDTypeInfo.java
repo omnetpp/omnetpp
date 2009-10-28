@@ -153,6 +153,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
      * (Given the special inheritance rules for properties, this may not be what you want;
      * see getPropertyInheritanceChain().
      */
+    // TODO: properly implement property: name, index pair
     public Map<String, PropertyElementEx> getProperties();
 
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */

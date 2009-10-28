@@ -289,8 +289,10 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentPropertyTempl);
                 addProposals(viewer, documentOffset, result, "@", nedTypeInfo.getProperties().keySet(), "", "property");
             }
-            if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
+            if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null) {
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmodulePropertyTempl);
                 addProposals(viewer, documentOffset, result, "@", submoduleType.getProperties().keySet(), "", "property");
+            }
         }
         else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
             if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)

@@ -41,7 +41,13 @@ public final class NedCompletionHelper {
         makeShortTemplate("@display(\"i=${icon}\");", "property"),
         makeShortTemplate("@class(${className});", "property"),
         makeShortTemplate("@contains(${label1});", "property"),
+        makeShortTemplate("@labels(${label1})", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
+
+    public final static Template[] proposedNedSubmodulePropertyTempl = {
+        makeShortTemplate("@display(\"i=${icon}\");", "property"),
+        makeShortTemplate("@dynamic()", "property"),
+    }; //XXX check this list before release
 
     public final static Template[] proposedNedParamPropertyTempl = {
         makeShortTemplate("@prompt(\"${message}\")", "property"),
