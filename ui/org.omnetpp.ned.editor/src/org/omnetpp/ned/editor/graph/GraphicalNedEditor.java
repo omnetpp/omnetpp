@@ -193,7 +193,9 @@ public class GraphicalNedEditor
                     if (getGraphicalControl() != null && !getGraphicalControl().isDisposed()) {
                         paletteManager.refresh();
                         PaletteViewer paletteViewer = getPaletteViewerProvider().getEditDomain().getPaletteViewer();
-                        paletteViewer.reveal((EditPart)paletteViewer.getEditPartRegistry().get(paletteManager.getLastUsedCreationToolEntry()));
+                        EditPart lastUsedToolEntry = (EditPart)paletteViewer.getEditPartRegistry().get(paletteManager.getLastUsedCreationToolEntry());
+                        if (lastUsedToolEntry != null)
+                            paletteViewer.reveal(lastUsedToolEntry);
                     }
                 }
             });
