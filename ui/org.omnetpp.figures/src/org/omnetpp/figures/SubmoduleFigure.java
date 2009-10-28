@@ -100,7 +100,8 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		if (this.scale == scale && newCumulativeHashCode == oldCumulativeHashCode)
 			return;
 
-		Assert.isNotNull(getFont()); // font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
+		// font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
+		setFont(getFont());
 
 		this.scale = scale;
 		this.oldCumulativeHashCode = newCumulativeHashCode;
