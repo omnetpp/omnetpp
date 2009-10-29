@@ -23,6 +23,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -183,6 +184,10 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(), templates)));
 	}
 
+    protected void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates, IWordDetector wordDetector) {
+        result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, wordDetector, templates)));
+    }
+
     protected CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {
 		IDocument docu = viewer.getDocument();
         int offset = documentOffset;
@@ -197,7 +202,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
     		// curly brace, "parameters:", "gates:", "connections:" etc.
     		String prefix = source;
     		prefix = prefix.replaceAll("(?s)\\s+", " "); // normalize whitespace
-    		prefix = prefix.replaceFirst(".*[;\\{\\}]", "");
+    		prefix = prefix.replaceFirst(".*[" + (this instanceof NedDisplayStringCompletionProcessor ? "" : ";") + "\\{\\}]", "");
     		prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|submodules|connections|connections +[a-z]+) *:", "");
     		String prefix2 = prefix.replaceFirst("[a-zA-Z_@][a-zA-Z0-9_]*$", "").trim(); // chop off last word
 

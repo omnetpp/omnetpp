@@ -128,4 +128,17 @@ public class SyntaxHighlightHelper {
 	        return Character.isLetter(c) || c == '/' || c == '>';
 	    }
 	}
+
+    /**
+     * Detects tags in display strings.
+     */
+    public static class NedDisplayStringTagDetector implements IWordDetector {
+        public boolean isWordStart(char c) {
+            return Character.isLetter(c);
+        }
+
+        public boolean isWordPart(char c) {
+            return c != ';' && c != '"';
+        }
+    }
 }

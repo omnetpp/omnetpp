@@ -8,6 +8,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedDisplayStringTagDetector;
 import org.omnetpp.common.image.ImageFactory;
 
 public class NedDisplayStringCompletionProcessor extends AbstractNedCompletionProcessor {
@@ -42,11 +43,11 @@ public class NedDisplayStringCompletionProcessor extends AbstractNedCompletionPr
                 addProposals(viewer, documentOffset, result, proposals, proposals, images);
             }
             else if (info.sectionType == SECT_PARAMETERS)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl);
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());
             else if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl);
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl, new NedDisplayStringTagDetector());
             else if (info.sectionType == SECT_CONNECTIONS)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl);
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl, new NedDisplayStringTagDetector());
         }
 
         // long millis = System.currentTimeMillis()-startMillis;
