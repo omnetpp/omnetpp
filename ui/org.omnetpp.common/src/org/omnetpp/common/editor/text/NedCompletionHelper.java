@@ -7,8 +7,11 @@
 
 package org.omnetpp.common.editor.text;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.templates.Template;
+import org.omnetpp.common.displaymodel.IDisplayString;
 
 /**
  * This class contains data for context assist functions for NED files.
@@ -43,6 +46,88 @@ public final class NedCompletionHelper {
         makeShortTemplate("@contains(${label1});", "property"),
         makeShortTemplate("@labels(${label1})", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
+
+    public final static Template[] proposedNedComponentDisplayStringTempl;
+
+    public final static Template[] proposedNedSubmoduleDisplayStringTempl;
+
+    public final static Template[] proposedNedConnectionDisplayStringTempl;
+    
+    static {
+        ArrayList<Template> componentTemplates = new ArrayList<Template>();
+        ArrayList<Template> submoduleTemplates = new ArrayList<Template>();
+        ArrayList<Template> connectionTemplates = new ArrayList<Template>();
+
+        for (IDisplayString.Tag tag : IDisplayString.Tag.values()) {
+            String fullPattern = tag.name() + "=";
+
+            boolean first = true;
+            for (IDisplayString.Prop prop : IDisplayString.Prop.values()) {
+                if (tag.equals(prop.getTag())) {
+                    if (!first)
+                        fullPattern += ",";
+                    else
+                        first = false;
+
+                    fullPattern += "${" + prop.getName().replaceAll("[^a-zA-Z0-9]", "") + "}";
+                }
+            }
+
+            int shortParameterCount = -1;
+            switch (tag) {
+                case bgp: break;
+                case bgb: shortParameterCount = 2; break;
+                case bgi: break;
+                case bgtt: break;
+                case bgg: shortParameterCount = 1; break;
+                case bgl: break;
+                case bgs: break;
+                case p: shortParameterCount = 2; break;
+                case b: shortParameterCount = 2; break;
+                case i: shortParameterCount = 1; break;
+                case is: break;
+                case i2: shortParameterCount = 1; break;
+                case r: shortParameterCount = 1; break;
+                case q: break;
+                case t: shortParameterCount = 1; break;
+                case tt: break;
+                case ls: shortParameterCount = 1; break;
+            }
+            
+            String description = tag.getDescription();
+            String shortPattern = shortParameterCount == -1 ? null : fullPattern;
+            int index = -1;
+            for (int i = 0; i < shortParameterCount + 1; i++)
+                index = shortPattern.indexOf('$', index + 1);
+            if (index != -1)
+                shortPattern = shortPattern.substring(0, index - 1);
+
+            if ((tag.getType() & IDisplayString.COMPOUNDMODULE) != 0) {
+                componentTemplates.add(makeShortTemplate(fullPattern, description));
+
+                if (shortPattern != null)
+                    componentTemplates.add(makeShortTemplate(shortPattern, description));
+            }
+
+            if ((tag.getType() & IDisplayString.SUBMODULE) != 0) {
+                submoduleTemplates.add(makeShortTemplate(fullPattern, description));
+
+                if (shortPattern != null)
+                    submoduleTemplates.add(makeShortTemplate(shortPattern, description));
+            }
+
+            if ((tag.getType() & IDisplayString.CONNECTION) != 0) {
+                connectionTemplates.add(makeShortTemplate(fullPattern, description));
+
+                if (shortPattern != null)
+                    connectionTemplates.add(makeShortTemplate(shortPattern, description));
+            }
+        }
+        
+        proposedNedComponentDisplayStringTempl = componentTemplates.toArray(new Template[0]);
+        proposedNedSubmoduleDisplayStringTempl = submoduleTemplates.toArray(new Template[0]);
+        proposedNedConnectionDisplayStringTempl = connectionTemplates.toArray(new Template[0]);
+    }
 
     public final static Template[] proposedNedSubmodulePropertyTempl = {
         makeShortTemplate("@display(\"i=${icon}\");", "property"),
