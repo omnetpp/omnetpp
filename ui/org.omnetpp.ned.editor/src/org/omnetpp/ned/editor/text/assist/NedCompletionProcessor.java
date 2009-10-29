@@ -294,7 +294,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
                 addProposals(viewer, documentOffset, result, "@", submoduleType.getProperties().keySet(), "", "property");
             }
         }
-        else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
+        else if (!line.startsWith("@") && ((line.contains("=") && !line.endsWith("=")) || !line.contains("="))) {
             if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamPropertyTempl);
             if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
@@ -359,6 +359,19 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
             if (line.equals(""))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionTempl);
 		}
+
+		// display string
+        if (line.matches("@display\\(\".*")) {
+            if (line.matches(".*(i|i2)=")) {
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl);
+            }
+            else if (info.sectionType == SECT_PARAMETERS)
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl);
+            else if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl);
+            else if (info.sectionType == SECT_CONNECTIONS)
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl);
+        }
 
 		// long millis = System.currentTimeMillis()-startMillis;
 		// Debug.println("Proposal creation: "+millis+"ms");
