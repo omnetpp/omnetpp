@@ -36,7 +36,7 @@ import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.wizard.support.IDEUtils;
 import org.omnetpp.cdt.wizard.support.LangUtils;
-import org.omnetpp.cdt.wizard.support.WizardFileUtils;
+import org.omnetpp.cdt.wizard.support.FileUtils;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -216,7 +216,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         	// make Math, FileUtils, StringUtils and static methods of other classes available to the template
         	// see chapter "Bean wrapper" in the FreeMarker manual 
         	context.getVariables().put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
-        	context.getVariables().put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(WizardFileUtils.class.getName()));
+        	context.getVariables().put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(FileUtils.class.getName()));
         	context.getVariables().put("StringUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(StringUtils.class.getName()));
         	context.getVariables().put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
         	context.getVariables().put("IDEUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(IDEUtils.class.getName()));

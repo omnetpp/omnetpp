@@ -301,15 +301,193 @@ result can be used in the templates (iteration via <#list>, etc).
 
 USING EXTERNAL JAVA CODE
 
-Adding custom Java code: TODO
+Jar files placed into the plugins subdirectory of an OMNeT++ project will be
+loaded automatically, and will be avalable for all templates. Jar files in
+that directory may be plain Java jars and Eclipse plug-in jars. (The latter
+makes it also possible to contribute new functionality into the IDE via
+various extension points, but this is outside the scope of this discussion
+about wizards.)
+
+In addition, jar files placed in the lib/ subdirectory of a template will
+be loaded automatically when the template is used, and the classes in it will
+be available for that template. Custom SWT widget classes can be imported and
+used in XSWT forms, and other code can be used in the template files via the
+bean wrapper (e.g. ${classes["org.example.SomeClass"].someStaticMethod(...)},
+see the example wizards.)
+
+
+UTILITY CLASSES AVAILABLE FROM THE TEMPLATES
 
 The following Java classes have been added to the context:
   Math		java.lang.Math
-  FileUtils	TODO
+  FileUtils	U
   StringUtils	org.apache.commons.lang.StringUtils
   CollectionUtils	org.apache.commons.lang.CollectionUtils
   IDEUtils	TODO
   LangUtils	TODO
+
+Example template code:
+
+  The value of 10*cos(0.2) is ${10*Math.cos(0.2)}.
+
+  The words of the sentence '${sentence}':
+  <#list StringUtils.split(sentence) as word>
+     ${word}
+  </#list>
+
+  Properties in the file ${filename}:
+  <#assign props = FileUtils.readPropertyFile(filename)>
+  <#list props?keys as key>
+     ${key} ==> ${props.get(key)}
+  </#list>
+
+
+Math:
+
+Represents the Java Math class, which contains mathematical functions.
+See http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html
+
+Math functions:
+
+  double cos(double x);
+  double sin(double x);
+  double pow(double x, double y);
+  etc.
+
+FileUtils:
+
+Contains utility functions for reading files in the following formats: XML,
+JSON, CSV, property file, and functions to read and return a text file
+as a single string, as an array of lines, and as a an array of string arrays
+(where string arrays were created by splitting each by whitespace).
+
+There are two sets of functions, one works on files in the Eclipse workspace,
+and the other files on "external" files, i.e. files in the file system.
+Files are interpreted in the Java platform's default encoding (unless XML files,
+which specify their own encoding.)
+
+FileUtils functions:
+
+org.w3c.dom.Document readXMLFile(IFile file);
+org.w3c.dom.Document readExternalXMLFile(String file);
+
+    Parses an XML file, and return the Document object of the resulting
+    DOM tree.
+
+Object readJSONFile(IFile file);
+Object readExternalJSONFile(String file);
+
+    Parses a JSON file. The result is a Boolean, Integer, Double, String,
+    List or Map, or any data structure composed of them.
+
+String[][] readCSVFile(IFile file);
+String[][] readExternalCSVFile(String file);
+
+    Reads a CSV file. The result is an array of lines, where each line is
+    represented by a string array. The header line is not treated specially.
+
+Properties readPropertyFile(IFile file);
+Properties readExternalPropertyFile(String file);
+
+    Parses a Java property file ('key=value' lines) in the workspace.
+    The result is a Properties object, which is effectively a hash of
+    key-value pairs.
+
+String[][] readSpaceSeparatedTextFile(IFile file);
+String[][] readExternalSpaceSeparatedTextFile(String file);
+
+    Reads a text file in the workspace, and returns its contents, split by
+    lines, and each line split by whitespace. Comment lines (those starting
+    with a hash mark, #) are discarded. The result is an array of lines,
+    where each line is a string array.
+
+String[] readLineOrientedTextFile(IFile file);
+String[] readExternalLineOrientedTextFile(String file);
+
+    Reads a text file in the workspace, and returns its lines. Comment lines
+    (those starting with a hash mark, #) are discarded. The result is a
+    string array.
+
+String readTextFile(IFile file);
+String readExternalTextFile(String file);
+
+    Reads a text file, and return its contents unchanged as a single string.
+
+
+StringUtils
+
+Represents the Apache Commons StringUtils class, which contains over a hundred
+utility functions for manipulating strings.
+See http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html
+
+StringUtils methods
+
+  boolean isEmpty(String s);
+  boolean isBlank(String s);
+  String capitalize(String s);
+  String upperCase(String s);
+  String lowerCase(String s);
+  boolean startsWith(String s, String suffix);
+  boolean endsWith(String s, String prefix);
+  String[] split(String s);
+  String join(String[] strings);
+  etc.
+
+
+CollectionUtils
+
+Represents the Apache Commons CollectionUtils class, which contains some useful
+functions for manipulating collections (like lists). Functions include computing
+set union, intersection, and difference.
+http://commons.apache.org/collections/apidocs/org/apache/commons/collections/CollectionUtils.html
+
+CollectionUtils methods
+
+Collection union(Collection a, Collection b);
+Collection intersection(Collection a, Collection b);
+Collection subtract(Collection a, Collection b);
+
+
+IDEUtils
+
+Provides entry points into various aspects of the IDE. This includes access to
+the Eclipse workspace (projects, folders, files), and the NED index. The former
+is documented in the Eclipse Platform help; documentation for the latter can
+be found in the sources (Javadoc).
+See http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/resInt.htm
+and http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspaceRoot.html
+
+IDEUtils methods
+
+IWorkspaceRoot getWorkspaceRoot();
+NEDResources getNEDResources();
+MsgResources getMsgResources();
+
+
+LangUtils
+
+Provides a collection of Java language related utility functions.
+
+LangUtils methods
+
+boolean hasMethod(Object object, String methodName);
+
+    Returns true if the object has a method with the given name.
+    Method args and return type are not taken into account.
+    Search is performed on the object's class and all super classes.
+
+boolean hasField(Object object, String fieldName);
+
+    Returns true if the object has a field with the given name.
+    Field type is not taken into account. Search is performed on
+    the object's class and all super classes.
+
+boolean instanceOf(Object object, String classOrInterfaceName);
+
+    Returns true if the given object is instance of (subclasses from or
+    implements) the given class or interface. To simplify usage, the class
+    or interface name is accepted both with and without the package name.
+
 
 TODO: custom widget: file selector (workspace / external file)
 
@@ -321,6 +499,8 @@ http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
 
 Documentation for the FreeMarker template language:
 http://freemarker.org/docs/index.html
+
+
 
 ---
 TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,

@@ -15,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
-import org.omnetpp.common.util.FileUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -29,7 +28,7 @@ import au.com.bytecode.opencsv.CSVReader;
  * 
  * @author Andras
  */
-public class WizardFileUtils {
+public class FileUtils {
 	/**
 	 * Parse an XML file in the workspace, and return the Document object 
 	 * of the resulting DOM tree.
@@ -254,7 +253,7 @@ public class WizardFileUtils {
 	 */
 	public static String readExternalTextFile(String file) {
 		try {
-			return FileUtils.readTextFile(file);
+			return org.omnetpp.common.util.FileUtils.readTextFile(file);
 		} catch (IOException e) {
 			throw new RuntimeException("Error reading file " + file + ": " + e.getMessage(), e);
 		}
