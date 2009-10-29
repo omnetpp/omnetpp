@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/opencsv-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/freemarker.jar" sourcepath="misc/freemarker-2.3.15-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-math-1.1.jar" sourcepath="misc/commons-math-1.1-sources.jar">
 		<attributes>

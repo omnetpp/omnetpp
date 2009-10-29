@@ -14,7 +14,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.draw2d,
  org.omnetpp.ide.nativelibs,
  org.omnetpp.common.core;visibility:=reexport
-Export-Package: freemarker.cache,
+Export-Package: au.com.bytecode.opencsv,
+ au.com.bytecode.opencsv.bean,
+ freemarker.cache,
  freemarker.core,
  freemarker.debug,
  freemarker.debug.impl,
@@ -107,10 +109,11 @@ Export-Package: freemarker.cache,
    org.eclipse.swt.graphics,
    org.eclipse.swt.widgets",
  org.omnetpp.common.xml;uses:="org.xml.sax.helpers,org.xml.sax"
-Bundle-ClassPath: lib/commons-collections-3.2.jar,
+Bundle-ClassPath: .,
+ lib/commons-collections-3.2.jar,
  lib/commons-math-1.1.jar,
  lib/freemarker.jar,
- .
+ lib/opencsv-2.0.jar
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Activator: org.omnetpp.common.CommonPlugin
 Eclipse-LazyStart: true
