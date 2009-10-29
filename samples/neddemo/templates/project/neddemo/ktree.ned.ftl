@@ -1,16 +1,32 @@
 <#-- template include for network.ned.ftl -->
 <#-- TODO: generateCoordinates -->
 <#if parametricNED>
+   <#if treeK==2>
 network ${ProjectName}
 {
     parameters:
-        int k = default(${treeK});
-        int levels = default(${treeLevels});
+        int levels = default(${treeLevels});  // 1 = root only
     submodules:
-        node[TODO]: ${nodeTypeName};
+        node[2^levels-1]: ${nodeTypeName};
     connections:
-        //TODO
+        for i=1..sizeof(node)-1 {
+            node[i].g++ <--> node[floor((i-1)/2)].g++;  
+        }
 }
+  <#else>
+network ${ProjectName}
+{
+    parameters:
+        int k = default(${treeK}); // tree branching factor
+        int levels = default(${treeLevels});  // 1 = root only
+    submodules:
+        node[(k^levels-1) / (k-1)]: ${nodeTypeName};
+    connections:
+        for i=1..sizeof(node)-1 {
+            node[i].g++ <--> node[floor((i-1)/k).g++;
+        }
+}
+  </#if>
 <#else>
 network ${ProjectName}
 {
