@@ -32,11 +32,56 @@ public interface IDisplayString {
     public enum PropType { READONLY, STRING, INTEGER, UNIT, COLOR, IMAGE }
 
     /**
+     *  Tag types
+     */
+    public final static int COMPOUNDMODULE = 1;
+    public final static int SUBMODULE = 2;
+    public final static int CONNECTION = 4;
+
+    /**
      * Tag names used in the display string
      */
-    public enum Tag { p, b, i, is, i2, r, q, t, tt,  // submodule tags
-                      bgp, bgb, bgi, bgtt, bgg, bgl, bgs, // compound module background tags
-                      m, a, ls, bp }                 // connection tags
+    public enum Tag {
+        bgp(COMPOUNDMODULE, "Background position"),
+        bgb(COMPOUNDMODULE, "Background box"),
+        bgi(COMPOUNDMODULE, "Background image"),
+        bgtt(COMPOUNDMODULE, "Background tooltip"),
+        bgg(COMPOUNDMODULE, "Background grid"),
+        bgl(COMPOUNDMODULE, "Layout parameters"),
+        bgs(COMPOUNDMODULE, "Layout seed"),
+        
+        p(COMPOUNDMODULE | SUBMODULE, "Position"),
+        b(COMPOUNDMODULE | SUBMODULE, "box"),
+        i(COMPOUNDMODULE | SUBMODULE, "Icon"),
+        is(COMPOUNDMODULE | SUBMODULE, "Icon size"),
+        i2(COMPOUNDMODULE | SUBMODULE, "Status icon"),
+        r(COMPOUNDMODULE | SUBMODULE, "Radius"),
+        q(COMPOUNDMODULE | SUBMODULE, "Queue"),
+        t(COMPOUNDMODULE | SUBMODULE | CONNECTION, "Text"),
+        tt(COMPOUNDMODULE | SUBMODULE | CONNECTION, "Tooltip"),
+
+//        m(CONNECTION, "Routing mode"),
+//        bp(CONNECTION, "Bend points"); 
+//        a(CONNECTION, "Anchor"),
+        ls(CONNECTION, "Line style");
+                      
+        private final int type;
+        private final String description;
+
+        Tag(int type, String description)
+        {
+            this.type = type;
+            this.description = description;
+        }
+        
+        public int getType() {
+            return type;
+        }
+        
+        public String getDescription() {
+            return description;
+        }
+    }
 
     // default value used if the tag exists but the property contains no value
     public static final String EMPTY_DEFAULTS_STR = "i=,,30;i2=,,30;b=40,24,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=,,grey82,black,2;bgg=,1,grey;bgi=,fixed;ls=black,1,solid";
