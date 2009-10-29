@@ -303,6 +303,16 @@ USING EXTERNAL JAVA CODE
 
 Adding custom Java code: TODO
 
+The following Java classes have been added to the context:
+  Math		java.lang.Math
+  FileUtils	TODO
+  StringUtils	org.apache.commons.lang.StringUtils
+  CollectionUtils	org.apache.commons.lang.CollectionUtils
+  IDEUtils	TODO
+  LangUtils	TODO
+
+TODO: custom widget: file selector (workspace / external file)
+
 
 REFERENCES
 

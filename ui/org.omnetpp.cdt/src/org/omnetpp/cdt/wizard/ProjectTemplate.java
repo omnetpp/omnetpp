@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -33,6 +34,9 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.wizard.support.IDEUtils;
+import org.omnetpp.cdt.wizard.support.LangUtils;
+import org.omnetpp.cdt.wizard.support.WizardFileUtils;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -209,11 +213,18 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         // substitute variables
     	String content;    	
         try {
-        	// make Math and static methods of other classes available to the template
+        	// make Math, FileUtils, StringUtils and static methods of other classes available to the template
         	// see chapter "Bean wrapper" in the FreeMarker manual 
         	context.getVariables().put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
+        	context.getVariables().put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(WizardFileUtils.class.getName()));
+        	context.getVariables().put("StringUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(StringUtils.class.getName()));
+        	context.getVariables().put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
+        	context.getVariables().put("IDEUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(IDEUtils.class.getName()));
+        	context.getVariables().put("LangUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(LangUtils.class.getName()));
+        	
         	context.getVariables().put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
-            templateCfg.setNumberFormat("computer"); // prevent digit grouping with comma
+
+        	templateCfg.setNumberFormat("computer"); // prevent digit grouping with comma
         	
         	// perform template substitution
 			Template template = templateCfg.getTemplate(templateName, "utf8");
