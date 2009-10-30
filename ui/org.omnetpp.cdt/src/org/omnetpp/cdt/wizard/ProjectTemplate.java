@@ -9,6 +9,7 @@ package org.omnetpp.cdt.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Calendar;
@@ -34,14 +35,14 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.wizard.support.FileUtils;
 import org.omnetpp.cdt.wizard.support.IDEUtils;
 import org.omnetpp.cdt.wizard.support.LangUtils;
-import org.omnetpp.cdt.wizard.support.FileUtils;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 
-import freemarker.cache.StringTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -52,7 +53,15 @@ import freemarker.template.TemplateException;
  * @author Andras
  */
 public abstract class ProjectTemplate implements IProjectTemplate {
-    public static final Image DEFAULT_ICON = Activator.getCachedImage("icons/full/obj16/template.png");
+
+	private static class NullTemplateLoader implements TemplateLoader {
+		public void closeTemplateSource(Object templateSource) throws IOException { }
+		public Object findTemplateSource(String name) throws IOException { return null; }
+		public long getLastModified(Object templateSource) { return 0; }
+		public Reader getReader(Object templateSource, String encoding) throws IOException { return null; }
+	}
+
+	public static final Image DEFAULT_ICON = Activator.getCachedImage("icons/full/obj16/template.png");
 
     private String name;
     private String description;
@@ -159,7 +168,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 		Map<String, Object> variables = context.getVariables();
         Configuration cfg = new Configuration();
         cfg.setNumberFormat("computer"); // prevent digit grouping with comma
-        cfg.setTemplateLoader(new StringTemplateLoader()); // effectively, no template loading
+        cfg.setTemplateLoader(new NullTemplateLoader()); // effectively, no template loading
 
         try {
         	for (String key : variables.keySet()) {
@@ -181,7 +190,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 		Map<String, Object> variables = context.getVariables();
         Configuration cfg = new Configuration();
         cfg.setNumberFormat("computer"); // prevent digit grouping with comma
-        cfg.setTemplateLoader(new StringTemplateLoader()); // effectively, no template loading
+        cfg.setTemplateLoader(new NullTemplateLoader()); // no template loading
         return doEvaluate(text, variables, cfg);
 	}
 

@@ -150,7 +150,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
 		if (selection instanceof ITextSelection) { 
 			ISelection activeEditorSelection = getActiveEditorSelection();
 			if (activeEditorSelection instanceof IStructuredSelection) {
-				List partSelList = new ArrayList();
+				List<Object> partSelList = new ArrayList<Object>();
 				for (Object sel : ((IStructuredSelection)activeEditorSelection).toArray()) {
 					Object selPart = getViewer().getEditPartRegistry().get(sel);
 					if (selPart != null)
