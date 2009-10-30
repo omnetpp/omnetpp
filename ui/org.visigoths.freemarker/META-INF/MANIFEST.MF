@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Freemarker Template Engine
+Bundle-SymbolicName: org.visigoths.freemarker
+Bundle-Version: 2.3.15
+Bundle-Vendor: Visigoth Software Society
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: freemarker.jar
+Export-Package: freemarker.cache,
+ freemarker.core,
+ freemarker.debug,
+ freemarker.debug.impl,
+ freemarker.ext.ant,
+ freemarker.ext.beans,
+ freemarker.ext.dom,
+ freemarker.ext.jdom,
+ freemarker.ext.jsp,
+ freemarker.ext.jython,
+ freemarker.ext.servlet,
+ freemarker.ext.util,
+ freemarker.ext.xml,
+ freemarker.log,
+ freemarker.template,
+ freemarker.template.utility
