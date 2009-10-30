@@ -17,9 +17,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.ui.console.FileLink;
 import org.eclipse.debug.ui.console.IConsole;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 
@@ -65,7 +62,8 @@ public class FreemarkerConsoleLineTracker implements IConsoleLineTracker {
 				List files = new ArrayList();
 				for (int i = 0; i < projects.length; i++) {
 					IProject project = projects[i];
-					IJavaProject jproject = JavaCore.create(project);
+//commenting out a few lines, to remove dependency on JDT  --Andras
+//					IJavaProject jproject = JavaCore.create(project);
 					
 					IFile[] foundFiles = retrieveFiles(project, res);
 
@@ -73,13 +71,17 @@ public class FreemarkerConsoleLineTracker implements IConsoleLineTracker {
 						IFile file = foundFiles[j];
 						
 						boolean isInsideOutputLocation = false;
-						
-						try {
-						    // check whether the file is located inside a Java project's output location
-                            isInsideOutputLocation = jproject.getOutputLocation().isPrefixOf(file.getFullPath());
-                        } catch (JavaModelException e1) {
-                            // noop; isInsideOutputLocation = false
-                        }
+
+//more lines commented out --Andras
+//						try {
+//						    // check whether the file is located inside a Java project's output location
+//                          isInsideOutputLocation = jproject.getOutputLocation().isPrefixOf(file.getFullPath());
+//                      } catch (JavaModelException e1) {
+//                          // noop; isInsideOutputLocation = false
+//                      }
+
+					    // same check as above, without pulling in dependence on JDT --Andras
+						isInsideOutputLocation = file.getFullPath().segment(1).equals("bin");
                         
 						if(!isInsideOutputLocation) {
 						    // FTL files inside a project's output location are probably copies
