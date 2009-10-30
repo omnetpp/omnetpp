@@ -72,6 +72,15 @@
     </para>
   </sect1>
   <sect1>
+    <title>Configuring &Omnetpp; Preferences
+    </title>
+    <para>
+      <picture file="pictures/Intro-Preferences.png">
+        Configuring &Omnetpp; Preferences
+      </picture>
+    </para>
+  </sect1>
+  <sect1>
     <title>Creating &Omnetpp;
       Projects 
     </title>
