@@ -305,7 +305,7 @@ public class CompoundModuleFigure extends NedFigure
     public void setDisplayString(IDisplayString dps) {
 		// OPTIMIZATION: do not change anything if the display string has not changed
 		int newCumulativeHashCode = dps.cumulativeHashCode();
-		if (newCumulativeHashCode == oldCumulativeHashCode)
+		if (oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
 			return;
 
 		this.oldCumulativeHashCode = newCumulativeHashCode;

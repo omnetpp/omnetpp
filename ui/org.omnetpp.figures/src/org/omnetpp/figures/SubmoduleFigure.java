@@ -98,7 +98,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	public void setDisplayString(float scale, IDisplayString displayString) {
 		// optimization: do not change anything if the display string has not changed
 		int newCumulativeHashCode = displayString.cumulativeHashCode();
-		if (this.scale == scale && newCumulativeHashCode == oldCumulativeHashCode)
+		if (this.scale == scale && oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
 			return;
 
 		// font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
