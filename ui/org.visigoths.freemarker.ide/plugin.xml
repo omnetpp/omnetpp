@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.visigoths.freemarker.ide"
+   name="%pluginName"
+   version="0.3.1"
+   provider-name="%providerName"
+   class="freemarker.eclipse.FreemarkerPlugin">
+
+   <runtime>
+      <library name="fmplugin.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.visigoths.freemarker"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.jdt.core"/>
+   </requires>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Freemarker Editor"
+            icon="icons/icon.gif"
+            extensions="ftl"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="freemarker.eclipse.editors.FreemarkerEditor"
+            id="freemarker.eclipse.editors.FreemarkerEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="FreeMarker Editor"
+            class="freemarker.eclipse.preferences.OutlinePreferencePage"
+            id="freemarker.eclipse.preferences.OutlinePreferencePage">
+      </page>
+      <page
+            name="Highlighting"
+            category="freemarker.eclipse.preferences.OutlinePreferencePage"
+            class="freemarker.eclipse.preferences.EditorPreferencePage"
+            id="freemarker.eclipse.preferences.EditorPreferencePage">
+      </page>
+   </extension>
+   <extension point="org.eclipse.debug.ui.consoleLineTrackers">
+      <consoleLineTracker 
+            id="freemarker.eclipse.debug.FreemarkerConsoleLineTracker"
+            class="freemarker.eclipse.debug.FreemarkerConsoleLineTracker"
+            processType="java">
+      </consoleLineTracker>
+   </extension>
+
+</plugin>
