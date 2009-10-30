@@ -60,8 +60,8 @@ import java.util.ArrayList;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
+import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.swt.graphics.Color;
 
 /**
  * The XML comment scanner. This class handles the lexical scanning
@@ -79,12 +79,11 @@ public class XmlCommentScanner extends RuleBasedScanner {
      * @param manager        the token manager to use
      */
     public XmlCommentScanner(ITokenManager manager) {
-        ArrayList  rules = new ArrayList();
+        ArrayList<PatternRule>  rules = new ArrayList<PatternRule>();
         IRule[]    result;
         IToken      comment;
         IToken      directive;
         IToken      interpolation;
-        Color      color;
 
         // Retrieve tokens
         comment = manager.getCommentToken();

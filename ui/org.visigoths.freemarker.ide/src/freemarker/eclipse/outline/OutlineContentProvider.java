@@ -2,7 +2,6 @@ package freemarker.eclipse.outline;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -26,6 +25,7 @@ import freemarker.template.Template;
  */
 public class OutlineContentProvider implements ITreeContentProvider {
 
+	@SuppressWarnings("unchecked")
 	public static final Comparator COMPARATOR = new Comparator() {
 		public int compare(Object arg0, Object arg1) {
 			return (arg0.toString().compareTo(
@@ -79,6 +79,7 @@ public class OutlineContentProvider implements ITreeContentProvider {
 	public void dispose() {
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object[] getElements(Object inputElement) {
 		Template t = fEditor.getReconcilingStrategy().getTemplate();
 		if (null == t) {
@@ -103,7 +104,6 @@ public class OutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getChildren(Object anElement) {
-		Enumeration e;
 		return (anElement instanceof ImportCollectionNode)
 			? ((ImportCollectionNode) anElement).getChildren()
 			: new Object[0];

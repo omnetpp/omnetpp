@@ -28,7 +28,7 @@ import freemarker.template.Template;
 public class ReconcilingStrategy implements IReconcilingStrategy {
 	private FreemarkerEditor fEditor;
     private Template fTemplate;
-    private Template fLastTemplate;
+    //private Template fLastTemplate;
 	private String fError;
 
 	public ReconcilingStrategy(FreemarkerEditor anEditor) {
@@ -49,10 +49,8 @@ public class ReconcilingStrategy implements IReconcilingStrategy {
 
 	private void parse() {
 		IFile file = ((IFileEditorInput)fEditor.getEditorInput()).getFile(); 
-		String name = file.getName();
 		Template template = null;
 		int fErrorLine = 0;
-		String fErrorExpected = "";
 		try {
 			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
 			Reader reader = new StringReader(fEditor.getDocument().get());
@@ -63,14 +61,11 @@ public class ReconcilingStrategy implements IReconcilingStrategy {
 		} catch (ParseException e) {
 			if (e.getMessage() != null) {
 				fError = e.getMessage();
-
-				
-					
-					try {
-						fErrorLine = e.getLineNumber();
-					} catch (NullPointerException npe) {
-						fErrorLine = 0;
-					}
+				try {
+					fErrorLine = e.getLineNumber();
+				} catch (NullPointerException npe) {
+					fErrorLine = 0;
+				}
 					
 			} else {
 				fError = "";
@@ -83,7 +78,7 @@ public class ReconcilingStrategy implements IReconcilingStrategy {
 				fTemplate = template;
 
 				// Save last successful parse tree
-				fLastTemplate = template;
+				//fLastTemplate = template;
 				
         	} else {
         		fTemplate = null;
@@ -120,8 +115,9 @@ public class ReconcilingStrategy implements IReconcilingStrategy {
 		return fTemplate;
 	}
     
-    private Object[] enum2array(Enumeration e) {
-    	Vector temp = new Vector();
+    @SuppressWarnings("unchecked")
+	private Object[] enum2array(Enumeration e) {
+    	Vector<TemplateElement> temp = new Vector<TemplateElement>();
     	TemplateElement t;
     	while(e.hasMoreElements()) {
     		t = (TemplateElement)e.nextElement();

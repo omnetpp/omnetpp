@@ -12,8 +12,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.ui.console.FileLink;
 import org.eclipse.debug.ui.console.IConsole;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
@@ -43,6 +41,7 @@ public class FreemarkerConsoleLineTracker implements IConsoleLineTracker {
 	 * 
 	 * @see org.eclipse.debug.ui.console.IConsoleLineTracker#lineAppended(org.eclipse.jface.text.IRegion)
 	 */
+	@SuppressWarnings("deprecation")
 	public void lineAppended(IRegion line) {
 		try {
 			String text = console.getDocument().get(line.getOffset(), line.getLength());
@@ -50,16 +49,14 @@ public class FreemarkerConsoleLineTracker implements IConsoleLineTracker {
 			if (m.matches()) {
 				String res = m.group(3);
 				int l = Integer.parseInt(m.group(1));
-				int c = Integer.parseInt(m.group(2));
+				//int c = Integer.parseInt(m.group(2));
 
 				int linkOffset = line.getOffset() + m.start(1) - 9;
 				int linkLength = line.getLength() - m.start(1) + 9;
 
-				IPath path = new Path(res);
-
 				IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 				
-				List files = new ArrayList();
+				List<IFile> files = new ArrayList<IFile>();
 				for (int i = 0; i < projects.length; i++) {
 					IProject project = projects[i];
 //commenting out a few lines, to remove dependency on JDT  --Andras
@@ -91,9 +88,9 @@ public class FreemarkerConsoleLineTracker implements IConsoleLineTracker {
 				}
 
 				if (files.size() != 0) {
-					List filteredFiles = new ArrayList();
+					List<IFile> filteredFiles = new ArrayList<IFile>();
 
-					nextfile : for (int j = 0; j < files.size(); j++) {
+					for (int j = 0; j < files.size(); j++) {
 						IFile aFile = (IFile) files.get(j);
 						IContainer parent = aFile.getParent();
 						while (parent != null) {
@@ -118,9 +115,9 @@ public class FreemarkerConsoleLineTracker implements IConsoleLineTracker {
 	public IFile[] retrieveFiles(IContainer container, String filename) {
 		String[] seqs = filename.split("/|\\\\");
 
-		List l = new LinkedList();
+		List<IContainer> l = new LinkedList<IContainer>();
 		l.add(container);
-		List files = new ArrayList();
+		List<IFile> files = new ArrayList<IFile>();
 		while (!l.isEmpty()) {
 			IContainer c = (IContainer) l.get(0);
 			l.remove(0);
@@ -129,11 +126,10 @@ public class FreemarkerConsoleLineTracker implements IConsoleLineTracker {
 				for (int i = 0; i < res.length; i++) {
 					IResource resource = res[i];
 					if (resource instanceof IContainer) {
-						l.add(resource);
+						l.add((IContainer)resource);
 					} else if (resource instanceof IFile) {
 						if (isCorrectFile((IFile) resource, seqs)) {
-							IPath path = ((IFile) resource).getProjectRelativePath();
-							files.add(resource);
+							files.add((IFile)resource);
 						}
 					}
 				}

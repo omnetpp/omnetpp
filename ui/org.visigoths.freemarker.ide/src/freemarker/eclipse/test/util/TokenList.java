@@ -11,7 +11,8 @@ import org.eclipse.jface.text.rules.IToken;
  * @author <a href="mailto:stephan&#64;chaquotay.net">Stephan Mueller</a>
  * @version $Id: TokenList.java,v 1.1 2004/02/05 00:17:52 stephanmueller Exp $
  */
-public class TokenList extends ArrayList {
+public class TokenList extends ArrayList<IToken> {
+	private static final long serialVersionUID = -1684933101782004077L;
 
 	public void addToken(IToken token, int count) {
 		for (int i = 0; i < count; i++) {
@@ -20,7 +21,7 @@ public class TokenList extends ArrayList {
 	}
 	
 	public IToken getToken(int i) {
-		return (IToken)this.get(i);
+		return this.get(i);
 	}
 	
 }

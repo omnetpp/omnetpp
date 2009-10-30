@@ -62,6 +62,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
+import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.Token;
 
@@ -100,7 +101,7 @@ public class PartitionScanner extends RuleBasedPartitionScanner {
      * Creates a new partition scanner.
      */
 	public PartitionScanner() {
-		List rules = new ArrayList();
+		List<PatternRule> rules = new ArrayList<PatternRule>();
 
 		IToken ftlComment = new Token(FTL_COMMENT);
 		IToken ftlDirective = new Token(FTL_DIRECTIVE);

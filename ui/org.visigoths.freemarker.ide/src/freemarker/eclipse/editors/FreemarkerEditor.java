@@ -40,6 +40,7 @@ public class FreemarkerEditor extends TextEditor {
 		super.dispose();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class aClass) {
 	    Object adapter;
 		if (aClass.equals(IContentOutlinePage.class)) {
@@ -100,12 +101,9 @@ public class FreemarkerEditor extends TextEditor {
 	
 	public void selectTextRange(int beginLine, int beginColumn, int length) {
 		int bOffset = 0;
-		int eOffset = 0;
 		try {
-		bOffset = getDocument().getLineInformation(beginLine-1).getOffset();
-		
-		setHighlightRange(bOffset+beginColumn-1, length , true);
-		
+			bOffset = getDocument().getLineInformation(beginLine-1).getOffset();
+			setHighlightRange(bOffset+beginColumn-1, length , true);
 		} catch (Exception e) {
 			
 		}

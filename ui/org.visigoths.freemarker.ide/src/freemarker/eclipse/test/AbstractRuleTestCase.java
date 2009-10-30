@@ -27,7 +27,7 @@ import freemarker.eclipse.test.util.MockCharacterScanner;
  */
 public abstract class AbstractRuleTestCase extends TestCase {
 
-	protected List tests = new ArrayList();
+	protected List<RuleTestInfo> tests = new ArrayList<RuleTestInfo>();
 	protected IRule rule = null;
 
 	public static final IToken NO_MATCH = new Token(null) {
@@ -54,7 +54,7 @@ public abstract class AbstractRuleTestCase extends TestCase {
 			throw new RuntimeException("rule == null");
 		}
 		for (int i = 0; i < tests.size(); i++) {
-			RuleTestInfo info = (RuleTestInfo) tests.get(i);
+			RuleTestInfo info = tests.get(i);
 			MockCharacterScanner scanner =
 				new MockCharacterScanner(info.text);
 			IToken result = rule.evaluate(scanner);

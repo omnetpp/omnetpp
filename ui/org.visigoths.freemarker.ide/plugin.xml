@@ -1,35 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.visigoths.freemarker.ide"
-   name="%pluginName"
-   version="0.3.1"
-   provider-name="%providerName"
-   class="freemarker.eclipse.FreemarkerPlugin">
-
-   <runtime>
-      <library name="fmplugin.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.core.runtime.compatibility"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.jface"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.swt"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.visigoths.freemarker"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.junit"/>
-      <import plugin="org.eclipse.debug.ui"/>
-      <import plugin="org.eclipse.jdt.core"/>
-   </requires>
+<plugin>
 
    <extension
          point="org.eclipse.ui.editors">
