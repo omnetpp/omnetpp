@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SXWT Plug-in
+Bundle-SymbolicName: org.swtworkbench.xswt;singleton:=true
+Bundle-Version: 1.1.2
+Bundle-Vendor: SWTWORKBENCH (improved and repackaged by OpenSim Ltd)
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/kxml-plugin.jar,
+ lib/xmlpull_1_1_3_1.jar,
+ .
+Export-Package: com.swtworkbench.community.xswt,
+ com.swtworkbench.community.xswt.codegen,
+ com.swtworkbench.community.xswt.codegens,
+ com.swtworkbench.community.xswt.contrib,
+ com.swtworkbench.community.xswt.dataparser,
+ com.swtworkbench.community.xswt.dataparser.parsers,
+ com.swtworkbench.community.xswt.dataparser.parsers.color,
+ com.swtworkbench.community.xswt.editor.views,
+ com.swtworkbench.community.xswt.editor.wizards,
+ com.swtworkbench.community.xswt.editors,
+ com.swtworkbench.community.xswt.layoutbuilder,
+ com.swtworkbench.community.xswt.metalogger,
+ com.swtworkbench.community.xswt.test

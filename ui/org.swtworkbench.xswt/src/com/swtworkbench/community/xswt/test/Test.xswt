@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <import xmlns="http://sweet_swt.sf.net/xswt">
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets"/>
+        <package name="org.eclipse.swt.custom"/>
+        <package name="org.eclipse.swt.layout"/>
+        <package name="net.sf.sweet_swt.controls"/>
+        <package name="com.swtworkbench.controls"/>
+    </import>
+    <x:children>
+        <composite x:id="childpane">
+            <layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+            <layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="1"/>
+            <x:children>
+
+            	<!-- The help label -->
+				<label x:id="help">
+		            <layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+				</label>
+				
+				<tabFolder>
+					<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+					<x:children>
+						<!-- A table tab -->
+						<composite x:id="list">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<table x:style="BORDER | MULTI" linesVisible="true" headerVisible="true">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+									<x:children>
+										<tableColumn x:style="CENTER" width="50" text="Done"/>
+										<tableColumn width="80" text="Priority"/>
+										<tableColumn width="300" text="Description"/>
+										<tableItem x:id="prototype1"/>
+										<button x:style="CHECK" x:id="doneEditor"/>
+										<!-- XSWT doesn't handle TableEditor's constructor properly -->
+										<tableEditor item="prototype1" column="0" editor="doneEditor"/>
+									</x:children>
+								</table>
+								<!-- The slider for the table pane -->
+								<slider x:style="VERTICAL" x:id="tableSlider">
+									<layoutData x:class="gridData" verticalAlignment="GridData.FILL"/>
+								</slider>
+							</x:children>
+						</composite>
+						<tabItem text="&amp;List" control="list"/>
+					
+						<!-- A detail tab -->
+						<composite x:id="detail">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<composite>
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="2"/>
+									<x:children>
+
+										<!-- Priority/description labels -->
+										<label text="Priority"/>
+										<label text="Description"/>
+										
+										<!-- Priority/description Text fields-->
+										<text x:id="priorityText" x:style="BORDER">
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL"/>
+										</text>
+										<text x:id="descriptionText" x:style="BORDER">
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL" grabExcessHorizontalSpace="true"/>
+										</text>
+						
+										<!-- Priority/description Label fields-->
+										<label x:id="priorityLabel" x:style="BORDER">
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL"/>
+										</label>
+										<label x:id="descriptionLabel" x:style="BORDER">
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL" grabExcessHorizontalSpace="true"/>
+										</label>
+										
+										<!-- Priority/description CLabel fields-->
+										<cLabel x:id="priorityCLabel">
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL"/>
+										</cLabel>
+										<cLabel x:id="descriptionCLabel">
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL" grabExcessHorizontalSpace="true"/>
+										</cLabel>
+										
+										<!-- Two-state buttons in their various forms -->
+										<label text="Done:"/>
+										<composite>
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL" grabExcessHorizontalSpace="true"/>
+											<layout x:class="gridLayout" numColumns="5"/>
+											<x:children>
+												<button x:id="toggleButton" x:style="TOGGLE" text="ToggleButton"/>
+												<button x:id="checkButton" x:style="CHECK" text="CheckBox"/>
+												<composite x:style="BORDER" x:id="radioGroup1">
+													<layout x:class="gridLayout" numColumns="2"/>
+													<x:children>
+														<button x:id="radioButton1" x:style="RADIO" text="Radio"/>
+														<button x:id="radioButton2" x:style="RADIO" text="Radio2"/>
+													</x:children>
+												</composite>
+												<label x:style="SEPARATOR | VERTICAL">
+													<layoutData x:class="gridData" heightHint="25"/>
+												</label>
+												<label x:id="doneLabel" text="DoneLabel"/>
+											</x:children>
+										</composite>
+										
+										<!-- Traditional radio buttons -->
+										<label text="Gender:"/>
+										<composite x:style="BORDER" x:id="radioGroup2">
+											<layout x:class="gridLayout" numColumns="8"/>
+											<x:children>
+												<button x:id="Male" x:style="RADIO" text="Male"/>
+												<button x:id="Female" x:style="RADIO" text="Female"/>
+												<label x:style="SEPARATOR | VERTICAL">
+													<layoutData x:class="gridData" heightHint="15"/>
+												</label>
+												<label text="Male ="/>
+												<label x:id="maleLabel" text="MaleLabel"/>
+												<label x:style="SEPARATOR | VERTICAL">
+													<layoutData x:class="gridData" heightHint="15"/>
+												</label>
+												<label text="Female ="/>
+												<label x:id="femaleLabel" text="FemaleLabel"/>
+											</x:children>
+										</composite>
+										
+										<!-- List boxes, SelectionGroups -->
+										<label text="List/SelectionGroup:"/>
+										<composite x:style="BORDER" x:id="radioGroup2">
+											<layout x:class="gridLayout" numColumns="3"/>
+											<x:children>
+												<list x:id="paymentType1" x:style="BORDER | V_SCROLL"/>
+												<list x:id="paymentType2" x:style="BORDER | V_SCROLL"/>
+												<list x:id="paymentType3" x:style="BORDER | V_SCROLL | MULTI"/>
+												<!--<selectionGroup x:id="paymentType4"/>
+												<selectionGroup x:id="paymentType5" x:style="MULTI|HORIZONTAL">
+													<layoutData x:class="gridData" horizontalSpan="2"/>
+												</selectionGroup>-->
+											</x:children>
+										</composite>
+										
+										<!-- Combo, CCombo -->
+										<label text="Combo/CCombo:"/>
+										<composite x:style="BORDER" x:id="radioGroup2">
+											<layout x:class="gridLayout" numColumns="3"/>
+											<x:children>
+												<combo x:id="combo1"/>
+												<combo x:id="combo2" x:style="SIMPLE"/>
+												<combo x:id="combo3" x:style="READ_ONLY"/>
+												<label x:style="SEPARATOR | HORIZONTAL"><layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="3"/></label>
+												<cCombo x:id="combo4"/>
+												<cCombo x:id="combo5" x:style="READ_ONLY" background="255 255 255"/>
+											</x:children>
+										</composite>
+
+									</x:children>
+								</composite>
+								
+								<!-- The slider for the detail pane -->
+								<slider x:style="VERTICAL" x:id="detailSlider">
+									<layoutData x:class="gridData" verticalAlignment="GridData.FILL"/>
+								</slider>
+								
+							</x:children>
+						</composite>
+						<tabItem text="&amp;Detail" control="detail"/>
+
+					</x:children>
+				</tabFolder>
+				
+            </x:children>
+        </composite>
+    </x:children>
+</xswt>

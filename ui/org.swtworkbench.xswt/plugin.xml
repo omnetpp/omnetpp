@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="XSWT Editor"
+            extensions="xswt,xml"
+            icon="icons/xswt.gif"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="com.swtworkbench.community.xswt.editors.XSWTEditor"
+            id="com.swtworkbench.community.xswt.editors.XSWTEditor">
+      </editor>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="XSWT Wizards"
+            id="com.swtworkbench.community.xswt.editor">
+      </category>
+      <wizard
+            name="XSWT File"
+            icon="icons/xswt.gif"
+            category="com.swtworkbench.community.xswt.editor"
+            class="com.swtworkbench.community.xswt.editor.wizards.XSWTNewWizard"
+            id="com.swtworkbench.community.xswt.editor.wizards.XSWTNewWizard">
+      </wizard>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="XSWT"
+            id="com.swtworkbench.community.xswt.editor">
+      </category>
+      <view
+            name="XSWT Preview"
+            icon="icons/xswt.gif"
+            category="com.swtworkbench.community.xswt.editor"
+            class="com.swtworkbench.community.xswt.editor.views.XSWTPreview"
+            id="com.swtworkbench.community.xswt.editor.views.XSWTPreview">
+      </view>
+   </extension>
+
+</plugin>
