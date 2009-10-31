@@ -1,9 +1,7 @@
 package org.omnetpp.cdt.wizard.support;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,11 +37,12 @@ public class FileChooser extends Composite implements IWidgetAdapter {
 		layout.marginHeight = layout.marginWidth = 0;
 		setLayout(layout);
 		
-		text = new Text(parent, SWT.SINGLE|SWT.BORDER);
-		browseButton = new Button(parent, SWT.PUSH);
+		text = new Text(this, SWT.SINGLE|SWT.BORDER);
+		browseButton = new Button(this, SWT.PUSH);
+		browseButton.setText("Browse...");
 		
 		browseButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent e) {
 				browse();
 			}
 		});
@@ -63,14 +62,13 @@ public class FileChooser extends Composite implements IWidgetAdapter {
         }
 	}
 
-	public IFile getFile() {
-		String filename = text.getText();
-		return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename));
-	}
+    public String getFileName() {
+        return text.getText();
+    }
 
-	public void setFile(IFile file) {
-		text.setText(file.getFullPath().toString());
-	}
+    public void setFileName(String file) {
+        text.setText(file);
+    }
 
 	public Text getTextControl() {
 		return text;
@@ -91,16 +89,15 @@ public class FileChooser extends Composite implements IWidgetAdapter {
 	 * Adapter interface.
 	 */
 	public Object getValueFromControl(Control control) {
-		return ((FileChooser)control).getFile();
+		return ((FileChooser)control).getFileName();
 	}
 
 	/**
 	 * Adapter interface.
 	 */
 	public void writeValueIntoControl(Control control, Object value) {
-		IFile file = value instanceof IFile ? (IFile)value :
-				ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(value.toString()));
-		((FileChooser)control).setFile(file);
+	    String fileName = value instanceof IResource ? ((IResource)value).getFullPath().toString() : value.toString();
+		((FileChooser)control).getTextControl().setText(fileName);
 	}
 
 }

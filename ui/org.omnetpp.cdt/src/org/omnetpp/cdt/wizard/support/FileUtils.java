@@ -12,7 +12,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
 
@@ -29,6 +33,56 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author Andras
  */
 public class FileUtils {
+   
+    /**
+     * Returns true if the given string is syntactically a valid workspace path.
+     */
+    public static boolean isValidWorkspacePath(String path) {
+        return new Path(path).segmentCount() > 0;
+    }
+
+    /**
+     * Returns true if the given string is syntactically a valid workspace file path.
+     * This function does not check whether the file exists, or whether the given path
+     * actually already points to a resource of a different type.
+     */
+    public static boolean isValidWorkspaceFilePath(String path) {
+        return new Path(path).segmentCount() > 1;
+    }
+
+    /**
+     * Returns the handle for the workspace project with the given name.
+     * Throws exception if the path is not a valid workspace project path. 
+     * This function does not test whether the project exists. To test that, 
+     * call the exists() method on the returned handle.
+     */
+    public static IProject asProject(String path) {
+        return ResourcesPlugin.getWorkspace().getRoot().getProject(path);
+    }
+
+    /**
+     * Returns the handle for the workspace container (i.e. project or folder) with the given name.
+     * Throws exception if the path is not a valid workspace container path. 
+     * This function does not test whether the container exists. To test that, 
+     * call the exists() method on the returned handle.
+     */
+    public static IContainer asContainer(String path) {
+        if (new Path(path).segmentCount() <= 1)
+            return ResourcesPlugin.getWorkspace().getRoot().getProject(path); // will fail on empty string -- this is intentional
+        else
+            return ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));
+    }
+
+    /**
+     * Returns the handle for the workspace file with the given name.
+     * Throws exception if the path is not a valid workspace file path. 
+     * This function does not test whether the file exists. To test that, 
+     * call the exists() method on the returned handle.
+     */
+    public static IFile asFile(String path) {
+        return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+    }
+
 	/**
 	 * Parse an XML file in the workspace, and return the Document object 
 	 * of the resulting DOM tree.
@@ -36,7 +90,8 @@ public class FileUtils {
 	 * @param file  the workspace file
 	 * @return DOM tree
 	 */
-	public static org.w3c.dom.Document readXMLFile(IFile file) {
+	public static org.w3c.dom.Document readXMLFile(String fileName) {
+	    IFile file = asFile(fileName);
 		return readExternalXMLFile(file.getLocation().toString());
 	}
 
@@ -71,7 +126,8 @@ public class FileUtils {
 	 * @param file  the workspace file
 	 * @return JSON tree
 	 */
-	public static Object readJSONFile(IFile file) {
+	public static Object readJSONFile(String fileName) {
+        IFile file = asFile(fileName);
 		return readExternalJSONFile(file.getLocation().toString());
 	}
 
@@ -103,7 +159,8 @@ public class FileUtils {
 	 * @param file  the workspace file
 	 * @return file contents
 	 */
-	public static String[][] readCSVFile(IFile file) {
+	public static String[][] readCSVFile(String fileName) {
+        IFile file = asFile(fileName);
 		return readExternalCSVFile(file.getLocation().toString());
 	}
 
@@ -138,7 +195,8 @@ public class FileUtils {
 	 * @param file  the workspace file
 	 * @return key-value pairs in a map
 	 */
-	public static Properties readPropertyFile(IFile file) {
+	public static Properties readPropertyFile(String fileName) {
+        IFile file = asFile(fileName);
 		return readExternalPropertyFile(file.getLocation().toString());
 	}
 
@@ -178,7 +236,8 @@ public class FileUtils {
 	 * @param file  the workspace file
 	 * @return file contents
 	 */
-	public static String[][] readSpaceSeparatedTextFile(IFile file) {
+	public static String[][] readSpaceSeparatedTextFile(String fileName) {
+        IFile file = asFile(fileName);
 		return readExternalSpaceSeparatedTextFile(file.getLocation().toString());
 	}
 
@@ -208,7 +267,8 @@ public class FileUtils {
 	 * @param file  the workspace file
 	 * @return file contents
 	 */
-	public static String[] readLineOrientedTextFile(IFile file) {
+	public static String[] readLineOrientedTextFile(String fileName) {
+        IFile file = asFile(fileName);
 		return readExternalLineOrientedTextFile(file.getLocation().toString());
 	}
 
@@ -239,7 +299,8 @@ public class FileUtils {
 	 * @param file  the workspace file
 	 * @return file contents
 	 */
-	public static String readTextFile(IFile file) {
+	public static String readTextFile(String fileName) {
+        IFile file = asFile(fileName);
 		return readExternalTextFile(file.getLocation().toString());
 	}
 

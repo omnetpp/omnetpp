@@ -167,6 +167,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	    		// instantiate XSWT form
 	    		composite = new Composite(parent, SWT.NONE);
 	    		composite.setLayout(new GridLayout());
+	    		XSWT.setClassLoader(getClass().getClassLoader()); //TODO dynamic jar loading
 	    		widgetMap = (Map<String,Control>) XSWT.create(composite, xswtFile.getContents()); 
 	    		setControl(composite);
 	    		
@@ -223,7 +224,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 						}
 						catch (Exception e) {
 							// NumberFormatException, ParseException (for date/time), something like that
-							String message = "Cannot put value '"+value+"' into "+control.getClass().getSimpleName()+" control "+key;
+							String message = "Cannot put value '"+value+"' into "+control.getClass().getSimpleName()+" control '"+key+"'";
 							MessageDialog.openError(getShell(), "Error", "Wizard page: "+message);
 							Activator.logError(message, e);
 						}

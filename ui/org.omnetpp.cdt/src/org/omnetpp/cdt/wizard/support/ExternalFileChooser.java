@@ -31,11 +31,12 @@ public class ExternalFileChooser extends Composite implements IWidgetAdapter {
 		layout.marginHeight = layout.marginWidth = 0;
 		setLayout(layout);
 		
-		text = new Text(parent, SWT.SINGLE|SWT.BORDER);
-		browseButton = new Button(parent, SWT.PUSH);
+		text = new Text(this, SWT.SINGLE|SWT.BORDER);
+		browseButton = new Button(this, SWT.PUSH);
+        browseButton.setText("Browse...");
 		
 		browseButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent e) {
 				browse();
 			}
 		});
