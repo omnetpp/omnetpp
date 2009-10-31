@@ -26,10 +26,9 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.4.0",
  org.omnetpp.launch;bundle-version="4.0.0",
  org.omnetpp.ned.core;bundle-version="4.0.0",
  org.omnetpp.ned.model;bundle-version="4.0.0",
- com.swtworkbench.community.xswt;bundle-version="1.1.2",
- org.kxml;bundle-version="1.1.2",
  org.visigoths.freemarker;bundle-version="2.3.15",
- org.visigoths.freemarker.ide;bundle-version="0.3.1"
+ org.visigoths.freemarker.ide;bundle-version="0.3.1",
+ org.swtworkbench.xswt;bundle-version="1.1.2"
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.cdt,
