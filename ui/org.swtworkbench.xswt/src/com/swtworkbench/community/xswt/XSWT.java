@@ -113,6 +113,10 @@ public class XSWT {
         customNSRegistry.put(namespace, handler);
     }
 
+    public static void setClassLoader(ClassLoader classLoader) {
+        ClassBuilder.getDefault().setClassLoader(classLoader);
+    }
+
     public static Map create(Composite parent, String file, Class relativeTo) throws XSWTException, XmlPullParserException,
             IOException {
         return create(parent, relativeTo.getResource(file).openStream());

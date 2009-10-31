@@ -6,23 +6,23 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import org.eclipse.swt.SWT;
+
 public class StyleParser {
     private static final Map mapStyles = new TreeMap();
 
     static {
         try {
-            registerClassConstants("org.eclipse.swt.SWT");
+            registerClassConstants(SWT.class);
         }
         catch (XSWTException e) {
             e.printStackTrace();
         }
     }
 
-    public static void registerClassConstants(String className) throws XSWTException {
-        Class constantsClass;
+    public static void registerClassConstants(Class constantsClass) throws XSWTException {
         TreeMap classStyles = new TreeMap();
         try {
-            constantsClass = Class.forName(className);
             Field[] fields = constantsClass.getDeclaredFields();
 
             for (int i = 0; i < fields.length; ++i) {
@@ -46,7 +46,7 @@ public class StyleParser {
             throw new XSWTException(t);
         }
 
-        StringTokenizer stringTokenizer = new StringTokenizer(className, ".");
+        StringTokenizer stringTokenizer = new StringTokenizer(constantsClass.getCanonicalName(), ".");
         int tokens = stringTokenizer.countTokens();
         String simpleClassName = null;
         for (int i = 0; i < tokens; ++i) {

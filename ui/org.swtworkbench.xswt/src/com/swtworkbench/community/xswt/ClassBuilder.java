@@ -18,6 +18,7 @@ public class ClassBuilder {
     private static ClassBuilder builder = null;
 
     private LinkedList imports = new LinkedList();
+    private ClassLoader classLoader = getClass().getClassLoader();  // instead of plain Class.forName() --Andras
 
     private Map resolvedClasses = new HashMap();
 
@@ -30,6 +31,10 @@ public class ClassBuilder {
     @SuppressWarnings("unchecked")
     public void importPackage(String packageName) {
         this.imports.addLast(packageName);
+    }
+    
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
     @SuppressWarnings("unchecked")
@@ -47,24 +52,24 @@ public class ClassBuilder {
             packageName.append(className);
             String fullyQualifiedName = packageName.toString();
             try {
-                result = Class.forName(fullyQualifiedName);
+                result = classLoader.loadClass(fullyQualifiedName);
             }
             catch (Exception localException) {
                 result = null;
             }
             if (result != null) {
-                StyleParser.registerClassConstants(fullyQualifiedName);
+                StyleParser.registerClassConstants(result);
                 return result;
             }
         }
 
         try {
-            result = Class.forName(className);
+            result = classLoader.loadClass(className);
         }
         catch (Throwable localThrowable) {
         }
         if (result != null) {
-            StyleParser.registerClassConstants(className);
+            StyleParser.registerClassConstants(result);
             return result;
         }
 
