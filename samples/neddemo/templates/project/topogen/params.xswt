@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="2"/>
+  <x:children>
+    <label text="Number of nodes:"/>
+    <spinner x:id="numNodes" x:style="BORDER" textLimit="4"/>
+    <label text="Number of links:"/>
+    <spinner x:id="numLinks" x:style="BORDER" textLimit="4"/>
+    <label text="RNG seed:"/>
+    <text x:id="seed" x:style="BORDER" textLimit="4"/>
+  </x:children>
+</xswt>

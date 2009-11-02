@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+    <text x:text="Grid Settings" x:style="MULTI|READ_ONLY|WRAP">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        <text
+x:p0="This Example Project Wizard demonstrates how to write a wizard that
+&#10;encapsulates a topology generator Java library. The library (a .jar file)
+&#10;is bundled with the wizard, and gets loaded when the wizard is activated.
+"/>
+    </text>
+    <label x:text="Wizard files are in:"/>
+    <label x:id="templateFolderPath"/>
+  </x:children>
+
+</xswt>
