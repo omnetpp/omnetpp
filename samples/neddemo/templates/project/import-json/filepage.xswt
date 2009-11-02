@@ -10,9 +10,10 @@
   </import>
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
-    <label x:text="File to import:"/>
-    <fileChooser x:id="file">
+    <label x:text="JSON file to import:"/>
+    <fileChooser x:id="fileName">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <setFocus/>
     </fileChooser>
   </x:children>
 </xswt>

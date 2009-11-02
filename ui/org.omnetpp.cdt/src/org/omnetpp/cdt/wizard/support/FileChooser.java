@@ -57,6 +57,7 @@ public class FileChooser extends Composite implements IWidgetAdapter {
         dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
         dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
         dialog.setAllowMultiple(false);
+        //FIXME select current file in the dialog
         if (dialog.open() == IDialogConstants.OK_ID) {
         	Object[] result = dialog.getResult();
         	if (result.length > 0) {

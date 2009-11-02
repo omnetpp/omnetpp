@@ -138,10 +138,13 @@ public class SWTDataUtil {
 			((Slider) control).setSelection(toInt(value));
 		if (control instanceof Spinner)
 			((Spinner) control).setSelection(toInt(value));
-		if (control instanceof StyledText)
+		if (control instanceof StyledText) {
 			((StyledText) control).setText(toString(value));
-		if (control instanceof Text) {
+			((StyledText) control).selectAll();
+		}
+		if (control instanceof Text) { 
 			((Text) control).setText(toString(value));
+			((Text) control).selectAll();
 		}
 		if (control instanceof Table) {
 			//TODO table, checkbox table, tableItem..
