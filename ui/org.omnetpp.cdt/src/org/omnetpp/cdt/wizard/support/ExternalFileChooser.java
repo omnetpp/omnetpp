@@ -3,6 +3,7 @@ package org.omnetpp.cdt.wizard.support;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -32,6 +33,7 @@ public class ExternalFileChooser extends Composite implements IWidgetAdapter {
 		setLayout(layout);
 		
 		text = new Text(this, SWT.SINGLE|SWT.BORDER);
+        text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
 		browseButton = new Button(this, SWT.PUSH);
         browseButton.setText("Browse...");
 		
@@ -47,8 +49,10 @@ public class ExternalFileChooser extends Composite implements IWidgetAdapter {
 		FileDialog dialog = new FileDialog(getShell());
 		dialog.setFileName(text.getText());
 		String result = dialog.open();
-		if (result != null)
+		if (result != null) {
 			text.setText(result);
+	        text.selectAll();
+		}
 	}
 
 	public String getFileName() {
@@ -57,6 +61,7 @@ public class ExternalFileChooser extends Composite implements IWidgetAdapter {
 
 	public void setFileName(String file) {
 		text.setText(file);
+        text.selectAll();
 	}
 
 	public Text getTextControl() {

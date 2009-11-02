@@ -6,6 +6,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -38,6 +39,7 @@ public class FileChooser extends Composite implements IWidgetAdapter {
 		setLayout(layout);
 		
 		text = new Text(this, SWT.SINGLE|SWT.BORDER);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
 		browseButton = new Button(this, SWT.PUSH);
 		browseButton.setText("Browse...");
 		
@@ -57,8 +59,10 @@ public class FileChooser extends Composite implements IWidgetAdapter {
         dialog.setAllowMultiple(false);
         if (dialog.open() == IDialogConstants.OK_ID) {
         	Object[] result = dialog.getResult();
-        	if (result.length > 0)
+        	if (result.length > 0) {
         		text.setText(((IResource)result[0]).getFullPath().toString());
+                text.selectAll();
+        	}
         }
 	}
 
@@ -68,6 +72,7 @@ public class FileChooser extends Composite implements IWidgetAdapter {
 
     public void setFileName(String file) {
         text.setText(file);
+        text.selectAll();
     }
 
 	public Text getTextControl() {
@@ -97,7 +102,7 @@ public class FileChooser extends Composite implements IWidgetAdapter {
 	 */
 	public void writeValueIntoControl(Control control, Object value) {
 	    String fileName = value instanceof IResource ? ((IResource)value).getFullPath().toString() : value.toString();
-		((FileChooser)control).getTextControl().setText(fileName);
+		((FileChooser)control).setFileName(fileName);
 	}
 
 }

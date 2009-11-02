@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+    <text x:text="Grid Settings" x:style="MULTI|READ_ONLY|WRAP">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        <text 
+x:p0="This Example Project Wizard shows how to invoke Java classes from wizard template files.
+&#10;This way you can easily incorporate external libraries that generate network topology,
+&#10;import networks and configuration from external files, perform calculations, and so on.
+"/>
+    </text>
+    <label x:text="Check out the files in the following folder:"/>
+    <label x:id="templateFolderPath"/>
+  </x:children>
+
+</xswt>

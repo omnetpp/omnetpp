@@ -8,10 +8,15 @@
     <package name="org.eclipse.swt.layout" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="2"/>
+  <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
-    <label x:text="File to import:"/>
-    <fileChooser x:id="file">
+    <label x:text="Links CSV file (columns: src, dest, speed [bps], cost):"/>
+    <fileChooser x:id="linksFile">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <setFocus/>
+    </fileChooser>
+    <label x:text="Optional nodes CSV file (columns: nodename, x, y):"/>
+    <fileChooser x:id="nodesFile">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
     </fileChooser>
   </x:children>

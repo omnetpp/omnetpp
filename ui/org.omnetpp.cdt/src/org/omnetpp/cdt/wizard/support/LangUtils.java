@@ -2,6 +2,13 @@ package org.omnetpp.cdt.wizard.support;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 
@@ -16,6 +23,75 @@ import java.lang.reflect.Method;
  * @author Andras
  */
 public class LangUtils {
+    public static List<Object> newList() { 
+        return new ArrayList<Object>(); 
+    }
+
+    public static Map<Object, Object> newMap() { 
+        return new HashMap<Object, Object>(); 
+    }
+
+    public static Set<Object> newSet() { 
+        return new HashSet<Object>(); 
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String toString(Object object) {
+        if (object == null)
+            return "null";
+        if (object instanceof String)
+            return "\"" + (String)object + "\"";
+        if (object instanceof Object[])
+            return toString(Arrays.asList((Object[])object));
+        if (object instanceof byte[])
+            return toString(Arrays.asList((byte[])object));
+        if (object instanceof char[])
+            return toString(Arrays.asList((char[])object));
+        if (object instanceof short[])
+            return toString(Arrays.asList((short[])object));
+        if (object instanceof int[])
+            return toString(Arrays.asList((int[])object));
+        if (object instanceof long[])
+            return toString(Arrays.asList((long[])object));
+        if (object instanceof float[])
+            return toString(Arrays.asList((float[])object));
+        if (object instanceof double[])
+            return toString(Arrays.asList((double[])object));
+        if (object instanceof List) {
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("[");
+            for (Object item : (List)object) {
+                if (buffer.length() > 1)
+                    buffer.append(", ");
+                buffer.append(toString(item));
+            }    
+            buffer.append("]");
+            return buffer.toString();
+        }
+        if (object instanceof Set) {
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("{");
+            for (Object item : (Set)object) {
+                if (buffer.length() > 1)
+                    buffer.append(", ");
+                buffer.append(toString(item));
+            }    
+            buffer.append("}");
+            return buffer.toString();
+        }
+        if (object instanceof Map) {
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("{");
+            for (Object key : ((Map)object).keySet()) {
+                if (buffer.length() > 1)
+                    buffer.append(", ");
+                buffer.append(toString(key) + ": " + ((Map)object).get(key));
+            }    
+            buffer.append("}");
+            return buffer.toString();
+        }
+        return object.toString();
+    }
 
 	/**
 	 * Returns true if the object has a method with the given name.
