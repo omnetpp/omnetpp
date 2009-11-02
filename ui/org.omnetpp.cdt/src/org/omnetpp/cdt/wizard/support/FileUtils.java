@@ -87,7 +87,7 @@ public class FileUtils {
 	 * Parse an XML file in the workspace, and return the Document object 
 	 * of the resulting DOM tree.
 	 * 
-	 * @param file  the workspace file
+	 * @param fileName  the workspace file
 	 * @return DOM tree
 	 */
 	public static org.w3c.dom.Document readXMLFile(String fileName) {
@@ -123,7 +123,7 @@ public class FileUtils {
 	 * Double, String, List or Map, or any data structure composed of them. 
 	 * The file is interpreted in the Java platform's default encoding.
 	 * 
-	 * @param file  the workspace file
+	 * @param fileName  the workspace file
 	 * @return JSON tree
 	 */
 	public static Object readJSONFile(String fileName) {
@@ -151,35 +151,61 @@ public class FileUtils {
 		}
 	}
 	
-	/**
-	 * Read a CSV file in the workspace. The result is an array of lines, 
-	 * where each line is a string array. The header line is not treated specially. 
-	 * The file is interpreted in the Java platform's default encoding.
+    /**
+     * Read a CSV file in the workspace. The result is an array of lines, 
+     * where each line is a string array. The file is interpreted in the 
+     * Java platform's default encoding. Additional method parameters control
+     * whether to discard the first line of the file (which is usually a header
+     * line), whether to ignore blank lines, and whether to ignore comment lines
+     * (those starting with the # character). Comment lines are not part of
+     * the commonly accepted CSV format, but it is supported here nevertheless,
+     * due of its usefulness.
 	 * 
-	 * @param file  the workspace file
+	 * @param fileName  the workspace file
+	 * @param ignoreFirstLine  whether the first line is to be discarded 
+	 * @param ignoreBlankLines  whether to ignore blank lines
+	 * @param ignoreCommentLines  whether to ignore lines starting with '#'
 	 * @return file contents
 	 */
-	public static String[][] readCSVFile(String fileName) {
+	public static String[][] readCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
         IFile file = asFile(fileName);
-		return readExternalCSVFile(file.getLocation().toString());
+		return readExternalCSVFile(file.getLocation().toString(), ignoreFirstLine, ignoreBlankLines, ignoreCommentLines);
 	}
 
 	/**
 	 * Read a CSV file, given with its file system path (NOT workspace path).
-	 * The result is an array of lines, where each line is a string array.
-	 * The header line is not treated specially.
-	 * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param file  filesystem path of the file
+     * The result is an array of lines, where each line is a string array. 
+     * The file is interpreted in the Java platform's default encoding. 
+     * Additional method parameters control whether to discard the first line
+     * of the file (which is usually a header line), whether to ignore blank 
+     * lines, and whether to ignore comment lines (those starting with 
+     * the # character). Comment lines are not part of the commonly accepted
+     * CSV format, but it is supported here nevertheless, due of its usefulness.
+     * 
+     * @param file  filesystem path of the file
+     * @param ignoreFirstLine  whether the first line is to be discarded 
+     * @param ignoreBlankLines  whether to ignore blank lines
+     * @param ignoreCommentLines  whether to ignore lines starting with '#'
 	 * @return file contents
 	 */
-	public static String[][] readExternalCSVFile(String file) {
+	public static String[][] readExternalCSVFile(String file, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
 		try {
 			CSVReader reader = new CSVReader(new FileReader(file));
 			List<String[]> tokenizedLines = new ArrayList<String[]>();
+			boolean isFirstLine = true;
 			String [] nextLine;
-			while ((nextLine = reader.readNext()) != null)
+			while ((nextLine = reader.readNext()) != null) {
+			    if (ignoreFirstLine && isFirstLine) {
+			        isFirstLine = false;
+			        continue;
+			    }
+			    if (ignoreBlankLines && (nextLine.length==0 || (nextLine.length==1 && StringUtils.isBlank(nextLine[0]))))
+			        continue;
+                if (ignoreCommentLines && nextLine.length>0 && !nextLine[0].isEmpty() && nextLine[0].charAt(0)=='#')
+                    continue;
 				tokenizedLines.add(nextLine);
+				isFirstLine = false;
+			}
 			return tokenizedLines.toArray(new String[][]{});
 		} catch (IOException e) {
 			throw new RuntimeException("Error reading file " + file + ": " + e.getMessage(), e);
@@ -192,7 +218,7 @@ public class FileUtils {
      * key-value pairs.
      * The file is interpreted in the Java platform's default encoding.
 	 * 
-	 * @param file  the workspace file
+	 * @param fileName  the workspace file
 	 * @return key-value pairs in a map
 	 */
 	public static Properties readPropertyFile(String fileName) {

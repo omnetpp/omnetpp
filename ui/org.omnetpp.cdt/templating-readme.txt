@@ -504,7 +504,7 @@ http://freemarker.org/docs/index.html
 
 ---
 
-TODO FileUtils doc out of date! IFile --> String; plus new methods at top
+TODO FileUtils doc out of date! IFile --> String; plus new methods at top; plus CSV reader pars
 
 TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
 JARs in the templates)
