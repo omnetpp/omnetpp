@@ -1,9 +1,7 @@
 package com.swtworkbench.community.xswt.metalogger;
 
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.Bundle;
 
 public class EclipseLogger extends AbstractLogger {
     private AbstractUIPlugin plugin;
@@ -20,6 +18,7 @@ public class EclipseLogger extends AbstractLogger {
         this.plugin.getLog().log(new Status(2, this.plugin.getBundle().getSymbolicName(), 2, message, null));
     }
 
+    @SuppressWarnings("unchecked")
     public void debug(Class subject, String message) {
         if (isDebug(subject))
             this.plugin.getLog().log(
