@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Decorations;
@@ -35,6 +36,10 @@ public class ClassBuilder {
     
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
+    }
+    
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
 
     @SuppressWarnings("unchecked")

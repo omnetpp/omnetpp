@@ -2,9 +2,13 @@ package org.omnetpp.cdt.wizard;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -145,6 +149,23 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	}
 	
 	/**
+	 * Overridden so that we can load JAR files from the template folder.
+	 */
+	@Override
+	protected ClassLoader createClassLoader() {
+	    List<URL> urls = new ArrayList<URL>();
+	    try {
+	        for (IResource resource : templateFolder.members())
+	            if (resource instanceof IFile && resource.getFileExtension().equals("jar"))
+	                urls.add(new URL("file", "", resource.getLocation().toPortableString()));
+	    } 
+	    catch (Exception e) {
+	        Activator.logError("Error assembling classpath for loading jars from the workspace", e);
+	    }
+	    return new URLClassLoader(urls.toArray(new URL[]{}), getClass().getClassLoader());
+	}
+	
+	/**
 	 * XSWT-based wizard page.
 	 * @author Andras
 	 */
@@ -162,12 +183,14 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		
 		@SuppressWarnings("unchecked")
 		public void createControl(Composite parent) {
-			Composite composite = null;
+	        ClassLoader oldClassLoader = XSWT.getClassLoader();
+	        XSWT.setClassLoader(getClassLoader()); // ensure access to custom widget classes
+
+	        Composite composite = null;
 	    	try {
 	    		// instantiate XSWT form
 	    		composite = new Composite(parent, SWT.NONE);
 	    		composite.setLayout(new GridLayout());
-	    		XSWT.setClassLoader(getClass().getClassLoader()); //TODO dynamic jar loading
 	    		widgetMap = (Map<String,Control>) XSWT.create(composite, xswtFile.getContents()); 
 	    		setControl(composite);
 	    		
@@ -181,6 +204,9 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	    		widgetMap = new HashMap<String, Control>(); // fake it
 	    		displayError(parent, composite, e); 
 			}
+	    	finally {
+	            XSWT.setClassLoader(oldClassLoader);
+	    	}
 		}
 		
 		public void displayError(final Composite parent, Composite composite, Exception e) {

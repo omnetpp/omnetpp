@@ -63,10 +63,19 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 
 	public static final Image DEFAULT_ICON = Activator.getCachedImage("icons/full/obj16/template.png");
 
+	// template attributes
     private String name;
     private String description;
     private String category;
     private Image image = DEFAULT_ICON;
+
+    // we need this ClassLoader for the Class.forName() calls in for both FreeMarker and XSWT.
+    // Without it, templates (BeanWrapper) and XSWT would only be able to access classes 
+    // from the eclipse plug-in from which their code was loaded. In contrast, we want them to
+    // have access to classes defined in this plug-in (FileUtils, IDEUtils, etc), and also
+    // to the contents of jars loaded at runtime from the user's projects in the workspace.
+    // See e.g. freemarker.template.utility.ClassUtil.forName(String)
+    private ClassLoader classLoader = null;  
     
     public ProjectTemplate() {
     }
@@ -140,14 +149,17 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         return context;
     }
     
+    protected ClassLoader getClassLoader() {
+        if (classLoader == null)
+            classLoader = createClassLoader();
+        return classLoader;
+    }
+
+    protected ClassLoader createClassLoader() {
+        return getClass().getClassLoader();
+    }
+    
     public void configureProject(CreationContext context) throws CoreException {
-    	// The following is needed to make classes from this plugin and dependencies 
-    	// (e.g. ned.core) available to templates via BeanWrapper. If not done,
-    	// templates only have access to classes from org.omnetpp.core and its
-    	// dependencies, because freemarker.jar is loaded from that plugin.
-    	// See freemarker.template.utility.ClassUtil.forName(String)
-    	Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-    	
         // do it!
         doConfigure(context);
     }
@@ -195,6 +207,10 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 	}
 
 	private String doEvaluate(String value, Map<String, Object> variables, Configuration cfg) throws TemplateException {
+        // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
+	    ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClassLoader());
+	    
 		try {
 			int k = 0;
 			while (true) {
@@ -211,7 +227,9 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 			Activator.logError(e); 
 			return ""; // cannot happen, we work with string reader/writer only
 		}
-		
+		finally {
+	        Thread.currentThread().setContextClassLoader(oldClassLoader);
+		}
 	}
 
     /**
@@ -219,6 +237,10 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      * performing variable substitutions in it. 
      */
     protected void createFile(IFile file, Configuration templateCfg, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
+        // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClassLoader());
+
         // substitute variables
     	String content;    	
         try {
@@ -243,6 +265,9 @@ public abstract class ProjectTemplate implements IProjectTemplate {
 		} catch (Exception e) {
 			throw Activator.wrapIntoCoreException(e);
 		}
+        finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
 
 		// normalize line endings, remove multiple blank lines, etc
 		content = content.replace("\r\n", "\n");

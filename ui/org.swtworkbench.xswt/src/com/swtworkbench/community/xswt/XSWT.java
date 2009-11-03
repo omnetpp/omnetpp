@@ -117,6 +117,10 @@ public class XSWT {
         ClassBuilder.getDefault().setClassLoader(classLoader);
     }
 
+    public static ClassLoader getClassLoader() {
+        return ClassBuilder.getDefault().getClassLoader();
+    }
+
     public static Map create(Composite parent, String file, Class relativeTo) throws XSWTException, XmlPullParserException,
             IOException {
         return create(parent, relativeTo.getResource(file).openStream());
