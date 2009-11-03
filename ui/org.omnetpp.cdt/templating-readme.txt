@@ -368,50 +368,87 @@ which specify their own encoding.)
 
 FileUtils functions:
 
-org.w3c.dom.Document readXMLFile(IFile file);
-org.w3c.dom.Document readExternalXMLFile(String file);
+org.w3c.dom.Document readXMLFile(String fileName);
+org.w3c.dom.Document readExternalXMLFile(String fileName);
 
     Parses an XML file, and return the Document object of the resulting
     DOM tree.
 
-Object readJSONFile(IFile file);
-Object readExternalJSONFile(String file);
+Object readJSONFile(String fileName);
+Object readExternalJSONFile(String fileName);
 
     Parses a JSON file. The result is a Boolean, Integer, Double, String,
     List or Map, or any data structure composed of them.
 
-String[][] readCSVFile(IFile file);
-String[][] readExternalCSVFile(String file);
+String[][] readCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines);
+String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines);
 
     Reads a CSV file. The result is an array of lines, where each line is
-    represented by a string array. The header line is not treated specially.
+    a string array. Additional method parameters control whether to discard the
+    first line of the file (which is usually a header line), whether to
+    ignore blank lines, and whether to ignore comment lines (those starting
+    with the # character). Comment lines are not part of the commonly accepted
+    CSV format, but they are supported here nevertheless, due to their
+    usefulness.
 
-Properties readPropertyFile(IFile file);
-Properties readExternalPropertyFile(String file);
+Properties readPropertyFile(String fileName);
+Properties readExternalPropertyFile(String fileName);
 
     Parses a Java property file ('key=value' lines) in the workspace.
     The result is a Properties object, which is effectively a hash of
     key-value pairs.
 
-String[][] readSpaceSeparatedTextFile(IFile file);
-String[][] readExternalSpaceSeparatedTextFile(String file);
+String[][] readSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines);
+String[][] readExternalSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines);
 
-    Reads a text file in the workspace, and returns its contents, split by
-    lines, and each line split by whitespace. Comment lines (those starting
-    with a hash mark, #) are discarded. The result is an array of lines,
-    where each line is a string array.
+    Reads a text file, and return its contents, split by lines, and each line
+    split by whitespace. Additional method parameters control whether to ignore
+    blank lines and/or comment lines (those starting with the # character).
+    The result is an array of lines, where each line is a string array of the
+    items on the line.
 
-String[] readLineOrientedTextFile(IFile file);
-String[] readExternalLineOrientedTextFile(String file);
+String[] readLineOrientedTextFile(String fileName);
+String[] readExternalLineOrientedTextFile(String fileName);
 
     Reads a text file in the workspace, and returns its lines. Comment lines
     (those starting with a hash mark, #) are discarded. The result is a
     string array.
 
-String readTextFile(IFile file);
-String readExternalTextFile(String file);
+String readTextFile(String fileName);
+String readExternalTextFile(String fileName);
 
     Reads a text file, and return its contents unchanged as a single string.
+
+boolean isValidWorkspacePath(String path);
+
+    Returns true if the given string is syntactically a valid workspace path.
+
+boolean isValidWorkspaceFilePath(String path);
+
+    Returns true if the given string is syntactically a valid workspace file path.
+    This function does not check whether the file exists, or whether the given path
+    actually already points to a resource of a different type.
+
+IProject asProject(String path);
+
+    Returns the handle for the workspace project with the given name.
+    Throws exception if the path is not a valid workspace project path.
+    This function does not test whether the project exists. To test that,
+    call the exists() method on the returned handle.
+
+IContainer asContainer(String path);
+
+    Returns the handle for the workspace container (i.e. project or folder) with the given name.
+    Throws exception if the path is not a valid workspace container path.
+    This function does not test whether the container exists. To test that,
+    call the exists() method on the returned handle.
+
+IFile asFile(String path);
+
+    Returns the handle for the workspace file with the given name.
+    Throws exception if the path is not a valid workspace file path.
+    This function does not test whether the file exists. To test that,
+    call the exists() method on the returned handle.
 
 
 StringUtils
@@ -488,8 +525,23 @@ boolean instanceOf(Object object, String classOrInterfaceName);
     implements) the given class or interface. To simplify usage, the class
     or interface name is accepted both with and without the package name.
 
+String toString(Object object);
 
-TODO: custom widget: file selector (workspace / external file)
+    Produces a user-friendly representation of the object. In case of
+    collections (lists, maps, etc), the representation is JSON-like.
+
+List<Object> newList();
+
+    Creates and returns a new mutable List object (currently ArrayList).
+
+Map<Object, Object> newMap();
+
+    Creates and returns a new mutable Map object (currently HashMap).
+
+Set<Object> newSet();
+
+    Creates and returns a new mutable Set object (currently HashSet).
+
 
 
 REFERENCES
@@ -504,7 +556,7 @@ http://freemarker.org/docs/index.html
 
 ---
 
-TODO FileUtils doc out of date! IFile --> String; plus new methods at top; plus CSV reader pars
+TODO document FileChooser and ExternalFileChooser: custom widget: file selector (workspace / external file)
 
 TODO mention http://www.jsonlint.com/
 
@@ -520,5 +572,4 @@ TODO: special markup in the template: "<?output="bubu.txt"> ... </?output>
 to support creation of files with runtime-decided names.
 TODO pelda: "Name of examples folder", "Name of source" folder
 
-TODO: check if XSWT 2.0 could be brought to work? Because it changed the file
-format a bit, and we want future OMNET++ versions to be backward compatible!!!
+

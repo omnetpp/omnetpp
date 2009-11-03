@@ -99,18 +99,18 @@ public class FileUtils {
 	 * Parse an XML file, given with its file system path (NOT workspace path),
      * and return the Document object of the resulting DOM tree.
 	 * 
-	 * @param file  filesystem path of the file
+	 * @param fileName  filesystem path of the file
 	 * @return DOM tree
 	 */
-	public static org.w3c.dom.Document readExternalXMLFile(String file) {
+	public static org.w3c.dom.Document readExternalXMLFile(String fileName) {
 		InputStream is = null;
 		try {
-			is = new FileInputStream(file);
+			is = new FileInputStream(fileName);
         	DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			return docBuilder.parse(is);
 		} 
 		catch (Exception e) {
-			throw new RuntimeException("Error XML reading file " + file + ": " + e.getMessage(), e);
+			throw new RuntimeException("Error XML reading file " + fileName + ": " + e.getMessage(), e);
 		}
 		finally {
 			if (is != null)
@@ -137,17 +137,17 @@ public class FileUtils {
 	 * data structure composed of them. 
 	 * The file is interpreted in the Java platform's default encoding.
 	 * 
-	 * @param file  filesystem path of the file
+	 * @param fileName  filesystem path of the file
 	 * @return JSON tree
 	 */
-	public static Object readExternalJSONFile(String file) {
+	public static Object readExternalJSONFile(String fileName) {
 		try {
-			String contents = readExternalTextFile(file);
+			String contents = readExternalTextFile(fileName);
 			JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
 			return reader.read(contents); 
 		} catch (IllegalArgumentException e) {
 			// thrown from ExceptionErrorListener on parse errors
-			throw new RuntimeException("Error parsing JSON file " + file + ": " + e.getMessage(), e);
+			throw new RuntimeException("Error parsing JSON file " + fileName + ": " + e.getMessage(), e);
 		}
 	}
 	
@@ -158,8 +158,8 @@ public class FileUtils {
      * whether to discard the first line of the file (which is usually a header
      * line), whether to ignore blank lines, and whether to ignore comment lines
      * (those starting with the # character). Comment lines are not part of
-     * the commonly accepted CSV format, but it is supported here nevertheless,
-     * due of its usefulness.
+     * the commonly accepted CSV format, but they are supported here nevertheless,
+     * due to their usefulness.
 	 * 
 	 * @param fileName  the workspace file
 	 * @param ignoreFirstLine  whether the first line is to be discarded 
@@ -180,17 +180,17 @@ public class FileUtils {
      * of the file (which is usually a header line), whether to ignore blank 
      * lines, and whether to ignore comment lines (those starting with 
      * the # character). Comment lines are not part of the commonly accepted
-     * CSV format, but it is supported here nevertheless, due of its usefulness.
+     * CSV format, but they are supported here nevertheless, due to their usefulness.
      * 
-     * @param file  filesystem path of the file
+     * @param fileName  filesystem path of the file
      * @param ignoreFirstLine  whether the first line is to be discarded 
      * @param ignoreBlankLines  whether to ignore blank lines
      * @param ignoreCommentLines  whether to ignore lines starting with '#'
 	 * @return file contents
 	 */
-	public static String[][] readExternalCSVFile(String file, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
+	public static String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
 		try {
-			CSVReader reader = new CSVReader(new FileReader(file));
+			CSVReader reader = new CSVReader(new FileReader(fileName));
 			List<String[]> tokenizedLines = new ArrayList<String[]>();
 			boolean isFirstLine = true;
 			String [] nextLine;
@@ -208,7 +208,7 @@ public class FileUtils {
 			}
 			return tokenizedLines.toArray(new String[][]{});
 		} catch (IOException e) {
-			throw new RuntimeException("Error reading file " + file + ": " + e.getMessage(), e);
+			throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
 		}
 	}
 
@@ -232,19 +232,19 @@ public class FileUtils {
 	 * which is effectively a hash of key-value pairs. 
 	 * The file is interpreted in the Java platform's default encoding.
 	 * 
-	 * @param file  filesystem path of the file
+	 * @param fileName  filesystem path of the file
 	 * @return key-value pairs in a map
 	 */
-	public static Properties readExternalPropertyFile(String file) {
+	public static Properties readExternalPropertyFile(String fileName) {
 		InputStream is = null;
 		try {
-			is = new FileInputStream(file);
+			is = new FileInputStream(fileName);
 			Properties properties = new Properties();
 			properties.load(is);
 			return properties;
 		} 
 		catch (Exception e) {
-			throw new RuntimeException("Error reading file " + file + ": " + e.getMessage(), e);
+			throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
 		}
 		finally {
 			if (is != null)
@@ -254,34 +254,44 @@ public class FileUtils {
 	
 	/**
 	 * Read a text file in the workspace, and return its contents, split by 
-	 * lines, and each line split by whitespace. Comment lines (those starting 
-	 * with a hash mark, #) are discarded. The result is an array of lines, 
-	 * where each line is a string array. 
+	 * lines, and each line split by whitespace. Additional method parameters 
+	 * control whether to ignore blank lines and/or comment lines (those 
+	 * starting with the # character). The result is an array of lines, 
+	 * where each line is a string array of the items on the line. 
 	 * The file is interpreted in the Java platform's default encoding.
 	 * 
 	 * @param file  the workspace file
 	 * @return file contents
 	 */
-	public static String[][] readSpaceSeparatedTextFile(String fileName) {
+	public static String[][] readSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines) {
         IFile file = asFile(fileName);
-		return readExternalSpaceSeparatedTextFile(file.getLocation().toString());
+		return readExternalSpaceSeparatedTextFile(file.getLocation().toString(), ignoreBlankLines, ignoreCommentLines);
 	}
 
 	/**
 	 * Read a text file, given with its file system path (NOT workspace path),
-	 * and return its contents, split by lines, and each line split by whitespace.
-	 * Comment lines (those starting with a hash mark, #) are discarded. 
-	 * The result is an array of lines, where each line is a string array. 
-	 * The file is interpreted in the Java platform's default encoding.
+     * and return its contents, split by lines, and each line split 
+     * by whitespace. Additional method parameters control whether 
+     * to ignore blank lines and/or comment lines (those starting 
+     * with the # character). The result is an array of lines, 
+     * where each line is a string array of the items on the line. 
+     * The file is interpreted in the Java platform's default encoding.
 	 * 
-	 * @param file  filesystem path of the file
+	 * @param fileName  filesystem path of the file
+     * @param ignoreBlankLines  whether to ignore blank lines
+     * @param ignoreCommentLines  whether to ignore lines starting with '#'
 	 * @return file contents
 	 */
-	public static String[][] readExternalSpaceSeparatedTextFile(String file) {
-		String[] lines = readExternalLineOrientedTextFile(file);
+	public static String[][] readExternalSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines) {
+		String[] lines = readExternalLineOrientedTextFile(fileName);
 		List<String[]> tokenizedLines = new ArrayList<String[]>();
-		for (String line : lines)
+		for (String line : lines) {
+		    if (ignoreBlankLines && StringUtils.isBlank(line))
+		        continue;
+		    if (ignoreCommentLines && line.charAt(0)=='#')
+		        continue;
 			tokenizedLines.add(StringUtils.split(line));
+		}
 		return tokenizedLines.toArray(new String[][]{});
 	}
 
@@ -304,11 +314,11 @@ public class FileUtils {
 	 * are discarded. The result is a string array.
 	 * The file is interpreted in the Java platform's default encoding.
 	 * 
-	 * @param file  filesystem path of the file
+	 * @param fileName  filesystem path of the file
 	 * @return file contents
 	 */
-	public static String[] readExternalLineOrientedTextFile(String file) {
-		String contents = readExternalTextFile(file);
+	public static String[] readExternalLineOrientedTextFile(String fileName) {
+		String contents = readExternalTextFile(fileName);
 		String[] lines = StringUtils.splitPreserveAllTokens(contents, "\r?\n");
 		List<String> noncommentLines = new ArrayList<String>();
 		for (String line : lines)
@@ -335,14 +345,14 @@ public class FileUtils {
 	 * and returns its contents unchanged as a single string. The file is 
 	 * interpreted in the Java platform's default encoding.
 	 * 
-	 * @param file  filesystem path of the file
+	 * @param fileName  filesystem path of the file
 	 * @return file contents
 	 */
-	public static String readExternalTextFile(String file) {
+	public static String readExternalTextFile(String fileName) {
 		try {
-			return org.omnetpp.common.util.FileUtils.readTextFile(file);
+			return org.omnetpp.common.util.FileUtils.readTextFile(fileName);
 		} catch (IOException e) {
-			throw new RuntimeException("Error reading file " + file + ": " + e.getMessage(), e);
+			throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
 		}
 	}
 	

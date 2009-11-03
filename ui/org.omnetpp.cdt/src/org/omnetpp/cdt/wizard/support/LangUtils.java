@@ -23,18 +23,32 @@ import java.util.Set;
  * @author Andras
  */
 public class LangUtils {
+    
+    /**
+     * Creates and returns a new mutable List object (currently ArrayList).
+     */
     public static List<Object> newList() { 
         return new ArrayList<Object>(); 
     }
 
+    /**
+     * Creates and returns a new mutable Map object (currently HashMap).
+     */
     public static Map<Object, Object> newMap() { 
         return new HashMap<Object, Object>(); 
     }
 
+    /**
+     * Creates and returns a new mutable Set object (currently HashSet).
+     */
     public static Set<Object> newSet() { 
         return new HashSet<Object>(); 
     }
 
+    /**
+     * Produces a user-friendly representation of the object. In case of
+     * collections (lists, maps, etc), the representation is JSON-like.
+     */
     @SuppressWarnings("unchecked")
     public static String toString(Object object) {
         if (object == null)
