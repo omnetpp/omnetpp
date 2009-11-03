@@ -9,15 +9,23 @@
   </import>
   <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
-    <group text="Node type">
+
+    <group text="NED code">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" x:numColumns="1"/>
+       <x:children>
+         <button x:id="parametricNED" text="Parametric topology" x:style="RADIO"/>
+         <button x:id="staticNED" text="Static topology" x:style="RADIO"/>
+       </x:children>
+    </group> 
+
+    <group text="Options">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" x:numColumns="2"/>
       <x:children>
-            <label text="Node NED type:"/>
-            <text x:id="nodeTypeName" x:style="BORDER"/>
-            <label text="Hub NED type:"/>
-            <text x:id="hubTypeName" x:style="BORDER"/>
-        </x:children>
+        <button x:id="wantPositions" x:style="CHECK" x:text="Generate coordinates (not available for all topologies)"/>
+      </x:children>
     </group>  
+
   </x:children>
 </xswt>

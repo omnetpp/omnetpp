@@ -1,29 +1,54 @@
 <#-- template include for network.ned.ftl -->
+<#if generateNodeTypeDecl>
+module ${nodeTypeName} {
+    parameters:
+        @display("i=misc/node_vs");
+    gates:
+        inout g[];
+}
+</#if>
+
+<#if generateHubNodeTypeDecl>
+module ${hubNodeTypeName} {
+    parameters:
+        @display("i=misc/node_vs");
+    gates:
+        inout g[];
+}
+</#if>
+
+<#if generateChannelTypeDecl && channelTypeName!="">
+channel ${channelTypeName} extends ned.DatarateChannel {
+    parameters:
+        int cost = default(0);
+}
+</#if>
+
 <#-- TODO: generateCoordinates -->
 <#if parametricNED>
-network ${ProjectName}
+network ${networkName}
 {
     parameters:
         int n = default(${nodes});
     submodules:
-        hub: ${hubTypeName};
+        hub: ${hubNodeTypeName};
         node[n]: ${nodeTypeName};
     connections:
         for i=0..n-1 {
-            hub.g++ <--> node[i].g++;
+            hub.g++ <-->${channelSpec} node[i].g++;
         }
 }
 <#else>
-network ${ProjectName}
+network ${networkName}
 {
     submodules:
-        hub: ${hubTypeName};
+        hub: ${hubNodeTypeName};
 <#list 0..nodes-1 as i>
         node${i}: ${nodeTypeName};
 </#list>
     connections:
 <#list 0..nodes-1 as i>
-        hub.g++ <--> node${i}.g++;
+        hub.g++ <-->${channelSpec} node${i}.g++;
 </#list>
 }
 </#if>

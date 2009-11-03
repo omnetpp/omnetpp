@@ -2,13 +2,7 @@
 // Created on ${date} for project ${projectname}
 //
 
-simple Node {
-    gates:
-        inout g[];
-}
-
-TODO handle: staticNED flag
-TODO handle: generateCoordinates
+package ${projectname};
 
 <#-- convert variables to numbers (some widgets return them as strings)-->
 <#assign treeK = treeK?number>
@@ -17,6 +11,12 @@ TODO handle: generateCoordinates
 <#assign columns = columns?number>
 <#assign rows = rows?number>
 
+<#if channelTypeName != "">
+  <#assign channelSpec = " " + channelTypeName + " <-->">
+<#else>
+  <#assign channelSpec = "">
+</#if>
+  
 <#-- pull in the correct template to do the actual work -->
 <#if star>
    <#include "star.ned.ftl">
