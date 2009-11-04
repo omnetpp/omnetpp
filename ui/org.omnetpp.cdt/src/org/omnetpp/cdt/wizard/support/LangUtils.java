@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import freemarker.template.utility.ClassUtil;
+
 
 
 /**
@@ -23,7 +25,21 @@ import java.util.Set;
  * @author Andras
  */
 public class LangUtils {
-    
+
+    /**
+     * Instantiates the given class with the default constructor.
+     * (Provided because FreeMarker does not seem to accept the Class.newInstance() method)
+     */
+    public static Object newInstance(String className) { 
+        try {
+            Class<?> clazz = ClassUtil.forName(className);
+            return clazz.newInstance();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Cannot instantiate "+className+": "+e.getClass().getSimpleName(), e);
+        } 
+    }
+
     /**
      * Creates and returns a new mutable List object (currently ArrayList).
      */

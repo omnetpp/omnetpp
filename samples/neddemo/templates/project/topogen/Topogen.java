@@ -17,18 +17,75 @@ import java.util.Set;
  * @author Andras
  */
 public class Topogen {
-    // node index -> list of nodes connected (nodes are numbered 0..nodes-1)
-    private List<Set<Integer>> graph = new ArrayList<Set<Integer>>();
+    private int nodes = 50;
+    private int edges = 80;
+    private long seed = 1234;
+    private double param1 = 0.3;
+    private double param2 = 0.1;
+
+    public Topogen() {
+    }
+    
+    public Topogen(int edges, int nodes, long seed) {
+        this.edges = edges;
+        this.nodes = nodes;
+        this.seed = seed;
+    }
+
+    public int getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(int nodes) {
+        this.nodes = nodes;
+    }
+
+    public int getEdges() {
+        return edges;
+    }
+
+    public void setEdges(int edges) {
+        this.edges = edges;
+    }
+
+    public long getSeed() {
+        return seed;
+    }
+
+    public void setSeed(long seed) {
+        this.seed = seed;
+    }
+
+    public double getParam1() {
+        return param1;
+    }
+
+    public void setParam1(double param1) {
+        this.param1 = param1;
+    }
+
+    public double getParam2() {
+        return param2;
+    }
+
+    public void setParam2(double param2) {
+        this.param2 = param2;
+    }
     
     /**
-     * Generates a connected graph with the given number of nodes and edges, and no multiple
-     * connections between any two nodes.
+     * Generates a connected graph with the given number of nodes and edges, and 
+     * no multiple connections between any two nodes.
+     * 
+     * Returns the edge list representation of the generated graph.
+     * For each node index i, the list contains the list of its neighbors.
      */
-    public Topogen(int nodes, int edges, long seed) {
+    public List<Set<Integer>> generate() {
         if (nodes > edges+1) // tree
             throw new IllegalArgumentException("Not enough edges to form a connected tree; need at least #nodes-1");
         if (edges > nodes*(nodes-1)/2) // full graph
             throw new IllegalArgumentException("Cannot have that many edges without having multiple edges between nodes");
+        
+        List<Set<Integer>> graph = new ArrayList<Set<Integer>>();
         
         Random rng = new Random(seed);
         
@@ -45,11 +102,11 @@ public class Topogen {
         // then create additional edges until we reach the desired count
         for (int i = 0; i < edges-nodes+1; i++) {
             // pick a random node which is not connected to all others yet
-            //TODO favour leaf nodes!
-            int src;
-            do {
-                src = rng.nextInt(nodes);
-            } while (graph.get(src).size() == nodes-1);
+            List<Integer> srcCandidates = increasingDegreeOrder(graph, nodes-2);
+
+            // then pick a src node, from the beginning of the list (prefer small node degrees)
+            int index = geom(srcCandidates.size()*param1, srcCandidates.size(), rng);
+            int src = srcCandidates.get(index);
         
             // calculate the distances to all others
             int[] dist = dijkstra(graph, src);
@@ -66,13 +123,31 @@ public class Topogen {
             }
             
             // then pick one node to connect to; try to pick one nearer src (i.e. at smaller indices in v[])
-            int dest = (destCandidates.size()==1 || rng.nextInt(4)!=3) ? destCandidates.get(0) : destCandidates.get(1); //FIXME better! (expon dist or something)
+            index = geom(destCandidates.size()*param2, destCandidates.size(), rng);
+            int dest = destCandidates.get(index);
             
             // add link
             graph.get(src).add(dest);
             graph.get(dest).add(src);
         }
-        
+        return graph;
+    }
+
+    private List<Integer> increasingDegreeOrder(List<Set<Integer>> graph, int maxDegree) {
+        int n = graph.size();
+        List<Integer> v = new ArrayList<Integer>();
+        for (int k=0; k<n; k++) {
+            if (graph.get(k).size() <= maxDegree) {
+                // insert k into v[]
+                for (int j=0; j<v.size(); j++)
+                    if (graph.get(k).size() < graph.get(v.get(j)).size()) {
+                        v.add(j,k); break; // insert element
+                    }
+                if (!v.contains(k))
+                    v.add(k); // insert at end
+            }
+        }
+        return v;
     }
 
     private int[] dijkstra(List<Set<Integer>> graph, int source) {
@@ -120,25 +195,18 @@ public class Topogen {
         return minPos;
     }
 
-    /**
-     * Static factory method for BeanWrapper access
-     */
-    public static Topogen create(int nodes, int edges, long seed) {
-        return new Topogen(nodes, edges, seed);
-    }
-
-    /**
-     * Returns the edge list representation of the generated graph.
-     * For each node index i, the list contains the list of its neighbors.
-     */
-    public List<Set<Integer>> getNeighborLists() {
-        return graph;
+    private int geom(double mean, int upper, Random rng) {
+        int d;
+        do {
+            d = (int)Math.floor(-mean * Math.log(rng.nextDouble()));
+        } while (d >= upper);
+        return d;
     }
     
     /**
      * Returns the graph in readable string form.
      */
-    public String toString() {
+    public static String toString(List<Set<Integer>> graph) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < graph.size(); i++) {
             result.append(i + ": [");
@@ -153,6 +221,7 @@ public class Topogen {
         int nodes = args.length>=1 ? Integer.parseInt(args[0]) : 10;
         int edges = args.length>=2 ? Integer.parseInt(args[1]) : 2*nodes;
         long seed = args.length>=3 ? Long.parseLong(args[2]) : System.currentTimeMillis();
-        System.out.println(new Topogen(nodes, edges, seed));
+        Topogen topogen = new Topogen(nodes, edges, seed);
+        System.out.println(Topogen.toString(topogen.generate()));
     }
 }

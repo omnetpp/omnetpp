@@ -10,7 +10,7 @@
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
     <label text="Number of nodes:"/>
-    <spinner x:id="numNodes" x:style="BORDER" textLimit="4"/>
+    <spinner x:id="numNodes" x:style="BORDER" maximum="10000" increment="10"/>
     <label text="Node placement:"/>
     <combo x:id="placement" x:style="BORDER|READ_ONLY">
         <add x:p0="grid"/>

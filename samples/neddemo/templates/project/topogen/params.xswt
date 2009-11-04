@@ -10,10 +10,14 @@
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
     <label text="Number of nodes:"/>
-    <spinner x:id="numNodes" x:style="BORDER" textLimit="4"/>
+    <spinner x:id="numNodes" x:style="BORDER" maximum="1000" increment="10"/>
     <label text="Number of links:"/>
-    <spinner x:id="numLinks" x:style="BORDER" textLimit="4"/>
+    <spinner x:id="numLinks" x:style="BORDER" maximum="10000" increment="10"/>
     <label text="RNG seed:"/>
     <text x:id="seed" x:style="BORDER" textLimit="4"/>
+    <label text="Par1 (affects node degrees):"/>
+    <scale x:id="param1Times100" minimum="1" maximum="500"/>
+    <label text="Par2 (affects link span):"/>
+    <scale x:id="param2Times100" minimum="1" maximum="500"/>
   </x:children>
 </xswt>
