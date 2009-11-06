@@ -6,10 +6,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +30,6 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
 
-
 import freemarker.template.Configuration;
 
 /**
@@ -41,6 +38,7 @@ import freemarker.template.Configuration;
  */
 //FIXME: freemarker logging currently goes to stdout
 //XXX removed properties: PROP_SOURCEFOLDERS = "addProjectReference", "sourceFolders", "nedSourceFolders", "makemakeOptions"
+//XXX todo document: glob patterns; verbatimFiles= option
 public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	public static final String TEMPLATE_PROPERTIES_FILENAME = "template.properties";
 	public static final Image MISSING_IMAGE = ImageDescriptor.getMissingImageDescriptor().createImage();
@@ -50,13 +48,15 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	public static final String PROP_TEMPLATEDESCRIPTION = "templateDescription"; // template description
 	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
 	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
-	public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of non-template files: won't get copied over
-	public static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank
+	public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of files NOT top copy into dest folder; basic glob patterns accepted
+	public static final String PROP_VERBATIMFILES = "verbatimFiles"; // list of files to copy verbatim, even if they would be ignored otherwise; basic glob patterns accepted
+	public static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank; basic glob patterns accepted
 
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
-	protected Set<IResource> ignoreResources = new HashSet<IResource>();
-	protected Set<IFile> optionalFiles = new HashSet<IFile>(); // files not to be generated if they'd be blank
+	protected List<String> ignoreResourcePatterns = new ArrayList<String>();
+	protected List<String> verbatimFilePatterns = new ArrayList<String>();
+	protected List<String> optionalFilePatterns = new ArrayList<String>();
 
 	public WorkspaceBasedContentTemplate(IFolder folder) throws CoreException {
 		super();
@@ -69,16 +69,19 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 		} catch (IOException e) {
 			throw CommonPlugin.wrapIntoCoreException(e);
 		}
-		
+
 		setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), folder.getName()));
 		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + folder.getFullPath()));
 		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), folder.getProject().getName()));
 
+		ignoreResourcePatterns.add("**/*.xswt");  // note: "*.ftl" is NOT to be added as ignore pattern!
+		ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
+
 		// load image
 		String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
 		if (imageFileName != null) {
+		    ignoreResourcePatterns.add(imageFileName);
 			IFile file = templateFolder.getFile(new Path(imageFileName));
-			ignoreResources.add(file); // do not copy image file to dest project
 			IPath locPath = file.getLocation();
 			String loc = locPath==null ? "<unknown>" : locPath.toOSString();
 			ImageRegistry imageRegistry = CommonPlugin.getDefault().getImageRegistry();
@@ -96,12 +99,14 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 		}
 
 		// the following options may not be modified via the wizard, so they are initialized here
-		ignoreResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
 		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORERESOURCES))," *, *"))
-			ignoreResources.add(folder.getFile(new Path(item)));
+		    ignoreResourcePatterns.add(item);
+
+		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_VERBATIMFILES))," *, *"))
+		    verbatimFilePatterns.add(item);
 
 		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES))," *, *"))
-			optionalFiles.add(folder.getFile(new Path(item)));
+            optionalFilePatterns.add(item);
 	}
 
 	@Override
@@ -174,9 +179,6 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 			String description = StringUtils.defaultIfEmpty(properties.getProperty("page."+pageID+".description"),"Select options below"); // "1 of 5" not good as default, because of conditional pages
 			result[i].setTitle(title);
 			result[i].setDescription(description);
-			
-			// do not copy forms into the new project
-			ignoreResources.add(xswtFile);
 		}
 		
 		return result;
@@ -212,34 +214,33 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	}
 	
 	protected void copy(IFolder folder, IContainer destFolder, CreationContext context) throws CoreException {
-		for (IResource resource : folder.members()) {
-			if (!ignoreResources.contains(resource)) {
-				if (resource instanceof IFile) {
-					IFile file = (IFile)resource;
-					IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount());
-					if (file.getFileExtension().equals("ftl")) {
-						// copy it with template substitution
-						IFile newFile = destFolder.getFile(relativePath.removeFileExtension());
-						createFileFromWorkspaceResource(newFile, relativePath.toString(), optionalFiles.contains(file), context);
-					}
-					else {
-						// copy it verbatim
-						IFile newFile = destFolder.getFile(relativePath);
-						if (newFile.exists())
-							newFile.delete(true, context.getProgressMonitor());
-						file.copy(newFile.getFullPath(), true, context.getProgressMonitor());
-					}
-				}
-				else if (resource instanceof IFolder) {
-					// create
-					IFolder subfolder = (IFolder)resource;
-					IFolder newSubfolder = destFolder.getFolder(new Path(subfolder.getName()));
-					if (!newSubfolder.exists())
-						newSubfolder.create(true, true, context.getProgressMonitor());
-					copy(subfolder, newSubfolder, context);
-				}
-			}
-		}
+	    for (IResource resource : folder.members()) {
+	        IPath relativePath = resource.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount());
+	        if (resource instanceof IFolder && !matchesAny(relativePath.toString(), ignoreResourcePatterns)) {
+	            // create
+	            IFolder subfolder = (IFolder)resource;
+	            IFolder newSubfolder = destFolder.getFolder(new Path(subfolder.getName()));
+	            if (!newSubfolder.exists())
+	                newSubfolder.create(true, true, context.getProgressMonitor());
+	            copy(subfolder, newSubfolder, context);
+	        }
+	        if (resource instanceof IFile) {
+	            IFile file = (IFile)resource;
+	            boolean isFtlFile = file.getFileExtension().equals("ftl");
+                if (matchesAny(relativePath.toString(), verbatimFilePatterns) || (!isFtlFile && !matchesAny(relativePath.toString(), ignoreResourcePatterns))) {
+	                // copy it verbatim
+	                IFile newFile = destFolder.getFile(relativePath);
+	                if (newFile.exists())
+	                    newFile.delete(true, context.getProgressMonitor());
+	                file.copy(newFile.getFullPath(), true, context.getProgressMonitor());
+	            } 
+                else if (isFtlFile && !matchesAny(relativePath.toString(), ignoreResourcePatterns)) {
+                    // copy it with template substitution
+                    IFile newFile = destFolder.getFile(relativePath.removeFileExtension());
+                    createFileFromWorkspaceResource(newFile, relativePath.toString(), matchesAny(relativePath.toString(), optionalFilePatterns), context);
+                }
+	        }
+	    }
 	}
 
     protected void createFileFromWorkspaceResource(IFile file, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
@@ -248,4 +249,20 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 		createFile(file, cfg, templateName, suppressIfBlank, context);
     }
 
+    /**
+     * Returns whether the given file name matches any of the given glob patterns.
+     * Only a limited subset of glob patterns is recognized: '*' and '?' only, 
+     * no curly braces or square brackets. Extra: "**" is recognized.
+     * Note: "*.txt" means text files in the ROOT folder. To mean "*.txt in any 
+     * folder", specify "** / *.txt" (without the spaces).
+     */
+    protected static boolean matchesAny(String path, List<String> basicGlobPatterns) {
+        path = path.replace('\\', '/'); // simplify matching
+        for (String pattern : basicGlobPatterns) {
+            String regex = "^" + pattern.replace(".", "\\.").replace("?", ".").replace("**/", "(.&/)?").replace("**", ".&").replace("*", "[^/]*").replace(".&", ".*") + "$";
+            if (path.matches(regex))
+                return true;
+        }
+        return false;
+    }
 }

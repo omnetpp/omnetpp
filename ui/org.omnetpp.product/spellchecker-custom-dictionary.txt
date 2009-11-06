@@ -303,3 +303,5 @@ submods
 subdirectory
 verbatim
 flipping
+glob
+txt
