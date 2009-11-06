@@ -93,6 +93,8 @@ Export-Package: au.com.bytecode.opencsv,
    org.eclipse.jface.viewers,
    org.eclipse.swt.graphics,
    org.eclipse.swt.widgets",
+ org.omnetpp.common.wizard,
+ org.omnetpp.common.wizard.support,
  org.omnetpp.common.xml;uses:="org.xml.sax.helpers,org.xml.sax"
 Bundle-ClassPath: .,
  lib/commons-collections-3.2.jar,

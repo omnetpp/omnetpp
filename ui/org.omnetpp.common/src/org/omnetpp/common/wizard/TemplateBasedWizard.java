@@ -40,7 +40,7 @@ import org.omnetpp.common.project.ProjectUtils;
  * @author Andras
  */
 public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
-    public static final Image ICON_CATEGORY = CommonPlugin.getImageDescriptor("icons/full/obj16/templatecategory.gif").createImage();
+    public static final Image ICON_CATEGORY = null; //FIXME CommonPlugin.getImageDescriptor("icons/full/obj16/templatecategory.gif").createImage();
 
     private TemplateSelectionPage templateSelectionPage;
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null

@@ -1,44 +1,68 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
-  
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 package org.omnetpp.ned.editor.wizards;
 
+import java.util.List;
+
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.INewWizard;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.omnetpp.common.wizard.IContentTemplate;
+import org.omnetpp.common.wizard.TemplateBasedWizard;
 
 /**
- * TODO add documentation
- *
- * @author rhornig
+ * "New NED file" wizard
+ * 
+ * @author Andras
  */
-public class NewNEDFileWizard extends Wizard implements INewWizard {
-    private NewNEDFileWizardPage1 page1 = null;
-
+public class NewNEDFileWizard extends TemplateBasedWizard {
     private IStructuredSelection selection;
+    private WizardNewFileCreationPage firstPage;
 
-    private IWorkbench workbench;
-
-    @Override
-    public void addPages() {
-        page1 = new NewNEDFileWizardPage1(workbench, selection);
-        addPage(page1);
+    public NewNEDFileWizard() {
     }
-
-    public void init(IWorkbench aWorkbench, IStructuredSelection currentSelection) {
-        workbench = aWorkbench;
-        selection = currentSelection;
+    
+    public void init(IWorkbench workbench, IStructuredSelection currentSelection) {
+        this.selection = currentSelection;
         setWindowTitle("New NED File");
     }
 
     @Override
+    public void addPages() {
+        firstPage = new WizardNewFileCreationPage("file selection page", selection);
+        firstPage.setAllowExistingResources(false);
+        firstPage.setTitle("New NED File");
+        firstPage.setDescription("Choose file name and parent folder");
+        firstPage.setFileExtension("ned");
+        firstPage.setFileName("untitled.ned");
+        addPage(firstPage);
+        super.addPages();
+    }
+
+    @Override
     public boolean performFinish() {
-        return page1.finish();
+        //XXX who will create the folder?
+        return super.performFinish();
+    }
+
+    @Override
+    protected IWizardPage getFirstExtraPage() {
+        return null;
+    }
+
+    @Override
+    protected IContainer getFolder() {
+        IPath path = firstPage.getContainerFullPath();
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        return path.segmentCount()==1 ? root.getProject(path.toString()) : root.getFolder(path);
+    }
+
+    @Override
+    protected List<IContentTemplate> getTemplates() {
+        return loadTemplatesFromWorkspace();  //XXX filtering etc.
     }
 
 }
