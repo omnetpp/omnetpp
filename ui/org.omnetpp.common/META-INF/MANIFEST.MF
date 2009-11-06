@@ -13,7 +13,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.draw2d,
  org.omnetpp.ide.nativelibs,
- org.omnetpp.common.core;visibility:=reexport
+ org.omnetpp.common.core;visibility:=reexport,
+ org.visigoths.freemarker;bundle-version="2.3.15",
+ org.swtworkbench.xswt;bundle-version="1.1.2"
 Export-Package: au.com.bytecode.opencsv,
  au.com.bytecode.opencsv.bean,
  org.apache.commons.collections,

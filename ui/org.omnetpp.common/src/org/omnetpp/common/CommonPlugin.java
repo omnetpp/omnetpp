@@ -8,6 +8,8 @@
 package org.omnetpp.common;
 
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -99,6 +101,15 @@ public class CommonPlugin extends AbstractUIPlugin {
         	getDefault().configPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(), PLUGIN_ID);
         }
         return getDefault().configPreferenceStore;
+    }
+
+    public static CoreException wrapIntoCoreException(Throwable exception) {
+        String msg = StringUtils.defaultIfEmpty(exception.getMessage(), exception.getClass().getSimpleName());
+        return wrapIntoCoreException(msg, exception);
+    }
+
+    public static CoreException wrapIntoCoreException(String message, Throwable exception) {
+        return new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
     }
 
 }
