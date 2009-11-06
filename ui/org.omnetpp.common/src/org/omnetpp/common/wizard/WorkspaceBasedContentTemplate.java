@@ -30,6 +30,8 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
 
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 
 /**
@@ -149,6 +151,17 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	    return new URLClassLoader(urls.toArray(new URL[]{}), getClass().getClassLoader());
 	}
 	
+	@Override
+	protected Configuration createFreemarkerConfiguration() {
+	    // add workspace template loader
+	    Configuration cfg = super.createFreemarkerConfiguration();
+	    cfg.setTemplateLoader(new MultiTemplateLoader( new TemplateLoader[] { 
+	            cfg.getTemplateLoader(), 
+	            new WorkspaceTemplateLoader(templateFolder)
+	    }));
+	    return cfg;
+	}
+
 	public ICustomWizardPage[] createCustomPages() throws CoreException {
     	// collect page IDs from property file ("page.1", "page.2" etc keys)
     	int[] pageIDs = new int[0];
@@ -205,8 +218,7 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 		}
 	}
 	
-	@Override
-	protected void doPerformFinish(CreationContext context) throws CoreException {
+	public void performFinish(CreationContext context) throws CoreException {
 		substituteNestedVariables(context);
 
 		// copy over files and folders, with template substitution
@@ -244,9 +256,7 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	}
 
     protected void createFileFromWorkspaceResource(IFile file, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
-        Configuration cfg = new Configuration();
-        cfg.setTemplateLoader(new WorkspaceTemplateLoader(templateFolder));
-		createFile(file, cfg, templateName, suppressIfBlank, context);
+		createFile(file, getFreemarkerConfiguration(), templateName, suppressIfBlank, context);
     }
 
     /**

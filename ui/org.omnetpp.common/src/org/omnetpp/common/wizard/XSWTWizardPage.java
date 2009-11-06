@@ -148,7 +148,7 @@ class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 		// evaluate as FreeMarker expression
 		try {
 			String macro = "${(" + condition + ")?string}";
-			String result = creatorTemplate.evaluate(macro, context);
+			String result = creatorTemplate.evaluate(macro, context.getVariables());
 			return result.equals("true");
 		} 
 		catch (Exception e) {

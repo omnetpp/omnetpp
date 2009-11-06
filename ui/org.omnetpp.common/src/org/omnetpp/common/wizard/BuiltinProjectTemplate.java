@@ -6,6 +6,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 
 import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 
 /**
@@ -28,15 +30,24 @@ public abstract class BuiltinProjectTemplate extends ContentTemplate {
 		return new ICustomWizardPage[0];
 	}
 
+	@Override
+	protected Configuration createFreemarkerConfiguration() {
+	    // add this plugin's "template" dir to the template loader
+	    Configuration cfg = super.createFreemarkerConfiguration();
+	    cfg.setTemplateLoader(new MultiTemplateLoader( new TemplateLoader[] { 
+	            cfg.getTemplateLoader(), 
+	            new ClassTemplateLoader(getClass(), "/template")  
+	    }));
+        return cfg;
+	}
+	
     protected void createFileFromPluginResource(String projectRelativePath, String templateName, CreationContext context) throws CoreException {
         createFileFromPluginResource(projectRelativePath, templateName, true, context);
     }
 
     protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
-        Configuration cfg = new Configuration();
-        cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/template"));
         IFile file = context.getFolder().getFile(new Path(projectRelativePath));
-        createFile(file, cfg, templateName, suppressIfBlank, context);
+        createFile(file, getFreemarkerConfiguration(), templateName, suppressIfBlank, context);
     }
 
 }

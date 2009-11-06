@@ -46,7 +46,7 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
     @Override
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
-        context.getVariables().put("fileName", firstPage.getFileName());
+        context.getVariables().put("newNedFileName", firstPage.getFileName());
         return context;
     }
     

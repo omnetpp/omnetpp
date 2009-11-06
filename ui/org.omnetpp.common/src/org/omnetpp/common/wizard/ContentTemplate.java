@@ -9,7 +9,6 @@ package org.omnetpp.common.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Calendar;
@@ -29,7 +28,7 @@ import org.omnetpp.common.wizard.support.FileUtils;
 import org.omnetpp.common.wizard.support.IDEUtils;
 import org.omnetpp.common.wizard.support.LangUtils;
 
-import freemarker.cache.TemplateLoader;
+import freemarker.cache.StringTemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -43,14 +42,6 @@ import freemarker.template.TemplateException;
  * @author Andras
  */
 public abstract class ContentTemplate implements IContentTemplate {
-
-	private static class NullTemplateLoader implements TemplateLoader {
-		public void closeTemplateSource(Object templateSource) throws IOException { }
-		public Object findTemplateSource(String name) throws IOException { return null; }
-		public long getLastModified(Object templateSource) { return 0; }
-		public Reader getReader(Object templateSource, String encoding) throws IOException { return null; }
-	}
-
 	public static final Image DEFAULT_ICON = CommonPlugin.getImage("icons/obj16/wiztemplate.png");
 
 	// template attributes
@@ -66,6 +57,9 @@ public abstract class ContentTemplate implements IContentTemplate {
     // to the contents of jars loaded at runtime from the user's projects in the workspace.
     // See e.g. freemarker.template.utility.ClassUtil.forName(String)
     private ClassLoader classLoader = null;  
+    
+    // FreeMarker configuration (stateless)
+    private Configuration freemarkerConfiguration = null;
     
     public ContentTemplate() {
     }
@@ -123,6 +117,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         variables.put("templateDescription", description);
         variables.put("templateCategory", category);
 		variables.put("rawProjectName", folder);
+		variables.put("projectName", folder);
 		variables.put("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(folder.getName())));
 		variables.put("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(folder.getName())));
 		variables.put("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(folder.getName())));
@@ -148,14 +143,30 @@ public abstract class ContentTemplate implements IContentTemplate {
     protected ClassLoader createClassLoader() {
         return getClass().getClassLoader();
     }
-    
-    public void performFinish(CreationContext context) throws CoreException {
-        // do it!
-        doPerformFinish(context);
+
+    public Configuration getFreemarkerConfiguration() {
+        if (freemarkerConfiguration == null)
+            freemarkerConfiguration = createFreemarkerConfiguration();
+        return freemarkerConfiguration;
     }
+    
+    protected Configuration createFreemarkerConfiguration() {
+        // note: subclasses should override to add a real template loader
+        Configuration cfg = new Configuration();
+        
+        cfg.setNumberFormat("computer"); // prevent digit grouping with comma
 
-    protected abstract void doPerformFinish(CreationContext context) throws CoreException;
-
+        // add loader for built-in macro definitions
+        cfg.addAutoInclude("[builtins]");
+        StringTemplateLoader loader = new StringTemplateLoader();
+        loader.putTemplate("[builtins]", 
+                "<#macro setoutput file>\n" + 
+        		"@@@@ setoutput ${file} @@@@\n" + 
+        		"</#macro>\n");
+        cfg.setTemplateLoader(loader);
+        return cfg;
+    }
+    
 	/**
      * Resolves references to other variables. Should be called from doPerformFinish() before
      * actually processing the templates.
@@ -165,15 +176,11 @@ public abstract class ContentTemplate implements IContentTemplate {
      */
 	protected void substituteNestedVariables(CreationContext context) throws CoreException {
 		Map<String, Object> variables = context.getVariables();
-        Configuration cfg = new Configuration();
-        cfg.setNumberFormat("computer"); // prevent digit grouping with comma
-        cfg.setTemplateLoader(new NullTemplateLoader()); // effectively, no template loading
-
         try {
         	for (String key : variables.keySet()) {
         		Object value = variables.get(key);
         		if (value instanceof String) {
-        			String newValue = doEvaluate((String)value, variables, cfg);
+        			String newValue = evaluate((String)value, variables);
         			variables.put(key, newValue);
         		}
         	}
@@ -185,20 +192,13 @@ public abstract class ContentTemplate implements IContentTemplate {
 	/** 
 	 * Performs template processing on the given string, and returns the result.
 	 */
-	public String evaluate(String text, CreationContext context) throws TemplateException {
-		Map<String, Object> variables = context.getVariables();
-        Configuration cfg = new Configuration();
-        cfg.setNumberFormat("computer"); // prevent digit grouping with comma
-        cfg.setTemplateLoader(new NullTemplateLoader()); // no template loading
-        return doEvaluate(text, variables, cfg);
-	}
-
-	private String doEvaluate(String value, Map<String, Object> variables, Configuration cfg) throws TemplateException {
+	public String evaluate(String value, Map<String, Object> variables) throws TemplateException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
 	    ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClassLoader());
 	    
 		try {
+		    Configuration cfg = getFreemarkerConfiguration();
 			int k = 0;
 			while (true) {
 				Template template = new Template("text" + k++, new StringReader(value), cfg, "utf8");
@@ -223,7 +223,7 @@ public abstract class ContentTemplate implements IContentTemplate {
      * Utility method for doConfigure. Copies a resource into the project,  
      * performing variable substitutions in it. 
      */
-    protected void createFile(IFile file, Configuration templateCfg, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
+    protected void createFile(IFile file, Configuration freemarkerConfig, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClassLoader());
@@ -239,13 +239,11 @@ public abstract class ContentTemplate implements IContentTemplate {
         	context.getVariables().put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
         	context.getVariables().put("IDEUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(IDEUtils.class.getName()));
         	context.getVariables().put("LangUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(LangUtils.class.getName()));
-        	
-        	context.getVariables().put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
 
-        	templateCfg.setNumberFormat("computer"); // prevent digit grouping with comma
+        	context.getVariables().put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
         	
         	// perform template substitution
-			Template template = templateCfg.getTemplate(templateName, "utf8");
+			Template template = freemarkerConfig.getTemplate(templateName, "utf8");
 			StringWriter writer = new StringWriter();
 			template.process(context.getVariables(), writer);
 			content = writer.toString();
