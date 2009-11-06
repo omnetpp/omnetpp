@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedWizard;
 
@@ -35,13 +36,20 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
         firstPage = new WizardNewFileCreationPage("file selection page", selection);
         firstPage.setAllowExistingResources(false);
         firstPage.setTitle("New NED File");
-        firstPage.setDescription("Choose file name and parent folder");
+        firstPage.setDescription("Choose NED file");
         firstPage.setFileExtension("ned");
         firstPage.setFileName("untitled.ned");
         addPage(firstPage);
         super.addPages();
     }
 
+    @Override
+    protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
+        CreationContext context = super.createContext(selectedTemplate, folder);
+        context.getVariables().put("fileName", firstPage.getFileName());
+        return context;
+    }
+    
     @Override
     public boolean performFinish() {
         //XXX who will create the folder?

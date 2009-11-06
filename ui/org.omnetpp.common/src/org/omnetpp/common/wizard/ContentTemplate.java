@@ -51,7 +51,7 @@ public abstract class ContentTemplate implements IContentTemplate {
 		public Reader getReader(Object templateSource, String encoding) throws IOException { return null; }
 	}
 
-	public static final Image DEFAULT_ICON = CommonPlugin.getImageDescriptor("icons/full/obj16/template.png").createImage();
+	public static final Image DEFAULT_ICON = CommonPlugin.getImage("icons/obj16/wiztemplate.png");
 
 	// template attributes
     private String name;

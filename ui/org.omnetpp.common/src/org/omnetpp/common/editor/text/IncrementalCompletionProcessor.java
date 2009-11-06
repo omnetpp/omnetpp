@@ -40,7 +40,7 @@ import org.omnetpp.common.util.StringUtils;
  * @author rhornig
  */
 public abstract class IncrementalCompletionProcessor extends TemplateCompletionProcessor {
-    private static final String DEFAULT_IMAGE = "icons/obj16/template.png"; 
+    private static final String DEFAULT_IMAGE = "icons/obj16/templateproposal.png"; 
 
     public class  IndentTemplateVariableResolver extends SimpleTemplateVariableResolver {
         protected IndentTemplateVariableResolver(String value) {

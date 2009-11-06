@@ -26,7 +26,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
@@ -40,8 +39,6 @@ import org.omnetpp.common.project.ProjectUtils;
  * @author Andras
  */
 public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
-    public static final Image ICON_CATEGORY = null; //FIXME CommonPlugin.getImageDescriptor("icons/full/obj16/templatecategory.gif").createImage();
-
     private TemplateSelectionPage templateSelectionPage;
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
     private IContentTemplate creatorOfCustomPages;
@@ -103,6 +100,10 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         return new WorkspaceBasedContentTemplate(folder);
     }
     
+    public IContentTemplate getSelectedTemplate() {
+        return templateSelectionPage.getSelectedTemplate();
+    }
+    
     @Override
     public IWizardPage getPreviousPage(IWizardPage page) {
     	// store page content before navigating away
@@ -132,7 +133,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     		else {
     			if (selectedTemplate != creatorOfCustomPages) {
     				try {
-    					context = selectedTemplate.createContext(getFolder());
+    					context = createContext(selectedTemplate, getFolder());
 						templateCustomPages = selectedTemplate.createCustomPages();
 					} catch (CoreException e) {
 						ErrorDialog.openError(getShell(), "Error", "Error creating wizard pages", e.getStatus());
@@ -173,7 +174,16 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     	return super.getNextPage(page);
     }
 
-    protected static ICustomWizardPage getNextEnabledCustomPage(ICustomWizardPage[] pages, int start, CreationContext context) {
+    /**
+     * Produces an initial creation context for the given template. Override if you need to
+     * put extra variables into the context (i.e. a file name).
+     */
+    protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
+        return selectedTemplate.createContext(folder);
+    }
+
+
+    private static ICustomWizardPage getNextEnabledCustomPage(ICustomWizardPage[] pages, int start, CreationContext context) {
     	for (int k = start; k < pages.length; k++)
     		if (pages[k].isEnabled(context))
     			return pages[k];
@@ -205,7 +215,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
 
     	// if we are on the template selection page, create a fresh context with the selected template
     	if (finishingPage == templateSelectionPage) {
-    		context = template!=null ? template.createContext(folder) : null;
+    		context = template!=null ? createContext(template, folder) : null;
     		templateCustomPages = new ICustomWizardPage[0]; // no pages (yet)
     	}
     	

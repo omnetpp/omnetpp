@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.HoverSupport;
@@ -32,6 +33,8 @@ import org.omnetpp.common.ui.SizeConstraint;
  * @author Andras
  */
 public class TemplateSelectionPage extends WizardPage {
+    public static final Image CATEGORY_IMAGE = CommonPlugin.getImage("icons/obj16/wiztemplatecategory.png");
+
     private TreeViewer treeViewer;
 
     protected TemplateSelectionPage() {
@@ -59,7 +62,7 @@ public class TemplateSelectionPage extends WizardPage {
             @Override
             public Image getImage(Object element) {
                 element = ((GenericTreeNode)element).getPayload();
-                return element instanceof IContentTemplate ? ((IContentTemplate)element).getImage() : TemplateBasedWizard.ICON_CATEGORY;
+                return element instanceof IContentTemplate ? ((IContentTemplate)element).getImage() : CATEGORY_IMAGE;
             }
         });
         treeViewer.setContentProvider(new GenericTreeContentProvider());
