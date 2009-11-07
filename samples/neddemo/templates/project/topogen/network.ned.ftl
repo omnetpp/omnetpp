@@ -1,5 +1,6 @@
+<@setoutput file=newNedFile?default("")/>
 //
-// Created: ${date} for project ${projectname}
+// Created: ${date} for project ${projectName}
 //
 
 package ${projectname};

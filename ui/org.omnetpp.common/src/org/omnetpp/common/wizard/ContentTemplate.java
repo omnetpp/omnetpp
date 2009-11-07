@@ -150,7 +150,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         return getClass().getClassLoader();
     }
 
-    public Configuration getFreemarkerConfiguration() {
+    protected Configuration getFreemarkerConfiguration() {
         if (freemarkerConfiguration == null)
             freemarkerConfiguration = createFreemarkerConfiguration();
         return freemarkerConfiguration;

@@ -100,7 +100,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     /**
      * Utility method for getTemplates()
      */
-    protected List<IContentTemplate> loadTemplatesFromWorkspace() {
+    protected List<IContentTemplate> loadTemplatesFromWorkspace(String wizardType) {
         // check the "templates/project" subdirectory of each OMNeT++ project
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         for (IProject project : ProjectUtils.getOmnetppProjects()) {
@@ -109,8 +109,12 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                 try {
                     // each template is a folder which contains a "template.properties" file
                     for (IResource resource : rootFolder.members()) {
-                        if (resource instanceof IFolder && ((IFolder)resource).getFile(WorkspaceBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME).exists())
-                            result.add(loadTemplateFrom((IFolder)resource));
+                        if (resource instanceof IFolder && WorkspaceBasedContentTemplate.looksLikeTemplateFolder((IFolder)resource)) {
+                            IFolder folder = (IFolder)resource;
+                            WorkspaceBasedContentTemplate template = new WorkspaceBasedContentTemplate(folder);
+                            if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
+                                result.add(template);
+                        }
                     }
                 } catch (CoreException e) {
                     CommonPlugin.logError("Error loading project templates from " + rootFolder.toString(), e);
@@ -120,10 +124,6 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         return result;
     }
 
-    protected IContentTemplate loadTemplateFrom(IFolder folder) throws CoreException {
-        return new WorkspaceBasedContentTemplate(folder);
-    }
-    
     public IContentTemplate getSelectedTemplate() {
         return templateSelectionPage.getSelectedTemplate();
     }

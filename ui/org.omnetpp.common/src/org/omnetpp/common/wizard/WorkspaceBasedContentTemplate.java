@@ -6,8 +6,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,6 +49,7 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	
 	// property names:
 	public static final String PROP_TEMPLATENAME = "templateName"; // template display name
+	public static final String PROP_SUPPORTEDWIZARDTYPES = "supportedWizardTypes"; // list of items: "project", "simulation", "nedfile", "inifile", "network", etc
 	public static final String PROP_TEMPLATEDESCRIPTION = "templateDescription"; // template description
 	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
 	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
@@ -56,22 +59,32 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
+	protected Set<String> supportedWizardTypes = new HashSet<String>();
 	protected List<String> ignoreResourcePatterns = new ArrayList<String>();
 	protected List<String> verbatimFilePatterns = new ArrayList<String>();
 	protected List<String> optionalFilePatterns = new ArrayList<String>();
+    private boolean imageAlreadyLoaded = false;
 
+    /**
+     * Currently only tests whether the given folder contains a template.properties file.
+     */
+    public static boolean looksLikeTemplateFolder(IFolder folder) {
+        return folder.getFile(TEMPLATE_PROPERTIES_FILENAME).exists();
+    }
+    
+    /**
+     * Loads the template from the given folder. This is a relatively cheap operation
+     * (only the template.properties file is read), so it is OK for the wizard to 
+     * instantiate WorkspaceBasedContentTemplate for each candidate folder just to determine
+     * whether it should be offered to th user.
+     */
 	public WorkspaceBasedContentTemplate(IFolder folder) throws CoreException {
 		super();
 		this.templateFolder = folder;
 
-		try {
-			InputStream is = folder.getFile(TEMPLATE_PROPERTIES_FILENAME).getContents();
-			properties.load(is);
-			is.close();
-		} catch (IOException e) {
-			throw CommonPlugin.wrapIntoCoreException(e);
-		}
+		properties = loadProperties(folder);
 
+		// note: image will be loaded lazily, in getImage()
 		setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), folder.getName()));
 		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + folder.getFullPath()));
 		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), folder.getProject().getName()));
@@ -79,28 +92,10 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 		ignoreResourcePatterns.add("**/*.xswt");  // note: "*.ftl" is NOT to be added as ignore pattern!
 		ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
 
-		// load image
-		String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
-		if (imageFileName != null) {
-		    ignoreResourcePatterns.add(imageFileName);
-			IFile file = templateFolder.getFile(new Path(imageFileName));
-			IPath locPath = file.getLocation();
-			String loc = locPath==null ? "<unknown>" : locPath.toOSString();
-			ImageRegistry imageRegistry = CommonPlugin.getDefault().getImageRegistry();
-			Image image = imageRegistry.get(loc);
-			if (image==null) {
-				try {
-					image = new Image(Display.getDefault(), loc);
-					imageRegistry.put(loc, image);
-				} catch (SWTException e) {
-					CommonPlugin.logError("Error loading image for project template in "+templateFolder.getFullPath(), e);
-					image = MISSING_IMAGE;
-				}
-			}
-			setImage(image);
-		}
-
 		// the following options may not be modified via the wizard, so they are initialized here
+        String[] labels = SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_SUPPORTEDWIZARDTYPES))," *, *");
+        supportedWizardTypes.addAll(Arrays.asList(labels));
+		
 		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORERESOURCES))," *, *"))
 		    ignoreResourcePatterns.add(item);
 
@@ -110,6 +105,63 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES))," *, *"))
             optionalFilePatterns.add(item);
 	}
+
+    /**
+     * Returns the workspace folder from which the template was loaded.
+     */
+    public IFolder getTemplateFolder() {
+        return templateFolder;
+    }
+    
+    /**
+     * Returns the values in the supportedWizardTypes property file entry.
+     */
+    public Set<String> getSupportedWizardTypes() {
+        return supportedWizardTypes;
+    }
+
+    @Override
+	public Image getImage() {
+	    // lazy loading of the image
+	    if (!imageAlreadyLoaded) {
+	        imageAlreadyLoaded = true;
+	        String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
+	        if (imageFileName != null) {
+	            ignoreResourcePatterns.add(imageFileName);
+	            IFile file = templateFolder.getFile(new Path(imageFileName));
+	            IPath locPath = file.getLocation();
+	            String loc = locPath==null ? "<unknown>" : locPath.toOSString();
+	            ImageRegistry imageRegistry = CommonPlugin.getDefault().getImageRegistry();
+	            Image image = imageRegistry.get(loc);
+	            if (image==null) {
+	                try {
+	                    image = new Image(Display.getDefault(), loc);
+	                    imageRegistry.put(loc, image);
+	                } catch (SWTException e) {
+	                    CommonPlugin.logError("Error loading image for project template in "+templateFolder.getFullPath(), e);
+	                    image = MISSING_IMAGE;
+	                }
+	            }
+	            setImage(image);
+	        }
+	    }
+        return super.getImage();
+	}
+
+    protected static Properties loadProperties(IFolder folder) throws CoreException {
+        InputStream is = null;
+        try {
+            Properties result = new Properties();
+			is = folder.getFile(TEMPLATE_PROPERTIES_FILENAME).getContents();
+			result.load(is);
+			is.close();
+			return result;
+		} 
+        catch (IOException e) {
+		    try { is.close(); } catch (IOException e2) { }
+			throw CommonPlugin.wrapIntoCoreException(e);
+		}
+    }
 
 	@Override
 	public CreationContext createContext(IContainer folder) {
@@ -257,7 +309,7 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 
 	@Override
 	protected boolean suppressIfBlank(IFile file) {
-        IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount());
+        IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount()); //FIXME not good.. oranges vs apples
 	    return matchesAny(relativePath.toString(), optionalFilePatterns);
 	}
 	

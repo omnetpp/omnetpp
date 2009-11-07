@@ -556,6 +556,10 @@ http://freemarker.org/docs/index.html
 
 ---
 
+TODO document: supportedWizardTypes = project, simulation, nedfile, network 
+  and in the concrete template it comes back as wizardType, which can be checked against. together with optionalFiles
+  e.g. don't generate package.ned if it's a simple NED File wizard
+
 TODO document <@setoutput file=newNedFileName?default("")/>   (ures: eredeti file; multiple setoutputs: concatenate)
 TODO document FileChooser and ExternalFileChooser: custom widget: file selector (workspace / external file)
 TODO NED type chooser, project chooser

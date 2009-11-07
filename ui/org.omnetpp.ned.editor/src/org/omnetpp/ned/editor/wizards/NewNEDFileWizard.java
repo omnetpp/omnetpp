@@ -20,6 +20,8 @@ import org.omnetpp.common.wizard.TemplateBasedWizard;
  * @author Andras
  */
 public class NewNEDFileWizard extends TemplateBasedWizard {
+    public static final String WIZARDTYPE = "nedfile";
+
     private IStructuredSelection selection;
     private WizardNewFileCreationPage firstPage;
 
@@ -46,14 +48,14 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
     @Override
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
+        context.getVariables().put("wizardType", WIZARDTYPE);
         context.getVariables().put("newNedFileName", firstPage.getFileName());
         return context;
     }
     
     @Override
     public boolean performFinish() {
-        //XXX who will create the folder?
-        return super.performFinish();
+        return super.performFinish();  // fine as it is
     }
 
     @Override
@@ -70,7 +72,8 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
 
     @Override
     protected List<IContentTemplate> getTemplates() {
-        return loadTemplatesFromWorkspace();  //XXX filtering etc.
+        //FIXME TODO: add built-in templates as well
+        return loadTemplatesFromWorkspace(WIZARDTYPE);
     }
 
 }
