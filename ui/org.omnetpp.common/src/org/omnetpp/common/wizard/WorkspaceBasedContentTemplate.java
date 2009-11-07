@@ -55,14 +55,12 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
 	public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of files NOT top copy into dest folder; basic glob patterns accepted
 	public static final String PROP_VERBATIMFILES = "verbatimFiles"; // list of files to copy verbatim, even if they would be ignored otherwise; basic glob patterns accepted
-	public static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank; basic glob patterns accepted
 
 	protected IFolder templateFolder;
 	protected Properties properties = new Properties();
 	protected Set<String> supportedWizardTypes = new HashSet<String>();
 	protected List<String> ignoreResourcePatterns = new ArrayList<String>();
 	protected List<String> verbatimFilePatterns = new ArrayList<String>();
-	protected List<String> optionalFilePatterns = new ArrayList<String>();
     private boolean imageAlreadyLoaded = false;
 
     /**
@@ -101,9 +99,6 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 
 		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_VERBATIMFILES))," *, *"))
 		    verbatimFilePatterns.add(item);
-
-		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES))," *, *"))
-            optionalFilePatterns.add(item);
 	}
 
     /**
@@ -169,7 +164,6 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 
 		// default values of recognized options (will be overwritten from property file)
 		context.getVariables().put(PROP_IGNORERESOURCES, "");
-		context.getVariables().put(PROP_OPTIONALFILES, "");
 		
 		// add property file entries as template variables
 		for (Object key : properties.keySet()) {
@@ -301,19 +295,13 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
                 else if (isFtlFile && !matchesAny(relativePath.toString(), ignoreResourcePatterns)) {
                     // copy it with template substitution
                     IFile newFile = destFolder.getFile(relativePath.removeFileExtension());
-                    createFileFromWorkspaceResource(newFile, relativePath.toString(), matchesAny(relativePath.toString(), optionalFilePatterns), context);
+                    createFileFromWorkspaceResource(newFile, relativePath.toString(), context);
                 }
 	        }
 	    }
 	}
 
-	@Override
-	protected boolean suppressIfBlank(IFile file) {
-        IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount()); //FIXME not good.. oranges vs apples
-	    return matchesAny(relativePath.toString(), optionalFilePatterns);
-	}
-	
-    protected void createFileFromWorkspaceResource(IFile file, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
+    protected void createFileFromWorkspaceResource(IFile file, String templateName, CreationContext context) throws CoreException {
 		createFile(file, getFreemarkerConfiguration(), templateName, context);
     }
 

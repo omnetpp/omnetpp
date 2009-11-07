@@ -227,19 +227,13 @@ public abstract class ContentTemplate implements IContentTemplate {
 		}
 	}
 
-	/**
-	 * Called back from createFile(), to decide whether a file whose content
-	 * would be blank (whitespace only) should be still saved or not. If the 
-	 * return value is true, the file will not be saved if its would be blank.  
-	 */
-	protected abstract boolean suppressIfBlank(IFile file);
-	
     /**
      * Utility method for doConfigure. Copies a resource into the project,  
      * performing variable substitutions in it. If the template contained 
      * &lt;@setoutput file="..."&gt; tags, multiple files will be saved. 
      * 
      * See also suppressIfBlank().
+     * @param suppressIfBlank 
      */
     protected void createFile(IFile file, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
@@ -294,16 +288,14 @@ public abstract class ContentTemplate implements IContentTemplate {
         for (String fileName : fileContent.keySet()) {
             IFile fileToSave = fileName.equals("") ? file : file.getParent().getFile(new Path(fileName));
             String contentToSave = fileContent.get(fileName);
-            if (!StringUtils.isBlank(contentToSave) || !suppressIfBlank(fileToSave)) {
+            if (!StringUtils.isBlank(contentToSave)) {
+                // save the file if not blank. Note: we do NOT delete the existing file with 
+                // the same name if contentToSave is blank; this is documented behavior.
                 byte[] bytes = contentToSave.getBytes(); 
                 if (!fileToSave.exists())
                     fileToSave.create(new ByteArrayInputStream(bytes), true, context.getProgressMonitor());
                 else
                     fileToSave.setContents(new ByteArrayInputStream(bytes), true, true, context.getProgressMonitor());
-            }
-            else {
-                if (fileToSave.exists())
-                    fileToSave.delete(true, true, context.getProgressMonitor()); // delete suppressed blank file
             }
         }
     }
