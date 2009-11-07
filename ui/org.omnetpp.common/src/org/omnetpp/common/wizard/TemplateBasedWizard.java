@@ -101,10 +101,10 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
      * Utility method for getTemplates()
      */
     protected List<IContentTemplate> loadTemplatesFromWorkspace(String wizardType) {
-        // check the "templates/project" subdirectory of each OMNeT++ project
+        // check the "templates/" subdirectory of each OMNeT++ project
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         for (IProject project : ProjectUtils.getOmnetppProjects()) {
-            IFolder rootFolder = project.getFolder(new Path("templates/project"));
+            IFolder rootFolder = project.getFolder(new Path("templates"));
             if (rootFolder.exists()) {
                 try {
                     // each template is a folder which contains a "template.properties" file

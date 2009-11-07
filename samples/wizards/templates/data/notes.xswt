@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+    <text x:text="Grid Settings" x:style="MULTI|READ_ONLY|WRAP">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        <text 
+x:p0="This Example Project Wizard shows how to use compound data types in templates.
+&#10;TODO.....................
+"/>
+    </text>
+    <label x:text="Wizard files are in:"/>
+    <label x:id="templateFolderPath"/>
+  </x:children>
+
+</xswt>

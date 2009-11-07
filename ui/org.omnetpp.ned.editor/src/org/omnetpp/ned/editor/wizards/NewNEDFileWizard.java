@@ -133,10 +133,10 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
             @Override
             public CreationContext createContext(IContainer folder) {
                 CreationContext context = super.createContext(folder);
-                context.getVariables().put("isEmpty", false);
+                context.getVariables().put("isEmpty", true);
                 context.getVariables().put("isSimple", false);
                 context.getVariables().put("isModule", false);
-                context.getVariables().put("isNetwork", true);
+                context.getVariables().put("isNetwork", false);
                 context.getVariables().put("isChannel", false);
                 context.getVariables().put("isModuleinterface", false);
                 context.getVariables().put("isChannelinterface", false);
