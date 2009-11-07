@@ -25,7 +25,7 @@ channel ${channelType} extends ned.DatarateChannel {
 //
 // Network generated from ${fileName}
 //
-network ${networkName} {
+network ${nedTypeName} {
     submodules:
 <#list nodes.keySet().toArray()?sort as node>
   <#assign nodeAttrs = nodes[node]>

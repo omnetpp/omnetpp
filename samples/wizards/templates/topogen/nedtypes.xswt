@@ -16,13 +16,13 @@
       <layout x:class="GridLayout" x:numColumns="2"/>
       <x:children>
         <label x:text="Network name:"/>
-        <text x:id="networkName" x:style="BORDER">
+        <text x:id="nedTypeName" x:style="BORDER">
           <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
           <setFocus/>
         </text>
       </x:children>
     </group>
-  
+
     <group text="Node NED type">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" x:numColumns="2"/>
@@ -36,7 +36,7 @@
         </button>
       </x:children>
     </group>
-     
+
     <group text="Channel NED type">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" x:numColumns="2"/>
@@ -50,6 +50,6 @@
         </button>
       </x:children>
     </group>
-     
+
   </x:children>
 </xswt>

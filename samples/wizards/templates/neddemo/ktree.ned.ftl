@@ -20,7 +20,7 @@ channel ${channelTypeName} extends ned.DatarateChannel {
 <#-- TODO: generateCoordinates -->
 <#if parametricNED>
    <#if treeK==2>
-network ${networkName}
+network ${nedTypeName}
 {
     parameters:
         int levels = default(${treeLevels});  // 1 = root only
@@ -32,7 +32,7 @@ network ${networkName}
         }
 }
   <#else>
-network ${networkName}
+network ${nedTypeName}
 {
     parameters:
         int k = default(${treeK}); // tree branching factor
@@ -46,7 +46,7 @@ network ${networkName}
 }
   </#if>
 <#else>
-network ${networkName}
+network ${nedTypeName}
 {
     submodules:
 <#list 0..treeLevels-1 as level>

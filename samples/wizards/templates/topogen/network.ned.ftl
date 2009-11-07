@@ -43,7 +43,7 @@ channel ${channelType} extends ned.DatarateChannel {
 // ${topo.toString().trim().replace("\n", "\n// ")}
 // </pre>
 //
-network ${networkName} {
+network ${nedTypeName} {
     submodules:
 <#list 0..neighborLists.size()-1 as i>
         node${i} : ${nodeType};
@@ -55,7 +55,6 @@ network ${networkName} {
      <#if (i < neighbor)>
         node${i}.g++ <--> ${channelType} <--> node${neighbor}.g++;
      </#if>
-  </#list>    
+  </#list>
 </#list>
 }
-    

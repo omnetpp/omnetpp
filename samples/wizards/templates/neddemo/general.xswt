@@ -15,7 +15,7 @@
       <layout x:class="GridLayout" x:numColumns="2"/>
       <x:children>
         <label x:text="Network name:"/>
-        <text x:id="networkName" x:style="BORDER">
+        <text x:id="nedTypeName" x:style="BORDER">
           <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
           <setFocus/>
         </text>
@@ -33,7 +33,7 @@
          <button x:id="bintree" text="Binary tree" x:style="RADIO"/>
          <button x:id="ktree" text="k-ary tree" x:style="RADIO"/>
        </x:children>
-    </group> 
+    </group>
 
   </x:children>
 </xswt>

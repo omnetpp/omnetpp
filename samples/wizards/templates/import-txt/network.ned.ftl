@@ -24,7 +24,7 @@ channel ${channelType} extends ned.DatarateChannel {
 <#--   links: a list, where each item is a map with keys "src", "dest", "bw", "cost" -->
 <#-- In this sample code, we do no cross-checks between nodes[] and links[], and -->
 <#-- assume that all nodes have coordinates, and all links have both data rate and cost specified. -->
-<#-- About the "dummy = ... ? default" constructs below, see http://osdir.com/ml/web.freemarker.user/2003-06/msg00026.html -->     
+<#-- About the "dummy = ... ? default" constructs below, see http://osdir.com/ml/web.freemarker.user/2003-06/msg00026.html -->
 <#compress>
 <#assign lines = FileUtils.readLineOrientedTextFile(fileName)>
 <#assign nodes = LangUtils.newList()>
@@ -60,7 +60,7 @@ channel ${channelType} extends ned.DatarateChannel {
 //
 // Network generated from ${fileName}
 //
-network ${networkName} {
+network ${nedTypeName} {
     submodules:
 <#list nodes as node>
         ${node["name"]}: ${nodeType} { @display("p=${node["x"]},${node["y"]}"); }
