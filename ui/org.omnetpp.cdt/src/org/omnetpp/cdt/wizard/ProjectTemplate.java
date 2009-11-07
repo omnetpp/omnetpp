@@ -40,6 +40,7 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.support.FileUtils;
 import org.omnetpp.common.wizard.support.LangUtils;
 
@@ -50,10 +51,10 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
- * The default implementation of IProjectTemplate
+ * The default implementation of IContentTemplate
  * @author Andras
  */
-public abstract class ProjectTemplate implements IProjectTemplate {
+public abstract class ProjectTemplate implements IContentTemplate {
 
 	private static class NullTemplateLoader implements TemplateLoader {
 		public void closeTemplateSource(Object templateSource) throws IOException { }
@@ -125,18 +126,18 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     	this.image = image;
     }
     
-    public CreationContext createContext(IProject project) {
-    	CreationContext context = new CreationContext(project);
+    public CreationContext createContext(IContainer folder) {
+    	CreationContext context = new CreationContext(folder);
     	
     	// pre-register some potentially useful template variables
     	Map<String, Object> variables = context.getVariables();
         variables.put("templateName", name);
         variables.put("templateDescription", description);
         variables.put("templateCategory", category);
-		variables.put("rawProjectName", project);
-		variables.put("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(project.getName())));
-		variables.put("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(project.getName())));
-		variables.put("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(project.getName())));
+		variables.put("rawProjectName", folder);
+		variables.put("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(folder.getName())));
+		variables.put("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(folder.getName())));
+		variables.put("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(folder.getName())));
         Calendar cal = Calendar.getInstance();
         variables.put("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
         variables.put("year", ""+cal.get(Calendar.YEAR));
@@ -159,16 +160,6 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     protected ClassLoader createClassLoader() {
         return getClass().getClassLoader();
     }
-    
-    public void configureProject(CreationContext context) throws CoreException {
-        // do it!
-        doConfigure(context);
-    }
-
-    /**
-     * Configure the project.
-     */
-    protected abstract void doConfigure(CreationContext context) throws CoreException;
 
 	/**
      * Resolves references to other variables. Should be called from doConfigure() before

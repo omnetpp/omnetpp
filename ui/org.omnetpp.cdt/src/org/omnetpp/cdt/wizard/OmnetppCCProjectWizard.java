@@ -65,6 +65,7 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.ICustomWizardPage;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 
@@ -82,7 +83,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     private CCProjectWizard nestedWizard;
     private TemplateSelectionPage templatePage;
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
-    private IProjectTemplate creatorOfCustomPages;
+    private IContentTemplate creatorOfCustomPages;
     private CreationContext context;
     
     public class NewOmnetppCppProjectCreationPage extends NewOmnetppProjectCreationPage {
@@ -140,12 +141,12 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                 @Override
                 public String getText(Object element) {
                     element = ((GenericTreeNode)element).getPayload();
-                    return element instanceof IProjectTemplate ? ((IProjectTemplate)element).getName() : element.toString();
+                    return element instanceof IContentTemplate ? ((IContentTemplate)element).getName() : element.toString();
                 }
                 @Override
                 public Image getImage(Object element) {
                     element = ((GenericTreeNode)element).getPayload();
-                    return element instanceof IProjectTemplate ? ((IProjectTemplate)element).getImage() : ICON_CATEGORY;
+                    return element instanceof IContentTemplate ? ((IContentTemplate)element).getImage() : ICON_CATEGORY;
                 }
             });
             treeViewer.setContentProvider(new GenericTreeContentProvider());
@@ -156,8 +157,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                     Item item = treeViewer.getTree().getItem(new Point(x,y));
                     Object element = item==null ? null : item.getData();
                     element = (element instanceof GenericTreeNode) ? ((GenericTreeNode)element).getPayload() : null;
-                    if (element instanceof IProjectTemplate) {
-                        String description = ((IProjectTemplate)element).getDescription();
+                    if (element instanceof IContentTemplate) {
+                        String description = ((IContentTemplate)element).getDescription();
                         if (description != null)
                             return HoverSupport.addHTMLStyleSheet(description);
                     }
@@ -172,25 +173,25 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         public void updateTemplateList() {
             // categorize and add templates into the tree
             // NOTE: gets called from first page's getNextPage() method             
-            List<IProjectTemplate> templates = getTemplates();
+            List<IContentTemplate> templates = getTemplates();
             GenericTreeNode root = new GenericTreeNode("root");
             Set<String> categories = new LinkedHashSet<String>(); 
-            for (IProjectTemplate template : templates)
+            for (IContentTemplate template : templates)
                 categories.add(template.getCategory());
             for (String category : categories) {
                 GenericTreeNode categoryNode = new GenericTreeNode(category);
                 root.addChild(categoryNode);
-                for (IProjectTemplate template : templates)
+                for (IContentTemplate template : templates)
                     if (category.equals(template.getCategory()))
                         categoryNode.addChild(new GenericTreeNode(template));
             }                
             treeViewer.setInput(root);
         }
 
-        public IProjectTemplate getSelectedTemplate() {
+        public IContentTemplate getSelectedTemplate() {
             Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
             element = element == null ? null : ((GenericTreeNode)element).getPayload();
-            return (element instanceof IProjectTemplate) ? (IProjectTemplate)element : null;
+            return (element instanceof IContentTemplate) ? (IContentTemplate)element : null;
         }
     }
     
@@ -326,7 +327,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     	}
     	else if (page == templatePage) {
     		// if there is a template selected, return its first enabled custom page (if it has one)
-    		IProjectTemplate selectedTemplate = templatePage.getSelectedTemplate();
+    		IContentTemplate selectedTemplate = templatePage.getSelectedTemplate();
     		if (selectedTemplate == null) {
     			context = null;
     		}
@@ -389,7 +390,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     	final IProject project = projectPage.getProjectHandle();
     	
     	// if we are on the first page, we use no template at all, otherwise we use the selected one
-    	final IProjectTemplate template;
+    	final IContentTemplate template;
     	if (finishingPage == projectPage) {
     		template = null;
     		context = null;
@@ -442,7 +443,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                 	try {
                 		context.setProgressMonitor(monitor);
                 		Assert.isTrue(context.getFolder().equals(project));
-                		template.configureProject(context);
+                		template.performFinish(context);
                 	} finally {
                     	context.setProgressMonitor(null);
                 	}
@@ -471,8 +472,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         return ((NewOmnetppCppProjectCreationPage)projectPage).withCplusplusSupport();
     }
 
-	protected List<IProjectTemplate> getTemplates() {
-		List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
+	protected List<IContentTemplate> getTemplates() {
+		List<IContentTemplate> result = new ArrayList<IContentTemplate>();
 		
 		// built-in templates
         if (withCplusplusSupport())
@@ -489,9 +490,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 		return result;
 	}
 
-	protected List<IProjectTemplate> loadTemplatesFromWorkspace() {
+	protected List<IContentTemplate> loadTemplatesFromWorkspace() {
 		// check the "templates/project" subdirectory of each OMNeT++ project
-		List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
+		List<IContentTemplate> result = new ArrayList<IContentTemplate>();
 		for (IProject project : ProjectUtils.getOmnetppProjects()) {
 			IFolder rootFolder = project.getFolder(new Path("templates"));
 			if (rootFolder.exists()) {
@@ -509,7 +510,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 		return result;
 	}
 
-	protected IProjectTemplate loadTemplateFrom(IFolder folder) throws CoreException {
+	protected IContentTemplate loadTemplateFrom(IFolder folder) throws CoreException {
 		return new WorkspaceBasedProjectTemplate(folder);
 	}
 

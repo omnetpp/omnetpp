@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.IContentTemplate;
 
 /**
  * Provides built-in project templates
@@ -22,8 +23,8 @@ public class BuiltinProjectTemplates {
     /**
      * Creates and returns built-in C++ project templates.
      */
-    public static List<IProjectTemplate> getCppTemplates() {
-        List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
+    public static List<IContentTemplate> getCppTemplates() {
+        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
 
         final String DEFAULT_SRCFOLDER_OPTIONS = "--deep --meta:recurse --meta:auto-include-path --meta:export-library --meta:use-exported-libs";
         final String DEFAULT_ROOTFOLDER_OPTIONS = "--nolink --meta:recurse";
@@ -31,8 +32,7 @@ public class BuiltinProjectTemplates {
         final String SINGLE_DIR = "Single-directory project, for small simulations";
         
         result.add(new BuiltinProjectTemplate("Empty project", SINGLE_DIR, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("rootPackage", "");
                 context.getVariables().put("simulationsPackage", "");
@@ -43,8 +43,7 @@ public class BuiltinProjectTemplates {
         });
         
         result.add(new BuiltinProjectTemplate("Tictoc example", SINGLE_DIR, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("rootPackage", "");
                 context.getVariables().put("simulationsPackage", "");
@@ -60,8 +59,7 @@ public class BuiltinProjectTemplates {
         });
         
         result.add(new BuiltinProjectTemplate("Source-sink example", SINGLE_DIR, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("rootPackage", "");
                 context.getVariables().put("simulationsPackage", "");
@@ -82,8 +80,7 @@ public class BuiltinProjectTemplates {
         final String SRC_AND_SIMULATIONS = "Project with \"src\" and \"simulations\" folders";
         
         result.add(new BuiltinProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("rootPackage", "");
                 context.getVariables().put("simulationsPackage", "");
@@ -97,8 +94,7 @@ public class BuiltinProjectTemplates {
         });
         
         result.add(new BuiltinProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("rootPackage", "");
                 context.getVariables().put("simulationsPackage", "");
@@ -117,8 +113,7 @@ public class BuiltinProjectTemplates {
         });
         
         result.add(new BuiltinProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "${projectname}");
                 context.getVariables().put("rootPackage", "org.example.${projectname}");
                 context.getVariables().put("simulationsPackage", "${rootPackage}.simulations");
@@ -148,13 +143,12 @@ public class BuiltinProjectTemplates {
     /**
      * Creates and returns built-in non-C++ project templates.
      */
-    public static List<IProjectTemplate> getNoncppTemplates() {
-    	List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
+    public static List<IContentTemplate> getNoncppTemplates() {
+    	List<IContentTemplate> result = new ArrayList<IContentTemplate>();
 
     	final String NONCPP_SINGLEDIR = "Single-directory project";
         result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SINGLEDIR, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("simulationsPackage", "");
                 substituteNestedVariables(context);
@@ -164,8 +158,7 @@ public class BuiltinProjectTemplates {
 
         final String NONCPP_SIMULATIONS = "Project with a \"simulations\" folder";
         result.add(new BuiltinProjectTemplate("Empty project", NONCPP_SIMULATIONS, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("simulationsPackage", "");
                 substituteNestedVariables(context);
@@ -175,8 +168,7 @@ public class BuiltinProjectTemplates {
         });
 
         result.add(new BuiltinProjectTemplate("Empty project with packages", NONCPP_SIMULATIONS, null) {
-            @Override
-            public void doConfigure(CreationContext context) throws CoreException {
+            public void performFinish(CreationContext context) throws CoreException {
                 context.getVariables().put("namespace", "");
                 context.getVariables().put("simulationsPackage", "org.example.${projectname}.simulations");
                 substituteNestedVariables(context);

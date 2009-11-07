@@ -47,6 +47,7 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.ICustomWizardPage;
 import org.omnetpp.common.wizard.SWTDataUtil;
+import org.omnetpp.common.wizard.WorkspaceTemplateLoader;
 
 import com.swtworkbench.community.xswt.XSWT;
 
@@ -125,8 +126,8 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 	}
 
 	@Override
-	public CreationContext createContext(IProject project) {
-		CreationContext context = super.createContext(project);
+	public CreationContext createContext(IContainer folder) {
+		CreationContext context = super.createContext(folder);
 
 		// default values of recognized options (will be overwritten from property file)
 		context.getVariables().put(PROP_ADDPROJECTREFERENCE, "true");
@@ -352,8 +353,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		}
 	}
 	
-	@Override
-	protected void doConfigure(CreationContext context) throws CoreException {
+	public void performFinish(CreationContext context) throws CoreException {
 		substituteNestedVariables(context);
 
 		if (SWTDataUtil.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
