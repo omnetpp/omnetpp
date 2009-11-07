@@ -1,362 +1,52 @@
 package org.omnetpp.cdt.wizard;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Text;
-import org.omnetpp.cdt.Activator;
-import org.omnetpp.common.json.ExceptionErrorListener;
-import org.omnetpp.common.json.JSONValidatingReader;
+import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.wizard.CreationContext;
-import org.omnetpp.common.wizard.ICustomWizardPage;
 import org.omnetpp.common.wizard.SWTDataUtil;
-import org.omnetpp.common.wizard.WorkspaceTemplateLoader;
-
-import com.swtworkbench.community.xswt.XSWT;
-
-import freemarker.template.Configuration;
+import org.omnetpp.common.wizard.WorkspaceBasedContentTemplate;
 
 /**
  * Project template loaded from a workspace project.
  * @author Andras
  */
-//FIXME: freemarker logging currently goes to stdout
-public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
-	public static final String TEMPLATE_PROPERTIES_FILENAME = "template.properties";
-	public static final Image MISSING_IMAGE = ImageDescriptor.getMissingImageDescriptor().createImage();
-	
-	// property names:
-	public static final String PROP_TEMPLATENAME = "templateName"; // template display name
-	public static final String PROP_TEMPLATEDESCRIPTION = "templateDescription"; // template description
-	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
-	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
-	public static final String PROP_ADDPROJECTREFERENCE = "addProjectReference"; // boolean: if true, make project as dependent on this one
-	public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of non-template files: won't get copied over
-	public static final String PROP_OPTIONALFILES = "optionalFiles"; // list of files to be suppressed if they'd be blank
-	public static final String PROP_SOURCEFOLDERS = "sourceFolders"; // source folders to be created and configured
-	public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
-	public static final String PROP_MAKEMAKEOPTIONS = "makemakeOptions"; // makemake options, as "folder1:options1,folder2:options2,..."
-
-	protected IFolder templateFolder;
-	protected Properties properties = new Properties();
-	protected Set<IResource> ignoreResources = new HashSet<IResource>();
-	protected Set<IFile> optionalFiles = new HashSet<IFile>(); // files not to be generated if they'd be blank
-
-	public WorkspaceBasedProjectTemplate(IFolder folder) throws CoreException {
-		super();
-		this.templateFolder = folder;
-
-		try {
-			InputStream is = folder.getFile(TEMPLATE_PROPERTIES_FILENAME).getContents();
-			properties.load(is);
-			is.close();
-		} catch (IOException e) {
-			throw Activator.wrapIntoCoreException(e);
-		}
-		
-		setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), folder.getName()));
-		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + folder.getFullPath()));
-		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), folder.getProject().getName()));
-
-		// load image
-		String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
-		if (imageFileName != null) {
-			IFile file = templateFolder.getFile(new Path(imageFileName));
-			ignoreResources.add(file); // do not copy image file to dest project
-			IPath locPath = file.getLocation();
-			String loc = locPath==null ? "<unknown>" : locPath.toOSString();
-			ImageRegistry imageRegistry = Activator.getDefault().getImageRegistry();
-			Image image = imageRegistry.get(loc);
-			if (image==null) {
-				try {
-					image = new Image(Display.getDefault(), loc);
-					imageRegistry.put(loc, image);
-				} catch (SWTException e) {
-					Activator.logError("Error loading image for project template in "+templateFolder.getFullPath(), e);
-					image = MISSING_IMAGE;
-				}
-			}
-			setImage(image);
-		}
-
-		// the following options may not be modified via the wizard, so they are initialized here
-		ignoreResources.add(folder.getFile(TEMPLATE_PROPERTIES_FILENAME));
-		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORERESOURCES))," *, *"))
-			ignoreResources.add(folder.getFile(new Path(item)));
-
-		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_OPTIONALFILES))," *, *"))
-			optionalFiles.add(folder.getFile(new Path(item)));
-	}
-
-	@Override
-	public CreationContext createContext(IContainer folder) {
-		CreationContext context = super.createContext(folder);
-
-		// default values of recognized options (will be overwritten from property file)
-		context.getVariables().put(PROP_ADDPROJECTREFERENCE, "true");
-		context.getVariables().put(PROP_IGNORERESOURCES, "");
-		context.getVariables().put(PROP_OPTIONALFILES, "");
-		context.getVariables().put(PROP_SOURCEFOLDERS, "");
-		context.getVariables().put(PROP_NEDSOURCEFOLDERS, "");
-		context.getVariables().put(PROP_MAKEMAKEOPTIONS, "");
-		
-		// add property file entries as template variables
-		for (Object key : properties.keySet()) {
-			Object value = properties.get(key);
-			Assert.isTrue(key instanceof String && value instanceof String);
-				context.getVariables().put((String)key, parseJSON((String)value));
-		}
-		
-		// add more predefined variables (these ones cannot be overwritten from the property file, would make no sense)
-		context.getVariables().put("templateFolderName", templateFolder.getName());
-		context.getVariables().put("templateFolderPath", templateFolder.getFullPath().toString());
-		context.getVariables().put("templateProject", templateFolder.getProject().getName());
-
-		return context;
-	}
-	
-	/**
-	 * Overridden so that we can load JAR files from the template folder.
-	 */
-	@Override
-	protected ClassLoader createClassLoader() {
-	    List<URL> urls = new ArrayList<URL>();
-	    try {
-	        for (IResource resource : templateFolder.members())
-	            if (resource instanceof IFile && resource.getFileExtension().equals("jar"))
-	                urls.add(new URL("file", "", resource.getLocation().toPortableString()));
-	    } 
-	    catch (Exception e) {
-	        Activator.logError("Error assembling classpath for loading jars from the workspace", e);
-	    }
-	    return new URLClassLoader(urls.toArray(new URL[]{}), getClass().getClassLoader());
-	}
-	
-	/**
-	 * XSWT-based wizard page.
-	 * @author Andras
-	 */
-	class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
-		protected IFile xswtFile;
-		protected String condition; // FreeMarker expr, use as isEnabled() condition
-		protected Map<String,Control> widgetMap;
-		protected CreationContext context; // to transfer context from populatePage() to createControl()
-		
-		public XSWTWizardPage(String name, IFile xswtFile, String condition) {
-			super(name);
-			this.xswtFile = xswtFile;
-			this.condition = condition;
-		}
-		
-		@SuppressWarnings("unchecked")
-		public void createControl(Composite parent) {
-	        ClassLoader oldClassLoader = XSWT.getClassLoader();
-	        XSWT.setClassLoader(getClassLoader()); // ensure access to custom widget classes
-
-	        Composite composite = null;
-	    	try {
-	    		// instantiate XSWT form
-	    		composite = new Composite(parent, SWT.NONE);
-	    		composite.setLayout(new GridLayout());
-	    		widgetMap = (Map<String,Control>) XSWT.create(composite, xswtFile.getContents()); 
-	    		setControl(composite);
-	    		
-	    		if (context != null) {
-	    			// do deferred populatePage() call
-	    			populatePage(context);
-	    			context = null; // to be safe
-	    		}
-	    		
-	    	} catch (Exception e) {
-	    		widgetMap = new HashMap<String, Control>(); // fake it
-	    		displayError(parent, composite, e); 
-			}
-	    	finally {
-	            XSWT.setClassLoader(oldClassLoader);
-	    	}
-		}
-		
-		public void displayError(final Composite parent, Composite composite, Exception e) {
-			String msg = "Error creating form from "+xswtFile.getFullPath();
-			Activator.logError(msg, e);
-			composite.dispose();
-			
-			// create error text widget
-    		Text errorText = new Text(parent, SWT.MULTI|SWT.READ_ONLY|SWT.WRAP) {
-    			@Override
-    			public Point computeSize(int whint, int hhint, boolean changed) {
-    				// Prevent text from blowing up the window horizontally.
-    				// This solution looks a bit harsh, but others like setting
-    				// GridData.widthHint don't work.
-    				Point size = super.computeSize(whint, hhint, changed);
-    				size.x = parent.getSize().x;
-					return size;
-    			}
-    			@Override
-    			protected void checkSubclass() {
-    			}
-    		};
-    		
-			errorText.setText(msg + ":\n\n" + e.getClass().getSimpleName()+": "+e.getMessage());
-			setControl(errorText);
-		}
-		
-		public void populatePage(CreationContext context) {
-			if (widgetMap == null) {
-				// call too early -- defer it to createControl()
-				this.context = context; 
-			}
-			else {
-				// fill up controls with values from the context
-				for (String key : widgetMap.keySet()) {
-					Control control = widgetMap.get(key);
-					Object value = context.getVariables().get(key);
-					if (value != null) {
-						try {
-							SWTDataUtil.writeValueIntoControl(control, value);
-						}
-						catch (Exception e) {
-							// NumberFormatException, ParseException (for date/time), something like that
-							String message = "Cannot put value '"+value+"' into "+control.getClass().getSimpleName()+" control '"+key+"'";
-							MessageDialog.openError(getShell(), "Error", "Wizard page: "+message);
-							Activator.logError(message, e);
-						}
-					}
-				}
-			}
-		}
-
-		public void extractPageContent(CreationContext context) {
-			// extract data from the XSWT form
-			Assert.isNotNull(widgetMap);
-			for (String widgetName : widgetMap.keySet()) {
-				Control control = widgetMap.get(widgetName);
-				Object value = SWTDataUtil.getValueFromControl(control);
-				context.getVariables().put(widgetName, value);
-			}
-		}
-
-		public boolean isEnabled(CreationContext context) {
-			if (StringUtils.isBlank(condition))
-				return true;
-			
-			// evaluate as FreeMarker expression
-			try {
-				String macro = "${(" + condition + ")?string}";
-				String result = evaluate(macro, context);
-				return result.equals("true");
-			} 
-			catch (Exception e) {
-				String message = "Cannot evaluate condition '"+condition+"' for page "+getName();
-				MessageDialog.openError(getShell(), "Error", "Wizard: "+message+": " + e.getMessage());
-				Activator.logError(message, e);
-				return true;
-			}
-		}
-
-		@Override
-		public IWizardPage getPreviousPage() {
-			if (getWizard() != null)
-				getWizard().getPreviousPage(this); // as required by ICustomWizardPage
-			return super.getPreviousPage();
-		}
-	};
-
-	public ICustomWizardPage[] createCustomPages() throws CoreException {
-    	// collect page IDs from property file ("page.1", "page.2" etc keys)
-    	int[] pageIDs = new int[0];
-    	for (Object key : properties.keySet())
-    		if (((String)key).matches("page\\.[0-9]+\\.file"))
-    			pageIDs = ArrayUtils.add(pageIDs, Integer.parseInt(((String)key).replaceFirst("^page\\.([0-9]+)\\.file$", "$1")));
-    	Arrays.sort(pageIDs);
-    	
-    	// create pages
-    	ICustomWizardPage[] result = new ICustomWizardPage[pageIDs.length];
-		for (int i=0; i<pageIDs.length; i++) {
-			// create page
-			int pageID = pageIDs[i];
-			String xswtFileName = properties.getProperty("page."+pageID+".file");
-			String condition = properties.getProperty("page."+pageID+".condition");
-			IFile xswtFile = templateFolder.getFile(new Path(xswtFileName));
-			if (!xswtFile.exists())
-				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Template file not found: "+xswtFile.getFullPath()));
-			result[i] = new XSWTWizardPage(getName()+"#"+pageID, xswtFile, condition);
-
-			// set title and description
-			String title = StringUtils.defaultIfEmpty(properties.getProperty("page."+pageID+".title"), getName());
-			String description = StringUtils.defaultIfEmpty(properties.getProperty("page."+pageID+".description"),"Select options below"); // "1 of 5" not good as default, because of conditional pages
-			result[i].setTitle(title);
-			result[i].setDescription(description);
-			
-			// do not copy forms into the new project
-			ignoreResources.add(xswtFile);
-		}
-		
-		return result;
+public class WorkspaceBasedProjectTemplate extends WorkspaceBasedContentTemplate {
+    public static final String PROP_ADDPROJECTREFERENCE = "addProjectReference"; // boolean: if true, make project as dependent on this one
+    public static final String PROP_SOURCEFOLDERS = "sourceFolders"; // source folders to be created and configured
+    public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
+    public static final String PROP_MAKEMAKEOPTIONS = "makemakeOptions"; // makemake options, as "folder1:options1,folder2:options2,..."
+    
+    public WorkspaceBasedProjectTemplate(IFolder folder) throws CoreException {
+        super(folder);
     }
 
-	/**
-	 * Parse text as JSON. Returns Boolean, String, Number, List or Map. If the
-	 * text does not look like JSON, treats it as an unquoted literal string, and
-	 * returns it as String.
-	 *  
-	 * @throws IllegalArgumentException on JSON parse error.
-	 */
-	public static Object parseJSON(String text) {
-		String numberRegex = "\\s*[+-]?[0-9.]+([eE][+-]?[0-9]+)?\\s*"; // sort of
-		if (text.equals("true") || text.equals("false") || text.matches(numberRegex) || 
-				text.trim().startsWith("[") || text.trim().startsWith("{")) {
-			// looks like JSON -- parse as such
-			JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
-			return reader.read(text); // throws IllegalArgumentException on parse errors
-		} 
-		else {
-			// apparently not JSON -- take it as a literal string with missing quotes
-			return text.trim();
-		}
-	}
+    @Override
+    public CreationContext createContext(IContainer folder) {
+        CreationContext context = super.createContext(folder);
+
+        // default values of recognized options (will be overwritten from property file)
+        context.getVariables().put(PROP_ADDPROJECTREFERENCE, "true");
+        context.getVariables().put(PROP_SOURCEFOLDERS, "");
+        context.getVariables().put(PROP_NEDSOURCEFOLDERS, "");
+        context.getVariables().put(PROP_MAKEMAKEOPTIONS, "");
+
+        return context;
+    }
+
+    //FIXME TODO override: protected ClassLoader createClassLoader() {
+    //FIXME register newer IDEUtils
+    
 	
 	public void performFinish(CreationContext context) throws CoreException {
-		substituteNestedVariables(context);
+	    super.performFinish(context);
 
-		if (SWTDataUtil.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
+	    if (SWTDataUtil.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
 			ProjectUtils.addReferencedProject((IProject)context.getFolder(), templateFolder.getProject(), context.getProgressMonitor());
 		
 		String[] srcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
@@ -370,46 +60,55 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		Map<String,String> makemakeOptions = SWTDataUtil.toStringMap(context.getVariables().get(PROP_MAKEMAKEOPTIONS));
 		if (!makemakeOptions.isEmpty())
 			createBuildSpec(makemakeOptions, context);
-
-	    // copy over files and folders, with template substitution
-		copy(templateFolder, context.getFolder(), context);
 	}
 	
-	protected void copy(IFolder folder, IContainer destFolder, CreationContext context) throws CoreException {
-		for (IResource resource : folder.members()) {
-			if (!ignoreResources.contains(resource)) {
-				if (resource instanceof IFile) {
-					IFile file = (IFile)resource;
-					IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount());
-					if (file.getFileExtension().equals("ftl")) {
-						// copy it with template substitution
-						IFile newFile = destFolder.getFile(relativePath.removeFileExtension());
-						createFileFromWorkspaceResource(newFile, relativePath.toString(), optionalFiles.contains(file), context);
-					}
-					else {
-						// copy it verbatim
-						IFile newFile = destFolder.getFile(relativePath);
-						if (newFile.exists())
-							newFile.delete(true, context.getProgressMonitor());
-						file.copy(newFile.getFullPath(), true, context.getProgressMonitor());
-					}
-				}
-				else if (resource instanceof IFolder) {
-					// create
-					IFolder subfolder = (IFolder)resource;
-					IFolder newSubfolder = destFolder.getFolder(new Path(subfolder.getName()));
-					if (!newSubfolder.exists())
-						newSubfolder.create(true, true, context.getProgressMonitor());
-					copy(subfolder, newSubfolder, context);
-				}
-			}
-		}
-	}
-
-    protected void createFileFromWorkspaceResource(IFile file, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
-        Configuration cfg = new Configuration();
-        cfg.setTemplateLoader(new WorkspaceTemplateLoader(templateFolder));
-		createFile(file, cfg, templateName, suppressIfBlank, context);
+    protected void createFolder(String projectRelativePath, CreationContext context) throws CoreException {
+        ProjectWizardUtils.createFolder(projectRelativePath, context);
+    }
+    
+    /**
+     * Creates the given folders, and a folder. If the parent folder(s) do not exist, they are created.
+     */
+    protected void createAndSetNedSourceFolders(String[] projectRelativePaths, CreationContext context) throws CoreException {
+        ProjectWizardUtils.createAndSetNedSourceFolders(projectRelativePaths, context);
     }
 
+    /**
+     * Sets C++ source folders to the given list.
+     */
+    protected void createAndSetSourceFolders(String[] projectRelativePaths, CreationContext context) throws CoreException {
+        ProjectWizardUtils.createAndSetSourceFolders(projectRelativePaths, context);
+    }
+    
+    /**
+     * Sets the project's source locations list to the given list of folders, in all configurations. 
+     * (Previous source entries get overwritten.)  
+     */
+    protected void setSourceLocations(IContainer[] folders, CreationContext context) throws CoreException {
+        ProjectWizardUtils.setSourceLocations(folders, context);
+    }
+
+    /**
+     * Creates a default build spec (project root being makemake folder)
+     */
+    protected void createDefaultBuildSpec(CreationContext context) throws CoreException {
+        BuildSpecification.createInitial((IProject)context.getFolder()).save();
+    }
+
+    /**
+     * Sets the makemake options on the given project. Array must contain folderPaths 
+     * as keys, and options as values.
+     */
+        
+    protected void createBuildSpec(String[] pathsAndMakemakeOptions, CreationContext context) throws CoreException {
+        ProjectWizardUtils.createBuildSpec(pathsAndMakemakeOptions, context);
+    }
+    
+    /**
+     * Sets the makemake options on the given project. Array must contain folderPath1, options1, 
+     * folderPath2, options2, etc.
+     */
+    protected void createBuildSpec(Map<String,String> pathsAndMakemakeOptions, CreationContext context) throws CoreException {
+        ProjectWizardUtils.createBuildSpec(pathsAndMakemakeOptions, context);
+    }
 }

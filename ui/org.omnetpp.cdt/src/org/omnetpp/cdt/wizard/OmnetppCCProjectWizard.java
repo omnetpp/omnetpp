@@ -335,6 +335,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     			if (selectedTemplate != creatorOfCustomPages) {
     				try {
     					context = selectedTemplate.createContext(projectPage.getProjectHandle());
+    					context.getVariables().put("wizardType", "project");
 						templateCustomPages = selectedTemplate.createCustomPages();
 					} catch (CoreException e) {
 						ErrorDialog.openError(getShell(), "Error", "Error creating wizard pages", e.getStatus());
@@ -403,6 +404,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     	// if we are on the template selection page, create a fresh context with the selected template
     	if (finishingPage == templatePage) {
     		context = template!=null ? template.createContext(project) : null;
+    		if (context!=null)
+    		    context.getVariables().put("wizardType", "project");
+
     		templateCustomPages = new ICustomWizardPage[0]; // no pages (yet)
     	}
     	
