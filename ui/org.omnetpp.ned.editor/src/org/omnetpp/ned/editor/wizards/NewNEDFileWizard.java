@@ -20,7 +20,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.BuiltinProjectTemplate;
 import org.omnetpp.common.wizard.CreationContext;
@@ -30,7 +29,6 @@ import org.omnetpp.common.wizard.TemplateBasedWizard;
 import org.omnetpp.common.wizard.XSWTWizardPage;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * "New NED file" wizard
@@ -70,7 +68,7 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
         CreationContext context = super.createContext(selectedTemplate, folder);
 
         context.getVariables().put("wizardType", WIZARDTYPE);
-        context.getVariables().put("newNedFileName", firstPage.getFileName());
+        context.getVariables().put("nedFileName", firstPage.getFileName());
 
         IPath filePath = firstPage.getContainerFullPath().append(firstPage.getFileName());
         IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
@@ -79,11 +77,6 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
 
         String nedTypeName = StringUtils.capitalize(StringUtils.makeValidIdentifier(filePath.removeFileExtension().lastSegment()));
         context.getVariables().put("nedTypeName", nedTypeName);
-
-        String license = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(newFile.getParent(), INEDTypeResolver.LICENSE_PROPERTY);
-        if (license==null || !LicenseUtils.isAcceptedLicense(license))
-            license = LicenseUtils.getDefaultLicense();
-        context.getVariables().put("bannerComment", LicenseUtils.getBannerComment(license, "//"));
         
         return context;
     }

@@ -1,7 +1,9 @@
-<@setoutput file=newNedFile?default("")/>
-//
+<@setoutput file=nedFileName?default("")/>
+${bannerComment}
+
 // Created: ${date} for project ${projectName}
-//
+
+<#if nedPackageName!="">package ${nedPackageName};</#if>
 
 simple WirelessNode {
     string routingProtocol;

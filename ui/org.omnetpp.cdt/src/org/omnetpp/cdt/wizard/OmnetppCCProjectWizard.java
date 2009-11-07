@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.ui.CUIPlugin;
@@ -64,6 +63,7 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.ICustomWizardPage;
@@ -336,6 +336,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     				try {
     					context = selectedTemplate.createContext(projectPage.getProjectHandle());
     					context.getVariables().put("wizardType", "project");
+    					context.getVariables().put("nedPackageName", StringUtils.makeValidIdentifier(projectPage.getProjectName()).toLowerCase());
 						templateCustomPages = selectedTemplate.createCustomPages();
 					} catch (CoreException e) {
 						ErrorDialog.openError(getShell(), "Error", "Error creating wizard pages", e.getStatus());
@@ -404,8 +405,10 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     	// if we are on the template selection page, create a fresh context with the selected template
     	if (finishingPage == templatePage) {
     		context = template!=null ? template.createContext(project) : null;
-    		if (context!=null)
+    		if (context!=null) {
     		    context.getVariables().put("wizardType", "project");
+                context.getVariables().put("nedPackageName", StringUtils.makeValidIdentifier(projectPage.getProjectName()).toLowerCase());
+    		}
 
     		templateCustomPages = new ICustomWizardPage[0]; // no pages (yet)
     	}

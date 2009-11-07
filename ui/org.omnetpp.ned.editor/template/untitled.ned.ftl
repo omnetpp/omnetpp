@@ -1,4 +1,4 @@
-<@setoutput file=newNedFileName?default("")/>
+<@setoutput file=nedFileName?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>

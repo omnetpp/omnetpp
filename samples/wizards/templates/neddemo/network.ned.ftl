@@ -1,9 +1,9 @@
-<@setoutput file=newNedFile?default("")/>
-//
-// Created on ${date} for project ${projectName}
-//
+<@setoutput file=nedFileName?default("")/>
+${bannerComment}
 
-package ${projectname};
+// Created: ${date} for project ${projectName}
+
+<#if nedPackageName!="">package ${nedPackageName};</#if>
 
 <#-- convert variables to numbers (some widgets return them as strings)-->
 <#assign treeK = treeK?number>

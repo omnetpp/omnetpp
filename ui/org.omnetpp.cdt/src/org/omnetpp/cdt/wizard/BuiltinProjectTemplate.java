@@ -1,27 +1,14 @@
 package org.omnetpp.cdt.wizard;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.CSourceEntry;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.WriteAccessException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
-import org.omnetpp.cdt.makefile.MakemakeOptions;
-import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.wizard.ContentTemplate;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.ICustomWizardPage;

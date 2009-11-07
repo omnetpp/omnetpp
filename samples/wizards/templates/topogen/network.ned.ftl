@@ -1,9 +1,9 @@
-<@setoutput file=newNedFile?default("")/>
-//
-// Created: ${date} for project ${projectName}
-//
+<@setoutput file=nedFileName?default("")/>
+${bannerComment}
 
-package ${projectname};
+// Created: ${date} for project ${projectName}
+
+<#if nedPackageName!="">package ${nedPackageName};</#if>
 
 <#if generateNodeTypeDecl>
 module ${nodeType} {

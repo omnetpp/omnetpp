@@ -1,3 +1,3 @@
-<#if wizardType=="project" || wizardType=="simulation">
-package ${projectname};
+<#if (wizardType=="project" || wizardType=="simulation") && nedPackageName!="">
+package ${nedPackageName};
 </#if>
