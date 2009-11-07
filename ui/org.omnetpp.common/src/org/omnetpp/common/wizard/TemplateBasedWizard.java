@@ -26,6 +26,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
@@ -43,9 +48,25 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
     private IContentTemplate creatorOfCustomPages;
     private CreationContext context;
+    private WizardPage dummyPage;
+
+    static class DummyPage extends WizardPage {
+        public DummyPage() {
+            super("dummy");
+            setTitle("Done");
+            setDescription("This wizard does not need more input.");
+        }
+        
+        public void createControl(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout());
+            Label label = new Label(composite, SWT.NONE);
+            label.setText("Click Finish to complete the wizard.");
+            setControl(composite);
+        }
+    }
     
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-        setForcePreviousAndNextButtons(true);
     }
 
     /**
@@ -57,6 +78,9 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public void addPages() {
         // note: template custom pages will be added in getNextPage() of the template selection page.
         addPage(templateSelectionPage = new TemplateSelectionPage());
+
+        // a dummy page is needed, otherwise the Next button will be disabled on the template selection page
+        addPage(dummyPage = new DummyPage());
     }
 
     /**
@@ -152,7 +176,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     				return firstCustomPage;
     			}
     		}
-            return getFirstExtraPage();  // first CDT page or something
+            return getFirstExtraPage()!=null ? getFirstExtraPage() : dummyPage;  // first CDT page or the like
     	}
 
     	// next custom page
@@ -168,9 +192,14 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
 				return nextPage;
 			}
 			
-			return getFirstExtraPage();  // first CDT page or something
+			return getFirstExtraPage();  // first CDT page or the like, or nothing
     	}
-    	
+
+    	// there's nothing after the dummy page
+        if (page == dummyPage) {
+            return null;
+        }
+
     	return super.getNextPage(page);
     }
 

@@ -1,3 +1,4 @@
+<@setoutput file=newNedFileName?default("")/>
 package ${projectname};
 
 <#if generateNodeTypeDecl>
