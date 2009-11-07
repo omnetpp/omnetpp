@@ -1,7 +1,5 @@
 package org.omnetpp.cdt.wizard.support;
 
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -17,12 +15,8 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
  * 
  * @author Andras
  */
-public class IDEUtils {
+public class IDEUtils extends org.omnetpp.common.wizard.support.IDEUtils {
 	
-	public static IWorkspaceRoot getWorkspaceRoot() {
-		return ResourcesPlugin.getWorkspace().getRoot();
-	}
-
 	public static NEDResources getNEDResources() {
 		return NEDResourcesPlugin.getNEDResources();
 	}

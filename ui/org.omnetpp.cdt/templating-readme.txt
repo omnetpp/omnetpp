@@ -2,7 +2,7 @@ TODO: mire szolgal; kinek kellene ilyet csinalni es mi celbol...
 
 
 
-Project templates are read from the templates/project folder of OMNeT++ projects.
+Wizard templates are read from the templates/ folder of OMNeT++ projects.
 
 In that folder, every subfolder that contains a template.properties file is
 treated as a project template. (Other folders are ignored.)

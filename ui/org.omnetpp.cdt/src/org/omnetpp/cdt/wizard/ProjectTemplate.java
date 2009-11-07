@@ -35,12 +35,13 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
-import org.omnetpp.cdt.wizard.support.FileUtils;
 import org.omnetpp.cdt.wizard.support.IDEUtils;
-import org.omnetpp.cdt.wizard.support.LangUtils;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.support.FileUtils;
+import org.omnetpp.common.wizard.support.LangUtils;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
@@ -288,7 +289,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      * Creates a folder. If the parent folder(s) do not exist, they are created.
      */
     protected void createFolder(String projectRelativePath, CreationContext context) throws CoreException {
-        IFolder folder = context.getProject().getFolder(new Path(projectRelativePath));
+        IFolder folder = context.getFolder().getFolder(new Path(projectRelativePath));
         if (!folder.getParent().exists())
             createFolder(folder.getParent().getProjectRelativePath().toString(), context);
         if (!folder.exists())
@@ -303,8 +304,8 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             createFolder(path, context);
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
-            folders[i] = context.getProject().getFolder(new Path(projectRelativePaths[i]));
-        ProjectUtils.saveNedFoldersFile(context.getProject(), folders);
+            folders[i] = context.getFolder().getFolder(new Path(projectRelativePaths[i]));
+        ProjectUtils.saveNedFoldersFile((IProject)context.getFolder(), folders);
     }
 
     /**
@@ -315,7 +316,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             createFolder(path, context);
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
-            folders[i] = context.getProject().getFolder(new Path(projectRelativePaths[i]));
+            folders[i] = context.getFolder().getFolder(new Path(projectRelativePaths[i]));
         setSourceLocations(folders, context);
     }
     
@@ -327,12 +328,12 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         if (System.getProperty("org.omnetpp.test.unit.running") != null)
             return; // in the test case we don't create a full CDT project, so the code below would throw NPE
 
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(context.getProject(), true);
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription((IProject)context.getFolder(), true);
         int n = folders.length;
         for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
             ICSourceEntry[] entries = new CSourceEntry[n];
             for (int i=0; i<n; i++) {
-                Assert.isTrue(folders[i].getProject().equals(context.getProject()));
+                Assert.isTrue(folders[i].getProject().equals(context.getFolder()));
                 entries[i] = new CSourceEntry(folders[i].getProjectRelativePath(), new IPath[0], 0);
             }
             try {
@@ -342,14 +343,14 @@ public abstract class ProjectTemplate implements IProjectTemplate {
                 Activator.logError(e); // should not happen, as we called getProjectDescription() with write=true
             }
         }
-        CoreModel.getDefault().setProjectDescription(context.getProject(), projectDescription);
+        CoreModel.getDefault().setProjectDescription((IProject)context.getFolder(), projectDescription);
     }
 
     /**
      * Creates a default build spec (project root being makemake folder)
      */
     protected void createDefaultBuildSpec(CreationContext context) throws CoreException {
-        BuildSpecification.createInitial(context.getProject()).save();
+        BuildSpecification.createInitial((IProject)context.getFolder()).save();
     }
 
     /**
@@ -370,7 +371,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      * folderPath2, options2, etc.
      */
     protected void createBuildSpec(Map<String,String> pathsAndMakemakeOptions, CreationContext context) throws CoreException {
-        IProject project = context.getProject();
+        IProject project = (IProject)context.getFolder();
         BuildSpecification buildSpec = BuildSpecification.createBlank(project);
         for (String folderPath: pathsAndMakemakeOptions.keySet()) {
             String args = pathsAndMakemakeOptions.get(folderPath);

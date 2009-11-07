@@ -44,6 +44,9 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.ICustomWizardPage;
+import org.omnetpp.common.wizard.SWTDataUtil;
 
 import com.swtworkbench.community.xswt.XSWT;
 
@@ -354,7 +357,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 		substituteNestedVariables(context);
 
 		if (SWTDataUtil.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
-			ProjectUtils.addReferencedProject(context.getProject(), templateFolder.getProject(), context.getProgressMonitor());
+			ProjectUtils.addReferencedProject((IProject)context.getFolder(), templateFolder.getProject(), context.getProgressMonitor());
 		
 		String[] srcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
 		if (srcFolders.length > 0)
@@ -369,7 +372,7 @@ public class WorkspaceBasedProjectTemplate extends ProjectTemplate {
 			createBuildSpec(makemakeOptions, context);
 
 	    // copy over files and folders, with template substitution
-		copy(templateFolder, context.getProject(), context);
+		copy(templateFolder, context.getFolder(), context);
 	}
 	
 	protected void copy(IFolder folder, IContainer destFolder, CreationContext context) throws CoreException {

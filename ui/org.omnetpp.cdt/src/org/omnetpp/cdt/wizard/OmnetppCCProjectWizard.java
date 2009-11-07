@@ -64,6 +64,8 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.ICustomWizardPage;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 
 
@@ -404,7 +406,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     	}
     	
     	// sanity check
-    	Assert.isTrue(context==null || context.getProject().equals(project));
+    	Assert.isTrue(context==null || context.getFolder().equals(project));
     	
     	// store custom page content before navigating away
     	if (ArrayUtils.contains(templateCustomPages, finishingPage))
@@ -439,7 +441,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                 if (template != null) {
                 	try {
                 		context.setProgressMonitor(monitor);
-                		Assert.isTrue(context.getProject() == project);
+                		Assert.isTrue(context.getFolder().equals(project));
                 		template.configureProject(context);
                 	} finally {
                     	context.setProgressMonitor(null);
@@ -491,7 +493,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 		// check the "templates/project" subdirectory of each OMNeT++ project
 		List<IProjectTemplate> result = new ArrayList<IProjectTemplate>();
 		for (IProject project : ProjectUtils.getOmnetppProjects()) {
-			IFolder rootFolder = project.getFolder(new Path("templates/project"));
+			IFolder rootFolder = project.getFolder(new Path("templates"));
 			if (rootFolder.exists()) {
 				try {
 					// each template is a folder which contains a "template.properties" file

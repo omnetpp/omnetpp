@@ -11,6 +11,8 @@ package org.omnetpp.cdt.wizard;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.ICustomWizardPage;
 
 /**
  * Interface for project content templates

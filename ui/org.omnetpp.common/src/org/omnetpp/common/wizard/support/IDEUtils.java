@@ -20,13 +20,4 @@ public class IDEUtils {
 		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 
-//FIXME	
-//	public static NEDResources getNEDResources() {
-//		return NEDResourcesPlugin.getNEDResources();
-//	}
-//
-//	public static MsgResources getMsgResources() {
-//		return NEDResourcesPlugin.getMSGResources();
-//	}
-
 }

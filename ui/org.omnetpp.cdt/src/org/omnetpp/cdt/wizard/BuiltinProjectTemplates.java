@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.omnetpp.common.wizard.CreationContext;
 
 /**
  * Provides built-in project templates

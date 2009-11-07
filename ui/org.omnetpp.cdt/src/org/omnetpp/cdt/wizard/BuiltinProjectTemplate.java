@@ -4,6 +4,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.ICustomWizardPage;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -35,7 +37,7 @@ public abstract class BuiltinProjectTemplate extends ProjectTemplate {
     protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
         Configuration cfg = new Configuration();
         cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/template"));
-        IFile file = context.getProject().getFile(new Path(projectRelativePath));
+        IFile file = context.getFolder().getFile(new Path(projectRelativePath));
         createFile(file, cfg, templateName, suppressIfBlank, context);
     }
 
