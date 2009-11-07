@@ -262,7 +262,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                 if (template != null) {
                 	try {
                 		context.setProgressMonitor(monitor);
-                		Assert.isTrue(context.getFolder() == folder);
+                		Assert.isTrue(context.getFolder().equals(folder));
                 		template.performFinish(context);
                 	} finally {
                     	context.setProgressMonitor(null);

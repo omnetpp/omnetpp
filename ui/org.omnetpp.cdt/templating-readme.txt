@@ -560,6 +560,14 @@ TODO document: supportedWizardTypes = project, simulation, nedfile, network
   and in the concrete template it comes back as wizardType, which can be checked against. together with optionalFiles
   e.g. don't generate package.ned if it's a simple NED File wizard
 
+TODO "New NED File" wizard milyen valtozokat definial alapbol!
+        "wizardType" (=="nedfile)
+        "newNedFileName"  -- the file name
+        "nedPackageName" -- expected NED package for that folder
+        "nedTypeName" -- derived from the file name     
+        "bannerComment" -- with copyright notice, etc
+
+
 TODO document glob patterns in verbatimFiles etc
 
 TODO: optionalFiles removed! now all files, if they would be empty, are NOT saved, (existing file, if exists,

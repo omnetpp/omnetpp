@@ -29,7 +29,7 @@ import com.swtworkbench.community.xswt.XSWT;
  * 
  * @author Andras
  */
-class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
+public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
     protected final ContentTemplate creatorTemplate;
     protected String xswtFileNameInfo; // for error messages only
     protected String xswtContent;  // the XML text
@@ -47,6 +47,8 @@ class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 
 	public XSWTWizardPage(ContentTemplate creatorTemplate, String name, InputStream xswtInput, String fileNameInfo, String condition) throws IOException {
 	    super(name);
+	    if (xswtInput == null)
+	        throw new IllegalArgumentException("InputStream is null -- file may not exist: " + fileNameInfo);
 	    this.creatorTemplate = creatorTemplate;
 	    this.xswtFileNameInfo = fileNameInfo;
         this.xswtContent = FileUtils.readTextFile(xswtInput);

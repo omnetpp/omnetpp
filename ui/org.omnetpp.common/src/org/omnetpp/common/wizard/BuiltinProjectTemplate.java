@@ -26,7 +26,7 @@ public abstract class BuiltinProjectTemplate extends ContentTemplate {
 		super(name, category, description, image);
 	}
 
-	public ICustomWizardPage[] createCustomPages() {
+	public ICustomWizardPage[] createCustomPages() throws CoreException {
 		return new ICustomWizardPage[0];
 	}
 
