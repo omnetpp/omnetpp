@@ -255,8 +255,14 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	    }
 	}
 
+	@Override
+	protected boolean suppressIfBlank(IFile file) {
+        IPath relativePath = file.getFullPath().removeFirstSegments(templateFolder.getFullPath().segmentCount());
+	    return matchesAny(relativePath.toString(), optionalFilePatterns);
+	}
+	
     protected void createFileFromWorkspaceResource(IFile file, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
-		createFile(file, getFreemarkerConfiguration(), templateName, suppressIfBlank, context);
+		createFile(file, getFreemarkerConfiguration(), templateName, context);
     }
 
     /**

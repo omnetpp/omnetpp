@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.resources.IContainer;
@@ -43,7 +46,10 @@ import freemarker.template.TemplateException;
  */
 public abstract class ContentTemplate implements IContentTemplate {
 	public static final Image DEFAULT_ICON = CommonPlugin.getImage("icons/obj16/wiztemplate.png");
-
+	
+	private static final String SETOUTPUT_MARKER = "@@@@ setoutput \"${file}\" @@@@\n";
+	private static final String SETOUTPUT_PATTERN = "(?s)@@@@ setoutput \"(.*?)\" @@@@\n"; // filename must be $1
+	 
 	// template attributes
     private String name;
     private String description;
@@ -157,13 +163,15 @@ public abstract class ContentTemplate implements IContentTemplate {
         cfg.setNumberFormat("computer"); // prevent digit grouping with comma
 
         // add loader for built-in macro definitions
-        cfg.addAutoInclude("[builtins]");
+        final String BUILTINS = "[builtins]";
+        cfg.addAutoInclude(BUILTINS);
         StringTemplateLoader loader = new StringTemplateLoader();
-        loader.putTemplate("[builtins]", 
+        loader.putTemplate(BUILTINS, 
                 "<#macro setoutput file>\n" + 
-        		"@@@@ setoutput ${file} @@@@\n" + 
+                SETOUTPUT_MARKER + 
         		"</#macro>\n");
         cfg.setTemplateLoader(loader);
+
         return cfg;
     }
     
@@ -219,11 +227,21 @@ public abstract class ContentTemplate implements IContentTemplate {
 		}
 	}
 
+	/**
+	 * Called back from createFile(), to decide whether a file whose content
+	 * would be blank (whitespace only) should be still saved or not. If the 
+	 * return value is true, the file will not be saved if its would be blank.  
+	 */
+	protected abstract boolean suppressIfBlank(IFile file);
+	
     /**
      * Utility method for doConfigure. Copies a resource into the project,  
-     * performing variable substitutions in it. 
+     * performing variable substitutions in it. If the template contained 
+     * &lt;@setoutput file="..."&gt; tags, multiple files will be saved. 
+     * 
+     * See also suppressIfBlank().
      */
-    protected void createFile(IFile file, Configuration freemarkerConfig, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
+    protected void createFile(IFile file, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClassLoader());
@@ -259,13 +277,34 @@ public abstract class ContentTemplate implements IContentTemplate {
 		content = content.replaceAll("\n\n\n+", "\n\n");
 		content = content.trim() + "\n";
 
-		// save file (unless it's blank)
-		if (!suppressIfBlank || !StringUtils.isBlank(content)) {
-            byte[] bytes = content.getBytes(); 
-            if (!file.exists())
-                file.create(new ByteArrayInputStream(bytes), true, context.getProgressMonitor());
-            else
-                file.setContents(new ByteArrayInputStream(bytes), true, false, context.getProgressMonitor());
+		// implement <@setoutput file="fname"/> tag: split content to files. "" means the main file
+        List<String> chunks = StringUtils.splitPreservingSeparators(content, Pattern.compile(SETOUTPUT_PATTERN));
+        Map<String, String> fileContent = new HashMap<String, String>(); // fileName -> content
+        fileContent.put("", chunks.get(0));
+        for (int i = 1; i < chunks.size(); i += 2) {
+            String fileName = chunks.get(i).replaceAll(SETOUTPUT_PATTERN, "$1");
+            String chunk = chunks.get(i+1);
+            if (!fileContent.containsKey(fileName))
+                fileContent.put(fileName, chunk);
+            else 
+                fileContent.put(fileName, fileContent.get(fileName) + chunk);  // append
+        }
+		
+		// save files (unless blank)
+        for (String fileName : fileContent.keySet()) {
+            IFile fileToSave = fileName.equals("") ? file : file.getParent().getFile(new Path(fileName));
+            String contentToSave = fileContent.get(fileName);
+            if (!StringUtils.isBlank(contentToSave) || !suppressIfBlank(fileToSave)) {
+                byte[] bytes = contentToSave.getBytes(); 
+                if (!fileToSave.exists())
+                    fileToSave.create(new ByteArrayInputStream(bytes), true, context.getProgressMonitor());
+                else
+                    fileToSave.setContents(new ByteArrayInputStream(bytes), true, true, context.getProgressMonitor());
+            }
+            else {
+                if (fileToSave.exists())
+                    fileToSave.delete(true, true, context.getProgressMonitor()); // delete suppressed blank file
+            }
         }
     }
 

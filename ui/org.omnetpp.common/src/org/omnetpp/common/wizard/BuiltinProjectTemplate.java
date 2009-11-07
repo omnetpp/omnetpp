@@ -47,7 +47,7 @@ public abstract class BuiltinProjectTemplate extends ContentTemplate {
 
     protected void createFileFromPluginResource(String projectRelativePath, String templateName, boolean suppressIfBlank, CreationContext context) throws CoreException {
         IFile file = context.getFolder().getFile(new Path(projectRelativePath));
-        createFile(file, getFreemarkerConfiguration(), templateName, suppressIfBlank, context);
+        createFile(file, getFreemarkerConfiguration(), templateName, context);
     }
 
 }

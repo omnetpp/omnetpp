@@ -833,6 +833,13 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		}
 	}
 
+	/**
+	 * The returned list always begins with the text before the first separator
+	 * (may be empty string), then goes on with (separator, text) pairs until it
+	 * reaches the end of the text. The length of the output is always an odd number,
+	 * and the returned list of strings joined together should always exactly reproduce 
+	 * the original input.
+	 */
 	public static List<String> splitPreservingSeparators(String string, Pattern separator) {
 		List<String> result = new ArrayList<String>();
 		Matcher matcher = separator.matcher(string);

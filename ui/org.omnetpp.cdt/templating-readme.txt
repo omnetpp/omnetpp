@@ -556,7 +556,9 @@ http://freemarker.org/docs/index.html
 
 ---
 
+TODO document <@setoutput file=newNedFileName?default("")/>   (ures: eredeti file; multiple setoutputs: concatenate)
 TODO document FileChooser and ExternalFileChooser: custom widget: file selector (workspace / external file)
+TODO NED type chooser, project chooser
 
 TODO mention http://www.jsonlint.com/
 
