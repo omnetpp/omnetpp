@@ -11,11 +11,10 @@
   <x:children>
     <text x:text="Grid Settings" x:style="MULTI|READ_ONLY|WRAP">
         <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-        <text 
-x:p0="This Example Project Wizard shows how to invoke Java classes from wizard template files.
-&#10;This way you can easily incorporate external libraries that generate network topology,
-&#10;import networks and configuration from external files, perform calculations, and so on.
-"/>
+        <text x:p0="This Example Project Wizard shows how to invoke Java classes from wizard
+template files. This way you can easily incorporate external libraries that generate
+network topology, import networks and configuration from external files, perform calculations,
+and so on."/>
     </text>
     <label x:text="Wizard files are in:"/>
     <label x:id="templateFolderPath"/>

@@ -15,6 +15,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -32,7 +33,7 @@ import com.swtworkbench.community.xswt.XSWT;
 public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
     protected final ContentTemplate creatorTemplate;
     protected String xswtFileNameInfo; // for error messages only
-    protected String xswtContent;  // the XML text
+    protected String xswtContent;  // the XML source
 	protected String condition; // FreeMarker expr, used as isEnabled() condition
 	protected Map<String,Control> widgetMap;
 	protected CreationContext context; // to transfer context from populatePage() to createControl()
@@ -57,16 +58,31 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 
 	@SuppressWarnings("unchecked")
 	public void createControl(Composite parent) {
+
+        // WORKAROUND: wizard blows up horizontally if we put a text or label widget into it
+        // with some long text. This is because the wizard window wants to be as big as the
+        // preferred size (see Control.computeSize()) of the contents. The workaround is to
+        // override computeSize() to return the size of the parent. This solution looks a bit harsh, 
+        // but others like setting GridData.widthHint don't work.
+        Composite composite = new Composite(parent, SWT.NONE) {
+            @Override
+            public Point computeSize(int whint, int hhint, boolean changed) {
+                Point size = super.computeSize(whint, hhint, changed);
+                size.x = getParent().getSize().x - 20;
+                return size;
+            }
+        };
+        composite.setLayout(new FillLayout());
+        setControl(composite);
+        
         ClassLoader oldClassLoader = XSWT.getClassLoader();
         XSWT.setClassLoader(creatorTemplate.getClassLoader()); // ensure access to custom widget classes
-
-        Composite composite = null;
+        Composite xswtHolder = null;
     	try {
-    		// instantiate XSWT form
-    		composite = new Composite(parent, SWT.NONE);
-    		composite.setLayout(new GridLayout());
-    		widgetMap = (Map<String,Control>) XSWT.create(composite, new ByteArrayInputStream(xswtContent.getBytes())); 
-    		setControl(composite);
+    	    // instantiate XSWT form
+    		xswtHolder = new Composite(composite, SWT.NONE);
+    		xswtHolder.setLayout(new GridLayout());
+    		widgetMap = (Map<String,Control>) XSWT.create(xswtHolder, new ByteArrayInputStream(xswtContent.getBytes())); 
     		
     		if (context != null) {
     			// do deferred populatePage() call
@@ -75,37 +91,22 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
     		}
     		
     	} catch (Exception e) {
+    	    xswtHolder.dispose();
     		widgetMap = new HashMap<String, Control>(); // fake it
-    		displayError(parent, composite, e); 
+    		displayError(composite, e); 
 		}
     	finally {
             XSWT.setClassLoader(oldClassLoader);
     	}
 	}
 	
-	public void displayError(final Composite parent, Composite composite, Exception e) {
+	public void displayError(Composite composite, Exception e) {
 		String msg = "Error creating form " + (xswtFileNameInfo!=null ? "from "+xswtFileNameInfo : getName());
 		CommonPlugin.logError(msg, e);
-		composite.dispose();
 		
 		// create error text widget
-		Text errorText = new Text(parent, SWT.MULTI|SWT.READ_ONLY|SWT.WRAP) {
-			@Override
-			public Point computeSize(int whint, int hhint, boolean changed) {
-				// Prevent text from blowing up the window horizontally.
-				// This solution looks a bit harsh, but others like setting
-				// GridData.widthHint don't work.
-				Point size = super.computeSize(whint, hhint, changed);
-				size.x = parent.getSize().x;
-				return size;
-			}
-			@Override
-			protected void checkSubclass() {
-			}
-		};
-		
+		Text errorText = new Text(composite, SWT.MULTI|SWT.READ_ONLY|SWT.WRAP);
 		errorText.setText(msg + ":\n\n" + e.getClass().getSimpleName()+": "+e.getMessage());
-		setControl(errorText);
 	}
 	
 	public void populatePage(CreationContext context) {

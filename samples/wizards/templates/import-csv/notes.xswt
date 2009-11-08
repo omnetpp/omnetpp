@@ -11,12 +11,10 @@
   <x:children>
     <text x:text="Grid Settings" x:style="MULTI|READ_ONLY|WRAP">
         <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-        <text 
-x:p0="This Example Project Wizard demonstrates how to write a wizard for
-&#10;importing CSV (Comma-Separated Vector) files to generate NED or ini files
-&#10;from them. You can easily adapt this wizard to your own CSV files or
-&#10;to your own simulation model (e.g. INET), by modifying the files of this wizard.
-"/>
+        <text x:p0="This Example Project Wizard demonstrates how to write a wizard for
+importing CSV (Comma-Separated Vector) files to generate NED or ini files
+from them. You can easily adapt this wizard to your own CSV files or
+to your own simulation model (e.g. INET), by modifying its source files."/>
     </text>
     <label x:text="Wizard files are in:"/>
     <label x:id="templateFolderPath"/>

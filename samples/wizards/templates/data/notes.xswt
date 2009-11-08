@@ -11,10 +11,7 @@
   <x:children>
     <text x:text="Grid Settings" x:style="MULTI|READ_ONLY|WRAP">
         <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-        <text 
-x:p0="This Example Project Wizard shows how to use compound data types in templates.
-&#10;TODO.....................
-"/>
+        <text x:p0="This Example Project Wizard shows how to use compound data types in templates.TODO....................."/>
     </text>
     <label x:text="Wizard files are in:"/>
     <label x:id="templateFolderPath"/>
