@@ -5,7 +5,7 @@ TODO: mire szolgal; kinek kellene ilyet csinalni es mi celbol...
 Wizard templates are read from the templates/ folder of OMNeT++ projects.
 
 In that folder, every subfolder that contains a template.properties file is
-treated as a project template. (Other folders are ignored.)
+treated as a content template. (Other folders are ignored.)
 
 When the template is used, the contents of the template folder (and subfolders)
 will be copied over into the new project preserving the directory structure,
@@ -89,6 +89,8 @@ Recognized property file keys:
                 Comma-separated list of items in the syntax "folder:options",
                 or a JSON-syntax map of strings; it sets opp_makemake options
                 for the given folders. There is no default.
+
+TODO: supportedWizardTypes; optionalFiles is removed!!!
 
 There are additinal options for adding custom pages into the wizard, see below.
 
@@ -277,6 +279,35 @@ add the following lines to template.properties:
 You get the idea.
 
 
+WIZARD TYPES
+
+The IDE offers several OMNeT++-related wizard dialogs: New OMNeT++ Project,
+New NED File, New Simple Module, and so on. Every content template can
+contribute to one or more of those wizard dialogs. The template author
+has to list the supported wizards in the supportedWizardTypes property file
+entry. Values are:
+
+   nedfile
+   project
+   TODO
+   TODO
+   ...
+
+In turn, the wizard will set the wizardType template variable when it executes,
+so template code can check (using <#if>) under which wizard it runs, and
+act accordingly.
+
+Specific wizard dialogs will also define extra variables for use in the
+templates. These variables are:
+
+  nedfile:
+    TODO
+    TODO
+  project:
+    TODO
+    TODO
+
+
 USING CUSTOM WIDGET CLASSES
 
 Since XSWT works via Java reflection, your own custom widgets can be used
@@ -301,14 +332,14 @@ result can be used in the templates (iteration via <#list>, etc).
 
 USING EXTERNAL JAVA CODE
 
-Jar files placed into the plugins subdirectory of an OMNeT++ project will be
+Jar files placed into the plugins/ subdirectory of an OMNeT++ project will be
 loaded automatically, and will be avalable for all templates. Jar files in
 that directory may be plain Java jars and Eclipse plug-in jars. (The latter
 makes it also possible to contribute new functionality into the IDE via
 various extension points, but this is outside the scope of this discussion
 about wizards.)
 
-In addition, jar files placed in the lib/ subdirectory of a template will
+In addition, jar files placed in the folder of the template will
 be loaded automatically when the template is used, and the classes in it will
 be available for that template. Custom SWT widget classes can be imported and
 used in XSWT forms, and other code can be used in the template files via the
@@ -543,6 +574,35 @@ Set<Object> newSet();
     Creates and returns a new mutable Set object (currently HashSet).
 
 
+EDITING XSWT FILES
+
+Double-clicking on an XSWT file will open it in the XSWT editor. The editor
+provides basic syntax highlighting (and not much else currently). An extremely
+useful feature of the IDE is the XSWT Preview, where you can see preview
+the form being edited (it updates when you save the file). The Preview should
+open automatically when you open the XSWT file; if it does not (or you close it),
+you can access it via the Window|Show View... menu item.
+
+Some (custom) widgets may not appear in the Preview; this is because the
+Preview does not load jar files from the projects.
+XXX This may get fixed.
+
+
+EDITING TEMPLATE FILES
+
+The Freemarker Editor is opened when you double-click files with the ftl or
+fti extension. (The latter stands for Freemarker Template Include, and it is
+intended for template fragments that you include into other templates. Otherwise
+the wizard ignores fti files, i.e. does not copy them into the new project or
+folder.) The Freemarker Editor offers basic syntax highlight, validation
+(error markers appear during editing if the template is not syntactically
+correct), and basic content assist. Content assist can help you with directives
+(<#...> syntax) and builtin operations (like ?number, ?size, ?default, etc).
+The content assist popup appears automatically when you type '<#' (actually
+a closing '>' is also needed for the editor to recognize the tag), and
+when you hit '?' within a directive or an interpolation (${...}).
+
+
 
 REFERENCES
 
@@ -556,7 +616,7 @@ http://freemarker.org/docs/index.html
 
 ---
 
-TODO document: supportedWizardTypes = project, simulation, nedfile, network 
+TODO document: supportedWizardTypes = project, simulation, nedfile, network
   and in the concrete template it comes back as wizardType, which can be checked against. together with optionalFiles
   e.g. don't generate package.ned if it's a simple NED File wizard
 
@@ -568,7 +628,7 @@ TODO "New NED File" wizard milyen valtozokat definial alapbol!
         "wizardType" (=="nedfile)
         "newNedFileName"  -- the file name
         "nedPackageName" -- expected NED package for that folder
-        "nedTypeName" -- derived from the file name     
+        "nedTypeName" -- derived from the file name
         "bannerComment" -- with copyright notice, etc
 
 TODO document: .fti "freemarker template include" files (they open in the FreeMarker editor, but get ignored on template initiation (ie. don't get copied over))
@@ -585,6 +645,9 @@ TODO document FileChooser and ExternalFileChooser: custom widget: file selector 
 TODO NED type chooser, project chooser
 
 TODO mention http://www.jsonlint.com/
+
+
+TODO document the <#assign dummy=expr!> trick! alternative: <@do FileUtil.deleteFile(file)!>
 
 TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
 JARs in the templates)
