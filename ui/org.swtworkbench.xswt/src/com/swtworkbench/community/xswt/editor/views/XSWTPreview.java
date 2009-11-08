@@ -35,7 +35,8 @@ import com.swtworkbench.community.xswt.XSWTException;
 import com.swtworkbench.community.xswt.metalogger.Logger;
 
 public class XSWTPreview extends ViewPart {
-
+    public static final String VIEW_ID = "com.swtworkbench.community.xswt.editor.views.XSWTPreview";
+    
     public XSWTPreview() {
     }
 
