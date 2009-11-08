@@ -130,7 +130,7 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
             }
         });
         
-        result.add(new BuiltinProjectTemplate("File with an empty NED type", null, null) {
+        result.add(new BuiltinProjectTemplate("NED file with one item", null, null) {
             @Override
             public CreationContext createContext(IContainer folder) {
                 CreationContext context = super.createContext(folder);

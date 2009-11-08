@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -100,11 +103,19 @@ public class TemplateSelectionPage extends WizardPage {
                 return null;
             }
         });
+        
+        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+                TemplateSelectionPage.this.selectionChanged();
+            }});
 
-        // always complete
-        setPageComplete(true);
+        setPageComplete(false);
     }
 
+    protected void selectionChanged() {
+        setPageComplete(getSelectedTemplate()!=null);
+    }
+    
     public void setTemplates(List<IContentTemplate> templates) {
         GenericTreeNode root = new GenericTreeNode("root");
         Set<String> categories = new LinkedHashSet<String>(); 
@@ -119,6 +130,11 @@ public class TemplateSelectionPage extends WizardPage {
                     categoryNode.addChild(new GenericTreeNode(template));
         }                
         treeViewer.setInput(root);
+        
+        if (!templates.isEmpty())
+            treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(templates.get(0))));
+
+        selectionChanged(); // update page state
     }
 
     public IContentTemplate getSelectedTemplate() {

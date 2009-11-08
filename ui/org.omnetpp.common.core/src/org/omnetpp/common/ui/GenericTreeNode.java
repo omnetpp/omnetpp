@@ -211,4 +211,9 @@ public class GenericTreeNode {
 		GenericTreeNode node = (GenericTreeNode)obj;
 		return node.payload==payload || node.payload.equals(payload);
 	}
+	
+	@Override
+	public int hashCode() {
+	    return payload==null ? super.hashCode() : payload.hashCode();
+	}
 }
