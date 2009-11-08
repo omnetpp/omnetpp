@@ -288,14 +288,14 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	            boolean isFtlFile = file.getFileExtension().equals("ftl");
                 if (matchesAny(relativePath.toString(), verbatimFilePatterns) || (!isFtlFile && !matchesAny(relativePath.toString(), ignoreResourcePatterns))) {
 	                // copy it verbatim
-	                IFile newFile = destFolder.getFile(relativePath);
+	                IFile newFile = destFolder.getFile(new Path(file.getName()));
 	                if (newFile.exists())
 	                    newFile.delete(true, context.getProgressMonitor());
 	                file.copy(newFile.getFullPath(), true, context.getProgressMonitor());
 	            } 
                 else if (isFtlFile && !matchesAny(relativePath.toString(), ignoreResourcePatterns)) {
                     // copy it with template substitution
-                    IFile newFile = destFolder.getFile(relativePath.removeFileExtension());
+                    IFile newFile = destFolder.getFile(new Path(file.getName()).removeFileExtension());
                     createFileFromWorkspaceResource(newFile, relativePath.toString(), context);
                 }
 	        }
