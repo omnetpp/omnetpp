@@ -11,7 +11,7 @@
   </import>
   <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
-    <text x:text="Grid Settings" x:style="MULTI|READ_ONLY|WRAP">
+    <text x:style="MULTI|READ_ONLY|WRAP|BORDER">
         <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
         <text x:p0="This Example Project Wizard demonstrates how to write a wizard for
 importing XML data, to generate NED or ini files from them. You can easily adapt
@@ -19,7 +19,7 @@ this wizard to your own XML files or to your own simulation model (e.g. INET),
 by modifying the source files."/>
     </text>
     <label x:text="Wizard files are in:"/>
-    <label x:id="templateFolderPath"/>
+    <fileLink x:id="templateFolderPath"/>
   </x:children>
 
 </xswt>
