@@ -33,6 +33,45 @@ public class FtlDirectiveCompletionProcessor implements IContentAssistProcessor 
         "assign", "attempt", "comment", "compress", "escape", "foreach", "function", "global", "if", "list",
         "local", "macro", "noescape", "noparse", "setting", "switch", "transform",
     };
+    
+    public static final String[] DIRECTIVE_TEMPLATES = {
+        "<#if {condition}> ... </#if>",
+        "<#if {condition}> ... <#else> ... </#if>",
+        "<#if {condition}> ... <#elseif {condition2}> ... <#else> ... </#if>",
+        "<#switch {value}> <#case {refValue1}> ... <#break>  <#default> ... </#switch>", 
+        "<#list {sequence} as {item}> ... </#list>",
+        "<#list {sequence} as {item}> ... <#if {condition}><#break></#if> ... </#list>",
+        "<#include {path}>",
+        "<#include {path} {options}>",
+        "<#import {path} as {hash}>",
+        "<#noparse> ... </#noparse>",
+        "<#compress> ... </#compress>",
+        "<#escape {identifier} as {expression}> ... </#escape>",
+        "<#escape {identifier} as {expression}> ... <#noescape>...</#noescape> ... </#escape>",
+        "<#assign {name}={value}>",
+        "<#assign {name1}={value1}, {name2}={value2}>",
+        "<#assign {name}> ... </#assign>",
+        "<#assign {name}={value} in {namespacehash}>",
+        "<#global {name}=value>",
+        "<#global {name1}={value1}, {name2}={value2}>",
+        "<#global {name}> ... </#assign>",
+        "<#local {name}={value}>",
+        "<#local {name1}={value1}, {name2}={value2}>",
+        "<#local {name}> ... </#assign>",
+        "<#setting {name}={value}>",
+        "<#macro {name}> ... </#macro>",
+        "<#macro {name} {param1} {param2}> ... <#nested {loopvar1}, {loopvar2}> ... <#return> ... </#macro>",
+        "<#function {name} {param1} {param2}>  ...  <#return {value}> ... </#function>",
+        "<#stop {message}>",
+        "<#ftl {param1}={value1}>",
+        "<#ftl {param1}={value1} {param2}={value2}>",
+        "<#attempt> ... <#recover> ... </#attempt>",
+        "<#visit {node}>",
+        "<#visit {node} using {namespace}>",
+        "<#recurse>",
+        "<#recurse {node>}",
+        "<#recurse {node} using {namespace}>",
+    };
 
     private FtlExpressionCompletionProcessor expressionCompletion = new FtlExpressionCompletionProcessor();
 
@@ -55,12 +94,24 @@ public class FtlDirectiveCompletionProcessor implements IContentAssistProcessor 
         // offer names of directives after <#, [#, </# and [/#
         if (linePrefix.matches("^.*[<\\]](/?#).*")) {
             String prefix = linePrefix.replaceFirst("^.*[<\\]](/?#)", "$1");
-            String [] directives = prefix.startsWith("/#") ? DIRECTIVE_ENDTAGS : DIRECTIVES;
+            boolean startTag = !prefix.startsWith("/#");
+            String [] directives = startTag ? DIRECTIVES : DIRECTIVE_ENDTAGS;
             prefix = prefix.replaceFirst("^/?#", "");
 
             for (String directive : directives)
                 if (directive.startsWith(prefix))
-                    result.add(new CompletionProposal(directive, documentOffset - prefix.length(), prefix.length(), directive.length()));
+                    result.add(new CompletionProposal(directive, documentOffset-prefix.length(), prefix.length(), directive.length()));
+
+            // offer template proposals
+            if (startTag) {
+                for (String directive : DIRECTIVE_TEMPLATES) {
+                    if (directive.startsWith("<#"+prefix)) {
+                        // simplified solution; TODO use TemplateProposal
+                        String offeredText = directive.replace("{", "").replace("}", "");
+                        result.add(new CompletionProposal(offeredText, documentOffset-prefix.length()-2, prefix.length()+2, offeredText.length()));
+                    }
+                }
+            }
         }
 
         // ask the expression completion class as well
