@@ -560,6 +560,8 @@ TODO document: supportedWizardTypes = project, simulation, nedfile, network
   and in the concrete template it comes back as wizardType, which can be checked against. together with optionalFiles
   e.g. don't generate package.ned if it's a simple NED File wizard
 
+TODO document new FileUtils methods (create/delete file/dir)
+
 TODO "New NED File" wizard milyen valtozokat definial alapbol!
         "wizardType" (=="nedfile)
         "newNedFileName"  -- the file name

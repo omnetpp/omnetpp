@@ -1,11 +1,14 @@
 package org.omnetpp.common.wizard.support;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,8 +17,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
@@ -83,6 +88,17 @@ public class FileUtils {
         return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
     }
 
+    /**
+     * Returns a java.io.File object for the given path. The object can be used to
+     * access operations provided by the File API, such as exists(), length(), etc.
+     * 
+     * @param path  the file path
+     * @return  the File object
+     */
+    public static File asExternalFile(String path) {
+        return new File(path);
+    }
+    
 	/**
 	 * Parse an XML file in the workspace, and return the Document object 
 	 * of the resulting DOM tree.
@@ -356,4 +372,130 @@ public class FileUtils {
 		}
 	}
 	
+	/**
+	 * Writes the given string to a temporary file, and returns the path of the 
+	 * temporary file in the file system. The file will be automatically deleted
+	 * when the IDE exits, but it can be also deleted earlier via deleteExternalFile().
+	 * 
+	 * @param content  file content
+	 * @return  temp file name
+	 */
+	public static String createTempFile(String content) {
+        try {
+            File tempFile = File.createTempFile("oppwiz", null);
+            org.omnetpp.common.util.FileUtils.writeTextFile(tempFile, content);
+            tempFile.deleteOnExit();
+            return tempFile.getAbsolutePath();
+        } 
+        catch (IOException e) {
+            throw new RuntimeException("Error creating temporary file: " + e.getMessage(), e);
+        }
+	}
+
+	/**
+	 * Creates a workspaces text file with the given contents, in the platform's default encoding.
+	 */
+	public static void createFile(String fileName, String content) throws CoreException {
+        IFile file = asFile(fileName);
+        if (!file.exists())
+            file.create(new ByteArrayInputStream(content.getBytes()), true, null);
+        else
+            file.setContents(new ByteArrayInputStream(content.getBytes()), true, true, null);
+	}
+
+    /**
+     * Creates a text file in the file system with the given contents, in the platform's default encoding.
+     */
+    public static void createExternalFile(String fileName, String content) {
+        try {
+            File file = new File(fileName);
+            org.omnetpp.common.util.FileUtils.writeTextFile(file, content);
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Error creating file " + fileName + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Deletes the given workspace file. It is OK to invoke it on a nonexistent file.
+     */
+    public static void deleteFile(String fileName) throws CoreException {
+        IFile file = asFile(fileName);
+        if (file.exists())
+            file.delete(true, null);
+    }
+
+    /**
+     * Deletes the given file from the file system. It is OK to invoke it on a nonexistent file.
+     */
+    public static void deleteExternalFile(String fileName) {
+        File file = new File(fileName);
+        if (!file.isFile())
+            throw new RuntimeException("deleteExternalFile: " + fileName + " is not a file");
+        if (file.exists() && !file.delete())
+            throw new RuntimeException("deleteExternalFile: file " + fileName + " could not be deleted");
+    }
+    
+    /**
+     * Creates a workspace folder. The parent must exist.
+     */
+    public static void createDirectory(String fileName) throws CoreException {
+        IContainer container = asContainer(fileName);
+        if (!container.exists()) {
+            if (container instanceof IFolder)
+                ((IFolder)container).create(true, true, null);
+            else
+                throw new IllegalArgumentException("createDirectory: refusing to create a project: " + fileName);
+        }
+    }
+
+    /**
+     * Creates a directory in the file system. The parent must exist.
+     */
+    public static void createExternalDirectory(String fileName) {
+        if (!new File(fileName).mkdir())
+            throw new RuntimeException("createExternalDirectory: directory " + fileName + " could not be created");
+    }
+
+    /**
+     * Deletes a workspace folder. The folder must be empty. It is OK to invoke
+     * it on a nonexistent folder.
+     */
+    public static void removeDirectory(String fileName) throws CoreException {
+        IContainer container = asContainer(fileName);
+        if (container.exists()) {
+            if (container instanceof IFolder)
+                ((IFolder)container).delete(true, null);
+            else
+                throw new IllegalArgumentException("removeDirectory: refusing to delete a project: " + fileName);
+        }
+    }
+
+    /**
+     * Deletes a directory in the file system. The directory must be empty. 
+     * It is OK to invoke it on a nonexistent directory. 
+     */
+    public static void removeExternalDirectory(String fileName) {
+        File file = new File(fileName);
+        if (!file.isDirectory())
+            throw new RuntimeException("removeExternalDirectory:" + fileName + " is not a directory");
+        if (file.exists() && !file.delete())
+            throw new RuntimeException("removeExternalDirectory: directory " + fileName + " could not be deleted");
+    }
+
+    /**
+     * Run an external program, and capture its output. The output is returned in a map:
+     *   ret["stdout"] is standard output,
+     *   ret["stderr"] is standard error,
+     *   ret["exitcode"] is exit code.
+     * 
+     * @param prog  program name
+     * @param args  command-line arguments
+     * @return output of the program in a map
+     */
+    public static Map<String,Object> runProgram(String prog, String[] args) {
+        //TODO FIXME XXX
+        return null;
+    }
+
 }
