@@ -1,6 +1,7 @@
 package freemarker.eclipse.editors;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
@@ -15,30 +16,25 @@ import org.eclipse.jface.text.rules.WhitespaceRule;
  */
 public class DirectiveScanner extends RuleBasedScanner {
 
-public DirectiveScanner(ITokenManager manager) {
+    public DirectiveScanner(ITokenManager manager) {
 
-	IToken string = manager.getStringToken();
-    IToken comment = manager.getCommentToken();
-		
+        IToken string = manager.getStringToken();
+        IToken comment = manager.getCommentToken();
 
-	Vector rules = new Vector();
+        List<IRule> rules = new ArrayList<IRule>();
 
-		
-	// Add rule for double quotes
-	rules.add(new SingleLineRule("\"", "\"", string,'\\'));
-    // Add rule for single quotes
-    rules.add(new SingleLineRule("'", "'", string,'\\'));
-    // Add rule for comments
-    rules.add(new SingleLineRule("<#--", "-->", comment));
+        // Add rule for double quotes
+        rules.add(new SingleLineRule("\"", "\"", string,'\\'));
+        // Add rule for single quotes
+        rules.add(new SingleLineRule("'", "'", string,'\\'));
+        // Add rule for comments
+        rules.add(new SingleLineRule("<#--", "-->", comment));
 
-	// Add generic whitespace rule.
-	rules.add(new WhitespaceRule(new WhitespaceDetector()));
+        // Add generic whitespace rule.
+        rules.add(new WhitespaceRule(new WhitespaceDetector()));
 
-	IRule[] result = new IRule[rules.size()];
-	rules.copyInto(result);
-	setRules(result);
-}
-	public IToken nextToken() {
-		return super.nextToken();
-	}
+        IRule[] result = new IRule[rules.size()];
+        rules.toArray(result);
+        setRules(result);
+    }
 }
