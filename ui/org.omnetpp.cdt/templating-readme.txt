@@ -567,6 +567,7 @@ TODO "New NED File" wizard milyen valtozokat definial alapbol!
         "nedTypeName" -- derived from the file name     
         "bannerComment" -- with copyright notice, etc
 
+TODO document: .fti "freemarker template include" files (they open in the FreeMarker editor, but get ignored on template initiation (ie. don't get copied over))
 
 TODO document glob patterns in verbatimFiles etc
 

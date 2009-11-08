@@ -87,7 +87,8 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + folder.getFullPath()));
 		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), folder.getProject().getName()));
 
-		ignoreResourcePatterns.add("**/*.xswt");  // note: "*.ftl" is NOT to be added as ignore pattern!
+		ignoreResourcePatterns.add("**/*.xswt");
+		ignoreResourcePatterns.add("**/*.fti");  // note: "*.ftl" is NOT to be added!
 		ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
 
 		// the following options may not be modified via the wizard, so they are initialized here

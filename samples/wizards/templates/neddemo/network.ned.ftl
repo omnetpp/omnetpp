@@ -20,12 +20,12 @@ ${bannerComment}
   
 <#-- pull in the correct template to do the actual work -->
 <#if star>
-   <#include "star.ned.ftl">
+   <#include "star.ned.fti">
 <#elseif ring>
-   <#include "ring.ned.ftl">
+   <#include "ring.ned.fti">
 <#elseif grid || torus>
-   <#include "gridtorus.ned.ftl">
+   <#include "gridtorus.ned.fti">
 <#elseif bintree || ktree>
    <#if bintree> <#assign treeK=2> </#if>
-   <#include "ktree.ned.ftl">
+   <#include "ktree.ned.fti">
 </#if>
