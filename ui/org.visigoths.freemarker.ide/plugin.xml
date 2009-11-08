@@ -8,7 +8,7 @@
             name="Freemarker Editor"
             icon="icons/icon.gif"
             extensions="ftl, fti"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            contributorClass="freemarker.eclipse.editors.ActionContributor"
             class="freemarker.eclipse.editors.FreemarkerEditor"
             id="freemarker.eclipse.editors.FreemarkerEditor">
       </editor>

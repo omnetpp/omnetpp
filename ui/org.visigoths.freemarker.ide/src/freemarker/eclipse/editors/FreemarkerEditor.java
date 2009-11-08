@@ -1,7 +1,10 @@
 package freemarker.eclipse.editors;
 
+import java.util.ResourceBundle;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -11,7 +14,9 @@ import org.eclipse.ui.IEditorActionBarContributor;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
+import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import freemarker.eclipse.outline.OutlinePage;
@@ -75,6 +80,16 @@ public class FreemarkerEditor extends TextEditor {
 	public IDocument getDocument() {
         return getDocumentProvider().getDocument(getEditorInput());
 	}
+	
+    @Override
+    protected void createActions() {
+        super.createActions();
+
+        ResourceBundle bundle = EditorMessages.getResourceBundle();
+        IAction a = new TextOperationAction(bundle, "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
+        a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+        setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
+    }
 	
 	public int getCursorLine() {
 		int line = -1;
