@@ -59,6 +59,8 @@ import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
@@ -320,4 +322,26 @@ public class Configuration extends SourceViewerConfiguration
             return partition;
         }
     }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getContentAssistant(org.eclipse.jface.text.source.ISourceViewer)
+     */
+    @Override
+    public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+
+        ContentAssistant assistant= new ContentAssistant();
+        assistant.setDocumentPartitioning(PartitionScanner.PARTITIONING_ID);
+        assistant.setContentAssistProcessor(new FtlDirectiveCompletionProcessor(), PartitionScanner.FTL_DIRECTIVE);
+        assistant.setContentAssistProcessor(new FtlExpressionCompletionProcessor(), PartitionScanner.FTL_DIRECTIVE);
+        assistant.setContentAssistProcessor(new FtlExpressionCompletionProcessor(), PartitionScanner.FTL_INTERPOLATION);
+        
+        assistant.enableAutoActivation(true);
+        assistant.setAutoActivationDelay(500);
+        assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
+        assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+        assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
+
+        return assistant;
+    }
+    
 }

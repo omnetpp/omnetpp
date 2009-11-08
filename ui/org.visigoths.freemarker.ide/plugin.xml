@@ -14,6 +14,13 @@
       </editor>
    </extension>
    <extension
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            extensions="ftl, fti"
+            class="freemarker.eclipse.editors.SetupParticipant">
+      </participant>
+   </extension>
+   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             name="FreeMarker Editor"

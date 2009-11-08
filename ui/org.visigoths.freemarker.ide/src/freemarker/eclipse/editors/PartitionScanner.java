@@ -70,7 +70,7 @@ import org.eclipse.jface.text.rules.Token;
  * The FreeMarker template partition scanner. This class separates
  * the text in the template into a number of non-overlapping
  * partitions. Each of the partitions can then apply their own
- * scanners and damage-repair policies within thier boundaries. This
+ * scanners and damage-repair policies within their boundaries. This
  * two-stage scanning is done to simplify the scanning in each stage,
  * and also to minimize repetitive parsing. 
  * 
@@ -78,7 +78,8 @@ import org.eclipse.jface.text.rules.Token;
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  */
 public class PartitionScanner extends RuleBasedPartitionScanner {
-
+    public final static String PARTITIONING_ID = "__ftl_partitioning"; 
+        
 	public final static String FTL_COMMENT = "__ftl_comment";
 	public final static String FTL_DIRECTIVE = "__ftl_directive";
 	public final static String FTL_INTERPOLATION = "__ftl_interpolation";

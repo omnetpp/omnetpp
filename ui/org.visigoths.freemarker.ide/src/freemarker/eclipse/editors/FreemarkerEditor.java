@@ -33,8 +33,8 @@ public class FreemarkerEditor extends TextEditor {
 		tokenManager = new TokenManager();
 		fReconcilingStrategy = new ReconcilingStrategy(this);
 		setSourceViewerConfiguration(new Configuration(this, tokenManager));
-		setDocumentProvider(new DocumentProvider());
 	}
+
 	public void dispose() {
 		tokenManager.dispose();
 		super.dispose();
@@ -73,11 +73,7 @@ public class FreemarkerEditor extends TextEditor {
 	}
 	
 	public IDocument getDocument() {
-		ISourceViewer viewer = getSourceViewer();
-		if (viewer != null) {
-			return viewer.getDocument();
-		}
-		return null;
+        return getDocumentProvider().getDocument(getEditorInput());
 	}
 	
 	public int getCursorLine() {
