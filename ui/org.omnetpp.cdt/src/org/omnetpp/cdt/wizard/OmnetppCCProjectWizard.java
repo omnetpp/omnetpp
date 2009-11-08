@@ -9,9 +9,7 @@ package org.omnetpp.cdt.wizard;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.CCProjectNature;
@@ -33,22 +31,16 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
@@ -57,16 +49,12 @@ import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.ui.GenericTreeContentProvider;
-import org.omnetpp.common.ui.GenericTreeNode;
-import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.ICustomWizardPage;
+import org.omnetpp.common.wizard.TemplateSelectionPage;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 
 
@@ -117,84 +105,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     }
 
-    
-    public class TemplateSelectionPage extends WizardPage {
-        private TreeViewer treeViewer;
-
-        protected TemplateSelectionPage() {
-            super("OmnetppTemplateSelectionPage");
-            setTitle("Project Contents");
-            setDescription("Choose initial project contents");
-        }
-
-        public void createControl(Composite parent) {
-            Composite composite = new Composite(parent, SWT.NONE);
-            composite.setLayout(new GridLayout(1,false));
-            setControl(composite);
-
-            // create tree and label
-            Label label = new Label(composite, SWT.NONE);
-            label.setText("Select template:");
-            treeViewer = new TreeViewer(composite, SWT.BORDER);
-            treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-            treeViewer.setLabelProvider(new LabelProvider() {
-                @Override
-                public String getText(Object element) {
-                    element = ((GenericTreeNode)element).getPayload();
-                    return element instanceof IContentTemplate ? ((IContentTemplate)element).getName() : element.toString();
-                }
-                @Override
-                public Image getImage(Object element) {
-                    element = ((GenericTreeNode)element).getPayload();
-                    return element instanceof IContentTemplate ? ((IContentTemplate)element).getImage() : ICON_CATEGORY;
-                }
-            });
-            treeViewer.setContentProvider(new GenericTreeContentProvider());
-
-            // show the descriptions in a tooltip
-            new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
-                public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-                    Item item = treeViewer.getTree().getItem(new Point(x,y));
-                    Object element = item==null ? null : item.getData();
-                    element = (element instanceof GenericTreeNode) ? ((GenericTreeNode)element).getPayload() : null;
-                    if (element instanceof IContentTemplate) {
-                        String description = ((IContentTemplate)element).getDescription();
-                        if (description != null)
-                            return HoverSupport.addHTMLStyleSheet(description);
-                    }
-                    return null;
-                }
-            });
-
-            // always complete
-            setPageComplete(true);
-        }
-
-        public void updateTemplateList() {
-            // categorize and add templates into the tree
-            // NOTE: gets called from first page's getNextPage() method             
-            List<IContentTemplate> templates = getTemplates();
-            GenericTreeNode root = new GenericTreeNode("root");
-            Set<String> categories = new LinkedHashSet<String>(); 
-            for (IContentTemplate template : templates)
-                categories.add(template.getCategory());
-            for (String category : categories) {
-                GenericTreeNode categoryNode = new GenericTreeNode(category);
-                root.addChild(categoryNode);
-                for (IContentTemplate template : templates)
-                    if (category.equals(template.getCategory()))
-                        categoryNode.addChild(new GenericTreeNode(template));
-            }                
-            treeViewer.setInput(root);
-        }
-
-        public IContentTemplate getSelectedTemplate() {
-            Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-            element = element == null ? null : ((GenericTreeNode)element).getPayload();
-            return (element instanceof IContentTemplate) ? (IContentTemplate)element : null;
-        }
-    }
-    
     /**
      * Customizations:
      *   (1) hide project name / location because we have a separate page for that
@@ -322,7 +232,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     public IWizardPage getNextPage(IWizardPage page) {
 		int indexInTemplateCustomPages = ArrayUtils.indexOf(templateCustomPages, page);
     	if (page == projectPage) {
-            templatePage.updateTemplateList();  // so that it can adapt to the withCplusplusSupport setting
+            templatePage.setTemplates(getTemplates());  // so that it can adapt to the withCplusplusSupport setting
             return templatePage;
     	}
     	else if (page == templatePage) {
