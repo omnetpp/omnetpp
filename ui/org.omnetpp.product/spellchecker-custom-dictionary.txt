@@ -307,3 +307,6 @@ glob
 txt
 nedfile
 moduleinterface
+accessors
+freemarker
+builtins

@@ -331,8 +331,8 @@ public class Configuration extends SourceViewerConfiguration
 
         ContentAssistant assistant= new ContentAssistant();
         assistant.setDocumentPartitioning(PartitionScanner.PARTITIONING_ID);
-        assistant.setContentAssistProcessor(new FtlDirectiveCompletionProcessor(), PartitionScanner.FTL_DIRECTIVE);
         assistant.setContentAssistProcessor(new FtlExpressionCompletionProcessor(), PartitionScanner.FTL_INTERPOLATION);
+        assistant.setContentAssistProcessor(new FtlDirectiveCompletionProcessor(), PartitionScanner.FTL_DIRECTIVE);
         
         assistant.enableAutoActivation(true);
         assistant.setAutoActivationDelay(500);

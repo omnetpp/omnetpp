@@ -2,8 +2,9 @@ package freemarker.eclipse;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import freemarker.eclipse.preferences.IPreferenceConstants;
@@ -13,20 +14,15 @@ import freemarker.eclipse.preferences.IPreferenceConstants;
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller </a>
  */
 public class FreemarkerPlugin extends AbstractUIPlugin implements IPreferenceConstants {
+	public static final String PLUGIN_ID = "org.visigoths.freemarker.ide";
 
-	//The shared instance.
+	// The shared instance.
 	private static FreemarkerPlugin plugin;
-
-	public FreemarkerPlugin() {
-		super();
-		plugin = this;
-	}
 
 	/**
 	 * The constructor.
 	 */
-	public FreemarkerPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public FreemarkerPlugin() {
 		plugin = this;
 	}
 
@@ -64,4 +60,20 @@ public class FreemarkerPlugin extends AbstractUIPlugin implements IPreferenceCon
 		prefs.setDefault(COLOR_XML_TAG, "0,0,128");
 		prefs.setDefault(XML_HIGHLIGHTING, true);
 	}
+	
+    public static void logError(Throwable exception) {
+        logError(exception.toString(), exception);
+    }
+
+    public static void logError(String message, Throwable exception) {
+        if (plugin != null) {
+            plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+        }
+        else {
+            System.err.println(message);
+            if (exception!=null)
+                exception.printStackTrace();
+        }
+    }
+	
 }
