@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
@@ -101,7 +102,7 @@ public class XSWTPreview extends ViewPart {
             }
             catch (XSWTException e) {
                 disposeChildren();
-                Text errMsg = new Text(compositeMain, 66);
+                Text errMsg = new Text(compositeMain, SWT.READ_ONLY|SWT.MULTI|SWT.WRAP);
                 ByteArrayOutputStream s = new ByteArrayOutputStream();
                 e.printStackTrace(new PrintWriter(s));
                 String stackdump = e.toString();
