@@ -23,15 +23,15 @@ import freemarker.eclipse.FreemarkerPlugin;
 public class FtlDirectiveCompletionProcessor implements IContentAssistProcessor {
     // directive names, copied out from FMParser.jj
     public static final String[] DIRECTIVES = {
-        "assign", "attempt", "break", "call", "case", "comment", "compress", "default",
-        "else", "elseif", "escape", "fallback", "flush", "foreach", "function", "global", "if", "import", "include", "list",
-        "local", "lt", "macro", "nested", "noescape", "noparse", "nt", "recover", "recurse", "return", "rt", "setting",
-        "stop", "switch", "t", "transform", "visit",
+        "assign", "attempt", "break", "case", "compress", "default", "else", "elseif", 
+        "escape", "fallback", "flush", "function", "global", "if", "import", "include", 
+        "list", "local", "lt", "macro", "nested", "noescape", "noparse", "nt", "recover", 
+        "recurse", "return", "rt", "setting", "stop", "switch", "t", "visit",
     };
 
     public static final String[] DIRECTIVE_ENDTAGS = {
-        "assign", "attempt", "comment", "compress", "escape", "foreach", "function", "global", "if", "list",
-        "local", "macro", "noescape", "noparse", "setting", "switch", "transform",
+        "assign", "attempt", "compress", "escape", "function", "global", "if", 
+        "list", "local", "macro", "noescape", "noparse", "setting", "switch",
     };
     
     public static final String[] DIRECTIVE_TEMPLATES = {
