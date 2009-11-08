@@ -41,8 +41,6 @@ import freemarker.template.Configuration;
  * @author Andras
  */
 //FIXME: freemarker logging currently goes to stdout
-//XXX removed properties: PROP_SOURCEFOLDERS = "addProjectReference", "sourceFolders", "nedSourceFolders", "makemakeOptions"
-//XXX todo document: glob patterns; verbatimFiles= option
 public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	public static final String TEMPLATE_PROPERTIES_FILENAME = "template.properties";
 	public static final Image MISSING_IMAGE = ImageDescriptor.getMissingImageDescriptor().createImage();
@@ -88,7 +86,8 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), folder.getProject().getName()));
 
 		ignoreResourcePatterns.add("**/*.xswt");
-		ignoreResourcePatterns.add("**/*.fti");  // note: "*.ftl" is NOT to be added!
+		ignoreResourcePatterns.add("**/*.fti");  // note: "*.ftl" is NOT to be added! (or they'd be skipped altogether)
+		ignoreResourcePatterns.add("**/*.jar");
 		ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
 
 		// the following options may not be modified via the wizard, so they are initialized here
@@ -182,15 +181,18 @@ public class WorkspaceBasedContentTemplate extends ContentTemplate {
 	}
 	
 	/**
-	 * Overridden so that we can load JAR files from the template folder.
+	 * Overridden so that we can load JAR files from the template folder and the project's "plugins" folder
 	 */
 	@Override
 	protected ClassLoader createClassLoader() {
 	    List<URL> urls = new ArrayList<URL>();
 	    try {
-	        for (IResource resource : templateFolder.members())
-	            if (resource instanceof IFile && resource.getFileExtension().equals("jar"))
-	                urls.add(new URL("file", "", resource.getLocation().toPortableString()));
+	        // load from the template folder and from the project's "plugins" folder
+	        IContainer[] folders = new IContainer[] { templateFolder, templateFolder.getProject().getFolder(new Path("plugins")) };
+	        for (IContainer folder : folders)
+	            for (IResource resource : folder.members())
+	                if (resource instanceof IFile && resource.getFileExtension().equals("jar"))
+	                    urls.add(new URL("file", "", resource.getLocation().toPortableString()));
 	    } 
 	    catch (Exception e) {
 	        CommonPlugin.logError("Error assembling classpath for loading jars from the workspace", e);
