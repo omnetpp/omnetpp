@@ -6,6 +6,8 @@
     <package name="org.eclipse.swt.widgets" />
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
@@ -13,13 +15,13 @@
         <layout x:class="GridLayout" x:numColumns="2"/>
         <layoutData x:class="GridData" x:horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
         <x:children>
-            <label text="Dummy DSDV option:"/>   
+            <label text="Dummy DSDV option:"/>
             <text x:style="BORDER"/>
-            <label text="Dummy DSDV option 2:"/>   
+            <label text="Dummy DSDV option 2:"/>
             <text x:style="BORDER"/>
-            <label text="Dummy DSDV option 3:"/>   
+            <label text="Dummy DSDV option 3:"/>
             <text x:style="BORDER"/>
         </x:children>
-    </group>  
+    </group>
   </x:children>
 </xswt>

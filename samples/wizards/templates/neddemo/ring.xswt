@@ -6,6 +6,8 @@
     <package name="org.eclipse.swt.widgets" />
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
@@ -16,6 +18,6 @@
         <label text="Number of nodes:"/>
         <spinner x:id="nodes" x:minimum="1" x:maximum="100" x:style="BORDER"/>
       </x:children>
-    </group>  
+    </group>
   </x:children>
 </xswt>

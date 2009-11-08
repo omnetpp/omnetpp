@@ -6,6 +6,8 @@
     <package name="org.eclipse.swt.widgets" />
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
@@ -13,21 +15,21 @@
         <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
         <layout x:class="GridLayout" x:numColumns="2"/>
         <x:children>
-            <label text="Dummy option:"/>   
+            <label text="Dummy option:"/>
             <text x:style="BORDER"/>
-            <label text="Dummy option 2:"/>   
+            <label text="Dummy option 2:"/>
             <text x:style="BORDER"/>
-            <label text="Dummy option 3:"/>   
+            <label text="Dummy option 3:"/>
             <text x:style="BORDER"/>
         </x:children>
-    </group>  
+    </group>
     <group text="Other">
         <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
         <layout x:class="GridLayout" x:numColumns="1"/>
         <x:children>
             <button x:id="showSettingsPage" x:style="CHECK" x:text="Customize project options"/>
         </x:children>
-    </group>  
+    </group>
   </x:children>
 
 </xswt>

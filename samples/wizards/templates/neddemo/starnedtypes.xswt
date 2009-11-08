@@ -6,6 +6,7 @@
     <package name="org.eclipse.swt.widgets" />
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" x:numColumns="1"/>
@@ -38,7 +39,7 @@
         </button>
       </x:children>
     </group>
-     
+
     <group text="Channel NED type">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" x:numColumns="2"/>
@@ -52,6 +53,6 @@
         </button>
       </x:children>
     </group>
-     
+
   </x:children>
 </xswt>

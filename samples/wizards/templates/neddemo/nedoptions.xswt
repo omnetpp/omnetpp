@@ -6,6 +6,8 @@
     <package name="org.eclipse.swt.widgets" />
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
@@ -17,7 +19,7 @@
          <button x:id="parametricNED" text="Parametric topology" x:style="RADIO"/>
          <button x:id="staticNED" text="Static topology" x:style="RADIO"/>
        </x:children>
-    </group> 
+    </group>
 
     <group text="Options">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
@@ -25,7 +27,7 @@
       <x:children>
         <button x:id="wantPositions" x:style="CHECK" x:text="Generate coordinates (not available for all topologies)"/>
       </x:children>
-    </group>  
+    </group>
 
   </x:children>
 </xswt>

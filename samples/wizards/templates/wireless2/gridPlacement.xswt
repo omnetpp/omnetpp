@@ -6,6 +6,8 @@
     <package name="org.eclipse.swt.widgets" />
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
@@ -20,6 +22,6 @@
             <label text="Vertical spacing:"/>
             <scale x:id="gridVSpacing"/>
         </x:children>
-    </group>  
+    </group>
   </x:children>
 </xswt>
