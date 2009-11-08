@@ -26,7 +26,6 @@
        <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
        <layout x:class="GridLayout" x:numColumns="1"/>
        <x:children>
-         <button x:id="isEmpty" text="Empty" x:style="RADIO"/>
          <button x:id="isSimple" text="Simple module" x:style="RADIO"/>
          <button x:id="isModule" text="Compound module" x:style="RADIO"/>
          <button x:id="isNetwork" text="Network" x:style="RADIO"/>

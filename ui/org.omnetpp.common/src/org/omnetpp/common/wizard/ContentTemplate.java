@@ -45,8 +45,6 @@ import freemarker.template.TemplateException;
  * @author Andras
  */
 public abstract class ContentTemplate implements IContentTemplate {
-	public static final Image DEFAULT_ICON = CommonPlugin.getImage("icons/obj16/wiztemplate.png");
-	
 	private static final String SETOUTPUT_MARKER = "@@@@ setoutput \"${file}\" @@@@\n";
 	private static final String SETOUTPUT_PATTERN = "(?s)@@@@ setoutput \"(.*?)\" @@@@\n"; // filename must be $1
 	 
@@ -54,7 +52,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     private String name;
     private String description;
     private String category;
-    private Image image = DEFAULT_ICON;
+    private Image image;
 
     // we need this ClassLoader for the Class.forName() calls in for both FreeMarker and XSWT.
     // Without it, templates (BeanWrapper) and XSWT would only be able to access classes 

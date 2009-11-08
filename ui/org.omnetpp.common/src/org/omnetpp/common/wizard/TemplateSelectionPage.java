@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -28,19 +29,31 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 
 /**
- * Wizard page for selecting an IContentTemplate.
+ * Wizard page for selecting an IContentTemplate. Templates appear in a tree,
+ * organized by categories. Templates that have "" or null as category will
+ * be placed on the top level of the tree.
  * 
  * @author Andras
  */
 public class TemplateSelectionPage extends WizardPage {
+    public static final Image DEFAULT_IMAGE = CommonPlugin.getImage("icons/obj16/wiztemplate.png");
     public static final Image CATEGORY_IMAGE = CommonPlugin.getImage("icons/obj16/wiztemplatecategory.png");
 
     private TreeViewer treeViewer;
+    private Image defaultImage = DEFAULT_IMAGE;
 
-    protected TemplateSelectionPage() {
+    public TemplateSelectionPage() {
         super("OmnetppTemplateSelectionPage");
         setTitle("Project Contents");
         setDescription("Select one of the options below");
+    }
+
+    public Image getDefaultImage() {
+        return defaultImage;
+    }
+
+    public void setDefaultImage(Image defaultImage) {
+        this.defaultImage = defaultImage;
     }
 
     public void createControl(Composite parent) {
@@ -62,7 +75,13 @@ public class TemplateSelectionPage extends WizardPage {
             @Override
             public Image getImage(Object element) {
                 element = ((GenericTreeNode)element).getPayload();
-                return element instanceof IContentTemplate ? ((IContentTemplate)element).getImage() : CATEGORY_IMAGE;
+                if (element instanceof IContentTemplate) {
+                    Image image = ((IContentTemplate)element).getImage();
+                    return image!=null ? image : defaultImage;
+                }
+                else {
+                    return CATEGORY_IMAGE;
+                }
             }
         });
         treeViewer.setContentProvider(new GenericTreeContentProvider());
@@ -92,10 +111,11 @@ public class TemplateSelectionPage extends WizardPage {
         for (IContentTemplate template : templates)
             categories.add(template.getCategory());
         for (String category : categories) {
-            GenericTreeNode categoryNode = new GenericTreeNode(category);
-            root.addChild(categoryNode);
+            GenericTreeNode categoryNode = StringUtils.isEmpty(category) ? root : new GenericTreeNode(category);
+            if (categoryNode != root)
+                root.addChild(categoryNode);
             for (IContentTemplate template : templates)
-                if (category.equals(template.getCategory()))
+                if (StringUtils.equals(category, template.getCategory()))
                     categoryNode.addChild(new GenericTreeNode(template));
         }                
         treeViewer.setInput(root);

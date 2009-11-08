@@ -121,15 +121,23 @@ public class NewNEDFileWizard extends TemplateBasedWizard {
     @Override
     protected List<IContentTemplate> getTemplates() {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+
+        result.add(new BuiltinProjectTemplate("Empty NED file", null, null) {
+            public void performFinish(CreationContext context) throws CoreException {
+                substituteNestedVariables(context);
+                context.getVariables().put("isEmpty", true);
+                createFileFromPluginResource("dummy", "untitled.ned.ftl", context); 
+            }
+        });
         
-        result.add(new BuiltinProjectTemplate("Empty file", "XXX TODO", null) { //FIXME use null category!!!
+        result.add(new BuiltinProjectTemplate("File with an empty NED type", null, null) {
             @Override
             public CreationContext createContext(IContainer folder) {
                 CreationContext context = super.createContext(folder);
-                context.getVariables().put("isEmpty", true);
+                context.getVariables().put("isEmpty", false);
                 context.getVariables().put("isSimple", false);
                 context.getVariables().put("isModule", false);
-                context.getVariables().put("isNetwork", false);
+                context.getVariables().put("isNetwork", true);
                 context.getVariables().put("isChannel", false);
                 context.getVariables().put("isModuleinterface", false);
                 context.getVariables().put("isChannelinterface", false);
