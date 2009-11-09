@@ -9,6 +9,7 @@ package org.omnetpp.common.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Calendar;
@@ -166,6 +167,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         cfg.addAutoInclude(BUILTINS);
         StringTemplateLoader loader = new StringTemplateLoader();
         loader.putTemplate(BUILTINS, 
+                "<#macro do arg></#macro>" + // allow void methods to be called as: <@do object.setFoo(x)!> 
                 "<#macro setoutput file>\n" + 
                 SETOUTPUT_MARKER + 
         		"</#macro>\n");
@@ -226,15 +228,22 @@ public abstract class ContentTemplate implements IContentTemplate {
 		}
 	}
 
+	
     /**
-     * Utility method for doConfigure. Copies a resource into the project,  
+     * Utility method for performFinish(). Copies a resource into the project,  
      * performing variable substitutions in it. If the template contained 
      * &lt;@setoutput file="..."&gt; tags, multiple files will be saved. 
-     * 
-     * See also suppressIfBlank().
-     * @param suppressIfBlank 
      */
-    protected void createFile(IFile file, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
+    protected void createTemplateFile(String containerRelativePath, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
+        createTemplateFile(context.getFolder().getFile(new Path(containerRelativePath)), freemarkerConfig, templateName, context);
+    }
+
+    /**
+     * Utility method for performFinish(). Copies a resource into the project,  
+     * performing variable substitutions in it. If the template contained 
+     * &lt;@setoutput file="..."&gt; tags, multiple files will be saved. 
+     */
+    protected void createTemplateFile(IFile file, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClassLoader());
@@ -285,32 +294,52 @@ public abstract class ContentTemplate implements IContentTemplate {
 		
 		// save files (unless blank)
         for (String fileName : fileContent.keySet()) {
-            IFile fileToSave = fileName.equals("") ? file : file.getParent().getFile(new Path(fileName));
             String contentToSave = fileContent.get(fileName);
             if (!StringUtils.isBlank(contentToSave)) {
                 // save the file if not blank. Note: we do NOT delete the existing file with 
                 // the same name if contentToSave is blank; this is documented behavior.
-                byte[] bytes = contentToSave.getBytes(); 
-                if (!fileToSave.exists())
-                    fileToSave.create(new ByteArrayInputStream(bytes), true, context.getProgressMonitor());
-                else
-                    fileToSave.setContents(new ByteArrayInputStream(bytes), true, true, context.getProgressMonitor());
+                IFile fileToSave = fileName.equals("") ? file : file.getParent().getFile(new Path(fileName));
+                createVerbatimFile(fileToSave, new ByteArrayInputStream(contentToSave.getBytes()), context);
             }
         }
     }
 
     /**
-     * Creates a folder, relative to the context resource (which must here be an IContainer). 
-     * If the parent folder(s) do not exist, they are created.
+     * Utility method for performFinish(). Creates a file from the given input stream.
+     * If the parent folder(s) do not exist, they are created. The project must exist though.
+     */
+    protected void createVerbatimFile(String containerRelativePath, InputStream inputStream, CreationContext context) throws CoreException {
+        createVerbatimFile(context.getFolder().getFile(new Path(containerRelativePath)), inputStream, context);
+    }
+    
+    /**
+     * Utility method for performFinish(). Creates a file from the given input stream.
+     * If the parent folder(s) do not exist, they are created. The project must exist though.
+     */
+    protected void createVerbatimFile(IFile file, InputStream inputStream, CreationContext context) throws CoreException {
+        if (!file.getParent().exists() && file.getParent() instanceof IFolder)
+            createFolder((IFolder)file.getParent(), context);
+        if (!file.exists())
+            file.create(inputStream, true, context.getProgressMonitor());
+        else
+            file.setContents(inputStream, true, true, context.getProgressMonitor());
+    }
+
+    /**
+     * Creates a folder, relative to the context resource. If the parent folder(s) 
+     * do not exist, they are created. The project must exist though.
      */
     protected void createFolder(String containerRelativePath, CreationContext context) throws CoreException {
-        if (!(context.getFolder() instanceof IContainer))
-            throw new IllegalStateException("createFolder() may only be used if the resource is an IContainer");
+        createFolder(context.getFolder().getFolder(new Path(containerRelativePath)), context);
+    }
 
-        IContainer container = (IContainer)context.getFolder();
-        IFolder folder = container.getFolder(new Path(containerRelativePath));
-        if (!folder.getParent().exists())
-            createFolder(folder.getParent().getProjectRelativePath().toString(), context);
+    /**
+     * Creates a folder. If the parent folder(s) do not exist, they are created. 
+     * The project must exist though.
+     */
+    protected void createFolder(IFolder folder, CreationContext context) throws CoreException {
+        if (!folder.getParent().exists() && folder.getParent() instanceof IFolder) // if even the project is missing, let folder.create() fail
+            createFolder((IFolder)folder.getParent(), context);
         if (!folder.exists())
             folder.create(true, true, context.getProgressMonitor());
     }

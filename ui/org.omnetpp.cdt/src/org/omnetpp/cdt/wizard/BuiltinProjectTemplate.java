@@ -40,7 +40,7 @@ public abstract class BuiltinProjectTemplate extends ContentTemplate {
         Configuration cfg = new Configuration();
         cfg.setTemplateLoader(new ClassTemplateLoader(getClass(), "/template"));
         IFile file = context.getFolder().getFile(new Path(projectRelativePath));
-        createFile(file, cfg, templateName, context);
+        createTemplateFile(file, cfg, templateName, context);
     }
 
     protected void createFolder(String projectRelativePath, CreationContext context) throws CoreException {
