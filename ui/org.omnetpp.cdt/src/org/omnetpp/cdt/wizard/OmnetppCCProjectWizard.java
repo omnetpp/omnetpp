@@ -416,7 +416,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 				try {
 					// each template is a folder which contains a "template.properties" file
 					for (IResource resource : rootFolder.members()) {
-						if (resource instanceof IFolder && ((IFolder)resource).getFile(WorkspaceBasedProjectTemplate.TEMPLATE_PROPERTIES_FILENAME).exists())
+						if (resource instanceof IFolder && ((IFolder)resource).getFile(FileBasedProjectTemplate.TEMPLATE_PROPERTIES_FILENAME).exists())
 							result.add(loadTemplateFrom((IFolder)resource));
 					}
 				} catch (CoreException e) {
@@ -428,7 +428,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 	}
 
 	protected IContentTemplate loadTemplateFrom(IFolder folder) throws CoreException {
-		return new WorkspaceBasedProjectTemplate(folder);
+		return new FileBasedProjectTemplate(folder);
 	}
 
     
