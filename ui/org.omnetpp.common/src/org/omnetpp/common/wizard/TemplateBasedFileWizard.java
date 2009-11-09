@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.ui.IWorkbench;
@@ -82,8 +83,10 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
         // open the file for editing 
         IPath filePath = firstPage.getContainerFullPath().append(firstPage.getFileName());
         IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
-        if (!newFile.exists())
+        if (!newFile.exists()) {
+            MessageDialog.openError(getShell(), "Problem", "The wizard does not seem to have created the requested file:\n" + newFile.getFullPath().toString());
             return false;
+        }
         
         try {
             IWorkbenchWindow dwindow = workbench.getActiveWorkbenchWindow();

@@ -109,9 +109,9 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                 try {
                     // each template is a folder which contains a "template.properties" file
                     for (IResource resource : rootFolder.members()) {
-                        if (resource instanceof IFolder && WorkspaceBasedContentTemplate.looksLikeTemplateFolder((IFolder)resource)) {
+                        if (resource instanceof IFolder && FileBasedContentTemplate.looksLikeTemplateFolder((IFolder)resource)) {
                             IFolder folder = (IFolder)resource;
-                            WorkspaceBasedContentTemplate template = new WorkspaceBasedContentTemplate(folder);
+                            FileBasedContentTemplate template = new FileBasedContentTemplate(folder);
                             if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
                                 result.add(template);
                         }
