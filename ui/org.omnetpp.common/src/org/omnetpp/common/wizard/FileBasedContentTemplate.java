@@ -237,8 +237,9 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	}
 	
 	/**
-	 * Overridden so that we can load JAR files from the template folder and the project's "plugins" folder
+	 * Overridden so that we can load JAR files from the template folder
 	 */
+	//TODO the project's "plugins" folder
 	@Override
 	protected ClassLoader createClassLoader() {
 	    try {

@@ -626,7 +626,7 @@ TODO jar files get loaded from the normal folder, and from the project's "plugin
 
 TODO "New NED File" wizard milyen valtozokat definial alapbol!
         "wizardType" (=="nedfile)
-        "newNedFileName"  -- the file name
+        "newFileName"  -- the file name
         "nedPackageName" -- expected NED package for that folder
         "nedTypeName" -- derived from the file name
         "bannerComment" -- with copyright notice, etc
@@ -640,7 +640,7 @@ TODO: optionalFiles removed! now all files, if they would be empty, are NOT save
  comments), or use FileUtils.writeTextFile() [note: it exists???]. If you want to delete an existing file,
  here's how you do it: FileUtils.deleteFile()
 
-TODO document <@setoutput file=newNedFileName?default("")/>   (ures: eredeti file; multiple setoutputs: concatenate)
+TODO document <@setoutput file=newFileName?default("")/>   (ures: eredeti file; multiple setoutputs: concatenate)
 TODO document FileChooser and ExternalFileChooser: custom widget: file selector (workspace / external file)
 TODO NED type chooser, project chooser
 

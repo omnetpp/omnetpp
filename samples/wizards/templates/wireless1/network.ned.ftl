@@ -1,4 +1,4 @@
-<@setoutput file=nedFileName?default("")/>
+<@setoutput file=newFileName?default("")/>
 ${bannerComment}
 
 // Created: ${date} for project ${projectName}

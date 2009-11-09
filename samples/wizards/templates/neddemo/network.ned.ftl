@@ -1,4 +1,4 @@
-<@setoutput file=nedFileName?default("")/>
+<@setoutput file=newFileName?default("")/>
 ${bannerComment}
 
 // Created: ${date} for project ${projectName}
@@ -17,7 +17,7 @@ ${bannerComment}
 <#else>
   <#assign channelSpec = "">
 </#if>
-  
+
 <#-- pull in the correct template to do the actual work -->
 <#if star>
    <#include "star.ned.fti">
