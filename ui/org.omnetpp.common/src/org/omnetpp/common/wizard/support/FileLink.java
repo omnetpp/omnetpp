@@ -80,7 +80,8 @@ public class FileLink extends Composite implements IWidgetAdapter {
 	 * Adapter interface.
 	 */
 	public Object getValueFromControl(Control control) {
-		return ((FileLink)control).getResource().getFullPath().toString();
+		IResource resource = ((FileLink)control).getResource();
+        return resource==null ? "" : resource.getFullPath().toString();
 	}
 
 	/**

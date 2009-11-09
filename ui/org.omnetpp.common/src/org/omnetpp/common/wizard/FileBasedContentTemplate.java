@@ -132,6 +132,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
 		ignoreResourcePatterns.add("**/*.fti");  // note: "*.ftl" is NOT to be added! (or they'd be skipped altogether)
 		ignoreResourcePatterns.add("**/*.jar");
 		ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
+		ignoreResourcePatterns.add(FILELIST_FILENAME);
 
 		// the following options may not be modified via the wizard, so they are initialized here
         String[] labels = SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_SUPPORTEDWIZARDTYPES))," *, *");
