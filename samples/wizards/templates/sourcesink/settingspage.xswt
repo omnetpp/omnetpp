@@ -11,6 +11,6 @@
   </import>
   <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
-    <button x:id="makeFolders" x:text="Make separate src/ and simulations/ folders" x:style="CHECK"/>
+    <button x:id="makeSrcAndSimulationsFolders" x:text="Make separate src/ and simulations/ folders" x:style="CHECK"/>
   </x:children>
 </xswt>

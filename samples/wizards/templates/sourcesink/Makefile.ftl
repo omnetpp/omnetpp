@@ -1,3 +1,4 @@
+<#if makeSrcAndSimulationsFolders>
 all: makefiles
 	cd src && $(MAKE)
 
@@ -10,3 +11,4 @@ cleanall:
 
 makefiles:
 	cd src && opp_makemake -f --deep
+</#if>
