@@ -34,7 +34,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.omnetpp.wizards"
-            class="org.omnetpp.ned.editor.wizards.NewNEDFileWizard"
+            class="org.omnetpp.ned.editor.wizards.NEDFileWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/newnedfile.gif"
             id="org.omnetpp.ned.editor.wizard.new.file"
