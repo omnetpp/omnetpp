@@ -1,14 +1,15 @@
-<#if makeSrcAndSimulationsFolders>
+<#include "main.fti">
+<#if srcFolder!=".">
 all: makefiles
-	cd src && $(MAKE)
+	cd ${srcFolder} && $(MAKE)
 
 clean:
-	cd src && $(MAKE) clean
+	cd ${srcFolder} && $(MAKE) clean
 
 cleanall:
-	cd src && $(MAKE) MODE=release clean
-	cd src && $(MAKE) MODE=debug clean
+	cd ${srcFolder} && $(MAKE) MODE=release clean
+	cd ${srcFolder} && $(MAKE) MODE=debug clean
 
 makefiles:
-	cd src && opp_makemake -f --deep
+	cd ${srcFolder} && opp_makemake -f --deep
 </#if>

@@ -1,3 +1,5 @@
+<#include "main.fti">
+<@setoutput file=srcFolder+"/Txc.cc"/>
 ${bannerComment}
 
 #include "Txc.h"

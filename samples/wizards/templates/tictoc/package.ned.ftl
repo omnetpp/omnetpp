@@ -1,8 +1,16 @@
-<#if rootPackage!="">// designate the NED package of this folder</#if>
-<#if rootPackage!="">package ${rootPackage};</#if>
+<#include "main.fti">
+<@setoutput file=srcFolder+"/package.ned"/>
+<#if srcPackage!="">
+// designate the NED package of this folder
+package ${srcPackage};
 
-<#if namespace!="">// namespace of module C++ classes</#if>
-<#if namespace!="">@namespace(${namespace});</#if>
+</#if>
+<#if namespace!="">
+// namespace of module C++ classes
+@namespace(${namespace});
 
-<#if licenseCode!="">@license(${licenseCode});</#if>
+</#if>
+<#if licenseCode!="">
+@license(${licenseCode});
+</#if>
 

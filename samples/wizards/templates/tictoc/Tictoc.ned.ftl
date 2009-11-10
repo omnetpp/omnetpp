@@ -1,7 +1,16 @@
+<#include "main.fti">
+<@setoutput file=simulationsFolder+"/Tictoc.ned"/>
 ${bannerComment}
 
 <#if simulationsPackage!="">package ${simulationsPackage};</#if>
-<#if rootPackage!="">import ${rootPackage}.Txc;</#if>
+
+<#if srcPackage!=simulationsPackage>
+  <#if srcPackage=="">
+import Txc;
+  <#else>
+import ${srcPackage}.Txc;
+  </#if>
+</#if>
 
 //
 // Two instances (tic and toc) of Txc connected.

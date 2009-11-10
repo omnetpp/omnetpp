@@ -1,6 +1,8 @@
+<#include "main.fti">
+<@setoutput file=srcFolder+"/Txc.ned"/>
 ${bannerComment}
 
-<#if rootPackage!="">package ${rootPackage};</#if>
+<#if srcPackage!="">package ${srcPackage};</#if>
 
 //
 // Immediately sends out any message it receives. It can optionally generate

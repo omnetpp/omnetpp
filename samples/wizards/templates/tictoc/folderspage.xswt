@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="2"/>
+  <x:children>
+
+    <label x:text="Folder for simple modules:"/>
+    <text x:id="srcFolder" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </text>
+    <label x:text="Folder for simulations:"/>
+    <text x:id="simulationsFolder" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label/>
+    <label/>
+
+    <label x:text="NED package for 'src':"/>
+    <text x:id="srcPackage" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </text>
+    <label x:text="NED package for 'simulations:'"/>
+    <text x:id="simulationsPackage" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </text>
+  </x:children>
+</xswt>
