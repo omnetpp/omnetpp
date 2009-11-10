@@ -12,6 +12,10 @@
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
 
+    <label x:style="WRAP">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <text x:p0="Do you want to put C++ classes into a namespace (recommended)? Using namespaces reduces name collisions. Enter namespace name, or leave it empty for no package."/>
+    </label>
     <label x:text="C++ namespace:"/>
     <text x:id="namespace" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>

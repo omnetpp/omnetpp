@@ -9,11 +9,22 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="2"/>
+  <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
 
+    <label x:style="WRAP">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <text x:p0="This wizard generates a basic example simulation in which a Source module periodically sends messages to a Sink module, which simply discards them."/>
+    </label>
+
+    <label/>
+  
+    <label x:style="WRAP">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <text x:p0="Do you want to make separate folders for your reusable components (e.g. simple modules), and for simulations?"/>
+    </label>
+  
     <button x:id="makeSrcAndSimulationsFolders" x:text="Make separate 'src' and 'simulations' folders" x:style="CHECK">
-      <layoutData x:class="GridData" horizontalSpan="2"/>
       <setFocus/>
     </button>
 
