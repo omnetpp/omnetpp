@@ -1,3 +1,6 @@
+<#if makeSrcAndSimulationsFolders>
+  <@setoutput file="src/Sink.cc"/>
+</#if>
 ${bannerComment}
 
 #include "Sink.h"

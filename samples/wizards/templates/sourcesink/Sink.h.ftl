@@ -1,3 +1,6 @@
+<#if makeSrcAndSimulationsFolders>
+  <@setoutput file="src/Sink.h"/>
+</#if>
 ${bannerComment}
 
 #ifndef __${PROJECTNAME}_SINK_H

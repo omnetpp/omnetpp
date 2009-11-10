@@ -42,11 +42,11 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     public CreationContext createContext(IContainer folder) {
         CreationContext context = super.createContext(folder);
 
-        // default values of recognized options (will be overwritten from property file)
-        context.getVariables().put(PROP_ADDPROJECTREFERENCE, "true");
-        context.getVariables().put(PROP_SOURCEFOLDERS, "");
-        context.getVariables().put(PROP_NEDSOURCEFOLDERS, "");
-        context.getVariables().put(PROP_MAKEMAKEOPTIONS, "");
+        // default values of recognized options
+        context.setVariableIfMissing(PROP_ADDPROJECTREFERENCE, "true");
+        context.setVariableIfMissing(PROP_SOURCEFOLDERS, "");
+        context.setVariableIfMissing(PROP_NEDSOURCEFOLDERS, "");
+        context.setVariableIfMissing(PROP_MAKEMAKEOPTIONS, "");
 
         return context;
     }

@@ -9,8 +9,23 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
-    <button x:id="makeSrcAndSimulationsFolders" x:text="Make separate src/ and simulations/ folders" x:style="CHECK"/>
+    <button x:id="makeSrcAndSimulationsFolders" x:text="Make separate 'src' and 'simulations' folders" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+      <setFocus/>
+    </button>
+    <label x:text="C++ namespace:"/>
+    <text x:id="namespace" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </text>
+    <label x:text="Package for 'src'"/>
+    <text x:id="rootPackage" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </text>
+    <label x:text="Package for 'simulations'"/>
+    <text x:id="simulationsPackage" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </text>
   </x:children>
 </xswt>

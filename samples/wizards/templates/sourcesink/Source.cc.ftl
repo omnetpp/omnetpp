@@ -1,3 +1,6 @@
+<#if makeSrcAndSimulationsFolders>
+  <@setoutput file="src/Source.cc"/>
+</#if>
 ${bannerComment}
 
 #include "Source.h"

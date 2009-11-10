@@ -34,6 +34,7 @@ public class FileLink extends Composite implements IWidgetAdapter {
 		setLayout(new FillLayout());
 		
 		link = new Link(this, SWT.NONE);
+		link.setText("n/a");
 		
 		link.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -66,7 +67,7 @@ public class FileLink extends Composite implements IWidgetAdapter {
 	
 	public void setResource(IResource resource) {
         this.resource = resource;
-        link.setText("<a>" + resource.getFullPath().toString() + "</a>");
+        link.setText(resource==null ? "n/a" : "<a>" + resource.getFullPath().toString() + "</a>");
     }
 	
 	/**

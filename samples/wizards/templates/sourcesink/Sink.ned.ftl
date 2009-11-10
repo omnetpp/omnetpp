@@ -1,3 +1,6 @@
+<#if makeSrcAndSimulationsFolders>
+  <@setoutput file="src/Sink.ned"/>
+</#if>
 ${bannerComment}
 
 <#if rootPackage!="">package ${rootPackage};</#if>

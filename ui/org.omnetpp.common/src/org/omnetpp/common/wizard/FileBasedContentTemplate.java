@@ -131,6 +131,10 @@ public class FileBasedContentTemplate extends ContentTemplate {
         ignoreResourcePatterns.add("**/*.xswt");
 		ignoreResourcePatterns.add("**/*.fti");  // note: "*.ftl" is NOT to be added! (or they'd be skipped altogether)
 		ignoreResourcePatterns.add("**/*.jar");
+		ignoreResourcePatterns.add("**/*.bak");
+		ignoreResourcePatterns.add("**/*~");
+		ignoreResourcePatterns.add("**/*~?");
+		ignoreResourcePatterns.add("**/backups/");  //FIXME does not work
 		ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
 		ignoreResourcePatterns.add(FILELIST_FILENAME);
 

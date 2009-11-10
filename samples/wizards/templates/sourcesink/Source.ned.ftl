@@ -1,3 +1,6 @@
+<#if makeSrcAndSimulationsFolders>
+  <@setoutput file="src/Source.ned"/>
+</#if>
 ${bannerComment}
 
 <#if rootPackage!="">package ${rootPackage};</#if>

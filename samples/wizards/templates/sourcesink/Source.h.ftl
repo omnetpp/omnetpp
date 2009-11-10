@@ -1,3 +1,6 @@
+<#if makeSrcAndSimulationsFolders>
+  <@setoutput file="src/Source.h"/>
+</#if>
 ${bannerComment}
 
 #ifndef __${PROJECTNAME}_SOURCE_H

@@ -1,8 +1,17 @@
-<#if rootPackage!="">// designate the NED package of this folder</#if>
-<#if rootPackage!="">package ${rootPackage};</#if>
+<#if makeSrcAndSimulationsFolders>
+  <@setoutput file="src/package.ned"/>
+</#if>
+<#if rootPackage!="">
+// designate the NED package of this folder
+package ${rootPackage};
+</#if>
 
-<#if namespace!="">// namespace of module C++ classes</#if>
-<#if namespace!="">@namespace(${namespace});</#if>
+<#if namespace!="">
+// namespace of module C++ classes
+@namespace(${namespace});
+</#if>
 
-<#if licenseCode!="">@license(${licenseCode});</#if>
+<#if licenseCode!="">
+@license(${licenseCode});
+</#if>
 
