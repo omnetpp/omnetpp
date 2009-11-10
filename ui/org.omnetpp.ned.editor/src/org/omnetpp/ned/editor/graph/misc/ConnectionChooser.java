@@ -216,7 +216,13 @@ public class ConnectionChooser {
         // sort channels
         Comparator<ChannelElementEx> connectionRankComparator = new Comparator<ChannelElementEx>() {
             public int compare(ChannelElementEx c1, ChannelElementEx c2) {
-                return channelTypeLabelsMap.get(c2).size() - channelTypeLabelsMap.get(c1).size();
+                int s1 = channelTypeLabelsMap.get(c1).size();
+                int s2 = channelTypeLabelsMap.get(c2).size();
+                
+                if (s1 == s2)
+                    return c1.getName().compareToIgnoreCase(c2.getName());
+                else
+                    return s2 - s1;
             }
         };
         channels = org.omnetpp.common.util.CollectionUtils.toSorted(channels, connectionRankComparator);
@@ -336,6 +342,7 @@ public class ConnectionChooser {
             templateConn.setSrcGatePlusplus(connection.getSrcGatePlusplus());
             templateConn.setSrcGateSubg(connection.getSrcGateSubg());
         }
+
         if (!chooseDest) {
             templateConn.setDestModule(connection.getDestModule());
             templateConn.setDestModuleIndex(connection.getDestModuleIndex());
@@ -344,13 +351,13 @@ public class ConnectionChooser {
             templateConn.setDestGatePlusplus(connection.getDestGatePlusplus());
             templateConn.setDestGateSubg(connection.getDestGateSubg());
         }
-        
+
         if (templateConn != null) {
             if (isConnectionUnused(compound, templateConn, srcModule, srcGate, chooseSrc, destModule, destGate, chooseDest))
                 unusedList.add(templateConn);
             else
                 usedList.add(templateConn);
-            
+
             connectionLabelsMap.put(templateConn, collectCommonLabels(srcGate, destGate));
         }
     }
