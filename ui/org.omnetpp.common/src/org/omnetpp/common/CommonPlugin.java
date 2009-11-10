@@ -103,7 +103,11 @@ public class CommonPlugin extends AbstractUIPlugin {
         }
         return image;
     }
-	
+
+    public static void log(int severity, String message) {
+        getDefault().getLog().log(new Status(severity, PLUGIN_ID, message));
+    }
+
 	public static void logError(Throwable exception) {
 		logError(exception.toString(), exception);
 	}

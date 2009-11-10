@@ -8,6 +8,8 @@
 package org.omnetpp.common.wizard;
 
 
+import java.util.Set;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.graphics.Image;
@@ -32,7 +34,8 @@ public interface IContentTemplate {
     
     /**
      * Template category is used for organizing the templates into a tree 
-     * in the wizard's template selection page.
+     * in the wizard's template selection page. An empty string will place
+     * the template to the top level of the tree.
      */
     String getCategory();
 
@@ -41,6 +44,13 @@ public interface IContentTemplate {
 	 * template selection page.
 	 */
     Image getImage();
+
+    /**
+     * Returns the types of wizards where this content template can appear.
+     * Possible values are "project", "nedfile", "msgfile", "nedcomponent",
+     * "simplemodule", "compoundmodule", "network", "inifile", "wizard" etc.
+     */
+    Set<String> getSupportedWizardTypes();
 
     /**
      * Creates an initial context with the given resource, and some initial variables set.

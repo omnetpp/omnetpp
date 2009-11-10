@@ -7,7 +7,9 @@
 
 package org.omnetpp.common.wizard;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,6 +39,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.util.FileUtils;
+import org.osgi.framework.Bundle;
 
 
 /**
@@ -104,6 +109,39 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     /**
      * Utility method for getTemplates()
      */
+    protected List<IContentTemplate> loadBuiltinTemplates(Bundle bundle) {
+        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+        try {
+            URL url = bundle.getResource("template/templatelist.txt");
+            String templateListTxt = FileUtils.readTextFile(url.openStream());
+            String[] templateNames = templateListTxt.split("\n");
+            for (String templateName : templateNames) {
+                templateName = templateName.trim();
+                URL templateUrl = CommonPlugin.getDefault().getBundle().getEntry("template/" + templateName);
+                if (templateUrl == null)
+                    CommonPlugin.log(IStatus.ERROR, "Wizard: Could not load built-in content template '" + templateName + "'");
+                else
+                    result.add(loadBuiltinTemplate(templateUrl));
+            }
+        } catch (IOException e) {
+            CommonPlugin.logError("Wizard: Could not load built-in content templates", e);
+        } catch (CoreException e2) {
+            CommonPlugin.logError("Wizard: Could not load built-in content templates", e2);
+        }
+        return result;
+    }
+
+    /**
+     * Factory method used by loadBuiltinTemplates(); override if you subclass 
+     * from FileBasedContentTemplate. 
+     */
+    protected IContentTemplate loadBuiltinTemplate(URL templateUrl) throws CoreException {
+        return new FileBasedContentTemplate(templateUrl);
+    }
+    
+    /**
+     * Utility method for getTemplates()
+     */
     protected List<IContentTemplate> loadTemplatesFromWorkspace(String wizardType) {
         // check the "templates/" subdirectory of each OMNeT++ project
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
@@ -115,7 +153,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                     for (IResource resource : rootFolder.members()) {
                         if (resource instanceof IFolder && FileBasedContentTemplate.looksLikeTemplateFolder((IFolder)resource)) {
                             IFolder folder = (IFolder)resource;
-                            FileBasedContentTemplate template = new FileBasedContentTemplate(folder);
+                            IContentTemplate template = loadTemplateFromWorkspace(folder);
                             if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
                                 result.add(template);
                         }
@@ -126,6 +164,14 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
             }
         }
         return result;
+    }
+
+    /**
+     * Factory method used by loadTemplatesFromWorkspace(); override if you subclass 
+     * from FileBasedContentTemplate. 
+     */
+    protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
+        return new FileBasedContentTemplate(folder);
     }
 
     public TemplateSelectionPage getTemplateSelectionPage() {
@@ -204,7 +250,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
 				return nextPage;
 			}
 			
-			return getFirstExtraPage();  // first CDT page or the like, or nothing
+			return getFirstExtraPage();  // FIXME if that's null, we may need to fake dummy page here!!! (if all subsequent pages are conditional, and get enabled only by a control on THIS page, the Next button may stay disabled!!!)
     	}
 
     	// there's nothing after the dummy page
@@ -222,7 +268,6 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         return selectedTemplate.createContext(folder);
     }
-
 
     private static ICustomWizardPage getNextEnabledCustomPage(ICustomWizardPage[] pages, int start, CreationContext context) {
     	for (int k = start; k < pages.length; k++)

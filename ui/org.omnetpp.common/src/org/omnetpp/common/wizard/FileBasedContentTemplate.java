@@ -134,7 +134,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
 		ignoreResourcePatterns.add("**/*.bak");
 		ignoreResourcePatterns.add("**/*~");
 		ignoreResourcePatterns.add("**/*~?");
-		ignoreResourcePatterns.add("**/backups/");  //FIXME does not work
+		ignoreResourcePatterns.add("**/backups/");
 		ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
 		ignoreResourcePatterns.add(FILELIST_FILENAME);
 
