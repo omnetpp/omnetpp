@@ -7,7 +7,9 @@
 
 package org.omnetpp.cdt.wizard;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -49,6 +52,7 @@ import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
@@ -393,10 +397,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 		List<IContentTemplate> result = new ArrayList<IContentTemplate>();
 		
 		// built-in templates
-        if (withCplusplusSupport())
-        	result.addAll(BuiltinProjectTemplates.getCppTemplates());
-        else 
-        	result.addAll(BuiltinProjectTemplates.getNoncppTemplates());
+		//FIXME TODO XXX obey withCplusplusSupport()!!!
+		result.addAll(loadBuiltinTemplates());
         
         // templates loaded from workspace projects
         //TODO C++ or not C++ projects? (i.e. some templates may require C++ support)
@@ -406,6 +408,28 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         
 		return result;
 	}
+
+	protected List<IContentTemplate> loadBuiltinTemplates() {
+        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+		try {
+		    URL url = Activator.getDefault().getBundle().getResource("template/templatelist.txt");
+		    String templateListTxt = FileUtils.readTextFile(url.openStream());
+		    String[] templateNames = templateListTxt.split("\n");
+		    for (String templateName : templateNames) {
+		        templateName = templateName.trim();
+		        URL templateUrl = Activator.getDefault().getBundle().getEntry("template/" + templateName);
+		        if (templateUrl == null)
+		            Activator.log(IStatus.ERROR, "Wizard: Could not load built-in content template '" + templateName + "'");
+		        else
+		            result.add(new FileBasedProjectTemplate(templateUrl));
+		    }
+		} catch (IOException e) {
+		    Activator.logError("Wizard: Could not load built-in content templates", e);
+		} catch (CoreException e2) {
+		    Activator.logError("Wizard: Could not load built-in content templates", e2);
+		}
+		return result;
+    }
 
 	protected List<IContentTemplate> loadTemplatesFromWorkspace() {
 		// check the "templates/project" subdirectory of each OMNeT++ project
@@ -424,14 +448,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 				}
 			}
 		}
-		
-		try {
-            result.add(new FileBasedProjectTemplate(Activator.getDefault(), "template/import-csv"));//FIXME just temp
-        }
-        catch (CoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 		return result;
 	}
 
