@@ -86,7 +86,13 @@ public class ConnectionChooser {
         List<ConnectionElement> usedList = new ArrayList<ConnectionElement>();
         Comparator<ConnectionElement> connectionRankComparator = new Comparator<ConnectionElement>() {
             public int compare(ConnectionElement c1, ConnectionElement c2) {
-                return connectionLabelsMap.get(c2).size() - connectionLabelsMap.get(c1).size();
+                int s1 = connectionLabelsMap.get(c1).size();
+                int s2 = connectionLabelsMap.get(c2).size();
+
+                if (s1 == s2)
+                    return getConnectionMenuItemText(c1).compareToIgnoreCase(getConnectionMenuItemText(c2));
+                else
+                    return s2 - s1;
             }
         };
 
