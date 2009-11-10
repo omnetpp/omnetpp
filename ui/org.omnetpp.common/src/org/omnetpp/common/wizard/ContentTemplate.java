@@ -251,16 +251,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         // substitute variables
     	String content;    	
         try {
-        	// make Math, FileUtils, StringUtils and static methods of other classes available to the template
-        	// see chapter "Bean wrapper" in the FreeMarker manual 
-        	context.getVariables().put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
-        	context.getVariables().put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(FileUtils.class.getName()));
-        	context.getVariables().put("StringUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(StringUtils.class.getName()));
-        	context.getVariables().put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
-        	context.getVariables().put("IDEUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(IDEUtils.class.getName()));
-        	context.getVariables().put("LangUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(LangUtils.class.getName()));
-
-        	context.getVariables().put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
+        	addVariablesBeforeCreation(context); // add classes: Math, FileUtils, IDEUtils, etc.
         	
         	// perform template substitution
 			Template template = freemarkerConfig.getTemplate(templateName, "utf8");
@@ -302,6 +293,23 @@ public abstract class ContentTemplate implements IContentTemplate {
                 createVerbatimFile(fileToSave, new ByteArrayInputStream(contentToSave.getBytes()), context);
             }
         }
+    }
+
+    /**
+     * Add classes: Math, FileUtils, IDEUtils, etc. Override to add more powerful variants
+     * of those classes.
+     */
+    protected void addVariablesBeforeCreation(CreationContext context) throws Exception {
+        // make Math, FileUtils, StringUtils and static methods of other classes available to the template
+        // see chapter "Bean wrapper" in the FreeMarker manual 
+        context.getVariables().put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
+        context.getVariables().put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(FileUtils.class.getName()));
+        context.getVariables().put("StringUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(StringUtils.class.getName()));
+        context.getVariables().put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
+        context.getVariables().put("IDEUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(IDEUtils.class.getName()));
+        context.getVariables().put("LangUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(LangUtils.class.getName()));
+
+        context.getVariables().put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
     }
 
     /**

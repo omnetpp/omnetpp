@@ -1,14 +1,18 @@
 package org.omnetpp.ned.editor.wizards;
 
+import java.net.URL;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedFileWizard;
+import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedListener;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 
 /**
@@ -28,6 +32,12 @@ public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
         firstPage.setDescription("Choose NED file");
         firstPage.setFileExtension("ned");
         firstPage.setFileName("untitled.ned");
+        
+        getTemplateSelectionPage().setTemplateAddedListener(new ITemplateAddedListener() {
+            public void addTemplateFrom(URL url) throws CoreException {
+                //TODO...
+            }
+        });
     }
 
     @Override

@@ -84,14 +84,18 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     }
 
     /**
-     * Returns the resource the wizard should create, or in which it should create content.
+     * Return the resource the wizard should create, or in which it should create content.
      * The resource may be a folder or project to be created, or an existing
      * folder or project in which the wizard will create files/folders.
+     * 
+     * Suggested implementation is to call the appropriate getter method of the 
+     * file/folder selection page of the wizard (which should be before the template
+     * selection page.)
      */
     protected abstract IContainer getFolder();
 
     /**
-     * Returns the templates to be shown on the Template Selection page. The set of templates 
+     * Return the templates to be shown on the Template Selection page. The set of templates 
      * returned may depend on options the user chose on previous wizard pages (such as the 
      * "With C++ Support" checkbox in the New OMNeT++ Project wizard.)
      */
@@ -124,8 +128,16 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         return result;
     }
 
+    public TemplateSelectionPage getTemplateSelectionPage() {
+        return templateSelectionPage;
+    }
+    
     public IContentTemplate getSelectedTemplate() {
         return templateSelectionPage.getSelectedTemplate();
+    }
+    
+    public CreationContext getCreationContext() {
+        return context;
     }
     
     @Override

@@ -3,11 +3,18 @@
  */
 package org.omnetpp.common.wizard;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -16,6 +23,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -24,6 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
@@ -44,21 +54,51 @@ public class TemplateSelectionPage extends WizardPage {
 
     private TreeViewer treeViewer;
     private Image defaultImage = DEFAULT_IMAGE;
+    private ITemplateAddedListener templateAddedListener;
+    private static String lastUrlEntered = "http://";
 
+    /**
+     * Listener to be provided when the wizard wants to provide "Load template from URL" 
+     * functionality. Method is supposed to call back setTemplates() to refresh the tree.
+     */
+    public interface ITemplateAddedListener {
+        void addTemplateFrom(URL url) throws CoreException;
+    }
+    
     public TemplateSelectionPage() {
         super("OmnetppTemplateSelectionPage");
-        setTitle("Project Contents");
+        setTitle("Initial Contents");
         setDescription("Select one of the options below");
     }
 
+    /**
+     * Returns the image to be used for templates that don't have one.
+     */
     public Image getDefaultImage() {
         return defaultImage;
     }
 
+    /**
+     * Sets the image to be used for templates that don't have one.
+     */
     public void setDefaultImage(Image defaultImage) {
         this.defaultImage = defaultImage;
     }
 
+    /**
+     * Enable the 'Add template by URL' link, and set the callback to be invoked
+     * when the user adds a template URL. Must be called before createControl(). 
+     */
+    public void setTemplateAddedListener(ITemplateAddedListener templateAddedListener) {
+        if (getControl() != null)
+            throw new IllegalStateException("Oh dear, too late...");
+        this.templateAddedListener = templateAddedListener;
+    }
+    
+    public ITemplateAddedListener getTemplateAddedListener() {
+        return templateAddedListener;
+    }
+    
     public void createControl(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(1,false));
@@ -109,11 +149,43 @@ public class TemplateSelectionPage extends WizardPage {
                 TemplateSelectionPage.this.selectionChanged();
             }});
 
+        if (templateAddedListener != null) {
+            Link link = new Link(composite, SWT.NONE);
+            link.setText("<a>Add content template by URL</a>");
+            link.addSelectionListener(new SelectionListener() {
+                public void widgetDefaultSelected(SelectionEvent e) {
+                    addTemplateByURL();
+                }
+
+                public void widgetSelected(SelectionEvent e) {
+                    addTemplateByURL();
+                }});
+        }
+        
         setPageComplete(false);
     }
 
     protected void selectionChanged() {
         setPageComplete(getSelectedTemplate()!=null);
+    }
+    
+    protected void addTemplateByURL() {
+        if (templateAddedListener == null)
+            return;
+        InputDialog dialog = new InputDialog(getShell(), "Enter Template URL", "Wizard template URL (should point to the folder containing template.properties)", lastUrlEntered, null);
+        if (dialog.open() == Dialog.OK && !StringUtils.isBlank(dialog.getValue())) {
+            String url = dialog.getValue().trim();
+            lastUrlEntered = url;
+            try {
+                templateAddedListener.addTemplateFrom(new URL(url));
+            }
+            catch (MalformedURLException e) {
+                MessageDialog.openError(getShell(), "Error", "Malformed URL '" + url + "': " + StringUtils.defaultString(e.getMessage()) + '.');
+            }
+            catch (CoreException e) {
+                ErrorDialog.openError(getShell(), "Error", "Could not add template at " + url, e.getStatus());
+            }
+        }
     }
     
     public void setTemplates(List<IContentTemplate> templates) {

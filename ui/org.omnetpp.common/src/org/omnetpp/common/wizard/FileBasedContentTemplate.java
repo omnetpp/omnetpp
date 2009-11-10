@@ -396,7 +396,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
                 return new URL("file", "", templateFolder.getFile(new Path(fileName)).getLocation().toPortableString());
         }
         catch (MalformedURLException e) {
-            throw CommonPlugin.wrapIntoCoreException("Cannot make URL for file " + fileName, e);
+            throw CommonPlugin.wrapIntoCoreException("Could not make URL for file " + fileName, e);
         }
     }
 
@@ -410,7 +410,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
                 return new URL(templateUrl.toString() + "/" + fileName).openStream();
             }
             catch (IOException e) {
-                throw CommonPlugin.wrapIntoCoreException("Cannot read file " + fileName, e);
+                throw CommonPlugin.wrapIntoCoreException("Could not read file " + fileName, e);
             }
         }
         else { 
@@ -429,7 +429,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
                     String filelistTxt = FileUtils.readTextFile(openFile(FILELIST_FILENAME));
                     fileList = filelistTxt.trim().split("\\s*\n\\s*");
                 } catch (IOException e) {
-                    throw CommonPlugin.wrapIntoCoreException("Cannot read filelist.txt", e);
+                    throw CommonPlugin.wrapIntoCoreException("Could not read filelist.txt", e);
                 }
             }
             else {
