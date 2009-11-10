@@ -379,7 +379,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	                createFolder(fileName, context);
 	        }
 	        else {
-	            boolean isFtlFile = new Path(fileName).getFileExtension().equals("ftl");
+	            boolean isFtlFile = StringUtils.defaultString(new Path(fileName).getFileExtension()).equals("ftl");
 	            InputStream inputStream = openFile(fileName);
 	            if (matchesAny(fileName, verbatimFilePatterns) || (!isFtlFile && !matchesAny(fileName, ignoreResourcePatterns)))
 	                createVerbatimFile(fileName, inputStream, context);
