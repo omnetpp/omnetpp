@@ -424,6 +424,14 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 				}
 			}
 		}
+		
+		try {
+            result.add(new FileBasedProjectTemplate(Activator.getDefault(), "template/import-csv"));//FIXME just temp
+        }
+        catch (CoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		return result;
 	}
 

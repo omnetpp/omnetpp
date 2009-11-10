@@ -175,7 +175,6 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	public Image getImage() {
 	    if (!imageAlreadyLoaded) {
 	        imageAlreadyLoaded = true;
-	        setImage(MISSING_IMAGE); // we'll overwrite it if all goes well
 	        String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
 	        if (imageFileName != null) {
 	            ignoreResourcePatterns.add(imageFileName);
@@ -189,6 +188,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	            } 
 	            catch (Exception e) {
 	                CommonPlugin.logError("Error loading image for content template " + getName(), e);
+	                setImage(MISSING_IMAGE);
 	            }
 	        }
 	    }
@@ -261,6 +261,24 @@ public class FileBasedContentTemplate extends ContentTemplate {
 
 	    public URLTemplateLoader2(URL baseUrl) {
 	        this.baseUrl = baseUrl;
+	    }
+
+	    public Object findTemplateSource(String name) throws IOException {
+	        // WORKAROUND: When Freemarker tries the file with local suffix 
+	        // ("en_US" etc), the file won't exist, and this method throws a 
+	        // FileNotFoundException from the URLTemplateSource constructor.
+	        // That's exactly what the method documentation says NOT to do,
+	        // as it aborts template processing. Solution: We probe whether 
+	        // the file exists, and only proceed to the original implementation
+	        // if it does.
+	        try {
+	            URL url = getURL(name);
+	            InputStream stream = url.openStream();
+	            try { stream.close(); } catch (IOException e) { }
+	        } catch (IOException e) {
+	            return null;
+	        }
+	        return super.findTemplateSource(name);
 	    }
 	    
 	    @Override
