@@ -1,21 +1,16 @@
-<#if makeSrcAndSimulationsFolders>
-  <@setoutput file="simulations/SourceSink.ned"/>
-<#else>
-  <#assign simulationsPackage=rootPackage>
-</#if>
+<#include "main.fti">
+<@setoutput file=simulationsFolder+"/SourceSink.ned"/>
 ${bannerComment}
 
-<#if simulationsPackage!="">
-package ${simulationsPackage};
-</#if>
+<#if simulationsPackage!="">package ${simulationsPackage};</#if>
 
-<#if rootPackage!=simulationsPackage>
-  <#if rootPackage==""> 
+<#if srcPackage!=simulationsPackage>
+  <#if srcPackage=="">
 import Source;
 import Sink;
   <#else>
-import ${rootPackage}.Source;
-import ${rootPackage}.Sink;
+import ${srcPackage}.Source;
+import ${srcPackage}.Sink;
   </#if>
 </#if>
 

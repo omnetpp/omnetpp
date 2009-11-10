@@ -1,6 +1,5 @@
-<#if makeSrcAndSimulationsFolders>
-  <@setoutput file="src/Source.h"/>
-</#if>
+<#include "main.fti">
+<@setoutput file=srcFolder+"/Source.h"/>
 ${bannerComment}
 
 #ifndef __${PROJECTNAME}_SOURCE_H

@@ -1,9 +1,8 @@
-<#if makeSrcAndSimulationsFolders>
-  <@setoutput file="src/Sink.ned"/>
-</#if>
+<#include "main.fti">
+<@setoutput file=srcFolder+"/Sink.ned"/>
 ${bannerComment}
 
-<#if rootPackage!="">package ${rootPackage};</#if>
+<#if srcPackage!="">package ${srcPackage};</#if>
 
 //
 // Consumes received messages and collects statistics

@@ -1,16 +1,15 @@
-<#if makeSrcAndSimulationsFolders>
-  <@setoutput file="src/package.ned"/>
-</#if>
-<#if rootPackage!="">
+<#include "main.fti">
+<@setoutput file=srcFolder+"/package.ned"/>
+<#if srcPackage!="">
 // designate the NED package of this folder
-package ${rootPackage};
-</#if>
+package ${srcPackage};
 
+</#if>
 <#if namespace!="">
 // namespace of module C++ classes
 @namespace(${namespace});
-</#if>
 
+</#if>
 <#if licenseCode!="">
 @license(${licenseCode});
 </#if>

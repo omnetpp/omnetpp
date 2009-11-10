@@ -1,6 +1,5 @@
-<#if makeSrcAndSimulationsFolders>
-  <@setoutput file="src/Sink.cc"/>
-</#if>
+<#include "main.fti">
+<@setoutput file=srcFolder+"/Sink.cc"/>
 ${bannerComment}
 
 #include "Sink.h"

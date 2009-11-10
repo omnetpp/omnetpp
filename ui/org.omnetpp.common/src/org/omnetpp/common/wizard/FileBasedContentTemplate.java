@@ -375,15 +375,16 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	    String[] fileList = getFileList();
 	    for (String fileName : fileList) {
 	        if (fileName.endsWith("/")) {
-	            createFolder(fileName, context);
+	            if (!matchesAny(fileName, ignoreResourcePatterns))
+	                createFolder(fileName, context);
 	        }
 	        else {
 	            boolean isFtlFile = new Path(fileName).getFileExtension().equals("ftl");
 	            InputStream inputStream = openFile(fileName);
-	            if (matchesAny(fileName.toString(), verbatimFilePatterns) || (!isFtlFile && !matchesAny(fileName.toString(), ignoreResourcePatterns)))
+	            if (matchesAny(fileName, verbatimFilePatterns) || (!isFtlFile && !matchesAny(fileName, ignoreResourcePatterns)))
 	                createVerbatimFile(fileName, inputStream, context);
-	            else if (isFtlFile && !matchesAny(fileName.toString(), ignoreResourcePatterns))
-	                createTemplateFile(fileName.replaceFirst("\\.ftl$", ""), getFreemarkerConfiguration(), fileName.toString(), context);
+	            else if (isFtlFile && !matchesAny(fileName, ignoreResourcePatterns))
+	                createTemplateFile(fileName.replaceFirst("\\.ftl$", ""), getFreemarkerConfiguration(), fileName, context);
 	        }
 	    }
 	}

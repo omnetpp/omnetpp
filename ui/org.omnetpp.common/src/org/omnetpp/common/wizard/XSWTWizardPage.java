@@ -121,6 +121,8 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 				Object value = context.getVariables().get(key);
 				if (value != null) {
 					try {
+			            //FIXME String result = creatorTemplate.evaluate(value, context.getVariables());
+					    
 						SWTDataUtil.writeValueIntoControl(control, value);
 					}
 					catch (Exception e) {

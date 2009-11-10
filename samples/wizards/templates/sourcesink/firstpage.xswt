@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="2"/>
+  <x:children>
+
+    <button x:id="makeSrcAndSimulationsFolders" x:text="Make separate 'src' and 'simulations' folders" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+      <setFocus/>
+    </button>
+
+  </x:children>
+</xswt>

@@ -11,16 +11,21 @@
   </import>
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
-    <button x:id="makeSrcAndSimulationsFolders" x:text="Make separate 'src' and 'simulations' folders" x:style="CHECK">
-      <layoutData x:class="GridData" horizontalSpan="2"/>
-      <setFocus/>
-    </button>
-    <label x:text="C++ namespace:"/>
-    <text x:id="namespace" x:style="BORDER">
+
+    <label x:text="Folder for simple modules:"/>
+    <text x:id="srcFolder" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
     </text>
+    <label x:text="Folder for simulations:"/>
+    <text x:id="simulationsFolder" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </text>
+
+<label/>
+<label/>
+
     <label x:text="Package for 'src'"/>
-    <text x:id="rootPackage" x:style="BORDER">
+    <text x:id="srcPackage" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
     </text>
     <label x:text="Package for 'simulations'"/>

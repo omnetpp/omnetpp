@@ -1,9 +1,8 @@
-<#if makeSrcAndSimulationsFolders>
-  <@setoutput file="src/Source.ned"/>
-</#if>
+<#include "main.fti">
+<@setoutput file=srcFolder+"/Source.ned"/>
 ${bannerComment}
 
-<#if rootPackage!="">package ${rootPackage};</#if>
+<#if srcPackage!="">package ${srcPackage};</#if>
 
 //
 // Generates messages with a configurable interarrival time.
