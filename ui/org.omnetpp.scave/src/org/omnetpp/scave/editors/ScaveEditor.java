@@ -75,6 +75,8 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.views.DatasetView;
+import org.omnetpp.scave.views.VectorBrowserView;
 
 /**
  * OMNeT++ Analysis tool.
@@ -276,7 +278,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         createInputsPage();
         createBrowseDataPage();
         createDatasetsPage();
-        
+
         tracker.synchronize();
 
         restoreState();
@@ -747,6 +749,24 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		if (page instanceof ScaveEditorPage) {
 			((ScaveEditorPage)page).pageActivated();
 		}
+
+		// open to default view
+		String viewID = null;
+		if (page == datasetsPage || page instanceof DatasetPage)
+            viewID = DatasetView.ID;
+		else if (page == browseDataPage)
+		    viewID = VectorBrowserView.ID;
+		if (viewID != null) {
+            try {
+                IWorkbenchPage workbenchPage = getSite().getPage();
+                if (workbenchPage.getPerspective() != null)
+                    workbenchPage.showView(viewID);
+            }
+            catch (PartInitException e) {
+                // unimportant
+            }
+		}
+
 		fakeSelectionChange();
 	}
 
