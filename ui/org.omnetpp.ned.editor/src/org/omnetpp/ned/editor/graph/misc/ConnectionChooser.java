@@ -198,10 +198,10 @@ public class ConnectionChooser {
         boolean matchingLabelsFound = false;
         final Map<ChannelElementEx, Collection<String>> channelTypeLabelsMap = new HashMap<ChannelElementEx, Collection<String>>();
         for (ChannelElementEx channel : channels) {
-            ArrayList<String> channelLabels = NEDElementUtilEx.getLabels(channel);
+            ArrayList<String> channelLabels = getLabels(channel);
             Collection labels = CollectionUtils.intersection(channelLabels, commonGateLabels);
             channelTypeLabelsMap.put(channel, labels);
-            if (!labels.isEmpty())
+            if (!labels.isEmpty() && (labels.size() != 1 || !StringUtils.isEmpty((String)labels.iterator().next())))
                 matchingLabelsFound = true;
         }
         if (!matchingLabelsFound)
@@ -251,35 +251,44 @@ public class ConnectionChooser {
 
     @SuppressWarnings("unchecked")
     private List<String> collectCommonLabels(IHasProperties object1, IHasProperties object2) {
-        return (List<String>)CollectionUtils.intersection(NEDElementUtilEx.getLabels(object1), NEDElementUtilEx.getLabels(object2));
+        return (List<String>)CollectionUtils.intersection(getLabels(object1), getLabels(object2));
     }
 
+    /**
+     * Creates a new menu item from the provided channel, and adds it to the provided menu.
+     * For convenience it returns the created item
+     */
     private MenuItem createChannelChooserMenuItem(BlockingMenu menu, ConnectionElementEx connectionWithGatesTemplate, ChannelElementEx channel, Collection<String> labels) {
-        MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
         ConnectionElementEx connectionWithChannelTemplate = (ConnectionElementEx)connectionWithGatesTemplate.deepDup();
         connectionWithChannelTemplate.setType(channel.getNEDTypeInfo().getFullyQualifiedName());
-        menuItem.setData(connectionWithChannelTemplate);
-        String text = channel.getName();
-        if (!labels.isEmpty())
-            text += " (" + StringUtils.join(labels, ", ") + ")";
-        menuItem.setText(text);
-        return menuItem;
+        return createMenuItem(menu, channel.getName(), connectionWithChannelTemplate, labels);
     }
     
     /**
      * Creates a new menu item from the provided connection template, and adds it to the provided menu.
      * For convenience it returns the created item
      */
-    private MenuItem createGatesChooserMenuItem(BlockingMenu menu, ConnectionElement connection, List<String> labels) {
+    private MenuItem createGatesChooserMenuItem(BlockingMenu menu, ConnectionElement connection, Collection<String> labels) {
+        return createMenuItem(menu, getConnectionMenuItemText(connection), connection, labels);
+    }
+
+    private String getConnectionMenuItemText(ConnectionElement connection) {
+        return StringUtils.removeEnd(NEDTreeUtil.generateNedSource(connection, false).trim(), ";");
+    }
+    
+    private MenuItem createMenuItem(BlockingMenu menu, String text, Object data, Collection<String> labels) {
         MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
-        menuItem.setData(connection);
-        String text = StringUtils.removeEnd(NEDTreeUtil.generateNedSource(connection, false).trim(), ";");
-        if (!labels.isEmpty())
-            text += " (" + StringUtils.join(labels, ", ") + ")";
+        menuItem.setData(data);
+        if (!labels.isEmpty()) {
+            String labelList = StringUtils.join(labels, ", ");
+            
+            if (!StringUtils.isEmpty(labelList))
+                text += " (" + labelList + ")";
+        }
         menuItem.setText(text);
         return menuItem;
     }
-    
+
     private MenuItem createSeparatorMenuItem(BlockingMenu menu) {
         return menu.addMenuItem(SWT.SEPARATOR);
     }
@@ -441,5 +450,14 @@ public class ConnectionChooser {
              compound.getConnections(null, null, conn.getDestModule(), conn.getDestGate()).isEmpty());
         
         return isSrcFree && isDestFree;
+    }
+    
+    public static ArrayList<String> getLabels(IHasProperties element) {
+        ArrayList<String> labels = NEDElementUtilEx.getLabels(element);
+
+        if (labels.size() == 0)
+            labels.add(null);
+
+        return labels;
     }
 }
