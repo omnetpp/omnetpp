@@ -24,7 +24,6 @@ public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
     @Override
     public void addPages() {
         super.addPages();
-        setWizardType("nedfile");
         setWindowTitle("New NED File");
         
         WizardNewFileCreationPage firstPage = getFirstPage();
@@ -54,54 +53,5 @@ public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
         
         return context;
     }
-    
-
-//    @Override
-//    protected List<IContentTemplate> getTemplates() {
-//        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-//
-//        result.add(new BuiltinProjectTemplate("Empty NED file", null, null) {
-//            public void performFinish(CreationContext context) throws CoreException {
-//                substituteNestedVariables(context);
-//                context.getVariables().put("isEmpty", true);
-//                createFileFromPluginResource("dummy", "untitled.ned.ftl", context); 
-//            }
-//        });
-//        
-//        result.add(new BuiltinProjectTemplate("NED file with one item", null, null) {
-//            @Override
-//            public CreationContext createContext(IContainer folder) {
-//                CreationContext context = super.createContext(folder);
-//                context.getVariables().put("isEmpty", false);
-//                context.getVariables().put("isSimple", false);
-//                context.getVariables().put("isModule", false);
-//                context.getVariables().put("isNetwork", true);
-//                context.getVariables().put("isChannel", false);
-//                context.getVariables().put("isModuleinterface", false);
-//                context.getVariables().put("isChannelinterface", false);
-//                return context;
-//            }
-//            @Override
-//            public ICustomWizardPage[] createCustomPages() throws CoreException {
-//                try {
-//                    ICustomWizardPage page = new XSWTWizardPage(this, "select type", getClass().getResourceAsStream("/template/nedtype.xswt"), "template/nedtype.xswt", null);
-//                    page.setTitle("Choose NED Type");
-//                    page.setDescription("Select options below");
-//                    return new ICustomWizardPage[] { page }; 
-//                }
-//                catch (IOException e) {
-//                    throw new CoreException(new Status(IStatus.ERROR, CommonPlugin.PLUGIN_ID, "Error loading template file"));
-//                }
-//            }
-//            
-//            public void performFinish(CreationContext context) throws CoreException {
-//                substituteNestedVariables(context);
-//                createFileFromPluginResource("dummy", "untitled.ned.ftl", context); 
-//            }
-//        });
-//
-//        result.addAll(loadTemplatesFromWorkspace(WIZARDTYPE));
-//        return result;
-//    }
 
 }

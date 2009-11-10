@@ -117,7 +117,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
             String[] templateNames = templateListTxt.split("\n");
             for (String templateName : templateNames) {
                 templateName = templateName.trim();
-                URL templateUrl = CommonPlugin.getDefault().getBundle().getEntry("template/" + templateName);
+                URL templateUrl = bundle.getEntry("template/" + templateName);
                 if (templateUrl == null)
                     CommonPlugin.log(IStatus.ERROR, "Wizard: Could not load built-in content template '" + templateName + "'");
                 else
