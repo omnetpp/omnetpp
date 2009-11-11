@@ -18,14 +18,12 @@
       <layoutData x:class="GridData" heightHint="200" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true" verticalAlignment="FILL" x:grabExcessVerticalSpace="true"/>
       <x:children>
         <button x:id="wantLabel" x:text="Label" x:style="CHECK"/>
-        <button x:id="wantImage" x:text="Image" x:style="CHECK"/>
         <button x:id="wantWrappingLabel" x:text="Wrapping label" x:style="CHECK"/>
         <button x:id="wantReadonlyText" x:text="Message (selectable multi-line label)" x:style="CHECK"/>
         <label/>
         <button x:id="wantText" x:text="Text edit field" x:style="CHECK"/>
         <button x:id="wantMultilineText" x:text="Multi-line text editor" x:style="CHECK"/>
         <button x:id="wantCombo" x:text="Combobox" x:style="CHECK"/>
-        <button x:id="wantCCombo" x:text="Custom combo" x:style="CHECK"/>
         <button x:id="wantList" x:text="Listbox" x:style="CHECK"/>
         <label/>
         <button x:id="wantCheckbox" x:text="Checkbox" x:style="CHECK"/>
@@ -36,7 +34,6 @@
         <button x:id="wantHSep" x:text="Horizontal separator" x:style="CHECK"/>
         <button x:id="wantVSep" x:text="Vertical separator" x:style="CHECK"/>
         <button x:id="wantTabs" x:text="Tabbed panel" x:style="CHECK"/>
-        <button x:id="wantCTabs" x:text="Custom Tabbed panel" x:style="CHECK"/>
         <label/>
         <button x:id="wantScale" x:text="Scale" x:style="CHECK"/>
         <button x:id="wantSlider" x:text="Slider (&quot;scrollbar&quot;)" x:style="CHECK"/>

@@ -18,9 +18,6 @@
     <!-- Label -->  
     <label text="This is a label"/>
   </#if>
-  <#if wantImage>
-    <!-- Image: TODO -->  
-  </#if>
   <#if wantWrappingLabel>  
     <!-- Wrapping label -->
     <label text="This is a very long label. Its text surely does not fit on a single line on the screen, so we want it to wrap automatically, depending on how much available space it has." x:style="WRAP">
@@ -60,9 +57,6 @@
       <add x:p0="sinewave"/>
       <add x:p0="unpinned"/>
     </combo>
-  </#if>
-  <#if wantCCombo>  
-    <!-- Custom combo -->
   </#if>
   <#if wantList>  
     <!-- Listbox (remove MULTI for single-select behavior) -->
@@ -122,9 +116,31 @@
   </#if>
   <#if wantTabs>  
     <!-- Tabbed panel -->
-  </#if>
-  <#if wantCTabs>  
-    <!-- Custom tabbed panel -->
+    <tabFolder>
+      <layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL" verticalAlignment="FILL"/>
+      <x:children>
+        <composite x:id="page1">
+          <layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+          <layout x:class="gridLayout" numColumns="2"/>
+          <x:children>
+            <label text="Enter something:"/>
+            <text x:style="BORDER"/>
+          </x:children>
+        </composite>
+
+        <composite x:id="page2">
+          <layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+          <layout x:class="gridLayout" numColumns="2"/>
+          <x:children>
+            <button text="Check this" x:style="CHECK"/>
+          </x:children>
+        </composite>
+
+        <tabItem text="Tab 1" control="page1"/>
+        <tabItem text="Tab 2" control="page2"/>
+        
+      </x:children>
+    </tabFolder>
   </#if>
   <#if wantScale>  
     <!-- Scale -->
