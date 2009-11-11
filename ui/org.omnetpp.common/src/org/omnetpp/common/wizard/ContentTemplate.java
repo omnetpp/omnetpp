@@ -327,10 +327,14 @@ public abstract class ContentTemplate implements IContentTemplate {
     protected void createVerbatimFile(IFile file, InputStream inputStream, CreationContext context) throws CoreException {
         if (!file.getParent().exists() && file.getParent() instanceof IFolder)
             createFolder((IFolder)file.getParent(), context);
-        if (!file.exists())
-            file.create(inputStream, true, context.getProgressMonitor());
-        else
-            file.setContents(inputStream, true, true, context.getProgressMonitor());
+        try {
+            if (!file.exists())
+                file.create(inputStream, true, context.getProgressMonitor());
+            else
+                file.setContents(inputStream, true, true, context.getProgressMonitor());
+        } catch (Exception e) {
+            throw CommonPlugin.wrapIntoCoreException("Cannot create file: "+file.getFullPath().toString(), e);
+        }
     }
 
     /**
@@ -346,10 +350,14 @@ public abstract class ContentTemplate implements IContentTemplate {
      * The project must exist though.
      */
     protected void createFolder(IFolder folder, CreationContext context) throws CoreException {
-        if (!folder.getParent().exists() && folder.getParent() instanceof IFolder) // if even the project is missing, let folder.create() fail
-            createFolder((IFolder)folder.getParent(), context);
-        if (!folder.exists())
-            folder.create(true, true, context.getProgressMonitor());
+        try {
+            if (!folder.getParent().exists() && folder.getParent() instanceof IFolder) // if even the project is missing, let folder.create() fail
+                createFolder((IFolder)folder.getParent(), context);
+            if (!folder.exists())
+                folder.create(true, true, context.getProgressMonitor());
+        } catch (Exception e) {
+            throw CommonPlugin.wrapIntoCoreException("Cannot create folder: "+folder.getFullPath().toString(), e);
+        }
     }
     
 }

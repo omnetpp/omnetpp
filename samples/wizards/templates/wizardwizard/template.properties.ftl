@@ -1,3 +1,4 @@
+<@setoutput file=wizardFolder+"/template.properties"/>
 <#function iif condition truevalue falsevalue="">
   	<#if condition><#return truevalue><#else><#return falsevalue></#if>
 </#function>

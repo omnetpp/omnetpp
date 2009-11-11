@@ -1,3 +1,4 @@
+<@setoutput file=wizardFolder+"/intro.xswt"/>
 <#if wantIntroPage>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
