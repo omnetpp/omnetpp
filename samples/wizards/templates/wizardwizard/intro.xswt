@@ -27,7 +27,7 @@ in the 'templates/&lt;wizardname&gt;' directory of an OMNeT++ project in the IDE
 &#10;&#10;
 Wizards are easy to distribute. When you normally zip up your simulation project 
 for release, just be sure to include (i.e. do not delete) the 'templates/' directory
-from it. There no deployment steps your users need to do to: when they import 
+from it. There are no deployment steps your users need to do to: when they import 
 the project into the IDE, your wizard automatically appears in the File|New...
 dialogs, and that's it.
 &#10;&#10;
