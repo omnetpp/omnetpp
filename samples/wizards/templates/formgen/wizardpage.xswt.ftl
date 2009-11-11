@@ -23,6 +23,7 @@ page.1.description = Select options below
     <package name="org.eclipse.swt.widgets" />
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
@@ -54,7 +55,7 @@ page.1.description = Select options below
         <@setoutput file=propsFile/>
 ${option} = false
         <@setoutput file=nedFile/>
-// ${option}: <#noparse><#if </#noparse> ${option}<#noparse>>true<#else>false</#if></#noparse>
+// ${option}: <#noparse><#if</#noparse> ${option}<#noparse>>true<#else>false</#if></#noparse>
         <@setoutput file=xswtFile/>
       </#list>
       </x:children>
@@ -67,6 +68,18 @@ ${option} = false
     </text>
     <@setoutput file=propsFile/>
 ${name} = some text
+    <@setoutput file=nedFile/>
+// ${name}: ${"${" + name + "}"}
+    <@setoutput file=xswtFile/>
+  <#elseif suffix=="<" || suffix=="<<">
+    <#-- **** FILECHOOSER **** -->
+    <#if suffix=="<"><#assign chooserWidget="fileChooser"><#else><#assign chooserWidget="externalFileChooser"></#if>
+    <label text="Choose ${name}:"/>
+    <${chooserWidget} x:id="${name}">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    </${chooserWidget}>
+    <@setoutput file=propsFile/>
+${name} = foo.txt
     <@setoutput file=nedFile/>
 // ${name}: ${"${" + name + "}"}
     <@setoutput file=xswtFile/>
@@ -99,7 +112,7 @@ ${name} = 10
     <@setoutput file=propsFile/>
 ${name} = false
     <@setoutput file=nedFile/>
-// ${name}: <#noparse><#if </#noparse> ${name}<#noparse>>true<#else>false</#if></#noparse>
+// ${name}: <#noparse><#if</#noparse> ${name}<#noparse>>true<#else>false</#if></#noparse>
     <@setoutput file=xswtFile/>
   <#elseif suffix=="=">
     <#-- **** SCALE **** -->
@@ -124,8 +137,10 @@ ${name} = ${lastOption}
     <@setoutput file=nedFile/>
 // ${name}: ${"${" + name + "}"}
     <@setoutput file=xswtFile/>
+  <#else>
+    <!-- unrecognized suffix "${suffix}" -->
   </#if>
-
+     
 </#list>  
   
   </x:children>
