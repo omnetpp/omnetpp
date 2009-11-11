@@ -12,10 +12,6 @@
   <layout x:class="GridLayout" x:numColumns="1"/>
   <x:children>
 
-    <label x:text="This wizard generates a New &lt;Something&gt; Wizard that you can distribute with your simulation model. Wizards make it easier for people who are new to your simulation model to get started quickly." x:style="WRAP">
-      <layoutData x:class="GridData" x:grabExcessHorizontalSpace="true"/>
-    </label>
-
     <group text="Basics">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" x:numColumns="2"/>
