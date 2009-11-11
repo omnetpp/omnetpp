@@ -1,3 +1,5 @@
+<@setoutput file=wizardFolder+"/jarloading.xswt"/>
+<#if wantJarLoading>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 
@@ -10,15 +12,13 @@
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" x:numColumns="1"/>
+
   <x:children>
-
-    <label x:text="Select the new wizard's behavior when it is invoked as a New OMNeT++ Project wizard:"/>
-    <composite>
-      <layout x:class="GridLayout" x:numColumns="1"/>
-      <x:children>
-        <button x:id="wantText" x:text="Add reference to the wizard's project" x:style="CHECK"/>
-      </x:children>
-    </composite>
-
+    <text x:style="BORDER">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        <text x:p0="FIXME TODO form to be written"/>
+    </text>
   </x:children>
+
 </xswt>
+</#if>

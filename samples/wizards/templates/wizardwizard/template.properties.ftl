@@ -35,7 +35,7 @@ page.1.file = intro.xswt
 page.2.file = basicform.xswt
 </#if>
 <#if wantWidgetsForm>
-page.3.file = widgets.xswt
+page.3.file = widgetsform.xswt
 </#if>
 <#if wantComplexForm>
 page.4.file = complexform.xswt
