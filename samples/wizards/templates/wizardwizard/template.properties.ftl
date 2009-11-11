@@ -30,6 +30,8 @@ addProjectReference = ${iif(wizardAddProjectReference,"true", "false")}
 # custom wizard pages
 <#if wantIntroPage>
 page.1.file = intro.xswt
+page.1.title = Introduction 
+page.1.description = Read this carefully 
 </#if>
 <#if wantBasicForm>
 page.2.file = basicform.xswt

@@ -20,6 +20,7 @@
         <button x:id="wantBasicForm" x:text="Basic data entry form" x:style="CHECK"/>
         <button x:id="wantWidgetsForm" x:text="Data entry form with various widgets" x:style="CHECK"/>
         <button x:id="wantComplexForm" x:text="Complex data entry (tables, etc)" x:style="CHECK"/>
+        <button x:id="wantConditionalPage" x:text="Branching (conditional pages)" x:style="CHECK"/>
         <button x:id="wantFileGeneration" x:text="Generate a file (or files)" x:style="CHECK"/>
         <button x:id="wantComputations" x:text="Perform basic computations for the output file" x:style="CHECK"/>
         <button x:id="wantJarLoading" x:text="Invoke code from a Java JAR file you provided" x:style="CHECK"/>
