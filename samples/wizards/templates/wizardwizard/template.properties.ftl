@@ -1,10 +1,11 @@
-<#function iif condition value>
-  	<#if condition><#return value><#else><#return ""></#if>
+<#function iif condition truevalue falsevalue="">
+  	<#if condition><#return truevalue><#else><#return falsevalue></#if>
 </#function>
+# wizard properties
 templateName = ${wizardTemplateName}
 templateDescription = ${wizardTemplateDescription}
 templateCategory = ${wizardTemplateCategory}
-<#assign wizartSupportedWizardTypes = 
+<#assign wizardSupportedWizardTypes = 
     iif(supportProject, "project,")+
     iif(supportSimulation, "simulation,") + 
 	iif(supportSimplemodule, "simplemodule,") +
@@ -13,16 +14,40 @@ templateCategory = ${wizardTemplateCategory}
 	iif(supportNedfile, "nedfile,") +
 	iif(supportMsgfile, "msgfile,") +
 	iif(supportInifile, "inifile,")>
-supportedWizardTypes = ${StringUtils.removeEnd(wizartSupportedWizardTypes, ",").replace(",", ", ")}
+supportedWizardTypes = ${StringUtils.removeEnd(wizardSupportedWizardTypes, ",").replace(",", ", ")}
 
+<#if supportProject>
+# project creation options
+addProjectReference = ${iif(wizardAddProjectReference,"true", "false")}
+<#if wizardSourceFolders!="">sourceFolders = ${wizardSourceFolders}</#if>
+<#if wizardNedSourceFolders!="">nedSourceFolders = ${wizardNedSourceFolders}</#if>
+<#if wizardMakemakeOptions!="">makemakeOptions = ${wizardMakemakeOptions}</#if>
+</#if>
 
 # template variables
 
 # custom wizard pages
+<#if wantIntroPage>
 page.1.file = intro.xswt
-page.2.file = supportedwizardtypes.xswt
-page.3.file = properties.xswt
-page.4.file = selectfeatures.xswt
-page.5.file = introcontent.xswt
-page.6.file = formcontents.xswt
-
+</#if>
+<#if wantBasicForm>
+page.2.file = basicform.xswt
+</#if>
+<#if wantWidgetsForm>
+page.3.file = widgets.xswt
+</#if>
+<#if wantComplexForm>
+page.4.file = complexform.xswt
+</#if>
+<#if wantFileGeneration>
+page.5.file = generatefile.xswt
+</#if>
+<#if wantComputations>
+page.6.file = computations.xswt
+</#if>
+<#if wantJarLoading>
+page.7.file = jarloading.xswt
+</#if>
+<#if wantProgramLaunch>
+page.8.file = programlaunch.xswt
+</#if>

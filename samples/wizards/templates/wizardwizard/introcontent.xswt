@@ -16,7 +16,7 @@
       <layoutData x:class="GridData" x:grabExcessHorizontalSpace="true"/>
     </label>
 
-    <text x:id="introText" x:style="BORDER|MULTI|WRAP">
+    <text x:id="wizardIntroText" x:style="BORDER|MULTI|WRAP">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true" verticalAlignment="FILL" x:grabExcessVerticalSpace="true"/>
       <setFocus/>
     </text>
