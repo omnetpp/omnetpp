@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+
+    <label x:text="Select the widgets for the form page:"/>
+    <composite>
+      <layout x:class="GridLayout" x:numColumns="1"/>
+      <x:children>
+        <button x:id="wantText" x:text="Text edit field" x:style="CHECK"/>
+        <button x:id="wantMultiText" x:text="Multi-line text editor field" x:style="CHECK"/>
+        <button x:id="wantCheckbox" x:text="Checkbox" x:style="CHECK"/>
+        <button x:id="wantRadioButtons" x:text="Radio Buttons" x:style="CHECK"/>
+        <button x:id="wantGroup" x:text="Widget Group" x:style="CHECK"/>
+      </x:children>
+    </composite>
+
+  </x:children>
+</xswt>

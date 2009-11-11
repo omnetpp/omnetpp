@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+
+    <label x:text="This wizard generates a New &lt;Something&gt; Wizard that you can distribute with your simulation model. Wizards make it easier for people who are new to your simulation model to get started quickly." x:style="WRAP">
+      <layoutData x:class="GridData" x:grabExcessHorizontalSpace="true"/>
+    </label>
+
+    <group text="Basics">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" x:numColumns="2"/>
+      <x:children>
+        <label x:text="Wizard Name:"/>
+        <text x:id="wizardTemplateName" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+          <setFocus/>
+        </text>
+        <label x:text="Wizard Description:"/>
+        <text x:id="wizardTemplateDescription" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        </text>
+        <label x:text="Wizard Category:"/>
+        <text x:id="wizardTemplateCategory" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        </text>
+      </x:children>
+    </group>
+  </x:children>
+</xswt>
