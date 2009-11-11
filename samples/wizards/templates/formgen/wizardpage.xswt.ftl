@@ -38,25 +38,32 @@ page.1.description = Select options below
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
     </label>
 
+<#assign spec = spec?replace("{", "{,")?replace("}", ",},")?replace(",,", ",")>
 <#list StringUtils.split(spec, ",") as i>
   <#assign field = i.trim()>
     <!-- ${field} -->
   <#assign name = field.replaceFirst("^([a-zA-Z0-9_]+).*", "$1")>
   <#assign suffix = field.replaceFirst("^[a-zA-Z0-9_]+", "")>
-  <#assign defaultValue = "">
-  <#if field.matches("([a-zA-Z0-9_]+/)+[a-zA-Z0-9_]+")>
+  <#if field=="">
+    <#-- nothing, skip it --> 
+  <#elseif field.matches("([a-zA-Z0-9_]+/)+[a-zA-Z0-9_]+")>
     <#-- **** RADIOBUTTON GROUP **** -->
+    <label text="Radio group:"/>
+    <label/>
     <composite>
       <layoutData x:class="GridData" horizontalSpan="2"/>
+      <layout x:class="GridLayout"/>
       <x:children>
+      <#assign first=true>
       <#list field.split("/") as j>
         <#assign option = j.trim()>
         <button x:id="${option}" text="${option}" x:style="RADIO"/>
         <@setoutput file=propsFile/>
-${option} = false
+${option} = <#if first>true<#else>false</#if>
         <@setoutput file=nedFile/>
 // ${option}: <#noparse><#if</#noparse> ${option}<#noparse>>true<#else>false</#if></#noparse>
         <@setoutput file=xswtFile/>
+        <#assign first=false>
       </#list>
       </x:children>
     </composite>
@@ -137,6 +144,16 @@ ${name} = ${lastOption}
     <@setoutput file=nedFile/>
 // ${name}: ${"${" + name + "}"}
     <@setoutput file=xswtFile/>
+  <#elseif suffix=="{">
+    <#-- **** GROUP START **** -->
+    <group text="${name}">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+  <#elseif suffix=="}">
+    <#-- **** GROUP END **** -->
+      </x:children>
+    </group>
   <#else>
     <!-- unrecognized suffix "${suffix}" -->
   </#if>

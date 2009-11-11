@@ -16,13 +16,16 @@
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
     </label>
 
-    <label x:text="By default, a text field will be generated for each variable, but this can be changed by appending a suffix character. Use ? for checkbox, % for numeric inputfield (spinner), $ for multi-line text, / for radio buttons (can be joined, e.g. red/gree/blue generates a radio group), = for slider, :option1/option2/option3 for combo box, < for file chooser, << for external file chooser." x:style="WRAP">
+    <label x:text="By default, a text field will be generated for each variable, but this can be changed by appending a suffix character. Use ? for checkbox, % for numeric inputfield (spinner), $ for multi-line text, / for radio buttons (can be joined, e.g. red/gree/blue generates a radio group), = for slider, :option1/option2/option3 for combo box, < for file chooser, << for external file chooser. Widgets can be visually grouped with the somelabel{...} syntax." x:style="WRAP">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
     </label>
-
-    <label x:text="Example: networkName, description$, makeIni?, numNodes%, avgDistance=, routing:none/aodv/dsdv, noTraffic/tcpTraffic/udpTraffic, topologyFile<" x:style="WRAP">
+    
+    <!-- Does not fit on the page, but the default value already serves as an example...
+    <label x:text="Example: networkName, description$, generateIniFile?, Network{ numNodes%, avgDistance=, routing:none/aodv/dsdv}, Traffic{ noTraffic/tcpTraffic/udpTraffic, trafficFile< }" x:style="WRAP">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
     </label>
+    -->
+    
     <label x:text="Enter variables (comma-separated list):" x:style="WRAP">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
     </label>

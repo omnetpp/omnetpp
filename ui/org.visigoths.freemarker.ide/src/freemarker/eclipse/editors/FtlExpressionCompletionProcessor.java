@@ -31,7 +31,7 @@ public class FtlExpressionCompletionProcessor implements IContentAssistProcessor
             "node_namespace", "node_type", "number", "parent", "replace", "reverse", "right_pad", "root", "round", "rtf",
             "seq_contains", "seq_index_of", "seq_last_index_of", "short", "size", "sort_by", "sort", "split", "starts_with",
             "string", "substring", "time", "trim", "uncap_first", "upper_case", "url", "values", "html", "word_list", "xhtml",
-            "xml", "matches", "groups", "replace", "split",
+            "xml", "matches", "groups",
     };
 
     @Override
