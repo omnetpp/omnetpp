@@ -60,7 +60,7 @@
   </#if>
   <#if wantList>  
     <!-- Listbox (remove MULTI for single-select behavior) -->
-    <list x:id="exampleTextVar4" x:style="BORDER|MULTI">
+    <list x:id="exampleListVar" x:style="BORDER|MULTI">
       <add x:p0="red"/>
       <add x:p0="green"/>
       <add x:p0="blue"/>
@@ -72,21 +72,20 @@
     <button x:id="exampleBooleanVar1" text="Check this" x:style="CHECK"/>
   </#if>
   <#if wantRadioButtons>  
-    <!-- Radio Buttons -->
+    <!-- Radio buttons -->
     <button x:id="exampleBooleanVar2a" text="Plan 1" x:style="RADIO"/>
     <button x:id="exampleBooleanVar2b" text="Plan 2" x:style="RADIO"/>
     <button x:id="exampleBooleanVar2c" text="Plan 9" x:style="RADIO"/>
   </#if>
   <#if wantGroup>  
     <!-- Labelled group -->
-    <!-- Labelled group -->
     <group text="Group">
       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" x:numColumns="2"/>
       <x:children>
           <label text="Type something:"/>
-          <text x:id="exampleTextVar10" x:style="BORDER"/>
-          <button x:id="exampleBooleanVar10" text=" And check this" x:style="CHECK">
+          <text x:id="exampleTextVar5" x:style="BORDER"/>
+          <button x:id="exampleBooleanVar5" text=" And check this" x:style="CHECK">
               <layoutData x:class="GridData" horizontalSpan="2"/>
           </button>
       </x:children>
@@ -99,8 +98,8 @@
       <layout x:class="GridLayout" x:numColumns="2"/>
       <x:children>
           <label text="Type something:"/>
-          <text x:id="exampleTextVar11" x:style="BORDER"/>
-          <button x:id="exampleBooleanVar11" text=" And check this" x:style="CHECK">
+          <text x:id="exampleTextVar6" x:style="BORDER"/>
+          <button x:id="exampleBooleanVar6" text=" And check this" x:style="CHECK">
               <layoutData x:class="GridData" horizontalSpan="2"/>
           </button>
       </x:children>
@@ -144,15 +143,15 @@
   </#if>
   <#if wantScale>  
     <!-- Scale -->
-    <scale x:id="exampleNumericVar10" x:minimum="-100" x:maximum="100" x:style="NONE"/>
+    <scale x:id="exampleNumericVar1" x:minimum="-100" x:maximum="100" x:style="NONE"/>
   </#if>
   <#if wantSlider>  
     <!-- Slider ("scrollbar") -->
-    <slider x:id="exampleNumericVar11" x:minimum="1" x:maximum="100" x:style="BORDER"/>
+    <slider x:id="exampleNumericVar2" x:minimum="1" x:maximum="100" x:style="BORDER"/>
   </#if>
   <#if wantSpinner>  
     <!-- Spinner (numeric edit field) -->
-    <spinner x:id="exampleNumericVar12" x:minimum="1" x:maximum="100" x:style="BORDER"/>
+    <spinner x:id="exampleNumericVar3" x:minimum="1" x:maximum="100" x:style="BORDER"/>
   </#if>
 
   </x:children>
