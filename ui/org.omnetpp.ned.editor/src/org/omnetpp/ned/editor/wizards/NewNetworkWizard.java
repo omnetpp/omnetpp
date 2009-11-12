@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.wizards;
 
 
+
 /**
  * "New NED file" wizard
  * 
@@ -12,4 +13,11 @@ public class NewNetworkWizard extends AbstractNedFileWizard {
         setWizardType("network");
     }
 
+    @Override
+    public void addPages() {
+        super.addPages();
+        setWindowTitle("New Network");
+        getFirstPage().setTitle("New Network");
+    }
+    
 }

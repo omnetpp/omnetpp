@@ -109,7 +109,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     /**
      * Utility method for getTemplates()
      */
-    protected List<IContentTemplate> loadBuiltinTemplates(Bundle bundle) {
+    protected List<IContentTemplate> loadBuiltinTemplates(Bundle bundle, String wizardType) {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         try {
             URL url = bundle.getResource("template/templatelist.txt");
@@ -120,8 +120,11 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                 URL templateUrl = bundle.getEntry("template/" + templateName);
                 if (templateUrl == null)
                     CommonPlugin.log(IStatus.ERROR, "Wizard: Could not load built-in content template '" + templateName + "'");
-                else
-                    result.add(loadBuiltinTemplate(templateUrl));
+                else {
+                    IContentTemplate template = loadBuiltinTemplate(templateUrl);
+                    if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
+                        result.add(template);
+                }
             }
         } catch (IOException e) {
             CommonPlugin.logError("Wizard: Could not load built-in content templates", e);

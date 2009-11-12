@@ -60,7 +60,7 @@ public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
     @Override
     protected List<IContentTemplate> getTemplates() {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        result.addAll(loadBuiltinTemplates(NedEditorPlugin.getDefault().getBundle()));
+        result.addAll(loadBuiltinTemplates(NedEditorPlugin.getDefault().getBundle(), getWizardType()));
         result.addAll(loadTemplatesFromWorkspace(getWizardType()));
         return result;
     }

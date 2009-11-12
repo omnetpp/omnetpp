@@ -1,2 +1,5 @@
+emptycompoundmodule
 emptynedfile
+emptynetwork
+emptysimplemodule
 nedfile
