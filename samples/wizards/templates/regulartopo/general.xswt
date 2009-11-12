@@ -9,24 +9,24 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
 
     <group text="Network">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-      <layout x:class="GridLayout" x:numColumns="2"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
-        <label x:text="Network name:"/>
+        <label text="Network name:"/>
         <text x:id="nedTypeName" x:style="BORDER">
-          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
           <setFocus/>
         </text>
       </x:children>
     </group>
 
     <group text="Select network layout">
-       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-       <layout x:class="GridLayout" x:numColumns="1"/>
+       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" numColumns="1"/>
        <x:children>
          <button x:id="star" text="Star" x:style="RADIO"/>
          <button x:id="ring" text="Ring" x:style="RADIO"/>

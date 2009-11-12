@@ -9,8 +9,8 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
-    <button x:id="addProjectReference" x:text="Add 'neddemo' project to new project's dependency list" x:style="CHECK"/>
+    <button x:id="addProjectReference" text="Add 'neddemo' project to new project's dependency list" x:style="CHECK"/>
   </x:children>
 </xswt>

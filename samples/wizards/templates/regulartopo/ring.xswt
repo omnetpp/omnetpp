@@ -9,14 +9,14 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
     <group text="Ring">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-      <layout x:class="GridLayout" x:numColumns="2"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
         <label text="Number of nodes:"/>
-        <spinner x:id="nodes" x:minimum="1" x:maximum="100" x:style="BORDER"/>
+        <spinner x:id="nodes" minimum="1" maximum="100" x:style="BORDER"/>
       </x:children>
     </group>
   </x:children>

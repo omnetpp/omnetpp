@@ -9,11 +9,11 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
     <group text="Dummy options">
-        <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-        <layout x:class="GridLayout" x:numColumns="2"/>
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <layout x:class="GridLayout" numColumns="2"/>
         <x:children>
             <label text="Dummy option:"/>
             <text x:style="BORDER"/>
@@ -24,10 +24,10 @@
         </x:children>
     </group>
     <group text="Other">
-        <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-        <layout x:class="GridLayout" x:numColumns="1"/>
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <layout x:class="GridLayout" numColumns="1"/>
         <x:children>
-            <button x:id="showSettingsPage" x:style="CHECK" x:text="Customize project options"/>
+            <button x:id="showSettingsPage" x:style="CHECK" text="Customize project options"/>
         </x:children>
     </group>
   </x:children>

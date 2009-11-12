@@ -9,22 +9,22 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
 
-    <label x:text="Select the features the new wizard should have:"/>
+    <label text="Select the features the new wizard should have:"/>
     <composite>
-      <layout x:class="GridLayout" x:numColumns="1"/>
+      <layout x:class="GridLayout" numColumns="1"/>
       <x:children>
-        <button x:id="wantIntroPage" x:text="Intro page" x:style="CHECK"/>
-        <button x:id="wantBasicForm" x:text="Basic data entry form" x:style="CHECK"/>
-        <button x:id="wantWidgetsForm" x:text="Data entry form with various widgets" x:style="CHECK"/>
-        <button x:id="wantComplexForm" x:text="Complex data entry (tables, etc)" x:style="CHECK"/>
-        <button x:id="wantConditionalPage" x:text="Branching (conditional pages)" x:style="CHECK"/>
-        <button x:id="wantFileGeneration" x:text="Generate a file (or files)" x:style="CHECK"/>
-        <button x:id="wantComputations" x:text="Perform basic computations for the output file" x:style="CHECK"/>
-        <button x:id="wantJarLoading" x:text="Invoke code from a Java JAR file you provided" x:style="CHECK"/>
-        <button x:id="wantProgramLaunch" x:text="Run an external command-line program, and use its output" x:style="CHECK"/>
+        <button x:id="wantIntroPage" text="Intro page" x:style="CHECK"/>
+        <button x:id="wantBasicForm" text="Basic data entry form" x:style="CHECK"/>
+        <button x:id="wantWidgetsForm" text="Data entry form with various widgets" x:style="CHECK"/>
+        <button x:id="wantComplexForm" text="Complex data entry (tables, etc)" x:style="CHECK"/>
+        <button x:id="wantConditionalPage" text="Branching (conditional pages)" x:style="CHECK"/>
+        <button x:id="wantFileGeneration" text="Generate a file (or files)" x:style="CHECK"/>
+        <button x:id="wantComputations" text="Perform basic computations for the output file" x:style="CHECK"/>
+        <button x:id="wantJarLoading" text="Invoke code from a Java JAR file you provided" x:style="CHECK"/>
+        <button x:id="wantProgramLaunch" text="Run an external command-line program, and use its output" x:style="CHECK"/>
       </x:children>
     </composite>
 

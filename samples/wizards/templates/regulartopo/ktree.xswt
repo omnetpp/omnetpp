@@ -9,16 +9,16 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
     <group text="Tree">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-        <layout x:class="GridLayout" x:numColumns="2"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <layout x:class="GridLayout" numColumns="2"/>
         <x:children>
          <label text="Branching (k):"/>
-         <spinner x:id="treeK" x:minimum="2" x:maximum="8" x:style="BORDER"/>
+         <spinner x:id="treeK" minimum="2" maximum="8" x:style="BORDER"/>
          <label text="Number of levels:"/>
-         <spinner x:id="treeLevels" x:minimum="2" x:maximum="8" x:style="BORDER"/>
+         <spinner x:id="treeLevels" minimum="2" maximum="8" x:style="BORDER"/>
        </x:children>
     </group>
   </x:children>

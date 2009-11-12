@@ -27,15 +27,15 @@ page.1.description = Select options below
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="2"/>
+  <layout x:class="GridLayout" numColumns="2"/>
 
   <x:children>
     <label x:text="This is an example wizard generated from the following spec:" x:style="WRAP">
-      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
-    
+
     <label x:text="${spec}" x:style="WRAP">
-      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
 
 <#assign spec = spec?replace("{", "{,")?replace("}", ",},")?replace(",,", ",")>
@@ -45,7 +45,7 @@ page.1.description = Select options below
   <#assign name = field.replaceFirst("^([a-zA-Z0-9_]+).*", "$1")>
   <#assign suffix = field.replaceFirst("^[a-zA-Z0-9_]+", "")>
   <#if field=="">
-    <#-- nothing, skip it --> 
+    <#-- nothing, skip it -->
   <#elseif field.matches("([a-zA-Z0-9_]+/)+[a-zA-Z0-9_]+")>
     <#-- **** RADIOBUTTON GROUP **** -->
     <label text="Radio group:"/>
@@ -71,7 +71,7 @@ ${option} = <#if first>true<#else>false</#if>
     <#-- **** TEXT **** -->
     <label text="Enter ${name}:"/>
     <text x:id="${name}" x:style="BORDER">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
     <@setoutput file=propsFile/>
 ${name} = some text
@@ -83,7 +83,7 @@ ${name} = some text
     <#if suffix=="<"><#assign chooserWidget="fileChooser"><#else><#assign chooserWidget="externalFileChooser"></#if>
     <label text="Choose ${name}:"/>
     <${chooserWidget} x:id="${name}">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </${chooserWidget}>
     <@setoutput file=propsFile/>
 ${name} = foo.txt
@@ -94,7 +94,7 @@ ${name} = foo.txt
     <#-- **** MULTILINE **** -->
     <label text="Enter ${name}:"/>
     <text x:id="${name}" x:style="BORDER|WRAP|MULTI">
-      <layoutData x:class="GridData" heightHint="60" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layoutData x:class="GridData" heightHint="60" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
     <@setoutput file=propsFile/>
 ${name} = some more text
@@ -147,7 +147,7 @@ ${name} = ${lastOption}
   <#elseif suffix=="{">
     <#-- **** GROUP START **** -->
     <group text="${name}">
-      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
   <#elseif suffix=="}">
@@ -157,8 +157,8 @@ ${name} = ${lastOption}
   <#else>
     <!-- unrecognized suffix "${suffix}" -->
   </#if>
-     
-</#list>  
-  
+
+</#list>
+
   </x:children>
 </xswt>

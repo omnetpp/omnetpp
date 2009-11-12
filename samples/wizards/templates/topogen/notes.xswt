@@ -9,15 +9,15 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
     <text x:style="MULTI|READ_ONLY|WRAP|BORDER">
-        <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         <text x:p0="This Example Project Wizard demonstrates how to write a wizard that
 encapsulates a topology generator Java library. The library (a .jar file) is bundled
 with the wizard, and gets loaded when the wizard is activated."/>
     </text>
-    <label x:text="Wizard files are in:"/>
+    <label text="Wizard files are in:"/>
     <fileLink x:id="templateFolderPath"/>
   </x:children>
 

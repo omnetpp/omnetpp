@@ -9,44 +9,44 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
 
     <group text="Network">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-      <layout x:class="GridLayout" x:numColumns="2"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
-        <label x:text="Network name:"/>
+        <label text="Network name:"/>
         <text x:id="nedTypeName" x:style="BORDER">
-          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
           <setFocus/>
         </text>
       </x:children>
     </group>
 
     <group text="Node NED type">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-      <layout x:class="GridLayout" x:numColumns="2"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
-        <label x:text="Type name:"/>
+        <label text="Type name:"/>
         <text x:id="nodeType" x:style="BORDER">
-          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </text>
         <label/>
-        <button x:id="generateNodeTypeDecl" x:text="This type does not exist yet, generate NED declaration for it" x:style="CHECK"/>
+        <button x:id="generateNodeTypeDecl" text="This type does not exist yet, generate NED declaration for it" x:style="CHECK"/>
       </x:children>
     </group>
 
     <group text="Channel NED type">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
-      <layout x:class="GridLayout" x:numColumns="2"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
-        <label x:text="Type name:"/>
+        <label text="Type name:"/>
         <text x:id="channelType" x:style="BORDER">
-          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </text>
         <label/>
-        <button x:id="generateChannelTypeDecl" x:text="This type does not exist yet, generate NED declaration for it" x:style="CHECK"/>
+        <button x:id="generateChannelTypeDecl" text="This type does not exist yet, generate NED declaration for it" x:style="CHECK"/>
       </x:children>
     </group>
 

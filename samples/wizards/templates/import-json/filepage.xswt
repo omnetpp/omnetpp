@@ -9,11 +9,11 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="2"/>
+  <layout x:class="GridLayout" numColumns="2"/>
   <x:children>
-    <label x:text="JSON file to import:"/>
+    <label text="JSON file to import:"/>
     <fileChooser x:id="fileName">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <setFocus/>
     </fileChooser>
   </x:children>

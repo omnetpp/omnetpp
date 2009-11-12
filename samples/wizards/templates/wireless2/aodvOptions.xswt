@@ -9,11 +9,11 @@
     <package name="org.omnetpp.common.wizard.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" x:numColumns="2"/>
+  <layout x:class="GridLayout" numColumns="2"/>
   <x:children>
     <group text="Configure AODV options:">
-        <layout x:class="GridLayout" x:numColumns="2"/>
-        <layoutData x:class="GridData" x:horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+        <layout x:class="GridLayout" numColumns="2"/>
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         <x:children>
             <label text="Dummy AODV option:"/>
             <text x:style="BORDER"/>
