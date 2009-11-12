@@ -37,6 +37,7 @@ public interface IConstants {
     public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.simplemodule";
     public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.compoundmodule";
     public static final String NEW_NETWORK_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.network";
+    public static final String NEW_SIMULATION_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.simulation";
 
     // preference IDs
 	public static final String PREF_OMNETPP_ROOT = "omnetppRoot";
