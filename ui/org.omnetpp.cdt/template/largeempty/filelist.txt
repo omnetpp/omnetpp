@@ -1,8 +1,0 @@
-filelist.txt
-Makefile.ftl
-Makefile.vc.ftl
-simulations/
-src/
-template.properties
-simulations/package.ned.ftl
-src/package.ned.ftl

@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.omnetpp.common" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.omnetpp.common" id="org.omnetpp.common.wizard.contenttemplates" name="Plugin to load content templates from"/>
+      </appinfo>
+      <documentation>
+         Contributes content templates into the OMNET++-related &quot;New&quot; wizards: New OMNeT++ Project, New NED File, New Simulation, New Simple Module, New Simulation, etc.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+         <documentation>
+            Contributes content templates into the OMNET++-related &quot;New&quot; wizards: New OMNeT++ Project, New NED File, New Simulation, New Simple Module, New Simulation, etc.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="plugin"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="plugin">
+      <annotation>
+         <documentation>
+            Adds content templates in the given folder of the given project to the OMNeT++-related &quot;New&quot; wizards. The folder is expected to contain content template folders, each of which must contain a &quot;template.properties&quot; file.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="folder" type="string">
+            <annotation>
+               <documentation>
+                  Folder within the plugin to load content templates from. Defaults to &quot;templates&quot;.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="pluginId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Id of the plugin to load content templates from.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         [Enter the first release in which this extension point appears.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

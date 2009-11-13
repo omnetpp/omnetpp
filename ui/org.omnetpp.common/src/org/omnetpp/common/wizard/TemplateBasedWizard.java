@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -21,9 +22,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -39,7 +43,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.util.FileUtils;
 import org.osgi.framework.Bundle;
 
 
@@ -49,6 +52,11 @@ import org.osgi.framework.Bundle;
  * @author Andras
  */
 public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
+    public static final String CONTENTTEMPLATE_EXTENSION_ID = "org.omnetpp.common.wizard.contenttemplates";
+    public static final String PLUGIN_ELEMENT = "plugin";
+    public static final String PLUGINID_ATT = "pluginId";
+    public static final String FOLDER_ATT = "folder";
+
     private TemplateSelectionPage templateSelectionPage;
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
     private IContentTemplate creatorOfCustomPages;
@@ -107,24 +115,51 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     protected abstract List<IContentTemplate> getTemplates();
 
     /**
-     * Utility method for getTemplates()
+     * Loads built-in templates from all plug-ins registered via the
+     * org.omnetpp.common.wizard.contenttemplates extension point.
      */
-    protected List<IContentTemplate> loadBuiltinTemplates(Bundle bundle, String wizardType) {
+    protected List<IContentTemplate> loadBuiltinTemplates(final String wizardType) {
+        final List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+        try {
+            IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(CONTENTTEMPLATE_EXTENSION_ID);
+            for (IConfigurationElement e : config) {
+                Assert.isTrue(e.getName().equals(PLUGIN_ELEMENT));
+                final String pluginName = e.getAttribute(PLUGINID_ATT);
+                final String folderName = StringUtils.defaultIfEmpty(e.getAttribute(FOLDER_ATT), "templates");
+                ISafeRunnable runnable = new ISafeRunnable() {
+                    public void run() throws Exception {
+                        Bundle bundle = Platform.getBundle(pluginName);
+                        if (bundle == null)
+                            throw new RuntimeException("Cannot resolve bundle " + pluginName);
+                        else
+                            result.addAll(loadBuiltinTemplates(bundle, folderName, wizardType));
+                    }
+                    public void handleException(Throwable e) {
+                        CommonPlugin.logError("Cannot read templates from plug-in " + pluginName, e);
+                    }
+                };
+                SafeRunner.run(runnable);
+            }
+        } catch (Exception ex) {
+            CommonPlugin.logError("Error loading built-in templates from plug-ins", ex);
+        }
+        return result;
+    }
+
+    /**
+     * Loads built-in templates that support the given wizard type from the given plugin.
+     */
+    @SuppressWarnings("unchecked")
+    protected List<IContentTemplate> loadBuiltinTemplates(Bundle bundle, String folderName, String wizardType) {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         try {
-            URL url = bundle.getResource("template/templatelist.txt");
-            String templateListTxt = FileUtils.readTextFile(url.openStream());
-            String[] templateNames = templateListTxt.split("\n");
-            for (String templateName : templateNames) {
-                templateName = templateName.trim();
-                URL templateUrl = bundle.getEntry("template/" + templateName);
-                if (templateUrl == null)
-                    CommonPlugin.log(IStatus.ERROR, "Wizard: Could not load built-in content template '" + templateName + "'");
-                else {
-                    IContentTemplate template = loadBuiltinTemplate(templateUrl);
-                    if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
-                        result.add(template);
-                }
+            Enumeration e = bundle.findEntries(folderName, FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME, true);
+            while (e.hasMoreElements()) {
+                URL propFileUrl = (URL) e.nextElement();
+                URL templateUrl = new URL(StringUtils.removeEnd(propFileUrl.toString(), FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME));
+                IContentTemplate template = loadTemplateFromURL(templateUrl, bundle);
+                if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
+                    result.add(template);
             }
         } catch (IOException e) {
             CommonPlugin.logError("Wizard: Could not load built-in content templates", e);
@@ -136,10 +171,10 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
 
     /**
      * Factory method used by loadBuiltinTemplates(); override if you subclass 
-     * from FileBasedContentTemplate. 
+     * from FileBasedContentTemplate. bundleOfTemplate may be null.
      */
-    protected IContentTemplate loadBuiltinTemplate(URL templateUrl) throws CoreException {
-        return new FileBasedContentTemplate(templateUrl);
+    protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
+        return new FileBasedContentTemplate(templateUrl, bundleOfTemplate);
     }
     
     /**

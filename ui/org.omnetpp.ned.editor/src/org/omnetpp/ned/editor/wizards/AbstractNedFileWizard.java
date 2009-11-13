@@ -16,7 +16,6 @@ import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedFileWizard;
 import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedListener;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
  * "New NED file" wizard
@@ -60,7 +59,7 @@ public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
     @Override
     protected List<IContentTemplate> getTemplates() {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        result.addAll(loadBuiltinTemplates(NedEditorPlugin.getDefault().getBundle(), getWizardType()));
+        result.addAll(loadBuiltinTemplates(getWizardType()));
         result.addAll(loadTemplatesFromWorkspace(getWizardType()));
         return result;
     }

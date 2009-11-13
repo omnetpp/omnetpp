@@ -128,5 +128,11 @@
             parentId="org.eclipse.ui.textEditorScope">
       </context>
    </extension>
+   <extension
+         point="org.omnetpp.common.wizard.contenttemplates">
+      <plugin
+            pluginId="org.omnetpp.inifile.editor">
+      </plugin>
+   </extension>
 
 </plugin>

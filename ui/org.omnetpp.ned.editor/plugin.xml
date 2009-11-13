@@ -278,5 +278,11 @@
             class="org.omnetpp.ned.editor.NedEditorPreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.omnetpp.common.wizard.contenttemplates">
+      <plugin
+            pluginId="org.omnetpp.ned.editor">
+      </plugin>
+   </extension>
 
 </plugin>

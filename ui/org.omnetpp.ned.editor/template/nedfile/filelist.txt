@@ -1,4 +1,0 @@
-filelist.txt
-nedtype.xswt
-template.properties
-untitled.ned.ftl

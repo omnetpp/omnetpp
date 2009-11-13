@@ -84,5 +84,11 @@
               <enablement></enablement>
            </commonWizard>
   </extension>
+  <extension
+        point="org.omnetpp.common.wizard.contenttemplates">
+     <plugin
+           pluginId="org.omnetpp.msg.editor">
+     </plugin>
+  </extension>
 
 </plugin>

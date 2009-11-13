@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -32,6 +33,7 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
 import org.omnetpp.common.util.FileUtils;
+import org.osgi.framework.Bundle;
 
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
@@ -59,7 +61,9 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	// template is either given with an IFolder or with an URL
 	protected IFolder templateFolder;
 	protected URL templateUrl;
-	protected String[] fileList;
+	protected Bundle bundleOfTemplate;
+	protected boolean allowJarLoading = true;
+    protected String[] fileList;
 	protected Properties properties = new Properties();
 	protected Set<String> supportedWizardTypes = new HashSet<String>();
 	protected List<String> ignoreResourcePatterns = new ArrayList<String>();
@@ -79,28 +83,42 @@ public class FileBasedContentTemplate extends ContentTemplate {
      * (see constructor taking an URL).
      */
     public FileBasedContentTemplate(Plugin plugin, String templateFolder) throws CoreException {
-        this(plugin.getBundle().getResource(templateFolder));
-        
-        // generate a better default description
-        setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from plugin " + plugin.getBundle().getSymbolicName()));
+        this(plugin.getBundle().getResource(templateFolder), plugin.getBundle());
+    }
+
+    /**
+     * Loads the template from the given URL; equivalent to FileBasedContentTemplate(templateUrl, null).
+     * Note that filelist.txt must be present in the folder that templateUrl points to.
+     */
+    public FileBasedContentTemplate(URL templateUrl) throws CoreException {
+        this(templateUrl, null);
     }
 
     /**
      * Loads the template from the given URL. The URL should point to the folder 
-     * which contains the template.properties file. The folder should also contain a
-     * filelist.txt, containing the list of the files in the template folder, one per line.
-     * This is needed to overcome the Java limitation that contents of a resource bundle 
-     * (or URL) cannot be enumerated.  
+     * which contains the template.properties file.
+     * 
+     * BundleOfTemplate may be null. If it is null, the folder should also contain 
+     * a filelist.txt, containing the list of the files in the template folder, 
+     * one per line. This is needed to overcome the Java limitation that contents of 
+     * a resource bundle (or URL) cannot be enumerated. If bundleOfTemplate is not null,
+     * filelist.txt is not needed because we can use Bundle's methods to enumerate the files.  
      */
-    public FileBasedContentTemplate(URL templateUrl) throws CoreException {
+    public FileBasedContentTemplate(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
         super();
         this.templateUrl = templateUrl;
+        this.bundleOfTemplate = bundleOfTemplate;
+        
+        if (bundleOfTemplate != null)
+            if (!templateUrl.getProtocol().contains("bundle") || !templateUrl.getHost().equals(bundleOfTemplate.getResource("/").getHost()))
+                throw new IllegalArgumentException("Template URL " + templateUrl + " is not from the given OSGi bundle");
 
         properties = loadPropertiesFrom(openFile(TEMPLATE_PROPERTIES_FILENAME));
 
         // note: image will be loaded lazily, in getImage()
         setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), StringUtils.substringAfterLast(templateUrl.getPath(), "/")));
-        setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + templateUrl.toString()));
+        String templateSource = (bundleOfTemplate != null) ? bundleOfTemplate.getSymbolicName() : templateUrl.toString(); 
+        setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + templateSource));
         setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), null));
 
         // other initializations
@@ -170,6 +188,18 @@ public class FileBasedContentTemplate extends ContentTemplate {
      */
     public Set<String> getSupportedWizardTypes() {
         return supportedWizardTypes;
+    }
+
+    public boolean getAllowJarLoading() {
+        return allowJarLoading;
+    }
+
+    /**
+     * Sets whether to allow adding jars in the plugin directory into the CLASSPATH.
+     * Must be invoked "early enough" to take effect.
+     */
+    public void setAllowJarLoading(boolean allowJarLoading) {
+        this.allowJarLoading = allowJarLoading;
     }
 
     /**
@@ -244,9 +274,10 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	/**
 	 * Overridden so that we can load JAR files from the template folder
 	 */
-	//TODO the project's "plugins" folder
 	@Override
 	protected ClassLoader createClassLoader() {
+	    if (!allowJarLoading)
+	        return getClass().getClassLoader();
 	    try {
 	        List<URL> urls = new ArrayList<URL>();
 	        for (String fileName : getFileList())
@@ -427,10 +458,24 @@ public class FileBasedContentTemplate extends ContentTemplate {
      * Exists to abstract out the difference between workspace loading (IFile) 
      * and URL (or resource bundle) based loading. 
      */
+    @SuppressWarnings("unchecked")
     protected String[] getFileList() throws CoreException {
         if (fileList == null) {
-            if (templateUrl != null) {
+            if (bundleOfTemplate != null) {
+                // URL points into an OSGi bundle, so we can use its findEntries() method to produce the file list
+                String folderName = StringUtils.removeStart(templateUrl.getPath(),  bundleOfTemplate.getResource("/").getPath());
+                Enumeration e = bundleOfTemplate.findEntries(folderName, "*", true);
+                List<String> list = new ArrayList<String>();
+                while (e.hasMoreElements()) {
+                    URL fileUrl = (URL) e.nextElement();
+                    String filePath = StringUtils.removeStart(fileUrl.toString(), templateUrl.toString());
+                    list.add(filePath);
+                }
+                fileList = list.toArray(new String[]{});
+            }
+            else if (templateUrl != null) {
                 try {
+                    // generic URL, so we expect to find a filelist.txt
                     String filelistTxt = FileUtils.readTextFile(openFile(FILELIST_FILENAME));
                     fileList = filelistTxt.trim().split("\\s*\n\\s*");
                 } catch (IOException e) {
@@ -438,6 +483,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
                 }
             }
             else {
+                // workspace
                 List<String> list = new ArrayList<String>();
                 collectFiles(templateFolder, templateFolder, list);
                 fileList = list.toArray(new String[]{});

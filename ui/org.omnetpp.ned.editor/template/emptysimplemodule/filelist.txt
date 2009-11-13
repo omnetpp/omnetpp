@@ -1,5 +1,0 @@
-filelist.txt
-template.properties
-untitled.cc.ftl
-untitled.h.ftl
-untitled.ned.ftl
