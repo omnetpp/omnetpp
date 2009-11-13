@@ -468,7 +468,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
                 List<String> list = new ArrayList<String>();
                 while (e.hasMoreElements()) {
                     URL fileUrl = (URL) e.nextElement();
-                    String filePath = StringUtils.removeStart(fileUrl.toString(), templateUrl.toString());
+                    String filePath = StringUtils.removeStart(fileUrl.getPath(), templateUrl.getPath());
                     list.add(filePath);
                 }
                 fileList = list.toArray(new String[]{});
