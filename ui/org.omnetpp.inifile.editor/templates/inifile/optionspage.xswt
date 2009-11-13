@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="2"/>
+  <x:children>
+
+    <label x:text="FIXME TODO select network"/>
+    <text x:id="nedTypeName" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <setFocus/>
+    </text>
+
+  </x:children>
+</xswt>

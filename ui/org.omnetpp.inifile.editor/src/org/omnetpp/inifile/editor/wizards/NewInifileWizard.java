@@ -1,44 +1,75 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
-  
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 package org.omnetpp.inifile.editor.wizards;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkbench;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.IContentTemplate;
+import org.omnetpp.common.wizard.TemplateBasedFileWizard;
+import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedListener;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 
 /**
- * Wizard for ini files. Its role is to create a new file 
- * resource in the provided container. If the container resource
- * (a folder or a project) is selected in the workspace 
- * when the wizard is opened, it will accept it as the target
- * container. The wizard creates one file with the extension
- * "ini".
+ * "New Inifile" wizard
+ * 
+ * @author Andras
  */
-public class NewInifileWizard extends Wizard implements INewWizard {
-    private NewInifileWizardPage1 page1 = null;
-    private IStructuredSelection selection;
-    private IWorkbench workbench;
+//XXX very similar to AbstractNedFileWizard...
+public class NewInifileWizard extends TemplateBasedFileWizard {
 
+    public NewInifileWizard() {
+        setWizardType("inifile");
+    }
+    
     @Override
     public void addPages() {
-        page1 = new NewInifileWizardPage1(workbench, selection);
-        addPage(page1);
-    }
-
-    public void init(IWorkbench aWorkbench, IStructuredSelection currentSelection) {
-        workbench = aWorkbench;
-        selection = currentSelection;
+        super.addPages();
         setWindowTitle("New Ini File");
+        
+        WizardNewFileCreationPage firstPage = getFirstPage();
+        firstPage.setTitle("Create an ini file");
+        firstPage.setDescription("This wizard allows you to create a new OMNeT++ simulation configuration file.");
+        firstPage.setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/wizban/newinifile.png"));
+        firstPage.setFileExtension("ini");
+        firstPage.setFileName("untitled.ini");
+        
+        getTemplateSelectionPage().setTemplateAddedListener(new ITemplateAddedListener() {
+            public void addTemplateFrom(URL url) throws CoreException {
+                //TODO...
+            }
+        });
     }
 
     @Override
-    public boolean performFinish() {
-        return page1.finish();
+    protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
+        CreationContext context = super.createContext(selectedTemplate, folder);
+
+        IPath filePath = getFirstPage().getContainerFullPath().append(getFirstPage().getFileName());
+        IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
+        String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
+        context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
+
+        String nedTypeName = StringUtils.capitalize(StringUtils.makeValidIdentifier(filePath.removeFileExtension().lastSegment()));
+        context.getVariables().put("nedTypeName", nedTypeName);
+        
+        return context;
     }
+
+    @Override
+    protected List<IContentTemplate> getTemplates() {
+        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+        result.addAll(loadBuiltinTemplates(getWizardType()));
+        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
+        return result;
+    }
+
 }

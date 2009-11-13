@@ -7,7 +7,6 @@
 
 package org.omnetpp.common.wizard;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -154,17 +153,17 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         try {
             Enumeration e = bundle.findEntries(folderName, FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME, true);
-            while (e.hasMoreElements()) {
-                URL propFileUrl = (URL) e.nextElement();
-                URL templateUrl = new URL(StringUtils.removeEnd(propFileUrl.toString(), FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME));
-                IContentTemplate template = loadTemplateFromURL(templateUrl, bundle);
-                if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
-                    result.add(template);
+            if (e != null) {
+                while (e.hasMoreElements()) {
+                    URL propFileUrl = (URL) e.nextElement();
+                    URL templateUrl = new URL(StringUtils.removeEnd(propFileUrl.toString(), FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME));
+                    IContentTemplate template = loadTemplateFromURL(templateUrl, bundle);
+                    if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
+                        result.add(template);
+                }
             }
-        } catch (IOException e) {
-            CommonPlugin.logError("Wizard: Could not load built-in content templates", e);
-        } catch (CoreException e2) {
-            CommonPlugin.logError("Wizard: Could not load built-in content templates", e2);
+        } catch (Exception e) {
+            CommonPlugin.logError("TemplateBasedWizard: Could not load content templates from plug-ins", e);
         }
         return result;
     }
