@@ -6,15 +6,19 @@
     <package name="org.eclipse.swt.widgets" />
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
   </import>
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
 
-    <label x:text="FIXME TODO select network"/>
-    <text x:id="nedTypeName" x:style="BORDER">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+    <label x:text="Select network:">
+      <layoutData x:class="GridData" heightHint="45" verticalAlignment="CENTER"/>
+    </label>
+    <nedTypeChooser x:id="networkName" acceptedTypes="NETWORK" notExistsText="Network does not exist" >
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <setFocus/>
-    </text>
+    </nedTypeChooser>
 
   </x:children>
 </xswt>
