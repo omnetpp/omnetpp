@@ -140,10 +140,22 @@ public interface INEDTypeResolver {
 
     /**
 	 * Returns all toplevel (non-inner) types from NED files in all projects,
-	 * including duplicate types. This method is useful for implementing the
+	 * including duplicate types. This method is useful for implementing an
 	 * Open NED Type dialog, and for not much else.
 	 */
 	public Collection<INEDTypeInfo> getNedTypesFromAllProjects();
+
+    /**
+     * Returns the fully qualified names of all toplevel (non-inner) types 
+     * from NED files in all projects, including duplicate types. This method 
+     * is useful for implementing an Open NED Type dialog, and for not much else.
+     */
+	public Set<String> getNedTypeQNamesFromAllProjects();
+
+    /**
+     * Returns the NED types from all projects that have the given fully qualified name.
+     */
+    public Set<INEDTypeInfo> getNedTypesFromAllProjects(String qualifiedName);
 
     /**
 	 * Returns all toplevel (non-inner) types in the NED files, excluding duplicate names,

@@ -353,6 +353,26 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return result;
 	}
 
+	public synchronized Set<String> getNedTypeQNamesFromAllProjects() {
+	    // return everything from everywhere
+	    Set<String> result = new HashSet<String>();
+	    for (IFile file : nedFiles.keySet())
+	        for (INEDElement child : nedFiles.get(file))
+	            if (child instanceof INedTypeElement)
+	                result.add(((INedTypeElement)child).getNEDTypeInfo().getFullyQualifiedName());
+	    return result;
+	}
+
+    public synchronized Set<INEDTypeInfo> getNedTypesFromAllProjects(String qualifiedName) {
+        Set<INEDTypeInfo> result = new HashSet<INEDTypeInfo>();
+        for (IProject project : projects.keySet()) {
+            INEDTypeInfo nedType = getToplevelOrInnerNedType(qualifiedName, project);
+            if (nedType != null)
+                result.add(nedType);
+        }
+        return result;
+    }
+
     public synchronized Collection<INEDTypeInfo> getNedTypes(IProject context) {
 		rehashIfNeeded();
         ProjectData projectData = projects.get(context);
