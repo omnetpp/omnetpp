@@ -12,7 +12,7 @@ import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.FileBasedContentTemplate;
-import org.omnetpp.common.wizard.SWTDataUtil;
+import org.omnetpp.common.wizard.XSWTDataBinding;
 
 /**
  * Content template specialized for OMNeT++ projects
@@ -58,18 +58,18 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
 	public void performFinish(CreationContext context) throws CoreException {
 	    super.performFinish(context);
 
-	    if (getTemplateFolder()!=null && SWTDataUtil.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
+	    if (getTemplateFolder()!=null && XSWTDataBinding.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
 			ProjectUtils.addReferencedProject((IProject)context.getFolder(), getTemplateFolder().getProject(), context.getProgressMonitor());
 		
-		String[] srcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
+		String[] srcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
 		if (srcFolders.length > 0)
 			createAndSetSourceFolders(srcFolders, context);
 
-		String[] nedSrcFolders = SWTDataUtil.toStringArray(context.getVariables().get(PROP_NEDSOURCEFOLDERS), " *, *");
+		String[] nedSrcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_NEDSOURCEFOLDERS), " *, *");
 		if (nedSrcFolders.length > 0)
 			createAndSetNedSourceFolders(nedSrcFolders, context);
 
-		Map<String,String> makemakeOptions = SWTDataUtil.toStringMap(context.getVariables().get(PROP_MAKEMAKEOPTIONS));
+		Map<String,String> makemakeOptions = XSWTDataBinding.toStringMap(context.getVariables().get(PROP_MAKEMAKEOPTIONS));
 		if (!makemakeOptions.isEmpty())
 			createBuildSpec(makemakeOptions, context);
 	}

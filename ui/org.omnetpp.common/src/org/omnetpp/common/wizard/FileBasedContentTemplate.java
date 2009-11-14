@@ -157,13 +157,13 @@ public class FileBasedContentTemplate extends ContentTemplate {
 		ignoreResourcePatterns.add(FILELIST_FILENAME);
 
 		// the following options may not be modified via the wizard, so they are initialized here
-        String[] labels = SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_SUPPORTEDWIZARDTYPES))," *, *");
+        String[] labels = XSWTDataBinding.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_SUPPORTEDWIZARDTYPES))," *, *");
         supportedWizardTypes.addAll(Arrays.asList(labels));
 		
-		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORERESOURCES))," *, *"))
+		for (String item : XSWTDataBinding.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORERESOURCES))," *, *"))
 		    ignoreResourcePatterns.add(item);
 
-		for (String item : SWTDataUtil.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_VERBATIMFILES))," *, *"))
+		for (String item : XSWTDataBinding.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_VERBATIMFILES))," *, *"))
 		    verbatimFilePatterns.add(item);
     }
 

@@ -10,7 +10,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -73,22 +72,15 @@ public class FileLink extends Composite implements IWidgetAdapter {
 	/**
 	 * Adapter interface.
 	 */
-	public boolean supportsControl(Control control) {
-		return control instanceof FileLink; 
-	}
-
-	/**
-	 * Adapter interface.
-	 */
-	public Object getValueFromControl(Control control) {
-		IResource resource = ((FileLink)control).getResource();
+	public Object getValue() {
+		IResource resource = getResource();
         return resource==null ? "" : resource.getFullPath().toString();
 	}
 
 	/**
 	 * Adapter interface.
 	 */
-	public void writeValueIntoControl(Control control, Object value) {
+	public void setValue(Object value) {
 	    IResource resource;
 	    if (value instanceof IResource)
 	        resource = (IResource)value;
@@ -100,7 +92,7 @@ public class FileLink extends Composite implements IWidgetAdapter {
                 resource = (path.segmentCount()==1) ? root.getProject(path.segment(0)) : root.getFile(path);
 	    }
 
-		((FileLink)control).setResource(resource);
+		setResource(resource);
 	}
 
 }

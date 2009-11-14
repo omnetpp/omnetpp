@@ -1,9 +1,11 @@
 package org.omnetpp.ned.editor.wizards.support;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -13,14 +15,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.wizard.IWidgetAdapter;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.IWidgetAdapterExt;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NedTypeSelectionDialog;
@@ -38,7 +40,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
  * 
  * @author Andras
  */
-public class NedTypeChooser extends Composite implements IWidgetAdapter {
+public class NedTypeChooser extends Composite implements IWidgetAdapterExt {
     public static final int MODULE = 1;
     public static final int SIMPLE_MODULE = 2;
     public static final int COMPOUND_MODULE = 4;
@@ -51,6 +53,7 @@ public class NedTypeChooser extends Composite implements IWidgetAdapter {
 	private Button browseButton;
 	private Label message;
 	
+	private IProject project;  // we regard types from this project and dependencies
 	private int acceptedTypes = ~0; // binary OR of the above integer constants
 	private String existsText = null;
 	private String notExistsText = null;  // actually, "exists and is an accepted type"
@@ -80,6 +83,14 @@ public class NedTypeChooser extends Composite implements IWidgetAdapter {
 			}
 		});
 	}
+
+    public IProject getProject() {
+        return project;
+    }
+
+    public void setProject(IProject project) {
+        this.project = project;
+    }
 
     public String getExistsText() {
         return existsText;
@@ -138,11 +149,13 @@ public class NedTypeChooser extends Composite implements IWidgetAdapter {
         dialog.setTitle("Select NED Type");
 
         // need to filter its contents according to the filter flags
-        List<INEDTypeInfo> types = new ArrayList<INEDTypeInfo>();
-        for (INEDTypeInfo nedType : NEDResourcesPlugin.getNEDResources().getNedTypesFromAllProjects())
+        NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+        Collection<INEDTypeInfo> allTypes = project==null ? nedResources.getNedTypesFromAllProjects() : nedResources.getNedTypes(project);
+        List<INEDTypeInfo> offeredTypes = new ArrayList<INEDTypeInfo>();
+        for (INEDTypeInfo nedType : allTypes)
             if (isAcceptedType(nedType))
-                types.add(nedType);
-        dialog.setElements(types.toArray());
+                offeredTypes.add(nedType);
+        dialog.setElements(offeredTypes.toArray());
 
         if (dialog.open() == ListDialog.OK) {
             INEDTypeInfo component = dialog.getResult()[0];
@@ -153,11 +166,26 @@ public class NedTypeChooser extends Composite implements IWidgetAdapter {
 
 	protected void textModified() {
 	    String name = text.getText();
-	    Set<INEDTypeInfo> nedTypes = NEDResourcesPlugin.getNEDResources().getNedTypesFromAllProjects(name);
+	    if (name.isEmpty()) {
+	        message.setText("");
+	        return;
+	    }
+
+	    // find out whether such type exists
 	    boolean found = false;
-	    for (INEDTypeInfo nedType : nedTypes)
-	        if (isAcceptedType(nedType))
-	            found = true;
+	    NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+	    if (project != null) {
+	        INEDTypeInfo nedType = nedResources.getToplevelNedType(name, project);
+            found = nedType!=null && isAcceptedType(nedType);
+	    }
+	    else {    
+	        Set<INEDTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
+	        for (INEDTypeInfo nedType : nedTypes)
+	            if (isAcceptedType(nedType))
+	                found = true;
+	    }
+	    
+	    // give feedback to user
 	    String newText = StringUtils.nullToEmpty(found ? existsText : notExistsText);
 	    if (!message.getText().equals(newText))
 	        message.setText(newText);
@@ -194,23 +222,17 @@ public class NedTypeChooser extends Composite implements IWidgetAdapter {
 	/**
 	 * Adapter interface.
 	 */
-	public boolean supportsControl(Control control) {
-		return control instanceof NedTypeChooser; 
+	public Object getValue(CreationContext context) {
+		return getNedName();
 	}
 
 	/**
 	 * Adapter interface.
 	 */
-	public Object getValueFromControl(Control control) {
-		return ((NedTypeChooser)control).getNedName();
-	}
-
-	/**
-	 * Adapter interface.
-	 */
-	public void writeValueIntoControl(Control control, Object value) {
+	public void setValue(Object value, CreationContext context) {
 	    String nedTypeName = value instanceof INEDTypeInfo ? ((INEDTypeInfo)value).getFullyQualifiedName() : value.toString();
-		((NedTypeChooser)control).setNedName(nedTypeName);
+	    setProject(context.getFolder().getProject());
+		setNedName(nedTypeName);
 	}
 
 }

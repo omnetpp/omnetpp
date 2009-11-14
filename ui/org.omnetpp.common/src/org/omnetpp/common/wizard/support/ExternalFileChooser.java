@@ -7,7 +7,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.wizard.IWidgetAdapter;
@@ -75,22 +74,15 @@ public class ExternalFileChooser extends Composite implements IWidgetAdapter {
 	/**
 	 * Adapter interface.
 	 */
-	public boolean supportsControl(Control control) {
-		return control instanceof ExternalFileChooser; 
+	public Object getValue() {
+		return getFileName();
 	}
 
 	/**
 	 * Adapter interface.
 	 */
-	public Object getValueFromControl(Control control) {
-		return ((ExternalFileChooser)control).getFileName();
-	}
-
-	/**
-	 * Adapter interface.
-	 */
-	public void writeValueIntoControl(Control control, Object value) {
-		((ExternalFileChooser)control).setFileName(value.toString());
+	public void setValue(Object value) {
+		setFileName(value.toString());
 	}
 
 }

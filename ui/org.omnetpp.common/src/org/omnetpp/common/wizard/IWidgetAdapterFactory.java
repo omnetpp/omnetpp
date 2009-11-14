@@ -1,5 +1,7 @@
 package org.omnetpp.common.wizard;
 
+import org.eclipse.swt.widgets.Control;
+
 
 /**
  * For extending classes to get to work with XSWTDataBinding.getValue()/
@@ -7,14 +9,9 @@ package org.omnetpp.common.wizard;
  * 
  * @author Andras
  */
-public interface IWidgetAdapter {
+public interface IWidgetAdapterFactory {
     /**
-     * Return the widget's value.
+     * Returns an adapter for the given widget.
      */
-	Object getValue();
-
-	/**
-     * Set the widget's value.
-     */
-	void setValue(Object value);
+	IWidgetAdapter getAdapterFor(Control control);
 }

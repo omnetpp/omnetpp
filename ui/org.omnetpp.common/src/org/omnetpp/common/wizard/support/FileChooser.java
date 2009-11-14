@@ -10,7 +10,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -87,23 +86,16 @@ public class FileChooser extends Composite implements IWidgetAdapter {
 	/**
 	 * Adapter interface.
 	 */
-	public boolean supportsControl(Control control) {
-		return control instanceof FileChooser; 
+	public Object getValue() {
+		return getFileName();
 	}
 
 	/**
 	 * Adapter interface.
 	 */
-	public Object getValueFromControl(Control control) {
-		return ((FileChooser)control).getFileName();
-	}
-
-	/**
-	 * Adapter interface.
-	 */
-	public void writeValueIntoControl(Control control, Object value) {
+	public void setValue(Object value) {
 	    String fileName = value instanceof IResource ? ((IResource)value).getFullPath().toString() : value.toString();
-		((FileChooser)control).setFileName(fileName);
+		setFileName(fileName);
 	}
 
 }

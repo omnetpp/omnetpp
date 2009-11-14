@@ -123,7 +123,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 					try {
 					    if (value instanceof String) // khmm... substitution for object trees is not so simple
 					        value = creatorTemplate.evaluate((String)value, context.getVariables());
-						SWTDataUtil.writeValueIntoControl(control, value);
+						XSWTDataBinding.putValueIntoControl(control, value, context);
 					}
 					catch (Exception e) {
 						// NumberFormatException, ParseException (for date/time), something like that
@@ -141,7 +141,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 		Assert.isNotNull(widgetMap);
 		for (String widgetName : widgetMap.keySet()) {
 			Control control = widgetMap.get(widgetName);
-			Object value = SWTDataUtil.getValueFromControl(control);
+			Object value = XSWTDataBinding.getValueFromControl(control, context);
 			context.getVariables().put(widgetName, value);
 		}
 	}

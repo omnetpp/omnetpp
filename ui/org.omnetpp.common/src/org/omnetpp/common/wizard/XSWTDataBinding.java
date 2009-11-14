@@ -34,9 +34,9 @@ import org.eclipse.swt.widgets.Tree;
  * 
  * @author Andras
  */
-public class SWTDataUtil {
+public class XSWTDataBinding {
 
-	public static Object getValueFromControl(Control control) {
+	public static Object getValueFromControl(Control control, CreationContext context) {
 		if (control instanceof Button)
 			return ((Button) control).getSelection(); // -> Boolean
 		if (control instanceof CCombo)
@@ -89,27 +89,21 @@ public class SWTDataUtil {
 			//TODO tree, checkbox tree, treeItem, etc
 		}
 		
-		// try dynamic resolution: the control or its "~Adapter" may implement IWidgetAdapter
-		if (control instanceof IWidgetAdapter && ((IWidgetAdapter)control).supportsControl(control)) {
-			return ((IWidgetAdapter)control).getValueFromControl(control);
-		}
-		Object adapter = null;
-		try {
-			Class<?> adapterClass = Class.forName(control.getClass().getCanonicalName() + "Adapter");
-			adapter = adapterClass.newInstance();
-		} catch (Exception e) {}
-		
-		if (adapter instanceof IWidgetAdapter && ((IWidgetAdapter)adapter).supportsControl(control)) {
-			return ((IWidgetAdapter)adapter).getValueFromControl(control);
-		}
-		return null;
+		Object adapter = getWidgetAdapter(control);        
+		if (adapter==null)
+            throw new RuntimeException("No adapter for widget " + control.getClass().toString());
+		if (adapter instanceof IWidgetAdapterExt)
+			return ((IWidgetAdapterExt)adapter).getValue(context);
+		else
+		    return ((IWidgetAdapter)adapter).getValue();
 	}
+
 
 	/**
 	 * May throw exception: NumberFormatException or ParseException (for date/time), etc 
 	 */
 	@SuppressWarnings("deprecation")
-	public static void writeValueIntoControl(Control control, Object value) {
+	public static void putValueIntoControl(Control control, Object value, CreationContext context) {
 		if (control instanceof Button)
 			((Button) control).setSelection(toBoolean(value));
 		if (control instanceof CCombo)
@@ -153,22 +147,35 @@ public class SWTDataUtil {
 			//TODO tree, checkbox tree, treeItem, etc
 		}
 
-		// try dynamic resolution: the control or its "~Adapter" may implement IWidgetAdapter
-		if (control instanceof IWidgetAdapter && ((IWidgetAdapter)control).supportsControl(control)) {
-			((IWidgetAdapter)control).writeValueIntoControl(control, value);
-		}
-		Object adapter = null;
-		try {
-			Class<?> adapterClass = Class.forName(control.getClass().getCanonicalName() + "Adapter");
-			adapter = adapterClass.newInstance();
-		} catch (Exception e) {}
-		
-		if (adapter instanceof IWidgetAdapter && ((IWidgetAdapter)adapter).supportsControl(control)) {
-			((IWidgetAdapter)adapter).writeValueIntoControl(control, value);
-		}
+        Object adapter = getWidgetAdapter(control);        
+        if (adapter==null)
+            throw new RuntimeException("No adapter for widget " + control.getClass().toString());
+        if (adapter instanceof IWidgetAdapterExt)
+            ((IWidgetAdapterExt)adapter).setValue(value, context);
+        else
+            ((IWidgetAdapter)adapter).setValue(value);
+	}
+	
+	public static Object getWidgetAdapter(Control control) {
+	    Object adapter = null;
+	    if (control instanceof IWidgetAdapter || control instanceof IWidgetAdapterExt)
+	        adapter = control;
+	    if (adapter == null) {
+	        for (IWidgetAdapterFactory f : getAdapterFactories()) {
+	            adapter = f.getAdapterFor(control);
+	            if (adapter != null)
+	                break;
+	        }
+	    }
+	    return adapter;
 	}
 
-	public static boolean toBoolean(Object value) {
+	public static IWidgetAdapterFactory[] getAdapterFactories() {
+        return new IWidgetAdapterFactory[0]; //TODO implement some extension mechanism
+    }
+
+
+    public static boolean toBoolean(Object value) {
 		return value.equals(true) || value.toString().equals("true");
 	}
 
@@ -189,6 +196,7 @@ public class SWTDataUtil {
 	public static String[] toStringArray(Object value) {
 		return toStringArray(value, null);
 	}
+
 
 	@SuppressWarnings("unchecked")
 	public static String[] toStringArray(Object value, String splitRegex) {
