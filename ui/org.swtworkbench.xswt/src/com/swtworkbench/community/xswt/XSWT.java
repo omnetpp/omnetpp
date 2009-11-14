@@ -319,7 +319,7 @@ public class XSWT {
             for (int i = 0; i < list.size(); ++i) {
                 FixupTableEntry entry = (FixupTableEntry) list.get(i);
                 if (entry != null) {
-                    msg = msg + "\nFound unresolved referrence: " + entry.attributeName + " at " + entry.toString();
+                    msg = msg + "\nFound unresolved reference: " + entry.attributeName + " at " + entry.toString();
                 }
             }
         }
