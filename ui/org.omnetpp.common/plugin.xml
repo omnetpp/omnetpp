@@ -44,4 +44,11 @@
             class="org.omnetpp.common.ConfigurationPreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.swtworkbench.xswt.classloaders">
+      <plugin
+            pluginId="org.omnetpp.common"
+            referenceClass="org.omnetpp.common.CommonPlugin">
+      </plugin>
+   </extension>
 </plugin>

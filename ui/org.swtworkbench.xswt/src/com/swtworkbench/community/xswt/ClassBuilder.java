@@ -16,13 +16,14 @@ import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Widget;
 
 public class ClassBuilder {
+    public static final String CLASSLOADER_EXTENSION_ID = "org.swtworkbench.xswt.classloaders";
     public static final String ERROR_NOT_CONTROL = "parent is not Control";
     public static final String ERROR_NOT_WIDGET = "parent is not Widget";
     public static final String ERROR_NOT_COMPOSITE = "parent is not Composite";
     public static final String ERROR_NOT_DECORATION = "parent is not Decoration";
-    private static IClassLoaderProvider[] classLoaderProviders; // eclipse configuration never changes during runtime
+    private static ClassLoader[] classLoaders; // class loaders from the eclipse configuration
     private LinkedList imports = new LinkedList();
-    private ClassLoader classLoader = getClass().getClassLoader();
+    private ClassLoader extraClassLoader;
     private Map resolvedClasses = new HashMap();
     private static ClassBuilder builder = null;
 
@@ -37,30 +38,32 @@ public class ClassBuilder {
         this.imports.addLast(packageName);
     }
     
-    public void setClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+    public void setExtraClassLoader(ClassLoader classLoader) {
+        this.extraClassLoader = classLoader;
     }
     
-    public ClassLoader getClassLoader() {
-        return classLoader;
+    public ClassLoader getExtraClassLoader() {
+        return extraClassLoader;
     }
 
-    protected IClassLoaderProvider[] getClassLoaderProviders() {
-        if (classLoaderProviders == null) {
-            List<IClassLoaderProvider> result = new ArrayList<IClassLoaderProvider>();
+    protected ClassLoader[] getClassLoaders() {
+        if (classLoaders == null) {
+            List<ClassLoader> result = new ArrayList<ClassLoader>();
+            result.add(getClass().getClassLoader());
             try {
-                IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor("org.swtworkbench.xswt.classloader");
+                IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(CLASSLOADER_EXTENSION_ID);
                 for (IConfigurationElement e : config) {
-                    Object o = e.createExecutableExtension("class");
-                    result.add((IClassLoaderProvider)o);  // must implement it (if not, we log an error)
+                    String pluginId = e.getAttribute("pluginId");
+                    String referenceClass = e.getAttribute("referenceClass");
+                    ClassLoader classLoader = Platform.getBundle(pluginId).loadClass(referenceClass).getClassLoader();
+                    result.add(classLoader);
                 }
             } catch (Exception ex) {
-                XswtPlugin.logError("Cannot get ClassLoaderProviders from configuration", ex);
+                XswtPlugin.logError("Error getting ClassLoaders from the configuration", ex);
             }
-            classLoaderProviders = result.toArray(new IClassLoaderProvider[]{});
+            classLoaders = result.toArray(new ClassLoader[]{});
         }
-//XXX        Platform.getPlugin("").getBundle().loadClass(name)
-        return classLoaderProviders;
+        return classLoaders;
     }
     
     @SuppressWarnings("unchecked")
@@ -69,12 +72,12 @@ public class ClassBuilder {
         if (result != null)
             return result;
 
-        for (IClassLoaderProvider c : getClassLoaderProviders()) {
-            result = getClass(className, c.getClassLoader());
+        for (ClassLoader classLoader : getClassLoaders()) {
+            result = getClass(className, classLoader);
             if (result != null)
                 return result;
         }
-        result = getClass(className, classLoader);
+        result = getClass(className, extraClassLoader);
         if (result != null)
             return result;
         throw new XSWTException("Unable to resolve class: " + className + "\nCheck the import node for the necessary package name");

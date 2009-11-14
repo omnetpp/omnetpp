@@ -75,8 +75,8 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
         composite.setLayout(new FillLayout());
         setControl(composite);
         
-        ClassLoader oldClassLoader = XSWT.getClassLoader();
-        XSWT.setClassLoader(creatorTemplate.getClassLoader()); // ensure access to custom widget classes
+        ClassLoader oldExtraClassLoader = XSWT.getExtraClassLoader();
+        XSWT.setExtraClassLoader(creatorTemplate.getClassLoader()); // ensure access to custom widget classes
         Composite xswtHolder = null;
     	try {
     	    // instantiate XSWT form
@@ -96,7 +96,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
     		displayError(composite, e); 
 		}
     	finally {
-            XSWT.setClassLoader(oldClassLoader);
+            XSWT.setExtraClassLoader(oldExtraClassLoader);
     	}
 	}
 	

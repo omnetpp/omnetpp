@@ -284,5 +284,12 @@
             pluginId="org.omnetpp.ned.editor">
       </plugin>
    </extension>
+   <extension
+         point="org.swtworkbench.xswt.classloaders">
+      <plugin
+            pluginId="org.omnetpp.ned.editor"
+            referenceClass="org.omnetpp.ned.editor.NedEditorPlugin">
+      </plugin>
+   </extension>
 
 </plugin>

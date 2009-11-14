@@ -421,5 +421,12 @@
             pluginId="org.omnetpp.cdt">
       </plugin>
    </extension>
+   <extension
+         point="org.swtworkbench.xswt.classloaders">
+      <plugin
+            pluginId="org.omnetpp.cdt"
+            referenceClass="org.omnetpp.cdt.Activator">
+      </plugin>
+   </extension>
    
 </plugin>
