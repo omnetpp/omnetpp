@@ -148,6 +148,33 @@ public class NedTypeChooser extends Composite implements IWidgetAdapterExt {
         dialog.setMessage("Select NED type:");
         dialog.setTitle("Select NED Type");
 
+/* FIXME TODO: offer unqualified names for the folder in the CreationContext! (at least optionally)
+ * also check them in the validation function
+ * 
+                    // fill network combo
+                    IContainer container = (IContainer)resource;
+                    IProject project = container.getProject();
+                    NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+
+                    // collect networks: separately those in the local package, and others
+                    List<String> networkNames = new ArrayList<String>(); 
+                    List<String> networkQNames = new ArrayList<String>(); 
+                    String iniFilePackage = nedResources.getExpectedPackageFor(container.getFile(new Path("anything.ini")));
+                    for (String networkQName : nedResources.getNetworkQNames(project)) {
+                        INEDTypeInfo network = nedResources.getToplevelNedType(networkQName, project);
+                        if (StringUtils.isEmpty(iniFilePackage)) {
+                            networkQNames.add(network.getFullyQualifiedName());
+                        } else {
+                            if ((iniFilePackage+".").equals(network.getNamePrefix()))
+                                networkNames.add(network.getName());
+                            if (!network.getNamePrefix().equals(""))
+                                networkQNames.add(network.getFullyQualifiedName());
+                        }
+                    }
+                    Collections.sort(networkNames);
+                    Collections.sort(networkQNames);
+                    networkNames.addAll(networkQNames);
+ */
         // need to filter its contents according to the filter flags
         NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
         Collection<INEDTypeInfo> allTypes = project==null ? nedResources.getNedTypesFromAllProjects() : nedResources.getNedTypes(project);
