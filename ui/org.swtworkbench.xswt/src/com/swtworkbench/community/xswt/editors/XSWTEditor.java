@@ -7,7 +7,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 
-import com.swtworkbench.community.xswt.Activator;
+import com.swtworkbench.community.xswt.XswtPlugin;
 import com.swtworkbench.community.xswt.editor.views.XSWTPreview;
 
 public class XSWTEditor extends TextEditor {
@@ -29,7 +29,7 @@ public class XSWTEditor extends TextEditor {
             if (workbenchPage != null)   // note: may be null during platform startup...
                 workbenchPage.showView(XSWTPreview.VIEW_ID);
         } catch (Exception e) {
-            Activator.logError(e);
+            XswtPlugin.logError(e);
         }
     }
     
