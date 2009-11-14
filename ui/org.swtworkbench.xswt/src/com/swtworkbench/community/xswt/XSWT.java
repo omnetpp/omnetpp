@@ -70,8 +70,9 @@ public class XSWT {
     private HashMap fixupTable = new HashMap();
 
     public ClassBuilder classBuilder = ClassBuilder.getDefault();
-    public static ILayoutBuilder layoutBuilder;
+    public static ILayoutBuilder layoutBuilder = new SWTLayoutBuilder();
     protected WidgetDataParser widgetDataParser = new WidgetDataParser();
+
 
     static {
         DataParser.registerDataParser(Character.TYPE, new CharacterDataParser());
@@ -105,8 +106,6 @@ public class XSWT {
         CodeGenerator.registerGenerator(Rectangle.class, new RectangleCodeGenerator());
         CodeGenerator.registerGenerator(RGB.class, new RGBCodeGenerator());
         CodeGenerator.registerGenerator(String[].class, new StringArrayCodeGenerator());
-
-        layoutBuilder = new SWTLayoutBuilder();
     }
 
     public static void registerNSHandler(String namespace, ICustomNSHandler handler) {
@@ -330,11 +329,6 @@ public class XSWT {
 
     private XSWT() {
         DataParser.registerDataParser(Widget.class, this.widgetDataParser);
-    }
-
-    private void dispose() {
-        this.classBuilder.dispose();
-        this.fixupTable.clear();
     }
 
     public Map getWidgetMap() {
