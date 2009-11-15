@@ -647,7 +647,7 @@ TODO NED type chooser, project chooser
 TODO mention http://www.jsonlint.com/
 
 
-TODO document the <#assign dummy=expr!> trick! alternative: <@do FileUtil.deleteFile(file)!>
+TODO document the <#assign dummy=expr!> trick! alternative: <@do FileUtil.deleteFile(file)!/>
 
 TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
 JARs in the templates)

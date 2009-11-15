@@ -25,8 +25,8 @@ channel ${channelType} extends ned.DatarateChannel {
 <#list linksData as link>
   <#if (link?size >= 2)>
     <#-- about the "dummy=something?default" construct, see http://osdir.com/ml/web.freemarker.user/2003-06/msg00026.html -->
-    <#assign dummy = nodes.put(link[0],"")?default(0)>
-    <#assign dummy = nodes.put(link[1],"")?default(0)>
+    <@do nodes.put(link[0],"") !/>
+    <@do nodes.put(link[1],"") !/>
   </#if>
 </#list>
 
@@ -35,7 +35,7 @@ channel ${channelType} extends ned.DatarateChannel {
   <#assign nodesData = FileUtils.readCSVFile(nodesFile, nodesFileIgnoreFirstLine, true, true)>
   <#list nodesData as node>
   <#if (node?size == 3)>
-    <#assign dummy = nodes.put(node[0], node[1]+","+node[2])?default(0)>
+    <@do nodes.put(node[0], node[1]+","+node[2]) !/>
   <#else>
     <#stop "Unexpected number of items on line >>>" + LangUtils.toString(node) + "<<< (expected 2, 3, or 4)">
   </#if>

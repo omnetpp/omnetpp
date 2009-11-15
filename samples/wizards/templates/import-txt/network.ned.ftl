@@ -41,19 +41,19 @@ channel ${channelType} extends ned.DatarateChannel {
     <#assign fields = line.split("[ \t]+")>
     <#if (fields?size != 3)> <#stop "Node lines are expected to contain exactly 3 items"> </#if>
     <#assign node = LangUtils.newMap()>
-    <#assign dummy = node.put("name", fields[0]) ? default(0)>
-    <#assign dummy = node.put("x", fields[1]) ? default(0)>
-    <#assign dummy = node.put("y", fields[2]) ? default(0)>
-    <#assign dummy = nodes.add(node) ? default(0)>
+    <@do node.put("name", fields[0]) !/>
+    <@do node.put("x", fields[1]) !/>
+    <@do node.put("y", fields[2]) !/>
+    <@do nodes.add(node) !/>
   <#elseif readingWhat == "LINKS">
     <#assign fields = line.split("[ \t]+")>
     <#if (fields?size != 4)> <#stop "Link lines are expected to contain exactly 4 items"> </#if>
     <#assign link = LangUtils.newMap()>
-    <#assign dummy = link.put("src", fields[0]) ? default(0)>
-    <#assign dummy = link.put("dest",fields[1]) ? default(0)>
-    <#assign dummy = link.put("bw",  fields[2]) ? default(0)>
-    <#assign dummy = link.put("cost",fields[3]) ? default(0)>
-    <#assign dummy = links.add(link) ? default(0)>
+    <@do link.put("src", fields[0]) !/>
+    <@do link.put("dest",fields[1]) !/>
+    <@do link.put("bw",  fields[2]) !/>
+    <@do link.put("cost",fields[3]) !/>
+    <@do links.add(link) !/>
   </#if>
 </#list>
 </#compress>

@@ -28,11 +28,11 @@ channel ${channelType} extends ned.DatarateChannel {
 <#assign param2 = param2Times100?number / 100.0>
 
 <#assign topo = LangUtils.newInstance("org.example.Topogen")>
-<#assign dummy = topo.setNodes(numNodes) ?default(0)>
-<#assign dummy = topo.setEdges(numLinks) ?default(0)>
-<#assign dummy = topo.setSeed(seed) ?default(0)>
-<#assign dummy = topo.setParam1(param1) ?default(0)>
-<#assign dummy = topo.setParam2(param2) ?default(0)>
+<@do topo.setNodes(numNodes) !/>
+<@do topo.setEdges(numLinks) !/>
+<@do topo.setSeed(seed) !/>
+<@do topo.setParam1(param1) !/>
+<@do topo.setParam2(param2) !/>
 <#assign neighborLists = topo.generate()>
 
 //
