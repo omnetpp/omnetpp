@@ -3,7 +3,7 @@ ${bannerComment}
 
 <#if namespaceName!="">namespace ${namespaceName};</#if>
 
-<#elseif is2>
+<#if doBasic>
 //
 // TODO generated message class
 //
@@ -13,7 +13,7 @@ ${msgKeyword} ${msgTypeName} {
     double arrayField1[];
     double arrayField2[10];
 }
-<#elseif is3>
+<#elseif doSubclassing>
 cplusplus {{
 #include "SomeMessage_m.h"
 }}
@@ -25,7 +25,7 @@ ${msgKeyword} SomeMessage;
 ${msgKeyword} ${msgTypeName} extends SomeMessage {
     int someField;
 }
-<#elseif is5>
+<#elseif doUseCppType>
 cplusplus {{
 #include "SomeType.h"
 }}
@@ -44,7 +44,7 @@ ${msgKeyword} ${msgTypeName} {
     SomeType field1;
     OtherType field2;
 }
-<#elseif is6>
+<#elseif doCustomize>
 //
 // TODO generated message class
 //

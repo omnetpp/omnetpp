@@ -19,9 +19,9 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
  * 
  * @author Andras
  */
-public class NewMsgWizard extends TemplateBasedFileWizard {
+public class NewMsgFileWizard extends TemplateBasedFileWizard {
 
-    public NewMsgWizard() {
+    public NewMsgFileWizard() {
         setWizardType("msgfile");
     }
     
