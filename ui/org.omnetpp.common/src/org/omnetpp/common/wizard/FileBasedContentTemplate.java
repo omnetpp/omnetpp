@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
@@ -246,8 +247,8 @@ public class FileBasedContentTemplate extends ContentTemplate {
      * Overridden to add new variables into the context.
      */
 	@Override
-	public CreationContext createContext(IContainer folder) {
-		CreationContext context = super.createContext(folder);
+	public CreationContext createContext(IContainer folder, IWizard wizard) {
+		CreationContext context = super.createContext(folder, wizard);
 
 		// default values for recognized options (will be overwritten from property file)
 		context.getVariables().put(PROP_IGNORERESOURCES, "");

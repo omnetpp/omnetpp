@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.wizard.IWizard;
 
 /**
  * Stores the resource and the template variables during the lifetime of the wizard. 
@@ -15,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * @author Andras
  */
 public class CreationContext {
+    private final IWizard wizard;  // immutable after ctor call
 	private final IContainer folder; // MUST REMAIN UNCHANGED after the constructor call
 	private Map<String,Object> variables = new HashMap<String, Object>();
 	private IProgressMonitor progressMonitor;
@@ -23,8 +25,9 @@ public class CreationContext {
      * Constructor. Accepts the folder or project to be created, or an existing
      * folder or project in which the wizard will create files/folders.
      */
-	public CreationContext(IContainer folder) {
+	public CreationContext(IContainer folder, IWizard wizard) {
 		this.folder = folder;
+		this.wizard = wizard;
 	}
 
 	/**
@@ -35,7 +38,14 @@ public class CreationContext {
 	 * (can only be set in the constructor).
 	 */
 	public IContainer getFolder() { // note: intentionally no setter defined!
-		return folder;
+	    return folder;
+	}
+	
+	/**
+	 * Returns the owner wizard.
+	 */
+	public IWizard getWizard() {
+		return wizard;
 	}
 	
 	/**

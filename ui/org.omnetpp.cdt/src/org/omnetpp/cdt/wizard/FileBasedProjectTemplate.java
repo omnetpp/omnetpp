@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.jface.wizard.IWizard;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.wizard.CreationContext;
@@ -39,8 +40,8 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     }
 
     @Override
-    public CreationContext createContext(IContainer folder) {
-        CreationContext context = super.createContext(folder);
+    public CreationContext createContext(IContainer folder, IWizard wizard) {
+        CreationContext context = super.createContext(folder, wizard);
 
         // default values of recognized options
         context.setVariableIfMissing(PROP_ADDPROJECTREFERENCE, "true");

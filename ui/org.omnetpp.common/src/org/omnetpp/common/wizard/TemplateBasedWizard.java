@@ -303,7 +303,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
      * put extra variables into the context (i.e. a file name).
      */
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
-        return selectedTemplate.createContext(folder);
+        return selectedTemplate.createContext(folder, this);
     }
 
     private static ICustomWizardPage getNextEnabledCustomPage(ICustomWizardPage[] pages, int start, CreationContext context) {

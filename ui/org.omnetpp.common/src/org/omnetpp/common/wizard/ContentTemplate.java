@@ -24,7 +24,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -113,8 +117,8 @@ public abstract class ContentTemplate implements IContentTemplate {
     	this.image = image;
     }
     
-    public CreationContext createContext(IContainer folder) {
-    	CreationContext context = new CreationContext(folder);
+    public CreationContext createContext(IContainer folder, IWizard wizard) {
+    	CreationContext context = new CreationContext(folder, wizard);
     	
     	// pre-register some potentially useful template variables
     	Map<String, Object> variables = context.getVariables();
@@ -330,13 +334,23 @@ public abstract class ContentTemplate implements IContentTemplate {
         try {
             if (!file.exists())
                 file.create(inputStream, true, context.getProgressMonitor());
-            else
+            else if (shouldOverwriteExistingFile(file, context))
                 file.setContents(inputStream, true, true, context.getProgressMonitor());
         } catch (Exception e) {
             throw CommonPlugin.wrapIntoCoreException("Cannot create file: "+file.getFullPath().toString(), e);
         }
     }
 
+    /**
+     * Called back when a file already exists. Should return true if the file 
+     * can be overwritten (otherwise it will be skipped.)
+     */
+    protected boolean shouldOverwriteExistingFile(IFile file, CreationContext context) {
+        IWizard wizard = context.getWizard();
+        Shell shell = (wizard instanceof IWizard) ? ((Wizard)wizard).getShell() : null;
+        return MessageDialog.openQuestion(shell, "Confirm", "File already exists, overwrite?\n" + file.getFullPath().toString());
+    }
+    
     /**
      * Creates a folder, relative to the context resource. If the parent folder(s) 
      * do not exist, they are created. The project must exist though.

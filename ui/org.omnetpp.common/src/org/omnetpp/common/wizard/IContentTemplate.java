@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -57,7 +58,7 @@ public interface IContentTemplate {
      * The resource is the workspace resource the wizard should create, or in which 
      * it should create content.
      */
-    CreationContext createContext(IContainer folder);
+    CreationContext createContext(IContainer folder, IWizard wizard);
     
     /**
      * Create custom wizard pages. Should never return null (may return an 
