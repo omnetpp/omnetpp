@@ -6,41 +6,27 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IWidgetAdapterExt;
+import org.omnetpp.common.wizard.support.AbstractChooser;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NedTypeSelectionDialog;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 /**
- * A control for selecting a NED type. Implemented as a Composite 
- * with a single-line Text and a Browse button. Plus, optionally
- * it can display a label below the text field, saying whether the 
- * NED type exists or not.
- * 
- * Does not replicate all the zillion methods of the Text class;
- * rather, it exposes the internal Text widget so that it can
- * be manipulated directly.
+ * A control for selecting a NED type.
  * 
  * @author Andras
  */
-public class NedTypeChooser extends Composite implements IWidgetAdapterExt {
+public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt {
     public static final int MODULE = 1;
     public static final int SIMPLE_MODULE = 2;
     public static final int COMPOUND_MODULE = 4;
@@ -48,40 +34,12 @@ public class NedTypeChooser extends Composite implements IWidgetAdapterExt {
     public static final int CHANNEL = 16;
     public static final int CHANNELINTERFACE = 32;
     public static final int NETWORK = 64;
-    
-	private Text text;
-	private Button browseButton;
-	private Label message;
 	
 	private IProject project;  // we regard types from this project and dependencies
 	private int acceptedTypes = ~0; // binary OR of the above integer constants
-	private String existsText = null;
-	private String notExistsText = null;  // actually, "exists and is an accepted type"
 
 	public NedTypeChooser(Composite parent, int style) {
 		super(parent, style);
-		GridLayout layout = new GridLayout(2,false);
-		layout.marginHeight = layout.marginWidth = 0;
-		setLayout(layout);
-		
-		text = new Text(this, SWT.SINGLE|SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-		browseButton = new Button(this, SWT.PUSH);
-		browseButton.setText("Browse...");
-
-		message = new Label(this, SWT.NONE);
-		message.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-		updateLabelsVisibility();
-		
-		text.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-                textModified();
-            }});
-		browseButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				browse();
-			}
-		});
 	}
 
     public IProject getProject() {
@@ -90,29 +48,6 @@ public class NedTypeChooser extends Composite implements IWidgetAdapterExt {
 
     public void setProject(IProject project) {
         this.project = project;
-    }
-
-    public String getExistsText() {
-        return existsText;
-    }
-
-    public void setExistsText(String existsText) {
-        this.existsText = existsText;
-        updateLabelsVisibility();
-    }
-
-    public String getNotExistsText() {
-        return notExistsText;
-    }
-
-    public void setNotExistsText(String notExistsText) {
-        this.notExistsText = notExistsText;
-        updateLabelsVisibility();
-    }
-
-    private void updateLabelsVisibility() {
-        boolean visible = existsText!=null || notExistsText!=null;
-        ((GridData)message.getLayoutData()).exclude = !visible;
     }
 
     /**
@@ -141,8 +76,7 @@ public class NedTypeChooser extends Composite implements IWidgetAdapterExt {
 	    return acceptedTypes;
 	}
 	
-	protected void browse() {
-        // pop up a chooser dialog
+	protected String browse() {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         NedTypeSelectionDialog dialog = new NedTypeSelectionDialog(window.getShell());
         dialog.setMessage("Select NED type:");
@@ -186,38 +120,11 @@ public class NedTypeChooser extends Composite implements IWidgetAdapterExt {
 
         if (dialog.open() == ListDialog.OK) {
             INEDTypeInfo component = dialog.getResult()[0];
-            text.setText(component.getFullyQualifiedName());
-            text.selectAll();
+            return component.getFullyQualifiedName();
         }
+        return null;
 	}
 
-	protected void textModified() {
-	    String name = text.getText();
-	    if (name.isEmpty()) {
-	        message.setText("");
-	        return;
-	    }
-
-	    // find out whether such type exists
-	    boolean found = false;
-	    NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
-	    if (project != null) {
-	        INEDTypeInfo nedType = nedResources.getToplevelNedType(name, project);
-            found = nedType!=null && isAcceptedType(nedType);
-	    }
-	    else {    
-	        Set<INEDTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
-	        for (INEDTypeInfo nedType : nedTypes)
-	            if (isAcceptedType(nedType))
-	                found = true;
-	    }
-	    
-	    // give feedback to user
-	    String newText = StringUtils.nullToEmpty(found ? existsText : notExistsText);
-	    if (!message.getText().equals(newText))
-	        message.setText(newText);
-	}
-	
 	protected boolean isAcceptedType(INEDTypeInfo nedType) {
 	    if ((acceptedTypes & MODULE)!=0 && NEDResources.MODULE_FILTER.matches(nedType)) return true;
 	    if ((acceptedTypes & SIMPLE_MODULE)!=0 && NEDResources.SIMPLE_MODULE_FILTER.matches(nedType)) return true;
@@ -230,36 +137,63 @@ public class NedTypeChooser extends Composite implements IWidgetAdapterExt {
 	}
 	
     public String getNedName() {
-        return text.getText();
+        return getText();
     }
 
-    public void setNedName(String file) {
-        text.setText(file);
-        text.selectAll();
+    public void setNedName(String name) {
+        setText(name);
     }
 
-	public Text getTextControl() {
-		return text;
-	}
+    @Override
+    protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
+        if (getText().isEmpty())
+            return null;
+        INEDTypeInfo nedType = lookupNedType();
+        String contents = nedType==null ? null : nedType.getNEDElement().getNEDSource();
+        String html = (contents == null) ? "<i>No such NED type</i>" : "<pre>"+StringUtils.quoteForHtml(contents)+"</pre>";
+        return HoverSupport.addHTMLStyleSheet(html);
+    }
 
-	public Button getBrowseButton() {
-		return browseButton;
-	}
+    @Override
+    protected boolean itemExists() {
+        return lookupNedType() != null;
+    }
 
-	/**
-	 * Adapter interface.
-	 */
-	public Object getValue(CreationContext context) {
-		return getNedName();
-	}
+    protected INEDTypeInfo lookupNedType() {
+        String name = getText();
+        NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+        if (project != null) {
+            INEDTypeInfo nedType = nedResources.getToplevelNedType(name, project);
+            if (nedType!=null && isAcceptedType(nedType))
+                return nedType;
+        }
+        else {    
+            Set<INEDTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
+            for (INEDTypeInfo nedType : nedTypes)
+                if (isAcceptedType(nedType))
+                    return nedType;
+        }
+        return null;
+    }
 
-	/**
-	 * Adapter interface.
-	 */
-	public void setValue(Object value, CreationContext context) {
-	    String nedTypeName = value instanceof INEDTypeInfo ? ((INEDTypeInfo)value).getFullyQualifiedName() : value.toString();
-	    setProject(context.getFolder().getProject());
-		setNedName(nedTypeName);
-	}
+    /**
+     * Adapter interface.
+     */
+    public void setValue(Object value, CreationContext context) {
+        String nedTypeName = value instanceof INEDTypeInfo ? ((INEDTypeInfo)value).getFullyQualifiedName() : value.toString();
+        setProject(context.getFolder().getProject());
+        setNedName(nedTypeName);
+    }
 
+    @Override
+    public void setValue(Object value) {
+        throw new IllegalAccessError("Call the 2-arg setValue instead");
+    }
+
+    /**
+     * Adapter interface.
+     */
+    public Object getValue(CreationContext context) {
+        return getValue();
+    }
 }

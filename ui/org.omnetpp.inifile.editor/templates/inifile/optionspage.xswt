@@ -12,10 +12,8 @@
   <layout x:class="GridLayout" x:numColumns="2"/>
   <x:children>
 
-    <label x:text="Select network:">
-      <layoutData x:class="GridData" heightHint="45" verticalAlignment="CENTER"/>
-    </label>
-    <nedTypeChooser x:id="networkName" acceptedTypes="NETWORK" notExistsText="Network does not exist" >
+    <label x:text="Select network:"/>
+    <nedTypeChooser x:id="networkName" acceptedTypes="NETWORK" >
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <setFocus/>
     </nedTypeChooser>

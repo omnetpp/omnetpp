@@ -4,24 +4,14 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.wizard.IWidgetAdapter;
 
 /**
- * A control for selecting a file from the file system.
+ * A control for selecting a file from the workspace.
  * Implemented as a Composite with a single-line Text and a Browse button.
  * 
  * Does not replicate all methods of the Text class; rather, it exposes the 
@@ -29,66 +19,37 @@ import org.omnetpp.common.wizard.IWidgetAdapter;
  * 
  * @author Andras
  */
-public class ExternalFileChooser extends Composite implements IWidgetAdapter {
-	private Text text;
-	private Button browseButton;
-	private Button previewButton;
-	private HoverSupport hoverSupport;
+public class ExternalFileChooser extends AbstractChooser {
 
-	public ExternalFileChooser(Composite parent, int style) {
-		super(parent, style);
-		GridLayout layout = new GridLayout(3,false);
-		layout.marginHeight = layout.marginWidth = 0;
-		setLayout(layout);
-		
-		text = new Text(this, SWT.SINGLE|SWT.BORDER);
-        text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-		browseButton = new Button(this, SWT.PUSH);
-        browseButton.setText("Browse...");
-		previewButton = new Button(this, SWT.PUSH);
-		previewButton.setText("Preview");
-		
-		browseButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				browse();
-			}
-		});
+    public ExternalFileChooser(Composite parent, int style) {
+        super(parent, style);
+    }
 
-		previewButton.addSelectionListener(new SelectionAdapter() {
-		    public void widgetSelected(SelectionEvent e) {
-		        preview();
-		    }
-		});
+    @Override
+    protected String browse() {
+        FileDialog dialog = new FileDialog(getShell());
+        dialog.setFileName(getTextControl().getText());
+        return dialog.open();
+    }
 
-        IHoverTextProvider provider = new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-                String contents = getFilePreviewContents();
-                String html = (contents == null) ? "<i>Cannot open file</i>" : "<pre>"+StringUtils.quoteForHtml(contents)+"</pre>";
-                return HoverSupport.addHTMLStyleSheet(html);
-            }
-        };
-        hoverSupport = new HoverSupport();
-        hoverSupport.adapt(text, provider);
-	}
+    @Override
+    protected boolean itemExists() {
+        String fileName = getTextControl().getText();
+        return new File(fileName).exists();
+    }
 
-	protected void browse() {
-        // filesystem selection:		
-		FileDialog dialog = new FileDialog(getShell());
-		dialog.setFileName(text.getText());
-		String result = dialog.open();
-		if (result != null) {
-			text.setText(result);
-	        text.selectAll();
-		}
-	}
-
-    protected void preview() {
-        hoverSupport.makeHoverSticky(text);
+    @Override
+    protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
+        if (getText().isEmpty())
+            return null;
+        String contents = getFilePreviewContents();
+        String html = (contents == null) ? "<i>Cannot open file</i>" : "<pre>"+StringUtils.quoteForHtml(contents)+"</pre>";
+        return HoverSupport.addHTMLStyleSheet(html);
     }
 
     protected String getFilePreviewContents() {
         try {
-            String fileName = text.getText();
+            String fileName = getTextControl().getText();
             File file = new File(fileName);
             if (!file.exists())
                 return null;
@@ -107,35 +68,21 @@ public class ExternalFileChooser extends Composite implements IWidgetAdapter {
         }
     }
 
-	public String getFileName() {
-		return text.getText();
-	}
+    public String getFileName() {
+        return getTextControl().getText();
+    }
 
-	public void setFileName(String file) {
-		text.setText(file);
-        text.selectAll();
-	}
+    public void setFileName(String file) {
+        getTextControl().setText(file);
+        getTextControl().selectAll();
+    }
 
-	public Text getTextControl() {
-		return text;
-	}
-
-	public Button getBrowseButton() {
-		return browseButton;
-	}
-
-	/**
-	 * Adapter interface.
-	 */
-	public Object getValue() {
-		return getFileName();
-	}
-
-	/**
-	 * Adapter interface.
-	 */
-	public void setValue(Object value) {
-		setFileName(value.toString());
-	}
+    @Override
+    public void setValue(Object value) {
+        if (value instanceof File) 
+            super.setValue(((File)value).getPath());
+        else
+            super.setValue(value);
+    }
 
 }

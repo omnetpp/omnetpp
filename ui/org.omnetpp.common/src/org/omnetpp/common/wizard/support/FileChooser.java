@@ -7,24 +7,14 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.wizard.IWidgetAdapter;
 
 /**
  * A control for selecting a file from the workspace.
@@ -35,49 +25,14 @@ import org.omnetpp.common.wizard.IWidgetAdapter;
  * 
  * @author Andras
  */
-public class FileChooser extends Composite implements IWidgetAdapter {
-	private Text text;
-	private Button browseButton;
-	private Button previewButton;
-	private HoverSupport hoverSupport;
+public class FileChooser extends AbstractChooser {
 
-	public FileChooser(Composite parent, int style) {
-		super(parent, style);
-		GridLayout layout = new GridLayout(3,false);
-		layout.marginHeight = layout.marginWidth = 0;
-		setLayout(layout);
-		
-		text = new Text(this, SWT.SINGLE|SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-		browseButton = new Button(this, SWT.PUSH);
-		browseButton.setText("Browse...");
-		previewButton = new Button(this, SWT.PUSH);
-		previewButton.setText("Preview");
-		
-		browseButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				browse();
-			}
-		});
+    public FileChooser(Composite parent, int style) {
+        super(parent, style);
+    }
 
-		previewButton.addSelectionListener(new SelectionAdapter() {
-		    public void widgetSelected(SelectionEvent e) {
-		        preview();
-		    }
-		});
-
-        IHoverTextProvider provider = new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-                String contents = getFilePreviewContents();
-                String html = (contents == null) ? "<i>Cannot open file</i>" : "<pre>"+StringUtils.quoteForHtml(contents)+"</pre>";
-                return HoverSupport.addHTMLStyleSheet(html);
-            }
-        };
-        hoverSupport = new HoverSupport();
-        hoverSupport.adapt(text, provider);
-	}
-
-    protected void browse() {
+    @Override
+    protected String browse() {
         ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new WorkbenchContentProvider());
         dialog.setTitle("Select File");
         dialog.setMessage("Select file");
@@ -86,30 +41,41 @@ public class FileChooser extends Composite implements IWidgetAdapter {
         dialog.setAllowMultiple(false);
 
         // select current file in the dialog (if does not exist, choose first ancestor that does)
-        String fileName = text.getText();
+        String fileName = getTextControl().getText();
         IResource initialSelection = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileName));
         if (!initialSelection.exists())
             initialSelection = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(fileName)); // maybe it's a folder
         while (!initialSelection.exists())
             initialSelection = initialSelection.getParent();
         dialog.setInitialSelection(initialSelection);
-        
-        if (dialog.open() == IDialogConstants.OK_ID) {
-        	Object[] result = dialog.getResult();
-        	if (result.length > 0) {
-        		text.setText(((IResource)result[0]).getFullPath().toString());
-                text.selectAll();
-        	}
-        }
-	}
 
-    protected void preview() {
-        hoverSupport.makeHoverSticky(text);
+        if (dialog.open() == IDialogConstants.OK_ID) {
+            Object[] result = dialog.getResult();
+            if (result.length > 0)
+                return ((IResource)result[0]).getFullPath().toString();
+        }
+        return null;
+    }
+
+    @Override
+    protected boolean itemExists() {
+        String fileName = getTextControl().getText();
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileName));
+        return file.exists();
+    }
+
+    @Override
+    protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
+        if (getText().isEmpty())
+            return null;
+        String contents = getFilePreviewContents();
+        String html = (contents == null) ? "<i>Cannot open file</i>" : "<pre>"+StringUtils.quoteForHtml(contents)+"</pre>";
+        return HoverSupport.addHTMLStyleSheet(html);
     }
 
     protected String getFilePreviewContents() {
         try {
-            String fileName = text.getText();
+            String fileName = getTextControl().getText();
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileName));
             if (!file.exists())
                 return null;
@@ -129,35 +95,20 @@ public class FileChooser extends Composite implements IWidgetAdapter {
     }
 
     public String getFileName() {
-        return text.getText();
+        return getTextControl().getText();
     }
 
     public void setFileName(String file) {
-        text.setText(file);
-        text.selectAll();
+        getTextControl().setText(file);
+        getTextControl().selectAll();
     }
 
-	public Text getTextControl() {
-		return text;
-	}
-
-	public Button getBrowseButton() {
-		return browseButton;
-	}
-
-	/**
-	 * Adapter interface.
-	 */
-	public Object getValue() {
-		return getFileName();
-	}
-
-	/**
-	 * Adapter interface.
-	 */
-	public void setValue(Object value) {
-	    String fileName = value instanceof IResource ? ((IResource)value).getFullPath().toString() : value.toString();
-		setFileName(fileName);
-	}
+    @Override
+    public void setValue(Object value) {
+        if (value instanceof IResource) 
+            super.setValue(((IResource)value).getFullPath().toString());
+        else
+            super.setValue(value);
+    }
 
 }
