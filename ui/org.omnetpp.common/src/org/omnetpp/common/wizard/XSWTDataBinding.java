@@ -106,11 +106,11 @@ public class XSWTDataBinding {
 	public static void putValueIntoControl(Control control, Object value, CreationContext context) {
 		if (control instanceof Button)
 			((Button) control).setSelection(toBoolean(value));
-		if (control instanceof CCombo)
+		else if (control instanceof CCombo)
 			((CCombo) control).setText(toString(value));
-		if (control instanceof Combo)
+		else if (control instanceof Combo)
 			((Combo) control).setText(toString(value));
-		if (control instanceof DateTime) {
+		else if (control instanceof DateTime) {
 			Date d;
 			try {
 				d = new SimpleDateFormat("y-M-d H:m:s").parse(toString(value));
@@ -120,40 +120,41 @@ public class XSWTDataBinding {
 			((DateTime) control).setDate(d.getYear(), d.getMonth(), d.getDate());
 			((DateTime) control).setTime(d.getHours(), d.getMinutes(), d.getSeconds());
 		}
-		if (control instanceof Label)
+		else if (control instanceof Label)
 			((Label) control).setText(toString(value));
-		if (control instanceof List)
+		else if (control instanceof List)
 			((List) control).setSelection(toStringArray(value));
-		if (control instanceof Link)
+		else if (control instanceof Link)
 			((Link) control).setText(toString(value));
-		if (control instanceof Scale)
+		else if (control instanceof Scale)
 			((Scale) control).setSelection(toInt(value));
-		if (control instanceof Slider)
+		else if (control instanceof Slider)
 			((Slider) control).setSelection(toInt(value));
-		if (control instanceof Spinner)
+		else if (control instanceof Spinner)
 			((Spinner) control).setSelection(toInt(value));
-		if (control instanceof StyledText) {
+		else if (control instanceof StyledText) {
 			((StyledText) control).setText(toString(value));
 			((StyledText) control).selectAll();
 		}
-		if (control instanceof Text) { 
+		else if (control instanceof Text) { 
 			((Text) control).setText(toString(value));
 			((Text) control).selectAll();
 		}
-		if (control instanceof Table) {
+		else if (control instanceof Table) {
 			//TODO table, checkbox table, tableItem..
 		}
-		if (control instanceof Tree) {
+		else if (control instanceof Tree) {
 			//TODO tree, checkbox tree, treeItem, etc
 		}
-
-        Object adapter = getWidgetAdapter(control);        
-        if (adapter==null)
-            throw new RuntimeException("No adapter for widget " + control.getClass().toString());
-        if (adapter instanceof IWidgetAdapterExt)
-            ((IWidgetAdapterExt)adapter).setValue(value, context);
-        else
-            ((IWidgetAdapter)adapter).setValue(value);
+		else {
+		    Object adapter = getWidgetAdapter(control);        
+		    if (adapter==null)
+		        throw new RuntimeException("No adapter for widget " + control.getClass().toString());
+		    if (adapter instanceof IWidgetAdapterExt)
+		        ((IWidgetAdapterExt)adapter).setValue(value, context);
+		    else
+		        ((IWidgetAdapter)adapter).setValue(value);
+		}
 	}
 	
 	public static Object getWidgetAdapter(Control control) {
