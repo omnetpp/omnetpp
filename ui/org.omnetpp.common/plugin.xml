@@ -54,6 +54,12 @@
       </initializer>
    </extension>
    <extension
+         point="org.omnetpp.common.wizard.contenttemplates">
+      <plugin
+            pluginId="org.omnetpp.common">
+      </plugin>
+   </extension>
+   <extension
          point="org.swtworkbench.xswt.classloaders">
       <plugin
             pluginId="org.omnetpp.common"
