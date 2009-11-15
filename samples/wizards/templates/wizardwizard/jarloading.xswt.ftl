@@ -1,4 +1,4 @@
-<@setoutput file=wizardFolder+"/jarloading.xswt"/>
+<@setoutput file="jarloading.xswt"/>
 <#if wantJarLoading>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">

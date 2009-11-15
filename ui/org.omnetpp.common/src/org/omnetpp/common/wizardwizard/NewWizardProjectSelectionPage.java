@@ -27,6 +27,11 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.TemplateBasedWizard;
 
 
+/**
+ * Project and wizard name selection page for the New Wizard wizard
+ *
+ * @author Andras
+ */
 public class NewWizardProjectSelectionPage extends WizardPage {
     private TableViewer table;
     private Text text;

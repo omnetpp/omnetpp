@@ -1,4 +1,4 @@
-<@setoutput file=wizardFolder+"/widgetsform.xswt"/>
+<@setoutput file="widgetsform.xswt"/>
 <#if wantWidgetsForm>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">

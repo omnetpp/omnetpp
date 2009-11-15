@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedWizard;
 
@@ -23,6 +24,14 @@ public class NewWizardWizard extends TemplateBasedWizard {
         addPage(firstPage = new NewWizardProjectSelectionPage("first page"));
         super.addPages();
     }
+
+    @Override
+    protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
+        CreationContext context = super.createContext(selectedTemplate, folder);
+        context.setVariable("newWizardName", firstPage.getWizardName());
+        context.setVariable("newWizardProject", firstPage.getProject());
+        return context;
+    }
     
     @Override
     protected IWizardPage getFirstExtraPage() {
@@ -31,8 +40,7 @@ public class NewWizardWizard extends TemplateBasedWizard {
 
     @Override
     protected IContainer getFolder() {
-        // TODO Auto-generated method stub
-        return null;
+        return firstPage.getWizardFolder();
     }
 
     public String getWizardType() {

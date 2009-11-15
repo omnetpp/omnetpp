@@ -1,4 +1,4 @@
-<@setoutput file=wizardFolder+"/complexform.xswt"/>
+<@setoutput file="complexform.xswt"/>
 <#if wantComplexForm>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">

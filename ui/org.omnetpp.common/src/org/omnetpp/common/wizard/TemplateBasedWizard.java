@@ -50,7 +50,9 @@ import org.osgi.framework.Bundle;
  *
  * @author Andras
  */
-public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
+public abstract class TemplateBasedWizard extends Wizard implements INewWizard /*FIXME only subclasses should implement this!!! */ {
+    public static final String TEMPLATES_FOLDER_NAME = "templates";
+    
     public static final String CONTENTTEMPLATE_EXTENSION_ID = "org.omnetpp.common.wizard.contenttemplates";
     public static final String PLUGIN_ELEMENT = "plugin";
     public static final String PLUGINID_ATT = "pluginId";

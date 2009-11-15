@@ -1,6 +1,6 @@
-<#assign xswtFile=wizardFolder+"/wizardpage.xswt">
-<#assign propsFile=wizardFolder+"/template.properties">
-<#assign nedFile=wizardFolder+"/output.ned.ftl">
+<#assign xswtFile="wizardpage.xswt">
+<#assign propsFile="template.properties">
+<#assign nedFile="output.ned.ftl">
 <@setoutput file=propsFile/>
 # adjust the following
 templateName = Generated Wizard
@@ -14,6 +14,13 @@ page.1.title = Generated Page
 page.1.description = Select options below
 
 # variables
+<@setoutput file=nedFile/>
+<#noparse><@setoutput file=newFileName?default("")/>
+${bannerComment}
+
+<#if nedPackageName!="">package ${nedPackageName};</#if>
+
+</#noparse>
 <@setoutput file=xswtFile/>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">

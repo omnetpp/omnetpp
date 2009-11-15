@@ -1,4 +1,4 @@
-<@setoutput file=wizardFolder+"/computations.xswt"/>
+<@setoutput file="computations.xswt"/>
 <#if wantComputations>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">

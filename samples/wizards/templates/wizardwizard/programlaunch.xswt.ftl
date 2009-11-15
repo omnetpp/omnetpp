@@ -1,4 +1,4 @@
-<@setoutput file=wizardFolder+"/programlaunch.xswt"/>
+<@setoutput file="programlaunch.xswt"/>
 <#if wantProgramLaunch>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">

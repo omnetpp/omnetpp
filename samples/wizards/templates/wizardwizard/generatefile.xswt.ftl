@@ -1,4 +1,4 @@
-<@setoutput file=wizardFolder+"/generatefile.xswt"/>
+<@setoutput file="generatefile.xswt"/>
 <#if wantFileGeneration>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
