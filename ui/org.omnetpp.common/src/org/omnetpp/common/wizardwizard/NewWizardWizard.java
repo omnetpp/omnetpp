@@ -1,5 +1,6 @@
 package org.omnetpp.common.wizardwizard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
@@ -14,7 +15,15 @@ import org.omnetpp.common.wizard.TemplateBasedWizard;
  * @author Andras
  */
 public class NewWizardWizard extends TemplateBasedWizard {
-
+    private NewWizardProjectSelectionPage firstPage;
+    
+    @Override
+    public void addPages() {
+        setWindowTitle("New Wizard");
+        addPage(firstPage = new NewWizardProjectSelectionPage("first page"));
+        super.addPages();
+    }
+    
     @Override
     protected IWizardPage getFirstExtraPage() {
         return null;
@@ -26,10 +35,16 @@ public class NewWizardWizard extends TemplateBasedWizard {
         return null;
     }
 
+    public String getWizardType() {
+        return "wizard";
+    }
+    
     @Override
     protected List<IContentTemplate> getTemplates() {
-        // TODO Auto-generated method stub
-        return null;
+        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+        result.addAll(loadBuiltinTemplates(getWizardType()));
+        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
+        return result;
     }
 
 }

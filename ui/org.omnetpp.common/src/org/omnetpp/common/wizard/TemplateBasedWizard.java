@@ -124,7 +124,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
             for (IConfigurationElement e : config) {
                 Assert.isTrue(e.getName().equals(PLUGIN_ELEMENT));
                 final String pluginName = e.getAttribute(PLUGINID_ATT);
-                final String folderName = StringUtils.defaultIfEmpty(e.getAttribute(FOLDER_ATT), "templates");
+                final String folderName = StringUtils.defaultIfEmpty(e.getAttribute(FOLDER_ATT), TEMPLATES_FOLDER_NAME);
                 ISafeRunnable runnable = new ISafeRunnable() {
                     public void run() throws Exception {
                         Bundle bundle = Platform.getBundle(pluginName);
@@ -183,7 +183,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         // check the "templates/" subdirectory of each OMNeT++ project
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         for (IProject project : ProjectUtils.getOmnetppProjects()) {
-            IFolder rootFolder = project.getFolder(new Path("templates"));
+            IFolder rootFolder = project.getFolder(new Path(TEMPLATES_FOLDER_NAME));
             if (rootFolder.exists()) {
                 try {
                     // each template is a folder which contains a "template.properties" file
