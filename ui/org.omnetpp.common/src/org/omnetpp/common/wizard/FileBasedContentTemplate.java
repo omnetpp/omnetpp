@@ -140,8 +140,11 @@ public class FileBasedContentTemplate extends ContentTemplate {
 
 		// note: image will be loaded lazily, in getImage()
 		setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), folder.getName()));
-		setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + folder.getFullPath()));
-		setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), folder.getProject().getName()));
+		String description = properties.getProperty(PROP_TEMPLATEDESCRIPTION);
+		String extraInfo = "Template contributed by project \"" + folder.getProject().getName() + "\"";
+        setDescription((StringUtils.isEmpty(description) ? "" : description+"<br><br>") + extraInfo);
+		String defaultCategory = "Wizards from project: " + folder.getProject().getName();
+        setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), defaultCategory));
 
 		init();
 	}
