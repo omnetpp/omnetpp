@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <label text="Select wizard dialogs you want the new wizard to appear in:"/>
+    <composite>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+        <button x:id="supportProject" text="New OMNeT++ Project..." x:style="CHECK"/>
+        <button x:id="supportSimulation" text="New Simulation..." x:style="CHECK"/>
+        <button x:id="supportSimplemodule" text="New Simple Module..." x:style="CHECK"/>
+        <button x:id="supportCompoundmodule" text="New Compound Module..." x:style="CHECK"/>
+        <button x:id="supportNetwork" text="New Network..." x:style="CHECK"/>
+        <button x:id="supportNedfile" text="New NED File..." x:style="CHECK"/>
+        <button x:id="supportMsgfile" text="New MSG File..." x:style="CHECK"/>
+        <button x:id="supportInifile" text="New INI File..." x:style="CHECK"/>
+      </x:children>
+    </composite>
+
+  </x:children>
+</xswt>

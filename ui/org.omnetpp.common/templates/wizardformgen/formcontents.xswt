@@ -26,7 +26,7 @@
     </label>
     -->
 
-    <label text="Enter variables (comma-separated list, e.g. &quot;name, nodes%, connect?&quot;):" x:style="WRAP">
+    <label text="Enter variables (comma-separated list):" x:style="WRAP">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
 
