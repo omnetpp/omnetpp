@@ -87,6 +87,8 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.ui.editors.wizards.UntitledTextFileWizard");//$NON-NLS-1$
+		// wizard wizard
+		layout.addNewWizardShortcut("org.omnetpp.common.wizard.newwizardwizard"); //$NON-NLS-1$
 	}
 
 }

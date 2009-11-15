@@ -8,6 +8,15 @@
             name="OMNeT++"
             id="org.omnetpp.wizards">
       </category>
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.common.wizardwizard.NewWizardWizard"
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
+            icon="icons/obj16/NewWizard.png"
+            id="org.omnetpp.common.wizard.newwizardwizard"
+            name="Wizard"
+            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.exportWizards">
