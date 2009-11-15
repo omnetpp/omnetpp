@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+
+    <group text="Message Type">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" x:numColumns="2"/>
+      <x:children>
+        <label x:text="Message class name:"/>
+        <text x:id="msgTypeName" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+          <setFocus/>
+        </text>
+        <label x:text="Object type:"/>
+        <combo x:id="msgKeyword">
+          <add x:p0="class"/>
+          <add x:p0="message"/>
+          <add x:p0="packet"/>
+        </combo>
+      </x:children>
+    </group>
+
+    <group text="Initial Content">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" x:numColumns="1"/>
+       <x:children>
+         <button x:id="doBasic" text="&amp;Basic sample message class" x:style="RADIO"/>
+         <button x:id="doSubclassing" text="Message that &amp;subclasses from a message defined in another .msg file" x:style="RADIO"/>
+         <button x:id="doUseCppType" text="Message class that uses &amp;data types defined in C++" x:style="RADIO"/>
+         <button x:id="doCustomize" text="Message class that can be c&amp;ustomized in C++" x:style="RADIO"/>
+       </x:children>
+    </group>
+
+  </x:children>
+</xswt>

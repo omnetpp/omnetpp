@@ -1,5 +1,8 @@
 package org.omnetpp.common.wizard;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -66,6 +69,14 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
         super.addPages();
     }
 
+    @Override
+    protected List<IContentTemplate> getTemplates() {
+        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+        result.addAll(loadBuiltinTemplates(getWizardType()));
+        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
+        return result;
+    }
+    
     @Override
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);

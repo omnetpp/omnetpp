@@ -1,8 +1,6 @@
 package org.omnetpp.inifile.editor.wizards;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -23,8 +21,6 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
  * 
  * @author Andras
  */
-//XXX very similar to AbstractNedFileWizard...
-//FIXME do not overwrite existing file!!!
 public class NewInifileWizard extends TemplateBasedFileWizard {
 
     public NewInifileWizard() {
@@ -60,14 +56,6 @@ public class NewInifileWizard extends TemplateBasedFileWizard {
         context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
         
         return context;
-    }
-
-    @Override
-    protected List<IContentTemplate> getTemplates() {
-        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        result.addAll(loadBuiltinTemplates(getWizardType()));
-        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
-        return result;
     }
 
 }

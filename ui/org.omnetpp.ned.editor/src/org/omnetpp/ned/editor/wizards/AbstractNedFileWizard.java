@@ -1,8 +1,6 @@
 package org.omnetpp.ned.editor.wizards;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -54,14 +52,6 @@ public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
         context.getVariables().put("nedTypeName", nedTypeName);
         
         return context;
-    }
-
-    @Override
-    protected List<IContentTemplate> getTemplates() {
-        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        result.addAll(loadBuiltinTemplates(getWizardType()));
-        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
-        return result;
     }
 
 }
