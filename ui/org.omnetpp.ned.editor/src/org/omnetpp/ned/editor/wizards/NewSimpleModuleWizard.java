@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.wizards;
 
 
 /**
- * "New NED file" wizard
+ * "New Simple Module" wizard
  * 
  * @author Andras
  */
@@ -17,6 +17,7 @@ public class NewSimpleModuleWizard extends AbstractNedFileWizard {
         super.addPages();
         setWindowTitle("New Simple Module");
         getFirstPage().setTitle("New Simple Module");
+        getFirstPage().setDescription("Choose NED file (generated C++ header and source files will be named similarly)");
     }
     
 }

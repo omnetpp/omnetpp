@@ -1,12 +1,13 @@
-<@setoutput file=newFileName?default("")/>
+<#assign hFileName=newFileName?default("")?replace("\\.[a-z]*$",".h", "ri")>
+<@setoutput file=hFileName/>
 ${bannerComment}
 
-#ifndef ${GUARD}
-#define ${GUARD}
+#ifndef __${PROJECTNAME}_${nedTypeName?upper_case}_H_
+#define __${PROJECTNAME}_${nedTypeName?upper_case}_H_
 
 #include <omnetpp.h>
 
-<#if namespace!="">namespace ${namespace} {</#if>
+<#if namespaceName!="">namespace ${namespaceName} {</#if>
 
 /**
  * TODO - Generated class
@@ -18,7 +19,7 @@ class ${nedTypeName} : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-<#if namespace!="">} //namespace</#if>
+<#if namespaceName!="">} //namespace</#if>
 
 #endif
 

@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.wizards;
 
 
 /**
- * "New NED file" wizard
+ * "New Compound Module" wizard
  * 
  * @author Andras
  */

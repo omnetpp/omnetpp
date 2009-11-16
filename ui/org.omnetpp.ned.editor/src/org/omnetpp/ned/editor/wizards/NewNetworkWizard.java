@@ -1,9 +1,8 @@
 package org.omnetpp.ned.editor.wizards;
 
 
-
 /**
- * "New NED file" wizard
+ * "New Network" wizard
  * 
  * @author Andras
  */

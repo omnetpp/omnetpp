@@ -1,9 +1,11 @@
-<@setoutput file=newFileName?default("")/>
+<#assign hFileName=newFileName?default("")?replace("\\.[a-z]*$",".h", "ri")>
+<#assign ccFileName=newFileName?default("")?replace("\\.[a-z]*$",".cc", "ri")>
+<@setoutput file=ccFileName/>
 ${bannerComment}
 
-#include "${nedTypeName}.h"
+#include "${hFileName}"
 
-<#if namespace!="">namespace ${namespace} {</#if>
+<#if namespaceName!="">namespace ${namespaceName} {</#if>
 
 Define_Module(${nedTypeName});
 
@@ -17,5 +19,5 @@ void ${nedTypeName}::handleMessage(cMessage *msg)
     // TODO - Generated method body
 }
 
-<#if namespace!="">} //namespace</#if>
+<#if namespaceName!="">} //namespace</#if>
 
