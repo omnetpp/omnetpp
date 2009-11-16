@@ -203,15 +203,23 @@ public class TemplateSelectionPage extends WizardPage {
         }                
         treeViewer.setInput(root);
         
-        if (!templates.isEmpty())
-            treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(templates.get(0))));
+        if (!templates.isEmpty()) {
+            // preselect the (first) template marked as default
+            IContentTemplate defaultTemplate = null;
+            for (IContentTemplate template : templates)
+                if (template.getIsDefault()) {defaultTemplate = template; break; }
+            if (defaultTemplate == null && !templates.isEmpty())
+                defaultTemplate = templates.get(0);
+
+            treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(defaultTemplate)));
+        }
 
         selectionChanged(); // update page state
     }
 
     public IContentTemplate getSelectedTemplate() {
         Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-        element = element == null ? null : ((GenericTreeNode)element).getPayload();
+        element = (element == null) ? null : ((GenericTreeNode)element).getPayload();
         return (element instanceof IContentTemplate) ? (IContentTemplate)element : null;
     }
 }

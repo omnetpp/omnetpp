@@ -39,7 +39,7 @@ public interface IContentTemplate {
      * the template to the top level of the tree.
      */
     String getCategory();
-
+    
     /**
 	 * The icon that appears with the name in the wizard's 
 	 * template selection page.
@@ -52,6 +52,13 @@ public interface IContentTemplate {
      * "simplemodule", "compoundmodule", "network", "inifile", "wizard" etc.
      */
     Set<String> getSupportedWizardTypes();
+
+    /**
+     * Return true if this is the default template for the supported wizard types.
+     * The default template gets applied if the user clicks 'Finish' before
+     * even the template selection page.
+     */
+    boolean getIsDefault();
 
     /**
      * Creates an initial context with the given resource, and some initial variables set.

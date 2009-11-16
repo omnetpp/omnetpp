@@ -58,6 +58,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     private String description;
     private String category;
     private Image image;
+    private boolean isDefault;
 
     // we need this ClassLoader for the Class.forName() calls in for both FreeMarker and XSWT.
     // Without it, templates (BeanWrapper) and XSWT would only be able to access classes 
@@ -115,6 +116,14 @@ public abstract class ContentTemplate implements IContentTemplate {
 
     public void setImage(Image image) {
     	this.image = image;
+    }
+
+    public boolean getIsDefault() {
+        return isDefault;
+    }
+    
+    public void setIsDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
     
     public CreationContext createContext(IContainer folder, IWizard wizard) {

@@ -56,6 +56,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	public static final String PROP_TEMPLATEDESCRIPTION = "templateDescription"; // template description
 	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
 	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
+	public static final String PROP_TEMPLATEISDEFAULT = "templateIsDefault"; // template is the default one or not
 	public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of files NOT top copy into dest folder; basic glob patterns accepted
 	public static final String PROP_VERBATIMFILES = "verbatimFiles"; // list of files to copy verbatim, even if they would be ignored otherwise; basic glob patterns accepted
 
@@ -121,6 +122,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
         String templateSource = (bundleOfTemplate != null) ? bundleOfTemplate.getSymbolicName() : templateUrl.toString(); 
         setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + templateSource));
         setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), null));
+        setIsDefault("true".equals(properties.getProperty(PROP_TEMPLATEISDEFAULT)));
 
         // other initializations
         init();

@@ -326,22 +326,15 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard /
     	// variables, depending on the page the user pressed Finish on
     	IWizardPage finishingPage = getContainer().getCurrentPage();
     	final IContainer folder = getFolder();
-    	
-    	// if we are before the template selection page, we'll use no template at all, otherwise we'll use the selected one
-    	final IContentTemplate template;
-        if (ArrayUtils.indexOf(getPages(),finishingPage) < ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
-    		template = null;
-    		context = null;
-    		templateCustomPages = new ICustomWizardPage[0];
-    	}
-    	else {
-        	template = templateSelectionPage.getSelectedTemplate();
-    	}
 
-    	// if we are on the template selection page, create a fresh context with the selected template
-    	if (finishingPage == templateSelectionPage) {
+        // use the selected template (if we are before the template selection page, this will be 
+        // the "default" template, i.e. the one with "templateIsDefault=true")
+        final IContentTemplate template = templateSelectionPage.getSelectedTemplate();
+
+    	// if we are on or before the template selection page, create a fresh context with the selected template
+    	if (ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
     		context = template!=null ? createContext(template, folder) : null;
-    		templateCustomPages = new ICustomWizardPage[0]; // no pages (yet)
+    		templateCustomPages = new ICustomWizardPage[0]; // no pages
     	}
     	
     	// sanity check
