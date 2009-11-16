@@ -28,6 +28,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.LicenseUtils;
@@ -354,10 +355,22 @@ public abstract class ContentTemplate implements IContentTemplate {
      * Called back when a file already exists. Should return true if the file 
      * can be overwritten (otherwise it will be skipped.)
      */
-    protected boolean shouldOverwriteExistingFile(IFile file, CreationContext context) {
-        IWizard wizard = context.getWizard();
-        Shell shell = (wizard instanceof IWizard) ? ((Wizard)wizard).getShell() : null;
-        return MessageDialog.openQuestion(shell, "Confirm", "File already exists, overwrite?\n" + file.getFullPath().toString());
+    protected boolean shouldOverwriteExistingFile(final IFile file, final CreationContext context) {
+        if (Display.getCurrent() != null) {
+            // we are in the UI thread -- ask.
+            IWizard wizard = context.getWizard();
+            Shell shell = (wizard instanceof IWizard) ? ((Wizard)wizard).getShell() : null;
+            return MessageDialog.openQuestion(shell, "Confirm", "File already exists, overwrite?\n" + file.getFullPath().toString());
+        }
+        else {
+            // we are in a background thread -- try in the UI thread
+            final boolean result[] = new boolean[1];
+            Display.getDefault().syncExec(new Runnable() {
+                public void run() {
+                    result[0] = shouldOverwriteExistingFile(file, context);
+                }});
+            return result[0];
+        }
     }
     
     /**
