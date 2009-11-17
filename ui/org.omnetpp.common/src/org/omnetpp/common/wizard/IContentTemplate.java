@@ -48,8 +48,8 @@ public interface IContentTemplate {
 
     /**
      * Returns the types of wizards where this content template can appear.
-     * Possible values are "project", "nedfile", "msgfile", "nedcomponent",
-     * "simplemodule", "compoundmodule", "network", "inifile", "wizard" etc.
+     * Possible values are "project", "nedfile", "msgfile", "simplemodule", 
+     * "compoundmodule", "network", "simulation", "inifile", "wizard" etc.
      */
     Set<String> getSupportedWizardTypes();
 

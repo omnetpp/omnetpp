@@ -50,7 +50,7 @@ import org.osgi.framework.Bundle;
  *
  * @author Andras
  */
-public abstract class TemplateBasedWizard extends Wizard implements INewWizard /*FIXME only subclasses should implement this!!! */ {
+public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public static final String TEMPLATES_FOLDER_NAME = "templates";
     
     public static final String CONTENTTEMPLATE_EXTENSION_ID = "org.omnetpp.common.wizard.contenttemplates";
@@ -58,6 +58,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard /
     public static final String PLUGINID_ATT = "pluginId";
     public static final String FOLDER_ATT = "folder";
 
+    private String wizardType;
     private TemplateSelectionPage templateSelectionPage;
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
     private IContentTemplate creatorOfCustomPages;
@@ -81,6 +82,14 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard /
     }
     
     public void init(IWorkbench workbench, IStructuredSelection selection) {
+    }
+
+    public String getWizardType() {
+        return wizardType;
+    }
+    
+    public void setWizardType(String wizardType) {
+        this.wizardType = wizardType;
     }
 
     /**
@@ -109,11 +118,19 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard /
     protected abstract IContainer getFolder();
 
     /**
-     * Return the templates to be shown on the Template Selection page. The set of templates 
-     * returned may depend on options the user chose on previous wizard pages (such as the 
-     * "With C++ Support" checkbox in the New OMNeT++ Project wizard.)
+     * Return the templates to be shown on the Template Selection page. This implementation
+     * returns the templates that match the wizards' type (see getWizardType()).
+     * Override this method to add more templates, or to introduce additional 
+     * filtering (i.e. by options the user selected on previous wizard pages, 
+     * such as the "With C++ Support" checkbox in the New OMNeT++ Project wizard).
      */
-    protected abstract List<IContentTemplate> getTemplates();
+    protected List<IContentTemplate> getTemplates() {
+        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+        result.addAll(loadBuiltinTemplates(getWizardType()));
+        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
+        //TODO define an ITemplateSource interface and a matching extension point
+        return result;
+    }
 
     /**
      * Loads built-in templates from all plug-ins registered via the
@@ -305,7 +322,9 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard /
      * put extra variables into the context (i.e. a file name).
      */
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
-        return selectedTemplate.createContext(folder, this);
+        CreationContext context = selectedTemplate.createContext(folder, this);
+        context.getVariables().put("wizardType", getWizardType());
+        return context;
     }
 
     private static ICustomWizardPage getNextEnabledCustomPage(ICustomWizardPage[] pages, int start, CreationContext context) {

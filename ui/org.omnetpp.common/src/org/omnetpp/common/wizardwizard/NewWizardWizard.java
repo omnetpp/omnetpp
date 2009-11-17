@@ -46,13 +46,5 @@ public class NewWizardWizard extends TemplateBasedWizard {
     public String getWizardType() {
         return "wizard";
     }
-    
-    @Override
-    protected List<IContentTemplate> getTemplates() {
-        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        result.addAll(loadBuiltinTemplates(getWizardType()));
-        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
-        return result;
-    }
 
 }

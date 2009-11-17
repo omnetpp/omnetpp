@@ -1,8 +1,5 @@
 package org.omnetpp.common.wizard;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -39,7 +36,6 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
     private IWorkbench workbench;
     private IStructuredSelection selection;
     private WizardNewFileCreationPage firstPage;
-    private String wizardType;
 
     public TemplateBasedFileWizard() {
     }
@@ -53,14 +49,6 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
         return firstPage;
     }
 
-    public String getWizardType() {
-        return wizardType;
-    }
-    
-    public void setWizardType(String wizardType) {
-        this.wizardType = wizardType;
-    }
-    
     @Override
     public void addPages() {
         firstPage = new WizardNewFileCreationPage("file selection page", selection);
@@ -70,17 +58,8 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
     }
 
     @Override
-    protected List<IContentTemplate> getTemplates() {
-        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        result.addAll(loadBuiltinTemplates(getWizardType()));
-        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
-        return result;
-    }
-    
-    @Override
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
-        context.getVariables().put("wizardType", getWizardType());
         context.getVariables().put("newFileName", firstPage.getFileName());
         return context;
     }
