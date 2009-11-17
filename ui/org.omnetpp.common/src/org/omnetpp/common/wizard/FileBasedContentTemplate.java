@@ -145,7 +145,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
 		String description = properties.getProperty(PROP_TEMPLATEDESCRIPTION);
 		String extraInfo = "Template contributed by project \"" + folder.getProject().getName() + "\"";
         setDescription((StringUtils.isEmpty(description) ? "" : description+"<br><br>") + extraInfo);
-		String defaultCategory = "Wizards from project: " + folder.getProject().getName();
+		String defaultCategory = "Wizards from project \"" + folder.getProject().getName() + "\"";
         setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), defaultCategory));
 
 		init();
