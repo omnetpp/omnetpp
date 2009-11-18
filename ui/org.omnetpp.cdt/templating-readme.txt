@@ -23,16 +23,18 @@ Template processing uses the FreeMarker library (http://freemarker.org), and
 all template syntax supported by FreeMarker can be used. Especially, variable
 references of the syntax ${varName} will be replaced with the variable value.
 
+The FreeMarker language also offers constructs that make it a full programming
+language: variable assigments, conditionals, loops, switch statement,
+functions, macros, expression evaluation, built-in operators, etc, as well
+as access to fields and methods of classes defined in Java. This means that
+any algorithm can be expressed in the FreeMarker language, and if that would
+not be enough, one can also pull in existing or custom-written Java libraries.
+
 The following variables are predefined:
+
   templateName          name of the template (see later)
   templateDescription   template description (see later)
   templateCategory      template category (see later)
-  rawProjectName        project name, "as is"
-  ProjectName           sanitized* project name with first letter capitalized
-  projectname           sanitized project name in all lowercase
-  PROJECTNAME           sanitized project name in all uppercase
-     * sanitization means making the name suitable as a C/C++ identifier name
-       (spaces, punctuation and other unfit chars replaced with underscore, etc.)
   date                  current date in yyyy-mm-dd format
   year                  year in yyyy format
   author                user name ("user.name" Java system property)
@@ -42,6 +44,16 @@ The following variables are predefined:
   templateFolderName    name of the folder in which the template files are
   templateFolderPath    workspace path of the folder in which the template files are
   templateProject       name of the project that defines the template
+
+The New OMNeT++ Project wizard also defines the following variables:
+
+  projectName, rawProjectName
+                        the project name, "as is"
+  ProjectName           sanitized* project name with first letter capitalized
+  projectname           sanitized project name in all lowercase
+  PROJECTNAME           sanitized project name in all uppercase
+     * sanitization means making the name suitable as a NED or C/C++ identifier
+       (spaces, punctuation and other unfit chars replaced with underscore, etc.)
 
 Other variables may come from custom template pages, see later.
 
@@ -67,18 +79,23 @@ Recognized property file keys:
   templateImage
                 Name of the icon that appears with the name in the wizard's
                 template selection page.
-  addProjectReference
-                True or false; defaults to true. If true, the template's project
-                will be added to the referenced projects list of the new project.
+  supportedWizardTypes
+                Comma-separated or JSON-syntax list of wizard types (e.g.
+                "nedfile", "simplemodule", "project", "inifile") that
+                this template supports. More about this later.
   ignoreResources
                 Comma-separated or JSON-syntax list of non-template files or
                 folders; those files won't get copied over to the new project.
-                Wildcards are NOT accepted. The template.properties file and
+                Wildcards are accepted. The template.properties file and
                 custom wizard page files automatically count as nontemplates,
                 so they don't have to be listed.
-  optionalFiles Comma-separated or JSON-syntax list of files that should be
-                suppressed (i.e. not created) if they would be empty after
-                template processing. Wildcards are NOT accepted.
+
+The "New OMNeT++ Project" wizard also recognizes the following options. These
+options can be overridden from custom wizard pages.
+
+  addProjectReference
+                True or false; defaults to true. If true, the template's project
+                will be added to the referenced projects list of the new project.
   sourceFolders
                 Comma-separated or JSON-syntax list of C++ source folders
                 to be created and configured. By default, none.
@@ -90,9 +107,8 @@ Recognized property file keys:
                 or a JSON-syntax map of strings; it sets opp_makemake options
                 for the given folders. There is no default.
 
-TODO: supportedWizardTypes; optionalFiles is removed!!!
-
-There are additinal options for adding custom pages into the wizard, see below.
+There are additinal options for adding custom pages into the wizard, as described
+in the next section.
 
 
 CUSTOM WIZARD PAGES
@@ -287,25 +303,47 @@ contribute to one or more of those wizard dialogs. The template author
 has to list the supported wizards in the supportedWizardTypes property file
 entry. Values are:
 
-   nedfile
    project
-   TODO
-   TODO
-   ...
+   simulation
+   nedfile
+   inifile
+   msgfile
+   simplemodule
+   compoundmodule
+   network
+   wizard
+
+A possible setting in the template.properties file is:
+supportedWizardTypes = project, simulation, nedfile, network
 
 In turn, the wizard will set the wizardType template variable when it executes,
-so template code can check (using <#if>) under which wizard it runs, and
+so template code can check under which wizard it runs (using <#if>..</#if>), and
 act accordingly.
 
 Specific wizard dialogs will also define extra variables for use in the
-templates. These variables are:
+templates, e.g. the wizard types that create a single file will put the
+newFileName variable into the context.
 
-  nedfile:
-    TODO
-    TODO
-  project:
-    TODO
-    TODO
+In the next sections we describe the individual wizard types.
+
+
+"project"
+
+Presented in the "New OMNeT++ Project" dialog. Extra variables:
+  nedPackageName
+  withCplusplusSupport
+
+"simulation"
+"nedfile"
+"inifile"
+"msgfile"
+"simplemodule"
+"compoundmodule"
+"network"
+
+"wizard"
+
+TODO show how to write templates that are suitable for more than one wizard.
 
 
 USING CUSTOM WIDGET CLASSES
