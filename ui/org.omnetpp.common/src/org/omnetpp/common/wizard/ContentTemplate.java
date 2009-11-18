@@ -303,7 +303,13 @@ public abstract class ContentTemplate implements IContentTemplate {
             if (!StringUtils.isBlank(contentToSave)) {
                 // save the file if not blank. Note: we do NOT delete the existing file with 
                 // the same name if contentToSave is blank; this is documented behavior.
-                IFile fileToSave = fileName.equals("") ? file : file.getParent().getFile(new Path(fileName));
+                IFile fileToSave = null;
+                if (fileName.equals(""))
+                    fileToSave = file; // main file
+                else if (fileName.endsWith("/"))
+                    fileToSave = file.getParent().getFile(new Path(fileName+file.getName())); // with main file's name, in a different directory
+                else
+                    fileToSave = file.getParent().getFile(new Path(fileName));
                 createVerbatimFile(fileToSave, new ByteArrayInputStream(contentToSave.getBytes()), context);
             }
         }

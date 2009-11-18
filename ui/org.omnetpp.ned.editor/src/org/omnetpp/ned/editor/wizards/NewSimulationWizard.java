@@ -6,8 +6,10 @@ import java.util.List;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -76,18 +78,21 @@ public class NewSimulationWizard extends TemplateBasedWizard {
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
         
-        context.getVariables().put("simulationFolderName", firstPage.getFileName());
+        String simulationFolderName = firstPage.getFileName();
+        IFolder simulationFolder = getFolder().getFolder(new Path(simulationFolderName));
+        
+        context.getVariables().put("simulationFolderName", simulationFolderName);
+
+        String simulationName = StringUtils.capitalize(StringUtils.makeValidIdentifier(simulationFolderName));
+        context.getVariables().put("simulationName", simulationName); // may be customized on further pages
 
         // NED-related stuff
-        IFile newFile = folder.getFile(new Path(getFirstPage().getFileName()));
-        String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
+        IFile someNedFile = simulationFolder.getFile(new Path("whatever.ned"));
+        String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(someNedFile); //FIXME getExpectedPackageFor() should rather take an IContainer...
         context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
 
-        String nedTypeName = StringUtils.capitalize(StringUtils.makeValidIdentifier(newFile.getFullPath().removeFileExtension().lastSegment()));
-        context.getVariables().put("nedTypeName", nedTypeName);
-
         // namespace
-        String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
+        String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(simulationFolder, INEDTypeResolver.NAMESPACE_PROPERTY);
         context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
 
         return context;
@@ -108,12 +113,23 @@ public class NewSimulationWizard extends TemplateBasedWizard {
 
         // offer user to open the files
         List<IFile> files = new ArrayList<IFile>();
-        for (IFile f : files)
-            if (f instanceof IFile)
-                files.add(f);
+        List<IFile> nedFiles = new ArrayList<IFile>();
+        try {
+            for (IResource resource : simulationFolder.members()) {
+                if (resource instanceof IFile) {
+                    files.add((IFile)resource);
+                    if ("ned".equals(resource.getFileExtension()))
+                        nedFiles.add((IFile)resource);
+                }
+            }
+        }
+        catch (CoreException e) {
+            CommonPlugin.logError(e);
+        }
         ListSelectionDialog dialog = new ListSelectionDialog(getShell(), files, 
                 new ArrayContentProvider(), new WorkbenchLabelProvider(), 
                 "Select files to open:");
+        dialog.setInitialElementSelections(nedFiles);
         if (dialog.open() == Window.OK) {
             for (Object o : dialog.getResult())
                 openFile((IFile)o);

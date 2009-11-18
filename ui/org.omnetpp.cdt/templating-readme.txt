@@ -640,9 +640,40 @@ TODO: optionalFiles removed! now all files, if they would be empty, are NOT save
  comments), or use FileUtils.writeTextFile() [note: it exists???]. If you want to delete an existing file,
  here's how you do it: FileUtils.deleteFile()
 
-TODO document <@setoutput file=newFileName?default("")/>   (ures: eredeti file; multiple setoutputs: concatenate)
-TODO document FileChooser and ExternalFileChooser: custom widget: file selector (workspace / external file)
+TODO document <@setoutput file=.../>
+   redirects output to the given file. The filename can contain slashes too, i.e.
+   one can write files in a different folder. If the folder does not exist, it will
+   be created.
+
+   If filename is empty, the directive restores output to the original file name (the template's name).
+   This also works if a folder name is given and only the file name is missing
+   (<@setoutput file="src/">): then it will write the file with the original name
+   but into the specified folder.
+
+   If there are multiple setoutput's with the same file name within a template,
+   the content will be concatenated. Concatenation only works within one template;
+   if you have multiple templates writing into the same file, they will overwrite
+   each other's content, and it is undefined which one will win.
+
+   Empty and blank files (ie. those containing only white space) will not be created,
+   i.e. processing will skip writing it without any question, warning or error.
+   This allows you to easily create conditional files. This also means that you
+   cannot create empty files this way. However, this "limitation" is easy to overcome
+   as most file formats (ned, c++, ini, xml, etc) have a comment syntax, so you
+   can just write a file that contains only a comment ("// file intentionally left blank").
+   Alternatively, you can create an empty file using the FileUtils Java utility class
+   (<@do FileUtils.createTextFile("empty.txt", "")!/>). Note: although blank files
+   are not created, the template engine will not delete an existing file that
+   happens to be already there with the same name.
+
+   Typical usage: <@setoutput file=fileName?default("")/>, which means that if
+   the fileName variable undefined (absent), use "" as file name, i.e. save to
+   the original file name.
+
+TODO document FileChooser and ExternalFileChooser, NedChooser: custom widget: file selector (workspace / external file)
 TODO NED type chooser, project chooser
+
+TODO setoutput path="..."
 
 TODO mention http://www.jsonlint.com/
 
