@@ -216,22 +216,25 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
     }
 
     @Override
+    public boolean performFinish() {
+        // Note: this is a small hack to enforce that the nested CC wizard gets invoked 
+        // first (to create the project), and then us, regardless on which page the user 
+        // clicked Finish. This code heavily relies on the particular implementation of 
+        // WizardDialog.finishPressed(), and may need to be revised if that changes.
+        if (withCplusplusSupport() && getContainer().getCurrentPage().getWizard() == this) {
+            getContainer().showPage(nestedWizard.getStartingPage());
+            return nestedWizard.performFinish();
+        }
+        return super.performFinish();
+    }
+    
+    @Override
     protected boolean createNewProject() {
         if (!withCplusplusSupport()) {
             // just delegate to the C++-less New OMNeT++ Project wizard
             return super.createNewProject();
         }
         else {
-            //TODO: only if we are NOT on a CDT page already! if so, it gets invoked automatically?
-            // need to invoke the CDT wizard
-            // show its page manually, and invoke wizard
-            if (getContainer().getCurrentPage().getWizard() == this) {
-                getContainer().showPage(nestedWizard.getStartingPage());
-                boolean ok = nestedWizard.performFinish();
-                if (!ok)
-                    return false;
-            }
-
             // add omnetpp nature, initial buildspec, etc.
             IProject project = getProjectCreationPage().getProjectHandle();
             try {
