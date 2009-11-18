@@ -1,5 +1,6 @@
 package org.omnetpp.cdt.wizard;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.eclipse.cdt.ui.wizards.CDTCommonProjectWizard;
 import org.eclipse.cdt.ui.wizards.CDTMainWizardPage;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -36,6 +38,7 @@ import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
+import org.osgi.framework.Bundle;
 
 /**
  * "New OMNeT++ Project" wizard, with C++ support. After the template pages 
@@ -244,5 +247,15 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             }
             return true;
         }
+    }
+    
+    @Override
+    protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
+        return new FileBasedProjectTemplate(folder);
+    }
+    
+    @Override
+    protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
+        return new FileBasedProjectTemplate(templateUrl, bundleOfTemplate);
     }
 }

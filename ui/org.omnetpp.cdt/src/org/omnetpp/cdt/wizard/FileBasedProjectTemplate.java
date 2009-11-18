@@ -14,6 +14,7 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.FileBasedContentTemplate;
 import org.omnetpp.common.wizard.XSWTDataBinding;
+import org.osgi.framework.Bundle;
 
 /**
  * Content template specialized for OMNeT++ projects
@@ -26,13 +27,16 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
     public static final String PROP_MAKEMAKEOPTIONS = "makemakeOptions"; // makemake options, as "folder1:options1,folder2:options2,..."
     
-
     public FileBasedProjectTemplate(IFolder folder) throws CoreException {
         super(folder);
     }
 
     public FileBasedProjectTemplate(Plugin plugin, String templateFolder) throws CoreException {
         super(plugin, templateFolder);
+    }
+
+    public FileBasedProjectTemplate(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
+        super(templateUrl, bundleOfTemplate);
     }
 
     public FileBasedProjectTemplate(URL templateUrl) throws CoreException {

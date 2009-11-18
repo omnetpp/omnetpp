@@ -84,6 +84,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  */
 //XXX is "element" argument to NEDBeginModelChangeEvent useful...? we don't use it in editors/views
 //XXX remove "source" from plain NEDModelChangeEvent too (and turn "anything might have changed" event into a separate class)
+@SuppressWarnings("restriction")
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private boolean debug = true;
@@ -1212,7 +1213,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         Debug.println("event type: "+event.getType());
     }
 
-    @SuppressWarnings("restriction")
 	public static void printDelta(IResourceDelta delta) {
     	// LEGEND: [+] added, [-] removed, [*] changed, [>] and [<] phantom added/removed;
     	// then: {CONTENT, MOVED_FROM, MOVED_TO, OPEN, TYPE, SYNC, MARKERS, REPLACED, DESCRIPTION, ENCODING}
