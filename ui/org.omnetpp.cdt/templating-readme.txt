@@ -1,11 +1,54 @@
+MOTIVATION
+
 TODO: mire szolgal; kinek kellene ilyet csinalni es mi celbol...
 
+The OMNeT++ IDE offers several wizards via the File|New menu: New OMNeT++
+Project, New Simple Module, New Compound Module, New Ini File, and so on.
+By default these wizards already offer useful functionality to the user,
+but using the information in this chapter, it is possible to add to them
+new UI elements and content templates that are specific to simulation models.
+For example, one can create a New INET Ad-Hoc Network wizard, a New MiXiM
+Simulation Wizard, an Import INET Network From CSV File wizard, a
+New MiXiM Radio Model wizard, and so on.
+
+These wizards can be prepared with low effort and without any Java or C++
+programming, and can be distributed with the corresponding model framework
+(i.e. INET or MiXiM). When end users import the model framework project
+into the IDE, the wizards get automatically contributed to the corresponding
+wizard dialogs; the end user does not need to install them or otherwise do
+anything to deploy the wizards.
+
+When you are writing a model framework which will be available for the
+general public, wizards are a great way to teach your users about your
+simulation model. While documentation and example simulations are somewhat
+passive ways of educating your users, wizards are more interactive and
+encourage users to experiment with the model and explore its capabilities.
+The right set of capable wizards can give a jump start to users, and
+emphasizes learning by doing.
 
 
-Wizard templates are read from the templates/ folder of OMNeT++ projects.
+OVERVIEW
 
-In that folder, every subfolder that contains a template.properties file is
-treated as a content template. (Other folders are ignored.)
+Custom wizards are read from the templates/ folder of OMNeT++ projects.
+
+Wizards are implemented by mixing a templating engine (for generating
+the output files) and a GUI description language (for custom wizard pages).
+Because of the use of a templating engine, we'll also refer to custom
+wizards are "content templates".
+
+In the templates/ folder, every subfolder that contains a template.properties
+file is treated as a content template. (Other folders are ignored.) Every
+content template folder may contain several types of files: the
+template.properties file contains general information about the wizard;
+*.ftl files are template files that will be copied (without the .ftl extension)
+into the target folder after template variable substitution; *.xswt files
+describe custom wizard pages. More rarely used files are *.fti (template
+include) files included by *.ftl files; and *.jar files that can be used
+to extend the wizard's functionality with dynamically loaded Java code.
+All other files are regarded as files that have to be copied into the
+target folder verbatim when the wizard runs. The wizard folder may contain
+subdirectories which may also contain files of the above type (except
+template.properties of course).
 
 When the template is used, the contents of the template folder (and subfolders)
 will be copied over into the new project preserving the directory structure,
@@ -15,6 +58,18 @@ with the exception of template.properties and other known special-purpose files.
 Files with the ".ftl" extension are regarded as templates, and they will undergo
 template processing (and the ".ftl" extension gets chopped off) before copying.
 Other files are copied verbatim.
+
+When the wizard is being used, a pool of variables is kept by the wizard dialog.
+These variables are the ones which will be eventually substituted into the *.ftl
+files (${varname} syntax). These variables are initialized from the key=value
+lines in the template.propeties files; they can get displayed and/or edited
+on custom wizard pages; and eventually they get substituted into *.ftl files.
+Some variables have special meaning and are interpreted by the wizard dialog
+(e.g. the nedSrcFolders variable determines which folders get denoted as
+NED Source Folders by the New OMNeT++ Project wizard). Variables can be used
+to generate output file names, can be used as input file names, and can serve
+as input and working variables for arbitrarily complex algorithms programmed
+in the template (*.ftl) files.
 
 
 TEMPLATE PROCESSING
