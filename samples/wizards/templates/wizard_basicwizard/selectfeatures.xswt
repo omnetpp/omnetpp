@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <label text="Select the features the new wizard should have:"/>
+    <composite>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+        <button x:id="wantIntroPage" text="Intro page" x:style="CHECK"/>
+        <button x:id="wantBasicForm" text="Basic data entry form" x:style="CHECK"/>
+      </x:children>
+    </composite>
+
+  </x:children>
+</xswt>
