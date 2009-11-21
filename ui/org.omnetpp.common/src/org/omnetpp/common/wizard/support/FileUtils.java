@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
+import org.omnetpp.common.util.ProcessUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -481,21 +482,6 @@ public class FileUtils {
             throw new RuntimeException("removeExternalDirectory:" + fileName + " is not a directory");
         if (file.exists() && !file.delete())
             throw new RuntimeException("removeExternalDirectory: directory " + fileName + " could not be deleted");
-    }
-
-    /**
-     * Run an external program, and capture its output. The output is returned in a map:
-     *   ret["stdout"] is standard output,
-     *   ret["stderr"] is standard error,
-     *   ret["exitcode"] is exit code.
-     * 
-     * @param prog  program name
-     * @param args  command-line arguments
-     * @return output of the program in a map
-     */
-    public static Map<String,Object> runProgram(String prog, String[] args) {
-        //TODO FIXME XXX
-        return null;
     }
 
 }

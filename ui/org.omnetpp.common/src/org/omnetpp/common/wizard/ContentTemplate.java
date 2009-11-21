@@ -36,6 +36,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.support.FileUtils;
 import org.omnetpp.common.wizard.support.IDEUtils;
 import org.omnetpp.common.wizard.support.LangUtils;
+import org.omnetpp.common.wizard.support.ProcessUtils;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
@@ -328,6 +329,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         context.getVariables().put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
         context.getVariables().put("IDEUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(IDEUtils.class.getName()));
         context.getVariables().put("LangUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(LangUtils.class.getName()));
+        context.getVariables().put("ProcessUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(ProcessUtils.class.getName()));
 
         context.getVariables().put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
     }

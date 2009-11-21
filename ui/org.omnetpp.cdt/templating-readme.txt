@@ -715,6 +715,8 @@ TODO document: supportedWizardTypes = project, simulation, nedfile, network
 
 TODO document new FileUtils methods (create/delete file/dir)
 
+TODO document ProcessUtils
+
 TODO jar files get loaded from the normal folder, and from the project's "plugins" folder. Jar files are not copied over.
 
 TODO "New NED File" wizard milyen valtozokat definial alapbol!
