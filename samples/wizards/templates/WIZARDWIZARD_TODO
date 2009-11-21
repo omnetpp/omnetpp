@@ -1,0 +1,6 @@
+- Complex data entry (tables, etc)
+- Branching (conditional pages)
+- Generate a file (or files)
+- Perform basic computations for the output file
+- Invoke code from a Java JAR file you provided
+- Run an external command-line program, and use its output
