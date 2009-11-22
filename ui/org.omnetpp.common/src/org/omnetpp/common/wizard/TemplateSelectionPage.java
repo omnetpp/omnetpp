@@ -106,7 +106,7 @@ public class TemplateSelectionPage extends WizardPage {
 
         // create tree and label
         Label label = new Label(composite, SWT.NONE);
-        label.setText("Select template:");
+        label.setText("&Select template:");
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         treeViewer.setLabelProvider(new LabelProvider() {
@@ -143,7 +143,7 @@ public class TemplateSelectionPage extends WizardPage {
                 return null;
             }
         });
-        
+
         treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                 TemplateSelectionPage.this.selectionChanged();
@@ -168,7 +168,7 @@ public class TemplateSelectionPage extends WizardPage {
     protected void selectionChanged() {
         setPageComplete(getSelectedTemplate()!=null);
     }
-    
+
     protected void addTemplateByURL() {
         if (templateAddedListener == null)
             return;

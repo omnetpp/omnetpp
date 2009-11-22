@@ -3,7 +3,6 @@ package org.omnetpp.common.wizard.support;
 import java.io.IOException;
 
 import org.omnetpp.common.util.ProcessUtils.ExecException;
-import org.omnetpp.common.util.ProcessUtils.ProcessResult;
 import org.omnetpp.common.util.ProcessUtils.TimeoutException;
 
 /**
@@ -13,21 +12,39 @@ import org.omnetpp.common.util.ProcessUtils.TimeoutException;
  * 
  * @author Andras
  */
+//XXX Freemarker apparently cannot cope with naked public data members of original ProcessResult -- check!
 public class ProcessUtils {
+    public static class ProcessResult {
+        private String standardOutput;
+        private String standardError;
+        private int exitValue;
+
+        public String stdout() {return standardOutput;}
+        public String stderr() {return standardError;}
+        public int exitCode()  {return exitValue;}
+
+        public ProcessResult(org.omnetpp.common.util.ProcessUtils.ProcessResult r) {
+            this.standardOutput = r.standardOutput;
+            this.standardError = r.standardError;
+            this.exitValue = r.exitValue;
+        }
+    }
+    
+    
     public static ProcessResult exec(String command) throws IOException, TimeoutException, ExecException {
-        return org.omnetpp.common.util.ProcessUtils.exec(command);
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command));
     }
 
     public static ProcessResult exec(String command, String[] arguments) throws IOException, TimeoutException, ExecException {
-        return org.omnetpp.common.util.ProcessUtils.exec(command, arguments);
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments));
     }
 
     public static ProcessResult exec(String command, String[] arguments, String workingDirectory) throws IOException, TimeoutException, ExecException {
-        return org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory);
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory));
     }
 
     public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput) throws IOException, TimeoutException, ExecException {
-        return org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, 0);
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, 0));
     }
 
     /**
@@ -36,7 +53,7 @@ public class ProcessUtils {
      * The timeout value 0 means wait infinitely long to finish the process.
      */
     public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout) throws IOException, TimeoutException, ExecException {
-        return org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, timeout);
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, timeout));
     }
 
     public static String lookupExecutable(String name) {
