@@ -12,9 +12,11 @@
   <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
 
-    <label text="FIXME TODO" x:style="WRAP">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </label>
+    <label text="Select folder:"/>
+
+    <folderSelectionTree x:id="folderToCopy" x:style="BORDER|V_SCROLL">
+      <layoutData x:class="GridData" heightHint="200" horizontalAlignment="FILL" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true"/>
+    </folderSelectionTree>
 
   </x:children>
 </xswt>
