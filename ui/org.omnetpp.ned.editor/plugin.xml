@@ -130,6 +130,13 @@
                  wizardId="org.omnetpp.ned.editor.wizard.new.simulation">
               <enablement></enablement>
            </commonWizard>
+           <commonWizard
+                 associatedExtensionId="org.omnetpp.navigator.content"
+                 menuGroupId="org.eclipse.cdt.ui"
+                 type="new"
+                 wizardId="org.omnetpp.common.wizard.newwizardwizard">
+              <enablement></enablement>
+           </commonWizard>
    </extension>
    
 

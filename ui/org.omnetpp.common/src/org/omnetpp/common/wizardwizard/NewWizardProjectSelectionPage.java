@@ -35,11 +35,13 @@ import org.omnetpp.common.wizard.TemplateBasedWizard;
 public class NewWizardProjectSelectionPage extends WizardPage {
     private TableViewer table;
     private Text text;
+    private IStructuredSelection selection;
 
-    public NewWizardProjectSelectionPage(String pageName) {
+    public NewWizardProjectSelectionPage(String pageName, IStructuredSelection selection) {
         super(pageName);
         setTitle("New Wizard");
         setDescription("Contribute a new wizard into one of the New... dialogs");
+        this.selection = selection;
     }
 
     public void createControl(Composite parent) {
@@ -79,6 +81,7 @@ public class NewWizardProjectSelectionPage extends WizardPage {
                 textModified();
             }});
         setControl(composite);
+        table.setSelection(selection);
     }
 
     protected void textModified() {
