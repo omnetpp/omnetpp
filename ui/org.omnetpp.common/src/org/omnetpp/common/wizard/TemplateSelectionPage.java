@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -110,6 +111,7 @@ public class TemplateSelectionPage extends WizardPage {
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)treeViewer.getTree().getLayoutData()).heightHint = 200;
+        
         treeViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
@@ -128,7 +130,21 @@ public class TemplateSelectionPage extends WizardPage {
                 }
             }
         });
+        
         treeViewer.setContentProvider(new GenericTreeContentProvider());
+
+        // set ordering: default templates first, then non-default templates, then template categories
+        treeViewer.setComparator(new ViewerComparator() {
+            @Override
+            public int category(Object element) {
+                element = ((GenericTreeNode)element).getPayload();
+                if (element instanceof IContentTemplate)
+                    return ((IContentTemplate) element).getIsDefault() ? 1 : 2;
+                if (element instanceof String)  // i.e. category name
+                    return 3;
+                return 4; // cannot happen
+            }
+        });
 
         // show the descriptions in a tooltip
         new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
