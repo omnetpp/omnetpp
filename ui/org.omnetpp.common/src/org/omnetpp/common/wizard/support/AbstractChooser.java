@@ -74,6 +74,8 @@ public abstract class AbstractChooser extends Composite implements IWidgetAdapte
                 textModified();
             }
         });
+        
+        textModified();  // update Preview button state
 	}
 
     protected void preview() {
@@ -140,6 +142,7 @@ public abstract class AbstractChooser extends Composite implements IWidgetAdapte
 	 */
 	public void setValue(Object value) {
 	    setText(value.toString());
+        textModified();
 	}
 
 }

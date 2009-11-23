@@ -41,14 +41,19 @@ public class FileChooser extends AbstractChooser {
         dialog.setAllowMultiple(false);
 
         // select current file in the dialog (if does not exist, choose first ancestor that does)
-        String fileName = getTextControl().getText();
-        IResource initialSelection = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileName));
-        if (!initialSelection.exists())
-            initialSelection = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(fileName)); // maybe it's a folder
-        while (!initialSelection.exists())
-            initialSelection = initialSelection.getParent();
-        dialog.setInitialSelection(initialSelection);
-
+        String fileName = getTextControl().getText().trim();
+        if (!fileName.equals("")) {
+            try {
+                IResource initialSelection = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileName));
+                if (!initialSelection.exists())
+                    initialSelection = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(fileName)); // maybe it's a folder
+                while (!initialSelection.exists())
+                    initialSelection = initialSelection.getParent();
+                dialog.setInitialSelection(initialSelection);
+            } 
+            catch (IllegalArgumentException e) { } // on bad file name syntax
+        }
+        
         if (dialog.open() == IDialogConstants.OK_ID) {
             Object[] result = dialog.getResult();
             if (result.length > 0)
@@ -59,9 +64,16 @@ public class FileChooser extends AbstractChooser {
 
     @Override
     protected boolean itemExists() {
-        String fileName = getTextControl().getText();
-        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileName));
-        return file.exists();
+        String fileName = getTextControl().getText().trim();
+        if (fileName.equals("")) 
+            return false;
+        try {
+            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileName));
+            return file.exists();
+        }
+        catch (IllegalArgumentException e) {
+            return false; // on bad file name syntax
+        } 
     }
 
     @Override

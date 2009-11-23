@@ -28,13 +28,20 @@ public class ExternalFileChooser extends AbstractChooser {
     @Override
     protected String browse() {
         FileDialog dialog = new FileDialog(getShell());
-        dialog.setFileName(getTextControl().getText());
+        File file = new File(getTextControl().getText().trim());
+        if (file.isDirectory()) {
+            dialog.setFilterPath(file.getPath());
+            dialog.setFileName("");
+        } else {
+            dialog.setFilterPath(file.getParent());
+            dialog.setFileName(file.getName());
+        }
         return dialog.open();
     }
 
     @Override
     protected boolean itemExists() {
-        String fileName = getTextControl().getText();
+        String fileName = getTextControl().getText().trim();
         return new File(fileName).exists();
     }
 
