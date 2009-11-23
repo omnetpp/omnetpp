@@ -46,13 +46,13 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 		this.condition = condition;
 	}
 
-	public XSWTWizardPage(ContentTemplate creatorTemplate, String name, InputStream xswtInput, String fileNameInfo, String condition) throws IOException {
+	public XSWTWizardPage(String name, ContentTemplate creatorTemplate, String condition, InputStream xswtInputStream, String fileNameInfo) throws IOException {
 	    super(name);
-	    if (xswtInput == null)
+	    if (xswtInputStream == null)
 	        throw new IllegalArgumentException("InputStream is null -- file may not exist: " + fileNameInfo);
 	    this.creatorTemplate = creatorTemplate;
 	    this.xswtFileNameInfo = fileNameInfo;
-        this.xswtContent = FileUtils.readTextFile(xswtInput);
+        this.xswtContent = FileUtils.readTextFile(xswtInputStream);
 	    this.condition = condition;
 	}
 

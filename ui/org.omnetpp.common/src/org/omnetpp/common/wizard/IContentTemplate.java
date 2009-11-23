@@ -82,4 +82,10 @@ public interface IContentTemplate {
      * access the GUI (e.g. custom wizard pages).
      */
     void performFinish(CreationContext context) throws CoreException;
+    
+    /**
+     * Copies wizard files verbatim into the given folder, keeping subfolder tree 
+     * structure. This is useful for implementing the "Clone Built-in Wizard" wizard.
+     */
+    void cloneTo(CreationContext context) throws CoreException;
 }

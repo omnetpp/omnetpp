@@ -34,6 +34,7 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.ReflectionUtils;
 import org.osgi.framework.Bundle;
 
 import freemarker.cache.MultiTemplateLoader;
@@ -348,8 +349,8 @@ public class FileBasedContentTemplate extends ContentTemplate {
     	// collect page IDs from property file ("page.1", "page.2" etc keys)
     	int[] pageIDs = new int[0];
     	for (Object key : properties.keySet())
-    		if (((String)key).matches("page\\.[0-9]+\\.file"))
-    			pageIDs = ArrayUtils.add(pageIDs, Integer.parseInt(((String)key).replaceFirst("^page\\.([0-9]+)\\.file$", "$1")));
+    		if (((String)key).matches("page\\.[0-9]+\\.(file|class)"))
+    			pageIDs = ArrayUtils.add(pageIDs, Integer.parseInt(((String)key).replaceFirst("^page\\.([0-9]+)\\.(file|class)$", "$1")));
     	Arrays.sort(pageIDs);
     	
     	// create pages
@@ -358,19 +359,41 @@ public class FileBasedContentTemplate extends ContentTemplate {
 			// create page
 			int pageID = pageIDs[i];
 			String xswtFileName = properties.getProperty("page."+pageID+".file");
+			String pageClass = properties.getProperty("page."+pageID+".class");
 			String condition = properties.getProperty("page."+pageID+".condition");
-			try {
-                result[i] = new XSWTWizardPage(this, getName()+"#"+pageID, openFile(xswtFileName), xswtFileName, condition);
-            }
-            catch (IOException e) {
-                throw new CoreException(new Status(IStatus.ERROR, CommonPlugin.PLUGIN_ID, "Error loading template file "+xswtFileName, e));
-            }
+			if (xswtFileName != null) {
+			    try {
+			        result[i] = new XSWTWizardPage(getName()+"#"+pageID, this, condition, openFile(xswtFileName), xswtFileName);
+			    }
+			    catch (IOException e) {
+			        throw new CoreException(new Status(IStatus.ERROR, CommonPlugin.PLUGIN_ID, "Error loading template file "+xswtFileName, e));
+			    }
+			}
+			else if (pageClass != null) {
+			    try {
+                    Class<?> clazz = getClassLoader().loadClass(pageClass); //FIXME classloader stuff -- it will not load from other plugins
+                    result[i] = (ICustomWizardPage) ReflectionUtils.invokeConstructor(clazz, getName()+"#"+pageID, this, condition==null?"":condition); // if condition is null, ReflectionUtils will throw NPE 
+                }
+                catch (Exception e) {
+                    throw new CoreException(new Status(IStatus.ERROR, CommonPlugin.PLUGIN_ID, "Error instantiating wizard page class "+pageClass, e));
+                }
+			}
+			else {
+			    Assert.isTrue(false);
+			}
 
 			// set title and description
-			String title = StringUtils.defaultIfEmpty(properties.getProperty("page."+pageID+".title"), getName());
-			String description = StringUtils.defaultIfEmpty(properties.getProperty("page."+pageID+".description"),"Select options below"); // "1 of 5" not good as default, because of conditional pages
-			result[i].setTitle(title);
-			result[i].setDescription(description);
+			String title = properties.getProperty("page."+pageID+".title");
+			if (!StringUtils.isEmpty(title))
+			    result[i].setTitle(title);
+			else if (StringUtils.isEmpty(result[i].getTitle()))
+                result[i].setTitle(getName());
+
+			String description = properties.getProperty("page."+pageID+".description");
+			if (!StringUtils.isEmpty(description))
+			    result[i].setDescription(description);
+			else if (StringUtils.isEmpty(result[i].getDescription()))
+			    result[i].setDescription("Select options below"); // note: "1 of 5" is not good, because of conditional pages
 		}
 		
 		return result;
@@ -527,4 +550,14 @@ public class FileBasedContentTemplate extends ContentTemplate {
         }
         return false;
     }
+    
+    public void cloneTo(CreationContext context) throws CoreException {
+        for (String fileName : getFileList()) {
+            if (!fileName.endsWith("/")) {
+                IFile destFile = context.getFolder().getFile(new Path(fileName));
+                createVerbatimFile(destFile, openFile(fileName), context);
+            }
+        }
+    }
+
 }

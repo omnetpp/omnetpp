@@ -787,4 +787,8 @@ TODO: special markup in the template: "<?output="bubu.txt"> ... </?output>
 to support creation of files with runtime-decided names.
 TODO pelda: "Name of examples folder", "Name of source" folder
 
+TODO document page.NN.class = org.foo.SomePageClass;
+  class must extend ICustomWizardPage;
+  class must have a public constructor with the following signature: (String name, IContentTemplate creatorTemplate, String condition)
+  class must be accessible to the class loader (TODO clarify...)
 

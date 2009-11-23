@@ -133,6 +133,16 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     }
 
     /**
+     * Utility method for the "Clone Built-in Template" wizard wizard.
+     */
+    public List<IContentTemplate> getAllTemplates() {
+        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
+        result.addAll(loadBuiltinTemplates(null));
+        result.addAll(loadTemplatesFromWorkspace(null));
+        return result;
+    }
+
+    /**
      * Loads built-in templates from all plug-ins registered via the
      * org.omnetpp.common.wizard.contenttemplates extension point.
      */

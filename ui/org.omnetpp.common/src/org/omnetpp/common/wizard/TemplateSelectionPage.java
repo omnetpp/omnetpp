@@ -109,6 +109,7 @@ public class TemplateSelectionPage extends WizardPage {
         label.setText("&Select template:");
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData)treeViewer.getTree().getLayoutData()).heightHint = 200;
         treeViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {

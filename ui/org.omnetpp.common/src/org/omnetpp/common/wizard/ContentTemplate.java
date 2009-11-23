@@ -321,6 +321,8 @@ public abstract class ContentTemplate implements IContentTemplate {
      * of those classes.
      */
     protected void addVariablesBeforeCreation(CreationContext context) throws Exception {
+        context.getVariables().put("creationContext", context);
+        
         // make Math, FileUtils, StringUtils and static methods of other classes available to the template
         // see chapter "Bean wrapper" in the FreeMarker manual 
         context.getVariables().put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
