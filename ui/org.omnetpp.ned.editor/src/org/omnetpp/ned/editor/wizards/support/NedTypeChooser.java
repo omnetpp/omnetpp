@@ -50,24 +50,6 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
         this.project = project;
     }
 
-    /**
-	 * Needed because for some reason XSWT doesn't like the int version...
-	 */
-    public void setAcceptedTypes(String filter) {
-        int filt = 0;
-        for (String type : filter.split("\\|")) {
-            if (type.equals("MODULE")) filt |= MODULE;
-            else if (type.equals("SIMPLE_MODULE")) filt |= SIMPLE_MODULE;
-            else if (type.equals("COMPOUND_MODULE")) filt |= COMPOUND_MODULE;
-            else if (type.equals("MODULEINTERFACE")) filt |= MODULEINTERFACE;
-            else if (type.equals("CHANNEL")) filt |= CHANNEL;
-            else if (type.equals("CHANNELINTERFACE")) filt |= CHANNELINTERFACE;
-            else if (type.equals("NETWORK")) filt |= NETWORK;
-            else throw new IllegalArgumentException("Unrecognized NED type flag " + type);
-        }
-        acceptedTypes = filt;
-    }
-
     public void setAcceptedTypes(int filter) {
 	    this.acceptedTypes = filter;   
 	}

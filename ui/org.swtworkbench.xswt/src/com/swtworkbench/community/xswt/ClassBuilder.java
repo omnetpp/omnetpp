@@ -77,7 +77,8 @@ public class ClassBuilder {
             if (result != null)
                 return result;
         }
-        result = getClass(className, extraClassLoader);
+        if (extraClassLoader != null)
+            result = getClass(className, extraClassLoader);
         if (result != null)
             return result;
         throw new XSWTException("Unable to resolve class: " + className + "\nCheck the import node for the necessary package name");

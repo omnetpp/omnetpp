@@ -46,13 +46,15 @@ public class StyleParser {
             throw new XSWTException(t);
         }
 
-        StringTokenizer stringTokenizer = new StringTokenizer(constantsClass.getCanonicalName(), ".");
-        int tokens = stringTokenizer.countTokens();
-        String simpleClassName = null;
-        for (int i = 0; i < tokens; ++i) {
-            simpleClassName = stringTokenizer.nextToken();
-        }
-        mapStyles.put(simpleClassName, classStyles);
+//        StringTokenizer stringTokenizer = new StringTokenizer(constantsClass.getCanonicalName(), ".");
+//        int tokens = stringTokenizer.countTokens();
+//        String simpleClassName = null;
+//        for (int i = 0; i < tokens; ++i) {
+//            simpleClassName = stringTokenizer.nextToken();
+//        }
+//        mapStyles.put(simpleClassName, classStyles);
+
+        mapStyles.put(constantsClass.getSimpleName(), classStyles); // same code as above
     }
 
     public static int parse(String source) throws XSWTException {
