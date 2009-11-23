@@ -1,5 +1,5 @@
 <#if folderToCopy=="">
-  <#stop "No folder specified."/>
-<#else>  
-  <@do FileUtils.copyFolder(FileUtils.asContainer(folderToCopy), creationContext.getFolder()) />
+  <#stop "No folder was selected."/>
 </#if>  
+<#-- TODO if a project was selected, we should ideally take over its settings into the wizard's template.properties file -->
+<@do FileUtils.copy(folderToCopy, creationContext.getFolder().getFullPath(), creationContext.getProgressMonitor()) ! />

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -19,12 +18,14 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
-import org.omnetpp.common.util.ProcessUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -90,6 +91,28 @@ public class FileUtils {
     }
 
     /**
+     * Returns the handle for the workspace project, folder or file with 
+     * the given name. If the resource does not exist and the path contains
+     * more than one segment (i.e. it cannot be a project), it is returned as 
+     * a file handle if it has a file extension, and as a folder if it
+     * does not.
+     */
+    public static IResource asResource(String pathName) {
+        Path path = new Path(pathName);
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        if (path.segmentCount() == 1)
+            return root.getProject(pathName);
+        else if (root.getFile(path).exists())
+            return root.getFile(path);
+        else if (root.getFolder(path).exists())
+            return root.getFolder(path);
+        else if (path.getFileExtension() != null)
+            return root.getFile(path);
+        else
+            return root.getFolder(path);
+    }
+
+    /**
      * Returns a java.io.File object for the given path. The object can be used to
      * access operations provided by the File API, such as exists(), length(), etc.
      * 
@@ -99,6 +122,30 @@ public class FileUtils {
     public static File asExternalFile(String path) {
         return new File(path);
     }
+    
+    /**
+     * Copies a workspace resource (file, folder or project) given with its path 
+     * to the destination path. For projects and folders, it copies recursively 
+     * (i.e. copies the whole folder tree).
+     */
+    public static void copy(String path, String destPath, IProgressMonitor monitor) throws CoreException {
+        IResource resource = asResource(path);
+        if (resource instanceof IProject && new Path(destPath).segmentCount()>1) {
+            // the normal IResource.copy() insists that a project can only be copied
+            // to a project (destPath "must have only one segment"), so here we do the
+            // top level by hand
+            if (asContainer(destPath) instanceof IFolder && !asContainer(destPath).exists())
+                ((IFolder)asContainer(destPath)).create(false, true, monitor);
+            for (IResource child : ((IProject)resource).members())
+                if (!child.isHidden() && !child.isTeamPrivateMember())
+                    child.copy(new Path(destPath).append(child.getName()), false, monitor);
+        }
+        else {
+            // normal copy is fine
+            resource.copy(new Path(destPath), false, monitor);
+        }
+    }
+    
     
 	/**
 	 * Parse an XML file in the workspace, and return the Document object 
