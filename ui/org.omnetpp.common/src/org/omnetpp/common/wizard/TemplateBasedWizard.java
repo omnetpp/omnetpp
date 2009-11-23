@@ -258,7 +258,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     	//
     	// NOTE: THIS DOES NOT ALWAYS GET CALLED BY THE DEFAULT WizardPage IMPLEMENTATION 
     	// WHEN 'BACK' IS CLICKED! ICustomWizardPage MUST OVERRIDE THAT IMPLEMENTATION
-    	// TO CALL THIS METHOD EVERY TIME, EVENIF IT DOESN'T USE THE RETURN VALUE.
+    	// TO CALL THIS METHOD EVERY TIME, EVEN IF IT DOESN'T USE THE RETURN VALUE.
 		if (ArrayUtils.contains(templateCustomPages, page))
 			((ICustomWizardPage)page).extractPageContent(context);
     	return super.getPreviousPage(page);
@@ -316,7 +316,8 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
 				return nextPage;
 			}
 			
-			return getFirstExtraPage();  // FIXME if that's null, we may need to fake dummy page here!!! (if all subsequent pages are conditional, and get enabled only by a control on THIS page, the Next button may stay disabled!!!)
+			// XXX we need to fake a dummy page: if all subsequent pages are conditional, and get enabled only by a control on THIS page, the Next button may stay disabled!!!
+            return getFirstExtraPage()!=null ? getFirstExtraPage() : dummyPage;
     	}
 
     	// there's nothing after the dummy page
