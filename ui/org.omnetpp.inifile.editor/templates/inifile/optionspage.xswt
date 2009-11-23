@@ -13,7 +13,7 @@
   <x:children>
 
     <label x:text="Select network:"/>
-    <nedTypeChooser x:id="networkName" acceptedTypes="NETWORK" >
+    <nedTypeChooser x:id="networkName" acceptedTypes="NedTypeChooser.NETWORK" >
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <setFocus/>
     </nedTypeChooser>
