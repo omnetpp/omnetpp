@@ -37,13 +37,12 @@ ${bannerComment}
   <layout x:class="GridLayout" numColumns="2"/>
 
   <x:children>
-    <label x:text="This is an example wizard generated from the following spec:" x:style="WRAP">
+  
+    <label x:text="This is a generated wizard page, to be refined manually. It was created with the &quot;${templateName}&quot; wizard." x:style="WRAP">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
 
-    <label x:text="${spec}" x:style="WRAP">
-      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </label>
+    <!-- page generate from: ${spec} -->
 
 <#assign spec = spec?replace("{", "{,")?replace("}", ",},")?replace(",,", ",")>
 <#list StringUtils.split(spec, ",") as i>
