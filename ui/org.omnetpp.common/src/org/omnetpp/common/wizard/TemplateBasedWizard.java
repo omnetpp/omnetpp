@@ -187,7 +187,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                     URL propFileUrl = (URL) e.nextElement();
                     URL templateUrl = new URL(StringUtils.removeEnd(propFileUrl.toString(), FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME));
                     IContentTemplate template = loadTemplateFromURL(templateUrl, bundle);
-                    if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
+                    if (wizardType==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(wizardType))
                         result.add(template);
                 }
             }
@@ -220,7 +220,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                         if (resource instanceof IFolder && FileBasedContentTemplate.looksLikeTemplateFolder((IFolder)resource)) {
                             IFolder folder = (IFolder)resource;
                             IContentTemplate template = loadTemplateFromWorkspace(folder);
-                            if (wizardType==null || template.getSupportedWizardTypes().contains(wizardType))
+                            if (wizardType==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(wizardType))
                                 result.add(template);
                         }
                     }
