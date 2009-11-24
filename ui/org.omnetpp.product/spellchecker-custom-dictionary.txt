@@ -310,3 +310,4 @@ moduleinterface
 accessors
 freemarker
 builtins
+discoverable

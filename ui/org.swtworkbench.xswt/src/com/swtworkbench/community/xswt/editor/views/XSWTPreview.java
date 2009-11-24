@@ -112,35 +112,33 @@ public class XSWTPreview extends ViewPart {
     }
 
     public void createPartControl(Composite parent) {
+        // in the original XSWT code, there were two SashForms here, to allow resizing the 
+        // composite. However, sashes were not easily discoverable by the user, and also awkward 
+        // because the sashes could not be minimized again (see hardcoded DRAG_MINIMUM=20 in SashForm), 
+        // and also the whole thing seems unnecessary because the view itself can be resized as well,
+        // so I removed the sashes. --Andras
         this.parent = parent;
         getSite().getWorkbenchWindow().getPartService().addPartListener(partListener);
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         workspace.addResourceChangeListener(resourceChangeListener, 1);
-        SashForm sashFormHorizontal = new SashForm(parent, 256);
-        SashForm sashFormVertical = new SashForm(sashFormHorizontal, 512);
-        new Composite(sashFormHorizontal, 0);
-        Composite compositeFrame0 = new Composite(sashFormVertical, 0);
+        
+        Composite compositeFrame0 = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginWidth = 0;
         gridLayout.marginHeight = 0;
         compositeFrame0.setLayout(gridLayout);
-        Composite compositeFrame = new Composite(compositeFrame0, 0);
-        compositeFrame.setBackground(new Color(compositeFrame.getDisplay(), 250, 140, 140));
+        
+        Composite compositeFrame = new Composite(compositeFrame0, SWT.NONE);
+        compositeFrame.setBackground(new Color(compositeFrame.getDisplay(), 100, 200, 120)); // green frame
         gridLayout = new GridLayout();
         gridLayout.marginWidth = 2;
         gridLayout.marginHeight = 2;
         compositeFrame.setLayout(gridLayout);
         compositeFrame.setLayoutData(new GridData(1808));
-        compositeMain = new Composite(compositeFrame, 0);
+        
+        compositeMain = new Composite(compositeFrame, SWT.NONE);
         compositeMain.setLayout(new GridLayout());
         compositeMain.setLayoutData(new GridData(1808));
-        new Composite(sashFormVertical, 0);
-        int ai[] = new int[2];
-        ai[0] = 1;
-        sashFormHorizontal.setWeights(ai);
-        int ai1[] = new int[2];
-        ai1[0] = 1;
-        sashFormVertical.setWeights(ai1);
     }
 
     private void contributeToActionBars() {
