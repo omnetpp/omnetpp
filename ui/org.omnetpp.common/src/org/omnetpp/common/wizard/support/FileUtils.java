@@ -126,28 +126,37 @@ public class FileUtils {
     /**
      * Copies a workspace resource (file, folder or project) given with its path 
      * to the destination path. For projects and folders, it copies recursively 
-     * (i.e. copies the whole folder tree).
+     * (i.e. copies the whole folder tree). From the project root directory it
+     * leaves out dot files, hidden files, and team private files.
      */
     public static void copy(String path, String destPath, IProgressMonitor monitor) throws CoreException {
         IResource resource = asResource(path);
-        if (resource instanceof IProject && new Path(destPath).segmentCount()>1) {
+        Path destPathPath = new Path(destPath);
+        if (resource instanceof IProject && destPathPath.segmentCount()>1) {
             // the normal IResource.copy() insists that a project can only be copied
             // to a project (destPath "must have only one segment"), so here we do the
-            // top level by hand
+            // top level by hand. Also, we leave out dot files, hidden files etc.
             if (asContainer(destPath) instanceof IFolder && !asContainer(destPath).exists())
-                ((IFolder)asContainer(destPath)).create(false, true, monitor);
+                makeFolder((IFolder)asContainer(destPath), monitor);
             for (IResource child : ((IProject)resource).members())
-                if (!child.isHidden() && !child.isTeamPrivateMember())
-                    child.copy(new Path(destPath).append(child.getName()), false, monitor);
+                if (!child.getName().startsWith(".") && !child.isHidden() && !child.isTeamPrivateMember())
+                    child.copy(destPathPath.append(child.getName()), false, monitor);
         }
         else {
             // normal copy is fine
-            resource.copy(new Path(destPath), false, monitor);
+            resource.copy(destPathPath, false, monitor);
         }
     }
     
-    
-	/**
+	private static void makeFolder(IFolder folder, IProgressMonitor monitor) throws CoreException {
+	    if (!folder.exists()) {
+	        if (folder.getParent() instanceof IFolder)
+	            makeFolder((IFolder)folder.getParent(), monitor);
+	        folder.create(false, true, monitor); // let it throw CoreException if not even the project exists
+	    }
+    }
+
+    /**
 	 * Parse an XML file in the workspace, and return the Document object 
 	 * of the resulting DOM tree.
 	 * 
