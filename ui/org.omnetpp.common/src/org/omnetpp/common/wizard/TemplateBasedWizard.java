@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -42,7 +41,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.ui.DetailMessageDialog;
 import org.osgi.framework.Bundle;
+
+import freemarker.template.TemplateModelException;
 
 
 /**
@@ -400,13 +402,42 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             CommonPlugin.logError(t);
-            String msg = StringUtils.defaultIfEmpty(t.getMessage(), t.getClass().getSimpleName());
-            MessageDialog.openError(getShell(), "Creation problems", "Error: " + msg);
+            
+            // try to present a sensible error dialog to the user
+            String errorMessage;
+            String detailsText;
+            if (t.getCause() instanceof TemplateModelException) {
+                TemplateModelException templateModelException = (TemplateModelException) t.getCause();
+                Exception causeException = templateModelException.getCauseException();
+                if (causeException != null) {
+                    errorMessage = messageOf(causeException);
+                    String templateStack = templateModelException.getFTLInstructionStack();
+                    detailsText = templateModelException.getMessage() + "\n\nTemplate stack:\n" + templateStack.trim();
+                }
+                else {
+                    errorMessage = messageOf(templateModelException);
+                    detailsText = null;
+                }
+            }
+            else {
+                errorMessage = messageOf(t);
+                detailsText = null;
+            }
+
+            DetailMessageDialog.openError(getShell(), "Creation problems", "Error: " + errorMessage, detailsText);
+
             return false;
         }
         return true;
     }
 
+    private String messageOf(Throwable e) {
+        String message = e.getMessage();
+        if (StringUtils.isEmpty(message))
+            return e.getClass().getSimpleName();
+        else
+            return message.replace("assertion failed:", "").trim(); // strip "assertion failed" text that some CoreExceptions contain
+    }
     
 }
 
