@@ -93,6 +93,10 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public void setWizardType(String wizardType) {
         this.wizardType = wizardType;
     }
+    
+    protected CreationContext getContext() {
+        return context;
+    }
 
     /**
      * Template custom pages will always directly follow the template selection page. To add
@@ -364,7 +368,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         final IContentTemplate template = templateSelectionPage.getSelectedTemplate();
 
     	// if we are on or before the template selection page, create a fresh context with the selected template
-    	if (ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
+    	if (finishingPage.getWizard()==this && ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
     		context = template!=null ? createContext(template, folder) : null;
     		templateCustomPages = new ICustomWizardPage[0]; // no pages
     	}

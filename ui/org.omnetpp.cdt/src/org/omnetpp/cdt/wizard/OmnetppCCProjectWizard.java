@@ -37,6 +37,7 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
+import org.omnetpp.common.wizard.ICustomWizardPage;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 import org.osgi.framework.Bundle;
 
@@ -221,7 +222,10 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
         // first (to create the project), and then us, regardless on which page the user 
         // clicked Finish. This code heavily relies on the particular implementation of 
         // WizardDialog.finishPressed(), and may need to be revised if that changes.
-        if (withCplusplusSupport() && getContainer().getCurrentPage().getWizard() == this) {
+        IWizardPage finishingPage = getContainer().getCurrentPage();
+        if (withCplusplusSupport() && finishingPage.getWizard() == this) {
+            if (finishingPage instanceof ICustomWizardPage)
+                ((ICustomWizardPage)finishingPage).extractPageContent(getContext()); // save page content first
             getContainer().showPage(nestedWizard.getStartingPage());
             return nestedWizard.performFinish();
         }
