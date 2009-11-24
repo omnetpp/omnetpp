@@ -129,7 +129,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
     
     public CreationContext createContext(IContainer folder, IWizard wizard) {
-    	CreationContext context = new CreationContext(folder, wizard);
+    	CreationContext context = new CreationContext(this, folder, wizard);
     	
     	// pre-register some potentially useful template variables
     	Map<String, Object> variables = context.getVariables();

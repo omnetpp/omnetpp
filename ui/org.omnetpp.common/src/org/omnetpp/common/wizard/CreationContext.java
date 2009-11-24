@@ -16,8 +16,9 @@ import org.eclipse.jface.wizard.IWizard;
  * @author Andras
  */
 public class CreationContext {
-    private final IWizard wizard;  // immutable after ctor call
-	private final IContainer folder; // MUST REMAIN UNCHANGED after the constructor call
+    private final IContentTemplate template; // immutable after constructor call
+    private final IWizard wizard;  // immutable after constructor call
+	private final IContainer folder; // immutable after the constructor call
 	private Map<String,Object> variables = new HashMap<String, Object>();
 	private IProgressMonitor progressMonitor;
 	
@@ -25,11 +26,22 @@ public class CreationContext {
      * Constructor. Accepts the folder or project to be created, or an existing
      * folder or project in which the wizard will create files/folders.
      */
-	public CreationContext(IContainer folder, IWizard wizard) {
+	public CreationContext(IContentTemplate template, IContainer folder, IWizard wizard) {
+	    this.template = template;
 		this.folder = folder;
 		this.wizard = wizard;
 	}
 
+    /**
+     * Returns the template for which this context is being used.
+     * 
+     * For health and safety of the wizards, this field is immutable 
+     * (can only be set in the constructor).
+     */
+	public IContentTemplate getTemplate() {
+        return template;
+    }
+	
 	/**
 	 * Returns the folder or project to be created, or an existing
 	 * folder or project in which the wizard will create files/folders.

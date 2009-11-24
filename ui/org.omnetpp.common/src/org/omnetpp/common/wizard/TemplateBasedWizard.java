@@ -372,9 +372,16 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     		context = template!=null ? createContext(template, folder) : null;
     		templateCustomPages = new ICustomWizardPage[0]; // no pages
     	}
+    	else if (template!=null && (context==null || context.getTemplate()!=template)) {
+    	    // first "if" doesn't fire if user presses Finish right on the 1st page of New OMNeT++ Project wizard
+            context = createContext(template, folder); 
+            templateCustomPages = new ICustomWizardPage[0]; // no pages
+    	}    	
     	
     	// sanity check
-    	Assert.isTrue(context==null || context.getFolder().equals(folder));
+    	Assert.isTrue((template==null) == (context==null));
+    	Assert.isTrue(template==null || context.getTemplate() == template);
+    	Assert.isTrue(template==null || context.getFolder().equals(folder));
     	
     	// store custom page content before navigating away
     	if (ArrayUtils.contains(templateCustomPages, finishingPage))
