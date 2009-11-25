@@ -1,5 +1,7 @@
 <#noparse>
 
+<#-- MACROS -->
+
 <#-- basic macro -->
 <#macro test foo bar baaz>
   Test text, and the params: ${foo}, ${bar}, ${baaz}

@@ -1,5 +1,6 @@
-<#-- TODO: basic control structures, if, list etc -->
 <#noparse>
+
+<#-- CONTROL STRUCTURES -->
 
 <#assign x = 3>
 
@@ -49,18 +50,5 @@
      something else
 </#switch>  
 
-<#switch x>
-  <#case x%8==0>
-     multiple of 8
-  <#case x%4==0>
-     multiple of 4
-  <#case x%2==0>
-     even number
-     <#break>
-  <#default>
-     odd number
-</#switch>  
-	
-	
 </#noparse>
 

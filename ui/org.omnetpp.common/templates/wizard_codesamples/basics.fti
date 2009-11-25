@@ -1,5 +1,7 @@
 <#noparse>
 
+<#-- BASICS -->
+
 <#-- simple variables -->
 <#assign k = 10>
 <#assign str = "hello">
@@ -23,7 +25,7 @@ boolVar = <#if boolVar>true<#else>false</#if>
 foo: ${foo?default("n/a")}, or ${foo!"n/a"} 
 
 <#-- builtin operations (question mark syntax) -->
-length of ${text} is ${text?length}; in all caps: ${text?upper_case}
+length of ${textVar} is ${textVar?length}; in all caps: ${textVar?upper_case}
 string-to-number: ${"3.1415"?number * 2}
 
 </#noparse>

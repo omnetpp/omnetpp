@@ -1,5 +1,7 @@
 <#noparse>
 
+<#-- RUNNING AN EXTERNAL PROGRAM -->
+
 <#assign executable = "perl">
 <#assign argvector = StringUtils.split("-v", " ")>
 

@@ -1,5 +1,7 @@
 <#noparse>
 
+<#-- INVOKING JAVA METHODS -->
+
 <#-- Accessing static methods and fields of Java classes -->
 Number of seconds since the Unix epoch: ${classes["java.lang.System"].currentTimeMillis() / 1000}
 The value of PI: ${classes["java.lang.Math"].PI}
@@ -31,18 +33,21 @@ With a bit more detail:
 </#list>
 
 Project contents:
-<#list workspaceRoot.getProjects() as project>
-${printTree(project, "")}
-</#list>
-
-<#function printTree resource indent>
-  ${indent}${resource.getFullPath().toString()}
+<#function dirTree resource indent>
+  <#assign result = indent + resource.getName() + "\n">
   <#if LangUtils.hasMethod(resource, "members")>
     <#list resource.members() as child>
-      ${printTree(child, indent+"  ")}
+      <#assign result = result + dirTree(child, indent+"  ")/>
     </#list>
   </#if>
+  <#return result>
 </#function>
+
+<#list workspaceRoot.getProjects() as project>
+  <#if project.isOpen()>
+${dirTree(project, "  ")}
+  </#if>
+</#list>
 
 <#-- OMNeT++ NED types can also be accessed, via NEDResourcesPlugin. -->
 <#assign nedResources = classes["org.omnetpp.ned.core.NEDResourcesPlugin"].getNEDResources()>

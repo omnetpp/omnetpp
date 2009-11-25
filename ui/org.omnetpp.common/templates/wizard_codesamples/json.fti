@@ -1,5 +1,7 @@
 <#noparse>
 
+<#-- DATA STRUCTURES -->
+
 Apps:
 <#list apps as i>
     ${i}
