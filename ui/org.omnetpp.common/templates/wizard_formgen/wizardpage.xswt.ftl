@@ -3,7 +3,7 @@
 <#assign nedFile="output.ned.ftl">
 <@setoutput file=propsFile/>
 # adjust the following
-templateName = Generated Wizard
+templateName = Newly Generated Wizard, with an Input Page
 templateDescription = Wizard with a single input page
 templateCategory = Generated Wizards
 supportedWizardTypes = project, nedfile, simulation

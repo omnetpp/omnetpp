@@ -32,6 +32,7 @@
 
     <text x:id="spec" x:style="BORDER|MULTI|WRAP">
       <layoutData x:class="GridData" heightHint="100" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <setFocus/>
     </text>
 
   </x:children>

@@ -3,7 +3,7 @@
   	<#if condition><#return truevalue><#else><#return falsevalue></#if>
 </#function>
 # wizard properties
-templateName = Newly Generated Wizard with Custom Page
+templateName = Newly Generated Wizard, with Custom Page
 templateDescription = Wizard with a page that contains selected widgets
 templateCategory = Generated Wizards 
 supportedWizardTypes =  project, nedfile, simulation
