@@ -1,3 +1,6 @@
-<#-- TODO: String manipulation -->
 <#noparse>
+
+<#-- String manipulation: both FreeMarker's builtins and the Apache StringUtils Java class are available -->
+
+
 </#noparse>

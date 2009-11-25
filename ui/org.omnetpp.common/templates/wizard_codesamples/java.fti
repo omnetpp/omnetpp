@@ -1,6 +1,6 @@
 <#noparse>
 
-<#-- How to access static methods and fields of Java classes -->
+<#-- Accessing static methods and fields of Java classes -->
 Number of seconds since the Unix epoch: ${classes["java.lang.System"].currentTimeMillis() / 1000}
 The value of PI: ${classes["java.lang.Math"].PI}
 
@@ -8,17 +8,15 @@ The value of PI: ${classes["java.lang.Math"].PI}
 <#assign System = classes["java.lang.System"]>
 Days since the Unix epoch: ${System.currentTimeMillis() / 1000 / 86400 }
 
-<#assign SWT = classes["org.eclipse.swt.SWT"]>
-SWT version: ${SWT.getVersion()}
-
 <#-- Args are accepted too (note: We have predefined java.lang.Math as Math since it's often needed) -->
 cos(0) = ${Math.cos(0)}
 PATH = ${System.getenv("PATH")} 
 
-<#-- Now, some more serious stuff. In the same style as above, the Eclipse workspace
-     can be accessed via the ResourcePlugin class
- -->
+<#-- Eclipse classes may also be accessed: -->
+<#assign SWT = classes["org.eclipse.swt.SWT"]>
+SWT version: ${SWT.getVersion()}
 
+<#-- for example, listing projects in the Eclipse workspace: -->
 <#assign ResourcesPlugin = classes["org.eclipse.core.resources.ResourcesPlugin"]>
 <#assign workspaceRoot = ResourcesPlugin.getWorkspace().getRoot()>
 
@@ -27,27 +25,26 @@ Projects in the workspace:
     ${project.getName()}
 </#list>
 
-With a bit more details:
+With a bit more detail:
 <#list workspaceRoot.getProjects() as project>
     ${project.getName()} (<#if project.isOpen()>OPEN<#else>CLOSED</#if>)
 </#list>
 
-<#--
-FIXME the following does not work because IFile does not have members()
+Project contents:
 <#list workspaceRoot.getProjects() as project>
-${printTree(project, " ")}
+${printTree(project, "")}
 </#list>
 
 <#function printTree resource indent>
-  ${resource.getFullPath().toString()}
-  <#list resource.members() as child>
-    ${printTree(child, indent+" ")}
-  </#list>
+  ${indent}${resource.getFullPath().toString()}
+  <#if LangUtils.hasMethod(resource, "members")>
+    <#list resource.members() as child>
+      ${printTree(child, indent+"  ")}
+    </#list>
+  </#if>
 </#function>
--->
 
 <#-- OMNeT++ NED types can also be accessed, via NEDResourcesPlugin. -->
-
 <#assign nedResources = classes["org.omnetpp.ned.core.NEDResourcesPlugin"].getNEDResources()>
 All NED types:
 <#list nedResources.getNedTypesFromAllProjects() as nedTypeInfo>

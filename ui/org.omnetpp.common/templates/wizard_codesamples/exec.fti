@@ -1,7 +1,15 @@
 <#noparse>
-<#assign result = ProcessUtils.exec("C:/home/tools/Perl/bin/perl.exe", StringUtils.split("-v", " "))>
-Process result:
+
+<#assign executable = "perl">
+<#assign argvector = StringUtils.split("-v", " ")>
+
+<#assign result = ProcessUtils.exec(executable, argvector)>
+Result of running ${executable} ${argvector}
+
 exit code: ${result.exitCode()}
-stdout: >>>${result.stdout()}<<<
+
 stderr: >>>${result.stderr()}<<<
+
+stdout: >>>${result.stdout()}<<<
+
 </#noparse>

@@ -1,4 +1,66 @@
 <#-- TODO: basic control structures, if, list etc -->
 <#noparse>
+
+<#assign x = 3>
+
+<#-- conditional-->
+<#if x == 1>
+  x is 1
+</#if> 
+
+<#if x == 1>
+  x is 1
+<#elseif x == 2>
+  x is 2
+<#elseif x == 3>
+  x is 3
+<#else>
+  something else
+</#if>  
+
+<#-- loops -->
+<#list 0..10 as i>
+  ${i} 
+</#list>
+
+<#list [1,2,5,10,20,50,100] as i>
+  ${i} 
+</#list>
+
+<#list ["apples", "bananas", "oranges", "enough", "pears" ] as fruit>
+  <#if fruit == "enough"> 
+     <#break>
+  </#if>
+  ${fruit} 
+</#list>
+
+<#-- switch -->
+<#switch x>
+  <#case 1> 
+     x is one
+     <#break>
+  <#case 2>
+     x is two
+     <#break>
+  <#case 3>
+     x is three
+     <#break>
+  <#default>
+     something else
+</#switch>  
+
+<#switch x>
+  <#case x%8==0>
+     multiple of 8
+  <#case x%4==0>
+     multiple of 4
+  <#case x%2==0>
+     even number
+     <#break>
+  <#default>
+     odd number
+</#switch>  
+	
+	
 </#noparse>
 

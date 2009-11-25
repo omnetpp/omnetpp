@@ -1,0 +1,30 @@
+<#noparse>
+
+<#-- simple variables -->
+<#assign k = 10>
+<#assign str = "hello">
+
+<#-- variables may come from template.properties (name=value), 
+     and may get modified on custom wizard pages before they get 
+     to template (.ftl) files. Refer to them with ${}. 
+-->
+textVar = "${textVar}"
+numericVar = ${numericVar}
+boolVar = <#if boolVar>true<#else>false</#if>
+
+<#-- numeric vars that come from template.properties may get converted 
+     to string in custom wizard pages, so they should be explicitly 
+     converted to number before they can be used in arithmetic expressions 
+-->
+<#assign numericVar = numericVar?number>
+2*numericVar+1 = ${2*numericVar+1}
+
+<#-- default value for undefined vars -->
+foo: ${foo?default("n/a")}, or ${foo!"n/a"} 
+
+<#-- builtin operations (question mark syntax) -->
+length of ${text} is ${text?length}; in all caps: ${text?upper_case}
+string-to-number: ${"3.1415"?number * 2}
+
+</#noparse>
+
