@@ -268,7 +268,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
 		
 		// add more predefined variables (these ones cannot be overwritten from the property file, would make no sense)
 		if (templateUrl != null) {
-		    context.getVariables().put("templateURL", templateUrl);
+		    context.getVariables().put("templateURL", templateUrl.toString());
 		}
 		if (templateFolder != null) {
 		    context.getVariables().put("templateFolderName", templateFolder.getName());

@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -24,6 +26,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
 
@@ -148,12 +151,31 @@ public class FileUtils {
         }
     }
     
-	private static void makeFolder(IFolder folder, IProgressMonitor monitor) throws CoreException {
-	    if (!folder.exists()) {
-	        if (folder.getParent() instanceof IFolder)
-	            makeFolder((IFolder)folder.getParent(), monitor);
-	        folder.create(false, true, monitor); // let it throw CoreException if not even the project exists
-	    }
+    /**
+     * Copies the file at the given URL to the given destination workspace file.
+     */
+    public static void copyURL(String url, String destFilePath, IProgressMonitor monitor) throws CoreException {
+        IFile destFile = asFile(destFilePath);
+        IContainer destContainer = destFile.getParent();
+        if (destContainer instanceof IFolder && !destContainer.exists())
+            makeFolder((IFolder)destContainer, monitor);
+        try {
+            destFile.create(new URL(url).openStream(), false, monitor); // if file already exists, let this method throw a CoreException
+        }
+        catch (MalformedURLException e) {
+            throw CommonPlugin.wrapIntoCoreException("Cannot copy file at URL \""+ url +"\": malformed URL", e);
+        }
+        catch (IOException e) {
+            throw CommonPlugin.wrapIntoCoreException("Cannot copy file at URL \""+ url +"\"", e);
+        }
+    }
+
+    private static void makeFolder(IFolder folder, IProgressMonitor monitor) throws CoreException {
+        if (!folder.exists()) {
+            if (folder.getParent() instanceof IFolder)
+                makeFolder((IFolder)folder.getParent(), monitor);
+            folder.create(false, true, monitor); // let it throw CoreException if not even the project exists
+        }
     }
 
     /**
