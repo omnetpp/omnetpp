@@ -5,7 +5,7 @@
 # wizard properties
 templateName = Newly Generated Wizard with Custom Page
 templateDescription = Wizard with a page that contains selected widgets
-templateCategory = 
+templateCategory = Generated Wizards 
 supportedWizardTypes =  project, nedfile, simulation
 
 # template variables

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout"/>
+
+  <x:children>
+  
+    <label text="Check the features you want to generate example code for:" x:style="WRAP"/>
+
+    <group text="General">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout"/>
+      <x:children>
+        <button x:id="wantControl" text="control structures (if, loops, etc)" x:style="CHECK"/>
+        <button x:id="wantJSON" text="lists, hashes" x:style="CHECK"/>
+        <button x:id="wantMacro" text="define a macro" x:style="CHECK"/>
+        <button x:id="wantFunction" text="define a function" x:style="CHECK"/>
+        <button x:id="wantStrings" text="string manipulation" x:style="CHECK"/>
+        <button x:id="wantJava" text="invoke Java methods" x:style="CHECK"/>
+      </x:children>
+    </group>
+
+    <group text="Advanced">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout"/>
+      <x:children>
+        <button x:id="wantExec" text="execute an external program and use its output" x:style="CHECK"/>
+        <button x:id="wantJar" text="invoke code in a JAR file" x:style="CHECK"/>
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
