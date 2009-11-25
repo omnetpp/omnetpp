@@ -4,6 +4,10 @@ templateDescription = Does not generate anything useful, but contains template c
 templateCategory = Generated Wizards
 supportedWizardTypes =
 
+<#if wantJar>
+ignoreResources = *.java
+</#if>
+
 <#if wantBasics>
 # variables
 boolVar = true
