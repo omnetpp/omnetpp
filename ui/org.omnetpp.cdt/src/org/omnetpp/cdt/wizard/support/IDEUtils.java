@@ -15,7 +15,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
  * 
  * @author Andras
  */
-public class IDEUtils extends org.omnetpp.common.wizard.support.IDEUtils {
+public class IDEUtils {
 	
 	public static NEDResources getNEDResources() {
 		return NEDResourcesPlugin.getNEDResources();

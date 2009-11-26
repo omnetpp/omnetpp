@@ -55,7 +55,7 @@ import freemarker.template.TemplateModelException;
 public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public static final String TEMPLATES_FOLDER_NAME = "templates";
     
-    public static final String CONTENTTEMPLATE_EXTENSION_ID = "org.omnetpp.common.wizard.contenttemplates";
+    public static final String CONTENTTEMPLATE_EXTENSIONPOINT_ID = "org.omnetpp.common.wizard.contenttemplates";
     public static final String PLUGIN_ELEMENT = "plugin";
     public static final String PLUGINID_ATT = "pluginId";
     public static final String FOLDER_ATT = "folder";
@@ -155,7 +155,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     protected List<IContentTemplate> loadBuiltinTemplates(final String wizardType) {
         final List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         try {
-            IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(CONTENTTEMPLATE_EXTENSION_ID);
+            IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(CONTENTTEMPLATE_EXTENSIONPOINT_ID);
             for (IConfigurationElement e : config) {
                 Assert.isTrue(e.getName().equals(PLUGIN_ELEMENT));
                 final String pluginName = e.getAttribute(PLUGINID_ATT);

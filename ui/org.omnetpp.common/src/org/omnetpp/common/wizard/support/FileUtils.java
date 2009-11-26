@@ -43,7 +43,7 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author Andras
  */
 public class FileUtils {
-   
+
     /**
      * Returns true if the given string is syntactically a valid workspace path.
      */
@@ -126,6 +126,14 @@ public class FileUtils {
         return new File(path);
     }
     
+    /**
+     * Returns the workspace root object. The workspace contains the user's
+     * projects.
+     */
+    public static IWorkspaceRoot getWorkspaceRoot() {
+        return ResourcesPlugin.getWorkspace().getRoot();
+    }
+
     /**
      * Copies a workspace resource (file, folder or project) given with its path 
      * to the destination path. For projects and folders, it copies recursively 

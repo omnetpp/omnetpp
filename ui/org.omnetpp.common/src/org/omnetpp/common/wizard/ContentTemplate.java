@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +23,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.Wizard;
@@ -34,7 +38,6 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.support.FileUtils;
-import org.omnetpp.common.wizard.support.IDEUtils;
 import org.omnetpp.common.wizard.support.LangUtils;
 import org.omnetpp.common.wizard.support.ProcessUtils;
 
@@ -43,6 +46,7 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateModelException;
 
 /**
  * The default implementation of IContentTemplate, using FreeMarker templates.
@@ -52,7 +56,9 @@ import freemarker.template.TemplateException;
  * @author Andras
  */
 public abstract class ContentTemplate implements IContentTemplate {
-	private static final String SETOUTPUT_MARKER = "@@@@ setoutput \"${file}\" @@@@\n";
+    public static final String CONTRIBUTORS_EXTENSIONPOINT_ID = "org.omnetpp.common.wizard.templatecontributors";
+
+    private static final String SETOUTPUT_MARKER = "@@@@ setoutput \"${file}\" @@@@\n";
 	private static final String SETOUTPUT_PATTERN = "(?s)@@@@ setoutput \"(.*?)\" @@@@\n"; // filename must be $1
 	 
 	// template attributes
@@ -72,6 +78,9 @@ public abstract class ContentTemplate implements IContentTemplate {
     
     // FreeMarker configuration (stateless)
     private Configuration freemarkerConfiguration = null;
+
+    // contributors list
+    private List<IContentTemplateContributor> contributors;
     
     public ContentTemplate() {
     }
@@ -152,6 +161,33 @@ public abstract class ContentTemplate implements IContentTemplate {
         variables.put("licenseText", LicenseUtils.getLicenseNotice(licenseCode));
         variables.put("bannerComment", LicenseUtils.getBannerComment(licenseCode, "//"));
 
+        // open access to more facilities
+        variables.put("creationContext", context);
+        variables.put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
+        
+        // make Math, FileUtils, StringUtils and static methods of other classes available to the template
+        // see chapter "Bean wrapper" in the FreeMarker manual 
+        try {
+            variables.put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
+            variables.put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(FileUtils.class.getName()));
+            variables.put("StringUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(StringUtils.class.getName()));
+            variables.put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
+            variables.put("LangUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(LangUtils.class.getName()));
+            variables.put("ProcessUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(ProcessUtils.class.getName()));
+        }
+        catch (TemplateModelException e1) {
+            CommonPlugin.logError(e1);
+        }
+
+        // allow contributors to add more vars, register further classes, etc.
+        for (IContentTemplateContributor contributor : getContributors()) {
+            try {
+                contributor.contributeToContext(context);
+            }
+            catch (Exception e) {
+                CommonPlugin.logError("Content template contributor threw an exception", e);
+            } 
+        }
         return context;
     }
     
@@ -162,9 +198,35 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
 
     protected ClassLoader createClassLoader() {
-        return getClass().getClassLoader();
+        // put all contributors' class loaders into the "classpath"
+        List<IContentTemplateContributor> contributors = getContributors();
+        ClassLoader[] loaders = new ClassLoader[contributors.size()];
+        for (int i=0; i<loaders.length; i++)
+            loaders[i] = contributors.get(i).getClass().getClassLoader();
+        return new DelegatingClassLoader(loaders);
     }
 
+    protected List<IContentTemplateContributor> getContributors() {
+        if (contributors == null)
+            contributors = createContributors();
+        return contributors;
+    }
+
+    protected List<IContentTemplateContributor> createContributors() {
+        List<IContentTemplateContributor> result = new ArrayList<IContentTemplateContributor>();
+        try {
+            IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(CONTRIBUTORS_EXTENSIONPOINT_ID);
+            for (IConfigurationElement e : config) {
+                Assert.isTrue(e.getName().equals("contributor"));
+                IContentTemplateContributor contributor = (IContentTemplateContributor) e.createExecutableExtension("class");
+                result.add(contributor);
+            }
+        } catch (Exception ex) {
+            CommonPlugin.logError("Error instantiating content template contributors", ex);
+        }
+        return result;
+    }
+    
     protected Configuration getFreemarkerConfiguration() {
         if (freemarkerConfiguration == null)
             freemarkerConfiguration = createFreemarkerConfiguration();
@@ -180,12 +242,25 @@ public abstract class ContentTemplate implements IContentTemplate {
         // add loader for built-in macro definitions
         final String BUILTINS = "[builtins]";
         cfg.addAutoInclude(BUILTINS);
+        String builtins = 
+            "<#macro do arg></#macro>" + // allow void methods to be called as: <@do object.setFoo(x)!> 
+            "<#macro setoutput file>\n" + 
+            SETOUTPUT_MARKER + 
+            "</#macro>\n\n";
+
+        for (IContentTemplateContributor contributor : getContributors()) {
+            try {
+                String code = contributor.getAdditionalTemplateCode();
+                if (!StringUtils.isEmpty(code))
+                    builtins += "<#-- " + contributor.getClass().getName() + ": -->\n" + code + "\n\n";
+            }
+            catch (Exception e) {
+                CommonPlugin.logError("Content template contributor threw an exception", e);
+            } 
+        }
+
         StringTemplateLoader loader = new StringTemplateLoader();
-        loader.putTemplate(BUILTINS, 
-                "<#macro do arg></#macro>" + // allow void methods to be called as: <@do object.setFoo(x)!> 
-                "<#macro setoutput file>\n" + 
-                SETOUTPUT_MARKER + 
-        		"</#macro>\n");
+        loader.putTemplate(BUILTINS, builtins);
         cfg.setTemplateLoader(loader);
 
         return cfg;
@@ -266,8 +341,6 @@ public abstract class ContentTemplate implements IContentTemplate {
         // substitute variables
     	String content;    	
         try {
-        	addVariablesBeforeCreation(context); // add classes: Math, FileUtils, IDEUtils, etc.
-        	
         	// perform template substitution
 			Template template = freemarkerConfig.getTemplate(templateName, "utf8");
 			StringWriter writer = new StringWriter();
@@ -314,26 +387,6 @@ public abstract class ContentTemplate implements IContentTemplate {
                 createVerbatimFile(fileToSave, new ByteArrayInputStream(contentToSave.getBytes()), context);
             }
         }
-    }
-
-    /**
-     * Add classes: Math, FileUtils, IDEUtils, etc. Override to add more powerful variants
-     * of those classes.
-     */
-    protected void addVariablesBeforeCreation(CreationContext context) throws Exception {
-        context.getVariables().put("creationContext", context);
-        
-        // make Math, FileUtils, StringUtils and static methods of other classes available to the template
-        // see chapter "Bean wrapper" in the FreeMarker manual 
-        context.getVariables().put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
-        context.getVariables().put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(FileUtils.class.getName()));
-        context.getVariables().put("StringUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(StringUtils.class.getName()));
-        context.getVariables().put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
-        context.getVariables().put("IDEUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(IDEUtils.class.getName()));
-        context.getVariables().put("LangUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(LangUtils.class.getName()));
-        context.getVariables().put("ProcessUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(ProcessUtils.class.getName()));
-
-        context.getVariables().put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
     }
 
     /**

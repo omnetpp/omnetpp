@@ -284,13 +284,13 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	@Override
 	protected ClassLoader createClassLoader() {
 	    if (!allowJarLoading)
-	        return getClass().getClassLoader();
+	        return super.createClassLoader();
 	    try {
 	        List<URL> urls = new ArrayList<URL>();
 	        for (String fileName : getFileList())
                 if (fileName.endsWith(".jar"))
                     urls.add(asURL(fileName));
-	        return new URLClassLoader(urls.toArray(new URL[]{}), getClass().getClassLoader());
+	        return new URLClassLoader(urls.toArray(new URL[]{}), super.createClassLoader());
 	    } 
 	    catch (Exception e) {
 	        CommonPlugin.logError("Error assembling classpath for loading jars from the workspace", e);

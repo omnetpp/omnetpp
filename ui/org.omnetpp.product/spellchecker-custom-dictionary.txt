@@ -311,3 +311,4 @@ accessors
 freemarker
 builtins
 discoverable
+classpath

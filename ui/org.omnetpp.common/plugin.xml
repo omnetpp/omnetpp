@@ -2,6 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="org.omnetpp.common.wizard.contenttemplates" name="Content Templates for New... Wizards" schema="schema/org.omnetpp.common.wizard.contenttemplates.exsd"/>
+   <extension-point id="org.omnetpp.common.wizard.templatecontributors" name="Content Template Contributors" schema="schema/org.omnetpp.common.wizard.templatecontributors.exsd"/>
    <extension
          point="org.eclipse.ui.newWizards">
       <category
