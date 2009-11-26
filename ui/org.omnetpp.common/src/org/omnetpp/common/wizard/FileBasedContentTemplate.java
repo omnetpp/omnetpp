@@ -408,15 +408,16 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	 */
 	public static Object parseJSON(String text) {
 		String numberRegex = "\\s*[+-]?[0-9.]+([eE][+-]?[0-9]+)?\\s*"; // sort of
+		text = text.trim();
 		if (text.equals("true") || text.equals("false") || text.matches(numberRegex) || 
-				text.trim().startsWith("[") || text.trim().startsWith("{")) {
+		        text.startsWith("[") || text.startsWith("{") || text.startsWith("\"")) {
 			// looks like JSON -- parse as such
 			JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
 			return reader.read(text); // throws IllegalArgumentException on parse errors
 		} 
 		else {
 			// apparently not JSON -- take it as a literal string with missing quotes
-			return text.trim();
+			return text;
 		}
 	}
 	
