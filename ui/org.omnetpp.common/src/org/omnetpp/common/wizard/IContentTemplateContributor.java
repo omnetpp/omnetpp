@@ -24,8 +24,14 @@ public interface IContentTemplateContributor {
     String getAdditionalTemplateCode() throws CoreException;
     
     /**
-     * May add variables to the context.
+     * Called after the context is created. May add variables 
+     * to the context.
      */
     void contributeToContext(CreationContext context);
+    
+    /**
+     * Called at the end of performFinish(). May perform additional tasks.
+     */
+    void postPerformFinish();
 
 }
