@@ -22,7 +22,7 @@
       <x:children>
         <button x:id="wantBasics" text="basics (variables, directives, etc.)" x:style="CHECK"/>
         <button x:id="wantControl" text="control structures (if, loops, etc)" x:style="CHECK"/>
-        <button x:id="wantJSON" text="lists, hashes" x:style="CHECK"/>
+        <button x:id="wantJSON" text="data structures: lists, hashes, etc" x:style="CHECK"/>
         <button x:id="wantMacro" text="macros" x:style="CHECK"/>
         <button x:id="wantFunction" text="functions" x:style="CHECK"/>
         <button x:id="wantStrings" text="string manipulation" x:style="CHECK"/>

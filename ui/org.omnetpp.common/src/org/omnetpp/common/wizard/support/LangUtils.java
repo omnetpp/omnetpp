@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.omnetpp.common.util.ReflectionUtils;
+
+import freemarker.ext.beans.HashAdapter;
+import freemarker.template.TemplateModel;
 import freemarker.template.utility.ClassUtil;
 
 
@@ -67,60 +71,83 @@ public class LangUtils {
      */
     @SuppressWarnings("unchecked")
     public static String toString(Object object) {
-        if (object == null)
-            return "null";
-        if (object instanceof String)
-            return "\"" + (String)object + "\"";
-        if (object instanceof Object[])
-            return toString(Arrays.asList((Object[])object));
-        if (object instanceof byte[])
-            return toString(Arrays.asList((byte[])object));
-        if (object instanceof char[])
-            return toString(Arrays.asList((char[])object));
-        if (object instanceof short[])
-            return toString(Arrays.asList((short[])object));
-        if (object instanceof int[])
-            return toString(Arrays.asList((int[])object));
-        if (object instanceof long[])
-            return toString(Arrays.asList((long[])object));
-        if (object instanceof float[])
-            return toString(Arrays.asList((float[])object));
-        if (object instanceof double[])
-            return toString(Arrays.asList((double[])object));
-        if (object instanceof List) {
-            StringBuilder buffer = new StringBuilder();
-            buffer.append("[");
-            for (Object item : (List)object) {
-                if (buffer.length() > 1)
-                    buffer.append(", ");
-                buffer.append(toString(item));
-            }    
-            buffer.append("]");
-            return buffer.toString();
+        try {
+            if (object == null)
+                return "null";
+            if (object instanceof String)
+                return "\"" + (String)object + "\"";
+            if (object instanceof Object[])
+                return toString(Arrays.asList((Object[])object));
+            if (object instanceof byte[])
+                return toString(Arrays.asList((byte[])object));
+            if (object instanceof char[])
+                return toString(Arrays.asList((char[])object));
+            if (object instanceof short[])
+                return toString(Arrays.asList((short[])object));
+            if (object instanceof int[])
+                return toString(Arrays.asList((int[])object));
+            if (object instanceof long[])
+                return toString(Arrays.asList((long[])object));
+            if (object instanceof float[])
+                return toString(Arrays.asList((float[])object));
+            if (object instanceof double[])
+                return toString(Arrays.asList((double[])object));
+            if (object instanceof HashAdapter) {
+                TemplateModel templateModel = ((HashAdapter) object).getTemplateModel();
+                if (templateModel.getClass().getName().equals("freemarker.ext.beans.StaticModel")) {
+                    Class<?> clazz = (Class<?>) ReflectionUtils.getFieldValue(templateModel, "clazz");
+                    return "wrapper for " + clazz.getName();
+                }
+                else {
+                    return templateModel.toString(); // HashAdapter implements List but size() throws exception
+                }
+            }
+            if (object instanceof List) {
+                StringBuilder buffer = new StringBuilder();
+                buffer.append("[");
+                for (Object item : (List)object) {
+                    if (buffer.length() > 1)
+                        buffer.append(", ");
+                    buffer.append(toString(item));
+                }    
+                buffer.append("]");
+                return buffer.toString();
+            }
+            if (object instanceof Set) {
+                StringBuilder buffer = new StringBuilder();
+                buffer.append("{");
+                for (Object item : (Set)object) {
+                    if (buffer.length() > 1)
+                        buffer.append(", ");
+                    buffer.append(toString(item));
+                }    
+                buffer.append("}");
+                return buffer.toString();
+            }
+            if (object instanceof Map) {
+                StringBuilder buffer = new StringBuilder();
+                buffer.append("{");
+                for (Object key : ((Map)object).keySet()) {
+                    if (buffer.length() > 1)
+                        buffer.append(", ");
+                    buffer.append(toString(key) + ": " + toString(((Map)object).get(key)));
+                }    
+                buffer.append("}");
+                return buffer.toString();
+            }
+            return object.toString();
         }
-        if (object instanceof Set) {
-            StringBuilder buffer = new StringBuilder();
-            buffer.append("{");
-            for (Object item : (Set)object) {
-                if (buffer.length() > 1)
-                    buffer.append(", ");
-                buffer.append(toString(item));
-            }    
-            buffer.append("}");
-            return buffer.toString();
+        catch (Exception e) {
+            return object.getClass().toString() + "[toString() threw " + e.getClass().getSimpleName() + "]"; // hashCode() is unsafe!!
         }
-        if (object instanceof Map) {
-            StringBuilder buffer = new StringBuilder();
-            buffer.append("{");
-            for (Object key : ((Map)object).keySet()) {
-                if (buffer.length() > 1)
-                    buffer.append(", ");
-                buffer.append(toString(key) + ": " + ((Map)object).get(key));
-            }    
-            buffer.append("}");
-            return buffer.toString();
-        }
-        return object.toString();
+    }
+
+    /**
+     * Returns the class of the given object. Provided because BeanWrapper seems to have
+     * a problem with the getClass() method. 
+     */
+    public static Class<?> getClass(Object object) {
+        return object.getClass();
     }
 
 	/**
