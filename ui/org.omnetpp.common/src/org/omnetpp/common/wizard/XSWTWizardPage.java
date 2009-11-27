@@ -37,6 +37,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 	protected Map<String,Control> widgetMap;
 	protected CreationContext context; // to transfer context from populatePage() to createControl()
     protected Composite composite;
+    protected boolean needsRecreate = true; // initially
 	
 	public XSWTWizardPage(String name, ContentTemplate creatorTemplate, String condition, IFile xswtFile) throws IOException, CoreException {
 		super(name);
@@ -57,6 +58,11 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 	}
 
 	public void createControl(Composite parent) {
+	    // WORKAROUND: wizard blows up horizontally if we put a text or label widget into it
+	    // with some long text. This is because the wizard window wants to be as big as the
+	    // preferred size (see Control.computeSize()) of the contents. The workaround is to
+	    // override computeSize() to return the size of the parent. This solution looks a bit harsh, 
+	    // but others like setting GridData.widthHint don't work.
         composite = new Composite(parent, SWT.NONE) {
             @Override
             public Point computeSize(int whint, int hhint, boolean changed) {
@@ -79,7 +85,8 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 	        this.context = context; // defer to createControl()
 	    }
 	    else {
-	        recreateForm(context);
+	        if (needsRecreate)
+	            recreateForm(context);
 	        if (widgetMap != null)
 	            putValuesIntoControls(context);
 	    }
@@ -99,6 +106,8 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
         String processedXswt = null;
         try {
             processedXswt = creatorTemplate.evaluate(xswtContent, context.getVariables());
+            if (xswtContent.equals(processedXswt))
+               needsRecreate = false; // source contains no template stuff -- spare some CPU cycles on next populatePage()
         } 
         catch (Exception e) {
             handleError("Error processing the form " + (xswtFileNameInfo!=null ? "from "+xswtFileNameInfo : getName()) + " as a FreeMarker template", e); 
