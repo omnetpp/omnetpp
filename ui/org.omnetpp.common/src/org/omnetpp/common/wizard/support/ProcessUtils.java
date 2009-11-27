@@ -56,6 +56,10 @@ public class ProcessUtils {
         return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, timeout));
     }
 
+    /**
+     * Finds the given executable in the PATH, and returns it with a full path.
+     * If not found, it returns the original string.
+     */
     public static String lookupExecutable(String name) {
         return org.omnetpp.common.util.ProcessUtils.lookupExecutable(name);
     }
