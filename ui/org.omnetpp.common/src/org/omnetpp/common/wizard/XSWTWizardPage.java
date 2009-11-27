@@ -3,7 +3,6 @@ package org.omnetpp.common.wizard;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +36,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 	protected String condition; // FreeMarker expr, used as isEnabled() condition
 	protected Map<String,Control> widgetMap;
 	protected CreationContext context; // to transfer context from populatePage() to createControl()
+    protected Composite composite;
 	
 	public XSWTWizardPage(String name, ContentTemplate creatorTemplate, String condition, IFile xswtFile) throws IOException, CoreException {
 		super(name);
@@ -56,15 +56,8 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 	    this.condition = condition;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void createControl(Composite parent) {
-
-        // WORKAROUND: wizard blows up horizontally if we put a text or label widget into it
-        // with some long text. This is because the wizard window wants to be as big as the
-        // preferred size (see Control.computeSize()) of the contents. The workaround is to
-        // override computeSize() to return the size of the parent. This solution looks a bit harsh, 
-        // but others like setting GridData.widthHint don't work.
-        Composite composite = new Composite(parent, SWT.NONE) {
+        composite = new Composite(parent, SWT.NONE) {
             @Override
             public Point computeSize(int whint, int hhint, boolean changed) {
                 Point size = super.computeSize(whint, hhint, changed);
@@ -75,70 +68,98 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
         composite.setLayout(new FillLayout());
         setControl(composite);
         
+        if (context != null) {
+            populatePage(context); // do deferred populatePage() call
+            context = null; // to be safe
+        }
+	}
+
+	public void populatePage(CreationContext context) {
+	    if (composite == null) {
+	        this.context = context; // defer to createControl()
+	    }
+	    else {
+	        recreateForm(context);
+	        if (widgetMap != null)
+	            putValuesIntoControls(context);
+	    }
+	}
+
+    @SuppressWarnings("unchecked")
+    protected void recreateForm(CreationContext context) {
+        System.out.println("recreating page " + getName());
+        
+        Assert.isNotNull(composite); // as ensured by populatePage()
+
+        // dispose previous content
+        for (Control control : composite.getChildren())
+            control.dispose();
+        
+        // process XSWT source as a FreeMarker template
+        String processedXswt = null;
+        try {
+            processedXswt = creatorTemplate.evaluate(xswtContent, context.getVariables());
+        } 
+        catch (Exception e) {
+            handleError("Error processing the form " + (xswtFileNameInfo!=null ? "from "+xswtFileNameInfo : getName()) + " as a FreeMarker template", e); 
+            return;
+        }
+        
+        // recreate XSWT form
         ClassLoader oldExtraClassLoader = XSWT.getExtraClassLoader();
         XSWT.setExtraClassLoader(creatorTemplate.getClassLoader()); // ensure access to custom widget classes
         Composite xswtHolder = null;
-    	try {
-    	    // instantiate XSWT form
-    		xswtHolder = new Composite(composite, SWT.NONE);
-    		xswtHolder.setLayout(new GridLayout());
-    		widgetMap = (Map<String,Control>) XSWT.create(xswtHolder, new ByteArrayInputStream(xswtContent.getBytes())); 
-    		
-    		if (context != null) {
-    			// do deferred populatePage() call
-    			populatePage(context);
-    			context = null; // to be safe
-    		}
-    		
-    	} catch (Exception e) {
-    	    xswtHolder.dispose();
-    		widgetMap = new HashMap<String, Control>(); // fake it
-    		displayError(composite, e); 
-		}
-    	finally {
+        try {
+            // instantiate XSWT form
+            xswtHolder = new Composite(composite, SWT.NONE);
+            xswtHolder.setLayout(new GridLayout());
+            widgetMap = (Map<String,Control>) XSWT.create(xswtHolder, new ByteArrayInputStream(processedXswt.getBytes()));
+            composite.layout(true);
+        } 
+        catch (Exception e) {
+            handleError("Error creating form " + (xswtFileNameInfo!=null ? "from "+xswtFileNameInfo : getName()), e); 
+        }
+        finally {
             XSWT.setExtraClassLoader(oldExtraClassLoader);
-    	}
-	}
-	
-	public void displayError(Composite composite, Exception e) {
-		String msg = "Error creating form " + (xswtFileNameInfo!=null ? "from "+xswtFileNameInfo : getName());
-		CommonPlugin.logError(msg, e);
-		
-		// create error text widget
-		Text errorText = new Text(composite, SWT.MULTI|SWT.READ_ONLY|SWT.WRAP);
-		errorText.setText(msg + ":\n\n" + e.getClass().getSimpleName()+": "+e.getMessage());
-	}
-	
-	public void populatePage(CreationContext context) {
-		if (widgetMap == null) {
-			// call too early -- defer it to createControl()
-			this.context = context; 
-		}
-		else {
-			// fill up controls with values from the context
-			for (String key : widgetMap.keySet()) {
-				Control control = widgetMap.get(key);
-				Object value = context.getVariables().get(key);
-				if (value != null) {
-					try {
-					    if (value instanceof String) // khmm... substitution for object trees is not so simple
-					        value = creatorTemplate.evaluate((String)value, context.getVariables());
-						XSWTDataBinding.putValueIntoControl(control, value, context);
-					}
-					catch (Exception e) {
-						// NumberFormatException, ParseException (for date/time), something like that
-						String message = "Cannot put value '"+value+"' into "+control.getClass().getSimpleName()+" control '"+key+"'";
-						MessageDialog.openError(getShell(), "Error", "Wizard page: "+message);
-						CommonPlugin.logError(message, e);
-					}
-				}
-			}
-		}
-	}
+        }
+    }
+    
+    protected void handleError(String message, Exception e) {
+        CommonPlugin.logError(message, e);
+        widgetMap = null;
+        for (Control control : composite.getChildren())
+            control.dispose();
+        Text errorText = new Text(composite, SWT.MULTI|SWT.READ_ONLY|SWT.WRAP);
+        errorText.setText(message + ":\n\n" + e.getClass().getSimpleName()+": "+e.getMessage());
+        composite.layout(true);
+    }
+
+    protected void putValuesIntoControls(CreationContext context) {
+        // fill up controls with values from the context
+        for (String key : widgetMap.keySet()) {
+        	Control control = widgetMap.get(key);
+        	Object value = context.getVariables().get(key);
+        	if (value != null) {
+        		try {
+        		    if (value instanceof String) // khmm... substitution for object trees is not so simple
+        		        value = creatorTemplate.evaluate((String)value, context.getVariables());
+        			XSWTDataBinding.putValueIntoControl(control, value, context);
+        		}
+        		catch (Exception e) {
+        			// NumberFormatException, ParseException (for date/time), something like that
+        			String message = "Cannot put value '"+value+"' into "+control.getClass().getSimpleName()+" control '"+key+"'";
+        			MessageDialog.openError(getShell(), "Error", "Wizard page: "+message);
+        			CommonPlugin.logError(message, e);
+        		}
+        	}
+        }
+    }
 
 	public void extractPageContent(CreationContext context) {
+		if (widgetMap == null)
+		    return; // there was an error on creation
+		
 		// extract data from the XSWT form
-		Assert.isNotNull(widgetMap);
 		for (String widgetName : widgetMap.keySet()) {
 			Control control = widgetMap.get(widgetName);
 			Object value = XSWTDataBinding.getValueFromControl(control, context);
