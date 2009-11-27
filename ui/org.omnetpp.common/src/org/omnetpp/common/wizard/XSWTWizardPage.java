@@ -38,7 +38,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 	protected Map<String,Control> widgetMap;
 	protected CreationContext context; // to transfer context from populatePage() to createControl()
 	
-	public XSWTWizardPage(ContentTemplate creatorTemplate, String name, IFile xswtFile, String condition) throws IOException, CoreException {
+	public XSWTWizardPage(String name, ContentTemplate creatorTemplate, String condition, IFile xswtFile) throws IOException, CoreException {
 		super(name);
         this.creatorTemplate = creatorTemplate;
         this.xswtFileNameInfo = xswtFile.getFullPath().toString();

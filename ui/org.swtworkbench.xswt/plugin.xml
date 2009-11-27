@@ -14,7 +14,8 @@
             id="com.swtworkbench.community.xswt.editors.XSWTEditor">
       </editor>
    </extension>
-
+   
+<!-- commented out so that it does not mislead users. -Andras
    <extension
          point="org.eclipse.ui.newWizards">
       <category
@@ -29,6 +30,7 @@
             id="com.swtworkbench.community.xswt.editor.wizards.XSWTNewWizard">
       </wizard>
    </extension>
+-->
 
    <extension
          point="org.eclipse.ui.views">
