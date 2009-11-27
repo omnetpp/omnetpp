@@ -21,12 +21,12 @@
         </label>
 
         <label text="Node:"/>
-        <nedTypeChooser x:id="nodeTypeName" acceptedTypes="NedTypeChooser.MODULE">
+        <nedTypeChooser x:id="nodeType" acceptedTypes="NedTypeChooser.MODULE">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </nedTypeChooser>
 
         <label text="Channel:"/>
-        <nedTypeChooser x:id="channelTypeName" acceptedTypes="NedTypeChooser.CHANNEL">
+        <nedTypeChooser x:id="channelType" acceptedTypes="NedTypeChooser.CHANNEL">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </nedTypeChooser>
 

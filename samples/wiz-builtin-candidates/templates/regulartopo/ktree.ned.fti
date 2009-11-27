@@ -1,8 +1,8 @@
 <#-- template include for network.ned.ftl -->
 
-<#if !NedUtils.isVisibleType(nodeTypeName,targetFolder)>
-<#assign nodeTypeName = StringUtils.makeValidIdentifier(nodeTypeName)>
-module ${nodeTypeName} {
+<#if !NedUtils.isVisibleType(nodeType,targetFolder)>
+<#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
+module ${nodeType} {
     parameters:
         @display("i=misc/node_vs");
     gates:
@@ -11,9 +11,9 @@ module ${nodeTypeName} {
 }
 </#if>
 
-<#if channelTypeName!="" && !NedUtils.isVisibleType(channelTypeName,targetFolder)>
-<#assign channelTypeName = StringUtils.makeValidIdentifier(channelTypeName)>
-channel ${channelTypeName} extends ned.DatarateChannel {
+<#if channelType!="" && !NedUtils.isVisibleType(channelType,targetFolder)>
+<#assign channelType = StringUtils.makeValidIdentifier(channelType)>
+channel ${channelType} extends ned.DatarateChannel {
     parameters:
         int cost = default(0);
 }
@@ -27,7 +27,7 @@ network ${nedTypeName}
     parameters:
         int levels = default(${treeLevels});  // 1 = root only
     submodules:
-        node[2^levels-1]: ${nodeTypeName};
+        node[2^levels-1]: ${nodeType};
     connections:
         for i=1..sizeof(node)-1 {
             node[i].parent <-->${channelSpec} node[floor((i-1)/2)].child++;
@@ -40,7 +40,7 @@ network ${nedTypeName}
         int k = default(${treeK}); // tree branching factor
         int levels = default(${treeLevels});  // 1 = root only
     submodules:
-        node[(k^levels-1) / (k-1)]: ${nodeTypeName};
+        node[(k^levels-1) / (k-1)]: ${nodeType};
     connections:
         for i=1..sizeof(node)-1 {
             node[i].parent <-->${channelSpec} node[floor((i-1)/k).child++;
@@ -53,7 +53,7 @@ network ${nedTypeName}
     submodules:
 <#list 0..treeLevels-1 as level>
   <#list 0..Math.pow(treeK, level)-1 as i>
-        node_${level}_${i}: ${nodeTypeName};
+        node_${level}_${i}: ${nodeType};
   </#list>
 
 </#list>

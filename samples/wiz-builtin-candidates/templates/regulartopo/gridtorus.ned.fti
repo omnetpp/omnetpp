@@ -1,8 +1,8 @@
 <#-- template include for network.ned.ftl -->
 
-<#if !NedUtils.isVisibleType(nodeTypeName,targetFolder)>
-<#assign nodeTypeName = StringUtils.makeValidIdentifier(nodeTypeName)>
-module ${nodeTypeName} {
+<#if !NedUtils.isVisibleType(nodeType,targetFolder)>
+<#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
+module ${nodeType} {
     parameters:
         @display("i=misc/node_vs");
     gates:
@@ -13,9 +13,9 @@ module ${nodeTypeName} {
 }
 </#if>
 
-<#if channelTypeName!="" && !NedUtils.isVisibleType(channelTypeName,targetFolder)>
-<#assign channelTypeName = StringUtils.makeValidIdentifier(channelTypeName)>
-channel ${channelTypeName} extends ned.DatarateChannel {
+<#if channelType!="" && !NedUtils.isVisibleType(channelType,targetFolder)>
+<#assign channelType = StringUtils.makeValidIdentifier(channelType)>
+channel ${channelType} extends ned.DatarateChannel {
     parameters:
         int cost = default(0);
 }
@@ -29,7 +29,7 @@ network ${nedTypeName}
         int columns = default(${columns});
         int rows = default(${rows});
     submodules:
-        node[columns*rows]: ${nodeTypeName};
+        node[columns*rows]: ${nodeType};
     connections:
 <#if grid>
         for i=0..rows-1, for j=0..columns-1 {
@@ -53,7 +53,7 @@ network ${nedTypeName}
     submodules:
 <#list 0..rows-1 as i>
   <#list 0..columns-1 as j>
-        node_${i}_${j}: ${nodeTypeName};
+        node_${i}_${j}: ${nodeType};
   </#list>
 
 </#list>

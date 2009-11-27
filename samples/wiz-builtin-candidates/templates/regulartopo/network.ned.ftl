@@ -12,8 +12,8 @@ ${bannerComment}
 <#assign columns = columns?number>
 <#assign rows = rows?number>
 
-<#if channelTypeName != "">
-  <#assign channelSpec = " " + channelTypeName + " <-->">
+<#if channelType != "">
+  <#assign channelSpec = " " + channelType + " <-->">
 <#else>
   <#assign channelSpec = "">
 </#if>
