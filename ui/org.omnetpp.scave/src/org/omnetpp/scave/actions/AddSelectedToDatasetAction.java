@@ -20,8 +20,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.datatable.IDataControl;
 import org.omnetpp.scave.editors.ui.DatasetSelectionDialog;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Add;
@@ -54,15 +54,15 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 		if (activePanel == null)
 			return;
 
-		final DataTable table = activePanel.getTable();
+		final IDataControl control = activePanel.getDataControl();
 		String filterPattern = activePanel.getFilter().getFilterPattern();
 		ResultType type = editor.getBrowseDataPage().getActivePanelType();
 
 		boolean addByFilter = false;
-		if (table.getSelectionCount() == table.getItemCount()) {
+		if (control.getSelectionCount() == control.getItemCount()) {
 			addByFilter = MessageDialog.openQuestion(editor.getSite().getShell(),
 							"Add all",
-							"All items are selected from the table. " +
+							"All items are selected. " +
 							"It is more terse to specify them by the current filter expression, " +
 							"than adding them one-by-one.\n\n" +
 							"Would you like to use the current filter expression?");
@@ -88,10 +88,10 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 								ScaveModelUtil.createAdd(filterPattern, type));
 				}
 				else {
-					ResultFileManager manager = table.getResultFileManager();
+					ResultFileManager manager = control.getResultFileManager();
 					addItems = ResultFileManager.callWithReadLock(manager, new Callable<Collection<Add>>() {
 						public Collection<Add> call() {
-							return ScaveModelUtil.createAdds(table.getSelectedItems(), null);
+							return ScaveModelUtil.createAdds(control.getSelectedItems(), null);
 						}
 					});
 				}
@@ -115,8 +115,8 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		if (activePanel != null) {
-			DataTable table = activePanel.getTable();
-			return table.getSelectionCount() > 0;
+			IDataControl control = activePanel.getDataControl();
+			return control.getSelectionCount() > 0;
 		}
 		return false;
 	}

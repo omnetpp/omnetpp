@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.datatable.IDataControl;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 
 /**
@@ -57,19 +57,18 @@ public class SelectAllAction extends AbstractScaveAction {
 		else if (activePage == scaveEditor.getBrowseDataPage()) {
 			FilteredDataPanel panel = ((BrowseDataPage)activePage).getActivePanel();
 			if (panel != null) {
-				DataTable table = panel.getTable();
-				if (table != null) {
-					table.setFocus();
-					table.selectAll();
-					table.notifyListeners(SWT.Selection, null);
+				IDataControl control = panel.getDataControl();
+				if (control != null) {
+					control.setFocus();
+					control.selectAll();
+					control.notifyListeners(SWT.Selection, null);
 				}
 			}
 		}
 	}
 
 	@Override
-	protected boolean isApplicable(ScaveEditor editor,
-			IStructuredSelection selection) {
+	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		Control focusControl = Display.getDefault().getFocusControl();
 		Composite activePage = editor.getActiveEditorPage();
 		return activePage != null &&

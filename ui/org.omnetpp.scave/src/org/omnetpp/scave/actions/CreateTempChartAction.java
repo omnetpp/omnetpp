@@ -14,9 +14,12 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
@@ -39,25 +42,28 @@ public class CreateTempChartAction extends AbstractScaveAction {
 	}
 
 	@Override
-	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-		if (activePanel == null || activePanel.getTable().getSelectionCount() == 0)
-			return;
-
+	protected void doRun(ScaveEditor editor, final IStructuredSelection selection) {
 		final String datasetName = "dataset";
-		final ResultFileManager manager = activePanel.getTable().getResultFileManager();
+		final ResultFileManager manager = ((IDListSelection)selection).getResultFileManager(); // activePanel.getTable().getResultFileManager();
 		Dataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<Dataset>() {
 			public Dataset call() {
 				return ScaveModelUtil.createTemporaryDataset(
 						datasetName,
-						activePanel.getTable().getSelectedIDs(),
+						((IDListSelection)selection).toIDList(), // activePanel.getTable().getSelectedIDs(),
 						null,
 						manager);
 			}
 		});
 
 		String chartName = "temp" + ++counter; //FIXME generate proper name
-		ResultType type = activePanel.getTable().getType();
+		ResultType type = ((IDListSelection)selection).getResultType();//activePanel.getTable().getType();
+		if (type == null) {
+            MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
+            messageBox.setText("Cannot plot data.");
+            messageBox.setMessage("The selection contains no or more than one kind of scalar, vector and histogram data.");
+            messageBox.open();
+            return;
+		}
 		Chart chart = ScaveModelUtil.createChart(chartName, type);
 		dataset.getItems().add(chart);
 
@@ -80,11 +86,6 @@ public class CreateTempChartAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-		return editor.getActiveEditorPage()==editor.getBrowseDataPage() && activePanel != null && activePanel.getTable().getSelectionCount() > 0;
-
-		//TODO: wherever there is a vector(s) or scalars selected, we want to be able to plot them
-		//XXX for this to work, BrowseDataPage should update the selection when I switch between the Vectors/Scalars/Histograms pages
-		//return selection instanceof IDListSelection && selection.size() > 0;
+	    return selection instanceof IDListSelection && !selection.isEmpty();
 	}
 }

@@ -10,8 +10,8 @@ package org.omnetpp.scave.actions;
 import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.Action;
-import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.datatable.IDataControl;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
@@ -20,7 +20,7 @@ import org.omnetpp.scave.model2.FilterUtil;
 
 /**
  * Sets the filter of a filtered data panel.
- * The filter is determined by the selected cell of the table of the panel. 
+ * The filter is determined by the selected cell of the panel's control. 
  *
  * @author tomi
  */
@@ -31,13 +31,13 @@ public class SetFilterAction2 extends Action
 	String fieldValue;
 
 	public SetFilterAction2() {
-		setDescription("Sets the filter according to the clicked table cell.");
+		setDescription("Sets the filter according to the clicked cell.");
 		update(null);
 	}
 
 	/**
 	 * This method is called when the active panel or
-	 * the selected cell of the table changed.
+	 * the selected cell is changed.
 	 * It updates the parameters of the action.
 	 */
 	public void update(final FilteredDataPanel panel) {
@@ -45,10 +45,10 @@ public class SetFilterAction2 extends Action
 		if (panel != null) {
 			ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
 				public Object call() {
-					DataTable table = panel.getTable();
-					ResultItem item = table.getSelectedItem();
-					if (item != null && table.getSelectedField() != null) {
-						ResultItemField field = new ResultItemField(table.getSelectedField());
+					IDataControl control = panel.getDataControl();
+					ResultItem item = control.getSelectedItem();
+					if (item != null && control.getSelectedField() != null) {
+						ResultItemField field = new ResultItemField(control.getSelectedField());
 						fieldName = field.getName();
 						fieldValue = field.getFieldValue(item);
 				

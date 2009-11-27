@@ -7,8 +7,8 @@
 
 package org.omnetpp.scave.views;
 
+import static org.omnetpp.scave.TestSupport.DATASET_VIEW_ALL_PANEL_ID;
 import static org.omnetpp.scave.TestSupport.DATASET_VIEW_HISTOGRAMS_PANEL_ID;
-import static org.omnetpp.scave.TestSupport.DATASET_VIEW_MAIN_PANEL_ID;
 import static org.omnetpp.scave.TestSupport.DATASET_VIEW_SCALARS_PANEL_ID;
 import static org.omnetpp.scave.TestSupport.DATASET_VIEW_VECTORS_PANEL_ID;
 import static org.omnetpp.scave.TestSupport.WIDGET_ID;
@@ -36,7 +36,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -54,19 +55,27 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
+import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.datatable.FilteredDataTabFolder;
+import org.omnetpp.scave.editors.datatable.IDataControl;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.model.AddDiscardOp;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.HistogramChart;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ResultItemRef;
@@ -83,11 +92,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 
 	public static final String ID = "org.omnetpp.scave.DatasetView";
 
-	private Composite panel;
-	private StackLayout layout;
-	private FilteredDataPanel vectorsPanel;
-	private FilteredDataPanel scalarsPanel;
-	private FilteredDataPanel histogramsPanel;
+	private FilteredDataTabFolder tabFolder;
 
 	private boolean viewControlCreated;
 
@@ -95,9 +100,6 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private Dataset selectedDataset;
 	private DatasetItem selectedItem;
 
-	private IAction showScalarsAction;
-	private IAction showVectorsAction;
-	private IAction showHistogramsAction;
 	private IAction selectAllAction;
 	private IAction toggleFilterAction;
 	private SetFilterAction2 setFilterAction;
@@ -127,60 +129,65 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		initActions();
 		hookPageListeners();
 		createToolbarButtons();
-		createContextMenu(vectorsPanel);
-		createContextMenu(scalarsPanel);
-		createContextMenu(histogramsPanel);
+        configurePanel(tabFolder.getAllPanel());
+		configurePanel(tabFolder.getVectorsPanel());
+        configurePanel(tabFolder.getScalarsPanel());
+		configurePanel(tabFolder.getHistogramsPanel());
+        createContextMenu(tabFolder.getAllPanel());
+		createContextMenu(tabFolder.getVectorsPanel());
+		createContextMenu(tabFolder.getScalarsPanel());
+		createContextMenu(tabFolder.getHistogramsPanel());
 	}
 
 
 	@Override
 	protected Control createViewControl(Composite parent) {
-		panel = new Composite(parent, SWT.NONE);
-		panel.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
-											  GridData.GRAB_VERTICAL |
-											  GridData.FILL_BOTH));
-		layout = new StackLayout();
-		panel.setLayout(layout);
-
-		// create pages
-		vectorsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.VECTOR_LITERAL));
-		scalarsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.SCALAR_LITERAL));
-		histogramsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.HISTOGRAM_LITERAL));
-
-		setVisibleDataPanel(vectorsPanel);
+		tabFolder = new FilteredDataTabFolder(parent, SWT.NONE);
+        tabFolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.FILL_BOTH));
+		setVisibleDataPanel(tabFolder.getVectorsPanel());
 		showFilter(false);
 
 		viewControlCreated = true;
 
 		if (enableGuiTest) {
-			panel.setData(WIDGET_ID, DATASET_VIEW_MAIN_PANEL_ID);
-			scalarsPanel.setData(WIDGET_ID, DATASET_VIEW_SCALARS_PANEL_ID);
-			vectorsPanel.setData(WIDGET_ID, DATASET_VIEW_VECTORS_PANEL_ID);
-			histogramsPanel.setData(WIDGET_ID, DATASET_VIEW_HISTOGRAMS_PANEL_ID);
+            tabFolder.getAllPanel().setData(WIDGET_ID, DATASET_VIEW_ALL_PANEL_ID);
+			tabFolder.getScalarsPanel().setData(WIDGET_ID, DATASET_VIEW_SCALARS_PANEL_ID);
+			tabFolder.getVectorsPanel().setData(WIDGET_ID, DATASET_VIEW_VECTORS_PANEL_ID);
+			tabFolder.getHistogramsPanel().setData(WIDGET_ID, DATASET_VIEW_HISTOGRAMS_PANEL_ID);
 		}
 
-		return panel;
+		return tabFolder;
 	}
 
 	private FilteredDataPanel configurePanel(FilteredDataPanel panel) {
-		panel.getTable().addSelectionListener(new SelectionAdapter() {
+		IDataControl control = panel.getDataControl();
+        control.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				DataTable table = (DataTable)e.widget;
-				if (table.getSelectionCount() == 0)
+				IDataControl control = (IDataControl)e.widget;
+				if (control.getSelectionCount() == 0)
 					setSelection(StructuredSelection.EMPTY);
 				else {
-					IDListSelection selection = new IDListSelection(table.getSelectedIDs(), table.getResultFileManager());
+					IDListSelection selection = new IDListSelection(control.getSelectedIDs(), control.getResultFileManager());
 					setSelection(selection);
 				}
 			}
+		});
+		control.addMouseListener(new MouseListener() {
+            public void mouseDoubleClick(MouseEvent e) {
+                if (e.getSource() instanceof IDataControl)
+                    new CreateTempChartAction().run();
+            }
+
+            public void mouseDown(MouseEvent e) {
+            }
+
+            public void mouseUp(MouseEvent e) {
+            }
 		});
 		return panel;
 	}
 
 	private void initActions() {
-		showScalarsAction = new ShowTableAction(ResultType.SCALAR_LITERAL);
-		showVectorsAction = new ShowTableAction(ResultType.VECTOR_LITERAL);
-		showHistogramsAction = new ShowTableAction(ResultType.HISTOGRAM_LITERAL);
 		toggleFilterAction = new ToggleFilterAction();
 		toggleFilterAction.setChecked(isFilterVisible());
 		setFilterAction = new SetFilterAction2();
@@ -193,19 +200,15 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
 		manager.add(toggleFilterAction);
 		manager.add(new Separator());
-		manager.add(showScalarsAction);
-		manager.add(showVectorsAction);
-		manager.add(showHistogramsAction);
-
-		showVectorsAction.setChecked(true);
 	}
 
 	private void createContextMenu(final FilteredDataPanel panel) {
-		DataTable table = panel.getTable();
-		IMenuManager menuManager = table.getContextMenuManager();
-		menuManager.add(new ChooseTableColumnsAction(table));
+		IDataControl control = panel.getDataControl();
+		IMenuManager menuManager = control.getContextMenuManager();
+		if (control instanceof DataTable)
+		    menuManager.add(new ChooseTableColumnsAction((DataTable)control));
 		menuManager.add(setFilterAction);
-		table.addSelectionListener(new SelectionAdapter() {
+		control.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
 					public Object call() throws Exception {
@@ -264,7 +267,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 						scheduledUpdate = new Runnable() {
 							public void run() {
 								scheduledUpdate = null;
-								updateDataTable();
+								updateDataControl();
 							}
 						};
 						Display.getDefault().asyncExec(scheduledUpdate);
@@ -277,7 +280,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				public void notifyChanged(Notification notification) {
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							updateDataTable();
+							updateDataControl();
 						}
 					});
 				}
@@ -310,55 +313,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		}
 	}
 
-	private FilteredDataPanel getVisibleDataPanel() {
-		return layout == null ? null : (FilteredDataPanel)layout.topControl;
-	}
-
-	private ResultType getVisibleResultType() {
-		FilteredDataPanel panel = getVisibleDataPanel();
-		return (panel == scalarsPanel ? ResultType.SCALAR_LITERAL :
-				panel == vectorsPanel ? ResultType.VECTOR_LITERAL :
-				panel == histogramsPanel ? ResultType.HISTOGRAM_LITERAL :
-				null);
-	}
-
-	private FilteredDataPanel getFilteredDataPanel(long id) {
-		int type = ResultFileManager.getTypeOf(id);
-
-		if (type == ResultFileManager.SCALAR)
-			return scalarsPanel;
-		else if (type == ResultFileManager.VECTOR)
-			return vectorsPanel;
-		else if (type == ResultFileManager.HISTOGRAM)
-			return histogramsPanel;
-		else
-			return null;
-	}
-
-	private void setVisibleDataPanel(FilteredDataPanel table) {
-		if (layout.topControl != table) {
-			if (setFilterAction != null)
-				setFilterAction.update(table);
-			layout.topControl = table;
-			panel.layout();
-			updateContentDescription();
-		}
-	}
-
-	private void setSelectedAction(IAction action) {
-		action.setChecked(true);
-		if (action == showScalarsAction) {
-			showVectorsAction.setChecked(false);
-			showHistogramsAction.setChecked(false);
-		}
-		else if (action == showVectorsAction) {
-			showScalarsAction.setChecked(false);
-			showHistogramsAction.setChecked(false);
-		}
-		else if (action == showHistogramsAction) {
-			showScalarsAction.setChecked(false);
-			showVectorsAction.setChecked(false);
-		}
+	private void setVisibleDataPanel(FilteredDataPanel panel) {
+		if (setFilterAction != null)
+			setFilterAction.update(panel);
+		updateContentDescription();
 	}
 
 	private void workbechSelectionChanged(ISelection selection) {
@@ -369,8 +327,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		if (selection == this.selection)
 			return;
 
-		if (selection instanceof IStructuredSelection &&
-				((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
+		if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
 			EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
 			dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
 			item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
@@ -399,11 +356,11 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	}
 
 	private void selectResultItem(ResultItemRef item) {
-		FilteredDataPanel panel = getFilteredDataPanel(item.getID());
+		FilteredDataPanel panel = tabFolder.getFilteredDataPanel(item.getID());
 		if (panel != null && !panel.isDisposed()) {
-			DataTable table = panel.getTable();
-			if (!table.isDisposed()) {
-				table.setSelectionByID(item.getID());
+			IDataControl control = panel.getDataControl();
+			if (!control.isDisposed()) {
+				control.setSelectionByID(item.getID());
 			}
 		}
 	}
@@ -416,54 +373,56 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	
 			if (activeScaveEditor != null) {
 				ResultFileManager manager = activeScaveEditor.getResultFileManager();
-				scalarsPanel.setResultFileManager(manager);
-				vectorsPanel.setResultFileManager(manager);
-				histogramsPanel.setResultFileManager(manager);
+				tabFolder.setResultFileManager(manager);
 				labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(activeScaveEditor.getAdapterFactory()));
 				hideMessage();
 			}
 			else {
-				scalarsPanel.setResultFileManager(null);
-				vectorsPanel.setResultFileManager(null);
-				histogramsPanel.setResultFileManager(null);
+                tabFolder.setResultFileManager(null);
 				labelProvider = null;
 				showMessage("No active scave editor.");
 			}
 		}
 	}
 
-	/**
-	 * Make the first table containing items visible.
-	 */
-	private void switchToNonEmptyTable() {
-		FilteredDataPanel control = getVisibleDataPanel();
-		IAction action = null;
-		if (control == null || control.getIDList().isEmpty()) {
-			control = null;
-			if (!scalarsPanel.getIDList().isEmpty()) { control = scalarsPanel; action = showScalarsAction; }
-			if (!vectorsPanel.getIDList().isEmpty()) { control = vectorsPanel; action = showVectorsAction; }
-			if (!histogramsPanel.getIDList().isEmpty()) { control = histogramsPanel; action = showHistogramsAction; }
-			if (control != null)
-				setVisibleDataPanel(control);
-			if (action != null)
-				setSelectedAction(action);
-		}
-
-	}
-
 	private void setInput(Dataset dataset, DatasetItem item) {
 		if (selectedDataset != dataset || selectedItem != item) {
 			selectedDataset = dataset;
 			selectedItem = item;
-			updateDataTable();
-			switchToNonEmptyTable();
+			updateDataControl();
+			setActivePanel(item);
 			updateContentDescription();
 		}
 	}
 
+    private void setActivePanel(DatasetItem item) {
+        ResultType type = null;
+        
+        if (item instanceof AddDiscardOp)
+            type = ((AddDiscardOp)item).getType();
+        else if (item instanceof BarChart || item instanceof ScatterChart)
+            type = ResultType.SCALAR_LITERAL;
+        else if (item instanceof LineChart)
+            type = ResultType.VECTOR_LITERAL;
+        else if (item instanceof HistogramChart)
+            type = ResultType.HISTOGRAM_LITERAL;
+// TODO:
+//        else if (item instanceof Group)
+//            type = ;
+//        else if (item instanceof Apply)
+//            type = ((Apply)item).;
+//        else if (item instanceof Compute)
+//            type = ((Compute)item).;
+
+        if (type != null)
+            tabFolder.setActivePanel(type);
+        else
+            tabFolder.setActivePanel(tabFolder.getAllPanel());
+    }
+
 	private void updateContentDescription() {
 		if (labelProvider != null && selectedDataset != null) {
-			ResultType visibleType = getVisibleResultType();
+			ResultType visibleType = tabFolder.getActivePanelType();
 			String type = (visibleType == ResultType.SCALAR_LITERAL ? "scalars" :
 				 		   visibleType == ResultType.VECTOR_LITERAL ? "vectors" :
 				 		   visibleType == ResultType.HISTOGRAM_LITERAL ? "histograms" : null);
@@ -496,72 +455,80 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			super.showMessage(text);
 	}
 
-	private void updateDataTable() {
+	private void updateDataControl() {
 		if (activeScaveEditor == null) {
-			Assert.isTrue(scalarsPanel.getResultFileManager() == null);
-			Assert.isTrue(vectorsPanel.getResultFileManager() == null);
-			Assert.isTrue(histogramsPanel.getResultFileManager() == null);
-			scalarsPanel.setIDList(IDList.EMPTY);
-			vectorsPanel.setIDList(IDList.EMPTY);
-			histogramsPanel.setIDList(IDList.EMPTY);
+            Assert.isTrue(tabFolder.getAllPanel().getResultFileManager() == null);
+			Assert.isTrue(tabFolder.getScalarsPanel().getResultFileManager() == null);
+			Assert.isTrue(tabFolder.getVectorsPanel().getResultFileManager() == null);
+			Assert.isTrue(tabFolder.getHistogramsPanel().getResultFileManager() == null);
+            tabFolder.getAllPanel().setIDList(IDList.EMPTY);
+			tabFolder.getScalarsPanel().setIDList(IDList.EMPTY);
+			tabFolder.getVectorsPanel().setIDList(IDList.EMPTY);
+			tabFolder.getHistogramsPanel().setIDList(IDList.EMPTY);
+			tabFolder.refreshPanelTitles();
 			return;
 		}
 
 		final ResultFileManager manager = activeScaveEditor.getResultFileManager();
 		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
 			public Object call() {
+                IDList all = IDList.EMPTY;
 				IDList scalars = IDList.EMPTY;
 				IDList vectors = IDList.EMPTY;
 				IDList histograms = IDList.EMPTY;
 				if (selectedDataset != null) {
+                    all = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, null);
 					scalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.SCALAR_LITERAL);
 					vectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.VECTOR_LITERAL);
 					histograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.HISTOGRAM_LITERAL);
 				}
-				scalarsPanel.setIDList(scalars);
-				vectorsPanel.setIDList(vectors);
-				histogramsPanel.setIDList(histograms);
+                tabFolder.getAllPanel().setIDList(all);
+				tabFolder.getScalarsPanel().setIDList(scalars);
+				tabFolder.getVectorsPanel().setIDList(vectors);
+				tabFolder.getHistogramsPanel().setIDList(histograms);
+	            tabFolder.refreshPanelTitles();
 				return null;
 			}
 		});
 	}
 
 	private void showFilter(boolean show) {
-		vectorsPanel.showFilterPanel(show);
-		scalarsPanel.showFilterPanel(show);
-		histogramsPanel.showFilterPanel(show);
+        tabFolder.getAllPanel().showFilterPanel(show);
+		tabFolder.getVectorsPanel().showFilterPanel(show);
+		tabFolder.getScalarsPanel().showFilterPanel(show);
+		tabFolder.getHistogramsPanel().showFilterPanel(show);
 	}
 
 	private boolean isFilterVisible() {
-		return vectorsPanel.isFilterPanelVisible();
+		return tabFolder.getVectorsPanel().isFilterPanelVisible();
 	}
 
 	/*
 	 * Actions
 	 */
 
-	class ShowTableAction extends Action
+	class ShowDataControlAction extends Action
 	{
-		FilteredDataPanel table;
+		FilteredDataPanel panel;
 
-		public ShowTableAction(ResultType type) {
+		public ShowDataControlAction(ResultType type) {
 			super(null, IAction.AS_RADIO_BUTTON);
 
 			switch (type.getValue()) {
 			case ResultType.SCALAR:
 				setText("Show scalars");
 				setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS));
-				table = scalarsPanel;
+				panel = tabFolder.getScalarsPanel();
 				break;
 			case ResultType.VECTOR:
 				setText("Show vectors");
 				setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS));
-				table = vectorsPanel;
+				panel = tabFolder.getVectorsPanel();
 				break;
 			case ResultType.HISTOGRAM:
 				setText("Show histograms");
 				setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS));
-				table = histogramsPanel;
+				panel = tabFolder.getHistogramsPanel();
 				break;
 			default:
 				Assert.isLegal(false, "Unknown result type: " + type);
@@ -570,7 +537,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		}
 
 		public void run() {
-			setVisibleDataPanel(table);
+			setVisibleDataPanel(panel);
 		}
 	}
 
@@ -585,7 +552,8 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		@Override
 		public void run() {
 			boolean visible = isFilterVisible();
-			showFilter(!visible);
+			showFilter(
+			        !visible);
 			setText(visible ? "Show filter" : "Hide filter");
 		}
 	}
@@ -594,10 +562,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	{
 		@Override
 		public void run() {
-			FilteredDataPanel panel = getVisibleDataPanel();
-			if (panel != null && panel.getTable() != null) {
-				panel.getTable().setFocus();
-				panel.getTable().selectAll();
+			FilteredDataPanel panel = tabFolder.getActivePanel();
+			if (panel != null && panel.getDataControl() != null) {
+				panel.getDataControl().setFocus();
+				panel.getDataControl().selectAll();
 			}
 		}
 	}
