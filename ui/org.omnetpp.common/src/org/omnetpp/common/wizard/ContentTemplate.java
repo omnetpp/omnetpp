@@ -160,6 +160,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         variables.put("templateName", name);
         variables.put("templateDescription", description);
         variables.put("templateCategory", category);
+        variables.put("targetFolder", folder.getFullPath().toString());
         String projectName = folder.getProject().getName();
 		variables.put("rawProjectName", projectName);
         variables.put("projectName", projectName);
