@@ -312,3 +312,5 @@ freemarker
 builtins
 discoverable
 classpath
+stdout
+stateless

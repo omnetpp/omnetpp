@@ -43,6 +43,7 @@ import org.omnetpp.common.wizard.support.ProcessUtils;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
+import freemarker.log.Logger;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -68,6 +69,11 @@ public abstract class ContentTemplate implements IContentTemplate {
     private Image image;
     private boolean isDefault;
 
+    static {
+        // configure Freemarker to use the Eclipse log (and NOT print to stdout)
+        Logger.setLoggerFactory(new FreemarkerEclipseLoggerFactory());
+    }
+    
     // we need this ClassLoader for the Class.forName() calls in for both FreeMarker and XSWT.
     // Without it, templates (BeanWrapper) and XSWT would only be able to access classes 
     // from the eclipse plug-in from which their code was loaded. In contrast, we want them to
