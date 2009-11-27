@@ -68,7 +68,7 @@ import org.omnetpp.scave.model.ResultType;
  *
  * @author andras
  */
-public class DataTable extends Table {
+public class DataTable extends Table implements IDataControl {
 
 	/**
 	 * Keys used in getData(),setData()
@@ -115,6 +115,7 @@ public class DataTable extends Table {
 		COL_COUNT = new Column("Count", null, 50, true),
 		COL_MEAN = new Column("Mean", null, 60, true),
 		COL_STDDEV = new Column("StdDev", null, 60, true),
+        COL_VARIANCE = new Column("Variance", null, 60, true),
 		COL_MIN = new Column("Min", null, 60, false),
 		COL_MAX = new Column("Max", null, 60, false),
 		COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 60, false),
@@ -134,18 +135,18 @@ public class DataTable extends Table {
 		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
 		COL_VECTOR_ID,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX, COL_MIN_TIME, COL_MAX_TIME
+		COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX, COL_MIN_TIME, COL_MAX_TIME
 	};
 
 	private static final Column[] allHistogramColumns = new Column[] {
 		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX
+		COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX
 	};
 
 	private ResultType type;
 	private ResultFileManager manager;
-	private IDList idlist;
+	private IDList idList;
 	private ListenerList listeners;
 	private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
 	private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
@@ -212,14 +213,14 @@ public class DataTable extends Table {
 	}
 
 	public void setIDList(IDList idlist) {
-		this.idlist = idlist;
+		this.idList = idlist;
 		restoreSortOrder();
 		refresh();
 		fireContentChangedEvent();
 	}
 
 	public IDList getIDList() {
-		return idlist;
+		return idList;
 	}
 
 	public IMenuManager getContextMenuManager() {
@@ -272,7 +273,7 @@ public class DataTable extends Table {
 		IDList items = new IDList();
 
 		for (int i = 0; i < selectionIndices.length; ++i)
-			items.add(idlist.get(selectionIndices[i]));
+			items.add(idList.get(selectionIndices[i]));
 
 		return items;
 	}
@@ -285,14 +286,14 @@ public class DataTable extends Table {
 		ResultItem[] items = new ResultItem[selectionIndices.length];
 
 		for (int i = 0; i < items.length; ++i) {
-			items[i] = manager.getItem(idlist.get(selectionIndices[i]));
+			items[i] = manager.getItem(idList.get(selectionIndices[i]));
 		}
 
 		return items;
 	}
 
 	public void refresh() {
-		setItemCount((int)idlist.size());
+		setItemCount((int)idList.size());
 		clearAll();
 	}
 
@@ -310,7 +311,7 @@ public class DataTable extends Table {
 		return null;
 	}
 
-	protected void addColumn(Column newColumn) {
+	protected TableColumn addColumn(Column newColumn) {
 		visibleColumns.add(newColumn);
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
 		tableColumn.setText(newColumn.text);
@@ -330,6 +331,8 @@ public class DataTable extends Table {
 				}
 			}
 		});
+        
+        return tableColumn;
 	}
 
 	private void restoreSortOrder() {
@@ -348,43 +351,43 @@ public class DataTable extends Table {
 
 		boolean ascending = direction == SWT.UP;
 		if (COL_DIRECTORY.equals(column))
-			idlist.sortByDirectory(manager, ascending);
+			idList.sortByDirectory(manager, ascending);
 		else if (COL_FILE.equals(column))
-			idlist.sortByFileName(manager, ascending);
+			idList.sortByFileName(manager, ascending);
 		else if (COL_CONFIG.equals(column))
-			idlist.sortByRunAttribute(manager, CONFIGNAME, ascending);
+			idList.sortByRunAttribute(manager, CONFIGNAME, ascending);
 		else if (COL_RUNNUMBER.equals(column))
-			idlist.sortByRunAttribute(manager, RUNNUMBER, ascending);
+			idList.sortByRunAttribute(manager, RUNNUMBER, ascending);
 		else if (COL_RUN_ID.equals(column))
-			idlist.sortByRun(manager, ascending);
+			idList.sortByRun(manager, ascending);
 		else if (COL_MODULE.equals(column))
-			idlist.sortByModule(manager, ascending);
+			idList.sortByModule(manager, ascending);
 		else if (COL_DATA.equals(column))
-			idlist.sortByName(manager, ascending);
+			idList.sortByName(manager, ascending);
 		else if (COL_VALUE.equals(column))
-			idlist.sortScalarsByValue(manager, ascending);
+			idList.sortScalarsByValue(manager, ascending);
 		else if (COL_VECTOR_ID.equals(column))
-			idlist.sortVectorsByVectorId(manager, ascending);
+			idList.sortVectorsByVectorId(manager, ascending);
 		else if (COL_COUNT.equals(column))
-			idlist.sortVectorsByLength(manager, ascending);
+			idList.sortVectorsByLength(manager, ascending);
 		else if (COL_MEAN.equals(column))
-			idlist.sortVectorsByMean(manager, ascending);
+			idList.sortVectorsByMean(manager, ascending);
 		else if (COL_STDDEV.equals(column))
-			idlist.sortVectorsByStdDev(manager, ascending);
+			idList.sortVectorsByStdDev(manager, ascending);
 		else if (COL_MIN.equals(column))
-			idlist.sortVectorsByMin(manager, ascending);
+			idList.sortVectorsByMin(manager, ascending);
 		else if (COL_MAX.equals(column))
-			idlist.sortVectorsByMax(manager, ascending);
+			idList.sortVectorsByMax(manager, ascending);
 		else if (COL_EXPERIMENT.equals(column))
-			idlist.sortByRunAttribute(manager, EXPERIMENT, ascending);
+			idList.sortByRunAttribute(manager, EXPERIMENT, ascending);
 		else if (COL_MEASUREMENT.equals(column))
-			idlist.sortByRunAttribute(manager, MEASUREMENT, ascending);
+			idList.sortByRunAttribute(manager, MEASUREMENT, ascending);
 		else if (COL_REPLICATION.equals(column))
-			idlist.sortByRunAttribute(manager, REPLICATION, ascending);
+			idList.sortByRunAttribute(manager, REPLICATION, ascending);
 		else if (COL_MIN_TIME.equals(column))
-			idlist.sortVectorsByStartTime(manager, ascending);
+			idList.sortVectorsByStartTime(manager, ascending);
 		else if (COL_MAX_TIME.equals(column))
-			idlist.sortVectorsByEndTime(manager, ascending);
+			idList.sortVectorsByEndTime(manager, ascending);
 	}
 
 	protected void layoutColumns() {
@@ -409,7 +412,7 @@ public class DataTable extends Table {
 		if (manager == null)
 			return;
 
-		long id = idlist.get(lineNumber);
+		long id = idList.get(lineNumber);
 		item.setData(ITEM_KEY, (Long)id);
 
 		for (int i = 0; i < visibleColumns.size(); ++i) {
@@ -437,7 +440,7 @@ public class DataTable extends Table {
 
 		try {
 
-			long id = idlist.get(row);
+			long id = idList.get(row);
 			ResultItem result = manager.getItem(id);
 
 			if (COL_DIRECTORY.equals(column))
@@ -494,6 +497,10 @@ public class DataTable extends Table {
 					double stddev = vector.getStddev();
 					return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 				}
+                else if (COL_STDDEV.equals(column)) {
+                    double variance = vector.getVariance();
+                    return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
+                }
 				else if (COL_MIN.equals(column)) {
 					double min = vector.getMin();
 					return Double.isNaN(min) ? "n.a." : String.valueOf(min);
@@ -525,6 +532,10 @@ public class DataTable extends Table {
 					double stddev = histogram.getStddev();
 					return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 				}
+                else if (COL_VARIANCE.equals(column)) {
+                    double variance = histogram.getVariance();
+                    return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
+                }
 				else if (COL_MIN.equals(column)) {
 					double min = histogram.getMin();
 					return Double.isNaN(min) ? "n.a." : String.valueOf(min);
@@ -559,13 +570,13 @@ public class DataTable extends Table {
 		clipboard.dispose();
 	}
 
-	public void addDataTableListener(IDataTableListener listener) {
+	public void addDataListener(IDataListener listener) {
 		if (listeners == null)
 			listeners = new ListenerList();
 		listeners.add(listener);
 	}
 
-	public void removeDataTableListener(IDataTableListener listener) {
+	public void removeDataListener(IDataListener listener) {
 		if (listeners != null)
 			listeners.remove(listener);
 	}
@@ -573,7 +584,7 @@ public class DataTable extends Table {
 	protected void fireContentChangedEvent() {
 		if (listeners != null) {
 			for (Object listener : new ArrayList<Object>(Arrays.asList(this.listeners.getListeners())))
-				((IDataTableListener)listener).contentChanged(this);
+				((IDataListener)listener).contentChanged(this);
 		}
 	}
 
@@ -682,7 +693,7 @@ public class DataTable extends Table {
 	}
 
 	public void setSelectionByID(long id) {
-		int index = idlist.indexOf(id);
+		int index = idList.indexOf(id);
 		if (index >= 0)
 			setSelection(index);
 	}
