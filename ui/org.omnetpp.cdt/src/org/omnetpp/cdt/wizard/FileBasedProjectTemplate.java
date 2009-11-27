@@ -56,8 +56,8 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     }
 
     @Override
-    public CreationContext createContext(IContainer folder, IWizard wizard) {
-        CreationContext context = super.createContext(folder, wizard);
+    protected CreationContext createContext(IContainer folder, IWizard wizard, String wizardType) {
+        CreationContext context = super.createContext(folder, wizard, wizardType);
 
         // default values of recognized options
         context.setVariableIfMissing(PROP_ADDPROJECTREFERENCE, "true");

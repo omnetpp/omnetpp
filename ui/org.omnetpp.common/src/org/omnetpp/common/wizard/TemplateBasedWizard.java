@@ -339,8 +339,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
      * put extra variables into the context (i.e. a file name).
      */
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
-        CreationContext context = selectedTemplate.createContext(folder, this);
-        context.getVariables().put("wizardType", getWizardType());
+        CreationContext context = selectedTemplate.createContextFor(folder, this, getWizardType());
         return context;
     }
 

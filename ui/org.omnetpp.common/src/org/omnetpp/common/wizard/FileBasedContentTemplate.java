@@ -253,8 +253,8 @@ public class FileBasedContentTemplate extends ContentTemplate {
      * Overridden to add new variables into the context.
      */
 	@Override
-	public CreationContext createContext(IContainer folder, IWizard wizard) {
-		CreationContext context = super.createContext(folder, wizard);
+	protected CreationContext createContext(IContainer folder, IWizard wizard, String wizardType) {
+		CreationContext context = super.createContext(folder, wizard, wizardType);
 
 		// default values for recognized options (will be overwritten from property file)
 		context.getVariables().put(PROP_IGNORERESOURCES, "");

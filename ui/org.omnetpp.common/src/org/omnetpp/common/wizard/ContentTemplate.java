@@ -136,12 +136,27 @@ public abstract class ContentTemplate implements IContentTemplate {
     public void setIsDefault(boolean isDefault) {
         this.isDefault = isDefault;
     }
-    
-    public CreationContext createContext(IContainer folder, IWizard wizard) {
+
+    public CreationContext createContextFor(IContainer folder, IWizard wizard, String wizardType) {
+        // need to install our class loader while createContext runs: pre-registering classes
+        // with StaticModel (Math, FileUtils, StringUtils, etc) needs this;
+        // see freemarker.template.utility.ClassUtil.forName(String)
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClassLoader());
+        try {
+            return createContext(folder, wizard, wizardType);
+        } 
+        finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    protected CreationContext createContext(IContainer folder, IWizard wizard, String wizardType) {
     	CreationContext context = new CreationContext(this, folder, wizard);
     	
     	// pre-register some potentially useful template variables
     	Map<String, Object> variables = context.getVariables();
+        variables.put("wizardType", wizardType);
         variables.put("templateName", name);
         variables.put("templateDescription", description);
         variables.put("templateCategory", category);
