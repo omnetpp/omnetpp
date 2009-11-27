@@ -1,5 +1,6 @@
 <#-- template include for network.ned.ftl -->
-<#if generateNodeTypeDecl>
+<#if !NedUtils.isVisibleType(nodeTypeName,targetFolder)>
+<#assign nodeTypeName = StringUtils.makeValidIdentifier(nodeTypeName)>
 module ${nodeTypeName} {
     parameters:
         @display("i=misc/node_vs");
@@ -8,7 +9,8 @@ module ${nodeTypeName} {
 }
 </#if>
 
-<#if generateHubNodeTypeDecl>
+<#if !NedUtils.isVisibleType(hubNodeTypeName,targetFolder)>
+<#assign hubNodeTypeName = StringUtils.makeValidIdentifier(hubNodeTypeName)>
 module ${hubNodeTypeName} {
     parameters:
         @display("i=misc/node_vs");
@@ -17,7 +19,8 @@ module ${hubNodeTypeName} {
 }
 </#if>
 
-<#if generateChannelTypeDecl && channelTypeName!="">
+<#if channelTypeName!="" && !NedUtils.isVisibleType(channelTypeName,targetFolder)>
+<#assign channelTypeName = StringUtils.makeValidIdentifier(channelTypeName)>
 channel ${channelTypeName} extends ned.DatarateChannel {
     parameters:
         int cost = default(0);
