@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
 <!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <chapter id="_custom_wizards">
-
-<title>Custom wizards</title>
+<title>Custom Wizards</title>
 <section id="_motivation">
-<title>MOTIVATION</title>
+<title>Motivation</title>
 <simpara>TODO: mire szolgal; kinek kellene ilyet csinalni es mi celbol&#8230;</simpara>
-<simpara>The OMNeT<literal> IDE offers several wizards via the File|New menu: New OMNeT</literal>
+<simpara>The OMNeT++ IDE offers several wizards via the File|New menu: New OMNeT++
 Project, New Simple Module, New Compound Module, New Ini File, and so on.
 By default these wizards already offer useful functionality to the user,
 but using the information in this chapter, it is possible to add to them
@@ -29,7 +28,7 @@ The right set of capable wizards can give a jump start to users, and
 emphasizes learning by doing.</simpara>
 </section>
 <section id="_overview">
-<title>OVERVIEW</title>
+<title>Overview</title>
 <simpara>Custom wizards are read from the templates/ folder of OMNeT++ projects.</simpara>
 <simpara>Wizards are implemented by mixing a templating engine (for generating
 the output files) and a GUI description language (for custom wizard pages).
@@ -56,7 +55,8 @@ with the exception of template.properties and other known special-purpose files.
 template processing (and the ".ftl" extension gets chopped off) before copying.
 Other files are copied verbatim.</simpara>
 <simpara>When the wizard is being used, a pool of variables is kept by the wizard dialog.
-These variables are the ones which will be eventually substituted into the <emphasis role="strong">.ftl
+These variables are the ones which will be eventually substituted into the *.ftl
+files (${varname} syntax). These variables are initialized from the key=value
 lines in the template.propeties files; they can get displayed and/or edited
 on custom wizard pages; and eventually they get substituted into *.ftl files.
 Some variables have special meaning and are interpreted by the wizard dialog
@@ -64,14 +64,15 @@ Some variables have special meaning and are interpreted by the wizard dialog
 NED Source Folders by the New OMNeT++ Project wizard). Variables can be used
 to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
-in the template (</emphasis>.ftl) files.</simpara>
+in the template (*.ftl) files.</simpara>
 </section>
 <section id="_template_processing">
-<title>TEMPLATE PROCESSING</title>
+<title>Template Processing</title>
 <simpara>Template processing uses the FreeMarker library (<ulink url="http://freemarker.org">http://freemarker.org</ulink>), and
-all template syntax supported by FreeMarker can be used. Especially, variable</simpara>
+all template syntax supported by FreeMarker can be used. Especially, variable
+references of the syntax ${varName} will be replaced with the variable value.</simpara>
 <simpara>The FreeMarker language also offers constructs that make it a full programming
-language: variable assigments, conditionals, loops, switch statement,
+language: variable assignments, conditionals, loops, switch statement,
 functions, macros, expression evaluation, built-in operators, etc, as well
 as access to fields and methods of classes defined in Java. This means that
 any algorithm can be expressed in the FreeMarker language, and if that would
@@ -247,7 +248,7 @@ sanitized project name in all uppercase
 <simpara>Other variables may come from custom template pages, see later.</simpara>
 </section>
 <section id="_the_template_properties_file">
-<title>THE TEMPLATE.PROPERTIES FILE</title>
+<title>The template.properties File</title>
 <simpara>The template.properties file is a standard Java property file (key=value syntax).
 That file can be used to supply a template name, a template description,
 and various other options.</simpara>
@@ -379,7 +380,7 @@ makemakeOptions
 in the next section.</simpara>
 </section>
 <section id="_custom_wizard_pages">
-<title>CUSTOM WIZARD PAGES</title>
+<title>Custom Wizard Pages</title>
 <simpara>The following properties can be used to define custom pages in the wizard. &lt;i&gt; is
 an integer page ID; their ordering defines the order of wizard pages.</simpara>
 <variablelist>
@@ -437,7 +438,8 @@ page.&lt;i&gt;.condition
 </varlistentry>
 </variablelist>
 <simpara>All property file entries are available as template variables too. Also, most
-property values may refer to other property values or template variables, using</simpara>
+property values may refer to other property values or template variables, using
+the ${name} syntax.</simpara>
 <simpara>Custom wizard pages are defined in XSWT (<ulink url="http://xswt.sourceforge.net">http://xswt.sourceforge.net</ulink>,
 <ulink url="http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home">http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home</ulink>).</simpara>
 <note><simpara>In the future, Java-based custom wizard pages will also be supported.
@@ -450,7 +452,7 @@ property values may refer to other property values or template variables, using<
         did not work out well.</simpara></note>
 </section>
 <section id="_binding_of_template_variables_to_widgets">
-<title>BINDING OF TEMPLATE VARIABLES TO WIDGETS</title>
+<title>Binding of Template Variables to Widgets</title>
 <simpara>XSWT allows one to tag widgets with id attributes. Widget IDs will become the
 names of template variables, with the values being the content of widgets.
 For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
@@ -479,7 +481,7 @@ layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}</li
 <simpara>The property file takes precedence over values in the XSWT file.</simpara>
 </section>
 <section id="_xswt_data_binding">
-<title>XSWT DATA BINDING</title>
+<title>XSWT Data Binding</title>
 <simpara>This is the way how values get transferred between widgets and template
 variables (R=read, W=write):</simpara>
 <variablelist>
@@ -708,7 +710,7 @@ but are useful in forms as structuring elements are: Composite, Group, Sash,
 TabFolder/TabItem.</simpara>
 </section>
 <section id="_conditional_custom_pages">
-<title>CONDITIONAL CUSTOM PAGES</title>
+<title>Conditional Custom Pages</title>
 <simpara>Now that templating and XSWT were covered, we can revisit how one can use page
 conditions. Consider the following practical example:</simpara>
 <simpara>Suppose a wizard for wireless networks. On the first page of the wizard there
@@ -727,7 +729,7 @@ page.4.condition = wantRouting &amp;&amp; protocol=="DSDV"</literallayout>
 <simpara>You get the idea.</simpara>
 </section>
 <section id="_wizard_types">
-<title>WIZARD TYPES</title>
+<title>Wizard Types</title>
 <simpara>The IDE offers several OMNeT<literal>-related wizard dialogs: New OMNeT</literal> Project,
 New NED File, New Simple Module, and so on. Every content template can
 contribute to one or more of those wizard dialogs. The template author
@@ -829,7 +831,7 @@ newFileName variable into the context.</simpara>
 </section>
 </section>
 <section id="_using_custom_widget_classes">
-<title>USING CUSTOM WIDGET CLASSES</title>
+<title>Using Custom Widget Classes</title>
 <simpara>Since XSWT works via Java reflection, your own custom widgets can be used
 the forms very much like normal SWT widgets. No glue or registration code
 is needed, just add their package to the &lt;import&gt; tags at the top of the XSWT
@@ -863,7 +865,7 @@ bean wrapper (e.g. ${classes["org.example.SomeClass"].someStaticMethod(&#8230;)}
 see the example wizards.)</simpara>
 </section>
 <section id="_utility_classes_available_from_the_templates">
-<title>UTILITY CLASSES AVAILABLE FROM THE TEMPLATES</title>
+<title>Utility Classes Available from the Templates</title>
 <simpara>The following Java classes have been added to the context:
   Math          java.lang.Math
   FileUtils     U
@@ -887,24 +889,10 @@ see the example wizards.)</simpara>
 <simpara>Represents the Java Math class, which contains mathematical functions.
 See <ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html">http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html</ulink></simpara>
 <simpara>Math functions:</simpara>
-<variablelist>
-<varlistentry>
-<term>
-double cos(double x)
-</term>
-<term>
-double sin(double x)
-</term>
-<term>
-double pow(double x, double y)
-</term>
-<listitem>
-<simpara>
-  etc.
-</simpara>
-</listitem>
-</varlistentry>
-</variablelist>
+<literallayout class="monospaced">double cos(double x)</literallayout>
+<literallayout class="monospaced">double sin(double x)</literallayout>
+<literallayout class="monospaced">double pow(double x, double y)</literallayout>
+<simpara>etc.</simpara>
 </section>
 <section id="_fileutils">
 <title>FileUtils:</title>
@@ -917,176 +905,80 @@ and the other files on "external" files, i.e. files in the file system.
 Files are interpreted in the Java platform&#8217;s default encoding (unless XML files,
 which specify their own encoding.)</simpara>
 <simpara>FileUtils functions:</simpara>
-<variablelist>
-<varlistentry>
-<term>
-org.w3c.dom.Document readXMLFile(String fileName)
-</term>
-<term>
-org.w3c.dom.Document readExternalXMLFile(String fileName)
-</term>
+<literallayout class="monospaced">org.w3c.dom.Document readXMLFile(String fileName)
+org.w3c.dom.Document readExternalXMLFile(String fileName)</literallayout>
+<itemizedlist>
 <listitem>
 <simpara>
-    Parses an XML file, and return the Document object of the resulting
-    DOM tree.
+Parses an XML file, and return the Document object of the resulting
+DOM tree.
 </simpara>
+<literallayout class="monospaced">Object readJSONFile(String fileName)
+Object readExternalJSONFile(String fileName)</literallayout>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
-Object readJSONFile(String fileName)
-</term>
-<term>
-Object readExternalJSONFile(String fileName)
-</term>
 <listitem>
 <simpara>
-    Parses a JSON file. The result is a Boolean, Integer, Double, String,
-    List or Map, or any data structure composed of them.
+Parses a JSON file. The result is a Boolean, Integer, Double, String,
+List or Map, or any data structure composed of them.
 </simpara>
+<literallayout class="monospaced">String[][] readCSVFile(String fileName, boolean ignoreFirstLine,
+                       boolean ignoreBlankLines, boolean ignoreCommentLines)
+String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine,
+                       boolean ignoreBlankLines, boolean ignoreCommentLines)</literallayout>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
-String[][] readCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines)
-</term>
-<term>
-String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines)
-</term>
 <listitem>
 <simpara>
-    Reads a CSV file. The result is an array of lines, where each line is
-    a string array. Additional method parameters control whether to discard the
-    first line of the file (which is usually a header line), whether to
-    ignore blank lines, and whether to ignore comment lines (those starting
-    with the # character). Comment lines are not part of the commonly accepted
-    CSV format, but they are supported here nevertheless, due to their
-    usefulness.
+Reads a CSV file. The result is an array of lines, where each line is
+a string array. Additional method parameters control whether to discard the
+first line of the file (which is usually a header line), whether to
+ignore blank lines, and whether to ignore comment lines (those starting
+with the # character). Comment lines are not part of the commonly accepted
+CSV format, but they are supported here nevertheless, due to their
+usefulness.
 </simpara>
+<literallayout class="monospaced">Properties readPropertyFile(String fileName)
+Properties readExternalPropertyFile(String fileName)</literallayout>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
-Properties readPropertyFile(String fileName)
-</term>
-<term>
-Properties readExternalPropertyFile(String fileName)
-</term>
-<listitem>
-<simpara>
-    Parses a Java property file (<emphasis>key=value</emphasis> lines) in the workspace.
-    The result is a Properties object, which is effectively a hash of
-    key-value pairs.
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-String[][] readSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines)
-</term>
-<term>
-String[][] readExternalSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines)
-</term>
-<listitem>
-<simpara>
-    Reads a text file, and return its contents, split by lines, and each line
-    split by whitespace. Additional method parameters control whether to ignore
-    blank lines and/or comment lines (those starting with the # character).
-    The result is an array of lines, where each line is a string array of the
-    items on the line.
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-String[] readLineOrientedTextFile(String fileName)
-</term>
-<term>
-String[] readExternalLineOrientedTextFile(String fileName)
-</term>
-<listitem>
-<simpara>
-    Reads a text file in the workspace, and returns its lines. Comment lines
-    (those starting with a hash mark, #) are discarded. The result is a
-    string array.
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-String readTextFile(String fileName)
-</term>
-<term>
-String readExternalTextFile(String fileName)
-</term>
-<listitem>
-<simpara>
-    Reads a text file, and return its contents unchanged as a single string.
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-boolean isValidWorkspacePath(String path)
-</term>
-<listitem>
-<simpara>
-    Returns true if the given string is syntactically a valid workspace path.
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-boolean isValidWorkspaceFilePath(String path)
-</term>
-<listitem>
-<simpara>
-    Returns true if the given string is syntactically a valid workspace file path.
-    This function does not check whether the file exists, or whether the given path
-    actually already points to a resource of a different type.
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-IProject asProject(String path)
-</term>
-<listitem>
-<simpara>
-    Returns the handle for the workspace project with the given name.
-    Throws exception if the path is not a valid workspace project path.
-    This function does not test whether the project exists. To test that,
-    call the exists() method on the returned handle.
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-IContainer asContainer(String path)
-</term>
-<listitem>
-<simpara>
-    Returns the handle for the workspace container (i.e. project or folder) with the given name.
-    Throws exception if the path is not a valid workspace container path.
-    This function does not test whether the container exists. To test that,
-    call the exists() method on the returned handle.
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-IFile asFile(String path)
-</term>
-<listitem>
-<simpara>
-    Returns the handle for the workspace file with the given name.
-    Throws exception if the path is not a valid workspace file path.
-    This function does not test whether the file exists. To test that,
-    call the exists() method on the returned handle.
-</simpara>
-</listitem>
-</varlistentry>
-</variablelist>
+</itemizedlist>
+<simpara>Parses a Java property file (<emphasis>key=value</emphasis> lines) in the workspace.
+The result is a Properties object, which is effectively a hash of
+key-value pairs.</simpara>
+<literallayout class="monospaced">String[][] readSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines)
+String[][] readExternalSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines)</literallayout>
+<simpara>Reads a text file, and return its contents, split by lines, and each line
+split by whitespace. Additional method parameters control whether to ignore
+blank lines and/or comment lines (those starting with the # character).
+The result is an array of lines, where each line is a string array of the
+items on the line.</simpara>
+<literallayout class="monospaced">String[] readLineOrientedTextFile(String fileName)
+String[] readExternalLineOrientedTextFile(String fileName)</literallayout>
+<simpara>Reads a text file in the workspace, and returns its lines. Comment lines
+(those starting with a hash mark, #) are discarded. The result is a
+string array.</simpara>
+<literallayout class="monospaced">String readTextFile(String fileName)
+String readExternalTextFile(String fileName)</literallayout>
+<simpara>Reads a text file, and return its contents unchanged as a single string.</simpara>
+<literallayout class="monospaced">boolean isValidWorkspacePath(String path)</literallayout>
+<simpara>Returns true if the given string is syntactically a valid workspace path.</simpara>
+<literallayout class="monospaced">boolean isValidWorkspaceFilePath(String path)</literallayout>
+<simpara>Returns true if the given string is syntactically a valid workspace file path.
+This function does not check whether the file exists, or whether the given path
+actually already points to a resource of a different type.</simpara>
+<literallayout class="monospaced">IProject asProject(String path)</literallayout>
+<simpara>Returns the handle for the workspace project with the given name.
+Throws exception if the path is not a valid workspace project path.
+This function does not test whether the project exists. To test that,
+call the exists() method on the returned handle.</simpara>
+<literallayout class="monospaced">IContainer asContainer(String path)</literallayout>
+<simpara>Returns the handle for the workspace container (i.e. project or folder) with the given name.
+Throws exception if the path is not a valid workspace container path.
+This function does not test whether the container exists. To test that,
+call the exists() method on the returned handle.</simpara>
+<literallayout class="monospaced">IFile asFile(String path)</literallayout>
+<simpara>Returns the handle for the workspace file with the given name.
+Throws exception if the path is not a valid workspace file path.
+This function does not test whether the file exists. To test that,
+call the exists() method on the returned handle.</simpara>
 </section>
 <section id="_stringutils">
 <title>StringUtils</title>
@@ -1271,7 +1163,7 @@ Set&lt;Object&gt; newSet()
 </section>
 </section>
 <section id="_editing_xswt_files">
-<title>EDITING XSWT FILES</title>
+<title>Editing XSWT Files</title>
 <simpara>Double-clicking on an XSWT file will open it in the XSWT editor. The editor
 provides basic syntax highlighting (and not much else currently). An extremely
 useful feature of the IDE is the XSWT Preview, where you can see preview
@@ -1283,7 +1175,7 @@ Preview does not load jar files from the projects.
 XXX This may get fixed.</simpara>
 </section>
 <section id="_editing_template_files">
-<title>EDITING TEMPLATE FILES</title>
+<title>Editing Template Files</title>
 <simpara>The Freemarker Editor is opened when you double-click files with the ftl or
 fti extension. (The latter stands for Freemarker Template Include, and it is
 intended for template fragments that you include into other templates. Otherwise
@@ -1296,8 +1188,8 @@ The content assist popup appears automatically when you type <emphasis>&lt;</emp
 a closing <emphasis>&gt;</emphasis> is also needed for the editor to recognize the tag), and
 when you hit <emphasis>?</emphasis> within a directive or an interpolation (${&#8230;}).</simpara>
 </section>
-<section id="_references">
-<title>REFERENCES</title>
+<bibliography id="_references">
+<title>References</title>
 <simpara>An XSWT tuturial and documentation can be found at:
 <ulink url="http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home">http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home</ulink></simpara>
 <simpara>Documentation for the FreeMarker template language:
@@ -1363,6 +1255,6 @@ TODO pelda: "Name of examples folder", "Name of source" folder</simpara>
   class must extend ICustomWizardPage;
   class must have a public constructor with the following signature: (String name, IContentTemplate creatorTemplate, String condition)
   class must be accessible to the class loader (TODO clarify&#8230;)</simpara>
-</section>
+</bibliography>
 
 </chapter>
