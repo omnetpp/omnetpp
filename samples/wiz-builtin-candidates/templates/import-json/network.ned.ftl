@@ -3,7 +3,8 @@ ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
 
-<#if generateNodeTypeDecl>
+<#if !NedUtils.isVisibleType(nodeType,targetFolder)>
+<#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
 module ${nodeType} {
     parameters:
         @display("i=abstract/router_s");
@@ -12,7 +13,8 @@ module ${nodeType} {
 }
 </#if>
 
-<#if generateChannelTypeDecl>
+<#if !NedUtils.isVisibleType(channelType,targetFolder)>
+<#assign channelType = StringUtils.makeValidIdentifier(channelType)>
 channel ${channelType} extends ned.DatarateChannel {
     parameters:
         int cost = default(0);
