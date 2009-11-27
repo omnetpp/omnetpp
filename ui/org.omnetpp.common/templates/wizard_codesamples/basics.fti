@@ -28,5 +28,11 @@ foo: ${foo?default("n/a")}, or ${foo!"n/a"}
 length of ${textVar} is ${textVar?length}; in all caps: ${textVar?upper_case}
 string-to-number: ${"3.1415"?number * 2}
 
+<#-- print all predefined variables -->
+<#list creationContext.getVariables()?keys?sort as key>
+   <#assign value = creationContext.getVariable(key)>
+   ${key} ==> ${LangUtils.toString(value)} (${LangUtils.getClass(value).getSimpleName()})
+</#list>
+
 </#noparse>
 

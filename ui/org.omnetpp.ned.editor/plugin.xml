@@ -298,5 +298,11 @@
             referenceClass="org.omnetpp.ned.editor.NedEditorPlugin">
       </plugin>
    </extension>
+   <extension
+         point="org.omnetpp.common.wizard.templatecontributors">
+      <contributor
+            class="org.omnetpp.ned.editor.wizards.ContentTemplateContributor">
+      </contributor>
+   </extension>
 
 </plugin>

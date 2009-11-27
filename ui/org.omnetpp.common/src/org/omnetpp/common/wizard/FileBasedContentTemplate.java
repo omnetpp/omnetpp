@@ -253,8 +253,8 @@ public class FileBasedContentTemplate extends ContentTemplate {
      * Overridden to add new variables into the context.
      */
 	@Override
-	public CreationContext createContext(IContainer folder, IWizard wizard) {
-		CreationContext context = super.createContext(folder, wizard);
+	protected CreationContext createContext(IContainer folder, IWizard wizard, String wizardType) {
+		CreationContext context = super.createContext(folder, wizard, wizardType);
 
 		// default values for recognized options (will be overwritten from property file)
 		context.getVariables().put(PROP_IGNORERESOURCES, "");
@@ -284,13 +284,13 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	@Override
 	protected ClassLoader createClassLoader() {
 	    if (!allowJarLoading)
-	        return getClass().getClassLoader();
+	        return super.createClassLoader();
 	    try {
 	        List<URL> urls = new ArrayList<URL>();
 	        for (String fileName : getFileList())
                 if (fileName.endsWith(".jar"))
                     urls.add(asURL(fileName));
-	        return new URLClassLoader(urls.toArray(new URL[]{}), getClass().getClassLoader());
+	        return new URLClassLoader(urls.toArray(new URL[]{}), super.createClassLoader());
 	    } 
 	    catch (Exception e) {
 	        CommonPlugin.logError("Error assembling classpath for loading jars from the workspace", e);
@@ -408,15 +408,16 @@ public class FileBasedContentTemplate extends ContentTemplate {
 	 */
 	public static Object parseJSON(String text) {
 		String numberRegex = "\\s*[+-]?[0-9.]+([eE][+-]?[0-9]+)?\\s*"; // sort of
+		text = text.trim();
 		if (text.equals("true") || text.equals("false") || text.matches(numberRegex) || 
-				text.trim().startsWith("[") || text.trim().startsWith("{")) {
+		        text.startsWith("[") || text.startsWith("{") || text.startsWith("\"")) {
 			// looks like JSON -- parse as such
 			JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
 			return reader.read(text); // throws IllegalArgumentException on parse errors
 		} 
 		else {
 			// apparently not JSON -- take it as a literal string with missing quotes
-			return text.trim();
+			return text;
 		}
 	}
 	

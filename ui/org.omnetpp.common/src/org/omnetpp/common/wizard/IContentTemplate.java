@@ -65,7 +65,7 @@ public interface IContentTemplate {
      * The resource is the workspace resource the wizard should create, or in which 
      * it should create content.
      */
-    CreationContext createContext(IContainer folder, IWizard wizard);
+    CreationContext createContextFor(IContainer folder, IWizard wizard, String wizardType);
     
     /**
      * Create custom wizard pages. Should never return null (may return an 
