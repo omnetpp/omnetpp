@@ -35,7 +35,6 @@ channel ${channelType} extends ned.DatarateChannel {
 <#assign nodes = LangUtils.newMap()>
 <#list linksData as link>
   <#if (link?size >= 2)>
-    <#-- about the "dummy=something?default" construct, see http://osdir.com/ml/web.freemarker.user/2003-06/msg00026.html -->
     <@do nodes.put(link[0],"") !/>
     <@do nodes.put(link[1],"") !/>
   </#if>
