@@ -8,7 +8,7 @@ import freemarker.template.TemplateException;
 
 /**
  * TODO
- * 
+ *
  * @author Andras
  */
 public class CDTContentTemplateContributor implements IContentTemplateContributor {

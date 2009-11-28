@@ -34,7 +34,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * "New Simulation" wizard.
- * 
+ *
  * @author Andras
  */
 public class NewSimulationWizard extends TemplateBasedWizard {
@@ -46,12 +46,12 @@ public class NewSimulationWizard extends TemplateBasedWizard {
     public NewSimulationWizard() {
         setWizardType("simulation");
     }
-    
+
     public void init(IWorkbench workbench, IStructuredSelection currentSelection) {
         this.workbench = workbench;
         this.selection = currentSelection;
     }
-    
+
     public WizardNewFileCreationPage getFirstPage() {
         return firstPage;
     }
@@ -77,10 +77,10 @@ public class NewSimulationWizard extends TemplateBasedWizard {
     @Override
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
-        
+
         String simulationFolderName = firstPage.getFileName();
         IFolder simulationFolder = getFolder().getFolder(new Path(simulationFolderName));
-        
+
         context.getVariables().put("simulationFolderName", simulationFolderName);
 
         String simulationName = StringUtils.capitalize(StringUtils.makeValidIdentifier(simulationFolderName));
@@ -97,7 +97,7 @@ public class NewSimulationWizard extends TemplateBasedWizard {
 
         return context;
     }
-    
+
     @Override
     public boolean performFinish() {
         boolean ok = super.performFinish();
@@ -126,8 +126,8 @@ public class NewSimulationWizard extends TemplateBasedWizard {
         catch (CoreException e) {
             CommonPlugin.logError(e);
         }
-        ListSelectionDialog dialog = new ListSelectionDialog(getShell(), files, 
-                new ArrayContentProvider(), new WorkbenchLabelProvider(), 
+        ListSelectionDialog dialog = new ListSelectionDialog(getShell(), files,
+                new ArrayContentProvider(), new WorkbenchLabelProvider(),
                 "Select files to open:");
         dialog.setInitialElementSelections(nedFiles);
         if (dialog.open() == Window.OK) {
@@ -143,7 +143,7 @@ public class NewSimulationWizard extends TemplateBasedWizard {
             IWorkbenchPage page = dwindow.getActivePage();
             if (page != null)
                 IDE.openEditor(page, file, true);
-        } 
+        }
         catch (org.eclipse.ui.PartInitException e) {
             CommonPlugin.logError(e);
         }

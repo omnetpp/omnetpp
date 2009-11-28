@@ -21,11 +21,11 @@ public class ChooseTemplateToClonePage extends TemplateSelectionPage implements 
     @Override
     public void createControl(Composite parent) {
         super.createControl(parent);
-        
+
         List<IContentTemplate> templates = ((TemplateBasedWizard)getWizard()).getAllTemplates();
         setTemplates(templates);
     }
-    
+
     public boolean isEnabled(CreationContext context) {
         return true;
     }

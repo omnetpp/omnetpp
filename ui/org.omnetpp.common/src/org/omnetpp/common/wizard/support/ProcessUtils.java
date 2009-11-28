@@ -8,8 +8,8 @@ import org.omnetpp.common.util.ProcessUtils.TimeoutException;
 /**
  * The class made available to content templates as "ProcessUtils".
  * Delegation was introduced to keep this class as stable, public and
- * documented API. 
- * 
+ * documented API.
+ *
  * @author Andras
  */
 //XXX Freemarker apparently cannot cope with naked public data members of original ProcessResult -- check!
@@ -29,8 +29,8 @@ public class ProcessUtils {
             this.exitValue = r.exitValue;
         }
     }
-    
-    
+
+
     public static ProcessResult exec(String command) throws IOException, TimeoutException, ExecException {
         return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command));
     }
@@ -49,7 +49,7 @@ public class ProcessUtils {
 
     /**
      * Executes the given command with the arguments as a separate process.
-     * The standard input is fed into the spawn process and the output is read until the process finishes or timeout occurs. 
+     * The standard input is fed into the spawn process and the output is read until the process finishes or timeout occurs.
      * The timeout value 0 means wait infinitely long to finish the process.
      */
     public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout) throws IOException, TimeoutException, ExecException {

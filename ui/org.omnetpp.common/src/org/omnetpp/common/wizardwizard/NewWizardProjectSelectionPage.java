@@ -130,7 +130,7 @@ public class NewWizardProjectSelectionPage extends WizardPage {
         Object selection = ((IStructuredSelection)table.getSelection()).getFirstElement();
         return (IProject) selection;
     }
-    
+
     public IContainer getWizardFolder() {
         IProject project = getProject();
         return project.getFolder(new Path(TemplateBasedWizard.TEMPLATES_FOLDER_NAME + "/" + getWizardName()));

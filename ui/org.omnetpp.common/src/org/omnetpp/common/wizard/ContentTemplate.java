@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -51,18 +51,18 @@ import freemarker.template.TemplateModelException;
 
 /**
  * The default implementation of IContentTemplate, using FreeMarker templates.
- * The createCustomPages() method is left undefined, but subclasses could use 
+ * The createCustomPages() method is left undefined, but subclasses could use
  * XSWTWizardPage for implementing it.
- * 
+ *
  * @author Andras
  */
 public abstract class ContentTemplate implements IContentTemplate {
     public static final String CONTRIBUTORS_EXTENSIONPOINT_ID = "org.omnetpp.common.wizard.templatecontributors";
 
     private static final String SETOUTPUT_MARKER = "@@@@ setoutput \"${file}\" @@@@\n";
-	private static final String SETOUTPUT_PATTERN = "(?s)@@@@ setoutput \"(.*?)\" @@@@\n"; // filename must be $1
-	 
-	// template attributes
+    private static final String SETOUTPUT_PATTERN = "(?s)@@@@ setoutput \"(.*?)\" @@@@\n"; // filename must be $1
+
+    // template attributes
     private String name;
     private String description;
     private String category;
@@ -73,21 +73,21 @@ public abstract class ContentTemplate implements IContentTemplate {
         // configure Freemarker to use the Eclipse log (and NOT print to stdout)
         Logger.setLoggerFactory(new FreemarkerEclipseLoggerFactory());
     }
-    
+
     // we need this ClassLoader for the Class.forName() calls in for both FreeMarker and XSWT.
-    // Without it, templates (BeanWrapper) and XSWT would only be able to access classes 
+    // Without it, templates (BeanWrapper) and XSWT would only be able to access classes
     // from the eclipse plug-in from which their code was loaded. In contrast, we want them to
     // have access to classes defined in this plug-in (FileUtils, IDEUtils, etc), and also
     // to the contents of jars loaded at runtime from the user's projects in the workspace.
     // See e.g. freemarker.template.utility.ClassUtil.forName(String)
-    private ClassLoader classLoader = null;  
-    
+    private ClassLoader classLoader = null;
+
     // FreeMarker configuration (stateless)
     private Configuration freemarkerConfiguration = null;
 
     // contributors list
     private List<IContentTemplateContributor> contributors;
-    
+
     public ContentTemplate() {
     }
 
@@ -99,8 +99,8 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
 
     public ContentTemplate(String name, String category, String description, Image image) {
-    	this(name, category, description);
-    	this.image = image;
+        this(name, category, description);
+        this.image = image;
     }
 
     public String getName() {
@@ -108,15 +108,15 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
 
     public void setName(String name) {
-    	this.name = name;
+        this.name = name;
     }
-    
+
     public String getCategory() {
-    	return category;
+        return category;
     }
-    
+
     public void setCategory(String category) {
-    	this.category = category;
+        this.category = category;
     }
 
     public String getDescription() {
@@ -124,21 +124,21 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
 
     public void setDescription(String description) {
-    	this.description = description;
+        this.description = description;
     }
-    
+
     public Image getImage() {
         return image;
     }
 
     public void setImage(Image image) {
-    	this.image = image;
+        this.image = image;
     }
 
     public boolean getIsDefault() {
         return isDefault;
     }
-    
+
     public void setIsDefault(boolean isDefault) {
         this.isDefault = isDefault;
     }
@@ -151,29 +151,29 @@ public abstract class ContentTemplate implements IContentTemplate {
         Thread.currentThread().setContextClassLoader(getClassLoader());
         try {
             return createContext(folder, wizard, wizardType);
-        } 
+        }
         finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 
     protected CreationContext createContext(IContainer folder, IWizard wizard, String wizardType) {
-    	CreationContext context = new CreationContext(this, folder, wizard);
-    	
-    	// pre-register some potentially useful template variables
-    	Map<String, Object> variables = context.getVariables();
+        CreationContext context = new CreationContext(this, folder, wizard);
+
+        // pre-register some potentially useful template variables
+        Map<String, Object> variables = context.getVariables();
         variables.put("wizardType", wizardType);
         variables.put("templateName", name);
         variables.put("templateDescription", description);
         variables.put("templateCategory", category);
         variables.put("targetFolder", folder.getFullPath().toString());
         String projectName = folder.getProject().getName();
-		variables.put("rawProjectName", projectName);
+        variables.put("rawProjectName", projectName);
         variables.put("projectName", projectName);
-		variables.put("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(projectName)));
-		variables.put("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(projectName)));
-		variables.put("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(projectName)));
-		Calendar cal = Calendar.getInstance();
+        variables.put("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(projectName)));
+        variables.put("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(projectName)));
+        variables.put("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(projectName)));
+        Calendar cal = Calendar.getInstance();
         variables.put("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
         variables.put("year", ""+cal.get(Calendar.YEAR));
         variables.put("author", System.getProperty("user.name"));
@@ -186,9 +186,9 @@ public abstract class ContentTemplate implements IContentTemplate {
         // open access to more facilities
         variables.put("creationContext", context);
         variables.put("classes", BeansWrapper.getDefaultInstance().getStaticModels());
-        
+
         // make Math, FileUtils, StringUtils and static methods of other classes available to the template
-        // see chapter "Bean wrapper" in the FreeMarker manual 
+        // see chapter "Bean wrapper" in the FreeMarker manual
         try {
             variables.put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
             variables.put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(FileUtils.class.getName()));
@@ -208,11 +208,11 @@ public abstract class ContentTemplate implements IContentTemplate {
             }
             catch (Exception e) {
                 CommonPlugin.logError("Content template contributor threw an exception", e);
-            } 
+            }
         }
         return context;
     }
-    
+
     public ClassLoader getClassLoader() {
         if (classLoader == null)
             classLoader = createClassLoader();
@@ -248,26 +248,26 @@ public abstract class ContentTemplate implements IContentTemplate {
         }
         return result;
     }
-    
+
     protected Configuration getFreemarkerConfiguration() {
         if (freemarkerConfiguration == null)
             freemarkerConfiguration = createFreemarkerConfiguration();
         return freemarkerConfiguration;
     }
-    
+
     protected Configuration createFreemarkerConfiguration() {
         // note: subclasses should override to add a real template loader
         Configuration cfg = new Configuration();
-        
+
         cfg.setNumberFormat("computer"); // prevent digit grouping with comma
 
         // add loader for built-in macro definitions
         final String BUILTINS = "[builtins]";
         cfg.addAutoInclude(BUILTINS);
-        String builtins = 
-            "<#macro do arg></#macro>" + // allow void methods to be called as: <@do object.setFoo(x)!> 
-            "<#macro setoutput file>\n" + 
-            SETOUTPUT_MARKER + 
+        String builtins =
+            "<#macro do arg></#macro>" + // allow void methods to be called as: <@do object.setFoo(x)!>
+            "<#macro setoutput file>\n" +
+            SETOUTPUT_MARKER +
             "</#macro>\n\n";
 
         for (IContentTemplateContributor contributor : getContributors()) {
@@ -278,7 +278,7 @@ public abstract class ContentTemplate implements IContentTemplate {
             }
             catch (Exception e) {
                 CommonPlugin.logError("Content template contributor threw an exception", e);
-            } 
+            }
         }
 
         StringTemplateLoader loader = new StringTemplateLoader();
@@ -287,73 +287,73 @@ public abstract class ContentTemplate implements IContentTemplate {
 
         return cfg;
     }
-    
-	/**
+
+    /**
      * Resolves references to other variables. Should be called from doPerformFinish() before
      * actually processing the templates.
-     * 
-     * Some variables contain references to other variables (e.g. 
+     *
+     * Some variables contain references to other variables (e.g.
      * "org.example.${projectname}"); substitute them.
      */
-	protected void substituteNestedVariables(CreationContext context) throws CoreException {
-		Map<String, Object> variables = context.getVariables();
+    protected void substituteNestedVariables(CreationContext context) throws CoreException {
+        Map<String, Object> variables = context.getVariables();
         try {
-        	for (String key : variables.keySet()) {
-        		Object value = variables.get(key);
-        		if (value instanceof String) {
-        			String newValue = evaluate((String)value, variables);
-        			variables.put(key, newValue);
-        		}
-        	}
+            for (String key : variables.keySet()) {
+                Object value = variables.get(key);
+                if (value instanceof String) {
+                    String newValue = evaluate((String)value, variables);
+                    variables.put(key, newValue);
+                }
+            }
         } catch (Exception e) {
-        	throw CommonPlugin.wrapIntoCoreException(e);
+            throw CommonPlugin.wrapIntoCoreException(e);
         }
-	}
+    }
 
-	/** 
-	 * Performs template processing on the given string, and returns the result.
-	 */
-	public String evaluate(String value, Map<String, Object> variables) throws TemplateException {
-        // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
-	    ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(getClassLoader());
-	    
-		try {
-		    Configuration cfg = getFreemarkerConfiguration();
-			int k = 0;
-			while (true) {
-				Template template = new Template("text" + k++, new StringReader(value), cfg, "utf8");
-				StringWriter writer = new StringWriter();
-				template.process(variables, writer);
-				String newValue = writer.toString();
-				if (value.equals(newValue))
-					return value;
-				value = newValue;
-			}
-		} 
-		catch (IOException e) {
-			CommonPlugin.logError(e); 
-			return ""; // cannot happen, we work with string reader/writer only
-		}
-		finally {
-	        Thread.currentThread().setContextClassLoader(oldClassLoader);
-		}
-	}
-
-	
     /**
-     * Utility method for performFinish(). Copies a resource into the project,  
-     * performing variable substitutions in it. If the template contained 
-     * &lt;@setoutput file="..."&gt; tags, multiple files will be saved. 
+     * Performs template processing on the given string, and returns the result.
+     */
+    public String evaluate(String value, Map<String, Object> variables) throws TemplateException {
+        // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClassLoader());
+
+        try {
+            Configuration cfg = getFreemarkerConfiguration();
+            int k = 0;
+            while (true) {
+                Template template = new Template("text" + k++, new StringReader(value), cfg, "utf8");
+                StringWriter writer = new StringWriter();
+                template.process(variables, writer);
+                String newValue = writer.toString();
+                if (value.equals(newValue))
+                    return value;
+                value = newValue;
+            }
+        }
+        catch (IOException e) {
+            CommonPlugin.logError(e);
+            return ""; // cannot happen, we work with string reader/writer only
+        }
+        finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+
+    /**
+     * Utility method for performFinish(). Copies a resource into the project,
+     * performing variable substitutions in it. If the template contained
+     * &lt;@setoutput file="..."&gt; tags, multiple files will be saved.
      */
     protected void createTemplateFile(String containerRelativePath, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
         createTemplateFile(context.getFolder().getFile(new Path(containerRelativePath)), freemarkerConfig, templateName, context);
     }
 
     /**
-     * Utility method for performFinish(). Copies a resource into the project,  
-     * performing variable substitutions in it. If the template contained 
-     * &lt;@setoutput file="..."&gt; tags, multiple files will be saved. 
+     * Utility method for performFinish(). Copies a resource into the project,
+     * performing variable substitutions in it. If the template contained
+     * &lt;@setoutput file="..."&gt; tags, multiple files will be saved.
      */
     protected void createTemplateFile(IFile file, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
@@ -361,26 +361,26 @@ public abstract class ContentTemplate implements IContentTemplate {
         Thread.currentThread().setContextClassLoader(getClassLoader());
 
         // substitute variables
-    	String content;    	
+        String content;
         try {
-        	// perform template substitution
-			Template template = freemarkerConfig.getTemplate(templateName, "utf8");
-			StringWriter writer = new StringWriter();
-			template.process(context.getVariables(), writer);
-			content = writer.toString();
-		} catch (Exception e) {
-			throw CommonPlugin.wrapIntoCoreException(e);
-		}
+            // perform template substitution
+            Template template = freemarkerConfig.getTemplate(templateName, "utf8");
+            StringWriter writer = new StringWriter();
+            template.process(context.getVariables(), writer);
+            content = writer.toString();
+        } catch (Exception e) {
+            throw CommonPlugin.wrapIntoCoreException(e);
+        }
         finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
 
-		// normalize line endings, remove multiple blank lines, etc
-		content = content.replace("\r\n", "\n");
-		content = content.replaceAll("\n\n\n+", "\n\n");
-		content = content.trim() + "\n";
+        // normalize line endings, remove multiple blank lines, etc
+        content = content.replace("\r\n", "\n");
+        content = content.replaceAll("\n\n\n+", "\n\n");
+        content = content.trim() + "\n";
 
-		// implement <@setoutput file="fname"/> tag: split content to files. "" means the main file
+        // implement <@setoutput file="fname"/> tag: split content to files. "" means the main file
         List<String> chunks = StringUtils.splitPreservingSeparators(content, Pattern.compile(SETOUTPUT_PATTERN));
         Map<String, String> fileContent = new HashMap<String, String>(); // fileName -> content
         fileContent.put("", chunks.get(0));
@@ -389,15 +389,15 @@ public abstract class ContentTemplate implements IContentTemplate {
             String chunk = chunks.get(i+1);
             if (!fileContent.containsKey(fileName))
                 fileContent.put(fileName, chunk);
-            else 
+            else
                 fileContent.put(fileName, fileContent.get(fileName) + chunk);  // append
         }
-		
-		// save files (unless blank)
+
+        // save files (unless blank)
         for (String fileName : fileContent.keySet()) {
             String contentToSave = fileContent.get(fileName);
             if (!StringUtils.isBlank(contentToSave)) {
-                // save the file if not blank. Note: we do NOT delete the existing file with 
+                // save the file if not blank. Note: we do NOT delete the existing file with
                 // the same name if contentToSave is blank; this is documented behavior.
                 IFile fileToSave = null;
                 if (fileName.equals(""))
@@ -418,7 +418,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     protected void createVerbatimFile(String containerRelativePath, InputStream inputStream, CreationContext context) throws CoreException {
         createVerbatimFile(context.getFolder().getFile(new Path(containerRelativePath)), inputStream, context);
     }
-    
+
     /**
      * Utility method for performFinish(). Creates a file from the given input stream.
      * If the parent folder(s) do not exist, they are created. The project must exist though.
@@ -437,7 +437,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
 
     /**
-     * Called back when a file already exists. Should return true if the file 
+     * Called back when a file already exists. Should return true if the file
      * can be overwritten (otherwise it will be skipped.)
      */
     protected boolean shouldOverwriteExistingFile(final IFile file, final CreationContext context) {
@@ -457,9 +457,9 @@ public abstract class ContentTemplate implements IContentTemplate {
             return result[0];
         }
     }
-    
+
     /**
-     * Creates a folder, relative to the context resource. If the parent folder(s) 
+     * Creates a folder, relative to the context resource. If the parent folder(s)
      * do not exist, they are created. The project must exist though.
      */
     protected void createFolder(String containerRelativePath, CreationContext context) throws CoreException {
@@ -467,7 +467,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
 
     /**
-     * Creates a folder. If the parent folder(s) do not exist, they are created. 
+     * Creates a folder. If the parent folder(s) do not exist, they are created.
      * The project must exist though.
      */
     protected void createFolder(IFolder folder, CreationContext context) throws CoreException {
@@ -480,7 +480,7 @@ public abstract class ContentTemplate implements IContentTemplate {
             throw CommonPlugin.wrapIntoCoreException("Cannot create folder: "+folder.getFullPath().toString(), e);
         }
     }
-    
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + " " + getName();

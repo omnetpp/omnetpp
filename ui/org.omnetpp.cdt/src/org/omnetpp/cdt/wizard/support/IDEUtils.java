@@ -6,23 +6,23 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 
 
 /**
- * Static utility methods for the FreeMarker templates, exposed to the user 
+ * Static utility methods for the FreeMarker templates, exposed to the user
  * via BeansWrapper.
- * 
+ *
  * IMPORTANT: This class must be backward compatible across OMNeT++ versions
- * at all times. DO NOT REMOVE FUNCTIONS OR CHANGE THEIR SIGNATURES; add new methods 
+ * at all times. DO NOT REMOVE FUNCTIONS OR CHANGE THEIR SIGNATURES; add new methods
  * instead, if needed.
- * 
+ *
  * @author Andras
  */
 public class IDEUtils {
-	
-	public static NEDResources getNEDResources() {
-		return NEDResourcesPlugin.getNEDResources();
-	}
 
-	public static MsgResources getMsgResources() {
-		return NEDResourcesPlugin.getMSGResources();
-	}
+    public static NEDResources getNEDResources() {
+        return NEDResourcesPlugin.getNEDResources();
+    }
+
+    public static MsgResources getMsgResources() {
+        return NEDResourcesPlugin.getMSGResources();
+    }
 
 }

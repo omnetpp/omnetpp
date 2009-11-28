@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * "New NED file" wizard
- * 
+ *
  * @author Andras
  */
 public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
@@ -25,13 +25,13 @@ public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
     public void addPages() {
         super.addPages();
         setWindowTitle("New NED File");
-        
+
         WizardNewFileCreationPage firstPage = getFirstPage();
         firstPage.setTitle("New NED File");
         firstPage.setDescription("Choose NED file");
         firstPage.setFileExtension("ned");
         firstPage.setFileName("untitled.ned");
-        
+
         getTemplateSelectionPage().setTemplateAddedListener(new ITemplateAddedListener() {
             public void addTemplateFrom(URL url) throws CoreException {
                 //TODO...

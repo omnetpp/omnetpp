@@ -11,7 +11,7 @@ import freemarker.template.TemplateException;
 
 /**
  * Contributes NED-related functionality to IContentTemplate-based wizards
- * 
+ *
  * @author Andras
  */
 public class NedContentTemplateContributor implements IContentTemplateContributor {

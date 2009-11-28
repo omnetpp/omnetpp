@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.omnetpp.common.wizard;
 
@@ -46,7 +46,7 @@ import org.omnetpp.common.ui.SizeConstraint;
  * Wizard page for selecting an IContentTemplate. Templates appear in a tree,
  * organized by categories. Templates that have "" or null as category will
  * be placed on the top level of the tree.
- * 
+ *
  * @author Andras
  */
 public class TemplateSelectionPage extends WizardPage {
@@ -59,13 +59,13 @@ public class TemplateSelectionPage extends WizardPage {
     private static String lastUrlEntered = "http://";
 
     /**
-     * Listener to be provided when the wizard wants to provide "Load template from URL" 
+     * Listener to be provided when the wizard wants to provide "Load template from URL"
      * functionality. Method is supposed to call back setTemplates() to refresh the tree.
      */
     public interface ITemplateAddedListener {
         void addTemplateFrom(URL url) throws CoreException;
     }
-    
+
     public TemplateSelectionPage() {
         super("OmnetppTemplateSelectionPage");
         setTitle("Initial Contents");
@@ -88,18 +88,18 @@ public class TemplateSelectionPage extends WizardPage {
 
     /**
      * Enable the 'Add template by URL' link, and set the callback to be invoked
-     * when the user adds a template URL. Must be called before createControl(). 
+     * when the user adds a template URL. Must be called before createControl().
      */
     public void setTemplateAddedListener(ITemplateAddedListener templateAddedListener) {
         if (getControl() != null)
             throw new IllegalStateException("Oh dear, too late...");
         this.templateAddedListener = templateAddedListener;
     }
-    
+
     public ITemplateAddedListener getTemplateAddedListener() {
         return templateAddedListener;
     }
-    
+
     public void createControl(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(1,false));
@@ -111,7 +111,7 @@ public class TemplateSelectionPage extends WizardPage {
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)treeViewer.getTree().getLayoutData()).heightHint = 200;
-        
+
         treeViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
@@ -130,7 +130,7 @@ public class TemplateSelectionPage extends WizardPage {
                 }
             }
         });
-        
+
         treeViewer.setContentProvider(new GenericTreeContentProvider());
 
         // set ordering: default templates first, then non-default templates, then template categories
@@ -178,7 +178,7 @@ public class TemplateSelectionPage extends WizardPage {
                     addTemplateByURL();
                 }});
         }
-        
+
         setPageComplete(false);
     }
 
@@ -204,10 +204,10 @@ public class TemplateSelectionPage extends WizardPage {
             }
         }
     }
-    
+
     public void setTemplates(List<IContentTemplate> templates) {
         GenericTreeNode root = new GenericTreeNode("root");
-        Set<String> categories = new LinkedHashSet<String>(); 
+        Set<String> categories = new LinkedHashSet<String>();
         for (IContentTemplate template : templates)
             categories.add(template.getCategory());
         for (String category : categories) {
@@ -217,9 +217,9 @@ public class TemplateSelectionPage extends WizardPage {
             for (IContentTemplate template : templates)
                 if (StringUtils.equals(category, template.getCategory()))
                     categoryNode.addChild(new GenericTreeNode(template));
-        }                
+        }
         treeViewer.setInput(root);
-        
+
         if (!templates.isEmpty()) {
             // preselect the (first) template marked as default
             IContentTemplate defaultTemplate = null;

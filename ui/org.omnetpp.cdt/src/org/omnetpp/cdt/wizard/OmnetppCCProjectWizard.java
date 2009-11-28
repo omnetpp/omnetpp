@@ -42,7 +42,7 @@ import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 import org.osgi.framework.Bundle;
 
 /**
- * "New OMNeT++ Project" wizard, with C++ support. After the template pages 
+ * "New OMNeT++ Project" wizard, with C++ support. After the template pages
  * (IContentTemplate), it continues in a customized "New CDT Project" Wizard.
  *
  * @author Andras
@@ -105,7 +105,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "browseButton"));
             hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "useDefaultsButton"));
 
-            // select "Show supported configurations only" checkbox (this comes from a preference in CDT, but we don't care) 
+            // select "Show supported configurations only" checkbox (this comes from a preference in CDT, but we don't care)
             ((Button)ReflectionUtils.getFieldValue(this, "show_sup")).setSelection(true);
         }
 
@@ -129,7 +129,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             if (!useDefaultLocation)
                 ((Text)ReflectionUtils.getFieldValue(getLocationArea(), "locationPathField")).setText(location.toString());
         }
-        
+
         public ProjectContentsLocationArea getLocationArea() {
             return (ProjectContentsLocationArea)ReflectionUtils.getFieldValue(this, "locationArea");
         }
@@ -137,7 +137,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
         public Text getProjectNameField() {
             return (Text)ReflectionUtils.getFieldValue(this, "projectNameField");
         }
-        
+
         @SuppressWarnings("unchecked")
         @Override
         public List<EntryDescriptor> filterItems(List items) {
@@ -151,7 +151,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
         }
     }
 
-    
+
     public class CCProjectWizard extends CDTCommonProjectWizard {
         public CCProjectWizard() {
             super(UIMessages.getString("NewModelProjectWizard.2"), UIMessages.getString("NewModelProjectWizard.3")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -177,10 +177,10 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             return prj;
         }
     }
-    
+
     public OmnetppCCProjectWizard() {
     }
-    
+
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         nestedWizard = new CCProjectWizard();
@@ -194,12 +194,12 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
         super.addPages();
         nestedWizard.addPages();  // note: this actually adds pages to the *nested* wizard, not this one!
     }
-    
+
     @Override
     protected WizardNewProjectCreationPage createProjectCreationPage() {
         return new NewOmnetppCppProjectCreationPage();  // custom one, with the "[] support C++ development" checkbox
     }
-    
+
     @Override
     protected IWizardPage getFirstExtraPage() {
         return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
@@ -218,9 +218,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
 
     @Override
     public boolean performFinish() {
-        // Note: this is a small hack to enforce that the nested CC wizard gets invoked 
-        // first (to create the project), and then us, regardless on which page the user 
-        // clicked Finish. This code heavily relies on the particular implementation of 
+        // Note: this is a small hack to enforce that the nested CC wizard gets invoked
+        // first (to create the project), and then us, regardless on which page the user
+        // clicked Finish. This code heavily relies on the particular implementation of
         // WizardDialog.finishPressed(), and may need to be revised if that changes.
         IWizardPage finishingPage = getContainer().getCurrentPage();
         if (withCplusplusSupport() && finishingPage.getWizard() == this) {
@@ -231,7 +231,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
         }
         return super.performFinish();
     }
-    
+
     @Override
     protected boolean createNewProject() {
         if (!withCplusplusSupport()) {
@@ -255,12 +255,12 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             return true;
         }
     }
-    
+
     @Override
     protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
         return new FileBasedProjectTemplate(folder);
     }
-    
+
     @Override
     protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
         return new FileBasedProjectTemplate(templateUrl, bundleOfTemplate);

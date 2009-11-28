@@ -19,10 +19,10 @@ import org.omnetpp.common.util.StringUtils;
 /**
  * A control for selecting a file from the workspace.
  * Implemented as a Composite with a single-line Text and a Browse button.
- * 
- * Does not replicate all methods of the Text class; rather, it exposes the 
+ *
+ * Does not replicate all methods of the Text class; rather, it exposes the
  * internal Text widget so that it can be manipulated directly.
- * 
+ *
  * @author Andras
  */
 public class FileChooser extends AbstractChooser {
@@ -50,10 +50,10 @@ public class FileChooser extends AbstractChooser {
                 while (!initialSelection.exists())
                     initialSelection = initialSelection.getParent();
                 dialog.setInitialSelection(initialSelection);
-            } 
+            }
             catch (IllegalArgumentException e) { } // on bad file name syntax
         }
-        
+
         if (dialog.open() == IDialogConstants.OK_ID) {
             Object[] result = dialog.getResult();
             if (result.length > 0)
@@ -65,7 +65,7 @@ public class FileChooser extends AbstractChooser {
     @Override
     protected boolean itemExists() {
         String fileName = getTextControl().getText().trim();
-        if (fileName.equals("")) 
+        if (fileName.equals(""))
             return false;
         try {
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileName));
@@ -73,7 +73,7 @@ public class FileChooser extends AbstractChooser {
         }
         catch (IllegalArgumentException e) {
             return false; // on bad file name syntax
-        } 
+        }
     }
 
     @Override
@@ -117,7 +117,7 @@ public class FileChooser extends AbstractChooser {
 
     @Override
     public void setValue(Object value) {
-        if (value instanceof IResource) 
+        if (value instanceof IResource)
             super.setValue(((IResource)value).getFullPath().toString());
         else
             super.setValue(value);

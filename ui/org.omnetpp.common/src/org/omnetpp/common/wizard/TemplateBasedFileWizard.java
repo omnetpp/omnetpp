@@ -16,19 +16,19 @@ import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.CommonPlugin;
 
 /**
- * Abstract base class for template-based "New xxx File..." wizards. 
- * 
- * Extends TemplateBasedWizard with a file selection first page, adds the 
- * "wizardType" and "newFileName" variables into the context, and opens 
- * the created file after completion. 
- * 
- * Subclasses are expected to override addPage() to configure the 
- * title, description etc, and provide a getTemplates() method. 
- * 
+ * Abstract base class for template-based "New xxx File..." wizards.
+ *
+ * Extends TemplateBasedWizard with a file selection first page, adds the
+ * "wizardType" and "newFileName" variables into the context, and opens
+ * the created file after completion.
+ *
+ * Subclasses are expected to override addPage() to configure the
+ * title, description etc, and provide a getTemplates() method.
+ *
  * This wizard does not prevent the content template from creating other
  * files than "newFileName", so it can be used for e.g. simple modules
- * (ned + cc + h) as well. 
- * 
+ * (ned + cc + h) as well.
+ *
  * @author Andras
  */
 public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
@@ -39,12 +39,12 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
 
     public TemplateBasedFileWizard() {
     }
-    
+
     public void init(IWorkbench workbench, IStructuredSelection currentSelection) {
         this.workbench = workbench;
         this.selection = currentSelection;
     }
-    
+
     public WizardNewFileCreationPage getFirstPage() {
         return firstPage;
     }
@@ -63,27 +63,27 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
         context.getVariables().put("newFileName", firstPage.getFileName());
         return context;
     }
-    
+
     @Override
     public boolean performFinish() {
         boolean ok = super.performFinish();
         if (!ok)
             return false;
-        
-        // open the file for editing 
+
+        // open the file for editing
         IPath filePath = firstPage.getContainerFullPath().append(firstPage.getFileName());
         IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
         if (!newFile.exists()) {
             MessageDialog.openError(getShell(), "Problem", "The wizard does not seem to have created the requested file:\n" + newFile.getFullPath().toString());
             return false;
         }
-        
+
         try {
             IWorkbenchWindow dwindow = workbench.getActiveWorkbenchWindow();
             IWorkbenchPage page = dwindow.getActivePage();
             if (page != null)
                 IDE.openEditor(page, newFile, true);
-        } 
+        }
         catch (org.eclipse.ui.PartInitException e) {
             CommonPlugin.logError(e);
             return false;

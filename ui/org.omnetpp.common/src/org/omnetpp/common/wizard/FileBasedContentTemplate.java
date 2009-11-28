@@ -47,30 +47,30 @@ import freemarker.template.Configuration;
  * @author Andras
  */
 public class FileBasedContentTemplate extends ContentTemplate {
-	public static final String TEMPLATE_PROPERTIES_FILENAME = "template.properties";
-	public static final String FILELIST_FILENAME = "filelist.txt"; // for URL loading
-	public static final Image MISSING_IMAGE = ImageDescriptor.getMissingImageDescriptor().createImage();
-	
-	// property names:
-	public static final String PROP_TEMPLATENAME = "templateName"; // template display name
-	public static final String PROP_SUPPORTEDWIZARDTYPES = "supportedWizardTypes"; // list of items: "project", "simulation", "nedfile", "inifile", "network", etc
-	public static final String PROP_TEMPLATEDESCRIPTION = "templateDescription"; // template description
-	public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
-	public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
-	public static final String PROP_TEMPLATEISDEFAULT = "templateIsDefault"; // template is the default one or not
-	public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of files NOT top copy into dest folder; basic glob patterns accepted
-	public static final String PROP_VERBATIMFILES = "verbatimFiles"; // list of files to copy verbatim, even if they would be ignored otherwise; basic glob patterns accepted
+    public static final String TEMPLATE_PROPERTIES_FILENAME = "template.properties";
+    public static final String FILELIST_FILENAME = "filelist.txt"; // for URL loading
+    public static final Image MISSING_IMAGE = ImageDescriptor.getMissingImageDescriptor().createImage();
 
-	// template is either given with an IFolder or with an URL
-	protected IFolder templateFolder;
-	protected URL templateUrl;
-	protected Bundle bundleOfTemplate;
-	protected boolean allowJarLoading = true;
+    // property names:
+    public static final String PROP_TEMPLATENAME = "templateName"; // template display name
+    public static final String PROP_SUPPORTEDWIZARDTYPES = "supportedWizardTypes"; // list of items: "project", "simulation", "nedfile", "inifile", "network", etc
+    public static final String PROP_TEMPLATEDESCRIPTION = "templateDescription"; // template description
+    public static final String PROP_TEMPLATECATEGORY = "templateCategory"; // template category (parent tree node)
+    public static final String PROP_TEMPLATEIMAGE = "templateImage"; // template icon name
+    public static final String PROP_TEMPLATEISDEFAULT = "templateIsDefault"; // template is the default one or not
+    public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of files NOT top copy into dest folder; basic glob patterns accepted
+    public static final String PROP_VERBATIMFILES = "verbatimFiles"; // list of files to copy verbatim, even if they would be ignored otherwise; basic glob patterns accepted
+
+    // template is either given with an IFolder or with an URL
+    protected IFolder templateFolder;
+    protected URL templateUrl;
+    protected Bundle bundleOfTemplate;
+    protected boolean allowJarLoading = true;
     protected String[] fileList;
-	protected Properties properties = new Properties();
-	protected Set<String> supportedWizardTypes = new HashSet<String>();
-	protected List<String> ignoreResourcePatterns = new ArrayList<String>();
-	protected List<String> verbatimFilePatterns = new ArrayList<String>();
+    protected Properties properties = new Properties();
+    protected Set<String> supportedWizardTypes = new HashSet<String>();
+    protected List<String> ignoreResourcePatterns = new ArrayList<String>();
+    protected List<String> verbatimFilePatterns = new ArrayList<String>();
     private boolean imageAlreadyLoaded = false;
 
     /**
@@ -98,20 +98,20 @@ public class FileBasedContentTemplate extends ContentTemplate {
     }
 
     /**
-     * Loads the template from the given URL. The URL should point to the folder 
+     * Loads the template from the given URL. The URL should point to the folder
      * which contains the template.properties file.
-     * 
-     * BundleOfTemplate may be null. If it is null, the folder should also contain 
-     * a filelist.txt, containing the list of the files in the template folder, 
-     * one per line. This is needed to overcome the Java limitation that contents of 
+     *
+     * BundleOfTemplate may be null. If it is null, the folder should also contain
+     * a filelist.txt, containing the list of the files in the template folder,
+     * one per line. This is needed to overcome the Java limitation that contents of
      * a resource bundle (or URL) cannot be enumerated. If bundleOfTemplate is not null,
-     * filelist.txt is not needed because we can use Bundle's methods to enumerate the files.  
+     * filelist.txt is not needed because we can use Bundle's methods to enumerate the files.
      */
     public FileBasedContentTemplate(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
         super();
         this.templateUrl = templateUrl;
         this.bundleOfTemplate = bundleOfTemplate;
-        
+
         if (bundleOfTemplate != null)
             if (!templateUrl.getProtocol().contains("bundle") || !templateUrl.getHost().equals(bundleOfTemplate.getResource("/").getHost()))
                 throw new IllegalArgumentException("Template URL " + templateUrl + " is not from the given OSGi bundle");
@@ -120,7 +120,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
 
         // note: image will be loaded lazily, in getImage()
         setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), StringUtils.substringAfterLast(templateUrl.getPath(), "/")));
-        String templateSource = (bundleOfTemplate != null) ? bundleOfTemplate.getSymbolicName() : templateUrl.toString(); 
+        String templateSource = (bundleOfTemplate != null) ? bundleOfTemplate.getSymbolicName() : templateUrl.toString();
         setDescription(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATEDESCRIPTION), "Template loaded from " + templateSource));
         setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), null));
         setIsDefault("true".equals(properties.getProperty(PROP_TEMPLATEISDEFAULT)));
@@ -131,52 +131,52 @@ public class FileBasedContentTemplate extends ContentTemplate {
 
     /**
      * Loads the template from the given folder. This is a relatively cheap operation
-     * (only the template.properties file is read), so it is OK for the wizard to 
+     * (only the template.properties file is read), so it is OK for the wizard to
      * instantiate WorkspaceBasedContentTemplate for each candidate folder just to determine
      * whether it should be offered to the user.
      */
-	public FileBasedContentTemplate(IFolder folder) throws CoreException {
-		super();
-		this.templateFolder = folder;
+    public FileBasedContentTemplate(IFolder folder) throws CoreException {
+        super();
+        this.templateFolder = folder;
 
         properties = loadPropertiesFrom(openFile(TEMPLATE_PROPERTIES_FILENAME));
 
-		// note: image will be loaded lazily, in getImage()
-		setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), folder.getName()));
-		String description = properties.getProperty(PROP_TEMPLATEDESCRIPTION);
-		String extraInfo = "Template contributed by project \"" + folder.getProject().getName() + "\"";
+        // note: image will be loaded lazily, in getImage()
+        setName(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATENAME), folder.getName()));
+        String description = properties.getProperty(PROP_TEMPLATEDESCRIPTION);
+        String extraInfo = "Template contributed by project \"" + folder.getProject().getName() + "\"";
         setDescription((StringUtils.isEmpty(description) ? "" : description+"<br><br>") + extraInfo);
-		String defaultCategory = "Wizards from project \"" + folder.getProject().getName() + "\"";
+        String defaultCategory = "Wizards from project \"" + folder.getProject().getName() + "\"";
         setCategory(StringUtils.defaultIfEmpty(properties.getProperty(PROP_TEMPLATECATEGORY), defaultCategory));
 
-		init();
-	}
+        init();
+    }
 
     protected void init() {
         ignoreResourcePatterns.add("**/*.xswt");
-		ignoreResourcePatterns.add("**/*.fti");  // note: "*.ftl" is NOT to be added! (or they'd be skipped altogether)
-		ignoreResourcePatterns.add("**/*.jar");
-		ignoreResourcePatterns.add("**/*.bak");
-		ignoreResourcePatterns.add("**/*~");
-		ignoreResourcePatterns.add("**/*~?");
-		ignoreResourcePatterns.add("**/backups/");
-		ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
-		ignoreResourcePatterns.add(FILELIST_FILENAME);
+        ignoreResourcePatterns.add("**/*.fti");  // note: "*.ftl" is NOT to be added! (or they'd be skipped altogether)
+        ignoreResourcePatterns.add("**/*.jar");
+        ignoreResourcePatterns.add("**/*.bak");
+        ignoreResourcePatterns.add("**/*~");
+        ignoreResourcePatterns.add("**/*~?");
+        ignoreResourcePatterns.add("**/backups/");
+        ignoreResourcePatterns.add(TEMPLATE_PROPERTIES_FILENAME);
+        ignoreResourcePatterns.add(FILELIST_FILENAME);
 
-		// the following options may not be modified via the wizard, so they are initialized here
+        // the following options may not be modified via the wizard, so they are initialized here
         String[] labels = XSWTDataBinding.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_SUPPORTEDWIZARDTYPES))," *, *");
         supportedWizardTypes.addAll(Arrays.asList(labels));
-		
-		for (String item : XSWTDataBinding.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORERESOURCES))," *, *"))
-		    ignoreResourcePatterns.add(item);
 
-		for (String item : XSWTDataBinding.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_VERBATIMFILES))," *, *"))
-		    verbatimFilePatterns.add(item);
+        for (String item : XSWTDataBinding.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_IGNORERESOURCES))," *, *"))
+            ignoreResourcePatterns.add(item);
+
+        for (String item : XSWTDataBinding.toStringArray(StringUtils.defaultString(properties.getProperty(PROP_VERBATIMFILES))," *, *"))
+            verbatimFilePatterns.add(item);
     }
 
     /**
      * Returns the workspace folder from which the template was loaded. Returns null
-     * if the template was loaded from an URL. 
+     * if the template was loaded from an URL.
      */
     public IFolder getTemplateFolder() {
         return templateFolder;
@@ -184,12 +184,12 @@ public class FileBasedContentTemplate extends ContentTemplate {
 
     /**
      * Returns the URL folder from which the template was loaded. Returns null
-     * if the template was loaded from a workspace folder. 
+     * if the template was loaded from a workspace folder.
      */
     public URL getTemplateUrl() {
         return templateUrl;
     }
-    
+
     /**
      * Returns the values in the supportedWizardTypes property file entry.
      */
@@ -213,247 +213,247 @@ public class FileBasedContentTemplate extends ContentTemplate {
      * Overridden to provide lazy loading.
      */
     @Override
-	public Image getImage() {
-	    if (!imageAlreadyLoaded) {
-	        imageAlreadyLoaded = true;
-	        String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
-	        if (imageFileName != null) {
-	            ignoreResourcePatterns.add(imageFileName);
-	            try {
-	                ImageRegistry imageRegistry = CommonPlugin.getDefault().getImageRegistry();
-	                String key = asURL(imageFileName).toString();
-	                Image image = imageRegistry.get(key);
-	                if (image == null)
-	                    imageRegistry.put(key, image = new Image(Display.getDefault(), openFile(imageFileName)));
-	                setImage(image);
-	            } 
-	            catch (Exception e) {
-	                CommonPlugin.logError("Error loading image for content template " + getName(), e);
-	                setImage(MISSING_IMAGE);
-	            }
-	        }
-	    }
+    public Image getImage() {
+        if (!imageAlreadyLoaded) {
+            imageAlreadyLoaded = true;
+            String imageFileName = properties.getProperty(PROP_TEMPLATEIMAGE);
+            if (imageFileName != null) {
+                ignoreResourcePatterns.add(imageFileName);
+                try {
+                    ImageRegistry imageRegistry = CommonPlugin.getDefault().getImageRegistry();
+                    String key = asURL(imageFileName).toString();
+                    Image image = imageRegistry.get(key);
+                    if (image == null)
+                        imageRegistry.put(key, image = new Image(Display.getDefault(), openFile(imageFileName)));
+                    setImage(image);
+                }
+                catch (Exception e) {
+                    CommonPlugin.logError("Error loading image for content template " + getName(), e);
+                    setImage(MISSING_IMAGE);
+                }
+            }
+        }
         return super.getImage();
-	}
+    }
 
     private static Properties loadPropertiesFrom(InputStream is) throws CoreException {
         try {
             Properties result = new Properties();
-			result.load(is);
-			is.close();
-			return result;
-		} 
+            result.load(is);
+            is.close();
+            return result;
+        }
         catch (IOException e) {
-		    try { is.close(); } catch (IOException e2) { }
-			throw CommonPlugin.wrapIntoCoreException(e);
-		}
+            try { is.close(); } catch (IOException e2) { }
+            throw CommonPlugin.wrapIntoCoreException(e);
+        }
     }
 
     /**
      * Overridden to add new variables into the context.
      */
-	@Override
-	protected CreationContext createContext(IContainer folder, IWizard wizard, String wizardType) {
-		CreationContext context = super.createContext(folder, wizard, wizardType);
+    @Override
+    protected CreationContext createContext(IContainer folder, IWizard wizard, String wizardType) {
+        CreationContext context = super.createContext(folder, wizard, wizardType);
 
-		// default values for recognized options (will be overwritten from property file)
-		context.getVariables().put(PROP_IGNORERESOURCES, "");
-		
-		// add property file entries as template variables
-		for (Object key : properties.keySet()) {
-			Object value = properties.get(key);
-			Assert.isTrue(key instanceof String && value instanceof String);
-				context.getVariables().put((String)key, parseJSON((String)value));
-		}
-		
-		// add more predefined variables (these ones cannot be overwritten from the property file, would make no sense)
-		if (templateUrl != null) {
-		    context.getVariables().put("templateURL", templateUrl.toString());
-		}
-		if (templateFolder != null) {
-		    context.getVariables().put("templateFolderName", templateFolder.getName());
-		    context.getVariables().put("templateFolderPath", templateFolder.getFullPath().toString());
-		    context.getVariables().put("templateProject", templateFolder.getProject().getName());
-		}
-		return context;
-	}
-	
-	/**
-	 * Overridden so that we can load JAR files from the template folder
-	 */
-	@Override
-	protected ClassLoader createClassLoader() {
-	    if (!allowJarLoading)
-	        return super.createClassLoader();
-	    try {
-	        List<URL> urls = new ArrayList<URL>();
-	        for (String fileName : getFileList())
+        // default values for recognized options (will be overwritten from property file)
+        context.getVariables().put(PROP_IGNORERESOURCES, "");
+
+        // add property file entries as template variables
+        for (Object key : properties.keySet()) {
+            Object value = properties.get(key);
+            Assert.isTrue(key instanceof String && value instanceof String);
+                context.getVariables().put((String)key, parseJSON((String)value));
+        }
+
+        // add more predefined variables (these ones cannot be overwritten from the property file, would make no sense)
+        if (templateUrl != null) {
+            context.getVariables().put("templateURL", templateUrl.toString());
+        }
+        if (templateFolder != null) {
+            context.getVariables().put("templateFolderName", templateFolder.getName());
+            context.getVariables().put("templateFolderPath", templateFolder.getFullPath().toString());
+            context.getVariables().put("templateProject", templateFolder.getProject().getName());
+        }
+        return context;
+    }
+
+    /**
+     * Overridden so that we can load JAR files from the template folder
+     */
+    @Override
+    protected ClassLoader createClassLoader() {
+        if (!allowJarLoading)
+            return super.createClassLoader();
+        try {
+            List<URL> urls = new ArrayList<URL>();
+            for (String fileName : getFileList())
                 if (fileName.endsWith(".jar"))
                     urls.add(asURL(fileName));
-	        return new URLClassLoader(urls.toArray(new URL[]{}), super.createClassLoader());
-	    } 
-	    catch (Exception e) {
-	        CommonPlugin.logError("Error assembling classpath for loading jars from the workspace", e);
-	        return getClass().getClassLoader();
-	    }
-	}
-	
+            return new URLClassLoader(urls.toArray(new URL[]{}), super.createClassLoader());
+        }
+        catch (Exception e) {
+            CommonPlugin.logError("Error assembling classpath for loading jars from the workspace", e);
+            return getClass().getClassLoader();
+        }
+    }
+
     static class URLTemplateLoader2 extends URLTemplateLoader {
-	    private URL baseUrl;
+        private URL baseUrl;
 
-	    public URLTemplateLoader2(URL baseUrl) {
-	        this.baseUrl = baseUrl;
-	    }
+        public URLTemplateLoader2(URL baseUrl) {
+            this.baseUrl = baseUrl;
+        }
 
-	    public Object findTemplateSource(String name) throws IOException {
-	        // WORKAROUND: When Freemarker tries the file with local suffix 
-	        // ("en_US" etc), the file won't exist, and this method throws a 
-	        // FileNotFoundException from the URLTemplateSource constructor.
-	        // That's exactly what the method documentation says NOT to do,
-	        // as it aborts template processing. Solution: We probe whether 
-	        // the file exists, and only proceed to the original implementation
-	        // if it does.
-	        try {
-	            URL url = getURL(name);
-	            InputStream stream = url.openStream();
-	            try { stream.close(); } catch (IOException e) { }
-	        } catch (IOException e) {
-	            return null;
-	        }
-	        return super.findTemplateSource(name);
-	    }
-	    
-	    @Override
-	    protected URL getURL(String name) {
-	        try {
+        public Object findTemplateSource(String name) throws IOException {
+            // WORKAROUND: When Freemarker tries the file with local suffix
+            // ("en_US" etc), the file won't exist, and this method throws a
+            // FileNotFoundException from the URLTemplateSource constructor.
+            // That's exactly what the method documentation says NOT to do,
+            // as it aborts template processing. Solution: We probe whether
+            // the file exists, and only proceed to the original implementation
+            // if it does.
+            try {
+                URL url = getURL(name);
+                InputStream stream = url.openStream();
+                try { stream.close(); } catch (IOException e) { }
+            } catch (IOException e) {
+                return null;
+            }
+            return super.findTemplateSource(name);
+        }
+
+        @Override
+        protected URL getURL(String name) {
+            try {
                 return new URL(baseUrl.toString() + "/" + name);
             }
             catch (MalformedURLException e) {
                 throw new IllegalArgumentException("Illegal template name: " + name, e);
             }
-	    }
-	}
-	
-	@Override
-	protected Configuration createFreemarkerConfiguration() {
-	    // add workspace template loader
-	    Configuration cfg = super.createFreemarkerConfiguration();
-	    cfg.setTemplateLoader(new MultiTemplateLoader( new TemplateLoader[] { 
-	            cfg.getTemplateLoader(), 
-	            templateUrl!=null ? new URLTemplateLoader2(templateUrl) : new WorkspaceTemplateLoader(templateFolder)
-	    }));
-	    return cfg;
-	}
+        }
+    }
 
-	public ICustomWizardPage[] createCustomPages() throws CoreException {
-    	// collect page IDs from property file ("page.1", "page.2" etc keys)
-    	int[] pageIDs = new int[0];
-    	for (Object key : properties.keySet())
-    		if (((String)key).matches("page\\.[0-9]+\\.(file|class)"))
-    			pageIDs = ArrayUtils.add(pageIDs, Integer.parseInt(((String)key).replaceFirst("^page\\.([0-9]+)\\.(file|class)$", "$1")));
-    	Arrays.sort(pageIDs);
-    	
-    	// create pages
-    	ICustomWizardPage[] result = new ICustomWizardPage[pageIDs.length];
-		for (int i = 0; i < pageIDs.length; i++) {
-			// create page
-			int pageID = pageIDs[i];
-			String xswtFileName = properties.getProperty("page."+pageID+".file");
-			String pageClass = properties.getProperty("page."+pageID+".class");
-			String condition = properties.getProperty("page."+pageID+".condition");
-			if (xswtFileName != null) {
-			    try {
-			        result[i] = new XSWTWizardPage(getName()+"#"+pageID, this, condition, openFile(xswtFileName), xswtFileName);
-			    }
-			    catch (IOException e) {
-			        throw new CoreException(new Status(IStatus.ERROR, CommonPlugin.PLUGIN_ID, "Error loading template file "+xswtFileName, e));
-			    }
-			}
-			else if (pageClass != null) {
-			    try {
+    @Override
+    protected Configuration createFreemarkerConfiguration() {
+        // add workspace template loader
+        Configuration cfg = super.createFreemarkerConfiguration();
+        cfg.setTemplateLoader(new MultiTemplateLoader( new TemplateLoader[] {
+                cfg.getTemplateLoader(),
+                templateUrl!=null ? new URLTemplateLoader2(templateUrl) : new WorkspaceTemplateLoader(templateFolder)
+        }));
+        return cfg;
+    }
+
+    public ICustomWizardPage[] createCustomPages() throws CoreException {
+        // collect page IDs from property file ("page.1", "page.2" etc keys)
+        int[] pageIDs = new int[0];
+        for (Object key : properties.keySet())
+            if (((String)key).matches("page\\.[0-9]+\\.(file|class)"))
+                pageIDs = ArrayUtils.add(pageIDs, Integer.parseInt(((String)key).replaceFirst("^page\\.([0-9]+)\\.(file|class)$", "$1")));
+        Arrays.sort(pageIDs);
+
+        // create pages
+        ICustomWizardPage[] result = new ICustomWizardPage[pageIDs.length];
+        for (int i = 0; i < pageIDs.length; i++) {
+            // create page
+            int pageID = pageIDs[i];
+            String xswtFileName = properties.getProperty("page."+pageID+".file");
+            String pageClass = properties.getProperty("page."+pageID+".class");
+            String condition = properties.getProperty("page."+pageID+".condition");
+            if (xswtFileName != null) {
+                try {
+                    result[i] = new XSWTWizardPage(getName()+"#"+pageID, this, condition, openFile(xswtFileName), xswtFileName);
+                }
+                catch (IOException e) {
+                    throw new CoreException(new Status(IStatus.ERROR, CommonPlugin.PLUGIN_ID, "Error loading template file "+xswtFileName, e));
+                }
+            }
+            else if (pageClass != null) {
+                try {
                     Class<?> clazz = getClassLoader().loadClass(pageClass); //FIXME classloader stuff -- it will not load from other plugins
-                    result[i] = (ICustomWizardPage) ReflectionUtils.invokeConstructor(clazz, getName()+"#"+pageID, this, condition==null?"":condition); // if condition is null, ReflectionUtils will throw NPE 
+                    result[i] = (ICustomWizardPage) ReflectionUtils.invokeConstructor(clazz, getName()+"#"+pageID, this, condition==null?"":condition); // if condition is null, ReflectionUtils will throw NPE
                 }
                 catch (Exception e) {
                     throw new CoreException(new Status(IStatus.ERROR, CommonPlugin.PLUGIN_ID, "Error instantiating wizard page class "+pageClass, e));
                 }
-			}
-			else {
-			    Assert.isTrue(false);
-			}
+            }
+            else {
+                Assert.isTrue(false);
+            }
 
-			// set title and description
-			String title = properties.getProperty("page."+pageID+".title");
-			if (!StringUtils.isEmpty(title))
-			    result[i].setTitle(title);
-			else if (StringUtils.isEmpty(result[i].getTitle()))
+            // set title and description
+            String title = properties.getProperty("page."+pageID+".title");
+            if (!StringUtils.isEmpty(title))
+                result[i].setTitle(title);
+            else if (StringUtils.isEmpty(result[i].getTitle()))
                 result[i].setTitle(getName());
 
-			String description = properties.getProperty("page."+pageID+".description");
-			if (!StringUtils.isEmpty(description))
-			    result[i].setDescription(description);
-			else if (StringUtils.isEmpty(result[i].getDescription()))
-			    result[i].setDescription("Select options below"); // note: "1 of 5" is not good, because of conditional pages
-		}
-		
-		return result;
+            String description = properties.getProperty("page."+pageID+".description");
+            if (!StringUtils.isEmpty(description))
+                result[i].setDescription(description);
+            else if (StringUtils.isEmpty(result[i].getDescription()))
+                result[i].setDescription("Select options below"); // note: "1 of 5" is not good, because of conditional pages
+        }
+
+        return result;
     }
 
-	/**
-	 * Parse text as JSON. Returns Boolean, String, Number, List or Map. If the
-	 * text does not look like JSON, treats it as an unquoted literal string, and
-	 * returns it as String.
-	 *  
-	 * @throws IllegalArgumentException on JSON parse error.
-	 */
-	public static Object parseJSON(String text) {
-		String numberRegex = "\\s*[+-]?[0-9.]+([eE][+-]?[0-9]+)?\\s*"; // sort of
-		text = text.trim();
-		if (text.equals("true") || text.equals("false") || text.matches(numberRegex) || 
-		        text.startsWith("[") || text.startsWith("{") || text.startsWith("\"")) {
-			// looks like JSON -- parse as such
-			JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
-			return reader.read(text); // throws IllegalArgumentException on parse errors
-		} 
-		else {
-			// apparently not JSON -- take it as a literal string with missing quotes
-			return text;
-		}
-	}
-	
-	public void performFinish(CreationContext context) throws CoreException {
-		substituteNestedVariables(context);
+    /**
+     * Parse text as JSON. Returns Boolean, String, Number, List or Map. If the
+     * text does not look like JSON, treats it as an unquoted literal string, and
+     * returns it as String.
+     *
+     * @throws IllegalArgumentException on JSON parse error.
+     */
+    public static Object parseJSON(String text) {
+        String numberRegex = "\\s*[+-]?[0-9.]+([eE][+-]?[0-9]+)?\\s*"; // sort of
+        text = text.trim();
+        if (text.equals("true") || text.equals("false") || text.matches(numberRegex) ||
+                text.startsWith("[") || text.startsWith("{") || text.startsWith("\"")) {
+            // looks like JSON -- parse as such
+            JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
+            return reader.read(text); // throws IllegalArgumentException on parse errors
+        }
+        else {
+            // apparently not JSON -- take it as a literal string with missing quotes
+            return text;
+        }
+    }
 
-		// copy over files and folders, with template substitution
-		copyFiles(context);
-	}
-	
-	/**
-	 * Instantiate the template given with an URL: copy files and folders given 
-	 * in file list to the destination folder specified in the context.
-	 */
-	protected void copyFiles(CreationContext context) throws CoreException {
-	    String[] fileList = getFileList();
-	    for (String fileName : fileList) {
-	        if (fileName.endsWith("/")) {
-	            if (!matchesAny(fileName, ignoreResourcePatterns))
-	                createFolder(fileName, context);
-	        }
-	        else {
-	            boolean isFtlFile = StringUtils.defaultString(new Path(fileName).getFileExtension()).equals("ftl");
-	            InputStream inputStream = openFile(fileName);
-	            if (matchesAny(fileName, verbatimFilePatterns) || (!isFtlFile && !matchesAny(fileName, ignoreResourcePatterns)))
-	                createVerbatimFile(fileName, inputStream, context);
-	            else if (isFtlFile && !matchesAny(fileName, ignoreResourcePatterns))
-	                createTemplateFile(fileName.replaceFirst("\\.ftl$", ""), getFreemarkerConfiguration(), fileName, context);
-	        }
-	    }
-	}
+    public void performFinish(CreationContext context) throws CoreException {
+        substituteNestedVariables(context);
 
-	/**
-	 * Exists to abstract out the difference between workspace loading (IFile) 
-	 * and URL (or resource bundle) based loading. 
-	 */
+        // copy over files and folders, with template substitution
+        copyFiles(context);
+    }
+
+    /**
+     * Instantiate the template given with an URL: copy files and folders given
+     * in file list to the destination folder specified in the context.
+     */
+    protected void copyFiles(CreationContext context) throws CoreException {
+        String[] fileList = getFileList();
+        for (String fileName : fileList) {
+            if (fileName.endsWith("/")) {
+                if (!matchesAny(fileName, ignoreResourcePatterns))
+                    createFolder(fileName, context);
+            }
+            else {
+                boolean isFtlFile = StringUtils.defaultString(new Path(fileName).getFileExtension()).equals("ftl");
+                InputStream inputStream = openFile(fileName);
+                if (matchesAny(fileName, verbatimFilePatterns) || (!isFtlFile && !matchesAny(fileName, ignoreResourcePatterns)))
+                    createVerbatimFile(fileName, inputStream, context);
+                else if (isFtlFile && !matchesAny(fileName, ignoreResourcePatterns))
+                    createTemplateFile(fileName.replaceFirst("\\.ftl$", ""), getFreemarkerConfiguration(), fileName, context);
+            }
+        }
+    }
+
+    /**
+     * Exists to abstract out the difference between workspace loading (IFile)
+     * and URL (or resource bundle) based loading.
+     */
     protected URL asURL(String fileName) throws CoreException {
         try {
             if (templateUrl != null)
@@ -467,8 +467,8 @@ public class FileBasedContentTemplate extends ContentTemplate {
     }
 
     /**
-     * Exists to abstract out the difference between workspace loading (IFile) 
-     * and URL (or resource bundle) based loading. 
+     * Exists to abstract out the difference between workspace loading (IFile)
+     * and URL (or resource bundle) based loading.
      */
     protected InputStream openFile(String fileName) throws CoreException {
         if (templateUrl != null) {
@@ -479,14 +479,14 @@ public class FileBasedContentTemplate extends ContentTemplate {
                 throw CommonPlugin.wrapIntoCoreException("Could not read file " + fileName, e);
             }
         }
-        else { 
+        else {
             return templateFolder.getFile(new Path(fileName)).getContents();
         }
     }
-    
+
     /**
-     * Exists to abstract out the difference between workspace loading (IFile) 
-     * and URL (or resource bundle) based loading. 
+     * Exists to abstract out the difference between workspace loading (IFile)
+     * and URL (or resource bundle) based loading.
      */
     @SuppressWarnings("unchecked")
     protected String[] getFileList() throws CoreException {
@@ -534,12 +534,12 @@ public class FileBasedContentTemplate extends ContentTemplate {
             }
         }
     }
-    
+
     /**
      * Returns whether the given file name matches any of the given glob patterns.
-     * Only a limited subset of glob patterns is recognized: '*' and '?' only, 
+     * Only a limited subset of glob patterns is recognized: '*' and '?' only,
      * no curly braces or square brackets. Extra: "**" is recognized.
-     * Note: "*.txt" means text files in the ROOT folder. To mean "*.txt in any 
+     * Note: "*.txt" means text files in the ROOT folder. To mean "*.txt in any
      * folder", specify "** / *.txt" (without the spaces).
      */
     protected static boolean matchesAny(String path, List<String> basicGlobPatterns) {
@@ -551,7 +551,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
         }
         return false;
     }
-    
+
     public void cloneTo(CreationContext context) throws CoreException {
         for (String fileName : getFileList()) {
             if (!fileName.endsWith("/")) {

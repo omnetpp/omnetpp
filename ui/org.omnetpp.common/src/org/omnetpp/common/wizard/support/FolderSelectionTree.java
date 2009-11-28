@@ -22,16 +22,16 @@ import org.omnetpp.common.wizard.IWidgetAdapter;
 
 /**
  * Allows the user to select a workspace folder, using a tree control.
- * 
+ *
  * @author Andras
  */
 public class FolderSelectionTree extends Composite implements IWidgetAdapter {
-	private TreeViewer treeViewer;
+    private TreeViewer treeViewer;
 
-	public FolderSelectionTree(Composite parent, int treeStyle) {
-		super(parent, SWT.NONE);
-		setLayout(new FillLayout());
-		treeViewer = new TreeViewer(this, treeStyle);
+    public FolderSelectionTree(Composite parent, int treeStyle) {
+        super(parent, SWT.NONE);
+        setLayout(new FillLayout());
+        treeViewer = new TreeViewer(this, treeStyle);
 
         treeViewer.setLabelProvider(new WorkbenchLabelProvider());
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
@@ -49,46 +49,46 @@ public class FolderSelectionTree extends Composite implements IWidgetAdapter {
         });
         treeViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
         treeViewer.setComparator(new ResourceComparator(ResourceComparator.NAME));
-	}
+    }
 
-	@Override
-	public boolean setFocus() {
+    @Override
+    public boolean setFocus() {
         return treeViewer.getTree().setFocus();
-	}
+    }
 
     public TreeViewer getTreeViewer() {
         return treeViewer;
     }
 
-	/**
-	 * Adapter interface.
-	 */
-	public Object getValue() {
-	    IStructuredSelection selection = (IStructuredSelection)treeViewer.getSelection();
-	    IContainer container = (IContainer) selection.getFirstElement();
-		return container == null ? "" : container.getFullPath().toString();
-	}
+    /**
+     * Adapter interface.
+     */
+    public Object getValue() {
+        IStructuredSelection selection = (IStructuredSelection)treeViewer.getSelection();
+        IContainer container = (IContainer) selection.getFirstElement();
+        return container == null ? "" : container.getFullPath().toString();
+    }
 
-	/**
-	 * Adapter interface.
-	 */
-	public void setValue(Object value) {
-	    IContainer container;
-	    if (value instanceof IContainer) {
-	        container = (IContainer)value;
-	    }
-	    else {
-	        Path path = new Path(value.toString());
-	        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-	        container = path.segmentCount()==1 ? root.getProject(path.toString()) : root.getFolder(path);
-	    }
-	    if (container.exists()) {
-	        StructuredSelection selection = new StructuredSelection(container);
-	        treeViewer.setSelection(selection);
-	    }
-	    else {
+    /**
+     * Adapter interface.
+     */
+    public void setValue(Object value) {
+        IContainer container;
+        if (value instanceof IContainer) {
+            container = (IContainer)value;
+        }
+        else {
+            Path path = new Path(value.toString());
+            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+            container = path.segmentCount()==1 ? root.getProject(path.toString()) : root.getFolder(path);
+        }
+        if (container.exists()) {
+            StructuredSelection selection = new StructuredSelection(container);
+            treeViewer.setSelection(selection);
+        }
+        else {
             treeViewer.setSelection(new StructuredSelection());
-	    }
-	}
+        }
+    }
 
 }

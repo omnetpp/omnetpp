@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.wizards;
 
 /**
  * "New Network" wizard
- * 
+ *
  * @author Andras
  */
 public class NewNetworkWizard extends AbstractNedFileWizard {
@@ -18,5 +18,5 @@ public class NewNetworkWizard extends AbstractNedFileWizard {
         setWindowTitle("New Network");
         getFirstPage().setTitle("New Network");
     }
-    
+
 }

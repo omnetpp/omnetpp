@@ -18,7 +18,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 
 /**
  * "New Inifile" wizard
- * 
+ *
  * @author Andras
  */
 public class NewInifileWizard extends TemplateBasedFileWizard {
@@ -26,19 +26,19 @@ public class NewInifileWizard extends TemplateBasedFileWizard {
     public NewInifileWizard() {
         setWizardType("inifile");
     }
-    
+
     @Override
     public void addPages() {
         super.addPages();
         setWindowTitle("New Ini File");
-        
+
         WizardNewFileCreationPage firstPage = getFirstPage();
         firstPage.setTitle("Create an ini file");
         firstPage.setDescription("This wizard allows you to create a new OMNeT++ simulation configuration file.");
         firstPage.setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/wizban/newinifile.png"));
         firstPage.setFileExtension("ini");
         firstPage.setFileName("omnetpp.ini");
-        
+
         getTemplateSelectionPage().setTemplateAddedListener(new ITemplateAddedListener() {
             public void addTemplateFrom(URL url) throws CoreException {
                 //FIXME TODO...
@@ -54,7 +54,7 @@ public class NewInifileWizard extends TemplateBasedFileWizard {
         IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
         String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
         context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
-        
+
         return context;
     }
 

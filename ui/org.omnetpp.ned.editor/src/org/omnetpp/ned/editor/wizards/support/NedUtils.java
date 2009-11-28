@@ -10,11 +10,11 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 
 /**
- * 
+ *
  * @author Andras
  */
 public class NedUtils {
-    
+
     /**
      * Returns whether the given NED type is visible in the given folder.
      * If the type is a fully qualified name, it is recognized if it is
@@ -34,7 +34,7 @@ public class NedUtils {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         Path path = new Path(inFolder);
         IContainer folder = (path.segmentCount() <= 1) ? root.getProject(inFolder) : root.getFolder(path);
-        
+
         NEDResources resources = NEDResourcesPlugin.getNEDResources();
         if (!typeName.contains(".")) {
             // try look up unqualified name if the package of the folder
