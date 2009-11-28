@@ -79,7 +79,7 @@ in the template (*.ftl) files.
 === Template Processing
 
 Template processing uses the FreeMarker library (http://freemarker.org), and
-all template syntax supported by FreeMarker can be used. Especially, variable 
+all template syntax supported by FreeMarker can be used. Especially, variable
 references of the syntax $\{varName} will be replaced with the variable value.
 
 The FreeMarker language also offers constructs that make it a full programming
@@ -129,21 +129,21 @@ Recognized property file keys:
 templateName::  The template's display name; defaults to the folder name.
                 This is the name that appears in the wizard's template selection
                 page.
-templateDescription::  
+templateDescription::
                 Description of the template. This may appear as a tooltip
                 or in a description pane in the wizard.
-templateCategory::  
+templateCategory::
                 Template category is used for organizing the templates into a
                 tree in the wizard's template selection page. Defaults to the
                 name of the project that provides the template.
-templateImage::  
+templateImage::
                 Name of the icon that appears with the name in the wizard's
                 template selection page.
-supportedWizardTypes::  
+supportedWizardTypes::
                 Comma-separated or JSON-syntax list of wizard types (e.g.
                 "nedfile", "simplemodule", "project", "inifile") that
                 this template supports. More about this later.
-ignoreResources::  
+ignoreResources::
                 Comma-separated or JSON-syntax list of non-template files or
                 folders; those files won't get copied over to the new project.
                 Wildcards are accepted. The template.properties file and
@@ -153,16 +153,16 @@ ignoreResources::
 The "New OMNeT++ Project" wizard also recognizes the following options. These
 options can be overridden from custom wizard pages.
 
-addProjectReference::  
+addProjectReference::
                 True or false; defaults to true. If true, the template's project
                 will be added to the referenced projects list of the new project.
-sourceFolders::  
+sourceFolders::
                 Comma-separated or JSON-syntax list of C++ source folders
                 to be created and configured. By default, none.
-nedSourceFolders::  
+nedSourceFolders::
                 Comma-separated or JSON-syntax list of NED source folders
                 to be created and configured. By default, none.
-makemakeOptions::  
+makemakeOptions::
                 Comma-separated list of items in the syntax "folder:options",
                 or a JSON-syntax map of strings; it sets opp_makemake options
                 for the given folders. There is no default.
@@ -248,6 +248,9 @@ Examples:
 
   apps = ["ftp", "smtp", "news"]
   layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}
+
+If you get an error complaining about syntax errors in a JSON entry, the
+http://jsonlint.com website can help you locate the problem.
 
 The property file takes precedence over values in the XSWT file.
 
@@ -453,7 +456,8 @@ be loaded automatically when the template is used, and the classes in it will
 be available for that template. Custom SWT widget classes can be imported and
 used in XSWT forms, and other code can be used in the template files via the
 bean wrapper (e.g. ${classes["org.example.SomeClass"].someStaticMethod(...)},
-see the example wizards.)
+see the example wizards.) Like .xswt files and template.properties, jar files
+are not copied over into the destination folder when the wizard executes.
 
 
 === Utility Classes Available from the Templates
@@ -513,21 +517,23 @@ FileUtils functions:
 
   method: org.w3c.dom.Document readXMLFile(String fileName)
   method: org.w3c.dom.Document readExternalXMLFile(String fileName)
-  
+
 Parses an XML file, and return the Document object of the resulting
 DOM tree.
 
   method: Object readJSONFile(String fileName)
   method: Object readExternalJSONFile(String fileName)
-  
-Parses a JSON file. The result is a Boolean, Integer, Double, String,
-List or Map, or any data structure composed of them.
 
-  method: String[][] readCSVFile(String fileName, boolean ignoreFirstLine, 
+Parses a JSON file. The result is a Boolean, Integer, Double, String,
+List or Map, or any data structure composed of them. The JSON syntax is
+documented at http://json.org; if you want to check whether a particular
+text file corresponds to the JSON syntax, use http://jsonlint.com.
+
+  method: String[][] readCSVFile(String fileName, boolean ignoreFirstLine,
                          boolean ignoreBlankLines, boolean ignoreCommentLines)
-  method: String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine, 
+  method: String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine,
                          boolean ignoreBlankLines, boolean ignoreCommentLines)
-                         
+
 Reads a CSV file. The result is an array of lines, where each line is
 a string array. Additional method parameters control whether to discard the
 first line of the file (which is usually a header line), whether to
@@ -576,7 +582,7 @@ actually already points to a resource of a different type.
 
   method: IWorkspaceRoot getWorkspaceRoot()
 
-Returns the workspace root object. The workspace contains the user's 
+Returns the workspace root object. The workspace contains the user's
 projects.
 
   method: IProject asProject(String path)
@@ -602,9 +608,9 @@ call the exists() method on the returned handle.
 
   method: IResource asResource(String pathName)
 
-Returns the handle for the workspace project, folder or file with 
+Returns the handle for the workspace project, folder or file with
 the given name. If the resource does not exist and the path contains
-more than one segment (i.e. it cannot be a project), it is returned as 
+more than one segment (i.e. it cannot be a project), it is returned as
 a file handle if it has a file extension, and as a folder if it
 does not.
 
@@ -614,19 +620,19 @@ Returns a java.io.File object for the given path. The object can be used to
 access operations provided by the File API, such as exists(), length(), etc.
 
   method: void copy(String path, String destPath, IProgressMonitor monitor)
-  
-Copies a workspace resource (file, folder or project) given with its path 
-to the destination path. For projects and folders, it copies recursively 
+
+Copies a workspace resource (file, folder or project) given with its path
+to the destination path. For projects and folders, it copies recursively
 (i.e. copies the whole folder tree). From the project root directory it
 leaves out dot files, hidden files, and team private files.
 
   methods:  void copyURL(String url, String destFilePath, IProgressMonitor monitor)
-  
+
 Copies the file at the given URL to the given destination workspace file.
 
   methods:String createTempFile(String content)
-    
-Writes the given string to a temporary file, and returns the path of the 
+
+Writes the given string to a temporary file, and returns the path of the
 temporary file in the file system. The file will be automatically deleted
 when the IDE exits, but it can be also deleted earlier via deleteExternalFile().
 
@@ -661,8 +667,8 @@ it on a nonexistent folder.
 
   method:  void removeExternalDirectory(String fileName) {
 
-Deletes a directory in the file system. The directory must be empty. 
-It is OK to invoke it on a nonexistent directory. 
+Deletes a directory in the file system. The directory must be empty.
+It is OK to invoke it on a nonexistent directory.
 
 
 ==== StringUtils
@@ -704,11 +710,11 @@ http://commons.apache.org/collections/apidocs/org/apache/commons/collections/Col
 CollectionUtils methods
 
   method: Collection union(Collection a, Collection b)
-  
+
   method: Collection intersection(Collection a, Collection b)
-  
+
   method: Collection subtract(Collection a, Collection b)
-  
+
 TODO
 
 ==== IDEUtils
@@ -723,9 +729,9 @@ and http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference
 IDEUtils methods
 
   method: NEDResources getNEDResources()
-  
+
   method: MsgResources getMsgResources()
-  
+
 TODO
 
 ==== LangUtils
@@ -771,7 +777,7 @@ Creates and returns a new mutable Set object (currently HashSet).
 
   method: Class<?> getClass(Object object)
 
-Returns the class of the given object. Provided because BeanWrapper 
+Returns the class of the given object. Provided because BeanWrapper
 seems to have a problem with the getClass() method.
 
 ==== ProcessUtils
@@ -779,9 +785,9 @@ seems to have a problem with the getClass() method.
   method: ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout)
 
 Executes the given command with the arguments as a separate process.
-The standard input is fed into the spawn process and the output is read 
-until the process finishes or timeout occurs. The timeout value 0 means wait 
-infinitely long to finish the process. Arguments at the end of the argument 
+The standard input is fed into the spawn process and the output is read
+until the process finishes or timeout occurs. The timeout value 0 means wait
+infinitely long to finish the process. Arguments at the end of the argument
 list are optional.
 
   method: String lookupExecutable(String name)
@@ -837,7 +843,9 @@ TODO document: supportedWizardTypes = project, simulation, nedfile, network
 
 + TODO document ProcessUtils
 
-TODO jar files get loaded from the normal folder, and from the project's "plugins" folder. Jar files are not copied over.
+TODO document LangUtils, NedUtils;
+
+TODO document what are the variables nedResources and msgResources; write a few examples about their usage
 
 TODO "New NED File" wizard milyen valtozokat definial alapbol!
         "wizardType" (=="nedfile)
@@ -845,8 +853,7 @@ TODO "New NED File" wizard milyen valtozokat definial alapbol!
         "nedPackageName" -- expected NED package for that folder
         "nedTypeName" -- derived from the file name
         "bannerComment" -- with copyright notice, etc
-
-TODO document: .fti "freemarker template include" files (they open in the FreeMarker editor, but get ignored on template initiation (ie. don't get copied over))
+   ==> can be found in ContentTemplate and subclasses; TemplateBasedDialog and subclasses
 
 TODO document glob patterns in verbatimFiles etc
 
@@ -888,27 +895,62 @@ TODO document <@setoutput file=.../>
 TODO document FileChooser and ExternalFileChooser, NedChooser: custom widget: file selector (workspace / external file)
 TODO NED type chooser, project chooser
 
-TODO setoutput path="..."
-
-TODO mention http://www.jsonlint.com/
-
-
 TODO document the <#assign dummy=expr!> trick! alternative: <@do FileUtil.deleteFile(file)!/>
 
 TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
 JARs in the templates)
 
-TODO pelda: "[] make new project dependent on this one" checkbox
-TODO Util: hasMethod(), hasField(), instanceof(), newInstance()
-
 TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())
 
-TODO: special markup in the template: "<?output="bubu.txt"> ... </?output>
-to support creation of files with runtime-decided names.
-TODO pelda: "Name of examples folder", "Name of source" folder
+TODO add:
+  In addition to XSWT files, custom Java pages may also be defined in Java code.
+  This can be useful when the wizard page would be too complex to describe with
+  XSWT, would need to have significant active behaviour, or simply the wizard page
+  code already exists in Java form. Defining a wizard page in Java requires
+  that you install the Eclipse PDE (Plug-in Development Environment), and that you
+  have some Eclipse development skills.
 
-TODO document page.NN.class = org.foo.SomePageClass;
-  class must extend ICustomWizardPage;
-  class must have a public constructor with the following signature: (String name, IContentTemplate creatorTemplate, String condition)
-  class must be accessible to the class loader (TODO clarify...)
+  The template.properties key for denoting a Java-based wizard page is page.<NN>.class,
+  and the value should be the fully qualified name of the Java class that implements
+  the wizard page. The requirements for the class are:
+    - the class must be accessible to the class loader
+    - the class must extend ICustomWizardPage;
+    - the class must have a public constructor with the following argument list:
+      (String name, IContentTemplate creatorTemplate, String condition)
+
+TODO advanced topic:
+  If you are skilled in writing Eclipse plug-ins, there are ways you can extend
+  content templates. One is to contribute to the
+  org.omnetpp.common.wizard.templatecontributor (FIXME double-check the name!!!)
+  extension point, which lets you supply IContentTemplateContributor objects
+  that can extend the content template implementation in various ways.
+
+TODO add a little nutshell XSWT tutorial!
+
+TODO also some minimal FreeMarker tutorial (variables are ${}, there is <#if>,
+  <#list>; and there's lots more, see the manual and/or the provided examples
+
+TODO add:
+  The "New Wizard" wizard in the IDE provides you with more than a handful of
+  working examples, useful utilities for writing wizards, sample code for
+  accessing various features, and so on. The aim of these wizards is to get you
+  productive in the shortest time possible.
+
+TODO add:
+  TEMPLATED PAGES
+
+  To overcome the limitation that XSWT page descriptions are completely static,
+  XSWT files undergo FreeMarker template processing before giving them to the
+  XSWT engine for instantiation. This template processing occurs right before
+  the page gets displayed, so data entered on previous pages can also be
+  used as input for generating XSWT source. This feature can be useful to make
+  conditional widgets (i.e. using <#if> to make part of the page appear only
+  when a certain option has been activated on earlier pages); to create a
+  previously unknown number of widgets (using a <#list>..</#list> loop);
+  to populate combo boxes, listboxes or other widgets with options; and more.
+  If the user navigates in the wizard back and forth several times (using the
+  Next and Back buttons), the contents of wizard pages are always re-created
+  with using the current values of template variables just before getting
+  displayed, so they will always be up to date.
+
 
