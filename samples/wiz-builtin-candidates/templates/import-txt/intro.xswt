@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+  
+    <text x:style="MULTI|READ_ONLY|WRAP">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <text x:p0="This wizard creates a network by importing its topology from a home-grown line-oriented text file format. The file format is as follows (# lines are comments):"/>
+    </text>
+
+    <text x:style="MULTI|READ_ONLY|BORDER|V_SCROLL" background="COLOR_WHITE" font="">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <text x:p0='NODES:
+&#10;#name	   x   	y
+&#10;RTE0	489	376
+&#10;...
+&#10;
+&#10;LINKS:
+&#10;#src   dest   speed   cost
+&#10;RTE7	RTE0	5e7	259
+&#10;...'/>
+    </text>
+
+    <text x:style="MULTI|READ_ONLY|WRAP">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <text x:p0="If the above file format does not suit you, make a copy of this wizard
+(File -> New -> Wizard -> Clone Built-in Wizard), and adapt it to your needs."/>
+    </text>
+
+  </x:children>
+
+</xswt>
+
+
+

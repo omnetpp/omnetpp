@@ -21,8 +21,8 @@
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
           <setFocus/>
         </fileChooser>
-        <button x:id="linksFileIgnoreFirstLine" text="Ignore first line (because it is a header)" x:style="CHECK">
-          <layoutData x:class="GridData" horizontalSpan="2"/>
+        <button x:id="linksFileIgnoreFirstLine" text="Ignore first line, it is a header" x:style="CHECK">
+          <layoutData x:class="GridData" horizontalIndent="10" horizontalSpan="2"/>
         </button>
       </x:children>
     </group>
@@ -35,8 +35,8 @@
         <fileChooser x:id="nodesFile">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </fileChooser>
-        <button x:id="nodesFileIgnoreFirstLine" text="Ignore first line (because it is a header)" x:style="CHECK">
-          <layoutData x:class="GridData" horizontalSpan="2"/>
+        <button x:id="nodesFileIgnoreFirstLine" text="Ignore first line, it is a header" x:style="CHECK">
+          <layoutData x:class="GridData" horizontalIndent="10" horizontalSpan="2"/>
         </button>
       </x:children>
     </group>
