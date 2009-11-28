@@ -89,33 +89,10 @@ as access to fields and methods of classes defined in Java. This means that
 any algorithm can be expressed in the FreeMarker language, and if that would
 not be enough, one can also pull in existing or custom-written Java libraries.
 
-The following variables are predefined:
-
-templateName::  name of the template (see later)
-templateDescription::  template description (see later)
-templateCategory::  template category (see later)
-date::  current date in yyyy-mm-dd format
-year::  year in yyyy format
-author::  user name ("user.name" Java system property)
-licenseCode::  license identifier for the @license NED property
-licenseText::  copyright notice for the given license
-bannerComment::  banner comment for source files; includes license text
-templateFolderName::  name of the folder in which the template files are
-templateFolderPath::  workspace path of the folder in which the template files are
-templateProject::  name of the project that defines the template
-
-The New OMNeT++ Project wizard also defines the following variables:
-
-projectName, rawProjectName::
-                        the project name, "as is"
-ProjectName::  sanitized project name with first letter capitalized
-projectname::  sanitized project name in all lowercase
-PROJECTNAME::  sanitized project name in all uppercase
-
-sanitization means making the name suitable as a NED or C/C++ identifier
-(spaces, punctuation and other unfit chars replaced with underscore, etc.)
-
-Other variables may come from custom template pages, see later.
+Several variables are predefined, such as templateName, targetFolder, date,
+author; others like targetFileName, targetTypeName, simulationFolderName,
+nedPackageName, etc. are defined only for certain wizard dialogs.
+A full list of variables is provided in a later section.
 
 
 === The template.properties File
@@ -178,6 +155,8 @@ an integer page ID; their ordering defines the order of wizard pages.
 
 page.<i>.file::
                 The name of the XSWT file that describes the wizard page layout.
+page.<i>.class::
+                TODO (see bottom of file)
 page.<i>.title::
                 Title of the wizard page, displayed in the page's title area.
                 Defaults to the template name.
@@ -419,6 +398,57 @@ TODO
 ==== "wizard"
 
 TODO show how to write templates that are suitable for more than one wizard.
+
+
+=== Predefined variables
+
+The following variables are predefined:
+
+General:
+
+date::  current date in yyyy-mm-dd format
+year::  year in yyyy format
+author::  user name ("user.name" Java system property)
+licenseCode::  license identifier for the @license NED property
+licenseText::  copyright notice for the given license
+bannerComment::  banner comment for source files; includes license text
+
+Template information:
+
+templateName::  name of the template
+templateDescription::  template description
+templateCategory::  template category
+templateURL:: for built-in and other URL-based templates: the URL the template was loaded from
+
+The following variables are only defined if the template was loaded from the workspace
+(i.e. a project's templates/ subdirectory):
+
+templateFolderName::  name of the folder (without path) in which the template files are
+templateFolderPath::  full workspace path of the folder in which the template files are
+templateProject::  name of the project that defines the template
+
+File names:
+
+targetFolder:: the project or folder path in which the project will generate files.
+   For project wizards, this holds the name of the project being created; for
+   file wizards, it holds the name of the folder in which the file will be created;
+   for simulation wizard, it holds the name of the project where the folder will be created. XXX revise!!!
+
+The New OMNeT++ Project wizard also defines the following variables:
+
+rawProjectName:: the project name, "as is"
+projectName::  sanitized project name with first letter capitalized
+projectname::  sanitized project name in all lowercase
+PROJECTNAME::  sanitized project name in all uppercase
+
+sanitization means making the name suitable as a NED or C/C++ identifier
+(spaces, punctuation and other unfit chars replaced with underscore, etc.)
+
+Other variables may come from custom template pages, see later.
+
+TODO other variables!!!!
+
+
 
 === Using Custom Widget Classes
 
@@ -862,14 +892,14 @@ TODO: optionalFiles removed! now all files, if they would be empty, are NOT save
  comments), or use FileUtils.writeTextFile() [note: it exists???]. If you want to delete an existing file,
  here's how you do it: FileUtils.deleteFile()
 
-TODO document <@setoutput file=.../>
+TODO document <@setoutput path=.../>
    redirects output to the given file. The filename can contain slashes too, i.e.
    one can write files in a different folder. If the folder does not exist, it will
    be created.
 
    If filename is empty, the directive restores output to the original file name (the template's name).
    This also works if a folder name is given and only the file name is missing
-   (<@setoutput file="src/">): then it will write the file with the original name
+   (<@setoutput path="src/">): then it will write the file with the original name
    but into the specified folder.
 
    If there are multiple setoutput's with the same file name within a template,
@@ -888,7 +918,7 @@ TODO document <@setoutput file=.../>
    are not created, the template engine will not delete an existing file that
    happens to be already there with the same name.
 
-   Typical usage: <@setoutput file=fileName?default("")/>, which means that if
+   Typical usage: <@setoutput path=fileName?default("")/>, which means that if
    the fileName variable undefined (absent), use "" as file name, i.e. save to
    the original file name.
 
