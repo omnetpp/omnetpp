@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=srcFolder+"/Sink.ned"/>
+<@setoutput path=srcFolder+"/Sink.ned"/>
 ${bannerComment}
 
 <#if srcPackage!="">package ${srcPackage};</#if>

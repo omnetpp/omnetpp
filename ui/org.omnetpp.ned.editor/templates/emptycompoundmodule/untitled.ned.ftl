@@ -1,8 +1,8 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
 
-module ${nedTypeName}
+module ${targetTypeName}
 {
 }

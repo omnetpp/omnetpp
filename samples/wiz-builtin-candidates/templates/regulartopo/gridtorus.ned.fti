@@ -23,7 +23,7 @@ channel ${channelType} extends ned.DatarateChannel {
 
 <#-- TODO: generateCoordinates -->
 <#if parametricNED>
-network ${nedTypeName}
+network ${targetTypeName}
 {
     parameters:
         int columns = default(${columns});
@@ -48,7 +48,7 @@ network ${nedTypeName}
 
 
 <#else>
-network ${nedTypeName}
+network ${targetTypeName}
 {
     submodules:
 <#list 0..rows-1 as i>

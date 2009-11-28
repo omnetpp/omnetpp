@@ -1,4 +1,4 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
 <#if namespaceName!="">namespace ${namespaceName};</#if>

@@ -1,4 +1,4 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
@@ -61,7 +61,7 @@ channel ${channelType} extends ned.DatarateChannel {
 //
 // Network generated from ${fileName}
 //
-network ${nedTypeName} {
+network ${targetTypeName} {
     submodules:
 <#list nodes as node>
         ${node["name"]}: ${nodeType} { @display("p=${node["x"]},${node["y"]}"); }

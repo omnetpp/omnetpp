@@ -1,3 +1,3 @@
 [General]
-network = ${ProjectName}
+network = ${projectName}
 

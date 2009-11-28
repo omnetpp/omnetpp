@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=simulationsFolder+"/omnetpp.ini"/>
+<@setoutput path=simulationsFolder+"/omnetpp.ini"/>
 [General]
 network = SourceSink
 cpu-time-limit = 60s

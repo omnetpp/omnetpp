@@ -17,7 +17,7 @@
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
         <label text="Network name:"/>
-        <text x:id="nedTypeName" x:style="BORDER">
+        <text x:id="targetTypeName" x:style="BORDER">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
           <setFocus/>
         </text>

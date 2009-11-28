@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=simulationsFolder+"/package.ned"/>
+<@setoutput path=simulationsFolder+"/package.ned"/>
 <#if simulationsPackage!="">
 // designate the NED package of this folder
 package ${simulationsPackage};

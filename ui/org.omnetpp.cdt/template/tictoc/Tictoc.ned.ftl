@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=simulationsFolder+"/Tictoc.ned"/>
+<@setoutput path=simulationsFolder+"/Tictoc.ned"/>
 ${bannerComment}
 
 <#if simulationsPackage!="">package ${simulationsPackage};</#if>

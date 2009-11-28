@@ -47,9 +47,6 @@ public abstract class AbstractNedFileWizard extends TemplateBasedFileWizard {
         String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
         context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
 
-        String nedTypeName = StringUtils.capitalize(StringUtils.makeValidIdentifier(newFile.getFullPath().removeFileExtension().lastSegment()));
-        context.getVariables().put("nedTypeName", nedTypeName);
-
         // namespace
         String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
         context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));

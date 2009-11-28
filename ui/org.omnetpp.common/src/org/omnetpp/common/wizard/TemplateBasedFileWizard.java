@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Abstract base class for template-based "New xxx File..." wizards.
@@ -60,7 +61,16 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
     @Override
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
-        context.getVariables().put("newFileName", firstPage.getFileName());
+        String fileName = firstPage.getFileName();
+        context.getVariables().put("targetFileName", fileName);
+
+        String fileNameWithoutExt = fileName.replaceFirst("\\.[^.]*$", "");
+        String targetTypeName = StringUtils.capitalize(StringUtils.makeValidIdentifier(fileNameWithoutExt));
+        context.getVariables().put("targetTypeName", targetTypeName);
+
+        // variables to help support project, simulation and file wizards with the same template code 
+        context.getVariables().put("targetPathPrefix", "");
+        context.getVariables().put("targetMainFile", "${targetFileName}"); 
         return context;
     }
 

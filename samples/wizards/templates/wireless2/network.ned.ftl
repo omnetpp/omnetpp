@@ -1,7 +1,7 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
-// Created: ${date} for project ${projectName}
+// Created: ${date} for project ${rawProjectName}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
 
@@ -17,7 +17,7 @@ simple WirelessNode {
 //
 // Generated network: ${numNodes} nodes, ${placement} placement, ${routingProtocol} routing
 //
-network ${ProjectName} {
+network ${projectName} {
     parameters:
         //TODO: node*.routingProtocol = "${routingProtocol}";
      submodules:

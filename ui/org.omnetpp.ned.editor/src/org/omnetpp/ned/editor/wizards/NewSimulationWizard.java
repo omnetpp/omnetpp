@@ -82,13 +82,19 @@ public class NewSimulationWizard extends TemplateBasedWizard {
         IFolder simulationFolder = getFolder().getFolder(new Path(simulationFolderName));
 
         context.getVariables().put("simulationFolderName", simulationFolderName);
-
+        
         String simulationName = StringUtils.capitalize(StringUtils.makeValidIdentifier(simulationFolderName));
-        context.getVariables().put("simulationName", simulationName); // may be customized on further pages
+        context.getVariables().put("simulationName", simulationName);
+
+        context.getVariables().put("targetTypeName", "${simulationName"); // may be customized on further pages
+
+        // variables to help support project, simulation and file wizards with the same template code 
+        context.getVariables().put("targetPathPrefix", simulationFolderName + "/");
+        context.getVariables().put("targetMainFile", simulationFolderName + "/${targetTypeName}.ned"); // let targetTypeName be edited on pages 
 
         // NED-related stuff
         IFile someNedFile = simulationFolder.getFile(new Path("whatever.ned"));
-        String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(someNedFile); //FIXME getExpectedPackageFor() should rather take an IContainer...
+        String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(someNedFile);
         context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
 
         // namespace

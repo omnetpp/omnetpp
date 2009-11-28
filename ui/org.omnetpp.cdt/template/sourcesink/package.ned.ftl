@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=srcFolder+"/package.ned"/>
+<@setoutput path=srcFolder+"/package.ned"/>
 <#if srcPackage!="">
 // designate the NED package of this folder
 package ${srcPackage};

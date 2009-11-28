@@ -1,7 +1,7 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
-// Created: ${date} for project ${projectName}
+// Created: ${date} for project ${rawProjectName}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
 

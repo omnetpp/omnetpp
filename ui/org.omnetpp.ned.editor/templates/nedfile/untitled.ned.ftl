@@ -1,4 +1,4 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
@@ -8,27 +8,27 @@ ${bannerComment}
 // TODO auto-generated type
 //
 <#if isSimple>
-simple ${nedTypeName}
+simple ${targetTypeName}
 {
 }
 <#elseif isModule>
-module ${nedTypeName}
+module ${targetTypeName}
 {
 }
 <#elseif isNetwork>
-network ${nedTypeName}
+network ${targetTypeName}
 {
 }
 <#elseif isChannel>
-channel ${nedTypeName}
+channel ${targetTypeName}
 {
 }
 <#elseif isModuleinterface>
-moduleinterface ${nedTypeName}
+moduleinterface ${targetTypeName}
 {
 }
 <#elseif isChannelinterface>
-channelinterface ${nedTypeName}
+channelinterface ${targetTypeName}
 {
 }
 <#else>

@@ -1,4 +1,4 @@
-<@setoutput file="template.properties"/>
+<@setoutput path="template.properties"/>
 <#function iif condition truevalue falsevalue="">
   	<#if condition><#return truevalue><#else><#return falsevalue></#if>
 </#function>
@@ -6,9 +6,9 @@
 templateName = ${wizardTemplateName}
 templateDescription = ${wizardTemplateDescription}
 templateCategory = ${wizardTemplateCategory}
-<#assign wizardSupportedWizardTypes = 
+<#assign wizardSupportedWizardTypes =
     iif(supportProject, "project,")+
-    iif(supportSimulation, "simulation,") + 
+    iif(supportSimulation, "simulation,") +
 	iif(supportSimplemodule, "simplemodule,") +
 	iif(supportCompoundmodule, "compoundmodule,") +
 	iif(supportNetwork, "network,") +
@@ -34,8 +34,8 @@ rows = 6
 # custom wizard pages
 <#if wantIntroPage>
 page.1.file = intro.xswt
-page.1.title = Introduction 
-page.1.description = Read this carefully 
+page.1.title = Introduction
+page.1.description = Read this carefully
 </#if>
 <#if wantBasicForm>
 page.2.file = basicform.xswt

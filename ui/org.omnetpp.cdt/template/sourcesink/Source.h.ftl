@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=srcFolder+"/Source.h"/>
+<@setoutput path=srcFolder+"/Source.h"/>
 ${bannerComment}
 
 #ifndef __${PROJECTNAME}_SOURCE_H

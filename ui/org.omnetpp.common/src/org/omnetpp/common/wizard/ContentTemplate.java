@@ -59,8 +59,8 @@ import freemarker.template.TemplateModelException;
 public abstract class ContentTemplate implements IContentTemplate {
     public static final String CONTRIBUTORS_EXTENSIONPOINT_ID = "org.omnetpp.common.wizard.templatecontributors";
 
-    private static final String SETOUTPUT_MARKER = "@@@@ setoutput \"${file}\" @@@@\n";
-    private static final String SETOUTPUT_PATTERN = "(?s)@@@@ setoutput \"(.*?)\" @@@@\n"; // filename must be $1
+    private static final String SETOUTPUT_MARKER = "@@@@ setoutput \"${path}\" @@@@\n";
+    private static final String SETOUTPUT_PATTERN = "(?s)@@@@ setoutput \"(.*?)\" @@@@\n"; // path must be matched as $1
 
     // template attributes
     private String name;
@@ -167,12 +167,11 @@ public abstract class ContentTemplate implements IContentTemplate {
         variables.put("templateDescription", description);
         variables.put("templateCategory", category);
         variables.put("targetFolder", folder.getFullPath().toString());
-        String projectName = folder.getProject().getName();
-        variables.put("rawProjectName", projectName);
-        variables.put("projectName", projectName);
-        variables.put("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(projectName)));
-        variables.put("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(projectName)));
-        variables.put("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(projectName)));
+        variables.put("rawProjectName", folder.getProject().getName());
+        String projectNameIdent = StringUtils.makeValidIdentifier(folder.getProject().getName());
+        variables.put("projectName", StringUtils.capitalize(projectNameIdent));
+        variables.put("projectname", StringUtils.lowerCase(projectNameIdent));
+        variables.put("PROJECTNAME", StringUtils.upperCase(projectNameIdent));
         Calendar cal = Calendar.getInstance();
         variables.put("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
         variables.put("year", ""+cal.get(Calendar.YEAR));
@@ -266,7 +265,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         cfg.addAutoInclude(BUILTINS);
         String builtins =
             "<#macro do arg></#macro>" + // allow void methods to be called as: <@do object.setFoo(x)!>
-            "<#macro setoutput file>\n" +
+            "<#macro setoutput path>\n" +
             SETOUTPUT_MARKER +
             "</#macro>\n\n";
 
@@ -344,7 +343,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     /**
      * Utility method for performFinish(). Copies a resource into the project,
      * performing variable substitutions in it. If the template contained
-     * &lt;@setoutput file="..."&gt; tags, multiple files will be saved.
+     * &lt;@setoutput path="..."&gt; tags, multiple files will be saved.
      */
     protected void createTemplateFile(String containerRelativePath, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
         createTemplateFile(context.getFolder().getFile(new Path(containerRelativePath)), freemarkerConfig, templateName, context);
@@ -353,7 +352,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     /**
      * Utility method for performFinish(). Copies a resource into the project,
      * performing variable substitutions in it. If the template contained
-     * &lt;@setoutput file="..."&gt; tags, multiple files will be saved.
+     * &lt;@setoutput path="..."&gt; tags, multiple files will be saved.
      */
     protected void createTemplateFile(IFile file, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
@@ -380,7 +379,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         content = content.replaceAll("\n\n\n+", "\n\n");
         content = content.trim() + "\n";
 
-        // implement <@setoutput file="fname"/> tag: split content to files. "" means the main file
+        // implement <@setoutput path="fname"/> tag: split content to files. "" means the main file
         List<String> chunks = StringUtils.splitPreservingSeparators(content, Pattern.compile(SETOUTPUT_PATTERN));
         Map<String, String> fileContent = new HashMap<String, String>(); // fileName -> content
         fileContent.put("", chunks.get(0));

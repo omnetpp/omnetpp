@@ -1,7 +1,7 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
-// Created: ${date} for project ${projectName}
+// Created: ${date} for project ${rawProjectName}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
 
@@ -43,7 +43,7 @@ channel ${channelType} extends ned.DatarateChannel {
 // ${topo.toString().trim().replace("\n", "\n// ")}
 // </pre>
 //
-network ${nedTypeName} {
+network ${targetTypeName} {
     submodules:
 <#list 0..neighborLists.size()-1 as i>
         node${i} : ${nodeType};

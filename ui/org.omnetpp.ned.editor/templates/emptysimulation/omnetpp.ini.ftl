@@ -1,5 +1,3 @@
-<#if wizardType=="simulation">
-<@setoutput file=simulationFolderName+"/"/>
+<@setoutput path=simulationFolderName+"/"/>
 [General]
-network = ${simulationName}
-</#if>
+network = ${targetTypeName}

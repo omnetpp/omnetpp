@@ -1,12 +1,12 @@
 <#if wizardType=="simulation">
-  <@setoutput file=simulationFolderName+"/"+simulationName+".ned"/>
+  <@setoutput path=simulationFolderName+"/"+simulationName+".ned"/>
   <#assign networkName=simulationName>
 <#elseif wizardType=="project">
-  <@setoutput file=ProjectName+".ned"/>
-  <#assign networkName=ProjectName>
+  <@setoutput path=projectName+".ned"/>
+  <#assign networkName=projectName>
 <#else>
-  <@setoutput file=newFileName?default("")/>
-  <#assign networkName=nedTypeName?default("Untitled")>
+  <@setoutput path=targetFileName?default("")/>
+  <#assign networkName=targetTypeName?default("Untitled")>
 </#if>
 ${bannerComment}
 

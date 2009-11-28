@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=srcFolder+"/Sink.cc"/>
+<@setoutput path=srcFolder+"/Sink.cc"/>
 ${bannerComment}
 
 #include "Sink.h"

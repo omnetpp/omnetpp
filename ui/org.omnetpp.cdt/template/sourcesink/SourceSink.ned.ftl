@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=simulationsFolder+"/SourceSink.ned"/>
+<@setoutput path=simulationsFolder+"/SourceSink.ned"/>
 ${bannerComment}
 
 <#if simulationsPackage!="">package ${simulationsPackage};</#if>

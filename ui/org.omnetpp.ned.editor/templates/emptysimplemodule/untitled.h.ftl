@@ -1,9 +1,9 @@
-<#assign hFileName=newFileName?default("")?replace("\\.[a-z]*$",".h", "ri")>
-<@setoutput file=hFileName/>
+<#assign hFileName=targetFileName?default("")?replace("\\.[a-z]*$",".h", "ri")>
+<@setoutput path=hFileName/>
 ${bannerComment}
 
-#ifndef __${PROJECTNAME}_${nedTypeName?upper_case}_H_
-#define __${PROJECTNAME}_${nedTypeName?upper_case}_H_
+#ifndef __${PROJECTNAME}_${targetTypeName?upper_case}_H_
+#define __${PROJECTNAME}_${targetTypeName?upper_case}_H_
 
 #include <omnetpp.h>
 
@@ -12,7 +12,7 @@ ${bannerComment}
 /**
  * TODO - Generated class
  */
-class ${nedTypeName} : public cSimpleModule
+class ${targetTypeName} : public cSimpleModule
 {
   protected:
     virtual void initialize();
