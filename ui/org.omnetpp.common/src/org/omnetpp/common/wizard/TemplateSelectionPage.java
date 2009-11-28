@@ -153,7 +153,7 @@ public class TemplateSelectionPage extends WizardPage {
                 Object element = item==null ? null : item.getData();
                 element = (element instanceof GenericTreeNode) ? ((GenericTreeNode)element).getPayload() : null;
                 if (element instanceof IContentTemplate) {
-                    String description = ((IContentTemplate)element).getDescription();
+                    String description = getTemplateHoverText((IContentTemplate)element);
                     if (description != null)
                         return HoverSupport.addHTMLStyleSheet(description);
                 }
@@ -184,6 +184,10 @@ public class TemplateSelectionPage extends WizardPage {
 
     protected void selectionChanged() {
         setPageComplete(getSelectedTemplate()!=null);
+    }
+
+    protected String getTemplateHoverText(IContentTemplate template) {
+        return template.getDescription();
     }
 
     protected void addTemplateByURL() {
@@ -239,4 +243,5 @@ public class TemplateSelectionPage extends WizardPage {
         element = (element == null) ? null : ((GenericTreeNode)element).getPayload();
         return (element instanceof IContentTemplate) ? (IContentTemplate)element : null;
     }
+
 }
