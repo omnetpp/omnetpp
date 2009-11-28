@@ -1,3 +1,4 @@
+<#noparse>
 <@setoutput path=targetMainFile?default("")/>
 ${bannerComment}
 
@@ -34,3 +35,4 @@ network ${targetTypeName} {
          }
 </#list>
 }
+</#noparse>

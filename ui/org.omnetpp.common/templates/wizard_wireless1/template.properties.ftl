@@ -1,10 +1,7 @@
-templateName = Dummy Wireless Network #1
-templateDescription = Demonstrates template usage
-templateCategory = Wizard Examples
+templateName = Newly Generated Dummy Wireless Network Wizard #1
+templateDescription = An example wizard which can generate a project, simulation, nedfile or network
+templateCategory = Newly Generated Wizards
 supportedWizardTypes = project, simulation, nedfile, network
-
-# configure the project
-addProjectReference = true
 
 # custom wizard pages
 page.1.file = general.xswt

@@ -1,6 +1,6 @@
-templateName = Dummy Wireless Network #2
-templateDescription = Demonstates conditional wizard pages
-templateCategory = Wizard Examples
+templateName = Newly Generated Dummy Wireless Network Wizard #2
+templateDescription = An example wizard which can generate a project, simulation, nedfile or network
+templateCategory = Newly Generated Wizards
 supportedWizardTypes = project, simulation, nedfile, network
 
 # default values
