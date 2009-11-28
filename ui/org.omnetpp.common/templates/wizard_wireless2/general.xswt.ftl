@@ -7,6 +7,7 @@
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
     <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" numColumns="2"/>
@@ -17,8 +18,8 @@
         <layoutData x:class="GridData" widthHint="300"/>
     </text>
 
-	<label/>
-	<label/>
+    <label/>
+    <label/>
 
     <label text="Number of nodes:"/>
     <spinner x:id="numNodes" x:style="BORDER" maximum="10000" increment="10"/>
@@ -34,8 +35,8 @@
         <layoutData x:class="GridData" horizontalSpan="2" horizontalIndent="16"/>
     </label>
 
-	<label/>
-	<label/>
+   <label/>
+   <label/>
 
     <button x:id="wantRouting" text="Configure routing protocols" x:style="CHECK">
         <layoutData x:class="GridData" horizontalSpan="2"/>
