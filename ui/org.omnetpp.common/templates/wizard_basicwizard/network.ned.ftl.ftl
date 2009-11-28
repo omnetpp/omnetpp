@@ -1,5 +1,5 @@
 <#noparse>
-<@setoutput path=targetFileName?default("")/>
+<@setoutput path=targetMainFile?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
@@ -29,7 +29,7 @@ network ${targetTypeName}
     submodules:
 <#list 0..rows-1 as i>
   <#list 0..columns-1 as j>
-        node_${i}_${j}: ${nodeTypeName};
+        node_${i}_${j}: Node;
   </#list>
 
 </#list>
