@@ -95,10 +95,10 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard {
 
         context.getVariables().put("nedPackageName", "${projectname}"); // identifier, with all lowercase
 
+        // variables to help support project, simulation and file wizards with the same template code.
+        // Intention: targetTypeName and targetMainFile are the NED type and file of "the network" 
+        // in this project; these variables are to be used only in projects where it makes sense.
         context.getVariables().put("targetTypeName", "${projectName}"); // identifier, with upper case first letter
-
-        // variables to help support project, simulation and file wizards with the same template code 
-        context.getVariables().put("targetPathPrefix", "");
         context.getVariables().put("targetMainFile", "${targetTypeName}.ned"); // let targetTypeName be edited on pages 
         return context;
     }

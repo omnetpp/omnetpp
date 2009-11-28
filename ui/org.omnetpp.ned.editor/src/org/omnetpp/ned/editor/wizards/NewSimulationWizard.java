@@ -30,6 +30,7 @@ import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedWizard;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
@@ -78,27 +79,24 @@ public class NewSimulationWizard extends TemplateBasedWizard {
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
 
-        String simulationFolderName = firstPage.getFileName();
-        IFolder simulationFolder = getFolder().getFolder(new Path(simulationFolderName));
-
+        String simulationFolderName = folder.getName();
         context.getVariables().put("simulationFolderName", simulationFolderName);
         
         String simulationName = StringUtils.capitalize(StringUtils.makeValidIdentifier(simulationFolderName));
         context.getVariables().put("simulationName", simulationName);
 
+        // variables to help support project, simulation and file wizards with the same template code. 
+        // Intention: targetTypeName and targetMainFile are the NED type and file of "the network" in this simulation.
         context.getVariables().put("targetTypeName", "${simulationName}"); // may be customized on further pages
-
-        // variables to help support project, simulation and file wizards with the same template code 
-        context.getVariables().put("targetPathPrefix", simulationFolderName + "/");
-        context.getVariables().put("targetMainFile", simulationFolderName + "/${targetTypeName}.ned"); // let targetTypeName be edited on pages 
+        context.getVariables().put("targetMainFile", "${targetTypeName}.ned"); // let targetTypeName be edited on pages 
 
         // NED-related stuff
-        IFile someNedFile = simulationFolder.getFile(new Path("whatever.ned"));
+        IFile someNedFile = folder.getFile(new Path("whatever.ned"));
         String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(someNedFile);
         context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
 
         // namespace
-        String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(simulationFolder, INEDTypeResolver.NAMESPACE_PROPERTY);
+        String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
         context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
 
         return context;
@@ -106,16 +104,21 @@ public class NewSimulationWizard extends TemplateBasedWizard {
 
     @Override
     public boolean performFinish() {
+        // create folder before invoking the template
+        IFolder simulationFolder = getFolder();
+        try {
+            simulationFolder.create(false, true, null);
+        }
+        catch (CoreException e1) {
+            NedEditorPlugin.logError(e1);
+            MessageDialog.openError(getShell(), "Problem", "Cannot create simulation folder " + simulationFolder.getFullPath().toString() + ": " + e1.getMessage());
+            return false;
+        }
+
+        // do it
         boolean ok = super.performFinish();
         if (!ok)
             return false;
-
-        // check if folder was created
-        IFolder simulationFolder = getFolder().getFolder(new Path(firstPage.getFileName()));
-        if (!simulationFolder.exists()) {
-            MessageDialog.openError(getShell(), "Problem", "The wizard does not seem to have created the requested folder:\n" + simulationFolder.getFullPath().toString());
-            return false;
-        }
 
         // offer user to open the files
         List<IFile> files = new ArrayList<IFile>();
@@ -161,10 +164,12 @@ public class NewSimulationWizard extends TemplateBasedWizard {
     }
 
     @Override
-    protected IContainer getFolder() {
-        IPath path = firstPage.getContainerFullPath();
+    protected IFolder getFolder() {
+        // return the handle of the simulation folder to be created
+        String simulationFolderName = firstPage.getFileName();
+        IPath path = firstPage.getContainerFullPath().append(simulationFolderName);
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        return path.segmentCount()==1 ? root.getProject(path.toString()) : root.getFolder(path);
+        return root.getFolder(path);
     }
 
 }

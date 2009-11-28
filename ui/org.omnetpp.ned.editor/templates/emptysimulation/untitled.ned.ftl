@@ -1,4 +1,4 @@
-<@setoutput path=simulationFolderName+"/"+targetTypeName+".ned"/>
+<@setoutput path=targetMainFile/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>

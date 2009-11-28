@@ -61,6 +61,7 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
     @Override
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
+
         String fileName = firstPage.getFileName();
         context.getVariables().put("targetFileName", fileName);
 
@@ -69,7 +70,6 @@ public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
         context.getVariables().put("targetTypeName", targetTypeName);
 
         // variables to help support project, simulation and file wizards with the same template code 
-        context.getVariables().put("targetPathPrefix", "");
         context.getVariables().put("targetMainFile", "${targetFileName}"); 
         return context;
     }
