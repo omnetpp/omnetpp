@@ -1,4 +1,4 @@
-<@setoutput path=targetFileName?default("")/>
+<@setoutput path=targetMainFile?default("")/>
 ${bannerComment}
 
 // Created: ${date} for project ${rawProjectName}
@@ -17,7 +17,7 @@ simple WirelessNode {
 //
 // Generated network: ${numNodes} nodes, ${placement} placement, ${routingProtocol} routing
 //
-network ${projectName} {
+network ${targetTypeName} {
     parameters:
         //TODO: node*.routingProtocol = "${routingProtocol}";
      submodules:

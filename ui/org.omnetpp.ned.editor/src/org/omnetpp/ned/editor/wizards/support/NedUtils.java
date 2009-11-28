@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor.wizards.support;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -39,7 +40,7 @@ public class NedUtils {
         if (!typeName.contains(".")) {
             // try look up unqualified name if the package of the folder
             String packageName = resources.getExpectedPackageFor(folder.getFile(new Path("dummy.ned")));
-            if (packageName.length() > 0) {
+            if (!StringUtils.isEmpty(packageName)) {
                 INEDTypeInfo result = resources.getToplevelNedType(packageName+ "." + typeName, folder.getProject());
                 if (result != null)
                     return result;

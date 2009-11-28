@@ -7,6 +7,7 @@
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
     <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" numColumns="1"/>
@@ -24,31 +25,24 @@
       </x:children>
     </group>
 
-    <group text="Node NED type">
+    <group text="NED types">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
-        <label text="Type name:"/>
-        <text x:id="nodeType" x:style="BORDER">
-          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-        </text>
-        <button x:id="generateNodeTypeDecl" text="This type does not exist yet, generate NED declaration for it" x:style="CHECK">
+        <label text="Choose an existing type, or type a name (without package) to create it.">
           <layoutData x:class="GridData" horizontalSpan="2"/>
-        </button>
-      </x:children>
-    </group>
+        </label>
 
-    <group text="Channel NED type">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-      <layout x:class="GridLayout" numColumns="2"/>
-      <x:children>
-        <label text="Type name:"/>
-        <text x:id="channelType" x:style="BORDER">
+        <label text="Node:"/>
+        <nedTypeChooser x:id="nodeType" acceptedTypes="NedTypeChooser.MODULE">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-        </text>
-        <button x:id="generateChannelTypeDecl" text="This type does not exist yet, generate NED declaration for it" x:style="CHECK">
-          <layoutData x:class="GridData" horizontalSpan="2"/>
-        </button>
+        </nedTypeChooser>
+
+        <label text="Channel:"/>
+        <nedTypeChooser x:id="channelType" acceptedTypes="NedTypeChooser.CHANNEL">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </nedTypeChooser>
+
       </x:children>
     </group>
 

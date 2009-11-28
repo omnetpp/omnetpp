@@ -1,4 +1,4 @@
-<@setoutput path=targetFileName?default("")/>
+<@setoutput path=targetMainFile?default("")/>
 ${bannerComment}
 
 // Created: ${date} for project ${rawProjectName}

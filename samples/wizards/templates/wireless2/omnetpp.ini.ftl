@@ -1,3 +1,5 @@
+<#if wizardType=="project" || wizardType=="simulation">
+<@setoutput path=targetPathPrefix/>
 [General]
-network = ${projectName}
-
+network = ${targetTypeName}
+</#if>

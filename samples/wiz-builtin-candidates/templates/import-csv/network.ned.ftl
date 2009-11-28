@@ -1,13 +1,4 @@
-<#if wizardType=="simulation">
-  <@setoutput path=simulationFolderName+"/"+simulationName+".ned"/>
-  <#assign networkName=simulationName>
-<#elseif wizardType=="project">
-  <@setoutput path=projectName+".ned"/>
-  <#assign networkName=projectName>
-<#else>
-  <@setoutput path=targetFileName?default("")/>
-  <#assign networkName=targetTypeName?default("Untitled")>
-</#if>
+<@setoutput path=targetMainFile?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
@@ -54,7 +45,7 @@ channel ${channelType} extends ned.DatarateChannel {
 //
 // Network generated from ${linksFile} <#if nodesFile!="">and ${nodesFile}</#if>
 //
-network ${networkName} {
+network ${targetTypeName} {
     submodules:
 <#list nodes.keySet().toArray()?sort as node>
   <#if nodes[node]=="">

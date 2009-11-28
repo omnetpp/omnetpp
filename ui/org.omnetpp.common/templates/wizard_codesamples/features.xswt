@@ -34,7 +34,7 @@
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout"/>
       <x:children>
-        <button x:id="wantExec" text="executing an external program and use its output" x:style="CHECK"/>
+        <button x:id="wantExec" text="executing an external program and capturing its output" x:style="CHECK"/>
         <button x:id="wantJar" text="invoking code in a JAR file" x:style="CHECK"/>
       </x:children>
     </group>
