@@ -55,14 +55,14 @@ public class TemplateSelectionPage extends WizardPage {
 
     private TreeViewer treeViewer;
     private Image defaultImage = DEFAULT_IMAGE;
-    private ITemplateAddedListener templateAddedListener;
+    private ITemplateAddedCallback templateAddedCallback;
     private static String lastUrlEntered = "http://";
 
     /**
      * Listener to be provided when the wizard wants to provide "Load template from URL"
      * functionality. Method is supposed to call back setTemplates() to refresh the tree.
      */
-    public interface ITemplateAddedListener {
+    public interface ITemplateAddedCallback {
         void addTemplateFrom(URL url) throws CoreException;
     }
 
@@ -90,14 +90,14 @@ public class TemplateSelectionPage extends WizardPage {
      * Enable the 'Add template by URL' link, and set the callback to be invoked
      * when the user adds a template URL. Must be called before createControl().
      */
-    public void setTemplateAddedListener(ITemplateAddedListener templateAddedListener) {
+    public void setTemplateAddedCallback(ITemplateAddedCallback templateAddedCallback) {
         if (getControl() != null)
             throw new IllegalStateException("Oh dear, too late...");
-        this.templateAddedListener = templateAddedListener;
+        this.templateAddedCallback = templateAddedCallback;
     }
 
-    public ITemplateAddedListener getTemplateAddedListener() {
-        return templateAddedListener;
+    public ITemplateAddedCallback getTemplateAddedListener() {
+        return templateAddedCallback;
     }
 
     public void createControl(Composite parent) {
@@ -166,7 +166,7 @@ public class TemplateSelectionPage extends WizardPage {
                 TemplateSelectionPage.this.selectionChanged();
             }});
 
-        if (templateAddedListener != null) {
+        if (templateAddedCallback != null) {
             Link link = new Link(composite, SWT.NONE);
             link.setText("<a>Add content template by URL</a>");
             link.addSelectionListener(new SelectionListener() {
@@ -187,14 +187,14 @@ public class TemplateSelectionPage extends WizardPage {
     }
 
     protected void addTemplateByURL() {
-        if (templateAddedListener == null)
+        if (templateAddedCallback == null)
             return;
         InputDialog dialog = new InputDialog(getShell(), "Enter Template URL", "Wizard template URL (should point to the folder containing template.properties)", lastUrlEntered, null);
         if (dialog.open() == Dialog.OK && !StringUtils.isBlank(dialog.getValue())) {
             String url = dialog.getValue().trim();
             lastUrlEntered = url;
             try {
-                templateAddedListener.addTemplateFrom(new URL(url));
+                templateAddedCallback.addTemplateFrom(new URL(url));
             }
             catch (MalformedURLException e) {
                 MessageDialog.openError(getShell(), "Error", "Malformed URL '" + url + "': " + StringUtils.defaultString(e.getMessage()) + '.');

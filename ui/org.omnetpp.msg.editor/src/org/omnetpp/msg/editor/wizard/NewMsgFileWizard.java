@@ -1,16 +1,12 @@
 package org.omnetpp.msg.editor.wizard;
 
-import java.net.URL;
-
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedFileWizard;
-import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedListener;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
@@ -38,12 +34,6 @@ public class NewMsgFileWizard extends TemplateBasedFileWizard {
 
         firstPage.setFileExtension("msg");
         firstPage.setFileName("untitled.msg");
-
-        getTemplateSelectionPage().setTemplateAddedListener(new ITemplateAddedListener() {
-            public void addTemplateFrom(URL url) throws CoreException {
-                //FIXME TODO...
-            }
-        });
     }
 
     @Override

@@ -1,18 +1,14 @@
 package org.omnetpp.inifile.editor.wizards;
 
-import java.net.URL;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedFileWizard;
-import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedListener;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 
@@ -38,12 +34,6 @@ public class NewInifileWizard extends TemplateBasedFileWizard {
         firstPage.setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/wizban/newinifile.png"));
         firstPage.setFileExtension("ini");
         firstPage.setFileName("omnetpp.ini");
-
-        getTemplateSelectionPage().setTemplateAddedListener(new ITemplateAddedListener() {
-            public void addTemplateFrom(URL url) throws CoreException {
-                //FIXME TODO...
-            }
-        });
     }
 
     @Override

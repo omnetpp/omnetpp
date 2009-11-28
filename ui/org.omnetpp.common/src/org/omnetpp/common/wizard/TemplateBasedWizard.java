@@ -42,6 +42,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.DetailMessageDialog;
+import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedCallback;
 import org.osgi.framework.Bundle;
 
 import freemarker.template.TemplateModelException;
@@ -62,10 +63,14 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
 
     private String wizardType;
     private TemplateSelectionPage templateSelectionPage;
+    private List<IContentTemplate> dynamicallyAddedTemplates = new ArrayList<IContentTemplate>();
+    
+    // selection state:
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
     private IContentTemplate creatorOfCustomPages;
     private CreationContext context;
     private WizardPage dummyPage;
+
 
     static class DummyPage extends WizardPage {
         public DummyPage() {
@@ -107,9 +112,22 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public void addPages() {
         // note: template custom pages will be added in getNextPage() of the template selection page.
         addPage(templateSelectionPage = new TemplateSelectionPage());
+        
+        templateSelectionPage.setTemplateAddedCallback(new ITemplateAddedCallback() {
+            public void addTemplateFrom(URL url) throws CoreException {
+                TemplateBasedWizard.this.addTemplateFrom(url);
+            }});
 
         // a dummy page is needed, otherwise the Next button will be disabled on the template selection page
         addPage(dummyPage = new DummyPage());
+    }
+
+    /**
+     * Called when the user manually enters a template URL at the template selection page.
+     */
+    protected void addTemplateFrom(URL url) throws CoreException {
+        dynamicallyAddedTemplates.add(loadTemplateFromURL(url, null));
+        templateSelectionPage.setTemplates(getTemplates()); // refresh page
     }
 
     /**
@@ -134,6 +152,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         result.addAll(loadBuiltinTemplates(getWizardType()));
         result.addAll(loadTemplatesFromWorkspace(getWizardType()));
+        result.addAll(dynamicallyAddedTemplates);
         //TODO define an ITemplateSource interface and a matching extension point
         return result;
     }
