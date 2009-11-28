@@ -8,6 +8,7 @@ class DelegatingClassLoader extends ClassLoader {
     private ClassLoader[] loaders;
 
     public DelegatingClassLoader(ClassLoader[] loaders) {
+        super(DelegatingClassLoader.class.getClassLoader());
         this.loaders = loaders;
     }
 

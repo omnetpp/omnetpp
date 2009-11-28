@@ -371,7 +371,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
             }
             else if (pageClass != null) {
                 try {
-                    Class<?> clazz = getClassLoader().loadClass(pageClass); //FIXME classloader stuff -- it will not load from other plugins
+                    Class<?> clazz = getClassLoader().loadClass(pageClass);
                     result[i] = (ICustomWizardPage) ReflectionUtils.invokeConstructor(clazz, getName()+"#"+pageID, this, condition==null?"":condition); // if condition is null, ReflectionUtils will throw NPE
                 }
                 catch (Exception e) {
