@@ -27,7 +27,8 @@ channel ${channelType} extends ned.DatarateChannel {
 //
 // Network generated from ${fileName}
 //
-network ${targetTypeName} {
+<#if wizardType=="compoundmodule"><#assign keyword="module"><#else><#assign keyword="network"></#if>
+${keyword} ${targetTypeName} {
     submodules:
 <#list 0..nodes.getLength()-1 as i>
   <#assign node = nodes.item(i)>
