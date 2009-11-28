@@ -27,6 +27,8 @@ network ${targetTypeName} {
             @display("p=${50+(i%gridColumns)*gridHSpacing},${50 + (i/gridColumns)?int * gridVSpacing}");
 <#elseif placement=="random">
             @display("p=${Math.random()*600},${Math.random()*400}");
+<#elseif placement=="sinewave">
+            @display("p=${i*600.0/numNodes},${250-200*Math.sin(6.28*i/numNodes)}");
 <#else>
 </#if>
          }

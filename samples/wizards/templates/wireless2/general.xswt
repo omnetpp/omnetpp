@@ -11,6 +11,15 @@
   </import>
   <layout x:class="GridLayout" numColumns="2"/>
   <x:children>
+
+    <label text="Network name:"/>
+    <text x:id="targetTypeName" x:style="BORDER">
+        <layoutData x:class="GridData" widthHint="300"/>
+    </text>
+
+	<label/>
+	<label/>
+
     <label text="Number of nodes:"/>
     <spinner x:id="numNodes" x:style="BORDER" maximum="10000" increment="10"/>
     <label text="Node placement:"/>
@@ -20,12 +29,20 @@
         <add x:p0="sinewave"/>
         <add x:p0="unpinned"/>
     </combo>
-    <label/> <!-- filler -->
-    <label text="Note: if you choose 'grid', you'll get a 'Grid Options' page later"/>
+
+    <label text="Note: if you choose 'grid', you'll get a 'Grid Options' page later">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalIndent="16"/>
+    </label>
+
+	<label/>
+	<label/>
+
     <button x:id="wantRouting" text="Configure routing protocols" x:style="CHECK">
         <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
-    <label/> <!-- filler -->
-    <label text="Note: if you check it, you'll get configuration pages later"/>
+
+    <label text="Note: if you check it, you'll get configuration pages later">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalIndent="16"/>
+    </label>
   </x:children>
 </xswt>

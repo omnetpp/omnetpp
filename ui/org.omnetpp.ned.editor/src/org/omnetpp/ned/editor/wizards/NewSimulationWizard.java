@@ -86,7 +86,7 @@ public class NewSimulationWizard extends TemplateBasedWizard {
         String simulationName = StringUtils.capitalize(StringUtils.makeValidIdentifier(simulationFolderName));
         context.getVariables().put("simulationName", simulationName);
 
-        context.getVariables().put("targetTypeName", "${simulationName"); // may be customized on further pages
+        context.getVariables().put("targetTypeName", "${simulationName}"); // may be customized on further pages
 
         // variables to help support project, simulation and file wizards with the same template code 
         context.getVariables().put("targetPathPrefix", simulationFolderName + "/");
