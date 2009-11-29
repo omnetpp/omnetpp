@@ -194,11 +194,17 @@ public class XSWTDataBinding {
             return Integer.parseInt(value.toString().trim());
     }
 
+    /**
+     * Note: this method CANNOT HANDLE QUOTES. Use JSON parsing for anything serious.
+     */
     public static String[] toStringArray(Object value) {
         return toStringArray(value, null);
     }
 
 
+    /**
+     * Note: this method CANNOT HANDLE QUOTES. Use JSON parsing for anything serious.
+     */
     @SuppressWarnings("unchecked")
     public static String[] toStringArray(Object value, String splitRegex) {
         if (value instanceof String[])
@@ -221,6 +227,9 @@ public class XSWTDataBinding {
         }
     }
 
+    /**
+     * Note: this method CANNOT HANDLE QUOTES. Use JSON parsing for anything serious.
+     */
     @SuppressWarnings("unchecked")
     public static Map<String,String> toStringMap(Object value) {
         if (value instanceof Map) {
