@@ -2,6 +2,8 @@
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
+<#if gateName==""><#assign gateName = "g"></#if>
+<#assign gateName = StringUtils.makeValidIdentifier(gateName)>
 
 <#if !NedUtils.isVisibleType(nodeType,targetFolder)>
 <#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
@@ -9,7 +11,7 @@ module ${nodeType} {
     parameters:
         @display("i=abstract/router_s");
     gates:
-        inout g[];
+        inout ${gateName}[];
 }
 </#if>
 
@@ -58,11 +60,11 @@ ${keyword} ${targetTypeName} {
     connections:
 <#list linksData as link>
   <#if (link?size == 4)>
-        ${link[0]}.g++ <--> ${channelType} { datarate=${link[2]}bps; cost=${link[3]}; } <--> ${link[1]}.g++;
+        ${link[0]}.${gateName}++ <--> ${channelType} { datarate=${link[2]}bps; cost=${link[3]}; } <--> ${link[1]}.${gateName}++;
   <#elseif (link?size == 3)>
-        ${link[0]}.g++ <--> ${channelType} { datarate=${link[2]}bps; } <--> ${link[1]}.g++;
+        ${link[0]}.${gateName}++ <--> ${channelType} { datarate=${link[2]}bps; } <--> ${link[1]}.${gateName}++;
   <#elseif (link?size == 2)>
-        ${link[0]}.g++ <--> ${channelType} <--> ${link[1]}.g++;
+        ${link[0]}.${gateName}++ <--> ${channelType} <--> ${link[1]}.${gateName}++;
   <#else>
         <#stop "Unexpected number of items on line >>>" + LangUtils.toString(link) + "<<< (expected 2, 3, or 4)" + link?size>
   </#if>

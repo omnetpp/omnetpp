@@ -2,6 +2,8 @@
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
+<#if gateName==""><#assign gateName = "g"></#if>
+<#assign gateName = StringUtils.makeValidIdentifier(gateName)>
 
 <#if !NedUtils.isVisibleType(nodeType,targetFolder)>
 <#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
@@ -9,7 +11,7 @@ module ${nodeType} {
     parameters:
         @display("i=abstract/router_s");
     gates:
-        inout g[];
+        inout ${gateName}[];
 }
 </#if>
 
@@ -41,9 +43,9 @@ ${keyword} ${targetTypeName} {
     connections:
 <#list links as link>
   <#if link.containsKey("bw") || link.containsKey("cost")>
-        ${link["from"]}.g++ <--> ${channelType} { <#if link.containsKey("bw")>datarate=${link["bw"]}bps; </#if><#if link.containsKey("cost")>cost=${link["cost"]}; </#if>} <--> ${link["to"]}.g++;
+        ${link["from"]}.${gateName}++ <--> ${channelType} { <#if link.containsKey("bw")>datarate=${link["bw"]}bps; </#if><#if link.containsKey("cost")>cost=${link["cost"]}; </#if>} <--> ${link["to"]}.${gateName}++;
   <#else>
-        ${link["from"]}.g++ <--> ${channelType} <--> ${link["to"]}.g++;
+        ${link["from"]}.${gateName}++ <--> ${channelType} <--> ${link["to"]}.${gateName}++;
   </#if>
 </#list>
 }

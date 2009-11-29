@@ -100,7 +100,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
             List<GateElementEx> gates = getMatchingGates();
             comboViewer.setInput(gates);
             if (comboViewer.getSelection().isEmpty() && !gates.isEmpty())
-                comboViewer.setSelection(new StructuredSelection(gates.get(0))); //FIXME this does not work, likely because GateElement has no hashCode() or equals()
+                comboViewer.setSelection(new StructuredSelection(gates.get(0)));
         }
     }
     
@@ -156,7 +156,8 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
         }
         else if (comboViewer != null) {
             GateElement gate = nedType.getGateDeclarations().get(gateName);
-            comboViewer.setSelection(new StructuredSelection(gate), true);
+            if (gate != null)
+                comboViewer.setSelection(new StructuredSelection(gate), true);
         }
     }
 
@@ -174,7 +175,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
         NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
         if (project != null) {
             INEDTypeInfo nedType = nedResources.getToplevelNedType(name, project);
-            if (nedType.getNEDElement() instanceof IModuleKindTypeElement)
+            if (nedType != null && nedType.getNEDElement() instanceof IModuleKindTypeElement)
                 return nedType;
         }
         else {

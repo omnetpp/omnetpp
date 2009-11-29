@@ -2,6 +2,8 @@
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
+<#if gateName==""><#assign gateName = "g"></#if>
+<#assign gateName = StringUtils.makeValidIdentifier(gateName)>
 
 <#if !NedUtils.isVisibleType(nodeType,targetFolder)>
 <#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
@@ -9,7 +11,7 @@ module ${nodeType} {
     parameters:
         @display("i=abstract/router_s");
     gates:
-        inout g[];
+        inout ${gateName}[];
 }
 </#if>
 
@@ -69,7 +71,7 @@ ${keyword} network ${targetTypeName} {
 </#list>
     connections:
 <#list links as link>
-        ${link["src"]}.g++ <--> ${channelType} { datarate=${link["bw"]}bps; cost=${link["cost"]}; } <--> ${link["dest"]}.g++;
+        ${link["src"]}.${gateName}++ <--> ${channelType} { datarate=${link["bw"]}bps; cost=${link["cost"]}; } <--> ${link["dest"]}.${gateName}++;
 </#list>
 }
 
