@@ -271,7 +271,12 @@ public abstract class ContentTemplate implements IContentTemplate {
             "<#macro do arg></#macro>" + // allow void methods to be called as: <@do object.setFoo(x)!>
             "<#macro setoutput path>\n" +
             SETOUTPUT_MARKER +
-            "</#macro>\n\n";
+            "</#macro>\n" +
+            "\n" +
+            "<#function iif condition truevalue falsevalue>\n" + 
+            "    <#if condition><#return truevalue><#else><#return falsevalue></#if>\n" + 
+            "</#function>\n" +
+            "\n";
 
         for (IContentTemplateContributor contributor : getContributors()) {
             try {
