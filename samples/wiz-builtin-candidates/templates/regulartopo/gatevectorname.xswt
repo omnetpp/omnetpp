@@ -22,7 +22,7 @@
         </label>
 
         <label text="Gate to connect:"/>
-        <gateChooser x:id="vectorGateName" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+        <gateChooser x:id="vectorGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </gateChooser>
 

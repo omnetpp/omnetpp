@@ -6,15 +6,15 @@ module ${nodeType} {
     parameters:
         @display("i=misc/node_vs");
     gates:
-  <#if gateVectorWithIndices || gateVectorWithPlusPlus> 
-        inout ${vectorGateName}[];
+  <#if gateVectorWithIndices || gateVectorWithPlusPlus>
+        inout ${vectorGate}[];
   <#else>
-    <#if ring || wheel> 
-        inout ${wheelPrevGate}; 
-        inout ${wheelNextGate}; 
+    <#if ring || wheel>
+        inout ${wheelPrevGate};
+        inout ${wheelNextGate};
     </#if>
-    <#if star || wheel> 
-        inout ${wheelToHubGate}; 
+    <#if star || wheel>
+        inout ${wheelToHubGate};
     </#if>
   </#if>
 }
@@ -27,10 +27,10 @@ module ${hubType} {
     parameters:
         @display("i=misc/node_vs");
     gates:
-      <#if gateVectorWithIndices || gateVectorWithPlusPlus> 
-        inout ${vectorGateName}[];
+      <#if gateVectorWithIndices || gateVectorWithPlusPlus>
+        inout ${vectorGate}[];
       <#else>
-        inout ${wheelHubOutGate}[]; 
+        inout ${wheelHubOutGate}[];
       </#if>
 }
   </#if>
@@ -52,38 +52,38 @@ network ${targetTypeName}
         int n = default(${nodes});
     submodules:
 <#if star || wheel>
-  <#if gateVectorWithIndices> 
-        hub: ${hubType} { gates: ${vectorGateName}[n]; }
-  <#elseif gateVectorWithPlusPlus> 
+  <#if gateVectorWithIndices>
+        hub: ${hubType} { gates: ${vectorGate}[n]; }
+  <#elseif gateVectorWithPlusPlus>
         hub: ${hubType};
-  <#else> 
+  <#else>
         hub: ${hubType} { gates: ${wheelHubOutGate}[n]; }
   </#if>
 </#if>
-<#if gateVectorWithIndices> 
-        node[n]: ${nodeType} { gates: ${vectorGateName}[${iif(wheel,4,iif(ring,1,2))}]; }
-<#else> 
+<#if gateVectorWithIndices>
+        node[n]: ${nodeType} { gates: ${vectorGate}[${iif(wheel,4,iif(ring,1,2))}]; }
+<#else>
         node[n]: ${nodeType};
 </#if>
     connections:
 <#if star || wheel>
         for i=0..n-1 {
-  <#if gateVectorWithIndices> 
-            hub.${vectorGateName}[i] <-->${channelSpec} node[i].${vectorGateName}[0];
-  <#elseif gateVectorWithPlusPlus> 
-            hub.${vectorGateName}++ <-->${channelSpec} node[i].${vectorGateName}++;
-  <#else> 
+  <#if gateVectorWithIndices>
+            hub.${vectorGate}[i] <-->${channelSpec} node[i].${vectorGate}[0];
+  <#elseif gateVectorWithPlusPlus>
+            hub.${vectorGate}++ <-->${channelSpec} node[i].${vectorGate}++;
+  <#else>
             hub.${wheelHubOutGate}[i] <-->${channelSpec} node[i].${wheelToHubGate};
   </#if>
         }
 </#if>
 <#if ring || wheel>
         for i=0..n-1 {
-  <#if gateVectorWithIndices> 
-            node[i].${vectorGateName}[${iif(ring,0,1)}] <-->${channelSpec} node[(i+1)%n].${vectorGateName}[${iif(ring,1,2)}];
-  <#elseif gateVectorWithPlusPlus> 
-            node[i].${vectorGateName}++ <-->${channelSpec} node[(i+1)%n].${vectorGateName}++;
-  <#else> 
+  <#if gateVectorWithIndices>
+            node[i].${vectorGate}[${iif(ring,0,1)}] <-->${channelSpec} node[(i+1)%n].${vectorGate}[${iif(ring,1,2)}];
+  <#elseif gateVectorWithPlusPlus>
+            node[i].${vectorGate}++ <-->${channelSpec} node[(i+1)%n].${vectorGate}++;
+  <#else>
             node[i].${wheelNextGate} <-->${channelSpec} node[(i+1)%n].${wheelPrevGate};
   </#if>
         }
@@ -94,29 +94,29 @@ network ${targetTypeName}
 {
     submodules:
 <#if star || wheel>
-  <#if gateVectorWithIndices> 
-        hub: ${hubType} { gates: ${vectorGateName}[n]; }
-  <#elseif gateVectorWithPlusPlus> 
+  <#if gateVectorWithIndices>
+        hub: ${hubType} { gates: ${vectorGate}[n]; }
+  <#elseif gateVectorWithPlusPlus>
         hub: ${hubType};
-  <#else> 
+  <#else>
         hub: ${hubType} { gates: ${wheelHubOutGate}[n]; }
   </#if>
 </#if>
 <#list 0..nodes-1 as i>
-<#if gateVectorWithIndices> 
-        node${i}: ${nodeType} { gates: ${vectorGateName}[${iif(wheel,3,iif(ring,2,1))}]; }
-<#else> 
+<#if gateVectorWithIndices>
+        node${i}: ${nodeType} { gates: ${vectorGate}[${iif(wheel,3,iif(ring,2,1))}]; }
+<#else>
         node${i}: ${nodeType};
 </#if>
 </#list>
     connections:
 <#if star || wheel>
   <#list 0..nodes-1 as i>
-    <#if gateVectorWithIndices> 
-        hub.${vectorGateName}[${i}] <-->${channelSpec} node${i}.${vectorGateName}[0];
-    <#elseif gateVectorWithPlusPlus> 
-        hub.${vectorGateName}++ <-->${channelSpec} node${i}.${vectorGateName}++;
-    <#else> 
+    <#if gateVectorWithIndices>
+        hub.${vectorGate}[${i}] <-->${channelSpec} node${i}.${vectorGate}[0];
+    <#elseif gateVectorWithPlusPlus>
+        hub.${vectorGate}++ <-->${channelSpec} node${i}.${vectorGate}++;
+    <#else>
         hub.${wheelHubOutGate}[${i}] <-->${channelSpec} node${i}.${wheelToHubGate};
     </#if>
   </#list>
@@ -126,11 +126,11 @@ network ${targetTypeName}
 </#if>
 <#if ring || wheel>
   <#list 0..nodes-1 as i>
-    <#if gateVectorWithIndices> 
-        node${i}.${vectorGateName}[${iif(ring,0,1)}] <-->${channelSpec} node${(i+1)%nodes}.${vectorGateName}[${iif(ring,1,2)}];
-    <#elseif gateVectorWithPlusPlus> 
-        node${i}.${vectorGateName}++ <-->${channelSpec} node${(i+1)%nodes}.${vectorGateName}++;
-    <#else> 
+    <#if gateVectorWithIndices>
+        node${i}.${vectorGate}[${iif(ring,0,1)}] <-->${channelSpec} node${(i+1)%nodes}.${vectorGate}[${iif(ring,1,2)}];
+    <#elseif gateVectorWithPlusPlus>
+        node${i}.${vectorGate}++ <-->${channelSpec} node${(i+1)%nodes}.${vectorGate}++;
+    <#else>
         node${i}.${wheelNextGate} <-->${channelSpec} node${(i+1)%nodes}.${wheelPrevGate};
     </#if>
   </#list>

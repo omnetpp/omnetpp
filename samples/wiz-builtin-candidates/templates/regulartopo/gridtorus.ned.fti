@@ -6,9 +6,9 @@ module ${nodeType} {
     parameters:
         @display("i=misc/node_vs");
     gates:
-<#if gateVectorWithIndices || gateVectorWithPlusPlus> 
-        inout ${vectorGateName}[];
-<#else> 
+<#if gateVectorWithIndices || gateVectorWithPlusPlus>
+        inout ${vectorGate}[];
+<#else>
         inout ${gridUpGate};
         inout ${gridDownGate};
         inout ${gridLeftGate};
@@ -26,17 +26,17 @@ channel ${channelType} extends ned.DatarateChannel {
 </#if>
 
 <#-- abbreviations used for the connections: -->
-<#if gateVectorWithIndices> 
-  <#assign up = vectorGateName + "[0]">
-  <#assign down = vectorGateName + "[1]">
-  <#assign left = vectorGateName + "[2]">
-  <#assign right = vectorGateName + "[3]">
-<#elseif gateVectorWithPlusPlus> 
-  <#assign up = vectorGateName + "++">
-  <#assign down = vectorGateName + "++">
-  <#assign left = vectorGateName + "++">
-  <#assign right = vectorGateName + "++">
-<#else> 
+<#if gateVectorWithIndices>
+  <#assign up = vectorGate + "[0]">
+  <#assign down = vectorGate + "[1]">
+  <#assign left = vectorGate + "[2]">
+  <#assign right = vectorGate + "[3]">
+<#elseif gateVectorWithPlusPlus>
+  <#assign up = vectorGate + "++">
+  <#assign down = vectorGate + "++">
+  <#assign left = vectorGate + "++">
+  <#assign right = vectorGate + "++">
+<#else>
   <#assign up = gridUpGate>
   <#assign down = gridDownGate>
   <#assign left = gridLeftGate>
@@ -52,9 +52,9 @@ network ${targetTypeName}
         int columns = default(${columns});
         int rows = default(${rows});
     submodules:
-<#if gateVectorWithIndices> 
-        node[columns*rows]: ${nodeType} { gates: ${vectorGateName}[4]; }
-<#else> 
+<#if gateVectorWithIndices>
+        node[columns*rows]: ${nodeType} { gates: ${vectorGate}[4]; }
+<#else>
         node[columns*rows]: ${nodeType};
 </#if>
 <#if grid>
@@ -81,9 +81,9 @@ network ${targetTypeName}
     submodules:
 <#list 0..rows-1 as i>
   <#list 0..columns-1 as j>
-    <#if gateVectorWithIndices> 
-        node_${i}_${j}: ${nodeType} { gates: ${vectorGateName}[4]; }
-    <#else>    
+    <#if gateVectorWithIndices>
+        node_${i}_${j}: ${nodeType} { gates: ${vectorGate}[4]; }
+    <#else>
         node_${i}_${j}: ${nodeType};
     </#if>
   </#list>
