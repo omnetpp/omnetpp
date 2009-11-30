@@ -19,10 +19,8 @@ ${bannerComment}
 </#if>
 
 <#-- pull in the correct template to do the actual work -->
-<#if star>
-   <#include "star.ned.fti">
-<#elseif ring>
-   <#include "ring.ned.fti">
+<#if star || ring || wheel>
+   <#include "wheel.ned.fti">
 <#elseif grid || torus>
    <#include "gridtorus.ned.fti">
 <#elseif bintree || ktree>
