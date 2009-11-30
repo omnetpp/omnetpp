@@ -44,6 +44,9 @@ channel ${channelType} extends ned.DatarateChannel {
 </#if>
 
 <#-- TODO: generateCoordinates -->
+//
+// A generated network with ${iif(bintree, "binary tree", "k-ary tree")} topology.
+//
 <#if parametricNED>
 network ${targetTypeName}
 {

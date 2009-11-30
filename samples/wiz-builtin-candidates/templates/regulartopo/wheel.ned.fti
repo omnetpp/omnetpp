@@ -62,7 +62,9 @@ channel ${channelType} extends ned.DatarateChannel {
   <#function outw i> <#return wheelHubOutGate + "[" + i + "]"> </#function>
 </#if>
 
-
+//
+// A generated network with ${iif(ring, "ring", iif(star, "star", "wheel"))} topology.
+//
 <#-- TODO: generateCoordinates -->
 <#if parametricNED>
 network ${targetTypeName}
