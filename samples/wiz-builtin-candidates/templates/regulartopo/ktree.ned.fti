@@ -6,8 +6,12 @@ module ${nodeType} {
     parameters:
         @display("i=misc/node_vs");
     gates:
-        inout parent;
-        inout child[];
+<#if gateVectorWithIndices || gateVectorWithPlusPlus> 
+        inout ${vectorGateName}[];
+<#else> 
+        inout ${treeParentGate};
+        inout ${treeChildGate}[];
+</#if>
 }
 </#if>
 
@@ -27,10 +31,20 @@ network ${targetTypeName}
     parameters:
         int levels = default(${treeLevels});  // 1 = root only
     submodules:
+<#if gateVectorWithIndices> 
+        node[2^levels-1]: ${nodeType} { gates: ${vectorGateName}[3]; }
+<#else> 
         node[2^levels-1]: ${nodeType};
-    connections:
+</#if>        
+    connections allowunconnected:
         for i=1..sizeof(node)-1 {
-            node[i].parent <-->${channelSpec} node[floor((i-1)/2)].child++;
+<#if gateVectorWithIndices> 
+            node[i].${vectorGateName}[0] <-->${channelSpec} node[floor((i-1)/2)].${vectorGateName}[1+i%2];
+<#elseif gateVectorWithPlusPlus> 
+            node[i].${vectorGateName}++ <-->${channelSpec} node[floor((i-1)/2)].${vectorGateName}++;
+<#else> 
+            node[i].${treeParentGate} <-->${channelSpec} node[floor((i-1)/2)].${treeChildGate}++;
+</#if>
         }
 }
   <#else>
@@ -40,10 +54,21 @@ network ${targetTypeName}
         int k = default(${treeK}); // tree branching factor
         int levels = default(${treeLevels});  // 1 = root only
     submodules:
+<#if gateVectorWithIndices> 
+        node[(k^levels-1) / (k-1)]: ${nodeType} { gates: ${vectorGateName}[1+k]; }
+<#else> 
         node[(k^levels-1) / (k-1)]: ${nodeType};
-    connections:
+</#if>        
+    connections allowunconnected:
         for i=1..sizeof(node)-1 {
             node[i].parent <-->${channelSpec} node[floor((i-1)/k).child++;
+<#if gateVectorWithIndices> 
+            node[i].${vectorGateName}[0] <-->${channelSpec} node[floor((i-1)/k)].${vectorGateName}[1+i%k];
+<#elseif gateVectorWithPlusPlus> 
+            node[i].${vectorGateName}++ <-->${channelSpec} node[floor((i-1)/k).${vectorGateName}++;
+<#else> 
+            node[i].${treeParentGate} <-->${channelSpec} node[floor((i-1)/k).${treeChildGate}++;
+</#if>
         }
 }
   </#if>
@@ -53,15 +78,25 @@ network ${targetTypeName}
     submodules:
 <#list 0..treeLevels-1 as level>
   <#list 0..Math.pow(treeK, level)-1 as i>
+    <#if gateVectorWithIndices> 
+        node_${level}_${i}: ${nodeType} { gates: ${vectorGateName}[${1+treeK}]; }
+    <#else> 
         node_${level}_${i}: ${nodeType};
+    </#if>        
   </#list>
 
 </#list>
-    connections:
+    connections allowunconnected:
 <#-- connect each node to its parent -->
 <#list 1..treeLevels-1 as level>
   <#list 0..Math.pow(treeK, level)-1 as i>
-        node_${level}_${i}.parent <-->${channelSpec} node_${level-1}_${(i/treeK)?floor}.child++;
+    <#if gateVectorWithIndices> 
+        node_${level}_${i}.${vectorGateName}[0] <-->${channelSpec} node_${level-1}_${(i/treeK)?floor}.${vectorGateName}[${1+i%treeK}];
+    <#elseif gateVectorWithPlusPlus> 
+        node_${level}_${i}.${vectorGateName}++ <-->${channelSpec} node_${level-1}_${(i/treeK)?floor}.${vectorGateName}++;
+    <#else> 
+        node_${level}_${i}.${treeParentGate} <-->${channelSpec} node_${level-1}_${(i/treeK)?floor}.${treeChildGate}[${i%treeK}];
+    </#if>
   </#list>
 
 </#list>

@@ -29,5 +29,15 @@
       </x:children>
     </group>
 
+    <group text="Gates">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" numColumns="1"/>
+       <x:children>
+         <button x:id="namedGates" text="Named scalar gates where possible" x:style="RADIO"/>
+         <button x:id="gateVectorWithIndices" text="Vector gates with indices (g[i])" x:style="RADIO"/>
+         <button x:id="gateVectorWithPlusPlus" text="Vector gates with autoexpand (g++)" x:style="RADIO"/>
+       </x:children>
+    </group>
+
   </x:children>
 </xswt>
