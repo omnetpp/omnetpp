@@ -1,4 +1,4 @@
-<@setoutput file="widgetsform.xswt"/>
+<@setoutput path="widgetsform.xswt"/>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 
@@ -8,6 +8,7 @@
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
     <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" numColumns="1"/>

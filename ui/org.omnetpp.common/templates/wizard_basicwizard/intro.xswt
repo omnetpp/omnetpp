@@ -7,37 +7,60 @@
     <package name="org.eclipse.swt.graphics" />
     <package name="org.eclipse.swt.layout" />
     <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
-    <text x:style="MULTI|READ_ONLY|WRAP|V_SCROLL">
-        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
-        <text x:p0=
-"This wizard generates a New &lt;Something&gt; Wizard that you can distribute
-to others with your simulation model. Wizards can show off the features of your
-simulation model, and make it easier for people who are new to your simulation
-model to get started. Wizards can also encapsulate other useful functionality,
-such as importing from various file formats or providing a comfortable user interface
-for command-line topology generation program.
-&#10;&#10;
-You won't need any special skills to create and edit wizards. Wizard files do not need
-to be compiled, packaged or anything. Wizards are made up of normal, readable text files
-in the 'templates/&lt;wizardname&gt;' directory of an OMNeT++ project in the IDE workspace.
-&#10;&#10;
-Wizards are easy to distribute. When you normally zip up your simulation project
-for release, just be sure to include (i.e. do not delete) the 'templates/' directory
-from it. There are no deployment steps your users need to do to: when they import
-the project into the IDE, your wizard automatically appears in the File|New...
-dialogs, and that's it.
-&#10;&#10;
-We provide plenty of examples to copy/paste code from. When you need more info,
-you'll find plenty on the Internet, because the wizard builds on existing, known
-open-source software: Eclipse's SWT widget tookit, its XML binding XSWT, and
-the FreeMarker templating engine.
-&#10;&#10;
+  
+    <label x:style="WRAP" text="This wizard guides you through the steps of creating a custom wizard.">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+     
+    <infoLink text="<a>What is a custom wizard?</a>" hoverMinimumWidth="580" hoverMinimumHeight="300"
+    hoverText=
+"&lt;b&gt;This wizard helps you create a New... wizard, specific
+to the simulation model or framework you are writing.&lt;/b&gt; 
+The resulting wizard can create a new project, a new simulation (NED+ini), 
+a new network or module, a new C++ class, etc., based on user input.  
+
+&lt;br&gt;&lt;br&gt;
+
+You can easily distribute the new wizard to your end users, and it can 
+help them explore the possibilities of your simulation model. 
+Wizards can also encapsulate other useful functionality to automate
+manual work, such as import from various file formats or give GUI access 
+to external topology generation programs.
+
+&lt;br&gt;&lt;br&gt;
+
+You don't need Eclipse programming skills to create or edit wizards. 
+Wizards are made up of normal, readable text files in the 
+'templates/&amp;lt;wizardname&amp;gt;' directory of an OMNeT++ project,
+and need not be compiled, packaged or deployed in order to work. 
+
+&lt;br&gt;&lt;br&gt;
+
+Wizards are easy to distribute. When you zip up your simulation project
+for release, just be sure to include (i.e. not to delete) the 'templates/' directory.
+There are no deployment steps for your end users: when they import
+the project into the IDE, the new wizards will automatically appear in the File -> New
+dialogs.
+
+&lt;br&gt;&lt;br&gt;
+
+To help you create wizards, we provide numerous 'wizard wizards' and code examples, 
+as you have already seen if you are reading this. The documentation of the wizard
+feature is located in the &lt;b&gt;User Guide&lt;/b&gt;. 
+There is plentiful more information available in the Internet, because  
+the wizard facility builds on existing, known open-source software: 
+Eclipse's SWT widget tookit, its XML binding XSWT, and the FreeMarker 
+templating engine.
+
+&lt;br&gt;&lt;br&gt;
+
 Happy exploration!"/>
-    </text>
+    
   </x:children>
 
 </xswt>

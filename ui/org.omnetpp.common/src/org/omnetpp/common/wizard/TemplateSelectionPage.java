@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.omnetpp.common.wizard;
 
@@ -46,7 +46,7 @@ import org.omnetpp.common.ui.SizeConstraint;
  * Wizard page for selecting an IContentTemplate. Templates appear in a tree,
  * organized by categories. Templates that have "" or null as category will
  * be placed on the top level of the tree.
- * 
+ *
  * @author Andras
  */
 public class TemplateSelectionPage extends WizardPage {
@@ -55,17 +55,17 @@ public class TemplateSelectionPage extends WizardPage {
 
     private TreeViewer treeViewer;
     private Image defaultImage = DEFAULT_IMAGE;
-    private ITemplateAddedListener templateAddedListener;
+    private ITemplateAddedCallback templateAddedCallback;
     private static String lastUrlEntered = "http://";
 
     /**
-     * Listener to be provided when the wizard wants to provide "Load template from URL" 
+     * Listener to be provided when the wizard wants to provide "Load template from URL"
      * functionality. Method is supposed to call back setTemplates() to refresh the tree.
      */
-    public interface ITemplateAddedListener {
+    public interface ITemplateAddedCallback {
         void addTemplateFrom(URL url) throws CoreException;
     }
-    
+
     public TemplateSelectionPage() {
         super("OmnetppTemplateSelectionPage");
         setTitle("Initial Contents");
@@ -88,18 +88,18 @@ public class TemplateSelectionPage extends WizardPage {
 
     /**
      * Enable the 'Add template by URL' link, and set the callback to be invoked
-     * when the user adds a template URL. Must be called before createControl(). 
+     * when the user adds a template URL. Must be called before createControl().
      */
-    public void setTemplateAddedListener(ITemplateAddedListener templateAddedListener) {
+    public void setTemplateAddedCallback(ITemplateAddedCallback templateAddedCallback) {
         if (getControl() != null)
             throw new IllegalStateException("Oh dear, too late...");
-        this.templateAddedListener = templateAddedListener;
+        this.templateAddedCallback = templateAddedCallback;
     }
-    
-    public ITemplateAddedListener getTemplateAddedListener() {
-        return templateAddedListener;
+
+    public ITemplateAddedCallback getTemplateAddedListener() {
+        return templateAddedCallback;
     }
-    
+
     public void createControl(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(1,false));
@@ -111,7 +111,7 @@ public class TemplateSelectionPage extends WizardPage {
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)treeViewer.getTree().getLayoutData()).heightHint = 200;
-        
+
         treeViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
@@ -130,7 +130,7 @@ public class TemplateSelectionPage extends WizardPage {
                 }
             }
         });
-        
+
         treeViewer.setContentProvider(new GenericTreeContentProvider());
 
         // set ordering: default templates first, then non-default templates, then template categories
@@ -153,7 +153,7 @@ public class TemplateSelectionPage extends WizardPage {
                 Object element = item==null ? null : item.getData();
                 element = (element instanceof GenericTreeNode) ? ((GenericTreeNode)element).getPayload() : null;
                 if (element instanceof IContentTemplate) {
-                    String description = ((IContentTemplate)element).getDescription();
+                    String description = getTemplateHoverText((IContentTemplate)element);
                     if (description != null)
                         return HoverSupport.addHTMLStyleSheet(description);
                 }
@@ -166,7 +166,7 @@ public class TemplateSelectionPage extends WizardPage {
                 TemplateSelectionPage.this.selectionChanged();
             }});
 
-        if (templateAddedListener != null) {
+        if (templateAddedCallback != null) {
             Link link = new Link(composite, SWT.NONE);
             link.setText("<a>Add content template by URL</a>");
             link.addSelectionListener(new SelectionListener() {
@@ -178,7 +178,7 @@ public class TemplateSelectionPage extends WizardPage {
                     addTemplateByURL();
                 }});
         }
-        
+
         setPageComplete(false);
     }
 
@@ -186,15 +186,19 @@ public class TemplateSelectionPage extends WizardPage {
         setPageComplete(getSelectedTemplate()!=null);
     }
 
+    protected String getTemplateHoverText(IContentTemplate template) {
+        return template.getDescription();
+    }
+
     protected void addTemplateByURL() {
-        if (templateAddedListener == null)
+        if (templateAddedCallback == null)
             return;
         InputDialog dialog = new InputDialog(getShell(), "Enter Template URL", "Wizard template URL (should point to the folder containing template.properties)", lastUrlEntered, null);
         if (dialog.open() == Dialog.OK && !StringUtils.isBlank(dialog.getValue())) {
             String url = dialog.getValue().trim();
             lastUrlEntered = url;
             try {
-                templateAddedListener.addTemplateFrom(new URL(url));
+                templateAddedCallback.addTemplateFrom(new URL(url));
             }
             catch (MalformedURLException e) {
                 MessageDialog.openError(getShell(), "Error", "Malformed URL '" + url + "': " + StringUtils.defaultString(e.getMessage()) + '.');
@@ -204,10 +208,10 @@ public class TemplateSelectionPage extends WizardPage {
             }
         }
     }
-    
+
     public void setTemplates(List<IContentTemplate> templates) {
         GenericTreeNode root = new GenericTreeNode("root");
-        Set<String> categories = new LinkedHashSet<String>(); 
+        Set<String> categories = new LinkedHashSet<String>();
         for (IContentTemplate template : templates)
             categories.add(template.getCategory());
         for (String category : categories) {
@@ -217,9 +221,9 @@ public class TemplateSelectionPage extends WizardPage {
             for (IContentTemplate template : templates)
                 if (StringUtils.equals(category, template.getCategory()))
                     categoryNode.addChild(new GenericTreeNode(template));
-        }                
+        }
         treeViewer.setInput(root);
-        
+
         if (!templates.isEmpty()) {
             // preselect the (first) template marked as default
             IContentTemplate defaultTemplate = null;
@@ -239,4 +243,5 @@ public class TemplateSelectionPage extends WizardPage {
         element = (element == null) ? null : ((GenericTreeNode)element).getPayload();
         return (element instanceof IContentTemplate) ? (IContentTemplate)element : null;
     }
+
 }

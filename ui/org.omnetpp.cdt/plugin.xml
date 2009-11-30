@@ -428,5 +428,11 @@
             referenceClass="org.omnetpp.cdt.Activator">
       </plugin>
    </extension>
+   <extension
+         point="org.omnetpp.common.wizard.templatecontributors">
+      <contributor
+            class="org.omnetpp.cdt.wizard.CDTContentTemplateContributor">
+      </contributor>
+   </extension>
    
 </plugin>

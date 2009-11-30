@@ -1,20 +1,20 @@
-<#assign hFileName=newFileName?default("")?replace("\\.[a-z]*$",".h", "ri")>
-<#assign ccFileName=newFileName?default("")?replace("\\.[a-z]*$",".cc", "ri")>
-<@setoutput file=ccFileName/>
+<#assign hFileName=targetFileName?default("")?replace("\\.[a-z]*$",".h", "ri")>
+<#assign ccFileName=targetFileName?default("")?replace("\\.[a-z]*$",".cc", "ri")>
+<@setoutput path=ccFileName/>
 ${bannerComment}
 
 #include "${hFileName}"
 
 <#if namespaceName!="">namespace ${namespaceName} {</#if>
 
-Define_Module(${nedTypeName});
+Define_Module(${targetTypeName});
 
-void ${nedTypeName}::initialize()
+void ${targetTypeName}::initialize()
 {
     // TODO - Generated method body
 }
 
-void ${nedTypeName}::handleMessage(cMessage *msg)
+void ${targetTypeName}::handleMessage(cMessage *msg)
 {
     // TODO - Generated method body
 }

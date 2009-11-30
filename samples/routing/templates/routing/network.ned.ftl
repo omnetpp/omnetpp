@@ -14,7 +14,7 @@ simple WirelessNode {
 //
 // Generated network: ${numNodes} nodes, ${placement} placement, ${routingProtocol} routing
 //
-network ${ProjectName} {
+network ${projectName} {
     parameters:
         //TODO: node*.routingProtocol = "${routingProtocol}";
      submodules:

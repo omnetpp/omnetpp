@@ -11,7 +11,7 @@ import org.omnetpp.common.wizard.TemplateBasedWizard;
 
 /**
  * "New Wizard" wizard
- * 
+ *
  * @author Andras
  */
 public class NewWizardWizard extends TemplateBasedWizard {
@@ -23,7 +23,7 @@ public class NewWizardWizard extends TemplateBasedWizard {
         super.init(workbench, selection);
         this.selection = selection;
     }
-    
+
     @Override
     public void addPages() {
         setWindowTitle("New Wizard");
@@ -38,7 +38,7 @@ public class NewWizardWizard extends TemplateBasedWizard {
         context.setVariable("newWizardProject", firstPage.getProject());
         return context;
     }
-    
+
     @Override
     protected IWizardPage getFirstExtraPage() {
         return null;

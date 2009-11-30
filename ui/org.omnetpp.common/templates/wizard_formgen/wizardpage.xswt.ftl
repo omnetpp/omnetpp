@@ -1,12 +1,12 @@
 <#assign xswtFile="wizardpage.xswt">
 <#assign propsFile="template.properties">
 <#assign nedFile="output.ned.ftl">
-<@setoutput file=propsFile/>
+<@setoutput path=propsFile/>
 # adjust the following
 templateName = Newly Generated Wizard, with an Input Page
 templateDescription = Wizard with a single input page
 templateCategory = Generated Wizards
-supportedWizardTypes = project, nedfile, simulation
+supportedWizardTypes =
 
 # custom wizard pages
 page.1.file = wizardpage.xswt
@@ -14,14 +14,14 @@ page.1.title = Generated Page
 page.1.description = Select options below
 
 # variables
-<@setoutput file=nedFile/>
-<#noparse><@setoutput file=newFileName?default("")/>
+<@setoutput path=nedFile/>
+<#noparse><@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
 
 </#noparse>
-<@setoutput file=xswtFile/>
+<@setoutput path=xswtFile/>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 
@@ -32,12 +32,13 @@ ${bannerComment}
     <package name="org.eclipse.swt.layout" />
     <package name="org.eclipse.swt.custom" />
     <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout" numColumns="2"/>
 
   <x:children>
-  
+
     <label x:text="This is a generated wizard page, to be refined manually. It was created with the &quot;${templateName}&quot; wizard." x:style="WRAP">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
@@ -64,11 +65,11 @@ ${bannerComment}
       <#list field.split("/") as j>
         <#assign option = j.trim()>
         <button x:id="${option}" text="${option}" x:style="RADIO"/>
-        <@setoutput file=propsFile/>
+        <@setoutput path=propsFile/>
 ${option} = <#if first>true<#else>false</#if>
-        <@setoutput file=nedFile/>
+        <@setoutput path=nedFile/>
 // ${option}: <#noparse><#if</#noparse> ${option}<#noparse>>true<#else>false</#if></#noparse>
-        <@setoutput file=xswtFile/>
+        <@setoutput path=xswtFile/>
         <#assign first=false>
       </#list>
       </x:children>
@@ -79,11 +80,11 @@ ${option} = <#if first>true<#else>false</#if>
     <text x:id="${name}" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
-    <@setoutput file=propsFile/>
+    <@setoutput path=propsFile/>
 ${name} = some text
-    <@setoutput file=nedFile/>
+    <@setoutput path=nedFile/>
 // ${name}: ${"${" + name + "}"}
-    <@setoutput file=xswtFile/>
+    <@setoutput path=xswtFile/>
   <#elseif suffix=="<" || suffix=="<<">
     <#-- **** FILECHOOSER **** -->
     <#if suffix=="<"><#assign chooserWidget="fileChooser"><#else><#assign chooserWidget="externalFileChooser"></#if>
@@ -91,51 +92,51 @@ ${name} = some text
     <${chooserWidget} x:id="${name}">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </${chooserWidget}>
-    <@setoutput file=propsFile/>
+    <@setoutput path=propsFile/>
 ${name} = foo.txt
-    <@setoutput file=nedFile/>
+    <@setoutput path=nedFile/>
 // ${name}: ${"${" + name + "}"}
-    <@setoutput file=xswtFile/>
+    <@setoutput path=xswtFile/>
   <#elseif suffix=="$">
     <#-- **** MULTILINE **** -->
     <label text="Enter ${name}:"/>
     <text x:id="${name}" x:style="BORDER|WRAP|MULTI">
       <layoutData x:class="GridData" heightHint="60" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
-    <@setoutput file=propsFile/>
+    <@setoutput path=propsFile/>
 ${name} = some more text
-    <@setoutput file=nedFile/>
-    <@setoutput file=nedFile/>
+    <@setoutput path=nedFile/>
+    <@setoutput path=nedFile/>
 // ${name}: ${"${" + name + "}"}
-    <@setoutput file=xswtFile/>
+    <@setoutput path=xswtFile/>
   <#elseif suffix=="%">
     <#-- **** SPINNER **** -->
     <label text="Select ${name}:"/>
     <spinner x:id="${name}" minimum="0" maximum="100" x:style="BORDER"/>
-    <@setoutput file=propsFile/>
+    <@setoutput path=propsFile/>
 ${name} = 10
-    <@setoutput file=nedFile/>
+    <@setoutput path=nedFile/>
 // ${name}: ${"${" + name + "}"}
-    <@setoutput file=xswtFile/>
+    <@setoutput path=xswtFile/>
   <#elseif suffix=="?">
     <#-- **** CHECKBOX **** -->
     <button x:id="${name}" text="${name}" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
-    <@setoutput file=propsFile/>
+    <@setoutput path=propsFile/>
 ${name} = false
-    <@setoutput file=nedFile/>
+    <@setoutput path=nedFile/>
 // ${name}: <#noparse><#if</#noparse> ${name}<#noparse>>true<#else>false</#if></#noparse>
-    <@setoutput file=xswtFile/>
+    <@setoutput path=xswtFile/>
   <#elseif suffix=="=">
     <#-- **** SCALE **** -->
     <label text="Choose ${name} (0..100):"/>
     <scale x:id="${name}" minimum="0" maximum="100"/>
-    <@setoutput file=propsFile/>
+    <@setoutput path=propsFile/>
 ${name} = 40
-    <@setoutput file=nedFile/>
+    <@setoutput path=nedFile/>
 // ${name}: ${"${" + name + "}"}
-    <@setoutput file=xswtFile/>
+    <@setoutput path=xswtFile/>
   <#elseif suffix.startsWith(":")>
     <#-- **** COMBOBOX **** -->
     <label text="Choose ${name}:"/>
@@ -145,11 +146,11 @@ ${name} = 40
       <add x:p0="${option.trim()}"/>
     </#list>
     </combo>
-    <@setoutput file=propsFile/>
+    <@setoutput path=propsFile/>
 ${name} = ${lastOption}
-    <@setoutput file=nedFile/>
+    <@setoutput path=nedFile/>
 // ${name}: ${"${" + name + "}"}
-    <@setoutput file=xswtFile/>
+    <@setoutput path=xswtFile/>
   <#elseif suffix=="{">
     <#-- **** GROUP START **** -->
     <group text="${name}">

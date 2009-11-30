@@ -1,7 +1,7 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetMainFile?default("")/>
 ${bannerComment}
 
-// Created: ${date} for project ${projectName}
+// Created: ${date} for project ${rawProjectName}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
 
@@ -12,8 +12,8 @@ ${bannerComment}
 <#assign columns = columns?number>
 <#assign rows = rows?number>
 
-<#if channelTypeName != "">
-  <#assign channelSpec = " " + channelTypeName + " <-->">
+<#if channelType != "">
+  <#assign channelSpec = " " + channelType + " <-->">
 <#else>
   <#assign channelSpec = "">
 </#if>

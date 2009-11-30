@@ -8,12 +8,13 @@
     <package name="org.eclipse.swt.layout" />
     <package name="org.eclipse.swt.custom" />
     <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
   <layout x:class="GridLayout"/>
 
   <x:children>
-  
+
     <label text="Check the features you want to generate example code for:" x:style="WRAP"/>
 
     <group text="General">
@@ -34,7 +35,7 @@
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout"/>
       <x:children>
-        <button x:id="wantExec" text="executing an external program and use its output" x:style="CHECK"/>
+        <button x:id="wantExec" text="executing an external program and capturing its output" x:style="CHECK"/>
         <button x:id="wantJar" text="invoking code in a JAR file" x:style="CHECK"/>
       </x:children>
     </group>

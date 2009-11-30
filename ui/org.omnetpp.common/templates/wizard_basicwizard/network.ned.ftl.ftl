@@ -1,5 +1,5 @@
 <#noparse>
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetMainFile?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
@@ -24,12 +24,12 @@ module Node {
 //
 // TODO Generated network
 //
-network ${nedTypeName}
+network ${targetTypeName}
 {
     submodules:
 <#list 0..rows-1 as i>
   <#list 0..columns-1 as j>
-        node_${i}_${j}: ${nodeTypeName};
+        node_${i}_${j}: Node;
   </#list>
 
 </#list>

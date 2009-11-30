@@ -30,7 +30,7 @@ import org.osgi.framework.Bundle;
 
 /**
  * Content template specialized for OMNeT++ projects
- * 
+ *
  * @author Andras
  */
 public class FileBasedProjectTemplate extends FileBasedContentTemplate {
@@ -38,7 +38,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     public static final String PROP_SOURCEFOLDERS = "sourceFolders"; // source folders to be created and configured
     public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
     public static final String PROP_MAKEMAKEOPTIONS = "makemakeOptions"; // makemake options, as "folder1:options1,folder2:options2,..."
-    
+
     public FileBasedProjectTemplate(IFolder folder) throws CoreException {
         super(folder);
     }
@@ -68,25 +68,25 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         return context;
     }
 
-	public void performFinish(CreationContext context) throws CoreException {
-	    super.performFinish(context);
+    public void performFinish(CreationContext context) throws CoreException {
+        super.performFinish(context);
 
-	    if (getTemplateFolder()!=null && XSWTDataBinding.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
-			ProjectUtils.addReferencedProject((IProject)context.getFolder(), getTemplateFolder().getProject(), context.getProgressMonitor());
-		
-		String[] srcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
-		if (srcFolders.length > 0)
-			createAndSetSourceFolders(srcFolders, context);
+        if (getTemplateFolder()!=null && XSWTDataBinding.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
+            ProjectUtils.addReferencedProject((IProject)context.getFolder(), getTemplateFolder().getProject(), context.getProgressMonitor());
 
-		String[] nedSrcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_NEDSOURCEFOLDERS), " *, *");
-		if (nedSrcFolders.length > 0)
-			createAndSetNedSourceFolders(nedSrcFolders, context);
+        String[] srcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
+        if (srcFolders.length > 0)
+            createAndSetSourceFolders(srcFolders, context);
 
-		Map<String,String> makemakeOptions = XSWTDataBinding.toStringMap(context.getVariables().get(PROP_MAKEMAKEOPTIONS));
-		if (!makemakeOptions.isEmpty())
-			createBuildSpec(makemakeOptions, context);
-	}
-	
+        String[] nedSrcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_NEDSOURCEFOLDERS), " *, *");
+        if (nedSrcFolders.length > 0)
+            createAndSetNedSourceFolders(nedSrcFolders, context);
+
+        Map<String,String> makemakeOptions = XSWTDataBinding.toStringMap(context.getVariables().get(PROP_MAKEMAKEOPTIONS));
+        if (!makemakeOptions.isEmpty())
+            createBuildSpec(makemakeOptions, context);
+    }
+
     /**
      * Creates a default build spec (project root being makemake folder)
      */
@@ -117,10 +117,10 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
             folders[i] = context.getFolder().getFolder(new Path(projectRelativePaths[i]));
         setSourceLocations(folders, context);
     }
-    
+
     /**
-     * Sets the project's source locations list to the given list of folders, in all configurations. 
-     * (Previous source entries get overwritten.)  
+     * Sets the project's source locations list to the given list of folders, in all configurations.
+     * (Previous source entries get overwritten.)
      */
     public void setSourceLocations(IContainer[] folders, CreationContext context) throws CoreException {
         if (System.getProperty("org.omnetpp.test.unit.running") != null)
@@ -145,7 +145,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     }
 
     /**
-     * Sets the makemake options on the given project. Array must contain folderPaths 
+     * Sets the makemake options on the given project. Array must contain folderPaths
      * as keys, and options as values.
      */
     public void createBuildSpec(String[] pathsAndMakemakeOptions, CreationContext context) throws CoreException {
@@ -153,11 +153,11 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         Map<String, String> tmp = new HashMap<String, String>();
         for (int i=0; i<pathsAndMakemakeOptions.length; i+=2)
             tmp.put(pathsAndMakemakeOptions[i], pathsAndMakemakeOptions[i+1]);
-        createBuildSpec(tmp, context);    
+        createBuildSpec(tmp, context);
     }
-    
+
     /**
-     * Sets the makemake options on the given project. Array must contain folderPath1, options1, 
+     * Sets the makemake options on the given project. Array must contain folderPath1, options1,
      * folderPath2, options2, etc.
      */
     public void createBuildSpec(Map<String,String> pathsAndMakemakeOptions, CreationContext context) throws CoreException {

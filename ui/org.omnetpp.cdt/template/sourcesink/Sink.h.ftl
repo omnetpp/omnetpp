@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=srcFolder+"/Sink.h"/>
+<@setoutput path=srcFolder+"/Sink.h"/>
 ${bannerComment}
 
 #ifndef __${PROJECTNAME}_SINK_H

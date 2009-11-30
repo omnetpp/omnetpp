@@ -31,7 +31,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedWizard;
@@ -93,7 +92,14 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard {
     @Override
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
-        context.getVariables().put("nedPackageName", StringUtils.makeValidIdentifier(getProjectCreationPage().getProjectName()).toLowerCase());
+
+        context.getVariables().put("nedPackageName", "${projectname}"); // identifier, with all lowercase
+
+        // variables to help support project, simulation and file wizards with the same template code.
+        // Intention: targetTypeName and targetMainFile are the NED type and file of "the network" 
+        // in this project; these variables are to be used only in projects where it makes sense.
+        context.getVariables().put("targetTypeName", "${projectName}"); // identifier, with upper case first letter
+        context.getVariables().put("targetMainFile", "${targetTypeName}.ned"); // let targetTypeName be edited on pages 
         return context;
     }
     

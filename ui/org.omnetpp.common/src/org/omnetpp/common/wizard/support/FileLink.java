@@ -19,31 +19,31 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.wizard.IWidgetAdapter;
 
 /**
- * A control for displaying the name of a resource as a link. When clicked, it shows 
+ * A control for displaying the name of a resource as a link. When clicked, it shows
  * the resource (opens Project Explorer and focuses it to the resource).
- * 
+ *
  * @author Andras
  */
 public class FileLink extends Composite implements IWidgetAdapter {
-	private Link link;
-	private IResource resource;
+    private Link link;
+    private IResource resource;
 
-	public FileLink(Composite parent, int style) {
-		super(parent, style);
-		setLayout(new FillLayout());
-		
-		link = new Link(this, SWT.NONE);
-		link.setText("n/a");
-		
-		link.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				showResource();
-			}
-		});
-	}
+    public FileLink(Composite parent, int style) {
+        super(parent, style);
+        setLayout(new FillLayout());
 
-	protected void showResource() {
-	    // show resource in Project Explorer (set its selection)
+        link = new Link(this, SWT.NONE);
+        link.setText("n/a");
+
+        link.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                showResource();
+            }
+        });
+    }
+
+    protected void showResource() {
+        // show resource in Project Explorer (set its selection)
         IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         if (workbenchPage != null) {  // note: may be null during platform startup...
             try {
@@ -54,45 +54,45 @@ public class FileLink extends Composite implements IWidgetAdapter {
                 CommonPlugin.logError("FileLink: could not show resource in Project Explorer", e);
             }
         }
-	}
-	
-	public Link getLinkControl() {
-		return link;
-	}
+    }
 
-	public IResource getResource() {
+    public Link getLinkControl() {
+        return link;
+    }
+
+    public IResource getResource() {
         return resource;
     }
-	
-	public void setResource(IResource resource) {
+
+    public void setResource(IResource resource) {
         this.resource = resource;
         link.setText(resource==null ? "n/a" : "<a>" + resource.getFullPath().toString() + "</a>");
     }
-	
-	/**
-	 * Adapter interface.
-	 */
-	public Object getValue() {
-		IResource resource = getResource();
-        return resource==null ? "" : resource.getFullPath().toString();
-	}
 
-	/**
-	 * Adapter interface.
-	 */
-	public void setValue(Object value) {
-	    IResource resource;
-	    if (value instanceof IResource)
-	        resource = (IResource)value;
-	    else {
-	        Path path = new Path(value.toString());
+    /**
+     * Adapter interface.
+     */
+    public Object getValue() {
+        IResource resource = getResource();
+        return resource==null ? "" : resource.getFullPath().toString();
+    }
+
+    /**
+     * Adapter interface.
+     */
+    public void setValue(Object value) {
+        IResource resource;
+        if (value instanceof IResource)
+            resource = (IResource)value;
+        else {
+            Path path = new Path(value.toString());
             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
             resource = root.findMember(path);
             if (resource == null)
                 resource = (path.segmentCount()==1) ? root.getProject(path.segment(0)) : root.getFile(path);
-	    }
+        }
 
-		setResource(resource);
-	}
+        setResource(resource);
+    }
 
 }

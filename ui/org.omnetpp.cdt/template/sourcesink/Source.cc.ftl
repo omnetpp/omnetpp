@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=srcFolder+"/Source.cc"/>
+<@setoutput path=srcFolder+"/Source.cc"/>
 ${bannerComment}
 
 #include "Source.h"

@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=srcFolder+"/Txc.h"/>
+<@setoutput path=srcFolder+"/Txc.h"/>
 ${bannerComment}
 
 #ifndef __${PROJECTNAME}_TCX_H

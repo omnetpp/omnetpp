@@ -13,10 +13,10 @@ import org.omnetpp.common.util.StringUtils;
 /**
  * A control for selecting a file from the workspace.
  * Implemented as a Composite with a single-line Text and a Browse button.
- * 
- * Does not replicate all methods of the Text class; rather, it exposes the 
+ *
+ * Does not replicate all methods of the Text class; rather, it exposes the
  * internal Text widget so that it can be manipulated directly.
- * 
+ *
  * @author Andras
  */
 public class ExternalFileChooser extends AbstractChooser {
@@ -86,7 +86,7 @@ public class ExternalFileChooser extends AbstractChooser {
 
     @Override
     public void setValue(Object value) {
-        if (value instanceof File) 
+        if (value instanceof File)
             super.setValue(((File)value).getPath());
         else
             super.setValue(value);

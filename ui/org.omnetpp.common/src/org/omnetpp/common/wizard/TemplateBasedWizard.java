@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,6 +42,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.DetailMessageDialog;
+import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedCallback;
 import org.osgi.framework.Bundle;
 
 import freemarker.template.TemplateModelException;
@@ -54,7 +55,7 @@ import freemarker.template.TemplateModelException;
  */
 public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public static final String TEMPLATES_FOLDER_NAME = "templates";
-    
+
     public static final String CONTENTTEMPLATE_EXTENSIONPOINT_ID = "org.omnetpp.common.wizard.contenttemplates";
     public static final String PLUGIN_ELEMENT = "plugin";
     public static final String PLUGINID_ATT = "pluginId";
@@ -62,10 +63,14 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
 
     private String wizardType;
     private TemplateSelectionPage templateSelectionPage;
+    private List<IContentTemplate> dynamicallyAddedTemplates = new ArrayList<IContentTemplate>();
+    
+    // selection state:
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
     private IContentTemplate creatorOfCustomPages;
     private CreationContext context;
     private WizardPage dummyPage;
+
 
     static class DummyPage extends WizardPage {
         public DummyPage() {
@@ -73,7 +78,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
             setTitle("Done");
             setDescription("This wizard does not need more input.");
         }
-        
+
         public void createControl(Composite parent) {
             Composite composite = new Composite(parent, SWT.NONE);
             composite.setLayout(new GridLayout());
@@ -82,18 +87,18 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
             setControl(composite);
         }
     }
-    
+
     public void init(IWorkbench workbench, IStructuredSelection selection) {
     }
 
     public String getWizardType() {
         return wizardType;
     }
-    
+
     public void setWizardType(String wizardType) {
         this.wizardType = wizardType;
     }
-    
+
     protected CreationContext getContext() {
         return context;
     }
@@ -107,17 +112,30 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public void addPages() {
         // note: template custom pages will be added in getNextPage() of the template selection page.
         addPage(templateSelectionPage = new TemplateSelectionPage());
+        
+        templateSelectionPage.setTemplateAddedCallback(new ITemplateAddedCallback() {
+            public void addTemplateFrom(URL url) throws CoreException {
+                TemplateBasedWizard.this.addTemplateFrom(url);
+            }});
 
         // a dummy page is needed, otherwise the Next button will be disabled on the template selection page
         addPage(dummyPage = new DummyPage());
     }
 
     /**
+     * Called when the user manually enters a template URL at the template selection page.
+     */
+    protected void addTemplateFrom(URL url) throws CoreException {
+        dynamicallyAddedTemplates.add(loadTemplateFromURL(url, null));
+        templateSelectionPage.setTemplates(getTemplates()); // refresh page
+    }
+
+    /**
      * Return the resource the wizard should create, or in which it should create content.
      * The resource may be a folder or project to be created, or an existing
      * folder or project in which the wizard will create files/folders.
-     * 
-     * Suggested implementation is to call the appropriate getter method of the 
+     *
+     * Suggested implementation is to call the appropriate getter method of the
      * file/folder selection page of the wizard (which should be before the template
      * selection page.)
      */
@@ -126,14 +144,15 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     /**
      * Return the templates to be shown on the Template Selection page. This implementation
      * returns the templates that match the wizards' type (see getWizardType()).
-     * Override this method to add more templates, or to introduce additional 
-     * filtering (i.e. by options the user selected on previous wizard pages, 
+     * Override this method to add more templates, or to introduce additional
+     * filtering (i.e. by options the user selected on previous wizard pages,
      * such as the "With C++ Support" checkbox in the New OMNeT++ Project wizard).
      */
     protected List<IContentTemplate> getTemplates() {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         result.addAll(loadBuiltinTemplates(getWizardType()));
         result.addAll(loadTemplatesFromWorkspace(getWizardType()));
+        result.addAll(dynamicallyAddedTemplates);
         //TODO define an ITemplateSource interface and a matching extension point
         return result;
     }
@@ -204,13 +223,13 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     }
 
     /**
-     * Factory method used by loadBuiltinTemplates(); override if you subclass 
+     * Factory method used by loadBuiltinTemplates(); override if you subclass
      * from FileBasedContentTemplate. bundleOfTemplate may be null.
      */
     protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
         return new FileBasedContentTemplate(templateUrl, bundleOfTemplate);
     }
-    
+
     /**
      * Utility method for getTemplates()
      */
@@ -239,8 +258,8 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     }
 
     /**
-     * Factory method used by loadTemplatesFromWorkspace(); override if you subclass 
-     * from FileBasedContentTemplate. 
+     * Factory method used by loadTemplatesFromWorkspace(); override if you subclass
+     * from FileBasedContentTemplate.
      */
     protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
         return new FileBasedContentTemplate(folder);
@@ -249,89 +268,89 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public TemplateSelectionPage getTemplateSelectionPage() {
         return templateSelectionPage;
     }
-    
+
     public IContentTemplate getSelectedTemplate() {
         return templateSelectionPage.getSelectedTemplate();
     }
-    
+
     public CreationContext getCreationContext() {
         return context;
     }
-    
+
     @Override
     public IWizardPage getPreviousPage(IWizardPage page) {
-    	// store page content before navigating away
-    	//
-    	// NOTE: THIS DOES NOT ALWAYS GET CALLED BY THE DEFAULT WizardPage IMPLEMENTATION 
-    	// WHEN 'BACK' IS CLICKED! ICustomWizardPage MUST OVERRIDE THAT IMPLEMENTATION
-    	// TO CALL THIS METHOD EVERY TIME, EVEN IF IT DOESN'T USE THE RETURN VALUE.
-		if (ArrayUtils.contains(templateCustomPages, page))
-			((ICustomWizardPage)page).extractPageContent(context);
-    	return super.getPreviousPage(page);
+        // store page content before navigating away
+        //
+        // NOTE: THIS DOES NOT ALWAYS GET CALLED BY THE DEFAULT WizardPage IMPLEMENTATION
+        // WHEN 'BACK' IS CLICKED! ICustomWizardPage MUST OVERRIDE THAT IMPLEMENTATION
+        // TO CALL THIS METHOD EVERY TIME, EVEN IF IT DOESN'T USE THE RETURN VALUE.
+        if (ArrayUtils.contains(templateCustomPages, page))
+            ((ICustomWizardPage)page).extractPageContent(context);
+        return super.getPreviousPage(page);
     }
-    
+
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
         // update template list just before flipping to the template selection page.
-    	if (ArrayUtils.indexOf(getPages(),page) == ArrayUtils.indexOf(getPages(),templateSelectionPage)-1) {
-            templateSelectionPage.setTemplates(getTemplates());  
+        if (ArrayUtils.indexOf(getPages(),page) == ArrayUtils.indexOf(getPages(),templateSelectionPage)-1) {
+            templateSelectionPage.setTemplates(getTemplates());
             return templateSelectionPage;
-    	}
-    	
-    	// if there is a template selected, return its first enabled custom page (if it has one)
-    	if (page == templateSelectionPage) {
-    		IContentTemplate selectedTemplate = templateSelectionPage.getSelectedTemplate();
-    		if (selectedTemplate == null) {
-    			context = null;
-    		}
-    		else {
-    			if (selectedTemplate != creatorOfCustomPages) {
-    				try {
-    					context = createContext(selectedTemplate, getFolder());
-						templateCustomPages = selectedTemplate.createCustomPages();
-					} catch (CoreException e) {
-						ErrorDialog.openError(getShell(), "Error", "Error creating wizard pages", e.getStatus());
-						CommonPlugin.logError(e);
-						templateCustomPages = new ICustomWizardPage[0];
-					}
-    				Assert.isNotNull(templateCustomPages);
-    				for (IWizardPage customPage : templateCustomPages)
-    					addPage(customPage);
-    				creatorOfCustomPages = selectedTemplate;
-    			}
+        }
 
-    			ICustomWizardPage firstCustomPage = getNextEnabledCustomPage(templateCustomPages, 0, context);
-    			if (firstCustomPage != null) {
-    				firstCustomPage.populatePage(context);
-    				return firstCustomPage;
-    			}
-    		}
+        // if there is a template selected, return its first enabled custom page (if it has one)
+        if (page == templateSelectionPage) {
+            IContentTemplate selectedTemplate = templateSelectionPage.getSelectedTemplate();
+            if (selectedTemplate == null) {
+                context = null;
+            }
+            else {
+                if (selectedTemplate != creatorOfCustomPages) {
+                    try {
+                        context = createContext(selectedTemplate, getFolder());
+                        templateCustomPages = selectedTemplate.createCustomPages();
+                    } catch (CoreException e) {
+                        ErrorDialog.openError(getShell(), "Error", "Error creating wizard pages", e.getStatus());
+                        CommonPlugin.logError(e);
+                        templateCustomPages = new ICustomWizardPage[0];
+                    }
+                    Assert.isNotNull(templateCustomPages);
+                    for (IWizardPage customPage : templateCustomPages)
+                        addPage(customPage);
+                    creatorOfCustomPages = selectedTemplate;
+                }
+
+                ICustomWizardPage firstCustomPage = getNextEnabledCustomPage(templateCustomPages, 0, context);
+                if (firstCustomPage != null) {
+                    firstCustomPage.populatePage(context);
+                    return firstCustomPage;
+                }
+            }
             return getFirstExtraPage()!=null ? getFirstExtraPage() : dummyPage;  // first CDT page or the like
-    	}
+        }
 
-    	// next custom page
+        // next custom page
         int indexInTemplateCustomPages = ArrayUtils.indexOf(templateCustomPages, page);
-    	if (indexInTemplateCustomPages != -1) {
-        	// store page content before navigating away
-    		((ICustomWizardPage)page).extractPageContent(context);
-    		
-    		// return next custom page if there is one
-			ICustomWizardPage nextPage = getNextEnabledCustomPage(templateCustomPages, indexInTemplateCustomPages+1, context);
-			if (nextPage != null) {
-				nextPage.populatePage(context);
-				return nextPage;
-			}
-			
-			// XXX we need to fake a dummy page: if all subsequent pages are conditional, and get enabled only by a control on THIS page, the Next button may stay disabled!!!
-            return getFirstExtraPage()!=null ? getFirstExtraPage() : dummyPage;
-    	}
+        if (indexInTemplateCustomPages != -1) {
+            // store page content before navigating away
+            ((ICustomWizardPage)page).extractPageContent(context);
 
-    	// there's nothing after the dummy page
+            // return next custom page if there is one
+            ICustomWizardPage nextPage = getNextEnabledCustomPage(templateCustomPages, indexInTemplateCustomPages+1, context);
+            if (nextPage != null) {
+                nextPage.populatePage(context);
+                return nextPage;
+            }
+
+            // XXX we need to fake a dummy page: if all subsequent pages are conditional, and get enabled only by a control on THIS page, the Next button may stay disabled!!!
+            return getFirstExtraPage()!=null ? getFirstExtraPage() : dummyPage;
+        }
+
+        // there's nothing after the dummy page
         if (page == dummyPage) {
             return null;
         }
 
-    	return super.getNextPage(page);
+        return super.getNextPage(page);
     }
 
     /**
@@ -344,60 +363,60 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     }
 
     private static ICustomWizardPage getNextEnabledCustomPage(ICustomWizardPage[] pages, int start, CreationContext context) {
-    	for (int k = start; k < pages.length; k++)
-    		if (pages[k].isEnabled(context))
-    			return pages[k];
-    	return null;
+        for (int k = start; k < pages.length; k++)
+            if (pages[k].isEnabled(context))
+                return pages[k];
+        return null;
     }
-    
+
     /**
      * Return the first page after the template selection page and template custom pages
      */
     protected abstract IWizardPage getFirstExtraPage();
-        
+
     @Override
     public boolean performFinish() {
-    	// first, make sure we have good template, context and templateCustomPages 
-    	// variables, depending on the page the user pressed Finish on
-    	IWizardPage finishingPage = getContainer().getCurrentPage();
-    	final IContainer folder = getFolder();
+        // first, make sure we have good template, context and templateCustomPages
+        // variables, depending on the page the user pressed Finish on
+        IWizardPage finishingPage = getContainer().getCurrentPage();
+        final IContainer folder = getFolder();
 
-        // use the selected template (if we are before the template selection page, this will be 
+        // use the selected template (if we are before the template selection page, this will be
         // the "default" template, i.e. the one with "templateIsDefault=true")
         final IContentTemplate template = templateSelectionPage.getSelectedTemplate();
 
-    	// if we are on or before the template selection page, create a fresh context with the selected template
-    	if (finishingPage.getWizard()==this && ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
-    		context = template!=null ? createContext(template, folder) : null;
-    		templateCustomPages = new ICustomWizardPage[0]; // no pages
-    	}
-    	else if (template!=null && (context==null || context.getTemplate()!=template)) {
-    	    // first "if" doesn't fire if user presses Finish right on the 1st page of New OMNeT++ Project wizard
-            context = createContext(template, folder); 
+        // if we are on or before the template selection page, create a fresh context with the selected template
+        if (finishingPage.getWizard()==this && ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
+            context = template!=null ? createContext(template, folder) : null;
             templateCustomPages = new ICustomWizardPage[0]; // no pages
-    	}    	
-    	
-    	// sanity check
-    	Assert.isTrue((template==null) == (context==null));
-    	Assert.isTrue(template==null || context.getTemplate() == template);
-    	Assert.isTrue(template==null || context.getFolder().equals(folder));
-    	
-    	// store custom page content before navigating away
-    	if (ArrayUtils.contains(templateCustomPages, finishingPage))
-    		((ICustomWizardPage)finishingPage).extractPageContent(context);
-    	
+        }
+        else if (template!=null && (context==null || context.getTemplate()!=template)) {
+            // first "if" doesn't fire if user presses Finish right on the 1st page of New OMNeT++ Project wizard
+            context = createContext(template, folder);
+            templateCustomPages = new ICustomWizardPage[0]; // no pages
+        }
+
+        // sanity check
+        Assert.isTrue((template==null) == (context==null));
+        Assert.isTrue(template==null || context.getTemplate() == template);
+        Assert.isTrue(template==null || context.getFolder().equals(folder));
+
+        // store custom page content before navigating away
+        if (ArrayUtils.contains(templateCustomPages, finishingPage))
+            ((ICustomWizardPage)finishingPage).extractPageContent(context);
+
         // define the operation for configuring the new project
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
                 // apply template: this may create files, set project properties, etc.
                 if (template != null) {
-                	try {
-                		context.setProgressMonitor(monitor);
-                		Assert.isTrue(context.getFolder().equals(folder));
-                		template.performFinish(context);
-                	} finally {
-                    	context.setProgressMonitor(null);
-                	}
+                    try {
+                        context.setProgressMonitor(monitor);
+                        Assert.isTrue(context.getFolder().equals(folder));
+                        template.performFinish(context);
+                    } finally {
+                        context.setProgressMonitor(null);
+                    }
                 }
             }
         };
@@ -405,14 +424,14 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         // run the operation
         try {
             getContainer().run(true, true, op);
-        } 
+        }
         catch (InterruptedException e) {
             return false;
         }
         catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             CommonPlugin.logError(t);
-            
+
             // try to present a sensible error dialog to the user
             String errorMessage;
             String detailsText;
@@ -448,7 +467,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         else
             return message.replace("assertion failed:", "").trim(); // strip "assertion failed" text that some CoreExceptions contain
     }
-    
+
 }
 
 

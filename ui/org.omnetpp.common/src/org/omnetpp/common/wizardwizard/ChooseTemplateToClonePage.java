@@ -2,6 +2,7 @@ package org.omnetpp.common.wizardwizard;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
@@ -21,9 +22,16 @@ public class ChooseTemplateToClonePage extends TemplateSelectionPage implements 
     @Override
     public void createControl(Composite parent) {
         super.createControl(parent);
-        
+
         List<IContentTemplate> templates = ((TemplateBasedWizard)getWizard()).getAllTemplates();
         setTemplates(templates);
+    }
+
+    @Override
+    protected String getTemplateHoverText(IContentTemplate template) {
+        String text = super.getTemplateHoverText(template);
+        text += "<br/><br/>Supported wizard types: " + StringUtils.join(template.getSupportedWizardTypes(), ", ");
+        return text;
     }
     
     public boolean isEnabled(CreationContext context) {

@@ -33,13 +33,13 @@ import org.omnetpp.common.json.JSONValidatingReader;
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
- * Static utility methods for the FreeMarker templates, exposed to the user 
+ * Static utility methods for the FreeMarker templates, exposed to the user
  * via BeansWrapper.
- * 
+ *
  * IMPORTANT: This class must be backward compatible across OMNeT++ versions
- * at all times. DO NOT REMOVE FUNCTIONS OR CHANGE THEIR SIGNATURES; add new methods 
+ * at all times. DO NOT REMOVE FUNCTIONS OR CHANGE THEIR SIGNATURES; add new methods
  * instead, if needed.
- * 
+ *
  * @author Andras
  */
 public class FileUtils {
@@ -62,8 +62,8 @@ public class FileUtils {
 
     /**
      * Returns the handle for the workspace project with the given name.
-     * Throws exception if the path is not a valid workspace project path. 
-     * This function does not test whether the project exists. To test that, 
+     * Throws exception if the path is not a valid workspace project path.
+     * This function does not test whether the project exists. To test that,
      * call the exists() method on the returned handle.
      */
     public static IProject asProject(String path) {
@@ -72,8 +72,8 @@ public class FileUtils {
 
     /**
      * Returns the handle for the workspace container (i.e. project or folder) with the given name.
-     * Throws exception if the path is not a valid workspace container path. 
-     * This function does not test whether the container exists. To test that, 
+     * Throws exception if the path is not a valid workspace container path.
+     * This function does not test whether the container exists. To test that,
      * call the exists() method on the returned handle.
      */
     public static IContainer asContainer(String path) {
@@ -85,8 +85,8 @@ public class FileUtils {
 
     /**
      * Returns the handle for the workspace file with the given name.
-     * Throws exception if the path is not a valid workspace file path. 
-     * This function does not test whether the file exists. To test that, 
+     * Throws exception if the path is not a valid workspace file path.
+     * This function does not test whether the file exists. To test that,
      * call the exists() method on the returned handle.
      */
     public static IFile asFile(String path) {
@@ -94,9 +94,9 @@ public class FileUtils {
     }
 
     /**
-     * Returns the handle for the workspace project, folder or file with 
+     * Returns the handle for the workspace project, folder or file with
      * the given name. If the resource does not exist and the path contains
-     * more than one segment (i.e. it cannot be a project), it is returned as 
+     * more than one segment (i.e. it cannot be a project), it is returned as
      * a file handle if it has a file extension, and as a folder if it
      * does not.
      */
@@ -118,14 +118,14 @@ public class FileUtils {
     /**
      * Returns a java.io.File object for the given path. The object can be used to
      * access operations provided by the File API, such as exists(), length(), etc.
-     * 
+     *
      * @param path  the file path
      * @return  the File object
      */
     public static File asExternalFile(String path) {
         return new File(path);
     }
-    
+
     /**
      * Returns the workspace root object. The workspace contains the user's
      * projects.
@@ -135,8 +135,8 @@ public class FileUtils {
     }
 
     /**
-     * Copies a workspace resource (file, folder or project) given with its path 
-     * to the destination path. For projects and folders, it copies recursively 
+     * Copies a workspace resource (file, folder or project) given with its path
+     * to the destination path. For projects and folders, it copies recursively
      * (i.e. copies the whole folder tree). From the project root directory it
      * leaves out dot files, hidden files, and team private files.
      */
@@ -158,7 +158,7 @@ public class FileUtils {
             resource.copy(destPathPath, false, monitor);
         }
     }
-    
+
     /**
      * Copies the file at the given URL to the given destination workspace file.
      */
@@ -187,308 +187,308 @@ public class FileUtils {
     }
 
     /**
-	 * Parse an XML file in the workspace, and return the Document object 
-	 * of the resulting DOM tree.
-	 * 
-	 * @param fileName  the workspace file
-	 * @return DOM tree
-	 */
-	public static org.w3c.dom.Document readXMLFile(String fileName) {
-	    IFile file = asFile(fileName);
-		return readExternalXMLFile(file.getLocation().toString());
-	}
-
-	/**
-	 * Parse an XML file, given with its file system path (NOT workspace path),
-     * and return the Document object of the resulting DOM tree.
-	 * 
-	 * @param fileName  filesystem path of the file
-	 * @return DOM tree
-	 */
-	public static org.w3c.dom.Document readExternalXMLFile(String fileName) {
-		InputStream is = null;
-		try {
-			is = new FileInputStream(fileName);
-        	DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			return docBuilder.parse(is);
-		} 
-		catch (Exception e) {
-			throw new RuntimeException("Error XML reading file " + fileName + ": " + e.getMessage(), e);
-		}
-		finally {
-			if (is != null)
-				try { is.close(); } catch (IOException e) { }
-		}
-	}
-	
-	/**
-	 * Parse a JSON file in the workspace. The result is a Boolean, Integer, 
-	 * Double, String, List or Map, or any data structure composed of them. 
-	 * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param fileName  the workspace file
-	 * @return JSON tree
-	 */
-	public static Object readJSONFile(String fileName) {
+     * Parse an XML file in the workspace, and return the Document object
+     * of the resulting DOM tree.
+     *
+     * @param fileName  the workspace file
+     * @return DOM tree
+     */
+    public static org.w3c.dom.Document readXMLFile(String fileName) {
         IFile file = asFile(fileName);
-		return readExternalJSONFile(file.getLocation().toString());
-	}
+        return readExternalXMLFile(file.getLocation().toString());
+    }
 
-	/**
-	 * Parse a JSON file, given with its file system path (NOT workspace path).
-	 * The result is a Boolean, Integer, Double, String, List or Map, or any
-	 * data structure composed of them. 
-	 * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param fileName  filesystem path of the file
-	 * @return JSON tree
-	 */
-	public static Object readExternalJSONFile(String fileName) {
-		try {
-			String contents = readExternalTextFile(fileName);
-			JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
-			return reader.read(contents); 
-		} catch (IllegalArgumentException e) {
-			// thrown from ExceptionErrorListener on parse errors
-			throw new RuntimeException("Error parsing JSON file " + fileName + ": " + e.getMessage(), e);
-		}
-	}
-	
     /**
-     * Read a CSV file in the workspace. The result is an array of lines, 
-     * where each line is a string array. The file is interpreted in the 
+     * Parse an XML file, given with its file system path (NOT workspace path),
+     * and return the Document object of the resulting DOM tree.
+     *
+     * @param fileName  filesystem path of the file
+     * @return DOM tree
+     */
+    public static org.w3c.dom.Document readExternalXMLFile(String fileName) {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(fileName);
+            DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            return docBuilder.parse(is);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Error XML reading file " + fileName + ": " + e.getMessage(), e);
+        }
+        finally {
+            if (is != null)
+                try { is.close(); } catch (IOException e) { }
+        }
+    }
+
+    /**
+     * Parse a JSON file in the workspace. The result is a Boolean, Integer,
+     * Double, String, List or Map, or any data structure composed of them.
+     * The file is interpreted in the Java platform's default encoding.
+     *
+     * @param fileName  the workspace file
+     * @return JSON tree
+     */
+    public static Object readJSONFile(String fileName) {
+        IFile file = asFile(fileName);
+        return readExternalJSONFile(file.getLocation().toString());
+    }
+
+    /**
+     * Parse a JSON file, given with its file system path (NOT workspace path).
+     * The result is a Boolean, Integer, Double, String, List or Map, or any
+     * data structure composed of them.
+     * The file is interpreted in the Java platform's default encoding.
+     *
+     * @param fileName  filesystem path of the file
+     * @return JSON tree
+     */
+    public static Object readExternalJSONFile(String fileName) {
+        try {
+            String contents = readExternalTextFile(fileName);
+            JSONValidatingReader reader = new JSONValidatingReader(new ExceptionErrorListener());
+            return reader.read(contents);
+        } catch (IllegalArgumentException e) {
+            // thrown from ExceptionErrorListener on parse errors
+            throw new RuntimeException("Error parsing JSON file " + fileName + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Read a CSV file in the workspace. The result is an array of lines,
+     * where each line is a string array. The file is interpreted in the
      * Java platform's default encoding. Additional method parameters control
      * whether to discard the first line of the file (which is usually a header
      * line), whether to ignore blank lines, and whether to ignore comment lines
      * (those starting with the # character). Comment lines are not part of
      * the commonly accepted CSV format, but they are supported here nevertheless,
      * due to their usefulness.
-	 * 
-	 * @param fileName  the workspace file
-	 * @param ignoreFirstLine  whether the first line is to be discarded 
-	 * @param ignoreBlankLines  whether to ignore blank lines
-	 * @param ignoreCommentLines  whether to ignore lines starting with '#'
-	 * @return file contents
-	 */
-	public static String[][] readCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
+     *
+     * @param fileName  the workspace file
+     * @param ignoreFirstLine  whether the first line is to be discarded
+     * @param ignoreBlankLines  whether to ignore blank lines
+     * @param ignoreCommentLines  whether to ignore lines starting with '#'
+     * @return file contents
+     */
+    public static String[][] readCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
         IFile file = asFile(fileName);
-		return readExternalCSVFile(file.getLocation().toString(), ignoreFirstLine, ignoreBlankLines, ignoreCommentLines);
-	}
+        return readExternalCSVFile(file.getLocation().toString(), ignoreFirstLine, ignoreBlankLines, ignoreCommentLines);
+    }
 
-	/**
-	 * Read a CSV file, given with its file system path (NOT workspace path).
-     * The result is an array of lines, where each line is a string array. 
-     * The file is interpreted in the Java platform's default encoding. 
+    /**
+     * Read a CSV file, given with its file system path (NOT workspace path).
+     * The result is an array of lines, where each line is a string array.
+     * The file is interpreted in the Java platform's default encoding.
      * Additional method parameters control whether to discard the first line
-     * of the file (which is usually a header line), whether to ignore blank 
-     * lines, and whether to ignore comment lines (those starting with 
+     * of the file (which is usually a header line), whether to ignore blank
+     * lines, and whether to ignore comment lines (those starting with
      * the # character). Comment lines are not part of the commonly accepted
      * CSV format, but they are supported here nevertheless, due to their usefulness.
-     * 
+     *
      * @param fileName  filesystem path of the file
-     * @param ignoreFirstLine  whether the first line is to be discarded 
+     * @param ignoreFirstLine  whether the first line is to be discarded
      * @param ignoreBlankLines  whether to ignore blank lines
      * @param ignoreCommentLines  whether to ignore lines starting with '#'
-	 * @return file contents
-	 */
-	public static String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
-		try {
-			CSVReader reader = new CSVReader(new FileReader(fileName));
-			List<String[]> tokenizedLines = new ArrayList<String[]>();
-			boolean isFirstLine = true;
-			String [] nextLine;
-			while ((nextLine = reader.readNext()) != null) {
-			    if (ignoreFirstLine && isFirstLine) {
-			        isFirstLine = false;
-			        continue;
-			    }
-			    if (ignoreBlankLines && (nextLine.length==0 || (nextLine.length==1 && StringUtils.isBlank(nextLine[0]))))
-			        continue;
+     * @return file contents
+     */
+    public static String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
+        try {
+            CSVReader reader = new CSVReader(new FileReader(fileName));
+            List<String[]> tokenizedLines = new ArrayList<String[]>();
+            boolean isFirstLine = true;
+            String [] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+                if (ignoreFirstLine && isFirstLine) {
+                    isFirstLine = false;
+                    continue;
+                }
+                if (ignoreBlankLines && (nextLine.length==0 || (nextLine.length==1 && StringUtils.isBlank(nextLine[0]))))
+                    continue;
                 if (ignoreCommentLines && nextLine.length>0 && !nextLine[0].isEmpty() && nextLine[0].charAt(0)=='#')
                     continue;
-				tokenizedLines.add(nextLine);
-				isFirstLine = false;
-			}
-			return tokenizedLines.toArray(new String[][]{});
-		} catch (IOException e) {
-			throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
-		}
-	}
+                tokenizedLines.add(nextLine);
+                isFirstLine = false;
+            }
+            return tokenizedLines.toArray(new String[][]{});
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
+        }
+    }
 
-	/**
-	 * Parse a Java property file ('key=value' lines) in the workspace. 
-     * The result is a Properties object, which is effectively a hash of 
+    /**
+     * Parse a Java property file ('key=value' lines) in the workspace.
+     * The result is a Properties object, which is effectively a hash of
      * key-value pairs.
      * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param fileName  the workspace file
-	 * @return key-value pairs in a map
-	 */
-	public static Properties readPropertyFile(String fileName) {
+     *
+     * @param fileName  the workspace file
+     * @return key-value pairs in a map
+     */
+    public static Properties readPropertyFile(String fileName) {
         IFile file = asFile(fileName);
-		return readExternalPropertyFile(file.getLocation().toString());
-	}
+        return readExternalPropertyFile(file.getLocation().toString());
+    }
 
-	/**
-	 * Parse a Java property file ('key=value' lines), given with its file 
-	 * system path (NOT workspace path). The result is a Properties object, 
-	 * which is effectively a hash of key-value pairs. 
-	 * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param fileName  filesystem path of the file
-	 * @return key-value pairs in a map
-	 */
-	public static Properties readExternalPropertyFile(String fileName) {
-		InputStream is = null;
-		try {
-			is = new FileInputStream(fileName);
-			Properties properties = new Properties();
-			properties.load(is);
-			return properties;
-		} 
-		catch (Exception e) {
-			throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
-		}
-		finally {
-			if (is != null)
-				try { is.close(); } catch (IOException e) { }
-		}
-	}
-	
-	/**
-	 * Read a text file in the workspace, and return its contents, split by 
-	 * lines, and each line split by whitespace. Additional method parameters 
-	 * control whether to ignore blank lines and/or comment lines (those 
-	 * starting with the # character). The result is an array of lines, 
-	 * where each line is a string array of the items on the line. 
-	 * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param file  the workspace file
-	 * @return file contents
-	 */
-	public static String[][] readSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines) {
-        IFile file = asFile(fileName);
-		return readExternalSpaceSeparatedTextFile(file.getLocation().toString(), ignoreBlankLines, ignoreCommentLines);
-	}
-
-	/**
-	 * Read a text file, given with its file system path (NOT workspace path),
-     * and return its contents, split by lines, and each line split 
-     * by whitespace. Additional method parameters control whether 
-     * to ignore blank lines and/or comment lines (those starting 
-     * with the # character). The result is an array of lines, 
-     * where each line is a string array of the items on the line. 
+    /**
+     * Parse a Java property file ('key=value' lines), given with its file
+     * system path (NOT workspace path). The result is a Properties object,
+     * which is effectively a hash of key-value pairs.
      * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param fileName  filesystem path of the file
+     *
+     * @param fileName  filesystem path of the file
+     * @return key-value pairs in a map
+     */
+    public static Properties readExternalPropertyFile(String fileName) {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(fileName);
+            Properties properties = new Properties();
+            properties.load(is);
+            return properties;
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
+        }
+        finally {
+            if (is != null)
+                try { is.close(); } catch (IOException e) { }
+        }
+    }
+
+    /**
+     * Read a text file in the workspace, and return its contents, split by
+     * lines, and each line split by whitespace. Additional method parameters
+     * control whether to ignore blank lines and/or comment lines (those
+     * starting with the # character). The result is an array of lines,
+     * where each line is a string array of the items on the line.
+     * The file is interpreted in the Java platform's default encoding.
+     *
+     * @param file  the workspace file
+     * @return file contents
+     */
+    public static String[][] readSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines) {
+        IFile file = asFile(fileName);
+        return readExternalSpaceSeparatedTextFile(file.getLocation().toString(), ignoreBlankLines, ignoreCommentLines);
+    }
+
+    /**
+     * Read a text file, given with its file system path (NOT workspace path),
+     * and return its contents, split by lines, and each line split
+     * by whitespace. Additional method parameters control whether
+     * to ignore blank lines and/or comment lines (those starting
+     * with the # character). The result is an array of lines,
+     * where each line is a string array of the items on the line.
+     * The file is interpreted in the Java platform's default encoding.
+     *
+     * @param fileName  filesystem path of the file
      * @param ignoreBlankLines  whether to ignore blank lines
      * @param ignoreCommentLines  whether to ignore lines starting with '#'
-	 * @return file contents
-	 */
-	public static String[][] readExternalSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines) {
-		String[] lines = readExternalLineOrientedTextFile(fileName);
-		List<String[]> tokenizedLines = new ArrayList<String[]>();
-		for (String line : lines) {
-		    if (ignoreBlankLines && StringUtils.isBlank(line))
-		        continue;
-		    if (ignoreCommentLines && line.charAt(0)=='#')
-		        continue;
-			tokenizedLines.add(StringUtils.split(line));
-		}
-		return tokenizedLines.toArray(new String[][]{});
-	}
+     * @return file contents
+     */
+    public static String[][] readExternalSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines) {
+        String[] lines = readExternalLineOrientedTextFile(fileName);
+        List<String[]> tokenizedLines = new ArrayList<String[]>();
+        for (String line : lines) {
+            if (ignoreBlankLines && StringUtils.isBlank(line))
+                continue;
+            if (ignoreCommentLines && line.charAt(0)=='#')
+                continue;
+            tokenizedLines.add(StringUtils.split(line));
+        }
+        return tokenizedLines.toArray(new String[][]{});
+    }
 
-	/**
-	 * Read a text file in the workspace, and return its lines. Comment lines
-	 * (those starting with a hash mark, #) are discarded. The result is a string array.
-	 * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param file  the workspace file
-	 * @return file contents
-	 */
-	public static String[] readLineOrientedTextFile(String fileName) {
+    /**
+     * Read a text file in the workspace, and return its lines. Comment lines
+     * (those starting with a hash mark, #) are discarded. The result is a string array.
+     * The file is interpreted in the Java platform's default encoding.
+     *
+     * @param file  the workspace file
+     * @return file contents
+     */
+    public static String[] readLineOrientedTextFile(String fileName) {
         IFile file = asFile(fileName);
-		return readExternalLineOrientedTextFile(file.getLocation().toString());
-	}
+        return readExternalLineOrientedTextFile(file.getLocation().toString());
+    }
 
-	/**
-	 * Read a text file, given with its file system path (NOT workspace path), 
-	 * and return its lines. Comment lines (those starting with a hash mark, #) 
-	 * are discarded. The result is a string array.
-	 * The file is interpreted in the Java platform's default encoding.
-	 * 
-	 * @param fileName  filesystem path of the file
-	 * @return file contents
-	 */
-	public static String[] readExternalLineOrientedTextFile(String fileName) {
-		String contents = readExternalTextFile(fileName);
-		String[] lines = StringUtils.splitPreserveAllTokens(contents, "\r?\n");
-		List<String> noncommentLines = new ArrayList<String>();
-		for (String line : lines)
-			if (!line.startsWith("#"))
-				noncommentLines.add(line);
-		return noncommentLines.toArray(new String[]{});
-	}
+    /**
+     * Read a text file, given with its file system path (NOT workspace path),
+     * and return its lines. Comment lines (those starting with a hash mark, #)
+     * are discarded. The result is a string array.
+     * The file is interpreted in the Java platform's default encoding.
+     *
+     * @param fileName  filesystem path of the file
+     * @return file contents
+     */
+    public static String[] readExternalLineOrientedTextFile(String fileName) {
+        String contents = readExternalTextFile(fileName);
+        String[] lines = StringUtils.splitPreserveAllTokens(contents, "\r?\n");
+        List<String> noncommentLines = new ArrayList<String>();
+        for (String line : lines)
+            if (!line.startsWith("#"))
+                noncommentLines.add(line);
+        return noncommentLines.toArray(new String[]{});
+    }
 
-	/**
-	 * Reads a text file in the workspace, and returns its contents unchanged 
-	 * as a single string. The file is interpreted in the Java platform's 
-	 * default encoding.
-	 * 
-	 * @param file  the workspace file
-	 * @return file contents
-	 */
-	public static String readTextFile(String fileName) {
+    /**
+     * Reads a text file in the workspace, and returns its contents unchanged
+     * as a single string. The file is interpreted in the Java platform's
+     * default encoding.
+     *
+     * @param file  the workspace file
+     * @return file contents
+     */
+    public static String readTextFile(String fileName) {
         IFile file = asFile(fileName);
-		return readExternalTextFile(file.getLocation().toString());
-	}
+        return readExternalTextFile(file.getLocation().toString());
+    }
 
-	/**
-	 * Read a text file, given with its file system path (NOT workspace path), 
-	 * and returns its contents unchanged as a single string. The file is 
-	 * interpreted in the Java platform's default encoding.
-	 * 
-	 * @param fileName  filesystem path of the file
-	 * @return file contents
-	 */
-	public static String readExternalTextFile(String fileName) {
-		try {
-			return org.omnetpp.common.util.FileUtils.readTextFile(fileName);
-		} catch (IOException e) {
-			throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
-		}
-	}
-	
-	/**
-	 * Writes the given string to a temporary file, and returns the path of the 
-	 * temporary file in the file system. The file will be automatically deleted
-	 * when the IDE exits, but it can be also deleted earlier via deleteExternalFile().
-	 * 
-	 * @param content  file content
-	 * @return  temp file name
-	 */
-	public static String createTempFile(String content) {
+    /**
+     * Read a text file, given with its file system path (NOT workspace path),
+     * and returns its contents unchanged as a single string. The file is
+     * interpreted in the Java platform's default encoding.
+     *
+     * @param fileName  filesystem path of the file
+     * @return file contents
+     */
+    public static String readExternalTextFile(String fileName) {
+        try {
+            return org.omnetpp.common.util.FileUtils.readTextFile(fileName);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Writes the given string to a temporary file, and returns the path of the
+     * temporary file in the file system. The file will be automatically deleted
+     * when the IDE exits, but it can be also deleted earlier via deleteExternalFile().
+     *
+     * @param content  file content
+     * @return  temp file name
+     */
+    public static String createTempFile(String content) {
         try {
             File tempFile = File.createTempFile("oppwiz", null);
             org.omnetpp.common.util.FileUtils.writeTextFile(tempFile, content);
             tempFile.deleteOnExit();
             return tempFile.getAbsolutePath();
-        } 
+        }
         catch (IOException e) {
             throw new RuntimeException("Error creating temporary file: " + e.getMessage(), e);
         }
-	}
+    }
 
-	/**
-	 * Creates a workspaces text file with the given contents, in the platform's default encoding.
-	 */
-	public static void createFile(String fileName, String content) throws CoreException {
+    /**
+     * Creates a workspaces text file with the given contents, in the platform's default encoding.
+     */
+    public static void createFile(String fileName, String content) throws CoreException {
         IFile file = asFile(fileName);
         if (!file.exists())
             file.create(new ByteArrayInputStream(content.getBytes()), true, null);
         else
             file.setContents(new ByteArrayInputStream(content.getBytes()), true, true, null);
-	}
+    }
 
     /**
      * Creates a text file in the file system with the given contents, in the platform's default encoding.
@@ -522,7 +522,7 @@ public class FileUtils {
         if (file.exists() && !file.delete())
             throw new RuntimeException("deleteExternalFile: file " + fileName + " could not be deleted");
     }
-    
+
     /**
      * Creates a workspace folder. The parent must exist.
      */
@@ -559,8 +559,8 @@ public class FileUtils {
     }
 
     /**
-     * Deletes a directory in the file system. The directory must be empty. 
-     * It is OK to invoke it on a nonexistent directory. 
+     * Deletes a directory in the file system. The directory must be empty.
+     * It is OK to invoke it on a nonexistent directory.
      */
     public static void removeExternalDirectory(String fileName) {
         File file = new File(fileName);

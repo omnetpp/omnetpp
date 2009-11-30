@@ -1,10 +1,4 @@
-<#if wizardType=="simulation">
-  <@setoutput file=simulationFolderName+"/"+simulationName+".ned"/>
-  <#assign networkName=simulationName>
-<#else>
-  <@setoutput file=newFileName?default("")/>
-  <#assign networkName=nedTypeName?default("Untitled")>
-</#if>
+<@setoutput path=targetMainFile/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
@@ -12,6 +6,6 @@ ${bannerComment}
 //
 // TODO Auto-generated network
 //
-network ${networkName} 
+network ${targetTypeName}
 {
 }

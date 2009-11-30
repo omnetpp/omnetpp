@@ -301,7 +301,7 @@
    <extension
          point="org.omnetpp.common.wizard.templatecontributors">
       <contributor
-            class="org.omnetpp.ned.editor.wizards.ContentTemplateContributor">
+            class="org.omnetpp.ned.editor.wizards.NedContentTemplateContributor">
       </contributor>
    </extension>
 

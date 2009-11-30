@@ -1,22 +1,18 @@
 package org.omnetpp.msg.editor.wizard;
 
-import java.net.URL;
-
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedFileWizard;
-import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedListener;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * "New Msg File" wizard
- * 
+ *
  * @author Andras
  */
 public class NewMsgFileWizard extends TemplateBasedFileWizard {
@@ -24,26 +20,20 @@ public class NewMsgFileWizard extends TemplateBasedFileWizard {
     public NewMsgFileWizard() {
         setWizardType("msgfile");
     }
-    
+
     @Override
     public void addPages() {
         super.addPages();
         setWindowTitle("New Msg File");
-        
+
         WizardNewFileCreationPage firstPage = getFirstPage();
-        
+
         firstPage.setTitle("Create a msg file");
         firstPage.setDescription("This wizard allows you to create a new OMNeT++ message definition file");
         firstPage.setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newmsgfile_wiz.png"));
 
         firstPage.setFileExtension("msg");
-        firstPage.setFileName("untitled.msg"); 
-        
-        getTemplateSelectionPage().setTemplateAddedListener(new ITemplateAddedListener() {
-            public void addTemplateFrom(URL url) throws CoreException {
-                //FIXME TODO...
-            }
-        });
+        firstPage.setFileName("untitled.msg");
     }
 
     @Override
@@ -59,7 +49,7 @@ public class NewMsgFileWizard extends TemplateBasedFileWizard {
         // namespace
         String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
         context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
-        
+
         return context;
     }
 }

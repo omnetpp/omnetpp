@@ -3,11 +3,14 @@ package org.omnetpp.common.wizardwizard;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -81,7 +84,16 @@ public class NewWizardProjectSelectionPage extends WizardPage {
                 textModified();
             }});
         setControl(composite);
-        table.setSelection(selection);
+        
+        // initial selection
+        IResource resource = null;
+        Object element = selection.getFirstElement();
+        if (element instanceof IResource)
+            resource = (IResource) element;
+        else if (element instanceof IAdaptable)
+            resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
+        if (resource != null)
+            table.setSelection(new StructuredSelection((resource.getProject())));
     }
 
     protected void textModified() {
@@ -130,7 +142,7 @@ public class NewWizardProjectSelectionPage extends WizardPage {
         Object selection = ((IStructuredSelection)table.getSelection()).getFirstElement();
         return (IProject) selection;
     }
-    
+
     public IContainer getWizardFolder() {
         IProject project = getProject();
         return project.getFolder(new Path(TemplateBasedWizard.TEMPLATES_FOLDER_NAME + "/" + getWizardName()));

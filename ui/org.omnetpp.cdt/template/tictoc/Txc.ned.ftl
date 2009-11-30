@@ -1,5 +1,5 @@
 <#include "main.fti">
-<@setoutput file=srcFolder+"/Txc.ned"/>
+<@setoutput path=srcFolder+"/Txc.ned"/>
 ${bannerComment}
 
 <#if srcPackage!="">package ${srcPackage};</#if>

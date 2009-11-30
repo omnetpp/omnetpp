@@ -23,7 +23,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 /**
  * A control for selecting a NED type.
- * 
+ *
  * @author Andras
  */
 public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt {
@@ -34,13 +34,13 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
     public static final int CHANNEL = 16;
     public static final int CHANNELINTERFACE = 32;
     public static final int NETWORK = 64;
-	
-	private IProject project;  // we regard types from this project and dependencies
-	private int acceptedTypes = ~0; // binary OR of the above integer constants
 
-	public NedTypeChooser(Composite parent, int style) {
-		super(parent, style);
-	}
+    private IProject project;  // we regard types from this project and dependencies
+    private int acceptedTypes = ~0; // binary OR of the above integer constants
+
+    public NedTypeChooser(Composite parent, int style) {
+        super(parent, style);
+    }
 
     public IProject getProject() {
         return project;
@@ -51,14 +51,14 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
     }
 
     public void setAcceptedTypes(int filter) {
-	    this.acceptedTypes = filter;   
-	}
+        this.acceptedTypes = filter;
+    }
 
-	public int getAcceptedTypes() {
-	    return acceptedTypes;
-	}
-	
-	protected String browse() {
+    public int getAcceptedTypes() {
+        return acceptedTypes;
+    }
+
+    protected String browse() {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         NedTypeSelectionDialog dialog = new NedTypeSelectionDialog(window.getShell());
         dialog.setMessage("Select NED type:");
@@ -66,15 +66,15 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
 
 /* FIXME TODO: offer unqualified names for the folder in the CreationContext! (at least optionally)
  * also check them in the validation function
- * 
+ *
                     // fill network combo
                     IContainer container = (IContainer)resource;
                     IProject project = container.getProject();
                     NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
 
                     // collect networks: separately those in the local package, and others
-                    List<String> networkNames = new ArrayList<String>(); 
-                    List<String> networkQNames = new ArrayList<String>(); 
+                    List<String> networkNames = new ArrayList<String>();
+                    List<String> networkQNames = new ArrayList<String>();
                     String iniFilePackage = nedResources.getExpectedPackageFor(container.getFile(new Path("anything.ini")));
                     for (String networkQName : nedResources.getNetworkQNames(project)) {
                         INEDTypeInfo network = nedResources.getToplevelNedType(networkQName, project);
@@ -105,19 +105,19 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
             return component.getFullyQualifiedName();
         }
         return null;
-	}
+    }
 
-	protected boolean isAcceptedType(INEDTypeInfo nedType) {
-	    if ((acceptedTypes & MODULE)!=0 && NEDResources.MODULE_FILTER.matches(nedType)) return true;
-	    if ((acceptedTypes & SIMPLE_MODULE)!=0 && NEDResources.SIMPLE_MODULE_FILTER.matches(nedType)) return true;
-	    if ((acceptedTypes & COMPOUND_MODULE)!=0 && NEDResources.COMPOUND_MODULE_FILTER.matches(nedType)) return true;
-	    if ((acceptedTypes & MODULEINTERFACE)!=0 && NEDResources.MODULEINTERFACE_FILTER.matches(nedType)) return true;
-	    if ((acceptedTypes & CHANNEL)!=0 && NEDResources.CHANNEL_FILTER.matches(nedType)) return true;
-	    if ((acceptedTypes & CHANNELINTERFACE)!=0 && NEDResources.CHANNELINTERFACE_FILTER.matches(nedType)) return true;
-	    if ((acceptedTypes & NETWORK)!=0 && NEDResources.NETWORK_FILTER.matches(nedType)) return true;
-	    return false;
-	}
-	
+    protected boolean isAcceptedType(INEDTypeInfo nedType) {
+        if ((acceptedTypes & MODULE)!=0 && NEDResources.MODULE_FILTER.matches(nedType)) return true;
+        if ((acceptedTypes & SIMPLE_MODULE)!=0 && NEDResources.SIMPLE_MODULE_FILTER.matches(nedType)) return true;
+        if ((acceptedTypes & COMPOUND_MODULE)!=0 && NEDResources.COMPOUND_MODULE_FILTER.matches(nedType)) return true;
+        if ((acceptedTypes & MODULEINTERFACE)!=0 && NEDResources.MODULEINTERFACE_FILTER.matches(nedType)) return true;
+        if ((acceptedTypes & CHANNEL)!=0 && NEDResources.CHANNEL_FILTER.matches(nedType)) return true;
+        if ((acceptedTypes & CHANNELINTERFACE)!=0 && NEDResources.CHANNELINTERFACE_FILTER.matches(nedType)) return true;
+        if ((acceptedTypes & NETWORK)!=0 && NEDResources.NETWORK_FILTER.matches(nedType)) return true;
+        return false;
+    }
+
     public String getNedName() {
         return getText();
     }
@@ -149,7 +149,7 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
             if (nedType!=null && isAcceptedType(nedType))
                 return nedType;
         }
-        else {    
+        else {
             Set<INEDTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
             for (INEDTypeInfo nedType : nedTypes)
                 if (isAcceptedType(nedType))

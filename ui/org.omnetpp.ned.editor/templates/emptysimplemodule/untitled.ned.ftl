@@ -1,4 +1,4 @@
-<@setoutput file=newFileName?default("")/>
+<@setoutput path=targetFileName?default("")/>
 ${bannerComment}
 
 <#if nedPackageName!="">package ${nedPackageName};</#if>
@@ -6,7 +6,7 @@ ${bannerComment}
 //
 // TODO auto-generated module
 //
-simple ${nedTypeName}
+simple ${targetTypeName}
 {
 }
 

@@ -1,10 +1,1 @@
-This folder contains sample input for the various Import wizards contributed
-by this project into the "New OMNeT++ Project" wizard of the IDE.
-
-Both the data files and the Import wizards are intended as "proof of concept",
-and to show what sort of wizards can be implemented with a handful of small
-source files. It is expected that end users will copy and modify these 
-wizards to adapt them to the particular file formats used in their simulation 
-projects.
-
-The wizard sources are under the templates/ folder.
+This folder contains sample input for the Topology Import wizards in the IDE.
