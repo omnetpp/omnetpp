@@ -30,6 +30,7 @@
        <x:children>
          <button x:id="star" text="Star" x:style="RADIO"/>
          <button x:id="ring" text="Ring" x:style="RADIO"/>
+         <button x:id="wheel" text="Wheel (star+ring)" x:style="RADIO"/>
          <button x:id="grid" text="Square grid" x:style="RADIO"/>
          <button x:id="torus" text="Torus" x:style="RADIO"/>
          <button x:id="bintree" text="Binary tree" x:style="RADIO"/>
