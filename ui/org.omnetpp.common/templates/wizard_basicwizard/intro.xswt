@@ -52,7 +52,7 @@ dialogs.
 To help you create wizards, we provide numerous 'wizard wizards' and code examples, 
 as you have already seen if you are reading this. The documentation of the wizard
 feature is located in the &lt;b&gt;User Guide&lt;/b&gt;. 
-There is plentiful more information available in the Internet, because  
+There is plentiful more information available on the Internet, because  
 the wizard facility builds on existing, known open-source software: 
 Eclipse's SWT widget tookit, its XML binding XSWT, and the FreeMarker 
 templating engine.
