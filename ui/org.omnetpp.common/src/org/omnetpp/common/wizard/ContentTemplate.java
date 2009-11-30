@@ -70,8 +70,12 @@ public abstract class ContentTemplate implements IContentTemplate {
     private boolean isDefault;
 
     static {
-        // configure Freemarker to use the Eclipse log (and NOT print to stdout)
-        Logger.setLoggerFactory(new FreemarkerEclipseLoggerFactory());
+        try {
+            // configure Freemarker to use the Eclipse log (and NOT print to stdout)
+            Logger.setLoggerFactory(new FreemarkerEclipseLoggerFactory());
+        } catch (Exception e) {
+            CommonPlugin.logError("Could not install Eclipse logging into FreeMarker", e);
+        }
     }
 
     // we need this ClassLoader for the Class.forName() calls in for both FreeMarker and XSWT.
