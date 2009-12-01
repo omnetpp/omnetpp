@@ -45,7 +45,7 @@ import org.omnetpp.common.ui.DetailMessageDialog;
 import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedCallback;
 import org.osgi.framework.Bundle;
 
-import freemarker.template.TemplateModelException;
+import freemarker.template.TemplateException;
 
 
 /**
@@ -445,18 +445,12 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
             // try to present a sensible error dialog to the user
             String errorMessage;
             String detailsText;
-            if (t.getCause() instanceof TemplateModelException) {
-                TemplateModelException templateModelException = (TemplateModelException) t.getCause();
-                Exception causeException = templateModelException.getCauseException();
-                if (causeException != null) {
-                    errorMessage = messageOf(causeException);
-                    String templateStack = templateModelException.getFTLInstructionStack();
-                    detailsText = templateModelException.getMessage() + "\n\nTemplate stack:\n" + templateStack.trim();
-                }
-                else {
-                    errorMessage = messageOf(templateModelException);
-                    detailsText = null;
-                }
+            if (t.getCause() instanceof TemplateException) {
+                TemplateException templateException = (TemplateException) t.getCause();
+                Exception causeException = templateException.getCauseException();
+                errorMessage = messageOf(causeException != null ? causeException : templateException);
+                String templateStack = templateException.getFTLInstructionStack();
+                detailsText = templateException.getMessage() + "\n\nTemplate stack:\n" + templateStack.trim();
             }
             else {
                 errorMessage = messageOf(t);
