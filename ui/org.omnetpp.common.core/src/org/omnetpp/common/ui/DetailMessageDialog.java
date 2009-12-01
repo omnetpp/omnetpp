@@ -166,4 +166,10 @@ public class DetailMessageDialog extends MessageDialog {
 	    getShell().layout(true);
 	    getShell().setSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
+	
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+	    super.createButtonsForButtonBar(parent);
+	    getButton(IDialogConstants.OK_ID).setFocus();
+	}
 }

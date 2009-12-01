@@ -1,7 +1,4 @@
 <@setoutput path="template.properties"/>
-<#function iif condition truevalue falsevalue="">
-  	<#if condition><#return truevalue><#else><#return falsevalue></#if>
-</#function>
 # wizard properties
 templateName = ${wizardTemplateName}
 templateDescription = ${wizardTemplateDescription}

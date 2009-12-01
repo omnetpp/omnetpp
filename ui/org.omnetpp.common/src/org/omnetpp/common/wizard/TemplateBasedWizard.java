@@ -213,7 +213,8 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                     URL templateUrl = new URL(StringUtils.removeEnd(propFileUrl.toString(), FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME));
                     IContentTemplate template = loadTemplateFromURL(templateUrl, bundle);
                     if (wizardType==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(wizardType))
-                        result.add(template);
+                        if (isSuitableTemplate(template))
+                            result.add(template);
                 }
             }
         } catch (Exception e) {
@@ -246,7 +247,8 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
                             IFolder folder = (IFolder)resource;
                             IContentTemplate template = loadTemplateFromWorkspace(folder);
                             if (wizardType==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(wizardType))
-                                result.add(template);
+                                if (isSuitableTemplate(template))
+                                    result.add(template);
                         }
                     }
                 } catch (CoreException e) {
@@ -255,6 +257,14 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
             }
         }
         return result;
+    }
+
+    /**
+     * Override for further filtering of templates (beyond wizardType). The default 
+     * implementation just returns true. 
+     */
+    protected boolean isSuitableTemplate(IContentTemplate template) {
+        return true;
     }
 
     /**

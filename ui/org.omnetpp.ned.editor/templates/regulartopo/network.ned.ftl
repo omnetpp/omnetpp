@@ -11,6 +11,7 @@ ${bannerComment}
 <#assign nodes = nodes?number>
 <#assign columns = columns?number>
 <#assign rows = rows?number>
+<#assign networkKeyword = iif(wizardType=="compoundmodule", "module", "network")>
 
 <#if channelType != "">
   <#assign channelSpec = " " + channelType + " <-->">

@@ -59,6 +59,11 @@ public interface IContentTemplate {
      * even the template selection page.
      */
     boolean getIsDefault();
+    
+    /**
+     * Returns a value from the template.properties file. May return null.
+     */
+    String getTemplateProperty(String key);
 
     /**
      * Creates an initial context with the given resource, and some initial variables set.

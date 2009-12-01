@@ -88,6 +88,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	 * Removes spaces, assures it begins with letter or underscore, etc.
 	 */
 	public static String makeValidIdentifier(String name) {
+        name = name.replaceAll("\\s", "");
         name = name.replaceAll("[^A-Za-z0-9_]", "_");
         name = name.replaceAll("__+", "_");
         if (!name.matches("[a-zA-Z_].*")) 
@@ -99,6 +100,8 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	 * Make the first noOfChars lower-case
 	 */
 	public static String uncapitalize(String value, int noOfChars) {
+	    if (value.length() < noOfChars)
+	        noOfChars = value.length();
 	    return value.substring(0,noOfChars).toLowerCase()+value.substring(noOfChars);
 
 	}

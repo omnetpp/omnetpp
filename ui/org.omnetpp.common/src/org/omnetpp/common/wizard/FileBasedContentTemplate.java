@@ -201,6 +201,10 @@ public class FileBasedContentTemplate extends ContentTemplate {
         return allowJarLoading;
     }
 
+    public String getTemplateProperty(String key) {
+        return properties.getProperty(key);
+    }
+    
     /**
      * Sets whether to allow adding jars in the plugin directory into the CLASSPATH.
      * Must be invoked "early enough" to take effect.

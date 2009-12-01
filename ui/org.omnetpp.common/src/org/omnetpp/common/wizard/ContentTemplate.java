@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -196,6 +197,7 @@ public abstract class ContentTemplate implements IContentTemplate {
             variables.put("Math", BeansWrapper.getDefaultInstance().getStaticModels().get(Math.class.getName()));
             variables.put("FileUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(FileUtils.class.getName()));
             variables.put("StringUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(StringUtils.class.getName()));
+            variables.put("WordUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(WordUtils.class.getName()));
             variables.put("CollectionUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(CollectionUtils.class.getName()));
             variables.put("LangUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(LangUtils.class.getName()));
             variables.put("ProcessUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(ProcessUtils.class.getName()));
@@ -271,7 +273,12 @@ public abstract class ContentTemplate implements IContentTemplate {
             "<#macro do arg></#macro>" + // allow void methods to be called as: <@do object.setFoo(x)!>
             "<#macro setoutput path>\n" +
             SETOUTPUT_MARKER +
-            "</#macro>\n\n";
+            "</#macro>\n" +
+            "\n" +
+            "<#function iif condition truevalue falsevalue>\n" + 
+            "    <#if condition><#return truevalue><#else><#return falsevalue></#if>\n" + 
+            "</#function>\n" +
+            "\n";
 
         for (IContentTemplateContributor contributor : getContributors()) {
             try {

@@ -17,8 +17,8 @@
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
-        <label text="Choose an existing type, or type a name (without package) to create it.">
-          <layoutData x:class="GridData" horizontalSpan="2"/>
+        <label text="Choose an existing type, or type a name (without package) to create it. The channel field can be left empty." x:style="WRAP">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </label>
 
         <label text="Hub:"/>

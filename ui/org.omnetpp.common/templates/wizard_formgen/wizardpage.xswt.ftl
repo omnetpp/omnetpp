@@ -43,17 +43,30 @@ ${bannerComment}
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
 
-    <!-- page generate from: ${spec} -->
+    <!-- page generated from the following spec:
+<#if !spec?contains("\n")>      </#if>${spec}    
+    -->
+    
+<#function makeLabel rawname>
+  <#assign label = rawname?replace("([a-z0-9_])([A-Z])", "$1 $2", "r")>
+  <#assign label = StringUtils.capitalize(label?lower_case)>
+  <#return label> 
+</#function>
+<#function makeIdentifier rawname>
+  <#return StringUtils.uncapitalize(StringUtils.makeValidIdentifier(WordUtils.capitalize(rawname?trim)),1)>
+</#function>
 
 <#assign spec = spec?replace("{", "{,")?replace("}", ",},")?replace(",,", ",")>
 <#list StringUtils.split(spec, ",") as i>
   <#assign field = i.trim()>
     <!-- ${field} -->
-  <#assign name = field.replaceFirst("^([a-zA-Z0-9_]+).*", "$1")>
-  <#assign suffix = field.replaceFirst("^[a-zA-Z0-9_]+", "")>
+  <#assign rawname = field.replaceFirst("^([-a-zA-Z0-9_ \t]*).*", "$1")>
+  <#assign suffix = StringUtils.removeStart(field,rawname)?trim>
+  <#assign label = makeLabel(rawname?trim)>
+  <#assign name = makeIdentifier(rawname?trim)>
   <#if field=="">
     <#-- nothing, skip it -->
-  <#elseif field.matches("([a-zA-Z0-9_]+/)+[a-zA-Z0-9_]+")>
+  <#elseif field.matches("[^:]*/.*")>
     <#-- **** RADIOBUTTON GROUP **** -->
     <label text="Radio group:"/>
     <label/>
@@ -63,8 +76,8 @@ ${bannerComment}
       <x:children>
       <#assign first=true>
       <#list field.split("/") as j>
-        <#assign option = j.trim()>
-        <button x:id="${option}" text="${option}" x:style="RADIO"/>
+        <#assign option = makeIdentifier(j?trim)>
+        <button x:id="${option}" text="${makeLabel(j?trim)}" x:style="RADIO"/>
         <@setoutput path=propsFile/>
 ${option} = <#if first>true<#else>false</#if>
         <@setoutput path=nedFile/>
@@ -76,7 +89,7 @@ ${option} = <#if first>true<#else>false</#if>
     </composite>
   <#elseif suffix=="">
     <#-- **** TEXT **** -->
-    <label text="Enter ${name}:"/>
+    <label text="${label}:"/>
     <text x:id="${name}" x:style="BORDER">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
@@ -88,7 +101,7 @@ ${name} = some text
   <#elseif suffix=="<" || suffix=="<<">
     <#-- **** FILECHOOSER **** -->
     <#if suffix=="<"><#assign chooserWidget="fileChooser"><#else><#assign chooserWidget="externalFileChooser"></#if>
-    <label text="Choose ${name}:"/>
+    <label text="${label}:"/>
     <${chooserWidget} x:id="${name}">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </${chooserWidget}>
@@ -99,7 +112,7 @@ ${name} = foo.txt
     <@setoutput path=xswtFile/>
   <#elseif suffix=="$">
     <#-- **** MULTILINE **** -->
-    <label text="Enter ${name}:"/>
+    <label text="${label}:"/>
     <text x:id="${name}" x:style="BORDER|WRAP|MULTI">
       <layoutData x:class="GridData" heightHint="60" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </text>
@@ -111,7 +124,7 @@ ${name} = some more text
     <@setoutput path=xswtFile/>
   <#elseif suffix=="%">
     <#-- **** SPINNER **** -->
-    <label text="Select ${name}:"/>
+    <label text="${label}:"/>
     <spinner x:id="${name}" minimum="0" maximum="100" x:style="BORDER"/>
     <@setoutput path=propsFile/>
 ${name} = 10
@@ -120,7 +133,7 @@ ${name} = 10
     <@setoutput path=xswtFile/>
   <#elseif suffix=="?">
     <#-- **** CHECKBOX **** -->
-    <button x:id="${name}" text="${name}" x:style="CHECK">
+    <button x:id="${name}" text="${label}" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
     <@setoutput path=propsFile/>
@@ -130,20 +143,20 @@ ${name} = false
     <@setoutput path=xswtFile/>
   <#elseif suffix=="=">
     <#-- **** SCALE **** -->
-    <label text="Choose ${name} (0..100):"/>
+    <label text="${label} (0..100):"/>
     <scale x:id="${name}" minimum="0" maximum="100"/>
     <@setoutput path=propsFile/>
 ${name} = 40
     <@setoutput path=nedFile/>
 // ${name}: ${"${" + name + "}"}
     <@setoutput path=xswtFile/>
-  <#elseif suffix.startsWith(":")>
+  <#elseif suffix?starts_with(":")>
     <#-- **** COMBOBOX **** -->
-    <label text="Choose ${name}:"/>
+    <label text="${label}:"/>
     <combo x:id="${name}" x:style="BORDER|READ_ONLY">
-    <#list suffix.substring(1).split("/") as option>
-      <#assign lastOption=option.trim()>
-      <add x:p0="${option.trim()}"/>
+    <#list suffix?substring(1)?split("/") as option>
+      <#assign lastOption=option?trim>
+      <add x:p0="${option?trim}"/>
     </#list>
     </combo>
     <@setoutput path=propsFile/>
@@ -153,7 +166,7 @@ ${name} = ${lastOption}
     <@setoutput path=xswtFile/>
   <#elseif suffix=="{">
     <#-- **** GROUP START **** -->
-    <group text="${name}">
+    <group text="${label}">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>

@@ -39,6 +39,9 @@ public abstract class LayoutBuilder {
             }
         }
 
+        // not found
+        result.constructor = null;
+        result.args = null;
         return result;
     }
 
