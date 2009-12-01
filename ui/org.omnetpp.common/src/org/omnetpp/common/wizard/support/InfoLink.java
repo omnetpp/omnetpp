@@ -14,8 +14,10 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.IWidgetAdapter;
 
 /**
- * A control for displaying the name of a resource as a link. When clicked, it shows
- * the resource (opens Project Explorer and focuses it to the resource).
+ * A control for which displays a text with embedded link(s), and clicking
+ * on a link will display a hover text in a window. The hover text can be given 
+ * the with setHoverText method (i.e. the hoverText XSWT attribute), or bound 
+ * to a template variable (using the x:id XSWT attribute).
  *
  * @author Andras
  */

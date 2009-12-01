@@ -16,9 +16,11 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.IWidgetAdapter;
 
 /**
- * A control for displaying the name of a resource as a link. When clicked, it shows
- * the resource (opens Project Explorer and focuses it to the resource).
- *
+ * A control for which displays a text with embedded link(s), and clicking
+ * on a link will launch the external browser for an URL. The URL can be
+ * given with setURL (i.e. the URL attribute in XSWT), or bound to a template
+ * variable (using the x:id XSWT attribute).
+ * 
  * @author Andras
  */
 public class HttpLink extends Composite implements IWidgetAdapter {

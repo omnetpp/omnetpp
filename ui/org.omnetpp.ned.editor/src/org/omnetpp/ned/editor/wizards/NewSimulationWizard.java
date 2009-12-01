@@ -70,7 +70,7 @@ public class NewSimulationWizard extends TemplateBasedWizard {
         firstPage.setTitle("New Simulation");
         firstPage.setDescription("Choose folder for simulation files");
         firstPage.setFileExtension("");
-        firstPage.setFileName("untitled");
+        firstPage.setFileName("");
         addPage(firstPage);
         super.addPages();
     }
