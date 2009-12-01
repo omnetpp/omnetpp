@@ -29,7 +29,7 @@ public abstract class LayoutBuilder {
                     String argStr = (String) argIter.next();
                     result.args[arg] = DataParser.parse(argStr, result.paramTypes[arg]);
                 }
-
+                return result;
             }
             catch (Exception e) {
                 Logger.log().debug(LayoutBuilder.class, "Error in parsing " + valueType + ": " + e);
