@@ -19,7 +19,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.wizard.FreemarkerEclipseLoggerFactory;
 import org.osgi.framework.BundleContext;
+
+import freemarker.log.Logger;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -51,6 +54,13 @@ public class CommonPlugin extends AbstractUIPlugin {
         PLUGIN_ID = getBundle().getSymbolicName();
 
         ImageFactory.initialize(getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH).split(";"));
+        
+        // configure FreeMarker to use the Eclipse log (and NOT print to stdout)
+        try {
+            Logger.setLoggerFactory(new FreemarkerEclipseLoggerFactory());
+        } catch (Exception e) {
+            CommonPlugin.logError("Could not install Eclipse logging into FreeMarker", e);
+        }
 	}
 
 	/*
