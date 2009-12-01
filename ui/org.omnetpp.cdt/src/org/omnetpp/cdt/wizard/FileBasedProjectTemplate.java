@@ -38,6 +38,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     public static final String PROP_SOURCEFOLDERS = "sourceFolders"; // source folders to be created and configured
     public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
     public static final String PROP_MAKEMAKEOPTIONS = "makemakeOptions"; // makemake options, as "folder1:options1,folder2:options2,..."
+    public static final String PROP_REQUIRESCPLUSPLUS = "requiresCPlusPlus"; // affects template filtering in the wizard
 
     public FileBasedProjectTemplate(IFolder folder) throws CoreException {
         super(folder);
@@ -74,17 +75,20 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         if (getTemplateFolder()!=null && XSWTDataBinding.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
             ProjectUtils.addReferencedProject((IProject)context.getFolder(), getTemplateFolder().getProject(), context.getProgressMonitor());
 
-        String[] srcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
-        if (srcFolders.length > 0)
-            createAndSetSourceFolders(srcFolders, context);
-
         String[] nedSrcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_NEDSOURCEFOLDERS), " *, *");
         if (nedSrcFolders.length > 0)
             createAndSetNedSourceFolders(nedSrcFolders, context);
 
-        Map<String,String> makemakeOptions = XSWTDataBinding.toStringMap(context.getVariables().get(PROP_MAKEMAKEOPTIONS));
-        if (!makemakeOptions.isEmpty())
-            createBuildSpec(makemakeOptions, context);
+        boolean supportCPlusPlus = XSWTDataBinding.toBoolean(context.getVariables().get("withCplusplusSupport"));
+        if (supportCPlusPlus) {
+            String[] srcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
+            if (srcFolders.length > 0)
+                createAndSetSourceFolders(srcFolders, context);
+
+            Map<String,String> makemakeOptions = XSWTDataBinding.toStringMap(context.getVariables().get(PROP_MAKEMAKEOPTIONS));
+            if (!makemakeOptions.isEmpty())
+                createBuildSpec(makemakeOptions, context);
+        }
     }
 
     /**
