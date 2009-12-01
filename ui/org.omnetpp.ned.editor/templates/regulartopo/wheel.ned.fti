@@ -63,11 +63,11 @@ channel ${channelType} extends ned.DatarateChannel {
 </#if>
 
 //
-// A generated network with ${iif(ring, "ring", iif(star, "star", "wheel"))} topology.
+// A generated ${networkKeyword} with ${iif(ring, "ring", iif(star, "star", "wheel"))} topology.
 //
 <#-- TODO: generateCoordinates -->
 <#if parametricNED>
-network ${targetTypeName}
+${networkKeyword} ${targetTypeName}
 {
     parameters:
         int n = default(${nodes});
@@ -99,7 +99,7 @@ network ${targetTypeName}
 </#if>
 }
 <#else>
-network ${targetTypeName}
+${networkKeyword} ${targetTypeName}
 {
     submodules:
 <#if star || wheel>

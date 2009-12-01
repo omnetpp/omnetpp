@@ -40,21 +40,21 @@ channel ${channelType} extends ned.DatarateChannel {
     <#function child i> <#return iif(i==0, treeLeftChild, treeRightChild)> </#function> <#-- i must be numeric! -->
   <#else>
     <#function child i> <#return treeChildGate + "[" + i + "]"> </#function>
-  </#if>  
+  </#if>
 </#if>
 
 <#-- TODO: generateCoordinates -->
 //
-// A generated network with ${iif(bintree, "binary tree", "k-ary tree")} topology.
+// A generated ${networkKeyword} with ${iif(bintree, "binary tree", "k-ary tree")} topology.
 //
 <#if parametricNED>
-network ${targetTypeName}
+${networkKeyword} ${targetTypeName}
 {
     parameters:
         int levels = default(${treeLevels});  // 1 = root only
   <#if ktree>
         int k = default(${treeK}); // tree branching factor
-  </#if>      
+  </#if>
     submodules:
   <#if bintree>
     <#if gateVectorWithIndices>
@@ -75,13 +75,13 @@ network ${targetTypeName}
             node[i].${parent} <-->${channelSpec} node[floor((i-1)/2)].${child(0)} if i%2==0;
             node[i].${parent} <-->${channelSpec} node[floor((i-1)/2)].${child(1)} if i%2==1;
   <#else>
-            <#assign k = iif(bintree, "2", "k")> 
+            <#assign k = iif(bintree, "2", "k")>
             node[i].${parent} <-->${channelSpec} node[floor((i-1)/${k})].${child("i%"+k)};
   </#if>
         }
 }
 <#else>
-network ${targetTypeName}
+${networkKeyword} ${targetTypeName}
 {
     submodules:
 <#list 0..treeLevels-1 as level>

@@ -45,11 +45,11 @@ channel ${channelType} extends ned.DatarateChannel {
 
 
 //
-// A generated network with ${iif(grid, "grid", "torus")} topology.
+// A generated ${networkKeyword} with ${iif(grid, "grid", "torus")} topology.
 //
 <#-- TODO: generateCoordinates -->
 <#if parametricNED>
-network ${targetTypeName}
+${networkKeyword} ${targetTypeName}
 {
     parameters:
         int columns = default(${columns});
@@ -79,7 +79,7 @@ network ${targetTypeName}
 
 
 <#else>
-network ${targetTypeName}
+${networkKeyword} ${targetTypeName}
 {
     submodules:
 <#list 0..rows-1 as i>
