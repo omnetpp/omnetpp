@@ -75,15 +75,17 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
 
     public void setNedType(INEDTypeInfo nedType) {
         this.nedType = nedType;
-        
+
         // create or fill the appropriate widget
         if (nedType == null) {
             if (comboViewer != null) {
                 comboViewer.getCombo().dispose();
                 comboViewer = null;
             }
-            if (text == null)
+            if (text == null) {
                 text = new Text(this, SWT.BORDER);
+                layout(true);
+            }
         }
         else {
             if (text != null) {
@@ -94,6 +96,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
                 comboViewer = new ComboViewer(this, SWT.READ_ONLY|SWT.BORDER);
                 comboViewer.setContentProvider(new ArrayContentProvider());
                 comboViewer.setLabelProvider(NEDTreeUtil.getNedModelLabelProvider());
+                layout(true);
             }
             
             // set/refresh gate list, and select 1st one
