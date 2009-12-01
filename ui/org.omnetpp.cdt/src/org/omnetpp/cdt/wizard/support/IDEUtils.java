@@ -34,13 +34,13 @@ public class IDEUtils {
     }
 
     /** 
-     * Opens a standard message dialog, with an closable details message.
+     * Opens a standard message dialog, with a closable details message.
      */
     public static boolean openConfirm(final String title, final String message, final String detailsMessage) {
         final boolean[] result = new boolean[1];
         DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
             public void run() {
-                result[0] = DetailMessageDialog.openConfirm(getShell(), title, detailsMessage);
+                result[0] = DetailMessageDialog.openConfirm(getShell(), title, message, detailsMessage);
             }});
         return result[0];
     }
@@ -52,7 +52,7 @@ public class IDEUtils {
         final boolean[] result = new boolean[1];
         DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
             public void run() {
-                result[0] = DetailMessageDialog.openQuestion(getShell(), title, detailsMessage);
+                result[0] = DetailMessageDialog.openQuestion(getShell(), title, message, detailsMessage);
             }});
         return result[0];
     }
@@ -63,7 +63,7 @@ public class IDEUtils {
     public static void openError(final String title, final String message, final String detailsMessage) {
         DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
             public void run() {
-                DetailMessageDialog.openError(getShell(), title, detailsMessage);
+                DetailMessageDialog.openError(getShell(), title, message, detailsMessage);
             }});
     }
 
@@ -73,7 +73,7 @@ public class IDEUtils {
     public static void openWarning(final String title, final String message, final String detailsMessage) {
         DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
             public void run() {
-                DetailMessageDialog.openWarning(getShell(), title, detailsMessage);
+                DetailMessageDialog.openWarning(getShell(), title, message, detailsMessage);
             }});
     }
 
@@ -83,7 +83,7 @@ public class IDEUtils {
     public static void openInformation(final String title, final String message, final String detailsMessage) {
         DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
             public void run() {
-                DetailMessageDialog.openInformation(getShell(), title, detailsMessage);
+                DetailMessageDialog.openInformation(getShell(), title, message, detailsMessage);
             }});
     }
 

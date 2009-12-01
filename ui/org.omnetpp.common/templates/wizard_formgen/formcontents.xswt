@@ -31,8 +31,8 @@
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
 
-    <text x:id="spec" x:style="BORDER|MULTI|WRAP">
-      <layoutData x:class="GridData" heightHint="100" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    <text x:id="spec" x:style="BORDER|MULTI|WRAP|V_SCROLL">
+      <layoutData x:class="GridData" heightHint="100" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
       <setFocus/>
     </text>
 
