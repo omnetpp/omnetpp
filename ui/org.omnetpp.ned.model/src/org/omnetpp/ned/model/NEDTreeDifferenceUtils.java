@@ -8,15 +8,16 @@
 package org.omnetpp.ned.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.compare.rangedifferencer.IRangeComparator;
+import org.eclipse.compare.rangedifferencer.RangeDifference;
+import org.eclipse.compare.rangedifferencer.RangeDifferencer;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.IRangeComparator;
-import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.RangeDifference;
-import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.RangeDifferencer;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -41,7 +42,6 @@ public class NEDTreeDifferenceUtils {
 		public void replaceAttribute(INEDElement element, String name, String value);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void applyTreeDifferences(INEDElement original, INEDElement target, IApplier applier) {
 		applier.replaceNonAttributeData(original, target.getSourceLocation(), target.getSourceRegion(),
 				target.getSyntaxProblemMaxLocalSeverity(), target.getConsistencyProblemMaxLocalSeverity()); 
@@ -50,7 +50,7 @@ public class NEDTreeDifferenceUtils {
 
 		NEDElementChildrenComparator comparatorOriginal = new NEDElementChildrenComparator(original);
 		NEDElementChildrenComparator comparatorTarget = new NEDElementChildrenComparator(target);
-		List<RangeDifference> differences = RangeDifferencer.findRanges(comparatorOriginal, comparatorTarget);
+		List<RangeDifference> differences = Arrays.asList(RangeDifferencer.findRanges(comparatorOriginal, comparatorTarget));
 
 		Collections.sort(differences, new Comparator<RangeDifference>() {
 			public int compare(RangeDifference o1, RangeDifference o2) {

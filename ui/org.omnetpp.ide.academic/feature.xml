@@ -2,7 +2,7 @@
 <feature
       id="org.omnetpp.ide.academic"
       label="OMNeT++ IDE - Academic Edition"
-      version="4.0.0.qualifier"
+      version="4.1.0.qualifier"
       provider-name="OpenSim Ltd."
       plugin="org.omnetpp.main"
       os="linux,macosx,win32"
@@ -340,15 +340,14 @@ END OF TERMS AND CONDITIONS
 
    <includes
          id="org.omnetpp.ide"
-         version="4.0.0.qualifier"
-         name="OMNeT++ Base IDE Feature"/>
+         version="4.1.0.qualifier"
+         name="OMNeT++ IDE Features"/>
 
    <plugin
          id="org.omnetpp.main.omnetpp"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
-         fragment="true"
-         unpack="false"/>
+         version="4.1.0.qualifier"
+         fragment="true"/>
 
 </feature>
