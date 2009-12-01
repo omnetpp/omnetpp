@@ -44,12 +44,14 @@ public class NewOmnetppClassCreationWizard extends NewClassCreationWizard {
             // overridden to use the namespace declared in package.ned files
             IWorkspaceRoot wsroot = ResourcesPlugin.getWorkspace().getRoot();
             IPath path = getSourceFolderFullPath();
-            IContainer folder = path.segmentCount()==1 ? wsroot.getProject(path.segment(0)) : wsroot.getFolder(path);
-            if (folder.exists()) {
-                String namespace = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
-                boolean empty = StringUtils.isEmpty(namespace);
-                setNamespaceText(empty ? "" : namespace, true);
-                setNamespaceSelection(!empty, !empty);
+            if (path != null && !path.isEmpty()) {
+                IContainer folder = path.segmentCount()==1 ? wsroot.getProject(path.segment(0)) : wsroot.getFolder(path);
+                if (folder.exists()) {
+                    String namespace = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
+                    boolean empty = StringUtils.isEmpty(namespace);
+                    setNamespaceText(empty ? "" : namespace, true);
+                    setNamespaceSelection(!empty, !empty);
+                }
             }
 
             return super.sourceFolderChanged();

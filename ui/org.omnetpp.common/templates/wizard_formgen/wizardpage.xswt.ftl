@@ -66,10 +66,13 @@ ${bannerComment}
   <#assign name = makeIdentifier(rawname?trim)>
   <#if field=="">
     <#-- nothing, skip it -->
+  <#elseif rawname?trim=="--">
+    <#-- **** SEPARATOR **** -->
+    <label x:style="SEPARATOR|HORIZONTAL">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
   <#elseif field.matches("[^:]*/.*")>
     <#-- **** RADIOBUTTON GROUP **** -->
-    <label text="Radio group:"/>
-    <label/>
     <composite>
       <layoutData x:class="GridData" horizontalSpan="2"/>
       <layout x:class="GridLayout"/>
@@ -98,6 +101,11 @@ ${name} = some text
     <@setoutput path=nedFile/>
 // ${name}: ${"${" + name + "}"}
     <@setoutput path=xswtFile/>
+  <#elseif suffix=="\"">
+    <#-- **** LABEL **** -->
+    <label text="${label}">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
   <#elseif suffix=="<" || suffix=="<<">
     <#-- **** FILECHOOSER **** -->
     <#if suffix=="<"><#assign chooserWidget="fileChooser"><#else><#assign chooserWidget="externalFileChooser"></#if>

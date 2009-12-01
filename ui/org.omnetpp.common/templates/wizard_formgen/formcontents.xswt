@@ -13,21 +13,12 @@
   <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
 
-    <label text="This wizard generates a wizard page for you, from the list of variables you want to ask." x:style="WRAP">
+    <infoLink text="This wizard generates a wizard page, from the list of variables you want to ask; <a>click here for more info.</a>" x:style="WRAP" 
+         hoverText="Variable names can be specified as a comma-separated list. It is recommended that you use camel-case variable names. By default, a text field will be generated for each variable, but this can be changed by appending a suffix character. Use ? for checkbox, % for numeric inputfield (spinner), $ for multi-line text, words separated by / for radio buttons (e.g. red/gree/blue), = for slider, :option1/option2/option3 for combo box, &lt; for file chooser, &lt;&lt; for external file chooser. Widgets can be visually grouped with the grouplabel{...} syntax.">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </label>
+    </infoLink>
 
-    <label text="By default, a text field will be generated for each variable, but this can be changed by appending a suffix character. Use ? for checkbox, % for numeric inputfield (spinner), $ for multi-line text, / for radio buttons (can be joined, e.g. red/gree/blue generates a radio group), = for slider, :option1/option2/option3 for combo box, < for file chooser, << for external file chooser. Widgets can be visually grouped with the somelabel{...} syntax." x:style="WRAP">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </label>
-
-    <!-- Does not fit on the page, but the default value already serves as an example...
-    <label text="Example: networkName, description$, generateIniFile?, Network{ numNodes%, avgDistance=, routing:none/aodv/dsdv}, Traffic{ noTraffic/tcpTraffic/udpTraffic, trafficFile< }" x:style="WRAP">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </label>
-    -->
-
-    <label text="Enter variables (comma-separated list, e.g. &quot;name, nodes%, connect?&quot;):" x:style="WRAP">
+    <label text="Enter variables with widget type suffixes (comma-separated list, e.g. &quot;name, nodes%, connect?&quot;):" x:style="WRAP">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </label>
 
@@ -35,6 +26,10 @@
       <layoutData x:class="GridData" heightHint="100" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
       <setFocus/>
     </text>
+
+    <label text="Help: editField, label&quot;, checkbox?, spinner%, multilineText$, radio1/radio2/radio3, slider=, combo:option1/option2/option3, workspaceFile<, externalFile<<, group{...}, -- (separator)" x:style="WRAP">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
 
   </x:children>
 </xswt>
