@@ -93,7 +93,7 @@ AC_CANONICAL_HOST()
 OMNETPP_PRODUCT="OMNeT++"
 OMNETPP_RELEASE=`cat Version`
 OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
-OMNETPP_BUILDID=internal
+OMNETPP_BUILDID="internal"
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
 # We'll collect in this variable the components we've detected problems with
@@ -1159,6 +1159,23 @@ if test -f ide/configuration/config.ini ; then
     perl -i~ -pe 's!osgi.instance.area.default=.*$!osgi.instance.area.default='$OMNETPP_SAMPLES_DIR'!g' ide/configuration/config.ini
     rm ide/configuration/config.ini~
 fi
+
+# patch the launcher.ini file to point to the platform specific configuration area
+patchIDEconfig () {
+  if test -f ide/$1/$2.ini ; then
+    perl -i~ -pe 'BEGIN{undef $/;} s!-configuration\n.*?\n!-configuration\n'$OMNETPP_ROOT'/ide/'$1'/configuration\n!smg' ide/$1/$2.ini
+    rm ide/$1/$2.ini~
+  fi
+}
+
+patchIDEconfig linux omnest
+patchIDEconfig linux64 omnest
+patchIDEconfig macosx omnest
+patchIDEconfig win32 omnest
+patchIDEconfig linux omnetpp
+patchIDEconfig linux64 omnetpp
+patchIDEconfig macosx omnetpp
+patchIDEconfig win32 omnetpp
 
 #----------------------
 # Check $OPP_PROBLEM_PACKAGES

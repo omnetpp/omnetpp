@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ IDE unit tests
 Bundle-SymbolicName: org.omnetpp.test.unit
-Bundle-Version: 4.0.0
+Bundle-Version: 4.1.0
 Bundle-Activator: org.omnetpp.test.unit.Activator
 Bundle-Vendor: Opensim Ltd
 Require-Bundle: org.junit4,
