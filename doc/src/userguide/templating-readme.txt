@@ -1248,3 +1248,11 @@ A: Currently you cannot. If you are desperate, you have the following options:
    page.xx.class= instead of page.xx.file; (4) implement scripting support
    for XSWT 1.x and contribute the patch to us :)
 
+In the Project wizard, how does it get decided which templates get offered
+if the "with C++ checkbox" gets selected or not selected on the first page?
+Ans: if the C++ support checkbox is cleared, templates that require 
+C++ support will not appear; when it is checked, there is no
+such filtering. A template is regarded as one that requires C++ support 
+if the template.properties file contains any of the following:
+sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true.
+
