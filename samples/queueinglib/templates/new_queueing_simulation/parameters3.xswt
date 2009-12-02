@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- priority classes -->
+    <label text="Priority classes:"/>
+    <spinner x:id="prorities" minimum="2" x:style="BORDER">
+    	<setFocus/>
+    </spinner>
+
+    <!-- job priority -->
+    <label text="Job priority:"/>
+    <text x:id="generatedJobPriority" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+    <label/>
+    <label text="The distribution of job priorities during job creation"/>
+
+  </x:children>
+</xswt>
