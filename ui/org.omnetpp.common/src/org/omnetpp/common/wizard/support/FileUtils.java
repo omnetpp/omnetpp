@@ -65,6 +65,7 @@ public class FileUtils {
      * Throws exception if the path is not a valid workspace project path.
      * This function does not test whether the project exists. To test that,
      * call the exists() method on the returned handle.
+     * Note: getLocation() on the resulting resource may return null!
      */
     public static IProject asProject(String path) {
         return ResourcesPlugin.getWorkspace().getRoot().getProject(path);
@@ -75,6 +76,7 @@ public class FileUtils {
      * Throws exception if the path is not a valid workspace container path.
      * This function does not test whether the container exists. To test that,
      * call the exists() method on the returned handle.
+     * Note: getLocation() on the resulting container may return null!
      */
     public static IContainer asContainer(String path) {
         if (new Path(path).segmentCount() <= 1)
@@ -88,9 +90,11 @@ public class FileUtils {
      * Throws exception if the path is not a valid workspace file path.
      * This function does not test whether the file exists. To test that,
      * call the exists() method on the returned handle.
+     * Note: getLocation() on the resulting file may return null!
      */
     public static IFile asFile(String path) {
-        return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+        return file;
     }
 
     /**
@@ -99,6 +103,7 @@ public class FileUtils {
      * more than one segment (i.e. it cannot be a project), it is returned as
      * a file handle if it has a file extension, and as a folder if it
      * does not.
+     * Note: getLocation() on the resulting resource may return null!
      */
     public static IResource asResource(String pathName) {
         Path path = new Path(pathName);
@@ -195,6 +200,8 @@ public class FileUtils {
      */
     public static org.w3c.dom.Document readXMLFile(String fileName) {
         IFile file = asFile(fileName);
+        if (!file.exists())  // ensure file.getLocation()!=null
+            throw new RuntimeException("File does not exist: " + fileName);
         return readExternalXMLFile(file.getLocation().toString());
     }
 
@@ -231,6 +238,8 @@ public class FileUtils {
      */
     public static Object readJSONFile(String fileName) {
         IFile file = asFile(fileName);
+        if (!file.exists())  // ensure file.getLocation()!=null
+            throw new RuntimeException("File does not exist: " + fileName);
         return readExternalJSONFile(file.getLocation().toString());
     }
 
@@ -272,6 +281,8 @@ public class FileUtils {
      */
     public static String[][] readCSVFile(String fileName, boolean ignoreFirstLine, boolean ignoreBlankLines, boolean ignoreCommentLines) {
         IFile file = asFile(fileName);
+        if (!file.exists())  // ensure file.getLocation()!=null
+            throw new RuntimeException("File does not exist: " + fileName);
         return readExternalCSVFile(file.getLocation().toString(), ignoreFirstLine, ignoreBlankLines, ignoreCommentLines);
     }
 
@@ -326,6 +337,8 @@ public class FileUtils {
      */
     public static Properties readPropertyFile(String fileName) {
         IFile file = asFile(fileName);
+        if (!file.exists())  // ensure file.getLocation()!=null
+            throw new RuntimeException("File does not exist: " + fileName);
         return readExternalPropertyFile(file.getLocation().toString());
     }
 
@@ -408,6 +421,8 @@ public class FileUtils {
      */
     public static String[] readLineOrientedTextFile(String fileName) {
         IFile file = asFile(fileName);
+        if (!file.exists())  // ensure file.getLocation()!=null
+            throw new RuntimeException("File does not exist: " + fileName);
         return readExternalLineOrientedTextFile(file.getLocation().toString());
     }
 
@@ -440,6 +455,8 @@ public class FileUtils {
      */
     public static String readTextFile(String fileName) {
         IFile file = asFile(fileName);
+        if (!file.exists())  // ensure file.getLocation()!=null
+            throw new RuntimeException("File does not exist: " + fileName);
         return readExternalTextFile(file.getLocation().toString());
     }
 
