@@ -1092,8 +1092,6 @@ TODO document <@setoutput path=.../>
 TODO document FileChooser and ExternalFileChooser, NedChooser: custom widget: file selector (workspace / external file)
 TODO NED type chooser, project chooser
 
-TODO document the <#assign dummy=expr!> trick! alternative: <@do FileUtil.deleteFile(file)!/>
-
 TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
 JARs in the templates)
 
@@ -1142,4 +1140,111 @@ TODO: document variables See contentTempate and derived classes, TemplateBasedWi
       check - createContext()
       possible wizard types: project, simulation, nedfile
   
+UTILITY FUNCTIONS/MACROS:
+
+iif(condition, valueIfTrue, valueIfFalse):
+   Inline if. The FreeMarker language does not have a conditional operator
+   (like ?: of C/C++), but the iif() function can save you from the verbosity
+   of having to spell out <#if>..<#else>..</#if> everywhere such thing is needed.
+   Note that unlike in C/C++ the evaluation is not lazy, i.e. both the "then" and
+   the "else" expressions are always evaluated.
+
+<@do expression !>
+   FreeMarker does not have a construct for calling a function and then discarding
+   the result. One could use <#assign dummy = expression>, but this, apart from
+   being ugly, will fail if the called (Java) function is void or returns null.
+   We recommend our small "@do" macro which takes one argument and does nothing,
+   and the exclamation mark (the FreeMarker default value operator) cures the
+   void/null problem.
+
+
+COMMON PITFALLS:
+
+1. Variables need to be defined. Referring to an undefined variable is an
+   error in FreeMarker, i.e. it does not return empty string as in bash or
+   in makefiles.
+
+2. Default values should be given in template.properties! You need to resist
+   the temptation to define them in the XSWT page by pre-filling the corresponding
+   widget (e.g. <text x:id="n" text="100">). If you specify the value in a page,
+   the assignment will not take effect if the user skips that page (i.e. clicks
+   Finish earlier). That causes variable to remain undefined, resulting in a
+   runtime error during template processing.
+
+3. Type mismatch. Variables have types in FreeMarker, and one can get type conversion
+   errors if the templates are not programmed carefully; for example, comparing a number
+   and a string is a runtime error. Worse, widgets in wizard pages may implicitly
+   perform type conversion. For example, a numHosts=100 line in template.properties
+   defines a number, but if you have a <text x:id="numHosts"/> widget in the form,
+   the variable will come back from it as a string. Even worse, whether the
+   number->string conversion takes place will depend on whether the page gets
+   displayed in the wizard session or not. Therefore, it is recommended that
+   you explicitly convert numeric variables to numbers at the top of templates,
+   for example like this: <#assign numHosts = numHosts?number>
+
+4. For some reason, FreeMarker refuses to print boolean variables, i.e. ${isFoo}
+   results in a runtime error. The common workaround is to write
+   <#if isFoo>true<#else>false</#if>; this can be shortened with our iif() function:
+   ${isFoo, "true", "false"}.
+
+5. Many string operations are available both as builtin FreeMarker operators
+   (varname?trim) and as Java methods via  FreeMarkers's BeanWrapper (varname.trim()).
+   If you are mixing the two, it is possible that you'll start getting
+   spurious errors for the Java method calls. In that case, simply change
+   Java method calls to FreeMarker builtins, and all will be well.
+
+6. Some Java functionality (the instanceof operator, Class.newInstance(), etc)
+   cannot be accessed via BeanWrapper. If you hit such a limitation, check
+   our LangUtils class that provides FreeMarker-callable static methods
+   to plug these holes.
+
+XSWT TIPS:
+
+Q: How can I make a checkbox or radio button? <checkbox> and <radio> are not
+   recognized in my XSWT files!
+A: They are called <button x:style="CHECK"> and <button x:style="RADIO"> in SWT.
+
+Q: My text fields, combo boxes etc look strange, what do I do wrong?
+A: You usually want to add the BORDER option, like this: <text x:style="BORDER">
+
+Q: How to make a long label wrap nicely?
+A: You will find that specifying x:style="WRAP" is necessary, but not enough. It is
+   also needed that the label widget expands and fills the space horizontally:
+      <label text="Some long text...." x:style="WRAP">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      </label>
+
+Q: How to set the focus?
+A: Add <setFocus/> to the XML body of the desired widget.
+
+Q: How to make widgets conditional on some previous input?
+A: You can use <#if> and other FreeMarker directives in XSWT files. These
+   files undergo template processing each time the corresponding page
+   appears.
+
+Q: How to carry forward data from a previous page to the next?
+A: Use FreeMarker variables (${varName}) in the page.
+
+Q: How can I fill a combo box with values that I'll only know at runtime?
+A: You can generate the <option> children of the combo using FreeMarker
+   directives, e.g. <#list>...</#list>
+
+Q: How can I have some more sophisticated user input than simple textedit
+   fields and checkboxes?
+A: You can implement custom SWT controls in Java, and use them in the
+   wizard pages. The custom controls may even be packaged into jar files
+   in the template's directory, i.e. you do not need to write a separate
+   Eclipse plug-in or something. Have a look at the source files of the
+   existing custom controls (FileChooser, NedTypeChooser, InfoLink, etc).
+
+Q: How to dynamically enable/disable controls on a page, depending
+   on other controls (i.e. a checkbox or radio button).
+A: Currently you cannot. If you are desperate, you have the following options:
+   (1) put the dependent controls onto a separate page, which you can make
+   conditional; (2) write a custom CheckboxComposite control in Java
+   that features a checkbox, and enables/disables child controls
+   when the checkbox selection changes; (3) write the full custom wizard
+   page entirely in Java, and register it in template.properties with
+   page.xx.class= instead of page.xx.file; (4) implement scripting support
+   for XSWT 1.x and contribute the patch to us :)
 
