@@ -69,30 +69,33 @@ public class FileLink extends Composite implements IWidgetAdapter {
         link.setText(resource==null ? "n/a" : "<a>" + resource.getFullPath().toString() + "</a>");
     }
 
+    public String getResourcePath() {
+    	IResource resource = getResource();
+    	return resource==null ? "" : resource.getFullPath().toString();
+    }
+    
+    public void setResourcePath(String resPath) {
+    	Path path = new Path(resPath);
+    	IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+    	resource = root.findMember(path);
+    	if (resource == null)
+    		resource = (path.segmentCount()==1) ? root.getProject(path.segment(0)) : root.getFile(path);
+    }
+    
     /**
      * Adapter interface.
      */
     public Object getValue() {
-        IResource resource = getResource();
-        return resource==null ? "" : resource.getFullPath().toString();
+    	return getResourcePath();
     }
 
     /**
      * Adapter interface.
      */
     public void setValue(Object value) {
-        IResource resource;
-        if (value instanceof IResource)
-            resource = (IResource)value;
-        else {
-            Path path = new Path(value.toString());
-            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-            resource = root.findMember(path);
-            if (resource == null)
-                resource = (path.segmentCount()==1) ? root.getProject(path.segment(0)) : root.getFile(path);
-        }
-
-        setResource(resource);
+        if (value instanceof IResource) 
+        	setResource((IResource)value);
+        else 
+            setResourcePath(value.toString());
     }
-
 }
