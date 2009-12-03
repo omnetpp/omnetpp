@@ -77,6 +77,8 @@ to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (*.ftl) files.
 
+
+
 === Wizard Types
 
 The IDE offers several OMNeT++-related wizard dialogs: New OMNeT++ Project,
@@ -107,6 +109,11 @@ templates, e.g. the wizard types that create a single file will put the
 newFileName variable into the context. To see all defined variables, 
 check the Appendix.
 
+TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
+     working examples, useful utilities for writing wizards, sample code for
+     accessing various features, and so on. The aim of these wizards is to get you
+     productive in the shortest time possible.
+
 
 === Template Processing
 
@@ -121,10 +128,45 @@ as access to fields and methods of classes defined in Java. This means that
 any algorithm can be expressed in the FreeMarker language, and if that would
 not be enough, one can also pull in existing or custom-written Java libraries.
 
+TIP: Documentation for the FreeMarker template language can be found at:
+     http://freemarker.org/docs/index.html
+
 Several variables are predefined, such as templateName, targetFolder, date,
 author; others like targetFileName, targetTypeName, simulationFolderName,
 nedPackageName, etc. are defined only for certain wizard dialogs.
-A full list of variables is provided in a later section.
+A full list of variables is provided in the Appendix.
+
+By default templates are processed and copied with the same name (chopping the .ftl
+extension), but it is possible to redirect the output of the template to a different 
+file using the <@setoutput path=.../> macro. The filename can contain slashes too, i.e.
+one can write files in a different folder. If the folder does not exist, it will
+be created.
+
+If filename is empty, the directive restores output to the original file name (the template's name).
+This also works if a folder name is given and only the file name is missing
+(<@setoutput path="src/">): then it will write the file with the original name
+but into the specified folder.
+
+If there are multiple setoutput's with the same file name within a template,
+the content will be concatenated. Concatenation only works within one template;
+if you have multiple templates writing into the same file, they will overwrite
+each other's content, and it is undefined which one will win.
+
+Empty and blank files (ie. those containing only white space) will not be created,
+i.e. processing will skip writing it without any question, warning or error.
+This allows you to easily create conditional files. This also means that you
+cannot create empty files this way. However, this "limitation" is easy to overcome
+as most file formats (ned, c++, ini, xml, etc) have a comment syntax, so you
+can just write a file that contains only a comment ("// file intentionally left blank").
+Alternatively, you can create an empty file using the FileUtils Java utility class
+(<@do FileUtils.createFile("empty.txt", "")!/>). 
+   
+NOTE: although blank files are not created, the template engine will not delete an
+      existing file that happens to be already there with the same name.
+
+TIP: A typical usage: <@setoutput path=fileName?default("")/>, which means that if
+     the fileName variable undefined (absent), use "" as file name, i.e. save to
+     the original file name.
 
 
 === The template.properties File
@@ -181,6 +223,7 @@ There are additional options for adding custom pages into the wizard, as describ
 in the next section.
 
 
+
 === Custom Wizard Pages
 
 The following properties can be used to define custom pages in the wizard. <i> is
@@ -218,12 +261,13 @@ All property file entries are available as template variables too. Also, most
 property values may refer to other property values or template variables, using
 the $\{name} syntax.
 
-Custom wizard pages are defined in XSWT (http://xswt.sourceforge.net,
-http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home).
+NOTE: Custom wizard pages are defined in XSWT (http://xswt.sourceforge.net,
+      http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home).
 
 NOTE: Currently we use XSWT 1.1.2. Newer XSWT integration builds from
-        http://www.coconut-palm-software.com/~xswt/integration/plugins/
-        did not work out well.
+      http://www.coconut-palm-software.com/~xswt/integration/plugins/
+      did not work out well.
+
 
 === Binding of Template Variables to Widgets
 
@@ -264,8 +308,6 @@ http://jsonlint.com website can help you locate the problem.
 
 The property file takes precedence over values in the XSWT file.
 
-=== XSWT Data Binding
-
 Entities and attributes in an XSWT file are directly mapped to the corresponding
 SWT controls and their properties. For example the <styledText> tag is mapped 
 to the StyledText SWT control. Similarly the 'text' attribute is mapped to the 
@@ -295,16 +337,19 @@ Layout data can also be added as a new tag inside a control element:
     <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
   </text>
 
+TIP: An XSWT tuturial and documentation can be found at:
+http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
+
+==== Standard SWT widgets
+
 TIP: The SWT controls are documented on the Eclipse website. See:
 http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/package-summary.html
 
 It is possible to bind template variables to a specific control by using the 'x:id' 
 attribute.
   <text x:id="templateVariableName" />
-
-This is the way how template variables are bound to the controls (R=read, W=write):
  
-==== Standard SWT widgets
+This is the way how template variables are bound to the controls (R=read, W=write):
 
 Button::        This SWT class represents buttons, checkboxes and radio
                 buttons, depending on its style attribute (SWT.PUSH,
@@ -468,8 +513,10 @@ TabFolder/TabItem:: Can be used to group the controls into separate pages.
       <tabItem text="Tab 2" control="page2"/>
     </x:children>
   </tabFolder>
+
+
     
-=== Conditional Custom Pages
+=== Conditional Custom Pages and Controls
 
 Now that templating and XSWT were covered, we can revisit how one can use page
 conditions. Consider the following practical example:
@@ -492,11 +539,27 @@ add the following lines to template.properties:
   page.3.condition = wantRouting && protocol=="AODV"
   page.4.condition = wantRouting && protocol=="DSDV"
 
-You get the idea.
+You get the idea. This enables to have conditional pages. 
 
-=== Extending the wizards in Java
+It is also possible to create controls conditionally.
+To overcome the limitation that XSWT page descriptions are completely static,
+XSWT files undergo FreeMarker template processing before giving them to the
+XSWT engine for instantiation. This template processing occurs right before
+the page gets displayed, so data entered on previous pages can also be
+used as input for generating XSWT source. This feature can be useful to make
+conditional widgets (i.e. using <#if> to make part of the page appear only
+when a certain option has been activated on earlier pages); to create a
+previously unknown number of widgets (using a <#list>..</#list> loop);
+to populate combo boxes, listboxes or other widgets with options; and more.
+If the user navigates in the wizard back and forth several times (using the
+Next and Back buttons), the contents of wizard pages are always re-created
+with using the current values of template variables just before getting
+displayed, so they will always be up to date.
 
-==== Creating Wizard Pages in Java
+
+=== Extending the Wizards in Java
+
+==== Creating Wizard Pages
 
 Defining a wizard page in Java requires that you install the Eclipse PDE 
 (Plug-in Development Environment), and that you have some Eclipse development skills.
@@ -554,21 +617,117 @@ that can extend the content template implementation in various ways. You can
 contribute new variables, functions or macros to the template context.
 
 
+=== Common Pitfalls
+
+ * Variables need to be defined. Referring to an undefined variable is an
+   error in FreeMarker, i.e. it does not return empty string as in bash or
+   in makefiles.
+
+ * Default values should be given in template.properties! You need to resist
+   the temptation to define them in the XSWT page by pre-filling the corresponding
+   widget (e.g. <text x:id="n" text="100">). If you specify the value in a page,
+   the assignment will not take effect if the user skips that page (i.e. clicks
+   Finish earlier). That causes variable to remain undefined, resulting in a
+   runtime error during template processing.
+
+ * Type mismatch. Variables have types in FreeMarker, and one can get type conversion
+   errors if the templates are not programmed carefully; for example, comparing a number
+   and a string is a runtime error. Worse, widgets in wizard pages may implicitly
+   perform type conversion. For example, a numHosts=100 line in template.properties
+   defines a number, but if you have a <text x:id="numHosts"/> widget in the form,
+   the variable will come back from it as a string. Even worse, whether the
+   number->string conversion takes place will depend on whether the page gets
+   displayed in the wizard session or not. Therefore, it is recommended that
+   you explicitly convert numeric variables to numbers at the top of templates,
+   for example like this: <#assign numHosts = numHosts?number>
+
+ * For some reason, FreeMarker refuses to print boolean variables, i.e. ${isFoo}
+   results in a runtime error. The common workaround is to write
+   <#if isFoo>true<#else>false</#if>; this can be shortened with our iif() function:
+   ${isFoo, "true", "false"}.
+
+ * Many string operations are available both as builtin FreeMarker operators
+   (varname?trim) and as Java methods via  FreeMarkers's BeanWrapper (varname.trim()).
+   If you are mixing the two, it is possible that you'll start getting
+   spurious errors for the Java method calls. In that case, simply change
+   Java method calls to FreeMarker builtins, and all will be well.
+
+ * Some Java functionality (the instanceof operator, Class.newInstance(), etc)
+   cannot be accessed via BeanWrapper. If you hit such a limitation, check
+   our LangUtils class that provides FreeMarker-callable static methods
+   to plug these holes.
+
+=== XSWT Tips and Trick:
+
+Q: How can I make a checkbox or radio button? <checkbox> and <radio> are not
+   recognized in my XSWT files!
+A: They are called <button x:style="CHECK"> and <button x:style="RADIO"> in SWT.
+
+Q: My text fields, combo boxes etc look strange, what do I do wrong?
+A: You usually want to add the BORDER option, like this: <text x:style="BORDER">
+
+Q: How to make a long label wrap nicely?
+A: You will find that specifying x:style="WRAP" is necessary, but not enough. It is
+   also needed that the label widget expands and fills the space horizontally:
+      <label text="Some long text...." x:style="WRAP">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      </label>
+
+Q: How to set the focus?
+A: Add <setFocus/> to the XML body of the desired widget.
+
+Q: How to make widgets conditional on some previous input?
+A: You can use <#if> and other FreeMarker directives in XSWT files. These
+   files undergo template processing each time the corresponding page
+   appears.
+
+Q: How to carry forward data from a previous page to the next?
+A: Use FreeMarker variables (${varName}) in the page.
+
+Q: How can I fill a combo box with values that I'll only know at runtime?
+A: You can generate the <option> children of the combo using FreeMarker
+   directives, e.g. <#list>...</#list>
+
+Q: How can I have some more sophisticated user input than simple textedit
+   fields and checkboxes?
+A: You can implement custom SWT controls in Java, and use them in the
+   wizard pages. The custom controls may even be packaged into jar files
+   in the template's directory, i.e. you do not need to write a separate
+   Eclipse plug-in or something. Have a look at the source files of the
+   existing custom controls (FileChooser, NedTypeChooser, InfoLink, etc).
+
+Q: How to dynamically enable/disable controls on a page, depending
+   on other controls (i.e. a checkbox or radio button).
+A: Currently you cannot. If you are desperate, you have the following options:
+   (1) put the dependent controls onto a separate page, which you can make
+   conditional; (2) write a custom CheckboxComposite control in Java
+   that features a checkbox, and enables/disables child controls
+   when the checkbox selection changes; (3) write the full custom wizard
+   page entirely in Java, and register it in template.properties with
+   page.xx.class= instead of page.xx.file; (4) implement scripting support
+   for XSWT 1.x and contribute the patch to us :)
+
+Q: In the Project wizard, how does it get decided which templates get offered
+   if the "with C++ checkbox" gets selected or not selected on the first page?
+A: If the C++ support checkbox is cleared, templates that require 
+   C++ support will not appear; when it is checked, there is no
+   such filtering. A template is regarded as one that requires C++ support 
+   if the template.properties file contains any of the following:
+   sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true.
 
 === Using the IDE
 
 ==== Editing XSWT Files
 
 Double-clicking on an XSWT file will open it in the XSWT editor. The editor
-provides basic syntax highlighting (and not much else currently). An extremely
-useful feature of the IDE is the XSWT Preview, where you can see preview
+provides basic syntax highlighting. An extremely
+useful feature of the IDE is the XSWT Preview, where you can preview
 the form being edited (it updates when you save the file). The Preview should
 open automatically when you open the XSWT file; if it does not (or you close it),
 you can access it via the Window|Show View... menu item.
 
 Some (custom) widgets may not appear in the Preview; this is because the
-Preview does not load jar files from the projects.
-XXX This may get fixed.
+Preview does not load jar files from the projects. (XXX This may get fixed.)
 
 ==== Editing Template Files
 
@@ -584,17 +743,9 @@ The content assist popup appears automatically when you type '<#' (actually
 a closing '>' is also needed for the editor to recognize the tag), and
 when you hit '?' within a directive or an interpolation ($\{...}).
 
-=== References
-
-An XSWT tuturial and documentation can be found at:
-http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
-
-Documentation for the FreeMarker template language:
-http://freemarker.org/docs/index.html
 
 
-
-=== Appendix A: Predefined variables
+=== Appendix A: Predefined Template Variables
 
 In this section we describe the individual wizard types and their supported
 template variables. Variables will be marked with one or more letter to show in 
@@ -697,7 +848,9 @@ msgResources (A):: all currently known message types
 NOTE: In additon to the above variables, all keys found in the template.properties file
 are added automatically to the context as a template variable.
 
-=== Appendix B: Functions, classes and macros avaiable from templates
+
+
+=== Appendix B: Functions, Classes and Macros avaiable from Templates
 
 iif(condition, valueIfTrue, valueIfFalse)::
    Inline if. The FreeMarker language does not have a conditional operator
@@ -727,8 +880,7 @@ Example template code:
 
   The value of 10*cos(0.2) is ${10*Math.cos(0.2)}.
 
-  Conditional output:
-  ${iif(condition,"yes","no")}
+  Conditional output: ${iif(condition,"yes","no")}
 
   Create an empty file:
   <@do FileUtils.createFile("empty.txt", "")!/>
@@ -1009,7 +1161,6 @@ Like isVisibleNedType(), but actually returns the given NED type
 if it was found; otherwise it returns null. Useful if you implement
 a complex wizard page in Java.
 
-
 ==== IDEUtils
 
 Provides entry points into various aspects of the IDE. This includes access to
@@ -1096,39 +1247,7 @@ TODO document what are the variables nedResources and msgResources; write a few 
 
 TODO document glob patterns in verbatimFiles etc
 
-TODO document <@setoutput path=.../>
-   redirects output to the given file. The filename can contain slashes too, i.e.
-   one can write files in a different folder. If the folder does not exist, it will
-   be created.
-
-   If filename is empty, the directive restores output to the original file name (the template's name).
-   This also works if a folder name is given and only the file name is missing
-   (<@setoutput path="src/">): then it will write the file with the original name
-   but into the specified folder.
-
-   If there are multiple setoutput's with the same file name within a template,
-   the content will be concatenated. Concatenation only works within one template;
-   if you have multiple templates writing into the same file, they will overwrite
-   each other's content, and it is undefined which one will win.
-
-   Empty and blank files (ie. those containing only white space) will not be created,
-   i.e. processing will skip writing it without any question, warning or error.
-   This allows you to easily create conditional files. This also means that you
-   cannot create empty files this way. However, this "limitation" is easy to overcome
-   as most file formats (ned, c++, ini, xml, etc) have a comment syntax, so you
-   can just write a file that contains only a comment ("// file intentionally left blank").
-   Alternatively, you can create an empty file using the FileUtils Java utility class
-   (<@do FileUtils.createFile("empty.txt", "")!/>). 
-   
-NOTE: although blank files are not created, the template engine will not delete an
-      existing file that happens to be already there with the same name.
-
-TIP: A typical usage: <@setoutput path=fileName?default("")/>, which means that if
-     the fileName variable undefined (absent), use "" as file name, i.e. save to
-     the original file name.
-
 TODO show how to write templates that are suitable for more than one wizard.
-
 
 TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())
 
@@ -1137,128 +1256,6 @@ JARs in the templates)
 
 TODO add a little nutshell XSWT tutorial!
 
-
 TODO also some minimal FreeMarker tutorial (variables are ${}, there is <#if>,
   <#list>; and there's lots more, see the manual and/or the provided examples
-
-TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
-     working examples, useful utilities for writing wizards, sample code for
-     accessing various features, and so on. The aim of these wizards is to get you
-     productive in the shortest time possible.
-
-TODO add:
-  TEMPLATED PAGES
-
-  To overcome the limitation that XSWT page descriptions are completely static,
-  XSWT files undergo FreeMarker template processing before giving them to the
-  XSWT engine for instantiation. This template processing occurs right before
-  the page gets displayed, so data entered on previous pages can also be
-  used as input for generating XSWT source. This feature can be useful to make
-  conditional widgets (i.e. using <#if> to make part of the page appear only
-  when a certain option has been activated on earlier pages); to create a
-  previously unknown number of widgets (using a <#list>..</#list> loop);
-  to populate combo boxes, listboxes or other widgets with options; and more.
-  If the user navigates in the wizard back and forth several times (using the
-  Next and Back buttons), the contents of wizard pages are always re-created
-  with using the current values of template variables just before getting
-  displayed, so they will always be up to date.
-
-
-COMMON PITFALLS:
-
-1. Variables need to be defined. Referring to an undefined variable is an
-   error in FreeMarker, i.e. it does not return empty string as in bash or
-   in makefiles.
-
-2. Default values should be given in template.properties! You need to resist
-   the temptation to define them in the XSWT page by pre-filling the corresponding
-   widget (e.g. <text x:id="n" text="100">). If you specify the value in a page,
-   the assignment will not take effect if the user skips that page (i.e. clicks
-   Finish earlier). That causes variable to remain undefined, resulting in a
-   runtime error during template processing.
-
-3. Type mismatch. Variables have types in FreeMarker, and one can get type conversion
-   errors if the templates are not programmed carefully; for example, comparing a number
-   and a string is a runtime error. Worse, widgets in wizard pages may implicitly
-   perform type conversion. For example, a numHosts=100 line in template.properties
-   defines a number, but if you have a <text x:id="numHosts"/> widget in the form,
-   the variable will come back from it as a string. Even worse, whether the
-   number->string conversion takes place will depend on whether the page gets
-   displayed in the wizard session or not. Therefore, it is recommended that
-   you explicitly convert numeric variables to numbers at the top of templates,
-   for example like this: <#assign numHosts = numHosts?number>
-
-4. For some reason, FreeMarker refuses to print boolean variables, i.e. ${isFoo}
-   results in a runtime error. The common workaround is to write
-   <#if isFoo>true<#else>false</#if>; this can be shortened with our iif() function:
-   ${isFoo, "true", "false"}.
-
-5. Many string operations are available both as builtin FreeMarker operators
-   (varname?trim) and as Java methods via  FreeMarkers's BeanWrapper (varname.trim()).
-   If you are mixing the two, it is possible that you'll start getting
-   spurious errors for the Java method calls. In that case, simply change
-   Java method calls to FreeMarker builtins, and all will be well.
-
-6. Some Java functionality (the instanceof operator, Class.newInstance(), etc)
-   cannot be accessed via BeanWrapper. If you hit such a limitation, check
-   our LangUtils class that provides FreeMarker-callable static methods
-   to plug these holes.
-
-XSWT TIPS:
-
-Q: How can I make a checkbox or radio button? <checkbox> and <radio> are not
-   recognized in my XSWT files!
-A: They are called <button x:style="CHECK"> and <button x:style="RADIO"> in SWT.
-
-Q: My text fields, combo boxes etc look strange, what do I do wrong?
-A: You usually want to add the BORDER option, like this: <text x:style="BORDER">
-
-Q: How to make a long label wrap nicely?
-A: You will find that specifying x:style="WRAP" is necessary, but not enough. It is
-   also needed that the label widget expands and fills the space horizontally:
-      <label text="Some long text...." x:style="WRAP">
-          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-      </label>
-
-Q: How to set the focus?
-A: Add <setFocus/> to the XML body of the desired widget.
-
-Q: How to make widgets conditional on some previous input?
-A: You can use <#if> and other FreeMarker directives in XSWT files. These
-   files undergo template processing each time the corresponding page
-   appears.
-
-Q: How to carry forward data from a previous page to the next?
-A: Use FreeMarker variables (${varName}) in the page.
-
-Q: How can I fill a combo box with values that I'll only know at runtime?
-A: You can generate the <option> children of the combo using FreeMarker
-   directives, e.g. <#list>...</#list>
-
-Q: How can I have some more sophisticated user input than simple textedit
-   fields and checkboxes?
-A: You can implement custom SWT controls in Java, and use them in the
-   wizard pages. The custom controls may even be packaged into jar files
-   in the template's directory, i.e. you do not need to write a separate
-   Eclipse plug-in or something. Have a look at the source files of the
-   existing custom controls (FileChooser, NedTypeChooser, InfoLink, etc).
-
-Q: How to dynamically enable/disable controls on a page, depending
-   on other controls (i.e. a checkbox or radio button).
-A: Currently you cannot. If you are desperate, you have the following options:
-   (1) put the dependent controls onto a separate page, which you can make
-   conditional; (2) write a custom CheckboxComposite control in Java
-   that features a checkbox, and enables/disables child controls
-   when the checkbox selection changes; (3) write the full custom wizard
-   page entirely in Java, and register it in template.properties with
-   page.xx.class= instead of page.xx.file; (4) implement scripting support
-   for XSWT 1.x and contribute the patch to us :)
-
-Q: In the Project wizard, how does it get decided which templates get offered
-   if the "with C++ checkbox" gets selected or not selected on the first page?
-A: If the C++ support checkbox is cleared, templates that require 
-   C++ support will not appear; when it is checked, there is no
-   such filtering. A template is regarded as one that requires C++ support 
-   if the template.properties file contains any of the following:
-   sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true.
 
