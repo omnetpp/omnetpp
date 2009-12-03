@@ -4,9 +4,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.ui.DetailMessageDialog;
 import org.omnetpp.common.util.DisplayUtils;
-import org.omnetpp.ned.core.MsgResources;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
 
 
 /**
@@ -20,14 +17,6 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
  * @author Andras
  */
 public class IDEUtils {
-
-    public static NEDResources getNEDResources() {
-        return NEDResourcesPlugin.getNEDResources();
-    }
-
-    public static MsgResources getMsgResources() {
-        return NEDResourcesPlugin.getMSGResources();
-    }
 
     protected static Shell getShell() {
         return Display.getCurrent().getActiveShell();

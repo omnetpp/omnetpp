@@ -165,7 +165,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         variables.put("targetFolder", folder.getFullPath().toString());
         variables.put("rawProjectName", folder.getProject().getName());
         String projectNameIdent = StringUtils.makeValidIdentifier(folder.getProject().getName());
-        variables.put("projectName", StringUtils.capitalize(projectNameIdent));
+        variables.put("projectName", StringUtils.capitalize(projectNameIdent)); // XXX should not be this ProjectName ?
         variables.put("projectname", StringUtils.lowerCase(projectNameIdent));
         variables.put("PROJECTNAME", StringUtils.upperCase(projectNameIdent));
         Calendar cal = Calendar.getInstance();

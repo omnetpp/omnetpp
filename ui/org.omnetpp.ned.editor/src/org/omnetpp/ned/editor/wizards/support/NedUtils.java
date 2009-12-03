@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -15,6 +16,20 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
  * @author Andras
  */
 public class NedUtils {
+
+    /**
+     * Returns all currently known NED types.
+     */
+    public static NEDResources getNEDResources() {
+        return NEDResourcesPlugin.getNEDResources();
+    }
+
+    /**
+     * Returns all currently known message resources.
+     */
+    public static MsgResources getMsgResources() {
+        return NEDResourcesPlugin.getMSGResources();
+    }
 
     /**
      * Returns whether the given NED type is visible in the given folder.
