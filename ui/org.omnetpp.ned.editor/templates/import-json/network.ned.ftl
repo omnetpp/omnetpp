@@ -5,8 +5,24 @@ ${bannerComment}
 <#if gateName==""><#assign gateName = "g"></#if>
 <#assign gateName = StringUtils.makeValidIdentifier(gateName)>
 
-<#if !NedUtils.isVisibleType(nodeType,targetFolder)>
-<#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
+<#assign nodeTypeExists = NedUtils.isVisibleType(nodeType,targetFolder)>
+<#if nodeTypeExists>
+import ${nodeType};
+  <#assign nodeType = nodeType?replace("^.*\\.", "", "r")>
+<#else>
+  <#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
+</#if>
+
+<#assign channelTypeSupplied = channelType!="">
+<#assign channelTypeExists = channelTypeSupplied && NedUtils.isVisibleType(channelType,targetFolder)>
+<#if channelTypeExists>
+import ${channelType};
+  <#assign channelType = channelType?replace("^.*\\.", "", "r")>
+<#else>
+  <#assign channelType = StringUtils.makeValidIdentifier(channelType)>
+</#if>
+
+<#if !nodeTypeExists>
 module ${nodeType} {
     parameters:
         @display("i=abstract/router_s");
@@ -15,8 +31,7 @@ module ${nodeType} {
 }
 </#if>
 
-<#if !NedUtils.isVisibleType(channelType,targetFolder)>
-<#assign channelType = StringUtils.makeValidIdentifier(channelType)>
+<#if channelTypeSupplied && !channelTypeExists>
 channel ${channelType} extends ned.DatarateChannel {
     parameters:
         int cost = default(0);
@@ -42,7 +57,9 @@ ${keyword} ${targetTypeName} {
 </#list>
     connections:
 <#list links as link>
-  <#if link.containsKey("bw") || link.containsKey("cost")>
+  <#if !channelTypeSupplied>
+        ${link["from"]}.${gateName}++ <--> ${link["to"]}.${gateName}++;
+  <#elseif link.containsKey("bw") || link.containsKey("cost")>
         ${link["from"]}.${gateName}++ <--> ${channelType} { <#if link.containsKey("bw")>datarate=${link["bw"]}bps; </#if><#if link.containsKey("cost")>cost=${link["cost"]}; </#if>} <--> ${link["to"]}.${gateName}++;
   <#else>
         ${link["from"]}.${gateName}++ <--> ${channelType} <--> ${link["to"]}.${gateName}++;
