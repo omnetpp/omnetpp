@@ -314,3 +314,9 @@ discoverable
 classpath
 stdout
 stateless
+templating
+subdirectories
+ftl
+xswt
+verbosity
+nutshell
