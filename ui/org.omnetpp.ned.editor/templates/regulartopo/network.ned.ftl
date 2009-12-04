@@ -13,7 +13,34 @@ ${bannerComment}
 <#assign rows = rows?number>
 <#assign networkKeyword = iif(wizardType=="compoundmodule", "module", "network")>
 
-<#if channelType != "">
+<#assign nodeTypeExists = NedUtils.isVisibleType(nodeType,targetFolder)>
+<#if nodeTypeExists>
+import ${nodeType};
+  <#assign nodeType = nodeType?replace("^.*\\.", "", "r")>
+<#else>
+  <#assign nodeType = StringUtils.makeValidIdentifier(nodeType)>
+</#if>
+
+<#if star || wheel>
+  <#assign hubTypeExists = NedUtils.isVisibleType(hubType,targetFolder)>
+  <#if hubTypeExists>
+import ${hubType};
+    <#assign hubType = hubType?replace("^.*\\.", "", "r")>
+  <#else>
+    <#assign hubType = StringUtils.makeValidIdentifier(hubType)>
+  </#if>
+</#if>
+
+<#assign channelTypeSupplied = channelType!="">
+<#assign channelTypeExists = channelTypeSupplied && NedUtils.isVisibleType(channelType,targetFolder)>
+<#if channelTypeExists>
+import ${channelType};
+  <#assign channelType = channelType?replace("^.*\\.", "", "r")>
+<#else>
+  <#assign channelType = StringUtils.makeValidIdentifier(channelType)>
+</#if>
+
+<#if channelTypeSupplied>
   <#assign channelSpec = " " + channelType + " <-->">
 <#else>
   <#assign channelSpec = "">
