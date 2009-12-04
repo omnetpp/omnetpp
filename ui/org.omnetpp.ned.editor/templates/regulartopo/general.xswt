@@ -35,6 +35,7 @@
          <button x:id="torus" text="Torus" x:style="RADIO"/>
          <button x:id="bintree" text="Binary tree" x:style="RADIO"/>
          <button x:id="ktree" text="k-ary tree" x:style="RADIO"/>
+         <button x:id="fullgraph" text="Full graph" x:style="RADIO"/>
        </x:children>
     </group>
 

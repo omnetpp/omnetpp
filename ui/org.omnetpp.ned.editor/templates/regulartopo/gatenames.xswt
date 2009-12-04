@@ -75,22 +75,29 @@
 <#if grid || torus>
         <!-- grid/torus -->
         <label text="Gate to upper neighbor:"/>
-        <gateChooser x:id="gridUpGate" nedTypeName="${hubType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+        <gateChooser x:id="gridUpGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </gateChooser>
 
         <label text="Gate to lower neighbor:"/>
-        <gateChooser x:id="gridDownGate" nedTypeName="${hubType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+        <gateChooser x:id="gridDownGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </gateChooser>
 
         <label text="Gate to left neighbor:"/>
-        <gateChooser x:id="gridLeftGate" nedTypeName="${hubType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+        <gateChooser x:id="gridLeftGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </gateChooser>
 
         <label text="Gate to right neighbor:"/>
-        <gateChooser x:id="gridRightGate" nedTypeName="${hubType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+        <gateChooser x:id="gridRightGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+</#if>
+
+<#if fullgraph>
+        <label text="Gate to connect:"/>
+        <gateChooser x:id="vectorGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR">
           <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
         </gateChooser>
 </#if>

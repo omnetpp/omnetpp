@@ -54,4 +54,6 @@ import ${channelType};
 <#elseif bintree || ktree>
    <#if bintree> <#assign treeK=2> </#if>
    <#include "ktree.ned.fti">
+<#elseif fullgraph>
+   <#include "fullgraph.ned.fti">
 </#if>
