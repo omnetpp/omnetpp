@@ -68,7 +68,7 @@ over. If you want to be sure that the file is copied, put some comment into it
 When the wizard is being used, a pool of variables is kept by the wizard dialog.
 These variables are the ones which will be eventually substituted into the \*.ftl
 files ($\{varname} syntax). These variables are initialized from the key=value
-lines in the template.propeties files; they can get displayed and/or edited
+lines in the template.properties files; they can get displayed and/or edited
 on custom wizard pages; and eventually they get substituted into \*.ftl files.
 Some variables have special meaning and are interpreted by the wizard dialog
 (e.g. the nedSrcFolders variable determines which folders get denoted as
@@ -236,7 +236,7 @@ page.<i>.class::
                 In addition to XSWT files, custom Java pages may also be defined 
                 in Java code. This can be useful when the wizard page would be 
                 too complex to describe with XSWT, would need to have significant 
-                active behaviour, or simply the wizard page code already exists 
+                active behavior, or simply the wizard page code already exists 
                 in Java form. See below for further discussion about custom pages.
 page.<i>.title::
                 Title of the wizard page, displayed in the page's title area.
@@ -337,12 +337,12 @@ Layout data can also be added as a new tag inside a control element:
     <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
   </text>
 
-TIP: An XSWT tuturial and documentation can be found at:
+TIP: An XSWT tutorial and documentation can be found at:
 http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
 
 ==== Standard SWT widgets
 
-TIP: The SWT controls are documented on the Eclipse website. See:
+TIP: The SWT controls are documented on the Eclipse web site. See:
 http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/package-summary.html
 
 It is possible to bind template variables to a specific control by using the 'x:id' 
@@ -461,11 +461,13 @@ GateChooser::   A control for selecting a gate of a NED module type. If the modu
                 Attributes:
                 * gateName : the name of the selected gate
                 * nedTypeName : the NED type whose gates should be enumerated.
-                * gateFilter : type filter for the enumerated gates. An integer 
-                value created by or-ing the possible filter values: INPUT, 
-                OUTPUT, INOUT, VECTOR, SCALAR (using the GateChooser prefix).
+                * gateFilter : type filter for the enumerated gates. Expects a
+                  binary OR (|) of the following values: GateChooser.INPUT, 
+                  GateChooser.OUTPUT, GateChooser.INOUT, GateChooser.VECTOR, 
+                  GateChooser.SCALAR.
 
-  <gateChooser x:id="gateName" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
+  <gateChooser x:id="gateName" nedTypeName="${nodeType}" 
+       gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
                 
 NedTypeChooser:: 
 				A control for selecting a NED module type. An existing type name can be selected
@@ -474,12 +476,14 @@ NedTypeChooser::
                 * R: returns the name of the selected ned type as a string.
                 Attributes:
                 * nedName : the NED module type as a string
-                * acceptedTypes : filter for the enumeration of types.An integer 
-                value created by or-ing the possible filter values: MODULE, 
-                SIMPLE_MODULE, COMPOUND_MODULE, MODULEINTERFACE, CHANNEL, 
-                CHANNELINTERFACE, NETWORK (using the NedTypesChoose prefix)
+                * acceptedTypes : filter for the enumeration of types. Expects a
+                  binary OR (|) of the following values: NedTypeChooser.MODULE, 
+                NedTypeChooser.SIMPLE_MODULE, NedTypeChooser.COMPOUND_MODULE, 
+                NedTypeChooser.MODULEINTERFACE, NedTypeChooser.CHANNEL, 
+                NedTypeChooser.CHANNELINTERFACE, NedTypeChooser.NETWORK.
 
-  <nedTypeChooser x:id="channelType" acceptedTypes="NedTypeChooser.CHANNEL"/>
+  <nedTypeChooser x:id="channelType" 
+       acceptedTypes="NedTypeChooser.CHANNEL"/>
 
 NOTE: Table and tree widgets are currently not supported in a useful way, the main
 reason being that SWT Tables and Trees are not editable by default.
@@ -580,7 +584,7 @@ is needed, just add their package to the <import> tags at the top of the XSWT
 file.
 
 However, some Java code is needed so that the wizard knows how to write
-template variables into your wigets and how to extract them after editing.
+template variables into your widgets and how to extract them after editing.
 This functionality can be added via the org.omnetpp.common.wizard.IWidgetAdapter
 interface. This interface must be implemented either by the widget class
 itself, or by a class named <widgetclass>Adapter in the same package.
@@ -594,7 +598,7 @@ can be given in the template.properties file in the JSON notation, and the
 result can be used in the templates (iteration via <#list>, etc).
 
 Jar files placed into the plugins/ subdirectory of an OMNeT++ project will be
-loaded automatically, and will be avalable for all templates. Jar files in
+loaded automatically, and will be available for all templates. Jar files in
 that directory may be plain Java jars and Eclipse plug-in jars. (The latter
 makes it also possible to contribute new functionality into the IDE via
 various extension points, but this is outside the scope of this discussion
@@ -641,7 +645,7 @@ contribute new variables, functions or macros to the template context.
    you explicitly convert numeric variables to numbers at the top of templates,
    for example like this: <#assign numHosts = numHosts?number>
 
- * For some reason, FreeMarker refuses to print boolean variables, i.e. ${isFoo}
+ * For some reason, FreeMarker refuses to print boolean variables, i.e. $\{isFoo}
    results in a runtime error. The common workaround is to write
    <#if isFoo>true<#else>false</#if>; this can be shortened with our iif() function:
    ${isFoo, "true", "false"}.
@@ -659,12 +663,12 @@ contribute new variables, functions or macros to the template context.
 
 === XSWT Tips and Trick:
 
-Q: How can I make a checkbox or radio button? <checkbox> and <radio> are not
-   recognized in my XSWT files!
-A: They are called <button x:style="CHECK"> and <button x:style="RADIO"> in SWT.
+How can I make a checkbox or radio button? <checkbox> and <radio> are not
+   recognized in my XSWT files!::
+   They are called <button x:style="CHECK"> and <button x:style="RADIO"> in SWT.
 
-Q: My text fields, combo boxes etc look strange, what do I do wrong?
-A: You usually want to add the BORDER option, like this: <text x:style="BORDER">
+My text fields, combo boxes etc look strange, what do I do wrong?::
+   You usually want to add the BORDER option, like this: <text x:style="BORDER">
 
 Q: How to make a long label wrap nicely?
 A: You will find that specifying x:style="WRAP" is necessary, but not enough. It is
@@ -682,7 +686,7 @@ A: You can use <#if> and other FreeMarker directives in XSWT files. These
    appears.
 
 Q: How to carry forward data from a previous page to the next?
-A: Use FreeMarker variables (${varName}) in the page.
+A: Use FreeMarker variables ($\{varName}) in the page.
 
 Q: How can I fill a combo box with values that I'll only know at runtime?
 A: You can generate the <option> children of the combo using FreeMarker
@@ -744,12 +748,55 @@ a closing '>' is also needed for the editor to recognize the tag), and
 when you hit '?' within a directive or an interpolation ($\{...}).
 
 
+=== Append. A: Predefined Template Variables
 
-=== Appendix A: Predefined Template Variables
+[cols="35%,^10%,^15%,^10%,^10%,^10%,^10%"]
+|==============
+|variable mname | project | simulation | msgfile | inifile | nedfile | wizard
+|addProjectReference    | X |   |   |   |   | 
+|author    				| X | X | X | X | X | X
+|classes    			| X | X | X | X | X | X
+|creationContext    	| X | X | X | X | X | X 
+|date                   | X | X | X | X | X | X
+|licenseCode    		| X | X | X | X | X | X
+|licenseText    		| X | X | X | X | X | X
+|makemakeOptions     	| X |   |   |   |   | 
+|msgResources     		| X | X | X | X | X | X
+|msgTypeName     	    |   |   | X |   |   | 
+|namespaceName       	|   | X | X |   | X | 
+|nedPackageName       	| X | X |   | X | X | 
+|nedResources    		| X | X | X | X | X | X
+|nedSourceFolders    	| X |   |   |   |   | 
+|newWizardName     		|   |   |   |   |   | X
+|newWizardProject     	|   |   |   |   |   | X 
+|projectName    		| X | X | X | X | X | X
+|PROJECTNAME    		| X | X | X | X | X | X
+|projectname    		| X | X | X | X | X | X
+|rawProjectName    		| X | X | X | X | X | X 
+|requiresCPlusPlus     	| X |   |   |   |   | 
+|simulationFolderName   |   | X |   |   |   | 
+|simulationName    		|   | X |   |   |   | 
+|sourceFolders     		| X |   |   |   |   | 
+|targetFileName 		|   |   | X | X | X | 
+|targetFileName       	|   |   | X | X | X | 
+|targetFolder    		| X | X | X | X | X | X
+|targetMainFile         | X | X | X | X | X | 
+|targetTypeName         | X | X | X | X | X | 
+|templateCategory    	| X | X | X | X | X | X
+|templateDescription    | X | X | X | X | X | X 
+|templateFolderName    	| X | X | X | X | X | X 
+|templateFolderPath    	| X | X | X | X | X | X
+|templateName    		| X | X | X | X | X | X
+|templateProject    	| X | X | X | X | X | X
+|templateURL    		| X | X | X | X | X | X
+|withCplusplusSupport   | X |   |   |   |   | 
+|wizardType    			| X | X | X | X | X | X
+|year 					| X | X | X | X | X | X
+|==============
 
 In this section we describe the individual wizard types and their supported
 template variables. Variables will be marked with one or more letter to show in 
-which wizard types they are supported. 
+which wizard types they are supported as shown on in the previous table. 
 
 A:: supported in all wizards
 P:: project
@@ -794,9 +841,9 @@ targetFolder (A):: the project or folder path in which the project will generate
    for simulation wizard, it holds the name of the folder where files will be created.
 targetFileName (NIM):: the name of the new file to be created 
 targetTypeName (PSNIM):: a typename that can be used as the main 'type' for the resulting code.
-                         (for P = ${projectName}, for S = ${simulationName}, for NIM = ${targetFileName}) // XXX revise
+                         (for P = $\{projectName}, for S = $\{simulationName}, for NIM = $\{targetFileName}) // XXX revise
 targetMainFile (PSNIM):: a file name that can be used as the 'main' output file for the template 
-                         (for PS = ${targetTypeName}.ned, for NIM = ${targetFileName})
+                         (for PS = $\{targetTypeName}.ned, for NIM = $\{targetFileName})
 
 ==== Project name related variables
 
@@ -820,7 +867,7 @@ namespaceName (SNM):: the namespace where C++ classes should be placed
 ==== NED files and message files
  
 nedSourceFolders (P):: NED source folders to be created and configured
-nedPackageName (PSNI):: (P: ${projectname}, SNI:autocalculated)
+nedPackageName (PSNI):: (P: $\{projectname}, SNI:autocalculated)
 msgTypeName (M):: the name of the message class
 
 ==== Variables specific to New Simulation wizards
@@ -833,11 +880,11 @@ simulationName (S):: the name of the simulation
 newWizardName (W):: the name of the new wizard to be created
 newWizardProject (W):: the project where the new wizard will be created
 
-==== Miscelanous
+==== Miscellaneus
 
 The variables below are just for advanced use only. They can be used to access
 directly all known NED and message types, static classes for utility functions and 
-the whole context used dorung template processing. 
+the whole context used during template processing. 
 
 creationContext (A):: The template evaluation context. Provided for low level access.
 classes (A)::         Access to class static models. It is possible to access 
@@ -845,12 +892,12 @@ classes (A)::         Access to class static models. It is possible to access
 nedResources (A):: all currently known NED types
 msgResources (A):: all currently known message types
 
-NOTE: In additon to the above variables, all keys found in the template.properties file
+NOTE: In addition to the above variables, all keys found in the template.properties file
 are added automatically to the context as a template variable.
 
 
 
-=== Appendix B: Functions, Classes and Macros avaiable from Templates
+=== Append. B: Functions, Classes and Macros available from Templates
 
 iif(condition, valueIfTrue, valueIfFalse)::
    Inline if. The FreeMarker language does not have a conditional operator
@@ -1001,9 +1048,11 @@ documented at http://json.org; if you want to check whether a particular
 text file corresponds to the JSON syntax, use http://jsonlint.com.
 
   method: String[][] readCSVFile(String fileName, boolean ignoreFirstLine,
-                         boolean ignoreBlankLines, boolean ignoreCommentLines)
+                         boolean ignoreBlankLines, 
+                         boolean ignoreCommentLines)
   method: String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine,
-                         boolean ignoreBlankLines, boolean ignoreCommentLines)
+                         boolean ignoreBlankLines, 
+                         boolean ignoreCommentLines)
 
 Reads a CSV file. The result is an array of lines, where each line is
 a string array. Additional method parameters control whether to discard the
@@ -1020,8 +1069,12 @@ Parses a Java property file ('key=value' lines) in the workspace.
 The result is a Properties object, which is effectively a hash of
 key-value pairs.
 
-  method: String[][] readSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines)
-  method: String[][] readExternalSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines)
+  method: String[][] readSpaceSeparatedTextFile(String fileName, 
+                           boolean ignoreBlankLines, 
+                           boolean ignoreCommentLines)
+  method: String[][] readExternalSpaceSeparatedTextFile(String fileName, 
+                           boolean ignoreBlankLines, 
+                           boolean ignoreCommentLines)
 
 Reads a text file, and return its contents, split by lines, and each line
 split by whitespace. Additional method parameters control whether to ignore
@@ -1097,7 +1150,8 @@ to the destination path. For projects and folders, it copies recursively
 (i.e. copies the whole folder tree). From the project root directory it
 leaves out dot files, hidden files, and team private files.
 
-  methods:  void copyURL(String url, String destFilePath, IProgressMonitor monitor)
+  methods:  void copyURL(String url, String destFilePath, 
+                         IProgressMonitor monitor)
 
 Copies the file at the given URL to the given destination workspace file.
 
@@ -1172,11 +1226,16 @@ and http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference
 
 IDEUtils methods
 
-  method: boolean openConfirm(final String title, final String message, final String detailsMessage)
-  method: boolean openQuestion(final String title, final String message, final String detailsMessage)
-  method: boolean openError(final String title, final String message, final String detailsMessage)
-  method: boolean openWarning(final String title, final String message, final String detailsMessage)
-  method: boolean openInformation(final String title, final String message, final String detailsMessage)
+  method: boolean openConfirm(String title, String message, 
+                              String detailsMessage)
+  method: boolean openQuestion(String title, String message, 
+                               String detailsMessage)
+  method: boolean openError(String title, String message, 
+                            String detailsMessage)
+  method: boolean openWarning(String title, String message, 
+                              String detailsMessage)
+  method: boolean openInformation(String title, String message, 
+                              String detailsMessage)
 
 Opens a standard message dialog, with an closable details message.
 
@@ -1228,7 +1287,9 @@ seems to have a problem with the getClass() method.
 
 ==== ProcessUtils
 
-  method: ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout)
+  method: ProcessResult exec(String command, String[] arguments, 
+                             String workingDirectory, 
+                             String standardInput, double timeout)
 
 Executes the given command with the arguments as a separate process.
 The standard input is fed into the spawn process and the output is read

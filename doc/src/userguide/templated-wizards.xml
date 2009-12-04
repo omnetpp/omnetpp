@@ -59,7 +59,7 @@ over. If you want to be sure that the file is copied, put some comment into it
 <simpara>When the wizard is being used, a pool of variables is kept by the wizard dialog.
 These variables are the ones which will be eventually substituted into the *.ftl
 files (${varname} syntax). These variables are initialized from the key=value
-lines in the template.propeties files; they can get displayed and/or edited
+lines in the template.properties files; they can get displayed and/or edited
 on custom wizard pages; and eventually they get substituted into *.ftl files.
 Some variables have special meaning and are interpreted by the wizard dialog
 (e.g. the nedSrcFolders variable determines which folders get denoted as
@@ -337,7 +337,7 @@ page.&lt;i&gt;.class
                 In addition to XSWT files, custom Java pages may also be defined
                 in Java code. This can be useful when the wizard page would be
                 too complex to describe with XSWT, would need to have significant
-                active behaviour, or simply the wizard page code already exists
+                active behavior, or simply the wizard page code already exists
                 in Java form. See below for further discussion about custom pages.
 </simpara>
 </listitem>
@@ -448,11 +448,11 @@ the java class name before them:
   &lt;text x:id="numServers" x:style="BORDER"&gt;
     &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
   &lt;/text&gt;</simpara>
-<tip><simpara>An XSWT tuturial and documentation can be found at:
+<tip><simpara>An XSWT tutorial and documentation can be found at:
 <ulink url="http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home">http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home</ulink></simpara></tip>
 <section id="_standard_swt_widgets">
 <title>Standard SWT widgets</title>
-<tip><simpara>The SWT controls are documented on the Eclipse website. See:
+<tip><simpara>The SWT controls are documented on the Eclipse web site. See:
 <ulink url="http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/package-summary.html">http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/package-summary.html</ulink></simpara></tip>
 <simpara>It is possible to bind template variables to a specific control by using the <emphasis>x:id</emphasis>
 attribute.
@@ -881,11 +881,13 @@ nedTypeName : the NED type whose gates should be enumerated.
 </listitem>
 <listitem>
 <simpara>
-gateFilter : type filter for the enumerated gates. An integer
-                value created by or-ing the possible filter values: INPUT,
-                OUTPUT, INOUT, VECTOR, SCALAR (using the GateChooser prefix).
+gateFilter : type filter for the enumerated gates. Expects a
+                  binary OR (|) of the following values: GateChooser.INPUT,
+                  GateChooser.OUTPUT, GateChooser.INOUT, GateChooser.VECTOR,
+                  GateChooser.SCALAR.
 </simpara>
-<literallayout class="monospaced">&lt;gateChooser x:id="gateName" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/&gt;</literallayout>
+<literallayout class="monospaced">&lt;gateChooser x:id="gateName" nedTypeName="${nodeType}"
+     gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/&gt;</literallayout>
 </listitem>
 </itemizedlist>
 </listitem>
@@ -918,12 +920,14 @@ nedName : the NED module type as a string
 </listitem>
 <listitem>
 <simpara>
-acceptedTypes : filter for the enumeration of types.An integer
-                value created by or-ing the possible filter values: MODULE,
-                SIMPLE_MODULE, COMPOUND_MODULE, MODULEINTERFACE, CHANNEL,
-                CHANNELINTERFACE, NETWORK (using the NedTypesChoose prefix)
+acceptedTypes : filter for the enumeration of types. Expects a
+                  binary OR (|) of the following values: NedTypeChooser.MODULE,
+                NedTypeChooser.SIMPLE_MODULE, NedTypeChooser.COMPOUND_MODULE,
+                NedTypeChooser.MODULEINTERFACE, NedTypeChooser.CHANNEL,
+                NedTypeChooser.CHANNELINTERFACE, NedTypeChooser.NETWORK.
 </simpara>
-<literallayout class="monospaced">&lt;nedTypeChooser x:id="channelType" acceptedTypes="NedTypeChooser.CHANNEL"/&gt;</literallayout>
+<literallayout class="monospaced">&lt;nedTypeChooser x:id="channelType"
+     acceptedTypes="NedTypeChooser.CHANNEL"/&gt;</literallayout>
 </listitem>
 </itemizedlist>
 </listitem>
@@ -1036,7 +1040,7 @@ the forms very much like normal SWT widgets. No glue or registration code
 is needed, just add their package to the &lt;import&gt; tags at the top of the XSWT
 file.</simpara>
 <simpara>However, some Java code is needed so that the wizard knows how to write
-template variables into your wigets and how to extract them after editing.
+template variables into your widgets and how to extract them after editing.
 This functionality can be added via the org.omnetpp.common.wizard.IWidgetAdapter
 interface. This interface must be implemented either by the widget class
 itself, or by a class named &lt;widgetclass&gt;Adapter in the same package.
@@ -1048,7 +1052,7 @@ the List and Map interfaces of the Java Collections API. The default values
 can be given in the template.properties file in the JSON notation, and the
 result can be used in the templates (iteration via &lt;#list&gt;, etc).</simpara>
 <simpara>Jar files placed into the plugins/ subdirectory of an OMNeT++ project will be
-loaded automatically, and will be avalable for all templates. Jar files in
+loaded automatically, and will be available for all templates. Jar files in
 that directory may be plain Java jars and Eclipse plug-in jars. (The latter
 makes it also possible to contribute new functionality into the IDE via
 various extension points, but this is outside the scope of this discussion
@@ -1106,6 +1110,7 @@ Type mismatch. Variables have types in FreeMarker, and one can get type conversi
 </listitem>
 <listitem>
 <simpara>
+For some reason, FreeMarker refuses to print boolean variables, i.e. ${isFoo}
    results in a runtime error. The common workaround is to write
    &lt;#if isFoo&gt;true&lt;#else&gt;false&lt;/#if&gt;; this can be shortened with our iif() function:
    ${isFoo, "true", "false"}.
@@ -1132,11 +1137,21 @@ Some Java functionality (the instanceof operator, Class.newInstance(), etc)
 </section>
 <section id="_xswt_tips_and_trick">
 <title>XSWT Tips and Trick:</title>
-<simpara>Q: How can I make a checkbox or radio button? &lt;checkbox&gt; and &lt;radio&gt; are not
-   recognized in my XSWT files!
-A: They are called &lt;button x:style="CHECK"&gt; and &lt;button x:style="RADIO"&gt; in SWT.</simpara>
-<simpara>Q: My text fields, combo boxes etc look strange, what do I do wrong?
-A: You usually want to add the BORDER option, like this: &lt;text x:style="BORDER"&gt;</simpara>
+<simpara>How can I make a checkbox or radio button? &lt;checkbox&gt; and &lt;radio&gt; are not
+   recognized in my XSWT files!::
+   They are called &lt;button x:style="CHECK"&gt; and &lt;button x:style="RADIO"&gt; in SWT.</simpara>
+<variablelist>
+<varlistentry>
+<term>
+My text fields, combo boxes etc look strange, what do I do wrong?
+</term>
+<listitem>
+<simpara>
+   You usually want to add the BORDER option, like this: &lt;text x:style="BORDER"&gt;
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
 <simpara>Q: How to make a long label wrap nicely?
 A: You will find that specifying x:style="WRAP" is necessary, but not enough. It is
    also needed that the label widget expands and fills the space horizontally:
@@ -1149,7 +1164,8 @@ A: Add &lt;setFocus/&gt; to the XML body of the desired widget.</simpara>
 A: You can use &lt;#if&gt; and other FreeMarker directives in XSWT files. These
    files undergo template processing each time the corresponding page
    appears.</simpara>
-<simpara>Q: How to carry forward data from a previous page to the next?</simpara>
+<simpara>Q: How to carry forward data from a previous page to the next?
+A: Use FreeMarker variables (${varName}) in the page.</simpara>
 <simpara>Q: How can I fill a combo box with values that I&#8217;ll only know at runtime?
 A: You can generate the &lt;option&gt; children of the combo using FreeMarker
    directives, e.g. &lt;#list&gt;&#8230;&lt;/#list&gt;</simpara>
@@ -1206,11 +1222,387 @@ a closing <emphasis>&gt;</emphasis> is also needed for the editor to recognize t
 when you hit <emphasis>?</emphasis> within a directive or an interpolation (${&#8230;}).</simpara>
 </section>
 </section>
-<appendix id="_predefined_template_variables">
-<title>Predefined Template Variables</title>
+<section id="_append_a_predefined_template_variables">
+<title>Append. A: Predefined Template Variables</title>
+<informaltable
+frame="all"
+rowsep="1" colsep="1"
+>
+<tgroup cols="7">
+<colspec colname="col_1" colwidth="35*"/>
+<colspec colname="col_2" colwidth="10*"/>
+<colspec colname="col_3" colwidth="15*"/>
+<colspec colname="col_4" colwidth="10*"/>
+<colspec colname="col_5" colwidth="10*"/>
+<colspec colname="col_6" colwidth="10*"/>
+<colspec colname="col_7" colwidth="10*"/>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara>variable mname</simpara></entry>
+<entry align="center" valign="top"><simpara>project</simpara></entry>
+<entry align="center" valign="top"><simpara>simulation</simpara></entry>
+<entry align="center" valign="top"><simpara>msgfile</simpara></entry>
+<entry align="center" valign="top"><simpara>inifile</simpara></entry>
+<entry align="center" valign="top"><simpara>nedfile</simpara></entry>
+<entry align="center" valign="top"><simpara>wizard</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>addProjectReference</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>author</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>classes</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>creationContext</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>date</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>licenseCode</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>licenseText</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>makemakeOptions</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>msgResources</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>msgTypeName</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>namespaceName</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>nedPackageName</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>nedResources</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>nedSourceFolders</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>newWizardName</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>newWizardProject</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>projectName</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>PROJECTNAME</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>projectname</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>rawProjectName</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>requiresCPlusPlus</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>simulationFolderName</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>simulationName</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>sourceFolders</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>targetFileName</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>targetFileName</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>targetFolder</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>targetMainFile</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>targetTypeName</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>templateCategory</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>templateDescription</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>templateFolderName</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>templateFolderPath</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>templateName</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>templateProject</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>templateURL</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>withCplusplusSupport</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>wizardType</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>year</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 <simpara>In this section we describe the individual wizard types and their supported
 template variables. Variables will be marked with one or more letter to show in
-which wizard types they are supported.</simpara>
+which wizard types they are supported as shown on in the previous table.</simpara>
 <variablelist>
 <varlistentry>
 <term>
@@ -1473,6 +1865,7 @@ targetTypeName (PSNIM)
 <listitem>
 <simpara>
 a typename that can be used as the main <emphasis>type</emphasis> for the resulting code.
+                         (for P = ${projectName}, for S = ${simulationName}, for NIM = ${targetFileName}) // XXX revise
 </simpara>
 </listitem>
 </varlistentry>
@@ -1483,6 +1876,7 @@ targetMainFile (PSNIM)
 <listitem>
 <simpara>
 a file name that can be used as the <emphasis>main</emphasis> output file for the template
+                         (for PS = ${targetTypeName}.ned, for NIM = ${targetFileName})
 </simpara>
 </listitem>
 </varlistentry>
@@ -1619,6 +2013,7 @@ nedPackageName (PSNI)
 </term>
 <listitem>
 <simpara>
+(P: ${projectname}, SNI:autocalculated)
 </simpara>
 </listitem>
 </varlistentry>
@@ -1684,11 +2079,11 @@ the project where the new wizard will be created
 </varlistentry>
 </variablelist>
 </section>
-<section id="_miscelanous">
-<title>Miscelanous</title>
+<section id="_miscellaneus">
+<title>Miscellaneus</title>
 <simpara>The variables below are just for advanced use only. They can be used to access
 directly all known NED and message types, static classes for utility functions and
-the whole context used dorung template processing.</simpara>
+the whole context used during template processing.</simpara>
 <variablelist>
 <varlistentry>
 <term>
@@ -1732,12 +2127,12 @@ all currently known message types
 </listitem>
 </varlistentry>
 </variablelist>
-<note><simpara>In additon to the above variables, all keys found in the template.properties file
+<note><simpara>In addition to the above variables, all keys found in the template.properties file
 are added automatically to the context as a template variable.</simpara></note>
 </section>
-</appendix>
-<appendix id="_functions_classes_and_macros_avaiable_from_templates">
-<title>Functions, Classes and Macros avaiable from Templates</title>
+</section>
+<section id="_append_b_functions_classes_and_macros_available_from_templates">
+<title>Append. B: Functions, Classes and Macros available from Templates</title>
 <variablelist>
 <varlistentry>
 <term>
@@ -1863,9 +2258,11 @@ List or Map, or any data structure composed of them. The JSON syntax is
 documented at <ulink url="http://json.org">http://json.org</ulink>; if you want to check whether a particular
 text file corresponds to the JSON syntax, use <ulink url="http://jsonlint.com">http://jsonlint.com</ulink>.</simpara>
 <literallayout class="monospaced">method: String[][] readCSVFile(String fileName, boolean ignoreFirstLine,
-                       boolean ignoreBlankLines, boolean ignoreCommentLines)
+                       boolean ignoreBlankLines,
+                       boolean ignoreCommentLines)
 method: String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine,
-                       boolean ignoreBlankLines, boolean ignoreCommentLines)</literallayout>
+                       boolean ignoreBlankLines,
+                       boolean ignoreCommentLines)</literallayout>
 <simpara>Reads a CSV file. The result is an array of lines, where each line is
 a string array. Additional method parameters control whether to discard the
 first line of the file (which is usually a header line), whether to
@@ -1878,8 +2275,12 @@ method: Properties readExternalPropertyFile(String fileName)</literallayout>
 <simpara>Parses a Java property file (<emphasis>key=value</emphasis> lines) in the workspace.
 The result is a Properties object, which is effectively a hash of
 key-value pairs.</simpara>
-<literallayout class="monospaced">method: String[][] readSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines)
-method: String[][] readExternalSpaceSeparatedTextFile(String fileName, boolean ignoreBlankLines, boolean ignoreCommentLines)</literallayout>
+<literallayout class="monospaced">method: String[][] readSpaceSeparatedTextFile(String fileName,
+                         boolean ignoreBlankLines,
+                         boolean ignoreCommentLines)
+method: String[][] readExternalSpaceSeparatedTextFile(String fileName,
+                         boolean ignoreBlankLines,
+                         boolean ignoreCommentLines)</literallayout>
 <simpara>Reads a text file, and return its contents, split by lines, and each line
 split by whitespace. Additional method parameters control whether to ignore
 blank lines and/or comment lines (those starting with the # character).
@@ -1931,7 +2332,8 @@ access operations provided by the File API, such as exists(), length(), etc.</si
 to the destination path. For projects and folders, it copies recursively
 (i.e. copies the whole folder tree). From the project root directory it
 leaves out dot files, hidden files, and team private files.</simpara>
-<literallayout class="monospaced">methods:  void copyURL(String url, String destFilePath, IProgressMonitor monitor)</literallayout>
+<literallayout class="monospaced">methods:  void copyURL(String url, String destFilePath,
+                       IProgressMonitor monitor)</literallayout>
 <simpara>Copies the file at the given URL to the given destination workspace file.</simpara>
 <literallayout class="monospaced">methods:String createTempFile(String content)</literallayout>
 <simpara>Writes the given string to a temporary file, and returns the path of the
@@ -1980,11 +2382,16 @@ be found in the sources (Javadoc).
 See <ulink url="http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/resInt.htm">http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/resInt.htm</ulink>
 and <ulink url="http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspaceRoot.html">http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspaceRoot.html</ulink></simpara>
 <simpara>IDEUtils methods</simpara>
-<literallayout class="monospaced">method: boolean openConfirm(final String title, final String message, final String detailsMessage)
-method: boolean openQuestion(final String title, final String message, final String detailsMessage)
-method: boolean openError(final String title, final String message, final String detailsMessage)
-method: boolean openWarning(final String title, final String message, final String detailsMessage)
-method: boolean openInformation(final String title, final String message, final String detailsMessage)</literallayout>
+<literallayout class="monospaced">method: boolean openConfirm(String title, String message,
+                            String detailsMessage)
+method: boolean openQuestion(String title, String message,
+                             String detailsMessage)
+method: boolean openError(String title, String message,
+                          String detailsMessage)
+method: boolean openWarning(String title, String message,
+                            String detailsMessage)
+method: boolean openInformation(String title, String message,
+                            String detailsMessage)</literallayout>
 <simpara>Opens a standard message dialog, with an closable details message.</simpara>
 </section>
 <section id="_langutils">
@@ -2018,7 +2425,9 @@ seems to have a problem with the getClass() method.</simpara>
 </section>
 <section id="_processutils">
 <title>ProcessUtils</title>
-<literallayout class="monospaced">method: ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout)</literallayout>
+<literallayout class="monospaced">method: ProcessResult exec(String command, String[] arguments,
+                           String workingDirectory,
+                           String standardInput, double timeout)</literallayout>
 <simpara>Executes the given command with the arguments as a separate process.
 The standard input is fed into the spawn process and the output is read
 until the process finishes or timeout occurs. The timeout value 0 means wait
@@ -2037,5 +2446,5 @@ JARs in the templates)</simpara>
 <simpara>TODO also some minimal FreeMarker tutorial (variables are ${}, there is &lt;#if&gt;,
   &lt;#list&gt;; and there&#8217;s lots more, see the manual and/or the provided examples</simpara>
 </section>
-</appendix>
+</section>
 </chapter>
