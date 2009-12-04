@@ -1241,7 +1241,6 @@ list are optional.
 Finds the given executable in the path, and returns it with full path.
 If not found, it returns the original string.
 
--------------------
 
 TODO document what are the variables nedResources and msgResources; write a few examples about their usage
 
