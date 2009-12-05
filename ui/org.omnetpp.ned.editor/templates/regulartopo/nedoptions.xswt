@@ -25,7 +25,7 @@
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
-        <button x:id="wantPositions" x:style="CHECK" text="Generate coordinates (not available for all topologies)"/>
+        <button x:id="generateCoordinates" x:style="CHECK" text="Generate coordinates (not available for all topologies)"/>
       </x:children>
     </group>
 

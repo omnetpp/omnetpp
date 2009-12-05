@@ -60,7 +60,6 @@ channel ${channelType} extends ned.DatarateChannel {
 //
 // A generated ${networkKeyword} with ${iif(ring, "ring", iif(star, "star", "wheel"))} topology.
 //
-<#-- TODO: generateCoordinates -->
 <#if parametricNED>
 ${networkKeyword} ${targetTypeName}
 {
@@ -68,19 +67,15 @@ ${networkKeyword} ${targetTypeName}
         int n = default(${nodes});
     submodules:
 <#if star || wheel>
-  <#if gateVectorWithIndices>
-        hub: ${hubType} { gates: ${vectorGate}[n]; }
-  <#elseif gateVectorWithPlusPlus>
-        hub: ${hubType};
-  <#else>
-        hub: ${hubType} { gates: ${wheelHubOutGate}[n]; }
-  </#if>
+        hub: ${hubType} {
+            <#if !gateVectorWithPlusPlus>gates: ${iif(namedGates,wheelHubOutGate,vectorGate)}[n];</#if>
+        }
 </#if>
-<#if gateVectorWithIndices>
-        node[n]: ${nodeType} { gates: ${vectorGate}[${iif(wheel,3,iif(ring,2,1))}]; }
-<#else>
-        node[n]: ${nodeType};
-</#if>
+        node[n]: ${nodeType} {
+            <#if generateCoordinates>@display("p=,,ring,");</#if>
+            <#if gateVectorWithIndices>gates: ${vectorGate}[${iif(wheel,3,iif(ring,2,1))}];</#if>
+        }
+        
     connections:
 <#if star || wheel>
         for i=0..n-1 {
@@ -98,20 +93,18 @@ ${networkKeyword} ${targetTypeName}
 {
     submodules:
 <#if star || wheel>
-  <#if gateVectorWithIndices>
-        hub: ${hubType} { gates: ${vectorGate}[${nodes}]; }
-  <#elseif gateVectorWithPlusPlus>
-        hub: ${hubType};
-  <#else>
-        hub: ${hubType} { gates: ${wheelHubOutGate}[${nodes}]; }
-  </#if>
+        hub: ${hubType} {
+            <#if generateCoordinates>@display("p=${centerX},${centerY}");</#if>
+            <#if !gateVectorWithPlusPlus>gates: ${iif(namedGates,wheelHubOutGate,vectorGate)}[${nodes}];</#if>
+        }
 </#if>
 <#list 0..nodes-1 as i>
-<#if gateVectorWithIndices>
-        node${i}: ${nodeType} { gates: ${vectorGate}[${iif(wheel,3,iif(ring,2,1))}]; }
-<#else>
-        node${i}: ${nodeType};
-</#if>
+        node${i}: ${nodeType} {
+            <#assign x = centerX + Math.floor(radius*Math.sin(2*i*Math.PI/nodes))>
+            <#assign y = centerY - Math.floor(radius*Math.cos(2*i*Math.PI/nodes))>
+            <#if generateCoordinates>@display("p=${x},${y}");</#if>
+            <#if gateVectorWithIndices>gates: ${vectorGate}[${iif(wheel,3,iif(ring,2,1))}];</#if>
+        }
 </#list>
     connections:
 <#if star || wheel>
