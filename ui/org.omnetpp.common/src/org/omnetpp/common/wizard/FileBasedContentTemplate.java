@@ -213,6 +213,10 @@ public class FileBasedContentTemplate extends ContentTemplate {
         this.allowJarLoading = allowJarLoading;
     }
 
+    public String getIdentifierString() {
+        return templateFolder==null ? templateUrl.toString() : templateFolder.getFullPath().toString();
+    }
+    
     /**
      * Overridden to provide lazy loading.
      */

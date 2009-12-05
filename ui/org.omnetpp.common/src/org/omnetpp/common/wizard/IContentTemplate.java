@@ -59,7 +59,13 @@ public interface IContentTemplate {
      * even the template selection page.
      */
     boolean getIsDefault();
-    
+
+    /**
+     * Return a string that uniquely identifies the template across UI sessions.
+     * Used for remembering the last choice in the template selection wizard.
+     */
+    String getIdentifierString();
+
     /**
      * Returns a value from the template.properties file. May return null.
      */

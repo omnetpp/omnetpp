@@ -381,7 +381,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     protected IContentTemplate getLastChosenTemplate(List<IContentTemplate> templates) {
         String ident = getDialogSettings().get(getWizardType()+".template");
         for (IContentTemplate template : templates)
-            if (template.getName().equals(ident))
+            if (template.getIdentifierString().equals(ident))
                 return template;
         return null;
     }
@@ -417,7 +417,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         // use the selected template (if we are before the template selection page, this will be
         // the "default" template, i.e. the one with "templateIsDefault=true")
         final IContentTemplate template = templateSelectionPage.getSelectedTemplate();
-        getDialogSettings().put(getWizardType()+".template", template.getName()); // see also getLastChosenTemplate(); FIXME use templateURL or something
+        getDialogSettings().put(getWizardType()+".template", template.getIdentifierString()); // see also getLastChosenTemplate()
 
         // if we are on or before the template selection page, create a fresh context with the selected template
         if (finishingPage.getWizard()==this && ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
