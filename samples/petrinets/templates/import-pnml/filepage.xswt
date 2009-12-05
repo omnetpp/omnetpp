@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+  <x:children>
+  
+    <label text="GraphML file to import:"/>
+    <fileChooser x:id="fileName">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <setFocus/>
+    </fileChooser>
+    
+    <button x:id="importDisplayString" x:style="CHECK" text="Interpret graph attributes as module/channel parameters">
+      <layoutData x:class="GridData" horizontalIndent="8" horizontalSpan="2"/>
+    </button>
+
+    <button x:id="importParams" x:style="CHECK" text="Interpret certain attributes as display string args (e.g. x, y)">
+      <layoutData x:class="GridData" horizontalIndent="8" horizontalSpan="2"/>
+    </button>
+
+  </x:children>
+</xswt>
