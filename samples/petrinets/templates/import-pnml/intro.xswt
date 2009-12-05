@@ -13,14 +13,14 @@
   <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
 
-    <label x:style="WRAP">
+    <httpLink x:style="WRAP" URL="http://www2.informatik.hu-berlin.de/top/pnml/about.html">
         <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-        <text x:p0="This wizard creates a Petri Net model by importing its topology from a Petri Net Markup Language (PNML) file."/>
-    </label>
+        <text x:p0="This wizard creates a Petri Net model by importing its topology from a <a>Petri Net Markup Language</a> (PNML) file."/>
+    </httpLink>
 
     <label x:style="WRAP">
         <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-        <text x:p0="If you'd like to modify or extend the importer, make a copy of this wizard
+        <text x:p0="If you'd like to modify or extend this importer, make a copy
 (File -> New -> Wizard -> Clone Built-in Wizard), and edit it."/>
     </label>
 

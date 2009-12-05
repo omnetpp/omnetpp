@@ -13,19 +13,15 @@
   <layout x:class="GridLayout" numColumns="2"/>
   <x:children>
   
-    <label text="GraphML file to import:"/>
+    <label text="PNML file to import:"/>
     <fileChooser x:id="fileName">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <setFocus/>
     </fileChooser>
-    
-    <button x:id="importDisplayString" x:style="CHECK" text="Interpret graph attributes as module/channel parameters">
-      <layoutData x:class="GridData" horizontalIndent="8" horizontalSpan="2"/>
-    </button>
 
-    <button x:id="importParams" x:style="CHECK" text="Interpret certain attributes as display string args (e.g. x, y)">
-      <layoutData x:class="GridData" horizontalIndent="8" horizontalSpan="2"/>
-    </button>
+    <label x:style="WRAP" text="Note: If the file contains more than one Petri Nets (i.e. <net> elements), the first one will be imported.">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
 
   </x:children>
 </xswt>
