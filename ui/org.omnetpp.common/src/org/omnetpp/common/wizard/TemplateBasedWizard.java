@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -88,6 +89,15 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         }
     }
 
+    public TemplateBasedWizard() {
+        // code copied from PreferencesExportWizard
+        IDialogSettings workbenchSettings = CommonPlugin.getDefault().getDialogSettings();
+        IDialogSettings section = workbenchSettings.getSection("TemplateBasedWizard");
+        if (section == null)
+            section = workbenchSettings.addNewSection("TemplateBasedWizard");
+        setDialogSettings(section);
+    }
+    
     public void init(IWorkbench workbench, IStructuredSelection selection) {
     }
 
@@ -126,8 +136,10 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
      * Called when the user manually enters a template URL at the template selection page.
      */
     protected void addTemplateFrom(URL url) throws CoreException {
-        dynamicallyAddedTemplates.add(loadTemplateFromURL(url, null));
+        IContentTemplate newTemplate = loadTemplateFromURL(url, null);
+        dynamicallyAddedTemplates.add(newTemplate);
         templateSelectionPage.setTemplates(getTemplates()); // refresh page
+        templateSelectionPage.setSelectedTemplate(newTemplate);
     }
 
     /**
@@ -303,7 +315,10 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
     public IWizardPage getNextPage(IWizardPage page) {
         // update template list just before flipping to the template selection page.
         if (ArrayUtils.indexOf(getPages(),page) == ArrayUtils.indexOf(getPages(),templateSelectionPage)-1) {
-            templateSelectionPage.setTemplates(getTemplates());
+            List<IContentTemplate> templates = getTemplates();
+            templateSelectionPage.setTemplates(templates);
+            templateSelectionPage.setSelectedTemplate(getLastChosenTemplate(templates));
+            
             return templateSelectionPage;
         }
 
@@ -363,6 +378,14 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         return super.getNextPage(page);
     }
 
+    protected IContentTemplate getLastChosenTemplate(List<IContentTemplate> templates) {
+        String ident = getDialogSettings().get(getWizardType()+".template");
+        for (IContentTemplate template : templates)
+            if (template.getName().equals(ident))
+                return template;
+        return null;
+    }
+
     /**
      * Produces an initial creation context for the given template. Override if you need to
      * put extra variables into the context (i.e. a file name).
@@ -394,6 +417,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         // use the selected template (if we are before the template selection page, this will be
         // the "default" template, i.e. the one with "templateIsDefault=true")
         final IContentTemplate template = templateSelectionPage.getSelectedTemplate();
+        getDialogSettings().put(getWizardType()+".template", template.getName()); // see also getLastChosenTemplate(); FIXME use templateURL or something
 
         // if we are on or before the template selection page, create a fresh context with the selected template
         if (finishingPage.getWizard()==this && ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {

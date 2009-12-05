@@ -484,6 +484,6 @@ public abstract class ContentTemplate implements IContentTemplate {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " " + getName();
+        return getClass().getSimpleName() + ":" + getName();
     }
 }

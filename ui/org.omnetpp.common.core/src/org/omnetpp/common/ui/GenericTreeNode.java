@@ -191,6 +191,16 @@ public class GenericTreeNode {
 		parent = null;
 	}
 
+	public GenericTreeNode findPayload(Object payload) {
+	    if (this.payload==payload || this.payload.equals(payload))
+	        return this;
+	    GenericTreeNode result;
+	    for (GenericTreeNode child : children)
+	        if ((result=child.findPayload(payload)) != null)
+	            return result;
+	    return null;
+	}
+	
 	/**
 	 * Delegates to payload's toString().
 	 */

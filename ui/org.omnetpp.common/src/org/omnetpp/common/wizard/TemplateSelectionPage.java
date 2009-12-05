@@ -255,6 +255,17 @@ public class TemplateSelectionPage extends WizardPage {
         return (element instanceof IContentTemplate) ? (IContentTemplate)element : null;
     }
 
+    public void setSelectedTemplate(IContentTemplate template) {
+        if (template == null)
+            treeViewer.setSelection(new StructuredSelection());
+        else {
+            Object input = treeViewer.getInput();
+            GenericTreeNode node = ((GenericTreeNode)input).findPayload(template);
+            if (node != null)
+                treeViewer.setSelection(new StructuredSelection(node), true);
+        }
+    }
+
     /**
      * Called when a template was double-clicked
      */
