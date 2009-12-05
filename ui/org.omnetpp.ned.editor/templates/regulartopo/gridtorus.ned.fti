@@ -45,7 +45,6 @@ channel ${channelType} extends ned.DatarateChannel {
 //
 // A generated ${networkKeyword} with ${iif(grid, "grid", "torus")} topology.
 //
-<#-- TODO: generateCoordinates -->
 <#if parametricNED>
 ${networkKeyword} ${targetTypeName}
 {
@@ -53,11 +52,10 @@ ${networkKeyword} ${targetTypeName}
         int columns = default(${columns});
         int rows = default(${rows});
     submodules:
-<#if gateVectorWithIndices>
-        node[columns*rows]: ${nodeType} { gates: ${vectorGate}[4]; }
-<#else>
-        node[columns*rows]: ${nodeType};
-</#if>
+        node[columns*rows]: ${nodeType} {
+            <#if generateCoordinates>@display(p=",,matrix,$columns");</#if>
+            <#if gateVectorWithIndices>gates: ${vectorGate}[4];</#if>
+        }
 <#if grid>
     connections allowunconnected:
         for i=0..rows-1, for j=0..columns-1 {
@@ -82,11 +80,10 @@ ${networkKeyword} ${targetTypeName}
     submodules:
 <#list 0..rows-1 as i>
   <#list 0..columns-1 as j>
-    <#if gateVectorWithIndices>
-        node_${i}_${j}: ${nodeType} { gates: ${vectorGate}[4]; }
-    <#else>
-        node_${i}_${j}: ${nodeType};
-    </#if>
+        node_${i}_${j}: ${nodeType} {
+            <#if generateCoordinates>@display(p="${startX+i*dx},${startY+j*dy}");</#if>
+            <#if gateVectorWithIndices>gates: ${vectorGate}[4];</#if>
+        }
   </#list>
 
 </#list>

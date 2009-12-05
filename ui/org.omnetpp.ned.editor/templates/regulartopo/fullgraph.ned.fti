@@ -28,18 +28,16 @@ channel ${channelType} extends ned.DatarateChannel {
 //
 // A generated ${networkKeyword} with full graph topology.
 //
-<#-- TODO: generateCoordinates -->
 <#if parametricNED>
 ${networkKeyword} ${targetTypeName}
 {
     parameters:
         int n = default(${nodes});
     submodules:
-  <#if gateVectorWithIndices>
-        node[n]: ${nodeType} { gates: ${vectorGate}[n]; }
-  <#else>
-        node[n]: ${nodeType};
-  </#if>
+        node[n]: ${nodeType} {
+            <#if generateCoordinates>@display(",,ring");</#if>
+            <#if !gateVectorWithPlusPlus>gates: ${vectorGate}[n];</#if>
+        }
     connections:
         for i=0..n-2, for j=i+1..n-1 {
             node[i].${g("j")} <-->${channelSpec} node[j].${g("i")};
@@ -50,11 +48,12 @@ ${networkKeyword} ${targetTypeName}
 {
     submodules:
   <#list 0..nodes-1 as i>
-    <#if gateVectorWithIndices>
-        node${i}: ${nodeType} { gates: ${vectorGate}[${nodes}]; }
-    <#else>
-        node${i}: ${nodeType};
-    </#if>
+        node${i}: ${nodeType} {
+            <#assign x = centerX + Math.floor(radius*Math.sin(2*i*Math.PI/nodes))>
+            <#assign y = centerY - Math.floor(radius*Math.cos(2*i*Math.PI/nodes))>
+            <#if generateCoordinates>@display("p=${x},${y}");</#if>
+            <#if !gateVectorWithPlusPlus>gates: ${vectorGate}[${nodes}];</#if>
+        }
   </#list>
     connections:
   <#list 0..nodes-2 as i>
