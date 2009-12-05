@@ -18,13 +18,19 @@ ${keyword} ${targetTypeName} {
     <#assign name = StringUtils.makeValidIdentifier(place.name.text)>
     <@do idToName.put(place.@id?string, name)!/>
     <#assign pos = place.graphics.position>
-        ${name}: Place { @display("p=${pos.@x},${pos.@y}"); }
+    <#assign initialMarking = place.initialMarking.text>
+        ${name}: Place { 
+            <#if pos?size!=0>@display("p=${pos.@x},${pos.@y}");</#if> 
+            <#if initialMarking?size!=0>numTokens = ${initialMarking};</#if> 
+        }
 </#list>
 <#list doc.pnml.net.transition as transition>
     <#assign name = StringUtils.makeValidIdentifier(transition.name.text)>
     <@do idToName.put(transition.@id?string, name)!/>
     <#assign pos = transition.graphics.position>
-        ${name}: Transition { @display("p=${pos.@x},${pos.@y}"); }
+        ${name}: Transition { 
+            <#if pos?size!=0>@display("p=${pos.@x},${pos.@y}");</#if> 
+        }
 </#list>
     connections:
 <#list doc.pnml.net.arc as arc>
