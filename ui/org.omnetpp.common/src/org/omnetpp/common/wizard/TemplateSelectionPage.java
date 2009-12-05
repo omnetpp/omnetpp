@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -166,6 +167,16 @@ public class TemplateSelectionPage extends WizardPage {
                 TemplateSelectionPage.this.selectionChanged();
             }});
 
+        treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                Object elem = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+                if (getSelectedTemplate() != null)
+                    templateSelectionMade();  // accept double-clicked template
+                else
+                    treeViewer.setExpandedState(elem, !treeViewer.getExpandedState(elem)); // open/close category
+            }
+        });
+        
         if (templateAddedCallback != null) {
             Link link = new Link(composite, SWT.NONE);
             link.setText("<a>Add content template by URL</a>");
@@ -244,4 +255,10 @@ public class TemplateSelectionPage extends WizardPage {
         return (element instanceof IContentTemplate) ? (IContentTemplate)element : null;
     }
 
+    /**
+     * Called when a template was double-clicked
+     */
+    protected void templateSelectionMade() {
+        getContainer().showPage(getNextPage());
+    }
 }
