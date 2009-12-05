@@ -35,7 +35,7 @@ ${networkKeyword} ${targetTypeName}
         int n = default(${nodes});
     submodules:
         node[n]: ${nodeType} {
-            <#if generateCoordinates>@display(",,ring");</#if>
+            <#if generateCoordinates>@display("p=,,ring");</#if>
             <#if !gateVectorWithPlusPlus>gates: ${vectorGate}[n];</#if>
         }
     connections:

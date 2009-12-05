@@ -53,7 +53,7 @@ ${networkKeyword} ${targetTypeName}
         int rows = default(${rows});
     submodules:
         node[columns*rows]: ${nodeType} {
-            <#if generateCoordinates>@display(p=",,matrix,$columns");</#if>
+            <#if generateCoordinates>@display("p=,,matrix,$columns");</#if>
             <#if gateVectorWithIndices>gates: ${vectorGate}[4];</#if>
         }
 <#if grid>
@@ -81,7 +81,7 @@ ${networkKeyword} ${targetTypeName}
 <#list 0..rows-1 as i>
   <#list 0..columns-1 as j>
         node_${i}_${j}: ${nodeType} {
-            <#if generateCoordinates>@display(p="${startX+i*dx},${startY+j*dy}");</#if>
+            <#if generateCoordinates>@display("p=${startX+i*dx},${startY+j*dy}");</#if>
             <#if gateVectorWithIndices>gates: ${vectorGate}[4];</#if>
         }
   </#list>
