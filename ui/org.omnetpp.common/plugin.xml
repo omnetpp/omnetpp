@@ -20,11 +20,32 @@
       </wizard>
    </extension>
    <extension
+         point="org.eclipse.ui.importWizards">
+      <category
+            id="org.omnetpp.importwizards"
+            name="OMNeT++">
+      </category>
+      <wizard
+            category="org.omnetpp.importwizards"
+            class="org.omnetpp.common.importexportwizards.ImportWizard"
+            icon="icons/obj16/importwizard.png"
+            id="org.omnetpp.common.wizard.importwizard"
+            name="Networks, simulations and other items">
+      </wizard>
+   </extension>
+   <extension
          point="org.eclipse.ui.exportWizards">
      <category
-           id="org.omnetpp.exportWizards"
+           id="org.omnetpp.exportwizards"
            name="OMNeT++">
      </category>
+     <wizard
+           category="org.omnetpp.exportwizards"
+           class="org.omnetpp.common.importexportwizards.ExportWizard"
+           icon="icons/obj16/exportwizard.png"
+           id="org.omnetpp.common.wizard.exportwizard"
+           name="Networks, simulations and other items">
+     </wizard>
    </extension>
 
    <extension
