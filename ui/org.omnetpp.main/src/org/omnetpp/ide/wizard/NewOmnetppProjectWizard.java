@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
@@ -42,7 +43,7 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * 
  * @author Andras
  */
-public class NewOmnetppProjectWizard extends TemplateBasedWizard {
+public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INewWizard {
     private WizardNewProjectCreationPage projectCreationPage;
 
 	public static class NewOmnetppProjectCreationPage extends WizardNewProjectCreationPage {

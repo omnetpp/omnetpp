@@ -3,6 +3,7 @@ package org.omnetpp.common.wizardwizard;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
@@ -14,7 +15,7 @@ import org.omnetpp.common.wizard.TemplateBasedWizard;
  *
  * @author Andras
  */
-public class NewWizardWizard extends TemplateBasedWizard {
+public class NewWizardWizard extends TemplateBasedWizard implements INewWizard {
     private NewWizardProjectSelectionPage firstPage;
     private IStructuredSelection selection;
 

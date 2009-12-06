@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -32,13 +33,13 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-public abstract class TemplateBasedFileWizard extends TemplateBasedWizard {
+public abstract class TemplateBasedNewFileWizard extends TemplateBasedWizard implements INewWizard {
 
     private IWorkbench workbench;
     private IStructuredSelection selection;
     private WizardNewFileCreationPage firstPage;
 
-    public TemplateBasedFileWizard() {
+    public TemplateBasedNewFileWizard() {
     }
 
     public void init(IWorkbench workbench, IStructuredSelection currentSelection) {

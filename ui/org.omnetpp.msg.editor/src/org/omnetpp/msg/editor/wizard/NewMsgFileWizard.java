@@ -6,7 +6,7 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
-import org.omnetpp.common.wizard.TemplateBasedFileWizard;
+import org.omnetpp.common.wizard.TemplateBasedNewFileWizard;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
@@ -15,7 +15,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
  *
  * @author Andras
  */
-public class NewMsgFileWizard extends TemplateBasedFileWizard {
+public class NewMsgFileWizard extends TemplateBasedNewFileWizard {
 
     public NewMsgFileWizard() {
         setWizardType("msgfile");

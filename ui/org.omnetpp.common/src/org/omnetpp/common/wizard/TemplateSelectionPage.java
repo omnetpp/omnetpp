@@ -56,15 +56,17 @@ public class TemplateSelectionPage extends WizardPage {
 
     private TreeViewer treeViewer;
     private Image defaultImage = DEFAULT_IMAGE;
-    private ITemplateAddedCallback templateAddedCallback;
+    private ITemplateProvider templateProvider;
     private static String lastUrlEntered = "http://";
 
     /**
-     * Listener to be provided when the wizard wants to provide "Load template from URL"
-     * functionality. Method is supposed to call back setTemplates() to refresh the tree.
+     * Provides templates to the page, and implements handler for the "Load template from URL"
+     * functionality. Method is supposed to call setTemplates() and setSelectedTemplate()
+     * on the page.
      */
-    public interface ITemplateAddedCallback {
-        void addTemplateFrom(URL url) throws CoreException;
+    public interface ITemplateProvider {
+        void initPage(TemplateSelectionPage page) throws CoreException;
+        void addTemplateFrom(URL url, TemplateSelectionPage page) throws CoreException;
     }
 
     public TemplateSelectionPage() {
@@ -91,14 +93,14 @@ public class TemplateSelectionPage extends WizardPage {
      * Enable the 'Add template by URL' link, and set the callback to be invoked
      * when the user adds a template URL. Must be called before createControl().
      */
-    public void setTemplateAddedCallback(ITemplateAddedCallback templateAddedCallback) {
+    public void setTemplateProvider(ITemplateProvider templateProvider) {
         if (getControl() != null)
-            throw new IllegalStateException("Oh dear, too late...");
-        this.templateAddedCallback = templateAddedCallback;
+            throw new IllegalStateException("Too late...");
+        this.templateProvider = templateProvider;
     }
 
-    public ITemplateAddedCallback getTemplateAddedListener() {
-        return templateAddedCallback;
+    public ITemplateProvider getTemplateProvider() {
+        return templateProvider;
     }
 
     public void createControl(Composite parent) {
@@ -177,7 +179,7 @@ public class TemplateSelectionPage extends WizardPage {
             }
         });
         
-        if (templateAddedCallback != null) {
+        if (templateProvider != null) {
             Link link = new Link(composite, SWT.NONE);
             link.setText("<a>Add content template by URL</a>");
             link.addSelectionListener(new SelectionListener() {
@@ -188,6 +190,14 @@ public class TemplateSelectionPage extends WizardPage {
                 public void widgetSelected(SelectionEvent e) {
                     addTemplateByURL();
                 }});
+        }
+
+        try {
+            templateProvider.initPage(this);
+        }
+        catch (CoreException e) {
+            CommonPlugin.logError("Error while filling template selection page", e);
+            MessageDialog.openError(getShell(), "Error", "Error while filling template selection page: " + StringUtils.defaultString(e.getMessage()) + '.');
         }
 
         setPageComplete(false);
@@ -202,14 +212,14 @@ public class TemplateSelectionPage extends WizardPage {
     }
 
     protected void addTemplateByURL() {
-        if (templateAddedCallback == null)
+        if (templateProvider == null)
             return;
         InputDialog dialog = new InputDialog(getShell(), "Enter Template URL", "Wizard template URL (should point to the folder containing template.properties)", lastUrlEntered, null);
         if (dialog.open() == Dialog.OK && !StringUtils.isBlank(dialog.getValue())) {
             String url = dialog.getValue().trim();
             lastUrlEntered = url;
             try {
-                templateAddedCallback.addTemplateFrom(new URL(url));
+                templateProvider.addTemplateFrom(new URL(url), this);
             }
             catch (MalformedURLException e) {
                 MessageDialog.openError(getShell(), "Error", "Malformed URL '" + url + "': " + StringUtils.defaultString(e.getMessage()) + '.');
@@ -270,6 +280,7 @@ public class TemplateSelectionPage extends WizardPage {
      * Called when a template was double-clicked
      */
     protected void templateSelectionMade() {
-        getContainer().showPage(getNextPage());
+        if (canFlipToNextPage())
+            getContainer().showPage(getNextPage());
     }
 }

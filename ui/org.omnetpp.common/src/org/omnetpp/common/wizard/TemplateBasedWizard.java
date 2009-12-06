@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -37,13 +38,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.DetailMessageDialog;
-import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateAddedCallback;
+import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateProvider;
 import org.osgi.framework.Bundle;
 
 import freemarker.template.TemplateException;
@@ -54,7 +55,7 @@ import freemarker.template.TemplateException;
  *
  * @author Andras
  */
-public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
+public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWizard {
     public static final String TEMPLATES_FOLDER_NAME = "templates";
 
     public static final String CONTENTTEMPLATE_EXTENSIONPOINT_ID = "org.omnetpp.common.wizard.contenttemplates";
@@ -123,23 +124,52 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         // note: template custom pages will be added in getNextPage() of the template selection page.
         addPage(templateSelectionPage = new TemplateSelectionPage());
         
-        templateSelectionPage.setTemplateAddedCallback(new ITemplateAddedCallback() {
-            public void addTemplateFrom(URL url) throws CoreException {
+        templateSelectionPage.setTemplateProvider(new ITemplateProvider() {
+            public void initPage(TemplateSelectionPage page) throws CoreException {
+                initTemplateSelectionPage();
+            }
+
+            public void addTemplateFrom(URL url, TemplateSelectionPage page) throws CoreException {
                 TemplateBasedWizard.this.addTemplateFrom(url);
-            }});
+            }
+        });
 
         // a dummy page is needed, otherwise the Next button will be disabled on the template selection page
         addPage(dummyPage = new DummyPage());
+    }
+
+    protected void initTemplateSelectionPage() {
+        List<IContentTemplate> templates = getTemplates();
+        templateSelectionPage.setTemplates(templates);
+        templateSelectionPage.setSelectedTemplate(getRememberedTemplate(templates));
+    }
+
+    protected IContentTemplate getRememberedTemplate(List<IContentTemplate> templates) {
+        String ident = getDialogSettings().get(getWizardType()+".template");
+        for (IContentTemplate template : templates)
+            if (template.getIdentifierString().equals(ident))
+                return template;
+        return null;
     }
 
     /**
      * Called when the user manually enters a template URL at the template selection page.
      */
     protected void addTemplateFrom(URL url) throws CoreException {
-        IContentTemplate newTemplate = loadTemplateFromURL(url, null);
-        dynamicallyAddedTemplates.add(newTemplate);
-        templateSelectionPage.setTemplates(getTemplates()); // refresh page
-        templateSelectionPage.setSelectedTemplate(newTemplate);
+        IContentTemplate template = loadTemplateFromURL(url, null);
+        boolean ok = getWizardType()==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(getWizardType());
+        ok = ok && isSuitableTemplate(template);
+        if (!ok) {
+            MessageDialog.openError(getShell(), "Error", 
+                    "The provided content template does not support this wizard dialog; " + 
+                    "try in other dialogs. (The template supports the following wizard types: " + 
+                    StringUtils.join(template.getSupportedWizardTypes(), ", ") + ")");
+        }
+        else {
+            dynamicallyAddedTemplates.add(template);
+            templateSelectionPage.setTemplates(getTemplates()); // refresh page
+            templateSelectionPage.setSelectedTemplate(template);
+        }
     }
 
     /**
@@ -313,12 +343,7 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
 
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
-        // update template list just before flipping to the template selection page.
         if (ArrayUtils.indexOf(getPages(),page) == ArrayUtils.indexOf(getPages(),templateSelectionPage)-1) {
-            List<IContentTemplate> templates = getTemplates();
-            templateSelectionPage.setTemplates(templates);
-            templateSelectionPage.setSelectedTemplate(getLastChosenTemplate(templates));
-            
             return templateSelectionPage;
         }
 
@@ -376,14 +401,6 @@ public abstract class TemplateBasedWizard extends Wizard implements INewWizard {
         }
 
         return super.getNextPage(page);
-    }
-
-    protected IContentTemplate getLastChosenTemplate(List<IContentTemplate> templates) {
-        String ident = getDialogSettings().get(getWizardType()+".template");
-        for (IContentTemplate template : templates)
-            if (template.getIdentifierString().equals(ident))
-                return template;
-        return null;
     }
 
     /**

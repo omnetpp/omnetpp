@@ -8,7 +8,7 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
-import org.omnetpp.common.wizard.TemplateBasedFileWizard;
+import org.omnetpp.common.wizard.TemplateBasedNewFileWizard;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 
@@ -17,7 +17,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
  *
  * @author Andras
  */
-public class NewInifileWizard extends TemplateBasedFileWizard {
+public class NewInifileWizard extends TemplateBasedNewFileWizard {
 
     public NewInifileWizard() {
         setWizardType("inifile");

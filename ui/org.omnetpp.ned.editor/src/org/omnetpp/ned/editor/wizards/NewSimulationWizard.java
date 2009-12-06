@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -38,7 +39,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
  *
  * @author Andras
  */
-public class NewSimulationWizard extends TemplateBasedWizard {
+public class NewSimulationWizard extends TemplateBasedWizard  implements INewWizard {
 
     private IWorkbench workbench;
     private IStructuredSelection selection;
