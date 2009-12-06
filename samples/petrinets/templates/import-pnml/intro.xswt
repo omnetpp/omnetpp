@@ -13,9 +13,9 @@
   <layout x:class="GridLayout" numColumns="1"/>
   <x:children>
 
-    <httpLink x:style="WRAP" URL="http://www2.informatik.hu-berlin.de/top/pnml/about.html">
+    <httpLink x:style="WRAP" URL="http://pnml.org">
         <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-        <text x:p0="This wizard creates a Petri Net model by importing its topology from a <a>Petri Net Markup Language</a> (PNML) file."/>
+        <text x:p0="This wizard creates a Petri Net model by importing its topology from a <a>Petri Net Markup Language</a> (PNML; ISO standard ISO/IEC-15909) file."/>
     </httpLink>
 
     <label x:style="WRAP">
