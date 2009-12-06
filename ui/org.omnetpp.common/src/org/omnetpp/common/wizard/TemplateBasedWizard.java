@@ -8,28 +8,15 @@
 package org.omnetpp.common.wizard;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.ISafeRunnable;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -42,10 +29,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.DetailMessageDialog;
-import org.omnetpp.common.wizard.TemplateSelectionPage.ITemplateProvider;
-import org.osgi.framework.Bundle;
 
 import freemarker.template.TemplateException;
 
@@ -59,17 +43,9 @@ import freemarker.template.TemplateException;
  * @author Andras
  */
 public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWizard {
-    public static final String TEMPLATES_FOLDER_NAME = "templates";
-
-    public static final String CONTENTTEMPLATE_EXTENSIONPOINT_ID = "org.omnetpp.common.wizard.contenttemplates";
-    public static final String PLUGIN_ELEMENT = "plugin";
-    public static final String PLUGINID_ATT = "pluginId";
-    public static final String FOLDER_ATT = "folder";
-
     private String wizardType;
     private IContentTemplate preselectedTemplate; // if this is given, templateSelectionPage will remain null
     private TemplateSelectionPage templateSelectionPage;
-    private List<IContentTemplate> dynamicallyAddedTemplates = new ArrayList<IContentTemplate>();
     
     // selection state:
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
@@ -138,57 +114,19 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
      */
     @Override
     public void addPages() {
-        if (preselectedTemplate == null) {
-            // note: template custom pages will be added in getNextPage() of the template selection page.
-            addPage(templateSelectionPage = new TemplateSelectionPage());
-
-            templateSelectionPage.setTemplateProvider(new ITemplateProvider() {
-                public void initPage(TemplateSelectionPage page) throws CoreException {
-                    initTemplateSelectionPage();
-                }
-
-                public void addTemplateFrom(URL url, TemplateSelectionPage page) throws CoreException {
-                    TemplateBasedWizard.this.addTemplateFrom(url);
-                }
-            });
-        }
-
+        // note: template custom pages will be added in getNextPage() of the template selection page.
+        if (preselectedTemplate == null)
+            addPage(templateSelectionPage = createTemplateSelectionPage());
+        
         // a dummy page is needed, otherwise the Next button will be disabled on the template selection page
         addPage(dummyPage = new DummyPage());
     }
 
-    protected void initTemplateSelectionPage() {
-        List<IContentTemplate> templates = getTemplates();
-        templateSelectionPage.setTemplates(templates);
-        templateSelectionPage.setSelectedTemplate(getRememberedTemplate(templates));
-    }
-
-    protected IContentTemplate getRememberedTemplate(List<IContentTemplate> templates) {
-        String ident = getDialogSettings().get(getWizardType()+".template");
-        for (IContentTemplate template : templates)
-            if (template.getIdentifierString().equals(ident))
-                return template;
-        return null;
-    }
-
     /**
-     * Called when the user manually enters a template URL at the template selection page.
+     * Override if you want to customize the template selection page.
      */
-    protected void addTemplateFrom(URL url) throws CoreException {
-        IContentTemplate template = loadTemplateFromURL(url, null);
-        boolean ok = getWizardType()==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(getWizardType());
-        ok = ok && isSuitableTemplate(template);
-        if (!ok) {
-            MessageDialog.openError(getShell(), "Error", 
-                    "The provided content template does not support this wizard dialog; " + 
-                    "try in other dialogs. (The template supports the following wizard types: " + 
-                    StringUtils.join(template.getSupportedWizardTypes(), ", ") + ")");
-        }
-        else {
-            dynamicallyAddedTemplates.add(template);
-            templateSelectionPage.setTemplates(getTemplates()); // refresh page
-            templateSelectionPage.setSelectedTemplate(template);
-        }
+    protected TemplateSelectionPage createTemplateSelectionPage() {
+        return new TemplateSelectionPage(getWizardType(), true);
     }
 
     /**
@@ -201,140 +139,6 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
      * selection page.)
      */
     protected abstract IContainer getFolder();
-
-    /**
-     * Return the templates to be shown on the Template Selection page. This implementation
-     * returns the templates that match the wizards' type (see getWizardType()).
-     * Override this method to add more templates, or to introduce additional
-     * filtering (i.e. by options the user selected on previous wizard pages,
-     * such as the "With C++ Support" checkbox in the New OMNeT++ Project wizard).
-     */
-    protected List<IContentTemplate> getTemplates() {
-        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        result.addAll(loadBuiltinTemplates(getWizardType()));
-        result.addAll(loadTemplatesFromWorkspace(getWizardType()));
-        result.addAll(dynamicallyAddedTemplates);
-        //TODO define an ITemplateSource interface and a matching extension point
-        return result;
-    }
-
-    /**
-     * Utility method for the "Clone Built-in Template" wizard wizard.
-     */
-    public List<IContentTemplate> getAllTemplates() {
-        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        result.addAll(loadBuiltinTemplates(null));
-        result.addAll(loadTemplatesFromWorkspace(null));
-        return result;
-    }
-
-    /**
-     * Loads built-in templates from all plug-ins registered via the
-     * org.omnetpp.common.wizard.contenttemplates extension point.
-     */
-    protected List<IContentTemplate> loadBuiltinTemplates(final String wizardType) {
-        final List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        try {
-            IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(CONTENTTEMPLATE_EXTENSIONPOINT_ID);
-            for (IConfigurationElement e : config) {
-                Assert.isTrue(e.getName().equals(PLUGIN_ELEMENT));
-                final String pluginName = e.getAttribute(PLUGINID_ATT);
-                final String folderName = StringUtils.defaultIfEmpty(e.getAttribute(FOLDER_ATT), TEMPLATES_FOLDER_NAME);
-                ISafeRunnable runnable = new ISafeRunnable() {
-                    public void run() throws Exception {
-                        Bundle bundle = Platform.getBundle(pluginName);
-                        if (bundle == null)
-                            throw new RuntimeException("Cannot resolve bundle " + pluginName);
-                        else
-                            result.addAll(loadBuiltinTemplates(bundle, folderName, wizardType));
-                    }
-                    public void handleException(Throwable e) {
-                        CommonPlugin.logError("Cannot read templates from plug-in " + pluginName, e);
-                    }
-                };
-                SafeRunner.run(runnable);
-            }
-        } catch (Exception ex) {
-            CommonPlugin.logError("Error loading built-in templates from plug-ins", ex);
-        }
-        return result;
-    }
-
-    /**
-     * Loads built-in templates that support the given wizard type from the given plugin.
-     */
-    @SuppressWarnings("unchecked")
-    protected List<IContentTemplate> loadBuiltinTemplates(Bundle bundle, String folderName, String wizardType) {
-        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        try {
-            Enumeration e = bundle.findEntries(folderName, FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME, true);
-            if (e != null) {
-                while (e.hasMoreElements()) {
-                    URL propFileUrl = (URL) e.nextElement();
-                    URL templateUrl = new URL(StringUtils.removeEnd(propFileUrl.toString(), FileBasedContentTemplate.TEMPLATE_PROPERTIES_FILENAME));
-                    IContentTemplate template = loadTemplateFromURL(templateUrl, bundle);
-                    if (wizardType==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(wizardType))
-                        if (isSuitableTemplate(template))
-                            result.add(template);
-                }
-            }
-        } catch (Exception e) {
-            CommonPlugin.logError("TemplateBasedWizard: Could not load content templates from plug-ins", e);
-        }
-        return result;
-    }
-
-    /**
-     * Factory method used by loadBuiltinTemplates(); override if you subclass
-     * from FileBasedContentTemplate. bundleOfTemplate may be null.
-     */
-    protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
-        return new FileBasedContentTemplate(templateUrl, bundleOfTemplate);
-    }
-
-    /**
-     * Utility method for getTemplates()
-     */
-    protected List<IContentTemplate> loadTemplatesFromWorkspace(String wizardType) {
-        // check the "templates/" subdirectory of each OMNeT++ project
-        List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        for (IProject project : ProjectUtils.getOmnetppProjects()) {
-            IFolder rootFolder = project.getFolder(new Path(TEMPLATES_FOLDER_NAME));
-            if (rootFolder.exists()) {
-                try {
-                    // each template is a folder which contains a "template.properties" file
-                    for (IResource resource : rootFolder.members()) {
-                        if (resource instanceof IFolder && FileBasedContentTemplate.looksLikeTemplateFolder((IFolder)resource)) {
-                            IFolder folder = (IFolder)resource;
-                            IContentTemplate template = loadTemplateFromWorkspace(folder);
-                            if (wizardType==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(wizardType))
-                                if (isSuitableTemplate(template))
-                                    result.add(template);
-                        }
-                    }
-                } catch (CoreException e) {
-                    CommonPlugin.logError("Error loading project templates from " + rootFolder.toString(), e);
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Override for further filtering of templates (beyond wizardType). The default 
-     * implementation just returns true. 
-     */
-    protected boolean isSuitableTemplate(IContentTemplate template) {
-        return true;
-    }
-
-    /**
-     * Factory method used by loadTemplatesFromWorkspace(); override if you subclass
-     * from FileBasedContentTemplate.
-     */
-    protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
-        return new FileBasedContentTemplate(folder);
-    }
 
     public TemplateSelectionPage getTemplateSelectionPage() {
         return templateSelectionPage;

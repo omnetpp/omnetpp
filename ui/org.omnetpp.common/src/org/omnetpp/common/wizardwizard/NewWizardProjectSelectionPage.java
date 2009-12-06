@@ -27,7 +27,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.wizard.TemplateBasedWizard;
+import org.omnetpp.common.wizard.TemplateSelectionPage;
 
 
 /**
@@ -125,7 +125,7 @@ public class NewWizardProjectSelectionPage extends WizardPage {
             return;
         }
         IProject project = (IProject)sel;
-        IFolder folder = project.getFolder(new Path(TemplateBasedWizard.TEMPLATES_FOLDER_NAME + "/" + wizardName));
+        IFolder folder = project.getFolder(new Path(TemplateSelectionPage.TEMPLATES_FOLDER_NAME + "/" + wizardName));
         if (folder.exists()) {
             setErrorMessage("Project already contains a wizard with that name");
             setPageComplete(false);
@@ -145,6 +145,6 @@ public class NewWizardProjectSelectionPage extends WizardPage {
 
     public IContainer getWizardFolder() {
         IProject project = getProject();
-        return project.getFolder(new Path(TemplateBasedWizard.TEMPLATES_FOLDER_NAME + "/" + getWizardName()));
+        return project.getFolder(new Path(TemplateSelectionPage.TEMPLATES_FOLDER_NAME + "/" + getWizardName()));
     }
 }

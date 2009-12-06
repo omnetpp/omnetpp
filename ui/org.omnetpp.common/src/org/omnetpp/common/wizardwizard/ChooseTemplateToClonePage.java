@@ -1,13 +1,9 @@
 package org.omnetpp.common.wizardwizard;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.ICustomWizardPage;
-import org.omnetpp.common.wizard.TemplateBasedWizard;
 import org.omnetpp.common.wizard.TemplateSelectionPage;
 
 /**
@@ -16,15 +12,7 @@ import org.omnetpp.common.wizard.TemplateSelectionPage;
  */
 public class ChooseTemplateToClonePage extends TemplateSelectionPage implements ICustomWizardPage {
     public ChooseTemplateToClonePage(String name, IContentTemplate creatorTemplate, String condition) {
-        super();
-    }
-
-    @Override
-    public void createControl(Composite parent) {
-        super.createControl(parent);
-
-        List<IContentTemplate> templates = ((TemplateBasedWizard)getWizard()).getAllTemplates();
-        setTemplates(templates);
+        super(null, true);
     }
 
     @Override

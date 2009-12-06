@@ -39,6 +39,7 @@ import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.ICustomWizardPage;
+import org.omnetpp.common.wizard.TemplateSelectionPage;
 import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 import org.osgi.framework.Bundle;
@@ -198,6 +199,38 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
     }
 
     @Override
+    protected TemplateSelectionPage createTemplateSelectionPage() {
+        // we have a special template type and special template filtering, so 
+        // need to override a few methods in TemplateSelectionPage
+        return new TemplateSelectionPage(getWizardType(), true) {
+            @Override
+            protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
+                return new FileBasedProjectTemplate(folder);
+            }
+            
+            @Override
+            protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
+                return new FileBasedProjectTemplate(templateUrl, bundleOfTemplate);
+            }
+
+            @Override
+            protected boolean isSuitableTemplate(IContentTemplate template) {
+                if (!withCplusplusSupport()) {
+                    // for projects without C++, don't show templates that require C++
+                    String reqCppSetting = template.getTemplateProperty(FileBasedProjectTemplate.PROP_REQUIRESCPLUSPLUS);
+                    boolean requiresCPluspPlus = 
+                        (!StringUtils.isEmpty(reqCppSetting) && XSWTDataBinding.toBoolean(reqCppSetting)) ||
+                        !StringUtils.isEmpty(template.getTemplateProperty(FileBasedProjectTemplate.PROP_SOURCEFOLDERS)) ||
+                        !StringUtils.isEmpty(template.getTemplateProperty(FileBasedProjectTemplate.PROP_MAKEMAKEOPTIONS));
+                    if (requiresCPluspPlus)
+                        return false;
+                }
+                return super.isSuitableTemplate(template);
+            }
+        };
+    }
+    
+    @Override
     protected WizardNewProjectCreationPage createProjectCreationPage() {
         return new NewOmnetppCppProjectCreationPage();  // custom one, with the "[] support C++ development" checkbox
     }
@@ -218,21 +251,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
         return ((NewOmnetppCppProjectCreationPage)getProjectCreationPage()).withCplusplusSupport();
     }
 
-    @Override
-    protected boolean isSuitableTemplate(IContentTemplate template) {
-        if (!withCplusplusSupport()) {
-            // for projects without C++, don't show templates that require C++
-            String reqCppSetting = template.getTemplateProperty(FileBasedProjectTemplate.PROP_REQUIRESCPLUSPLUS);
-            boolean requiresCPluspPlus = 
-                (!StringUtils.isEmpty(reqCppSetting) && XSWTDataBinding.toBoolean(reqCppSetting)) ||
-                !StringUtils.isEmpty(template.getTemplateProperty(FileBasedProjectTemplate.PROP_SOURCEFOLDERS)) ||
-                !StringUtils.isEmpty(template.getTemplateProperty(FileBasedProjectTemplate.PROP_MAKEMAKEOPTIONS));
-            if (requiresCPluspPlus)
-                return false;
-        }
-        return super.isSuitableTemplate(template);
-    }
-    
     @Override
     public boolean performFinish() {
         // Note: this is a small hack to enforce that the nested CC wizard gets invoked
@@ -273,13 +291,4 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
         }
     }
 
-    @Override
-    protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
-        return new FileBasedProjectTemplate(folder);
-    }
-
-    @Override
-    protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
-        return new FileBasedProjectTemplate(templateUrl, bundleOfTemplate);
-    }
 }
