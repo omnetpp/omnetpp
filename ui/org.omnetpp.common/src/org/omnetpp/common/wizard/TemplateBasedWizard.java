@@ -51,7 +51,10 @@ import freemarker.template.TemplateException;
 
 
 /**
- * Generic "New..." wizard which supports dynamically contributed templates.
+ * A generic wizard which supports content templates (IContentTemplate).
+ * The wizard may come up with a template selection page, or with a pre-selected template.
+ * The former mode is the default; the latter mode can be selected by calling
+ * setPreselectedTemplate() right after wizard creation.
  *
  * @author Andras
  */
@@ -64,6 +67,7 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
     public static final String FOLDER_ATT = "folder";
 
     private String wizardType;
+    private IContentTemplate preselectedTemplate; // if this is given, templateSelectionPage will remain null
     private TemplateSelectionPage templateSelectionPage;
     private List<IContentTemplate> dynamicallyAddedTemplates = new ArrayList<IContentTemplate>();
     
@@ -98,10 +102,23 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
             section = workbenchSettings.addNewSection("TemplateBasedWizard");
         setDialogSettings(section);
     }
-    
+
     public void init(IWorkbench workbench, IStructuredSelection selection) {
     }
 
+    /**
+     * By default, the wizard will start with a template selection page. To start with
+     * a specific template instead (and skip the page), call this method right after
+     * wizard creation.
+     */
+    public void setPreselectedTemplate(IContentTemplate preselectedTemplate) {
+        if (preselectedTemplate != null)
+            throw new NullPointerException("argument cannot be null");
+        if (templateSelectionPage != null)
+            throw new IllegalArgumentException("too late: template selection page already created and added");
+        this.preselectedTemplate = preselectedTemplate;
+    }
+    
     public String getWizardType() {
         return wizardType;
     }
@@ -121,18 +138,20 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
      */
     @Override
     public void addPages() {
-        // note: template custom pages will be added in getNextPage() of the template selection page.
-        addPage(templateSelectionPage = new TemplateSelectionPage());
-        
-        templateSelectionPage.setTemplateProvider(new ITemplateProvider() {
-            public void initPage(TemplateSelectionPage page) throws CoreException {
-                initTemplateSelectionPage();
-            }
+        if (preselectedTemplate == null) {
+            // note: template custom pages will be added in getNextPage() of the template selection page.
+            addPage(templateSelectionPage = new TemplateSelectionPage());
 
-            public void addTemplateFrom(URL url, TemplateSelectionPage page) throws CoreException {
-                TemplateBasedWizard.this.addTemplateFrom(url);
-            }
-        });
+            templateSelectionPage.setTemplateProvider(new ITemplateProvider() {
+                public void initPage(TemplateSelectionPage page) throws CoreException {
+                    initTemplateSelectionPage();
+                }
+
+                public void addTemplateFrom(URL url, TemplateSelectionPage page) throws CoreException {
+                    TemplateBasedWizard.this.addTemplateFrom(url);
+                }
+            });
+        }
 
         // a dummy page is needed, otherwise the Next button will be disabled on the template selection page
         addPage(dummyPage = new DummyPage());
@@ -322,7 +341,7 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
     }
 
     public IContentTemplate getSelectedTemplate() {
-        return templateSelectionPage.getSelectedTemplate();
+        return preselectedTemplate!=null ? preselectedTemplate : templateSelectionPage.getSelectedTemplate();
     }
 
     public CreationContext getCreationContext() {
@@ -343,9 +362,8 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
 
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
-        if (ArrayUtils.indexOf(getPages(),page) == ArrayUtils.indexOf(getPages(),templateSelectionPage)-1) {
+        if (templateSelectionPage!=null && ArrayUtils.indexOf(getPages(),page) == ArrayUtils.indexOf(getPages(),templateSelectionPage)-1)
             return templateSelectionPage;
-        }
 
         // if there is a template selected, return its first enabled custom page (if it has one)
         if (page == templateSelectionPage) {
@@ -433,11 +451,11 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
 
         // use the selected template (if we are before the template selection page, this will be
         // the "default" template, i.e. the one with "templateIsDefault=true")
-        final IContentTemplate template = templateSelectionPage.getSelectedTemplate();
+        final IContentTemplate template = preselectedTemplate!=null ? preselectedTemplate : templateSelectionPage.getSelectedTemplate();
         getDialogSettings().put(getWizardType()+".template", template.getIdentifierString()); // see also getLastChosenTemplate()
 
         // if we are on or before the template selection page, create a fresh context with the selected template
-        if (finishingPage.getWizard()==this && ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
+        if (preselectedTemplate==null && finishingPage.getWizard()==this && ArrayUtils.indexOf(getPages(),finishingPage) <= ArrayUtils.indexOf(getPages(),templateSelectionPage)) {
             context = template!=null ? createContext(template, folder) : null;
             templateCustomPages = new ICustomWizardPage[0]; // no pages
         }
