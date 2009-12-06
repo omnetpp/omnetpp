@@ -450,7 +450,8 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
         // sanity check
         Assert.isTrue((template==null) == (context==null));
         Assert.isTrue(template==null || context.getTemplate() == template);
-        Assert.isTrue(template==null || context.getFolder().equals(folder));
+        Assert.isTrue(template==null || equal(context.getFolder(), folder));
+        checkFolder(folder);
 
         // store custom page content before navigating away
         if (ArrayUtils.contains(templateCustomPages, finishingPage))
@@ -463,7 +464,7 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
                 if (template != null) {
                     try {
                         context.setProgressMonitor(monitor);
-                        Assert.isTrue(context.getFolder().equals(folder));
+                        Assert.isTrue(equal(context.getFolder(), folder));
                         template.performFinish(context);
                     } finally {
                         context.setProgressMonitor(null);
@@ -505,6 +506,15 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
         return true;
     }
 
+    protected void checkFolder(IContainer folder) {
+        // default policy: folder is null only for export wizards
+        Assert.isTrue((folder==null) == getWizardType().equals("export"));
+    }
+
+    private static boolean equal(Object o1, Object o2) {
+        return o1==null ? o2==null : o1.equals(o2);    
+    }
+    
     private String messageOf(Throwable e) {
         String message = e.getMessage();
         if (StringUtils.isEmpty(message))

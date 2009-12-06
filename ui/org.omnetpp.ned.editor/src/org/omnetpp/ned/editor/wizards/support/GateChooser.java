@@ -168,7 +168,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
      * Adapter interface.
      */
     public void setValue(Object value, CreationContext context) {
-        contextProject = context.getFolder().getProject();
+        contextProject = context.getFolder() == null ? null : context.getFolder().getProject();
         setNedType(lookupModuleType(nedTypeName, contextProject));
         setGateName(value.toString());
     }

@@ -453,7 +453,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
                 if (matchesAny(fileName, verbatimFilePatterns) || (!isFtlFile && !matchesAny(fileName, ignoreResourcePatterns)))
                     createVerbatimFile(fileName, inputStream, context);
                 else if (isFtlFile && !matchesAny(fileName, ignoreResourcePatterns))
-                    createTemplateFile(fileName.replaceFirst("\\.ftl$", ""), getFreemarkerConfiguration(), fileName, context);
+                    createTemplatedFile(fileName.replaceFirst("\\.ftl$", ""), getFreemarkerConfiguration(), fileName, context);
             }
         }
     }
@@ -561,6 +561,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
     }
 
     public void cloneTo(CreationContext context) throws CoreException {
+        assertContextFolder(context);
         for (String fileName : getFileList()) {
             if (!fileName.endsWith("/")) {
                 IFile destFile = context.getFolder().getFile(new Path(fileName));

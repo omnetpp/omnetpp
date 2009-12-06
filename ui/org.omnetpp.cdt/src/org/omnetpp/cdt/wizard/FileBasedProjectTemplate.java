@@ -72,6 +72,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     public void performFinish(CreationContext context) throws CoreException {
         super.performFinish(context);
 
+        Assert.isTrue(context.getFolder() instanceof IProject);
         if (getTemplateFolder()!=null && XSWTDataBinding.toBoolean(context.getVariables().get(PROP_ADDPROJECTREFERENCE)))
             ProjectUtils.addReferencedProject((IProject)context.getFolder(), getTemplateFolder().getProject(), context.getProgressMonitor());
 
@@ -95,6 +96,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
      * Creates a default build spec (project root being makemake folder)
      */
     protected void createDefaultBuildSpec(CreationContext context) throws CoreException {
+        Assert.isTrue(context.getFolder() instanceof IProject);
         BuildSpecification.createInitial((IProject)context.getFolder()).save();
     }
 
@@ -102,6 +104,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
      * Creates the given folders, and a folder. If the parent folder(s) do not exist, they are created.
      */
     public void createAndSetNedSourceFolders(String[] projectRelativePaths, CreationContext context) throws CoreException {
+        Assert.isTrue(context.getFolder() instanceof IProject);
         for (String path : projectRelativePaths)
             createFolder(path, context);
         IContainer[] folders = new IContainer[projectRelativePaths.length];
@@ -114,6 +117,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
      * Sets C++ source folders to the given list.
      */
     public void createAndSetSourceFolders(String[] projectRelativePaths, CreationContext context) throws CoreException {
+        Assert.isTrue(context.getFolder() instanceof IProject);
         for (String path : projectRelativePaths)
             createFolder(path, context);
         IContainer[] folders = new IContainer[projectRelativePaths.length];
@@ -130,6 +134,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         if (System.getProperty("org.omnetpp.test.unit.running") != null)
             return; // in the test case we don't create a full CDT project, so the code below would throw NPE
 
+        Assert.isTrue(context.getFolder() instanceof IProject);
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription((IProject)context.getFolder(), true);
         int n = folders.length;
         for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
@@ -165,6 +170,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
      * folderPath2, options2, etc.
      */
     public void createBuildSpec(Map<String,String> pathsAndMakemakeOptions, CreationContext context) throws CoreException {
+        Assert.isTrue(context.getFolder() instanceof IProject);
         IProject project = (IProject)context.getFolder();
         BuildSpecification buildSpec = BuildSpecification.createBlank(project);
         for (String folderPath: pathsAndMakemakeOptions.keySet()) {

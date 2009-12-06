@@ -163,7 +163,7 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
      */
     public void setValue(Object value, CreationContext context) {
         String nedTypeName = value instanceof INEDTypeInfo ? ((INEDTypeInfo)value).getFullyQualifiedName() : value.toString();
-        setProject(context.getFolder().getProject());
+        setProject(context.getFolder() == null ? null : context.getFolder().getProject());
         setNedName(nedTypeName);
     }
 

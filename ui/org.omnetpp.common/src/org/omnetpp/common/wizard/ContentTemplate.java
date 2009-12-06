@@ -44,7 +44,6 @@ import org.omnetpp.common.wizard.support.ProcessUtils;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
-import freemarker.log.Logger;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -162,12 +161,16 @@ public abstract class ContentTemplate implements IContentTemplate {
         variables.put("templateName", name);
         variables.put("templateDescription", description);
         variables.put("templateCategory", category);
-        variables.put("targetFolder", folder.getFullPath().toString());
-        variables.put("rawProjectName", folder.getProject().getName());
-        String projectNameIdent = StringUtils.makeValidIdentifier(folder.getProject().getName());
-        variables.put("projectName", StringUtils.capitalize(projectNameIdent)); // XXX should not be this ProjectName ?
-        variables.put("projectname", StringUtils.lowerCase(projectNameIdent));
-        variables.put("PROJECTNAME", StringUtils.upperCase(projectNameIdent));
+        if (folder != null) {
+            // note: folder is null only for the export wizard; all other wizards should have a folder given
+            variables.put("targetFolder", folder.getFullPath().toString());
+            variables.put("rawProjectName", folder.getProject().getName());
+            String projectNameIdent = StringUtils.makeValidIdentifier(folder.getProject().getName());
+            variables.put("projectName", StringUtils.capitalize(projectNameIdent));
+            variables.put("ProjectName", StringUtils.capitalize(projectNameIdent));
+            variables.put("projectname", StringUtils.lowerCase(projectNameIdent));
+            variables.put("PROJECTNAME", StringUtils.upperCase(projectNameIdent));
+        }
         Calendar cal = Calendar.getInstance();
         variables.put("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
         variables.put("year", ""+cal.get(Calendar.YEAR));
@@ -209,6 +212,11 @@ public abstract class ContentTemplate implements IContentTemplate {
         return context;
     }
 
+    protected void assertContextFolder(CreationContext context) {
+        if (context.getFolder() == null)
+            throw new IllegalStateException("This method cannot be used when context.getFolder() is null");
+    }
+    
     public ClassLoader getClassLoader() {
         if (classLoader == null)
             classLoader = createClassLoader();
@@ -347,8 +355,9 @@ public abstract class ContentTemplate implements IContentTemplate {
      * performing variable substitutions in it. If the template contained
      * &lt;@setoutput path="..."&gt; tags, multiple files will be saved.
      */
-    protected void createTemplateFile(String containerRelativePath, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
-        createTemplateFile(context.getFolder().getFile(new Path(containerRelativePath)), freemarkerConfig, templateName, context);
+    protected void createTemplatedFile(String containerRelativePath, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
+        assertContextFolder(context);
+        createTemplatedFile(context.getFolder().getFile(new Path(containerRelativePath)), freemarkerConfig, templateName, context);
     }
 
     /**
@@ -356,7 +365,7 @@ public abstract class ContentTemplate implements IContentTemplate {
      * performing variable substitutions in it. If the template contained
      * &lt;@setoutput path="..."&gt; tags, multiple files will be saved.
      */
-    protected void createTemplateFile(IFile file, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
+    protected void createTemplatedFile(IFile file, Configuration freemarkerConfig, String templateName, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClassLoader());
@@ -417,6 +426,7 @@ public abstract class ContentTemplate implements IContentTemplate {
      * If the parent folder(s) do not exist, they are created. The project must exist though.
      */
     protected void createVerbatimFile(String containerRelativePath, InputStream inputStream, CreationContext context) throws CoreException {
+        assertContextFolder(context);
         createVerbatimFile(context.getFolder().getFile(new Path(containerRelativePath)), inputStream, context);
     }
 
@@ -464,6 +474,7 @@ public abstract class ContentTemplate implements IContentTemplate {
      * do not exist, they are created. The project must exist though.
      */
     protected void createFolder(String containerRelativePath, CreationContext context) throws CoreException {
+        assertContextFolder(context);
         createFolder(context.getFolder().getFolder(new Path(containerRelativePath)), context);
     }
 
