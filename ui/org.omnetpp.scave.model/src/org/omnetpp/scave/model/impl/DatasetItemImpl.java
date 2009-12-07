@@ -31,22 +31,22 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public abstract class DatasetItemImpl extends EObjectImpl implements DatasetItem {
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected DatasetItemImpl() {
-		super();
-	}
+        super();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	protected EClass eStaticClass() {
-		return ScaveModelPackage.Literals.DATASET_ITEM;
-	}
+        return ScaveModelPackage.Literals.DATASET_ITEM;
+    }
 
 } //DatasetItemImpl

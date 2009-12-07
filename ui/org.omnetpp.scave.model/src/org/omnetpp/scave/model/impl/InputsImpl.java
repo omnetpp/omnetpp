@@ -46,118 +46,118 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class InputsImpl extends EObjectImpl implements Inputs {
 	/**
-	 * The cached value of the '{@link #getInputs() <em>Inputs</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getInputs() <em>Inputs</em>}' containment reference list.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getInputs()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getInputs()
+     * @generated
+     * @ordered
+     */
 	protected EList<InputFile> inputs;
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected InputsImpl() {
-		super();
-	}
+        super();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	protected EClass eStaticClass() {
-		return ScaveModelPackage.Literals.INPUTS;
-	}
+        return ScaveModelPackage.Literals.INPUTS;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public EList<InputFile> getInputs() {
-		if (inputs == null) {
-			inputs = new EObjectContainmentEList<InputFile>(InputFile.class, this, ScaveModelPackage.INPUTS__INPUTS);
-		}
-		return inputs;
-	}
+        if (inputs == null) {
+            inputs = new EObjectContainmentEList<InputFile>(InputFile.class, this, ScaveModelPackage.INPUTS__INPUTS);
+        }
+        return inputs;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case ScaveModelPackage.INPUTS__INPUTS:
-				return ((InternalEList<?>)getInputs()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.INPUTS__INPUTS:
+                return ((InternalEList<?>)getInputs()).basicRemove(otherEnd, msgs);
+        }
+        return super.eInverseRemove(otherEnd, featureID, msgs);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case ScaveModelPackage.INPUTS__INPUTS:
-				return getInputs();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.INPUTS__INPUTS:
+                return getInputs();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@SuppressWarnings("unchecked")
 		@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case ScaveModelPackage.INPUTS__INPUTS:
-				getInputs().clear();
-				getInputs().addAll((Collection<? extends InputFile>)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.INPUTS__INPUTS:
+                getInputs().clear();
+                getInputs().addAll((Collection<? extends InputFile>)newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.INPUTS__INPUTS:
-				getInputs().clear();
-				return;
-		}
-		super.eUnset(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.INPUTS__INPUTS:
+                getInputs().clear();
+                return;
+        }
+        super.eUnset(featureID);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.INPUTS__INPUTS:
-				return inputs != null && !inputs.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.INPUTS__INPUTS:
+                return inputs != null && !inputs.isEmpty();
+        }
+        return super.eIsSet(featureID);
+    }
 
 } //InputsImpl

@@ -36,136 +36,136 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class ExceptImpl extends EObjectImpl implements Except {
 	/**
-	 * The default value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
-	 * <!-- begin-user-doc -->
+     * The default value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getFilterPattern()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getFilterPattern()
+     * @generated
+     * @ordered
+     */
 	protected static final String FILTER_PATTERN_EDEFAULT = null;
 	/**
-	 * The cached value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getFilterPattern()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getFilterPattern()
+     * @generated
+     * @ordered
+     */
 	protected String filterPattern = FILTER_PATTERN_EDEFAULT;
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected ExceptImpl() {
-		super();
-	}
+        super();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	protected EClass eStaticClass() {
-		return ScaveModelPackage.Literals.EXCEPT;
-	}
+        return ScaveModelPackage.Literals.EXCEPT;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public String getFilterPattern() {
-		return filterPattern;
-	}
+        return filterPattern;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public void setFilterPattern(String newFilterPattern) {
-		String oldFilterPattern = filterPattern;
-		filterPattern = newFilterPattern;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.EXCEPT__FILTER_PATTERN, oldFilterPattern, filterPattern));
-	}
+        String oldFilterPattern = filterPattern;
+        filterPattern = newFilterPattern;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.EXCEPT__FILTER_PATTERN, oldFilterPattern, filterPattern));
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
-				return getFilterPattern();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
+                return getFilterPattern();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
-				setFilterPattern((String)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
+                setFilterPattern((String)newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
-				setFilterPattern(FILTER_PATTERN_EDEFAULT);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
+                setFilterPattern(FILTER_PATTERN_EDEFAULT);
+                return;
+        }
+        super.eUnset(featureID);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
-				return FILTER_PATTERN_EDEFAULT == null ? filterPattern != null : !FILTER_PATTERN_EDEFAULT.equals(filterPattern);
-		}
-		return super.eIsSet(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
+                return FILTER_PATTERN_EDEFAULT == null ? filterPattern != null : !FILTER_PATTERN_EDEFAULT.equals(filterPattern);
+        }
+        return super.eIsSet(featureID);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+        if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (filterPattern: ");
-		result.append(filterPattern);
-		result.append(')');
-		return result.toString();
-	}
+        StringBuffer result = new StringBuffer(super.toString());
+        result.append(" (filterPattern: ");
+        result.append(filterPattern);
+        result.append(')');
+        return result.toString();
+    }
 
 } //ExceptImpl

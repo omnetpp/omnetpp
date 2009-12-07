@@ -35,135 +35,135 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class LineChartImpl extends ChartImpl implements LineChart {
 	/**
-	 * The default value of the '{@link #getLineNameFormat() <em>Line Name Format</em>}' attribute.
-	 * <!-- begin-user-doc -->
+     * The default value of the '{@link #getLineNameFormat() <em>Line Name Format</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getLineNameFormat()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getLineNameFormat()
+     * @generated
+     * @ordered
+     */
 	protected static final String LINE_NAME_FORMAT_EDEFAULT = null;
 	/**
-	 * The cached value of the '{@link #getLineNameFormat() <em>Line Name Format</em>}' attribute.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getLineNameFormat() <em>Line Name Format</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getLineNameFormat()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getLineNameFormat()
+     * @generated
+     * @ordered
+     */
 	protected String lineNameFormat = LINE_NAME_FORMAT_EDEFAULT;
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
     protected LineChartImpl() {
-		super();
-	}
+        super();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
     @Override
 				protected EClass eStaticClass() {
-		return ScaveModelPackage.Literals.LINE_CHART;
-	}
+        return ScaveModelPackage.Literals.LINE_CHART;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public String getLineNameFormat() {
-		return lineNameFormat;
-	}
+        return lineNameFormat;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public void setLineNameFormat(String newLineNameFormat) {
-		String oldLineNameFormat = lineNameFormat;
-		lineNameFormat = newLineNameFormat;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT, oldLineNameFormat, lineNameFormat));
-	}
+        String oldLineNameFormat = lineNameFormat;
+        lineNameFormat = newLineNameFormat;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT, oldLineNameFormat, lineNameFormat));
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
-				return getLineNameFormat();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
+                return getLineNameFormat();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
-				setLineNameFormat((String)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
+                setLineNameFormat((String)newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
-				setLineNameFormat(LINE_NAME_FORMAT_EDEFAULT);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
+                setLineNameFormat(LINE_NAME_FORMAT_EDEFAULT);
+                return;
+        }
+        super.eUnset(featureID);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
-				return LINE_NAME_FORMAT_EDEFAULT == null ? lineNameFormat != null : !LINE_NAME_FORMAT_EDEFAULT.equals(lineNameFormat);
-		}
-		return super.eIsSet(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
+                return LINE_NAME_FORMAT_EDEFAULT == null ? lineNameFormat != null : !LINE_NAME_FORMAT_EDEFAULT.equals(lineNameFormat);
+        }
+        return super.eIsSet(featureID);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+        if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (lineNameFormat: ");
-		result.append(lineNameFormat);
-		result.append(')');
-		return result.toString();
-	}
+        StringBuffer result = new StringBuffer(super.toString());
+        result.append(" (lineNameFormat: ");
+        result.append(lineNameFormat);
+        result.append(')');
+        return result.toString();
+    }
 
 } //LineChartImpl
