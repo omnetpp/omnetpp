@@ -27,7 +27,7 @@
             icon="icons/xswt.gif"
             category="com.swtworkbench.community.xswt.editor"
             class="com.swtworkbench.community.xswt.editor.wizards.XSWTNewWizard"
-            id="com.swtworkbench.community.xswt.editor.wizards.XSWTNewWizard">
+            id="com.swtworkbench.community.xswt.editor.wizards.NewXSWTFile">
       </wizard>
    </extension>
 -->

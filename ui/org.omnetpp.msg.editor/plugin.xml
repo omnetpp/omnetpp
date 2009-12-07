@@ -66,7 +66,7 @@
             class="org.omnetpp.msg.editor.wizard.NewMsgFileWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/newmsgfile.gif"
-            id="org.omnetpp.msg.editor.wizard.new.file"
+            id="org.omnetpp.msg.editor.wizards.NewMsgFile"
             name="Message Definition (msg)"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
@@ -80,7 +80,7 @@
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.msg.editor.wizard.new.file">
+                 wizardId="org.omnetpp.msg.editor.wizards.NewMsgFile">
               <enablement></enablement>
            </commonWizard>
   </extension>

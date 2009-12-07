@@ -63,11 +63,11 @@
            class="org.omnetpp.scave.wizard.ScaveModelWizard"
            finalPerspective="org.omnetpp.main.OmnetppPerspective"
            icon="icons/newscavefile.png"
-           id="org.omnetpp.scave.wizard.ScaveModelModelWizardID"
+           id="org.omnetpp.scave.wizards.NewScaveFile"
            name="Analysis File (anf)"
            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
         <description>
-           Create a new Analysis file that describes how charts and plottings should be created from recorded data.
+           Create a new Analysis file that describes how charts and plots are created from simulation results.
         </description>
      </wizard>
   </extension>
@@ -77,7 +77,7 @@
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.scave.wizard.ScaveModelModelWizardID">
+                 wizardId="org.omnetpp.scave.wizards.NewScaveFile">
               <enablement></enablement>
            </commonWizard>
   </extension>

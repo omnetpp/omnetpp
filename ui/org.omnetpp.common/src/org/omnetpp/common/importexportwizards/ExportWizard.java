@@ -34,6 +34,6 @@ public class ExportWizard extends TemplateBasedWizard implements IExportWizard {
     
     @Override
     protected IContainer getFolder() {
-        return null; //FIXME
+        return null;
     }
 }

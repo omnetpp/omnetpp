@@ -14,7 +14,7 @@
             class="org.omnetpp.common.wizardwizard.NewWizardWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewWizard.png"
-            id="org.omnetpp.common.wizard.newwizardwizard"
+            id="org.omnetpp.common.wizards.NewWizard"
             name="Wizard"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
       </wizard>
@@ -29,7 +29,7 @@
             category="org.omnetpp.importwizards"
             class="org.omnetpp.common.importexportwizards.ImportWizard"
             icon="icons/obj16/importwizard.png"
-            id="org.omnetpp.common.wizard.importwizard"
+            id="org.omnetpp.common.wizards.ImportWizard"
             name="Networks, simulations and other items">
       </wizard>
    </extension>
@@ -43,7 +43,7 @@
            category="org.omnetpp.exportwizards"
            class="org.omnetpp.common.importexportwizards.ExportWizard"
            icon="icons/obj16/exportwizard.png"
-           id="org.omnetpp.common.wizard.exportwizard"
+           id="org.omnetpp.common.wizards.ExportWizard"
            name="Networks, simulations and other items">
      </wizard>
    </extension>

@@ -2,6 +2,7 @@ package org.omnetpp.common.importexportwizards;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -63,6 +64,11 @@ public class ImportWizard extends Wizard implements IImportWizard {
                 return type;
         
         // looks like it does not support anything
+        return null;
+    }
+
+    
+    protected IWizard createWizard(String wizardType) {
         return null;
     }
 

@@ -37,7 +37,7 @@
             class="org.omnetpp.ned.editor.wizards.NedFileWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/newnedfile.gif"
-            id="org.omnetpp.ned.editor.wizard.new.file"
+            id="org.omnetpp.ned.editor.wizards.NewNedFile"
             name="Network Description File (NED)"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
@@ -49,7 +49,7 @@
             class="org.omnetpp.ned.editor.wizards.NewSimpleModuleWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewSimpleModule.png"
-            id="org.omnetpp.ned.editor.wizard.new.simplemodule"
+            id="org.omnetpp.ned.editor.wizards.NewSimpleModule"
             name="Simple Module"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
@@ -61,7 +61,7 @@
             class="org.omnetpp.ned.editor.wizards.NewCompoundModuleWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewCompoundModule.png"
-            id="org.omnetpp.ned.editor.wizard.new.compoundmodule"
+            id="org.omnetpp.ned.editor.wizards.NewCompoundModule"
             name="Compound Module"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
@@ -73,7 +73,7 @@
             class="org.omnetpp.ned.editor.wizards.NewNetworkWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewNetwork.png"
-            id="org.omnetpp.ned.editor.wizard.new.network"
+            id="org.omnetpp.ned.editor.wizards.NewNetwork"
             name="Network"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
@@ -85,7 +85,7 @@
             class="org.omnetpp.ned.editor.wizards.NewSimulationWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewSimulation.png"
-            id="org.omnetpp.ned.editor.wizard.new.simulation"
+            id="org.omnetpp.ned.editor.wizards.NewSimulation"
             name="Simulation"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
@@ -99,42 +99,42 @@
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.file">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewNedFile">
               <enablement></enablement>
            </commonWizard>
            <commonWizard
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.simplemodule">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewSimpleModule">
               <enablement></enablement>
            </commonWizard>
            <commonWizard
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.compoundmodule">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewCompoundModule">
               <enablement></enablement>
            </commonWizard>
            <commonWizard
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.network">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewNetwork">
               <enablement></enablement>
            </commonWizard>
            <commonWizard
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.simulation">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewSimulation">
               <enablement></enablement>
            </commonWizard>
            <commonWizard
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.common.wizard.newwizardwizard">
+                 wizardId="org.omnetpp.common.wizards.NewWizard">
               <enablement></enablement>
            </commonWizard>
    </extension>
