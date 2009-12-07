@@ -80,7 +80,7 @@ class LegendTooltip implements ILegend
 	}
 
 	public Rectangle layout(GC gc, Rectangle rect) {
-		button.setLocation(rect.width - button.getSize().x - 2, rect.y + 2);
+		button.setLocation(rect.getRight().x - button.getSize().x - 2, rect.y + 2);
 		return rect;
 	}
 

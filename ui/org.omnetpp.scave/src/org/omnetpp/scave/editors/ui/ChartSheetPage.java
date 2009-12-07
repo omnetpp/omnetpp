@@ -27,10 +27,14 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Layout;
+import org.eclipse.ui.forms.widgets.ILayoutExtension;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartCanvas;
@@ -118,8 +122,10 @@ public class ChartSheetPage extends ScaveEditorPage {
 		ChartCanvas view = ChartFactory.createChart(chartsArea, chart, scaveEditor.getResultFileManager());
 		Assert.isNotNull(view);
 
-		//
-		view.setLayoutData(new GridData(320,200));
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gridData.minimumWidth = 320;
+        gridData.minimumHeight = 200;
+        view.setLayoutData(gridData);
 		chartsArea.configureChild(view);
 		addChartUpdater(chart, view);
 		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
@@ -177,25 +183,20 @@ public class ChartSheetPage extends ScaveEditorPage {
 		chartsArea.layout();
 		chartsArea.redraw();
 	}
-
+	
 	private void initialize() {
 		// set up UI
 		setPageTitle("Charts: " + getChartSheetName(chartsheet));
 		setFormTitle("Charts: " + getChartSheetName(chartsheet));
 		setBackground(ColorFactory.WHITE);
-		//setExpandHorizontal(true);
-		//setExpandVertical(true);
-		GridLayout layout = new GridLayout();
-		getBody().setLayout(layout);
+		setExpandHorizontal(true);
+		setExpandVertical(true);
 
-		chartsArea = new LiveTable(getBody(), SWT.DOUBLE_BUFFERED);
-		chartsArea.setLayoutData(new GridData(SWT.FILL,SWT.FILL, true, true));
-		chartsArea.setBackground(ColorFactory.WHITE);
-
-		GridLayout gridLayout = new GridLayout(2, true); //2 columns
-		gridLayout.horizontalSpacing = 7;
-		gridLayout.verticalSpacing = 7;
-		chartsArea.setLayout(gridLayout);
+        Composite body = getBody();
+        body.setLayout(new FillLayout());
+        chartsArea = new LiveTable(body, SWT.DOUBLE_BUFFERED);
+		chartsArea.setLayout(new GridLayout(2, true));
+        chartsArea.setBackground(ColorFactory.WHITE);
 
 		chartsArea.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -213,8 +214,6 @@ public class ChartSheetPage extends ScaveEditorPage {
 		// set up contents
 		for (final Chart chart : chartsheet.getCharts())
 			addChartView(chart);
-
-		getContent().setSize(getContent().computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 
 	@Override
@@ -273,4 +272,36 @@ public class ChartSheetPage extends ScaveEditorPage {
 		command.append(SetCommand.create(domain, chartsheet, feature, charts));
 		scaveEditor.executeCommand(command);
 	}
+
+    private static class FillLayout extends Layout implements ILayoutExtension {
+        @Override
+        protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
+            Rectangle rect = composite.getParent().getParent().getClientArea();
+            Point location = composite.getLocation();
+            Point size = new Point(rect.width - rect.x - location.x, rect.height - rect.y - location.y);
+
+            for (Control child : composite.getChildren()) {
+                Point childSize = child.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache);
+                size.x = Math.max(size.x, childSize.x);
+                size.y = Math.max(size.y, childSize.y);
+            }
+
+            return size;
+        }
+
+        @Override
+        protected void layout(Composite composite, boolean flushCache) {
+            Rectangle rect = composite.getClientArea ();
+            for (Control child : composite.getChildren())
+                child.setBounds(rect);
+        }
+
+        public int computeMinimumWidth(Composite composite, boolean changed) {
+            return 0;
+        }
+
+        public int computeMaximumWidth(Composite composite, boolean changed) {
+            return computeSize(composite, SWT.DEFAULT, SWT.DEFAULT, false).x;
+        }
+    }    
 }
