@@ -1,6 +1,6 @@
 = Dummy
 
-== Custom Wizards
+== Writing Wizards
 
 === Motivation
 
@@ -32,44 +32,120 @@ emphasizes learning by doing.
 === Overview
 
 Custom wizards are read from the templates/ folder of OMNeT++ projects.
-
 Wizards are implemented by mixing a templating engine (for generating
-the output files) and a GUI description language (for custom wizard pages).
-Because of the use of a templating engine, we'll also refer to custom
-wizards as "content templates".
+the output files) and a GUI description language (for custom wizard pages to
+gather user input for the file generation). Because of the use of a 
+templating engine, we'll also refer to custom wizards as "content templates".
 
 In the templates/ folder, every subfolder that contains a template.properties
 file is treated as a content template. (Other folders are ignored.) Every
-content template folder may contain several types of files: the
-template.properties file contains general information about the wizard;
-*.ftl files are template files that will be copied (without the .ftl extension)
-into the target folder after template variable substitution; *.xswt files
-describe custom wizard pages. More rarely used files are *.fti (template
-include) files included by *.ftl files; and *.jar files that can be used
-to extend the wizard's functionality with dynamically loaded Java code.
-All other files are regarded as files that have to be copied into the
-target folder verbatim when the wizard runs. The wizard folder may contain
-subdirectories which may also contain files of the above type (except
-template.properties of course).
+content template folder may contain several types of files: 
+
+* The template.properties file contains general information about the wizard.
+  Defines the initial value for the template variables and specifies the 
+  custom wizard pages to be invoked whenb the wizard is run. 
+* *.ftl files are template files that will be copied (without the .ftl extension)
+  into the target folder after template variable substitution. 
+* *.xswt files describe custom wizard pages to gather user input.  
+* More rarely used files are *.fti (template include) files included by *.ftl 
+  files. This can be used to factor out common parts from the template files.
+*  *.jar files that can be used to extend the wizard's functionality 
+  with dynamically loaded Java code.
+* All other files are regarded as files that have to be copied into the
+  target folder verbatim when the wizard runs. The wizard folder may contain
+  subdirectories which may also contain files of the above type (except
+  template.properties of course).
+
+
+The IDE offers several OMNeT++-related wizard dialogs: New OMNeT++ Project,
+New NED File, New Simple Module, and so on. Every content template can
+contribute to one or more of those wizard dialogs.
+
+
+==== Configuring the Wizard
+
+The first step when creating a wizard is to create a new folder
+under the `templates` directory of the project. A file named `template.properties` 
+must be present in the newly created directory. The file is used to configure 
+the wizard. 
+
+  templateName = New Test Wizard
+  templateDescription = Generate an exampmle
+  templateCategory = Test Wizards
+  supportedWizardTypes = simulation,project
+
+Specify at least the name, type and category for your wizard. Category is used to
+specify how the wizards will be visually grouped. Wizard type specifies, in which
+New ... Wizard  your new wizard will appear. You can specify one or more of the
+following types: `project, simulation, nedfile, inifile, msgfile, wizard, 
+simplemodue, compoundmodule, network` 
+
+You can decide now what data you would like to gather from the user. Define 
+template variables and their values as key-value pairs:
+
+  nodeName = Dummy
+  networkSize = 6
+ 
+The wizard should have a custom page, where the user can specify the value of the above variables.
+
+  page.1.file = parameters.xswt
+  page.1.title = Network parameters 
+ 
+We will use the file `parameters.xswt` to define the layout and the content of the new wizard page.
+
+NOTE: There are numerous other configuration keys that can be used in `template.properties`. See the
+"Configuration Keys" section for an exhaustive list of options. 
+ 
+==== Creating a new Wizard Page
+
+Files with ".xswt" extension (Wizard Page definitions) are used to define the UI and
+add new wizard pages to gather user input for the template generation. In the previous
+section we have specified that the file called `parameters.xswt` will contain the new
+wizard page definition. We will add a 'spinner' control to specify the size of our network 
+and a 'text' control to specify the node type:
+
+  <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+	  <import xmlns="http://sweet_swt.sf.net/xswt">
+	    <!-- Import all widgets and utility classes  -->
+	    <package name="java.lang"/>
+	    <package name="org.eclipse.swt.widgets" />
+	    <package name="org.eclipse.swt.graphics" />
+	    <package name="org.eclipse.swt.layout" />
+	    <package name="org.eclipse.swt.custom" />
+	    <package name="org.omnetpp.common.wizard.support" />
+	    <package name="org.omnetpp.ned.editor.wizards.support" />
+	    <package name="org.omnetpp.cdt.wizard.support" />
+	  </import>
+	  <layout x:class="GridLayout" numColumns="2"/>
+	  <x:children>
+	    <label text="Number nodes in the network:"/>
+	    <spinner x:id="networkSize" minimum="2" x:style="BORDER"/>
+	    <label text="Type of Nodes:"/>
+	    <text x:id="nodeName" x:style="BORDER"/>
+	  </x:children>
+  </xswt>
+
+The above page will have two columns. The first column contains a label,
+while the second contains an editable control.
+Please note the `x:id="varName"` attributes in the spinner and text control 
+definitions. We can bind a template variable to a control using the `id` attribute.
+When the user finishes with the wizard page, the content of the controls will be 
+automatically copied to the specified template variables.   
+
+
+==== Creating Templated Files
 
 When the template is used, the contents of the template folder (and subfolders)
 will be copied over into the new project preserving the directory structure,
 with the exception of template.properties and other known special-purpose files.
 (It is also possible to specify other files and folders to ignore during copying.)
 
-Files with the ".ftl" extension are regarded as templates, and they will undergo
-template processing (and the ".ftl" extension gets chopped off) before copying.
-Other files are copied verbatim.
-
-NOTE: If a file becomes empty after template processing, it will not be copied
-over. If you want to be sure that the file is copied, put some comment into it 
-(most files formats allow comments), or use FileUtils.createFile(filename, content).
-
 When the wizard is being used, a pool of variables is kept by the wizard dialog.
-These variables are the ones which will be eventually substituted into the \*.ftl
-files ($\{varname} syntax). These variables are initialized from the key=value
-lines in the template.properties files; they can get displayed and/or edited
-on custom wizard pages; and eventually they get substituted into \*.ftl files.
+These variables are initialized from the key=value lines in the 
+template.properties files; they can get displayed and/or edited
+on custom wizard pages; and eventually they get substituted into \*.ftl files
+(using the $\{varname} syntax).
+
 Some variables have special meaning and are interpreted by the wizard dialog
 (e.g. the nedSrcFolders variable determines which folders get denoted as
 NED Source Folders by the New OMNeT++ Project wizard). Variables can be used
@@ -77,32 +153,11 @@ to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (*.ftl) files.
 
-
-
-=== Wizard Types
-
-The IDE offers several OMNeT++-related wizard dialogs: New OMNeT++ Project,
-New NED File, New Simple Module, and so on. Every content template can
-contribute to one or more of those wizard dialogs. The template author
-has to list the supported wizards in the supportedWizardTypes property file
-entry in the template.properties file. Values are:
-
-*  project
-*  simulation
-*  nedfile
-*  inifile
-*  msgfile
-*  simplemodule
-*  compoundmodule
-*  network
-*  wizard
-
-A possible setting in the template.properties file is:
-  supportedWizardTypes = project, simulation, nedfile, network
-
-In turn, the wizard will set the wizardType template variable when it executes,
+The wizard will set the wizardType template variable when it executes,
 so template code can check under which wizard type it runs (using <#if>..</#if>), and
 act accordingly.
+
+TODO add a simple example
 
 Specific wizard dialogs will also define extra variables for use in the
 templates, e.g. the wizard types that create a single file will put the
@@ -115,61 +170,7 @@ TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
      productive in the shortest time possible.
 
 
-=== Template Processing
-
-Template processing uses the FreeMarker library (http://freemarker.org), and
-all template syntax supported by FreeMarker can be used. Especially, variable
-references of the syntax $\{varName} will be replaced with the variable value.
-
-The FreeMarker language also offers constructs that make it a full programming
-language: variable assignments, conditionals, loops, switch statement,
-functions, macros, expression evaluation, built-in operators, etc, as well
-as access to fields and methods of classes defined in Java. This means that
-any algorithm can be expressed in the FreeMarker language, and if that would
-not be enough, one can also pull in existing or custom-written Java libraries.
-
-TIP: Documentation for the FreeMarker template language can be found at:
-     http://freemarker.org/docs/index.html
-
-Several variables are predefined, such as templateName, targetFolder, date,
-author; others like targetFileName, targetTypeName, simulationFolderName,
-nedPackageName, etc. are defined only for certain wizard dialogs.
-A full list of variables is provided in the Appendix.
-
-By default templates are processed and copied with the same name (chopping the .ftl
-extension), but it is possible to redirect the output of the template to a different 
-file using the <@setoutput path=.../> macro. The filename can contain slashes too, i.e.
-one can write files in a different folder. If the folder does not exist, it will
-be created.
-
-If filename is empty, the directive restores output to the original file name (the template's name).
-This also works if a folder name is given and only the file name is missing
-(<@setoutput path="src/">): then it will write the file with the original name
-but into the specified folder.
-
-If there are multiple setoutput's with the same file name within a template,
-the content will be concatenated. Concatenation only works within one template;
-if you have multiple templates writing into the same file, they will overwrite
-each other's content, and it is undefined which one will win.
-
-Empty and blank files (ie. those containing only white space) will not be created,
-i.e. processing will skip writing it without any question, warning or error.
-This allows you to easily create conditional files. This also means that you
-cannot create empty files this way. However, this "limitation" is easy to overcome
-as most file formats (ned, c++, ini, xml, etc) have a comment syntax, so you
-can just write a file that contains only a comment ("// file intentionally left blank").
-Alternatively, you can create an empty file using the FileUtils Java utility class
-(<@do FileUtils.createFile("empty.txt", "")!/>). 
-   
-NOTE: although blank files are not created, the template engine will not delete an
-      existing file that happens to be already there with the same name.
-
-TIP: A typical usage: <@setoutput path=fileName?default("")/>, which means that if
-     the fileName variable undefined (absent), use "" as file name, i.e. save to
-     the original file name.
-
-
-=== The template.properties File
+=== Configuration Keys
 
 The template.properties file is a standard Java property file (key=value syntax).
 That file can be used to supply a template name, a template description,
@@ -222,6 +223,63 @@ makemakeOptions::
 There are additional options for adding custom pages into the wizard, as described
 in the next section.
 
+=== Template Processing
+
+Template processing uses the FreeMarker library (http://freemarker.org), and
+all template syntax supported by FreeMarker can be used. Especially, variable
+references of the syntax $\{varName} will be replaced with the variable value.
+
+The FreeMarker language also offers constructs that make it a full programming
+language: variable assignments, conditionals, loops, switch statement,
+functions, macros, expression evaluation, built-in operators, etc, as well
+as access to fields and methods of classes defined in Java. This means that
+any algorithm can be expressed in the FreeMarker language, and if that would
+not be enough, one can also pull in existing or custom-written Java libraries.
+
+TIP: Documentation for the FreeMarker template language can be found at:
+     http://freemarker.org/docs/index.html
+
+Several variables are predefined, such as templateName, targetFolder, date,
+author; others like targetFileName, targetTypeName, simulationFolderName,
+nedPackageName, etc. are defined only for certain wizard dialogs.
+A full list of variables is provided in the Appendix.
+
+
+==== Generating multiple files 
+
+By default templates are processed and copied with the same name (chopping the .ftl
+extension), but it is possible to redirect the output of the template to a different 
+file using the <@setoutput path=.../> macro. The filename can contain slashes too, i.e.
+one can write files in a different folder. If the folder does not exist, it will
+be created.
+
+If filename is empty, the directive restores output to the original file name (the template's name).
+This also works if a folder name is given and only the file name is missing
+(<@setoutput path="src/">): then it will write the file with the original name
+but into the specified folder.
+
+If there are multiple setoutput's with the same file name within a template,
+the content will be concatenated. Concatenation only works within one template;
+if you have multiple templates writing into the same file, they will overwrite
+each other's content, and it is undefined which one will win.
+
+==== Conditional file creation
+
+Empty and blank files (ie. those containing only white space) will not be created,
+i.e. processing will skip writing it without any question, warning or error.
+This allows you to easily create conditional files. This also means that you
+cannot create empty files this way. However, this "limitation" is easy to overcome
+as most file formats (ned, c++, ini, xml, etc) have a comment syntax, so you
+can just write a file that contains only a comment ("// file intentionally left blank").
+Alternatively, you can create an empty file using the FileUtils Java utility class
+(<@do FileUtils.createFile("empty.txt", "")!/>). 
+   
+NOTE: Although blank files are not created, the template engine will not delete an
+      existing file that happens to be already there with the same name.
+
+TIP: A typical usage: <@setoutput path=fileName?default("")/>, which means that if
+     the fileName variable undefined (absent), use "" as file name, i.e. save to
+     the original file name.
 
 
 === Custom Wizard Pages
@@ -269,76 +327,31 @@ NOTE: Currently we use XSWT 1.1.2. Newer XSWT integration builds from
       did not work out well.
 
 
-=== Binding of Template Variables to Widgets
+=== Conditional Custom Wizard Pages
 
-XSWT allows one to tag widgets with id attributes. Widget IDs will become the
-names of template variables, with the values being the content of widgets.
-For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
-(Java type "String"), while checkboxes and radio buttons provide a boolean
-(Java type "Boolean").
+Now that templating and XSWT were covered, we can revisit how one can use page
+conditions. Consider the following practical example:
 
-XSWT also allows filling up the widgets with default values, but this feature
-should be used with care, because the defaults set in XSWT may not make it
-to the file templates! This is so because if the user clicks Finish early,
-the rest of the wizard pages (and their widgets) may not be created at all,
-so values set in the XSWT will take no effect.
+Suppose a wizard for wireless networks. On the first page of the wizard there
+is a "[] configure routing" checkbox with the ID "wantRouting". If this
+checkbox gets selected, you want to display a second page where the user can
+select a routing protocol, then further configuration pages depending on
+the particular routing protocol the user chose. To achieve this, you would
+add the following lines to template.properties:
 
-For this reason, defaults should ALWAYS be set in the property file. To do so,
-simply use a key with the ID of the widget; those values will be written
-into the wizard page when the page is created. For example, if you have a
-text widget with id="numNodes" and a checkbox with id="generateTraffic", then
-the following lines
+  # page with the "wantRouting" checkbox
+  page.1.title = General
+  # page with the "protocol" combobox
+  page.2.title = Choose Routing Protocol
+  page.3.title = AODV Options
+  page.4.title = DSDV Options
 
-  numNodes = 100
-  generateTraffic = true
+  page.2.condition = wantRouting
+  page.3.condition = wantRouting && protocol=="AODV"
+  page.4.condition = wantRouting && protocol=="DSDV"
 
-will fill in the text widget with "100" and select the checkbox. Widgets that
-do not have such lines in the property file will be left alone.
+You get the idea. This allows the creation of conditional pages. 
 
-Compound data structures (arrays, maps, and any combination of them) can be
-specified in the JSON syntax (http://json.org). They can be iterated over
-in the templates, and can be used as input/output for custom compound widgets.
-Examples:
-
-  apps = ["ftp", "smtp", "news"]
-  layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}
-
-If you get an error complaining about syntax errors in a JSON entry, the
-http://jsonlint.com website can help you locate the problem.
-
-The property file takes precedence over values in the XSWT file.
-
-Entities and attributes in an XSWT file are directly mapped to the corresponding
-SWT controls and their properties. For example the <styledText> tag is mapped 
-to the StyledText SWT control. Similarly the 'text' attribute is mapped to the 
-'text' property of the StyledText control. It is also possible to call any public 
-method on the control by embedding a "call" as a child tag:
-  <styledtext text="Hello world!">
-  	  <setFocus/>
-  </styledText>
-
-Constants in controls declared 'public final' can be used in an XSWT file by appending
-the java class name before them:
-  <gateChooser gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
-
-Constants in the SWT class do not need the "SWT." prefix. You can use:
-  <button x:style="RADIO"/>
-
-Children can be added to a compound control inside the <x:children></x:children> tags.
-  <group text="Hello">
-    <x:children>
-      <label text="Message 1" />
-      <label text="Message 2" />
-    </x:children>
-  </group> 
-
-Layout data can also be added as a new tag inside a control element:
-  <text x:id="numServers" x:style="BORDER">
-    <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-  </text>
-
-TIP: An XSWT tutorial and documentation can be found at:
-http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
 
 ==== Standard SWT widgets
 
@@ -360,7 +373,7 @@ Button::        This SWT class represents buttons, checkboxes and radio
 
 Combo, CCombo:: Represent a combo box and a custom combo box. It can be
                 made read-only (with the SWT.READ_ONLY style); a read-only
-                combo only allows list selection but no manual editing.
+                combo allows list selection but no manual editing.
                 The list items can be specified from XSWT. Variables only
                 work with the textedit part (cannot add/remove list items).
                 * W: the string value gets written into the combo. If the combo
@@ -413,6 +426,7 @@ HttpLink::      A control containing a text and a hyperlink between <a></a> tags
                 be specified to be opened in an external browser.
                 * W: accepts a string with the target URL. 
                 * R: returns the target URL as string.
+                
                 Attributes:
                 * text : the textual content of the control <a></a> denotes the link inside.
                 * URL : the target URL where the control points to 
@@ -423,6 +437,7 @@ InfoLink::      A control for which displays a text with embedded link(s), and c
                 to a template variable (using the x:id XSWT attribute).
                 * W: accepts a string with the hover text for the control. 
                 * R: returns the hover text as string.
+                
                 Attributes:
                 * text : the content of the control
                 * hoverText : the html formatted text displayed in the hover control 
@@ -435,6 +450,7 @@ FileLink::      A control for displaying the name of a resource as a link. When 
                 the resource (opens Project Explorer and focuses it to the resource).
                 * W: accepts a string with the workspace path of the resource to be shown. 
                 * R: returns the full workspace path of the resource.
+                
                 Attributes:
                 * resourcePath : the full workspace path of the file  
 
@@ -442,6 +458,7 @@ FileChooser::   A control for selecting a file from the workspace. Implemented a
                 a single-line Text and a Browse button.
                 * W: accepts a string with the workspace file name. 
                 * R: returns the name of the selected file as a string from the workspace.
+                
                 Attributes:
                 * fileName : the full workspace path of the selected file.
 
@@ -450,6 +467,7 @@ ExternalFileChooser::
                 a single-line Text and a Browse button.
                 * W: accepts a string with the full file name. 
                 * R: returns the name of the selected file as a string from the filesystem.
+                
                 Attributes:
                 * fileName : the full filesystem path of the selected file.
 
@@ -458,6 +476,7 @@ GateChooser::   A control for selecting a gate of a NED module type. If the modu
                 if it doesn't, it lets the user enter a gate name.
                 * W: accepts strings with a gate name. 
                 * R: returns the name of the selected gate as a string.
+                
                 Attributes:
                 * gateName : the name of the selected gate
                 * nedTypeName : the NED type whose gates should be enumerated.
@@ -474,6 +493,7 @@ NedTypeChooser::
 				or a new one can be entered.
                 * W: accepts strings with a ned type name. 
                 * R: returns the name of the selected ned type as a string.
+                
                 Attributes:
                 * nedName : the NED module type as a string
                 * acceptedTypes : filter for the enumeration of types. Expects a
@@ -491,6 +511,7 @@ reason being that SWT Tables and Trees are not editable by default.
 Some non-interactive widgets which cannot be connected to template variables
 but are useful in forms as structuring elements: 
 Composite:: Used to group two or more controls into a single one.
+
   <composite>
     <layoutData x:class="GridData" horizontalSpan="2"/>
     <layout x:class="GridLayout"/>
@@ -501,6 +522,7 @@ Composite:: Used to group two or more controls into a single one.
   </composite>
 
 Group::  Used to group the controls with a visual heading.
+
   <group text="Heading text">
     <x:children>
        <label text="Control 1"/>
@@ -509,6 +531,7 @@ Group::  Used to group the controls with a visual heading.
   </group>
 
 TabFolder/TabItem:: Can be used to group the controls into separate pages.
+
   <tabFolder>
     <x:children>
       <composite x:id="page1"></composite>
@@ -518,32 +541,86 @@ TabFolder/TabItem:: Can be used to group the controls into separate pages.
     </x:children>
   </tabFolder>
 
+=== Binding of Template Variables to Widgets
 
-    
-=== Conditional Custom Pages and Controls
+XSWT allows one to tag widgets with id attributes. Widget IDs will become the
+names of template variables, with the values being the content of widgets.
+For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
+(Java type "String"), while checkboxes and radio buttons provide a boolean
+(Java type "Boolean").
 
-Now that templating and XSWT were covered, we can revisit how one can use page
-conditions. Consider the following practical example:
+XSWT also allows filling up the widgets with default values, but this feature
+should be used with care, because the defaults set in XSWT may not make it
+to the file templates! This is so because if the user clicks Finish early,
+the rest of the wizard pages (and their widgets) may not be created at all,
+so values set in the XSWT will take no effect.
 
-Suppose a wizard for wireless networks. On the first page of the wizard there
-is a "[] configure routing" checkbox with the ID "wantRouting". If this
-checkbox gets selected, you want to display a second page where the user can
-select a routing protocol, then further configuration pages depending on
-the particular routing protocol the user chose. To achieve this, you would
-add the following lines to template.properties:
+For this reason, defaults should ALWAYS be set in the property file. To do so,
+simply use a key with the ID of the widget; those values will be written
+into the wizard page when the page is created. For example, if you have a
+text widget with id="numNodes" and a checkbox with id="generateTraffic", then
+the following lines
 
-  # page with the "wantRouting" checkbox
-  page.1.title = General
-  # page with the "protocol" combobox
-  page.2.title = Choose Routing Protocol
-  page.3.title = AODV Options
-  page.4.title = DSDV Options
+  numNodes = 100
+  generateTraffic = true
 
-  page.2.condition = wantRouting
-  page.3.condition = wantRouting && protocol=="AODV"
-  page.4.condition = wantRouting && protocol=="DSDV"
+will fill in the text widget with "100" and select the checkbox. Widgets that
+do not have such lines in the property file will be left alone.
 
-You get the idea. This enables to have conditional pages. 
+Compound data structures (arrays, maps, and any combination of them) can be
+specified in the JSON syntax (http://json.org). They can be iterated over
+in the templates, and can be used as input/output for custom compound widgets.
+Examples:
+
+  apps = ["ftp", "smtp", "news"]
+  layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}
+
+If you get an error complaining about syntax errors in a JSON entry, the
+http://jsonlint.com website can help you locate the problem.
+
+The property file takes precedence over values in the XSWT file.
+
+==== XSWT Form Creation
+
+Entities and attributes in an XSWT file are directly mapped to the corresponding
+SWT controls and their properties. For example the <styledText> tag is mapped 
+to the StyledText SWT control. Similarly the 'text' attribute is mapped to the 
+'text' property of the StyledText control. It is also possible to call any public 
+method on the control by embedding a "call" as a child tag:
+
+  <styledtext text="Hello world!">
+  	  <setFocus/>
+  </styledText>
+
+Constants in controls declared 'public final' can be used in an XSWT file by appending
+the java class name before them:
+
+  <gateChooser gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
+
+Constants in the SWT class do not need the "SWT." prefix. You can use:
+
+  <button x:style="RADIO"/>
+
+Children can be added to a compound control inside the <x:children></x:children> tags.
+
+  <group text="Hello">
+    <x:children>
+      <label text="Message 1" />
+      <label text="Message 2" />
+    </x:children>
+  </group> 
+
+Layout data can also be added as a new tag inside a control element:
+
+  <text x:id="numServers" x:style="BORDER">
+    <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+  </text>
+
+TIP: An XSWT tutorial and documentation can be found at:
+http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
+
+
+==== Conditional Controls
 
 It is also possible to create controls conditionally.
 To overcome the limitation that XSWT page descriptions are completely static,
@@ -559,7 +636,7 @@ If the user navigates in the wizard back and forth several times (using the
 Next and Back buttons), the contents of wizard pages are always re-created
 with using the current values of template variables just before getting
 displayed, so they will always be up to date.
-
+    
 
 === Extending the Wizards in Java
 
@@ -753,58 +830,47 @@ when you hit '?' within a directive or an interpolation ($\{...}).
 [cols="35%,^10%,^15%,^10%,^10%,^10%,^10%"]
 |==============
 |variable mname | project | simulation | msgfile | inifile | nedfile | wizard
-|addProjectReference    | X |   |   |   |   | 
-|author    				| X | X | X | X | X | X
-|classes    			| X | X | X | X | X | X
-|creationContext    	| X | X | X | X | X | X 
-|date                   | X | X | X | X | X | X
-|licenseCode    		| X | X | X | X | X | X
-|licenseText    		| X | X | X | X | X | X
-|makemakeOptions     	| X |   |   |   |   | 
-|msgResources     		| X | X | X | X | X | X
-|msgTypeName     	    |   |   | X |   |   | 
-|namespaceName       	|   | X | X |   | X | 
-|nedPackageName       	| X | X |   | X | X | 
-|nedResources    		| X | X | X | X | X | X
-|nedSourceFolders    	| X |   |   |   |   | 
-|newWizardName     		|   |   |   |   |   | X
-|newWizardProject     	|   |   |   |   |   | X 
-|projectName    		| X | X | X | X | X | X
-|PROJECTNAME    		| X | X | X | X | X | X
-|projectname    		| X | X | X | X | X | X
-|rawProjectName    		| X | X | X | X | X | X 
-|requiresCPlusPlus     	| X |   |   |   |   | 
-|simulationFolderName   |   | X |   |   |   | 
-|simulationName    		|   | X |   |   |   | 
-|sourceFolders     		| X |   |   |   |   | 
-|targetFileName 		|   |   | X | X | X | 
-|targetFileName       	|   |   | X | X | X | 
-|targetFolder    		| X | X | X | X | X | X
-|targetMainFile         | X | X | X | X | X | 
-|targetTypeName         | X | X | X | X | X | 
-|templateCategory    	| X | X | X | X | X | X
-|templateDescription    | X | X | X | X | X | X 
-|templateFolderName    	| X | X | X | X | X | X 
-|templateFolderPath    	| X | X | X | X | X | X
-|templateName    		| X | X | X | X | X | X
-|templateProject    	| X | X | X | X | X | X
-|templateURL    		| X | X | X | X | X | X
-|withCplusplusSupport   | X |   |   |   |   | 
-|wizardType    			| X | X | X | X | X | X
-|year 					| X | X | X | X | X | X
+|`addProjectReference`  | X |   |   |   |   | 
+|`author`  				| X | X | X | X | X | X
+|`date`                 | X | X | X | X | X | X
+|`licenseCode`    		| X | X | X | X | X | X
+|`licenseText`    		| X | X | X | X | X | X
+|`makemakeOptions`     	| X |   |   |   |   | 
+|`msgTypeName`     	    |   |   | X |   |   | 
+|`namespaceName`       	|   | X | X |   | X | 
+|`nedPackageName`       | X | X |   | X | X | 
+|`nedSourceFolders`    	| X |   |   |   |   | 
+|`newWizardName`     	|   |   |   |   |   | X
+|`newWizardProject`     |   |   |   |   |   | X 
+|`projectName`    		| X | X | X | X | X | X
+|`PROJECTNAME`    		| X | X | X | X | X | X
+|`projectname`    		| X | X | X | X | X | X
+|`rawProjectName`    	| X | X | X | X | X | X 
+|`requiresCPlusPlus`    | X |   |   |   |   | 
+|`simulationFolderName` |   | X |   |   |   | 
+|`simulationName`    	|   | X |   |   |   | 
+|`sourceFolders`     	| X |   |   |   |   | 
+|`targetFileName`       |   |   | X | X | X | 
+|`targetFolder`    		| X | X | X | X | X | X
+|`targetMainFile`       | X | X | X | X | X | 
+|`targetTypeName`       | X | X | X | X | X | 
+|`templateCategory`    	| X | X | X | X | X | X
+|`templateDescription`  | X | X | X | X | X | X 
+|`templateFolderName`   | X | X | X | X | X | X 
+|`templateFolderPath`   | X | X | X | X | X | X
+|`templateName`    		| X | X | X | X | X | X
+|`templateProject`    	| X | X | X | X | X | X
+|`templateURL`    		| X | X | X | X | X | X
+|`withCplusplusSupport` | X |   |   |   |   | 
+|`wizardType`    		| X | X | X | X | X | X
+|`year` 				| X | X | X | X | X | X
 |==============
 
 In this section we describe the individual wizard types and their supported
 template variables. Variables will be marked with one or more letter to show in 
-which wizard types they are supported as shown on in the previous table. 
-
-A:: supported in all wizards
-P:: project
-S:: simulation
-M:: messagefile
-I:: inifile
-N:: nedfile, simplemodule, compoundmodule, network
-W:: wizard
+which wizard types they are supported as shown on in the previous table  
+(A: supported in all wizards; P: project;S:: simulation; M: messagefile; I: inifile;
+N: nedfile, simplemodule, compoundmodule, network; W: wizard).
 
 ==== General
 
@@ -825,6 +891,7 @@ templateDescription (A):: template description
 templateCategory (A):: template category
 templateURL (A):: the URL the template was loaded from (Only for built-in and 
                   other URL-based wizards)
+
 
 The following variables are only defined if the template was loaded from the workspace
 (i.e. a project's templates/ subdirectory):
