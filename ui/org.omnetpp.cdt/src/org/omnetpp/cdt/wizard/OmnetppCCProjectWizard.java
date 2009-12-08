@@ -232,7 +232,10 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
     
     @Override
     protected WizardNewProjectCreationPage createProjectCreationPage() {
-        return new NewOmnetppCppProjectCreationPage();  // custom one, with the "[] support C++ development" checkbox
+        WizardNewProjectCreationPage page = new NewOmnetppCppProjectCreationPage(); // custom one, with the "[] support C++ development" checkbox
+        page.setTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
+        setWindowTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
+        return page;  
     }
 
     @Override

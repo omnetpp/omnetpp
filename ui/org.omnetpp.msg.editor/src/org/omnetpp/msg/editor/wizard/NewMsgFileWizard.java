@@ -24,12 +24,12 @@ public class NewMsgFileWizard extends TemplateBasedNewFileWizard {
     @Override
     public void addPages() {
         super.addPages();
-        setWindowTitle("New Msg File");
+        setWindowTitle(isImporting() ? "Import Message File" : "New Message File");
 
         WizardNewFileCreationPage firstPage = getFirstPage();
 
-        firstPage.setTitle("Create a msg file");
-        firstPage.setDescription("This wizard allows you to create a new OMNeT++ message definition file");
+        firstPage.setTitle(isImporting() ? "Import Message File" : "New Message File");
+        firstPage.setDescription("This wizard allows you to " + (isImporting() ? "import" : "create") + " a new OMNeT++ message definition file");
         firstPage.setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newmsgfile_wiz.png"));
 
         firstPage.setFileExtension("msg");

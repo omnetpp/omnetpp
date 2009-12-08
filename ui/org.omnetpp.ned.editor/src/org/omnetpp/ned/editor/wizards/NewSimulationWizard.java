@@ -60,7 +60,7 @@ public class NewSimulationWizard extends TemplateBasedWizard  implements INewWiz
 
     @Override
     public void addPages() {
-        setWindowTitle("New Simulation");
+        setWindowTitle(isImporting() ? "Import Simulation" : "New Simulation");
         firstPage = new WizardNewFileCreationPage("folder selection page", selection) {
             @Override
             protected String getNewFileLabel() {
@@ -68,7 +68,7 @@ public class NewSimulationWizard extends TemplateBasedWizard  implements INewWiz
             }
         };
         firstPage.setAllowExistingResources(false);
-        firstPage.setTitle("New Simulation");
+        firstPage.setTitle(isImporting() ? "Import Simulation" : "New Simulation");
         firstPage.setDescription("Choose folder for simulation files");
         firstPage.setFileExtension("");
         firstPage.setFileName("");

@@ -26,11 +26,11 @@ public class NewInifileWizard extends TemplateBasedNewFileWizard {
     @Override
     public void addPages() {
         super.addPages();
-        setWindowTitle("New Ini File");
+        setWindowTitle(isImporting() ? "Import Ini File" : "New Ini File");
 
         WizardNewFileCreationPage firstPage = getFirstPage();
-        firstPage.setTitle("Create an ini file");
-        firstPage.setDescription("This wizard allows you to create a new OMNeT++ simulation configuration file.");
+        firstPage.setTitle(isImporting() ? "Import Ini File" : "New Ini File");
+        firstPage.setDescription("This wizard allows you to " + (isImporting() ? "import" : "create") + " a new OMNeT++ simulation configuration file");
         firstPage.setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/wizban/newinifile.png"));
         firstPage.setFileExtension("ini");
         firstPage.setFileName("omnetpp.ini");

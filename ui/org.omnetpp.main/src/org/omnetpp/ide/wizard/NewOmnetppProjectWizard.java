@@ -48,9 +48,8 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INew
 
 	public static class NewOmnetppProjectCreationPage extends WizardNewProjectCreationPage {
 	    public NewOmnetppProjectCreationPage() {
-	        super("OMNeT++ Project");
+	        super("omnetpp project");
 	        setTitle("OMNeT++ Project");
-	        setDescription("Create a new OMNeT++ Project");
 	        setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/full/wizban/newoprj_wiz.png"));
 	    }
 	}
@@ -66,6 +65,9 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INew
 	@Override
 	public void addPages() {
 		addPage(projectCreationPage = createProjectCreationPage());
+		projectCreationPage.setTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
+		projectCreationPage.setDescription(isImporting() ? "Import into a new OMNeT++ project" : "Create a new OMNeT++ Project");
+
 		super.addPages();
 	}
 

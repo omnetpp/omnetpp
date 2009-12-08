@@ -15,8 +15,8 @@ public class NewNetworkWizard extends AbstractNedFileWizard {
     @Override
     public void addPages() {
         super.addPages();
-        setWindowTitle("New Network");
-        getFirstPage().setTitle("New Network");
+        setWindowTitle(isImporting() ? "Import Network" : "New Network");
+        getFirstPage().setTitle(isImporting() ? "Import Network" : "New Network");
     }
 
 }

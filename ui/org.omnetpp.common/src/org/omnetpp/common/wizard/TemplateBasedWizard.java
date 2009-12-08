@@ -26,7 +26,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.ui.DetailMessageDialog;
@@ -42,7 +41,7 @@ import freemarker.template.TemplateException;
  *
  * @author Andras
  */
-public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWizard {
+public abstract class TemplateBasedWizard extends Wizard implements ITemplateBasedWizard {
     private String wizardType;
     private IContentTemplate preselectedTemplate; // if this is given, templateSelectionPage will remain null
     private TemplateSelectionPage templateSelectionPage;
@@ -52,7 +51,7 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
     private IContentTemplate creatorOfCustomPages;
     private CreationContext context;
     private WizardPage dummyPage;
-
+    private boolean importing;
 
     static class DummyPage extends WizardPage {
         public DummyPage() {
@@ -82,17 +81,20 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
     public void init(IWorkbench workbench, IStructuredSelection selection) {
     }
 
-    /**
-     * By default, the wizard will start with a template selection page. To start with
-     * a specific template instead (and skip the page), call this method right after
-     * wizard creation.
-     */
-    public void setPreselectedTemplate(IContentTemplate preselectedTemplate) {
-        if (preselectedTemplate != null)
+    public void setTemplate(IContentTemplate preselectedTemplate) {
+        if (preselectedTemplate == null)
             throw new NullPointerException("argument cannot be null");
         if (templateSelectionPage != null)
             throw new IllegalArgumentException("too late: template selection page already created and added");
         this.preselectedTemplate = preselectedTemplate;
+    }
+    
+    public void setImporting(boolean importing) {
+        this.importing = importing;
+    }
+    
+    public boolean isImporting() {
+        return importing;
     }
     
     public String getWizardType() {
@@ -170,13 +172,13 @@ public abstract class TemplateBasedWizard extends Wizard implements IWorkbenchWi
             return templateSelectionPage;
 
         // if there is a template selected, return its first enabled custom page (if it has one)
-        if (page == templateSelectionPage) {
-            IContentTemplate selectedTemplate = templateSelectionPage.getSelectedTemplate();
+        if (page == templateSelectionPage || (page==getStartingPage() && templateSelectionPage==null)) {
+            IContentTemplate selectedTemplate = getSelectedTemplate();
             if (selectedTemplate == null) {
                 context = null;
             }
             else {
-                if (selectedTemplate != creatorOfCustomPages) {
+                if (selectedTemplate != creatorOfCustomPages || !equal(getFolder(), context.getFolder())) {
                     try {
                         context = createContext(selectedTemplate, getFolder());
                         templateCustomPages = selectedTemplate.createCustomPages();

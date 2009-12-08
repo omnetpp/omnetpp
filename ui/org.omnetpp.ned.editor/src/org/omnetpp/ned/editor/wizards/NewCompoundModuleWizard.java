@@ -15,8 +15,8 @@ public class NewCompoundModuleWizard extends AbstractNedFileWizard {
     @Override
     public void addPages() {
         super.addPages();
-        setWindowTitle("New Compound Module");
-        getFirstPage().setTitle("New Compound Module");
+        setWindowTitle(isImporting() ? "Import Compound Module" : "New Compound Module");
+        getFirstPage().setTitle(isImporting() ? "Import Compound Module" : "New Compound Module");
     }
 
 }

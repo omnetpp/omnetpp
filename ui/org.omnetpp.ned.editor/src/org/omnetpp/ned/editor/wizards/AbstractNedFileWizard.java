@@ -23,8 +23,8 @@ public abstract class AbstractNedFileWizard extends TemplateBasedNewFileWizard {
         setWindowTitle("New NED File");
 
         WizardNewFileCreationPage firstPage = getFirstPage();
-        firstPage.setTitle("New NED File");
-        firstPage.setDescription("Choose NED file");
+        firstPage.setTitle(isImporting() ? "Import NED File" : "New NED File");
+        firstPage.setDescription(isImporting() ? "Choose import target NED file" : "Choose NED file");
         firstPage.setFileExtension("ned");
         firstPage.setFileName("untitled.ned");
     }

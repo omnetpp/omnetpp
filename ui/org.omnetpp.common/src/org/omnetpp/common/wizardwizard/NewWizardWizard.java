@@ -27,8 +27,12 @@ public class NewWizardWizard extends TemplateBasedWizard implements INewWizard {
 
     @Override
     public void addPages() {
-        setWindowTitle("New Wizard");
+        setWindowTitle(isImporting() ? "Import a Wizard" : "New Wizard");
+
         addPage(firstPage = new NewWizardProjectSelectionPage("first page", selection));
+        firstPage.setTitle(isImporting() ? "Import a Wizard" : "New Wizard");
+        firstPage.setDescription((isImporting() ? "Import" : "Contribute") + " a wizard into one of the New... dialogs");
+
         super.addPages();
     }
 

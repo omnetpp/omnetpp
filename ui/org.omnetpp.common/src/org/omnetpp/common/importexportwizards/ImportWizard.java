@@ -1,14 +1,21 @@
 package org.omnetpp.common.importexportwizards;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.wizard.IContentTemplate;
+import org.omnetpp.common.wizard.ITemplateBasedWizard;
 import org.omnetpp.common.wizard.TemplateSelectionPage;
 
 /**
@@ -19,7 +26,22 @@ import org.omnetpp.common.wizard.TemplateSelectionPage;
  * @author Andras
  */
 public class ImportWizard extends Wizard implements IImportWizard {
+    private static final String NEWWIZARDS_EXTENSION_POINT_ID = "org.eclipse.ui.newWizards";
     private TemplateSelectionPage templateSelectionPage;
+    private IWorkbench workbench;
+    private IStructuredSelection selection;
+
+    private static Map<String,String> wizardTypeToId = new HashMap<String, String>();
+    static {
+        wizardTypeToId.put("nedfile", IConstants.NEW_NEDFILE_WIZARD_ID);
+        wizardTypeToId.put("msgfile", IConstants.NEW_MSGFILE_WIZARD_ID);
+        wizardTypeToId.put("inifile", IConstants.NEW_INIFILE_WIZARD_ID);
+        wizardTypeToId.put("network", IConstants.NEW_NETWORK_WIZARD_ID);
+        wizardTypeToId.put("compoundmodule", IConstants.NEW_COMPOUND_MODULE_WIZARD_ID);
+        wizardTypeToId.put("simplemodule", IConstants.NEW_SIMPLE_MODULE_WIZARD_ID);
+        wizardTypeToId.put("simulation", IConstants.NEW_SIMULATION_WIZARD_ID);
+        wizardTypeToId.put("project", IConstants.NEW_OMNETPP_CC_PROJECT_WIZARD_ID);
+    }
 
     public ImportWizard() {
         // code copied from PreferencesExportWizard
@@ -31,6 +53,8 @@ public class ImportWizard extends Wizard implements IImportWizard {
     }
 
     public void init(IWorkbench workbench, IStructuredSelection selection) {
+        this.workbench = workbench;
+        this.selection = selection;
     }
 
     @Override
@@ -43,8 +67,21 @@ public class ImportWizard extends Wizard implements IImportWizard {
     public IWizardPage getNextPage(IWizardPage page) {
         if (page == templateSelectionPage) {
             IContentTemplate template = templateSelectionPage.getSelectedTemplate();
-            String wizardType = chooseWizardTypeFor(template);
-            //TODO create the corresponding wizard... and return its first page
+            if (template != null) {
+                String wizardType = chooseWizardTypeFor(template);
+                try {
+                    ITemplateBasedWizard wizard = createWizard(wizardType);
+                    wizard.setContainer(getContainer());
+                    wizard.setTemplate(template);
+                    wizard.setImporting(true);
+                    wizard.init(workbench, selection);
+                    wizard.addPages();
+                    return wizard.getStartingPage();
+                }
+                catch (CoreException e) {
+                    CommonPlugin.logError("Cannot create wizard for template " + template.getName(), e);
+                }
+            }
             return null;
         }
         return super.getNextPage(page);
@@ -68,8 +105,20 @@ public class ImportWizard extends Wizard implements IImportWizard {
     }
 
     
-    protected IWizard createWizard(String wizardType) {
-        return null;
+    protected ITemplateBasedWizard createWizard(String wizardType) throws CoreException {
+        String id = wizardTypeToId.get(wizardType);
+        if (id == null)
+            throw new IllegalArgumentException("Cannot find wizard for wizardType='" + wizardType + "'");
+        
+        IConfigurationElement wizardConfigElement = null;
+        IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(NEWWIZARDS_EXTENSION_POINT_ID);
+        for (IConfigurationElement e : config)
+            if (id.equals(e.getAttribute("id")))
+                wizardConfigElement = e;
+        if (wizardConfigElement == null)
+            throw new IllegalArgumentException("Cannot find wizard for wizardType='" + wizardType + "'");
+        
+        return (ITemplateBasedWizard) wizardConfigElement.createExecutableExtension("class");
     }
 
     @Override

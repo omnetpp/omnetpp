@@ -43,7 +43,6 @@ public class NewWizardProjectSelectionPage extends WizardPage {
     public NewWizardProjectSelectionPage(String pageName, IStructuredSelection selection) {
         super(pageName);
         setTitle("New Wizard");
-        setDescription("Contribute a new wizard into one of the New... dialogs");
         this.selection = selection;
     }
 
