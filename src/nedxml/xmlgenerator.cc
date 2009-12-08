@@ -16,6 +16,7 @@
 
 
 #include <string.h>
+#include <sstream>
 #include <iostream>
 #include <iomanip>
 #include "nedelements.h"
@@ -32,6 +33,13 @@ void generateXML(ostream& out, NEDElement *tree, bool srcloc, int indentsize)
     xmlgen.setIndentSize(indentsize);
     xmlgen.setSourceLocationAttributes(srcloc);
     xmlgen.generate(out, tree);
+}
+
+std::string generateXML(NEDElement *tree, bool srcloc, int indentsize)
+{
+    std::stringstream out;
+    generateXML(out, tree, srcloc, indentsize);
+    return out.str();
 }
 
 //-----------------------------------------
@@ -63,6 +71,13 @@ void NEDXMLGenerator::generate(ostream& out, NEDElement *tree)
 
     // recursively generate children
     doGenerate(out, tree, 0);
+}
+
+std::string NEDXMLGenerator::generate(NEDElement *tree)
+{
+    std::stringstream out;
+    generate(out, tree);
+    return out.str();
 }
 
 void NEDXMLGenerator::printAttrValue(ostream& out, const char *s)

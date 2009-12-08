@@ -24,6 +24,7 @@ import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
 import org.omnetpp.ned.engine.NEDSyntaxValidator;
 import org.omnetpp.ned.engine.NEDTools;
+import org.omnetpp.ned.engine.nedxml;
 import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
@@ -50,19 +51,29 @@ public class NEDTreeUtil {
 	 * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in old syntax as well
 	 */
     public static String generateNedSource(INEDElement treeRoot, boolean keepSyntax) {
-		// XXX for debugging
         //Debug.println(generateXmlFromPojoElementTree(treeRoot,""));
 
         NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(false); // turn it on for debugging
-		if (keepSyntax && treeRoot instanceof NedFileElement && "1".equals(((NedFileElement)treeRoot).getVersion())) {
-			NED1Generator ng = new NED1Generator(errors);
-            return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for conversion errors!!
-		}
-		else {
-			NED2Generator ng = new NED2Generator(errors);
-			return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for errors!!
-		}
+		NEDElement swigTree = pojo2swig(treeRoot);
+		String result;
+        if (keepSyntax && treeRoot instanceof NedFileElement && "1".equals(((NedFileElement)treeRoot).getVersion()))
+            result = new NED1Generator(errors).generate(swigTree, "");
+		else
+			result = new NED2Generator(errors).generate(swigTree, ""); 
+        // TODO check NEDErrorStore for conversion errors
+        swigTree.delete();
+        return result;
+    }
+
+    /**
+     * Generate NEDXML from the given element tree.
+     */
+    public static String generateXML(INEDElement tree, boolean srcLoc, int indentSize) {
+        NEDElement swigTree = pojo2swig(tree);
+        String result = nedxml.generateXML(swigTree, srcLoc, indentSize);
+        swigTree.delete();
+        return result;
     }
 
 	/**
