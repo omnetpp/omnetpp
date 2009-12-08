@@ -567,4 +567,13 @@ public class VectorChart extends ChartCanvas {
 	String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint) {
 		return null;
 	}
+
+    @Override
+    public void setDisplayAxesDetails(Boolean value) {
+        xAxis.setDrawTickLabels(value);
+        xAxis.setDrawTitle(value);
+        yAxis.setDrawTickLabels(value);
+        yAxis.setDrawTitle(value);
+        chartChanged();
+    }
 }

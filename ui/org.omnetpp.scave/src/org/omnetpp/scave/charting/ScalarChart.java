@@ -413,4 +413,13 @@ public class ScalarChart extends ChartCanvas {
 		}
 		return null;
 	}
+
+    @Override
+    public void setDisplayAxesDetails(Boolean value) {
+        valueAxis.setDrawTickLabels(value);
+        valueAxis.setDrawTitle(value);
+        domainAxis.setLabels(value);
+        domainAxis.setDrawTitle(value);
+        chartChanged();
+    }
 }

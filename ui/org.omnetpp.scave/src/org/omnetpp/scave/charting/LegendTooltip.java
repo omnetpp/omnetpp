@@ -70,6 +70,14 @@ class LegendTooltip implements ILegend
 			}
 		});
 	}
+	
+    public boolean isVisible() {
+        return button.isVisible();
+    }
+
+	public void setVisible(boolean visible) {
+	    button.setVisible(visible);
+    }
 
 	public void clearItems() {
 		items.clear();

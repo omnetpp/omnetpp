@@ -43,6 +43,8 @@ class DomainAxis {
 	Rectangle rect; // strip below the plotArea where the axis text etc goes
 	Vector<LineData> lines = new Vector<LineData>();
 	String title = DEFAULT_X_AXIS_TITLE;
+    boolean drawLabels = true;
+    boolean drawTitle = true;
 	Font titleFont = DEFAULT_AXIS_TITLE_FONT;
 	Font labelsFont = DEFAULT_LABELS_FONT;
 	double rotation = DEFAULT_X_LABELS_ROTATED_BY;
@@ -84,6 +86,14 @@ class DomainAxis {
 		this.chart = chart;
 	}
 
+    public void setLabels(boolean drawLabels) {
+        this.drawLabels = drawLabels;
+    }
+
+    public void setDrawTitle(boolean drawTitle) {
+        this.drawTitle = drawTitle;
+    }
+
 	public void dispose() {
 		for (LineData line : lines)
 			for (LabelData label : line.labels)
@@ -99,7 +109,7 @@ class DomainAxis {
 		if (pass == 1) {
 			// measure title height and labels height
 			gc.setFont(titleFont);
-			int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
+			int titleHeight = !drawTitle || title.equals("") ? 0 : gc.textExtent(title).y;
 			gc.setFont(labelsFont);
 			lines.add(new LineData());
 			IScalarDataset dataset = chart.getDataset();
@@ -143,12 +153,14 @@ class DomainAxis {
 
 			// position labels vertically
 			int labelsHeight = 0;
-			for (LineData line : lines) {
-				for (LabelData label : line.labels)
-					label.centerY = labelsHeight + line.height / 2;
-				labelsHeight += line.height;
+			if (drawLabels) {
+    			for (LineData line : lines) {
+    				for (LabelData label : line.labels)
+    					label.centerY = labelsHeight + line.height / 2;
+    				labelsHeight += line.height;
+    			}
+    			labelsHeight = Math.min(labelsHeight, maxSize.height);
 			}
-			labelsHeight = Math.min(labelsHeight, maxSize.height);
 
 			// modify insets with space required
 			insets.top = Math.max(insets.top, 10); // leave a few pixels at the top
@@ -195,50 +207,54 @@ class DomainAxis {
 		graphics.setLineWidth(1);
 		graphics.setForegroundColor(ColorFactory.BLACK);
 
+        BarPlot plot = chart.getPlot();
+        Rectangle plotRect = plot.getRectangle();
 
 		// draw labels
-		IScalarDataset dataset = chart.getDataset();
-		BarPlot plot = chart.getPlot();
-		Rectangle plotRect = plot.getRectangle();
-		if (dataset != null) {
-			int cColumns = dataset.getColumnCount();
-			int cRows = dataset.getRowCount();
-	
-			// draw lines
-			for (int row = 0; row < cRows; ++row) {
-				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
-				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
-				graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
-			}
-	
-			// draw labels
-			graphics.setFont(labelsFont);
-			graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
-			graphics.pushState(); // for restoring the transform
-			for (LineData line : lines) {
-				for (LabelData label : line.labels) {
-					graphics.restoreState();
-					int left = plot.getBarRectangle(label.row, 0, coordsMapping).x;
-					int right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
-					Dimension size = label.size;
-					Dimension rotatedSize = label.rotatedSize;
-			
-					if (isRectangularAngle(rotation)) // center into the cell
-						graphics.translate((left + right) / 2, rect.y + gap + 1 + label.centerY);
-					else // left at the bottom of the bar
-						graphics.translate((left + right) / 2 + rotatedSize.width / 2, rect.y + gap + 1 + label.centerY);
-					graphics.rotate((float)rotation);
-					graphics.drawTextLayout(label.textLayout, - size.width / 2, - size.height/2);
-				}
-			}
-			graphics.popState();
+		if (drawLabels) {
+    		IScalarDataset dataset = chart.getDataset();
+    		if (dataset != null) {
+    			int cColumns = dataset.getColumnCount();
+    			int cRows = dataset.getRowCount();
+    	
+    			// draw lines
+    			for (int row = 0; row < cRows; ++row) {
+    				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
+    				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
+    				graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
+    			}
+    	
+    			// draw labels
+    			graphics.setFont(labelsFont);
+    			graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
+    			graphics.pushState(); // for restoring the transform
+    			for (LineData line : lines) {
+    				for (LabelData label : line.labels) {
+    					graphics.restoreState();
+    					int left = plot.getBarRectangle(label.row, 0, coordsMapping).x;
+    					int right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
+    					Dimension size = label.size;
+    					Dimension rotatedSize = label.rotatedSize;
+    			
+    					if (isRectangularAngle(rotation)) // center into the cell
+    						graphics.translate((left + right) / 2, rect.y + gap + 1 + label.centerY);
+    					else // left at the bottom of the bar
+    						graphics.translate((left + right) / 2 + rotatedSize.width / 2, rect.y + gap + 1 + label.centerY);
+    					graphics.rotate((float)rotation);
+    					graphics.drawTextLayout(label.textLayout, - size.width / 2, - size.height/2);
+    				}
+    			}
+    			graphics.popState();
+    		}
 		}
 
 		// draw axis title
-		graphics.setFont(titleFont);
-		graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
-		Point size = gc.textExtent(title);
-		graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.bottom() - size.y - 1);
+		if (drawTitle) {
+    		graphics.setFont(titleFont);
+    		graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
+    		Point size = gc.textExtent(title);
+    		graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.bottom() - size.y - 1);
+		}
 
 		graphics.popState();
 		graphics.dispose();

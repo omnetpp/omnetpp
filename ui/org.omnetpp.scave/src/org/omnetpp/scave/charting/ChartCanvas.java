@@ -407,12 +407,24 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		title.setFont(value);
 		chartChanged();
 	}
+	
+	public abstract void setDisplayAxesDetails(Boolean value);
+	
+	public void setDisplayTitle(Boolean value) {
+        title.setVisible(value);
+        chartChanged();
+	}
 
 	public void setDisplayLegend(Boolean value) {
 		if (value == null)
 			value = DEFAULT_DISPLAY_LEGEND;
 		legend.setVisible(value);
 		chartChanged();
+	}
+	
+	public void setDisplayLegendTooltip(Boolean value) {
+        legendTooltip.setVisible(value);
+        chartChanged();
 	}
 
 	public void setLegendBorder(Boolean value) {

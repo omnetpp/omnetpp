@@ -294,4 +294,13 @@ public class HistogramChartCanvas extends ChartCanvas {
 		drawStatusText(gc);
 		drawRubberband(gc);
 	}
+
+    @Override
+    public void setDisplayAxesDetails(Boolean value) {
+        xAxis.setDrawTickLabels(value);
+        xAxis.setDrawTitle(value);
+        yAxis.setDrawTickLabels(value);
+        yAxis.setDrawTitle(value);
+        chartChanged();
+    }
 }

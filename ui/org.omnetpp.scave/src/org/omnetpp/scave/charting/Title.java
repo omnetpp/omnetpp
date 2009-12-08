@@ -23,6 +23,7 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
  */
 public class Title {
 
+    private boolean visible;
 	private String text;
 	private Font font;
 	private Color color = ChartDefaults.DEFAULT_TITLE_COLOR;
@@ -35,6 +36,10 @@ public class Title {
 		this.text = text;
 		this.font = font;
 	}
+
+    public void setVisible(boolean value) {
+        visible = value;
+    }
 
 	public String getText() {
 		return text;
@@ -53,7 +58,7 @@ public class Title {
 	}
 
 	public Rectangle layout(GC gc, Rectangle parent) {
-		if (text == null || text.length() == 0)
+		if (!visible || text == null || text.length() == 0)
 			return parent;
 
 		TextLayout textLayout = new TextLayout(gc.getDevice());
@@ -70,7 +75,7 @@ public class Title {
 	}
 
 	public void draw(GC gc) {
-		if (text == null || text.length() == 0 || bounds == null)
+		if (!visible || text == null || text.length() == 0 || bounds == null)
 			return;
 
 		TextLayout textLayout = new TextLayout(gc.getDevice());

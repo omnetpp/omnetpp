@@ -336,9 +336,18 @@ public class ChartSheetPage extends ScaveEditorPage {
         }
         else if (ChartSheetProperties.PROP_DISPLAY_CHART_DETAILS.equals(name)) {
             boolean displayChartDetails = value == null ? ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS : Boolean.parseBoolean(value);
+            for (Control child : chartsArea.getChildren())
+                if (child instanceof ChartCanvas)
+                    setDisplayChartDetails((ChartCanvas)child, displayChartDetails);
             chartsArea.layout(true);
             reflow(true);
         }
+    }
+
+    private void setDisplayChartDetails(ChartCanvas chartCanvas, boolean displayChartDetails) {
+        chartCanvas.setDisplayTitle(displayChartDetails);
+        chartCanvas.setDisplayLegendTooltip(displayChartDetails);
+        chartCanvas.setDisplayAxesDetails(displayChartDetails);
     }
 
     private static class FillLayout extends Layout implements ILayoutExtension {
