@@ -77,8 +77,8 @@ public class LinearAxis {
 		if (pass == 1) {
 			if (vertical) {
 				// postpone layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
-				insets.left = 50;
-				insets.right = 30;
+				insets.left = 0;
+				insets.right = 0;
 			}
 			else {
 				gc.setFont(tickFont);
