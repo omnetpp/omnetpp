@@ -14,9 +14,11 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.scave.charting.properties.ChartProperties;
+import org.omnetpp.scave.charting.properties.ChartSheetProperties;
 import org.omnetpp.scave.charting.properties.VectorChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.ChartLine;
@@ -43,6 +45,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 	public IPropertySource getPropertySource(Object object) {
 		if (object instanceof Chart)
 			return ChartProperties.createPropertySource((Chart)object, manager);
+		else if (object instanceof ChartSheet)
+            return ChartSheetProperties.createPropertySource((ChartSheet)object, delegate.getPropertySource(object));
 		else if (object instanceof SetOperation) {
 			IItemPropertySource itemPropertySource =
 				(IItemPropertySource) adapterFactory.adapt(object, IItemPropertySource.class);

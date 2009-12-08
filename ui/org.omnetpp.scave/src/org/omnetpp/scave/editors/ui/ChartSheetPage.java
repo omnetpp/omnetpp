@@ -35,47 +35,79 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.ILayoutExtension;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.charting.properties.ChartProperties;
+import org.omnetpp.scave.charting.properties.ChartSheetProperties;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 public class ChartSheetPage extends ScaveEditorPage {
 
-	private ChartSheet chartsheet; // the underlying model
+	private ChartSheet chartSheet; // the underlying model
 
 	private LiveTable chartsArea;
 	private List<ChartUpdater> updaters = new ArrayList<ChartUpdater>();
 
 	public ChartSheetPage(Composite parent, ScaveEditor editor, ChartSheet chartsheet) {
 		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, editor);
-		this.chartsheet = chartsheet;
+		this.chartSheet = chartsheet;
 		initialize();
 	}
 
-	public void updatePage(Notification notification) {
+    @SuppressWarnings("unchecked")
+    public void updatePage(Notification notification) {
 		Object notifier = notification.getNotifier();
 
-		if (notifier == chartsheet) {
+		if (notifier == chartSheet) {
 			switch (notification.getFeatureID(ChartSheet.class)) {
-			case ScaveModelPackage.CHART_SHEET__NAME:
-				setPageTitle("Charts: " + getChartSheetName(chartsheet));
-				setFormTitle("Charts: " + getChartSheetName(chartsheet));
-				break;
-			case ScaveModelPackage.CHART_SHEET__CHARTS:
-				synchronize();
-				break;
+    			case ScaveModelPackage.CHART_SHEET__NAME:
+    				setPageTitle("Charts: " + getChartSheetName(chartSheet));
+    				setFormTitle("Charts: " + getChartSheetName(chartSheet));
+    				break;
+    			case ScaveModelPackage.CHART_SHEET__CHARTS:
+    				synchronize();
+    	            chartsArea.layout(true);
+    	            reflow(true);
+    				break;
+                case ScaveModelPackage.CHART_SHEET__PROPERTIES:
+                    Property property;
+                    switch (notification.getEventType()) {
+                        case Notification.ADD:
+                            property = (Property)notification.getNewValue();
+                            setChartSheetProperty(property.getName(), property.getValue());
+                            break;
+                        case Notification.REMOVE:
+                            property = (Property)notification.getOldValue();
+                            setChartSheetProperty(property.getName(), null);
+                            break;
+                        case Notification.ADD_MANY:
+                            for (Property prop : (List<Property>)notification.getNewValue())
+                                setChartSheetProperty(prop.getName(), prop.getValue());
+                            break;
+                        case Notification.REMOVE_MANY:
+                            for (Property prop : (List<Property>)notification.getOldValue())
+                                setChartSheetProperty(prop.getName(), null);
+                            break;
+                    }
+                    break;
 			}
 		}
-		else {
-			updateCharts();
+		else if (notifier instanceof Property) {
+            Property property = (Property)notifier;
+            switch (notification.getEventType()) {
+                case Notification.SET:
+                    setChartSheetProperty(property.getName(), (String)notification.getNewValue());
+                    break;
+            }
 		}
+		else
+			updateCharts();
 	}
 
 	public void updateCharts() {
@@ -84,7 +116,6 @@ public class ChartSheetPage extends ScaveEditorPage {
 	}
 
 	public Composite getChartSheetComposite() {
-		//return getBody();
 		return chartsArea;
 	}
 
@@ -123,8 +154,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 		Assert.isNotNull(view);
 
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gridData.minimumWidth = 320;
-        gridData.minimumHeight = 200;
+        gridData.minimumWidth = ChartSheetProperties.DEFAULT_MIN_CHART_WIDTH;
+        gridData.minimumHeight = ChartSheetProperties.DEFAULT_MIN_CHART_HEIGHT;
         view.setLayoutData(gridData);
 		chartsArea.configureChild(view);
 		addChartUpdater(chart, view);
@@ -133,7 +164,6 @@ public class ChartSheetPage extends ScaveEditorPage {
 
 		// hide legend
 		view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
-		//
 		view.addMouseListener(new MouseAdapter() {
 			// double click in the view opens the chart in a separate page
 			public void mouseDoubleClick(MouseEvent e) {
@@ -146,6 +176,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 			}
 		});
 
+		setDisplayChartDetails(view, ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS);
 		return view;
 	}
 
@@ -162,7 +193,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 			if (child instanceof ChartCanvas)
 				currentViews.add((ChartCanvas)child);
 
-		List<Chart> charts = new ArrayList<Chart>(chartsheet.getCharts());
+		List<Chart> charts = new ArrayList<Chart>(chartSheet.getCharts());
 		List<ChartCanvas> views = new ArrayList<ChartCanvas>(charts.size());
 
 		for (Chart chart : charts) {
@@ -186,17 +217,23 @@ public class ChartSheetPage extends ScaveEditorPage {
 	
 	private void initialize() {
 		// set up UI
-		setPageTitle("Charts: " + getChartSheetName(chartsheet));
-		setFormTitle("Charts: " + getChartSheetName(chartsheet));
-		setBackground(ColorFactory.WHITE);
+		setPageTitle("Charts: " + getChartSheetName(chartSheet));
+		setFormTitle("Charts: " + getChartSheetName(chartSheet));
 		setExpandHorizontal(true);
 		setExpandVertical(true);
+		getForm().getHead().addMouseListener(new MouseAdapter() {
+		    // mouse click on the title selects the chart sheet in the model
+            public void mouseUp(MouseEvent e) {
+                chartsArea.setSelection(new Control[0]);
+                scaveEditor.setSelection(new StructuredSelection(chartSheet));
+            }
+		});
 
         Composite body = getBody();
         body.setLayout(new FillLayout());
         chartsArea = new LiveTable(body, SWT.DOUBLE_BUFFERED);
-		chartsArea.setLayout(new GridLayout(2, true));
-        chartsArea.setBackground(ColorFactory.WHITE);
+        chartsArea.setBackground(getBackground());
+		chartsArea.setLayout(new GridLayout(ChartSheetProperties.DEFAULT_COLUMN_COUNT, true));
 
 		chartsArea.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -212,8 +249,11 @@ public class ChartSheetPage extends ScaveEditorPage {
 		});
 
 		// set up contents
-		for (final Chart chart : chartsheet.getCharts())
+		for (Chart chart : chartSheet.getCharts())
 			addChartView(chart);
+		
+		for (Property property : chartSheet.getProperties())
+		    setChartSheetProperty(property.getName(), property.getValue());
 	}
 
 	@Override
@@ -230,12 +270,12 @@ public class ChartSheetPage extends ScaveEditorPage {
 
 	@Override
 	public boolean gotoObject(Object object) {
-		if (object == chartsheet) {
+		if (object == chartSheet) {
 			return true;
 		}
 		if (object instanceof EObject) {
 			EObject eobject = (EObject)object;
-			for (Chart chart : chartsheet.getCharts())
+			for (Chart chart : chartSheet.getCharts())
 				if (chart == eobject) {
 					// TODO scroll to chart
 					return true;
@@ -269,9 +309,37 @@ public class ChartSheetPage extends ScaveEditorPage {
 		EditingDomain domain = scaveEditor.getEditingDomain();
 		CompoundCommand command = new CompoundCommand("Move");
 		EStructuralFeature feature = ScaveModelPackage.eINSTANCE.getChartSheet_Charts();
-		command.append(SetCommand.create(domain, chartsheet, feature, charts));
+		command.append(SetCommand.create(domain, chartSheet, feature, charts));
 		scaveEditor.executeCommand(command);
 	}
+
+    private void setChartSheetProperty(String name, String value) {
+        if (ChartSheetProperties.PROP_COLUMN_COUNT.equals(name)) {
+            GridLayout gridLayout = (GridLayout)chartsArea.getLayout();
+            gridLayout.numColumns = value == null ? ChartSheetProperties.DEFAULT_COLUMN_COUNT : Integer.parseInt(value);
+            chartsArea.layout(true);
+            reflow(true);
+        }
+        else if (ChartSheetProperties.PROP_MIN_CHART_WIDTH.equals(name)) {
+            int minWidth = value == null ? ChartSheetProperties.DEFAULT_MIN_CHART_WIDTH : Integer.parseInt(value);
+            for (Control child : chartsArea.getChildren())
+                ((GridData)child.getLayoutData()).minimumWidth = minWidth; 
+            chartsArea.layout(true);
+            reflow(true);
+        }
+        else if (ChartSheetProperties.PROP_MIN_CHART_HEIGHT.equals(name)) {
+            int minHeight = value == null ? ChartSheetProperties.DEFAULT_MIN_CHART_HEIGHT : Integer.parseInt(value);
+            for (Control child : chartsArea.getChildren())
+                ((GridData)child.getLayoutData()).minimumHeight = minHeight; 
+            chartsArea.layout(true);
+            reflow(true);
+        }
+        else if (ChartSheetProperties.PROP_DISPLAY_CHART_DETAILS.equals(name)) {
+            boolean displayChartDetails = value == null ? ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS : Boolean.parseBoolean(value);
+            chartsArea.layout(true);
+            reflow(true);
+        }
+    }
 
     private static class FillLayout extends Layout implements ILayoutExtension {
         @Override
