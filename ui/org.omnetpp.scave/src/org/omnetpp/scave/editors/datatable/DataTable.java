@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.IMenuManager;
@@ -31,6 +32,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -80,18 +83,18 @@ public class DataTable extends Table implements IDataControl {
 
 		private String text;
 		private String fieldName;
-		private int weight;
+		private int defaultWidth;
 		private boolean defaultVisible;
 
-		public Column(String text, String fieldName, int weight, boolean visible) {
+		public Column(String text, String fieldName, int defaultWidth, boolean defaultVisible) {
 			this.text = text;
 			this.fieldName = fieldName;
-			this.weight = weight;
-			this.defaultVisible = visible;
+			this.defaultWidth = defaultWidth;
+			this.defaultVisible = defaultVisible;
 		}
 
 		public Column clone() {
-			return new Column(this.text, this.fieldName, this.weight, this.defaultVisible);
+			return new Column(this.text, this.fieldName, this.defaultWidth, this.defaultVisible);
 		}
 
 		public boolean equals(Object other) {
@@ -252,19 +255,28 @@ public class DataTable extends Table implements IDataControl {
 	}
 
 	public void setVisibleColumns(String[] columnTexts) {
-		List<String> visibleColumnTexts = Arrays.asList(columnTexts);
-
-		visibleColumns.clear();
-		for (TableColumn column : getColumns())
-			column.dispose();
-
 		for (Column column : getAllColumns()) {
-			boolean visible = visibleColumnTexts.indexOf(column.text) >= 0;
-			if (visible)
+            TableColumn tableColumn = getTableColumn(column);
+            boolean currentlyVisible = tableColumn != null;
+		    boolean requestedVisible = ArrayUtils.indexOf(columnTexts, column.text) != -1;
+
+			if (requestedVisible && !currentlyVisible)
 				addColumn(column);
+			else if (!requestedVisible && currentlyVisible){
+                visibleColumns.remove(column);
+                tableColumn.dispose();
+			}
 		}
+		
+		int position = 0;
+		int[] columnOrder = new int[getColumns().length];
+        for (Column column : getAllColumns())
+            if (visibleColumns.indexOf(column) != -1)
+                columnOrder[position++] = getTableColumnIndex(column);
+
+        setColumnOrder(columnOrder);
+		    
 		saveState();
-		layoutColumns();
 		refresh();
 	}
 
@@ -303,19 +315,27 @@ public class DataTable extends Table implements IDataControl {
 	}
 
 	protected TableColumn getTableColumn(Column column) {
-		for (TableColumn tableColumn : getColumns()) {
-			if (tableColumn.getData(COLUMN_KEY).equals(column)) {
+		for (TableColumn tableColumn : getColumns())
+			if (tableColumn.getData(COLUMN_KEY).equals(column))
 				return tableColumn;
-			}
-		}
 		return null;
 	}
+
+    protected int getTableColumnIndex(Column column) {
+        TableColumn[] columns = getColumns();
+        for (int index = 0; index < columns.length; index++) {
+            TableColumn tableColumn = columns[index];
+            if (tableColumn.getData(COLUMN_KEY).equals(column))
+                return index;
+        }
+        return -1;
+    }
 
 	protected TableColumn addColumn(Column newColumn) {
 		visibleColumns.add(newColumn);
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
 		tableColumn.setText(newColumn.text);
-		tableColumn.setWidth(newColumn.weight);
+		tableColumn.setWidth(newColumn.defaultWidth);
 		tableColumn.setData(COLUMN_KEY, newColumn);
 		tableColumn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -330,6 +350,12 @@ public class DataTable extends Table implements IDataControl {
 					fireContentChangedEvent();
 				}
 			}
+		});
+		tableColumn.addControlListener(new ControlAdapter() {
+		    @Override
+		    public void controlResized(ControlEvent e) {
+		        saveState();
+		    }
 		});
         
         return tableColumn;
@@ -388,24 +414,6 @@ public class DataTable extends Table implements IDataControl {
 			idList.sortVectorsByStartTime(manager, ascending);
 		else if (COL_MAX_TIME.equals(column))
 			idList.sortVectorsByEndTime(manager, ascending);
-	}
-
-	protected void layoutColumns() {
-		double unit = getWidthUnit();
-		for (int i = 0; i < visibleColumns.size(); ++i) {
-			Column column = visibleColumns.get(i);
-			TableColumn tableColumn = getTableColumn(column);
-			if (tableColumn != null)
-				tableColumn.setWidth((int)(column.weight * unit));
-		}
-	}
-
-	private double getWidthUnit() {
-		int sumOfWeights = 0;
-		for (Column column : visibleColumns)
-			sumOfWeights += (column.weight);
-
-		return (double)getSize().x / sumOfWeights;
 	}
 
 	protected void fillTableLine(TableItem item, int lineNumber) {
@@ -600,6 +608,7 @@ public class DataTable extends Table implements IDataControl {
 		if (preferences != null) {
 			for (Column column : getAllColumns()) {
 				preferences.setDefault(getPreferenceStoreKey(column, "visible"), column.defaultVisible);
+                preferences.setDefault(getPreferenceStoreKey(column, "width"), column.defaultWidth);
 			}
 		}
 	}
@@ -609,8 +618,11 @@ public class DataTable extends Table implements IDataControl {
 			visibleColumns.clear();
 			for (Column column : getAllColumns()) {
 				boolean visible = preferences.getBoolean(getPreferenceStoreKey(column, "visible"));
-				if (visible)
-					addColumn(column.clone());
+				if (visible) {
+                    Column clone = column.clone();
+                    clone.defaultWidth = preferences.getInt(getPreferenceStoreKey(column, "width"));
+					addColumn(clone);
+				}
 			}
 		}
 	}
@@ -620,6 +632,8 @@ public class DataTable extends Table implements IDataControl {
 			for (Column column : getAllColumns()) {
 				boolean visible = visibleColumns.indexOf(column) >= 0;
 				preferences.setValue(getPreferenceStoreKey(column, "visible"), visible);
+				if (visible)
+                    preferences.setValue(getPreferenceStoreKey(column, "width"), getTableColumn(column).getWidth());
 			}
 		}
 	}
