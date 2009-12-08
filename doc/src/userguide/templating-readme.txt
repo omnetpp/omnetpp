@@ -72,13 +72,13 @@ the wizard.
   templateName = New Test Wizard
   templateDescription = Generate an exampmle
   templateCategory = Test Wizards
-  supportedWizardTypes = simulation,project
+  supportedWizardTypes = simulation, network
 
 Specify at least the name, type and category for your wizard. Category is used to
 specify how the wizards will be visually grouped. Wizard type specifies, in which
 New ... Wizard  your new wizard will appear. You can specify one or more of the
 following types: `project, simulation, nedfile, inifile, msgfile, wizard, 
-simplemodue, compoundmodule, network` 
+simplemodue, compoundmodule, network, import, export` 
 
 You can decide now what data you would like to gather from the user. Define 
 template variables and their values as key-value pairs:
@@ -143,7 +143,7 @@ with the exception of template.properties and other known special-purpose files.
 When the wizard is being used, a pool of variables is kept by the wizard dialog.
 These variables are initialized from the key=value lines in the 
 template.properties files; they can get displayed and/or edited
-on custom wizard pages; and eventually they get substituted into \*.ftl files
+on custom wizard pages; and eventually they get substituted into *.ftl files
 (using the $\{varname} syntax).
 
 Some variables have special meaning and are interpreted by the wizard dialog
@@ -153,11 +153,20 @@ to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (*.ftl) files.
 
-The wizard will set the wizardType template variable when it executes,
-so template code can check under which wizard type it runs (using <#if>..</#if>), and
-act accordingly.
+Create a file named `untitled.ned.flt`. 
 
-TODO add a simple example
+	<@setoutput path=targetFileName?default("")/>
+	${bannerComment}
+	
+	<#if nedPackageName!="">package ${nedPackageName};</#if>
+	
+	network ${targetTypeName}
+	{
+		node[${networkSize}] : ${nodeName}
+	}
+
+The file name for the output will be value of the `targetFileName` variable.
+The rest of template variables will be substituted into the template. 
 
 Specific wizard dialogs will also define extra variables for use in the
 templates, e.g. the wizard types that create a single file will put the
@@ -169,6 +178,51 @@ TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
      accessing various features, and so on. The aim of these wizards is to get you
      productive in the shortest time possible.
 
+
+==== Wizard Types
+
+The wizard will set the `wizardType` template variable when it executes,
+so template code can check under which wizard type it runs (using <#if>..</#if>), and
+act accordingly. This feature allows the creation of templates that 
+can be used for multiple wizard types. 
+
+Create a file called `omnetpp.ini.ftl` and fill with:	
+
+	<#if wizardType=="simulation">
+	network = ${targetTypeName}
+	</#if>
+
+We need this file only if we are creating a simulation. If the 
+current type is not 'simulation', an empty file will be generated
+and it will not be copied to the destination folder. 
+	
+There are several types of wizards you can create. Each one has a different
+goal:
+
+===== New Project Wizards
+
+Project wizards can create -- as their name suggest -- new projects. All necessary files
+required by the new project can be included in the template. It is possible to adjust 
+project properties to customize the new project. You can enable C++ code support, set 
+source and NED folders. The files in the template folder will be directly copied to the
+new project folder.   
+
+===== New Simulation Wizards
+
+A new simulation is basically a network definition plus an INI file 
+describing the initial configurations. These files are typically 
+created in a separate directory that is selected in the wizard as the
+`simulation folder`. 
+
+===== New INI,MSG or NED File Wizards
+
+These wizards generate only a single file. The filename can be accessed in the 
+\${targetFileName} and the target folder as \${targetFolder}.  
+
+===== Export / Import Wizards 
+
+Export and import wizards work similarly like the other wizards, but the input 
+and output files must be specified on custom wizard pages.
 
 === Configuration Keys
 
@@ -426,10 +480,8 @@ HttpLink::      A control containing a text and a hyperlink between <a></a> tags
                 be specified to be opened in an external browser.
                 * W: accepts a string with the target URL. 
                 * R: returns the target URL as string.
-                
-                Attributes:
-                * text : the textual content of the control <a></a> denotes the link inside.
-                * URL : the target URL where the control points to 
+                * ATTR: text : the textual content of the control <a></a> denotes the link inside.
+                * ATTR: URL : the target URL where the control points to 
 
 InfoLink::      A control for which displays a text with embedded link(s), and clicking
                 on a link will display a hover text in a window. The hover text can be given 
@@ -437,50 +489,40 @@ InfoLink::      A control for which displays a text with embedded link(s), and c
                 to a template variable (using the x:id XSWT attribute).
                 * W: accepts a string with the hover text for the control. 
                 * R: returns the hover text as string.
-                
-                Attributes:
-                * text : the content of the control
-                * hoverText : the html formatted text displayed in the hover control 
-                * hoverMinimumWidth : the minimal width for the hover control
-                * hoverMinimumHeight : the minimal height for the hover control
-                * hoverPreferredWidth : the preferred width for the hover control
-                * hoverPreferredHeight : the preferred height for the hover control
+                * ATTR: text : the content of the control
+                * ATTR: hoverText : the html formatted text displayed in the hover control 
+                * ATTR: hoverMinimumWidth : the minimal width for the hover control
+                * ATTR: hoverMinimumHeight : the minimal height for the hover control
+                * ATTR: hoverPreferredWidth : the preferred width for the hover control
+                * ATTR: hoverPreferredHeight : the preferred height for the hover control
 
 FileLink::      A control for displaying the name of a resource as a link. When clicked, it shows
                 the resource (opens Project Explorer and focuses it to the resource).
                 * W: accepts a string with the workspace path of the resource to be shown. 
                 * R: returns the full workspace path of the resource.
-                
-                Attributes:
-                * resourcePath : the full workspace path of the file  
+                * ATTR: resourcePath : the full workspace path of the file  
 
 FileChooser::   A control for selecting a file from the workspace. Implemented as a Composite with 
                 a single-line Text and a Browse button.
                 * W: accepts a string with the workspace file name. 
                 * R: returns the name of the selected file as a string from the workspace.
-                
-                Attributes:
-                * fileName : the full workspace path of the selected file.
+                * ATTR: fileName : the full workspace path of the selected file.
 
 ExternalFileChooser::
                 A control for selecting a file from the filesystem. Implemented as a Composite with 
                 a single-line Text and a Browse button.
                 * W: accepts a string with the full file name. 
                 * R: returns the name of the selected file as a string from the filesystem.
-                
-                Attributes:
-                * fileName : the full filesystem path of the selected file.
+                * ATTR: fileName : the full filesystem path of the selected file.
 
 GateChooser::   A control for selecting a gate of a NED module type. If the module
                 exists, it lets the user select one of its gates from a combo;
                 if it doesn't, it lets the user enter a gate name.
                 * W: accepts strings with a gate name. 
                 * R: returns the name of the selected gate as a string.
-                
-                Attributes:
-                * gateName : the name of the selected gate
-                * nedTypeName : the NED type whose gates should be enumerated.
-                * gateFilter : type filter for the enumerated gates. Expects a
+                * ATTR: gateName : the name of the selected gate
+                * ATTR: nedTypeName : the NED type whose gates should be enumerated.
+                * ATTR: gateFilter : type filter for the enumerated gates. Expects a
                   binary OR (|) of the following values: GateChooser.INPUT, 
                   GateChooser.OUTPUT, GateChooser.INOUT, GateChooser.VECTOR, 
                   GateChooser.SCALAR.
@@ -493,10 +535,8 @@ NedTypeChooser::
 				or a new one can be entered.
                 * W: accepts strings with a ned type name. 
                 * R: returns the name of the selected ned type as a string.
-                
-                Attributes:
-                * nedName : the NED module type as a string
-                * acceptedTypes : filter for the enumeration of types. Expects a
+                * ATTR: nedName : the NED module type as a string
+                * ATTR: acceptedTypes : filter for the enumeration of types. Expects a
                   binary OR (|) of the following values: NedTypeChooser.MODULE, 
                 NedTypeChooser.SIMPLE_MODULE, NedTypeChooser.COMPOUND_MODULE, 
                 NedTypeChooser.MODULEINTERFACE, NedTypeChooser.CHANNEL, 
