@@ -165,12 +165,12 @@ Create a file named `untitled.ned.flt`.
 		node[${networkSize}] : ${nodeName}
 	}
 
-The file name for the output will be value of the `targetFileName` variable.
+The file name for the output will be the value of the `targetFileName` variable.
 The rest of template variables will be substituted into the template. 
 
 Specific wizard dialogs will also define extra variables for use in the
 templates, e.g. the wizard types that create a single file will put the
-newFileName variable into the context. To see all defined variables, 
+`newFileName` variable into the context. To see all defined variables, 
 check the Appendix.
 
 TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
@@ -182,7 +182,7 @@ TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
 ==== Wizard Types
 
 The wizard will set the `wizardType` template variable when it executes,
-so template code can check under which wizard type it runs (using <#if>..</#if>), and
+so template code can check under which wizard type it runs (using `<#if>..</#if>`), and
 act accordingly. This feature allows the creation of templates that 
 can be used for multiple wizard types. 
 
@@ -192,7 +192,7 @@ Create a file called `omnetpp.ini.ftl` and fill with:
 	network = ${targetTypeName}
 	</#if>
 
-We need this file only if we are creating a simulation. If the 
+We need the INI file only if we are creating a simulation. If the 
 current type is not 'simulation', an empty file will be generated
 and it will not be copied to the destination folder. 
 	
@@ -210,13 +210,13 @@ new project folder.
 ===== New Simulation Wizards
 
 A new simulation is basically a network definition plus an INI file 
-describing the initial configurations. These files are typically 
-created in a separate directory that is selected in the wizard as the
-`simulation folder`. 
+describing the initial configurations and parameter values. These 
+files are typically created in a separate directory that is selected 
+in the wizard as the 'simulation folder'. 
 
 ===== New INI,MSG or NED File Wizards
 
-These wizards generate only a single file. The filename can be accessed in the 
+New ... File Wizards generate only a single file. The filename can be accessed in the 
 \${targetFileName} and the target folder as \${targetFolder}.  
 
 ===== Export / Import Wizards 
@@ -226,7 +226,7 @@ and output files must be specified on custom wizard pages.
 
 === Configuration Keys
 
-The template.properties file is a standard Java property file (key=value syntax).
+The `template.properties` file is a standard Java property file (`key = value` syntax).
 That file can be used to supply a template name, a template description,
 and various other options.
 
@@ -293,9 +293,9 @@ not be enough, one can also pull in existing or custom-written Java libraries.
 TIP: Documentation for the FreeMarker template language can be found at:
      http://freemarker.org/docs/index.html
 
-Several variables are predefined, such as templateName, targetFolder, date,
-author; others like targetFileName, targetTypeName, simulationFolderName,
-nedPackageName, etc. are defined only for certain wizard dialogs.
+Several variables are predefined, such as `templateName, targetFolder, date,
+author`; others like `targetFileName, targetTypeName, simulationFolderName,
+nedPackageName`, etc. are defined only for certain wizard dialogs.
 A full list of variables is provided in the Appendix.
 
 
@@ -303,16 +303,16 @@ A full list of variables is provided in the Appendix.
 
 By default templates are processed and copied with the same name (chopping the .ftl
 extension), but it is possible to redirect the output of the template to a different 
-file using the <@setoutput path=.../> macro. The filename can contain slashes too, i.e.
+file using the `<@setoutput path=.../>` macro. The filename can contain slashes too, i.e.
 one can write files in a different folder. If the folder does not exist, it will
 be created.
 
 If filename is empty, the directive restores output to the original file name (the template's name).
 This also works if a folder name is given and only the file name is missing
-(<@setoutput path="src/">): then it will write the file with the original name
+(`<@setoutput path="src/">`): then it will write the file with the original name
 but into the specified folder.
 
-If there are multiple setoutput's with the same file name within a template,
+NOTE: If there are multiple setoutput's with the same file name within a template,
 the content will be concatenated. Concatenation only works within one template;
 if you have multiple templates writing into the same file, they will overwrite
 each other's content, and it is undefined which one will win.
@@ -326,19 +326,19 @@ cannot create empty files this way. However, this "limitation" is easy to overco
 as most file formats (ned, c++, ini, xml, etc) have a comment syntax, so you
 can just write a file that contains only a comment ("// file intentionally left blank").
 Alternatively, you can create an empty file using the FileUtils Java utility class
-(<@do FileUtils.createFile("empty.txt", "")!/>). 
+(`<@do FileUtils.createFile("empty.txt", "")!/>`). 
    
 NOTE: Although blank files are not created, the template engine will not delete an
       existing file that happens to be already there with the same name.
 
-TIP: A typical usage: <@setoutput path=fileName?default("")/>, which means that if
+TIP: A typical usage: `<@setoutput path=fileName?default("")/>`, which means that if
      the fileName variable undefined (absent), use "" as file name, i.e. save to
      the original file name.
 
 
 === Custom Wizard Pages
 
-The following properties can be used to define custom pages in the wizard. <i> is
+The following properties can be used to define custom pages in the wizard. `<i>` is
 an integer page ID (starting with 1); their ordering defines the order of wizard 
 pages.
 
@@ -365,8 +365,8 @@ page.<i>.condition::
                 The condition will be evaluated by the template engine, so any
                 valid FreeMarker expression that can produce true or "true" as
                 a result will do. The expression must be supplied without the
-                ${ and } marks: the string you enter will be substituted into
-                "${( <condition> )?string}" string (will replace "<condition>"),
+                `${` and `}` marks: the string you enter will be substituted into
+                "`${( <condition> )?string}`" string (will replace "`<condition>`"),
                 and evaluate as such. An example will be provided later.
 
 All property file entries are available as template variables too. Also, most
@@ -412,21 +412,21 @@ You get the idea. This allows the creation of conditional pages.
 TIP: The SWT controls are documented on the Eclipse web site. See:
 http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/package-summary.html
 
-It is possible to bind template variables to a specific control by using the 'x:id' 
+It is possible to bind template variables to a specific control by using the `x:id` 
 attribute.
   <text x:id="templateVariableName" />
  
 This is the way how template variables are bound to the controls (R=read, W=write):
 
 Button::        This SWT class represents buttons, checkboxes and radio
-                buttons, depending on its style attribute (SWT.PUSH,
-                SWT.CHECK, SWT.RADIO).
+                buttons, depending on its style attribute (`SWT.PUSH,
+                SWT.CHECK, SWT.RADIO`).
                 * W: the string "true" selects the checkbox/radiobutton,
                    everything else clears it.
                 * R: returns a Boolean.
 
 Combo, CCombo:: Represent a combo box and a custom combo box. It can be
-                made read-only (with the SWT.READ_ONLY style); a read-only
+                made read-only (with the `SWT.READ_ONLY` style); a read-only
                 combo allows list selection but no manual editing.
                 The list items can be specified from XSWT. Variables only
                 work with the textedit part (cannot add/remove list items).
@@ -444,7 +444,7 @@ Label::         Label widget (not interactive).
                 * R: returns the label
 
 List::          A listbox widget that allows selection of one or more items,
-                depending on the style attribute (SWT.SINGLE or SWT.MULTI).
+                depending on the style attribute (`SWT.SINGLE` or `SWT.MULTI`).
                 List items can be specified from XSWT. Template variables only
                 work with the selection (cannot add/remove list items).
                 * W: accepts a string with comma-separated items, and selects the
@@ -470,17 +470,17 @@ StyledText::    A textedit widget which allows displaying and editing of
                 styled text. Handled similarly to Text.
 
 Text::          A textedit widget. It can be single-line or multi-line,
-                depending on the style attribute (SWT.SINGLE, SWT.MULTI).
+                depending on the style attribute (`SWT.SINGLE, SWT.MULTI`).
                 * W: accepts a (potentially multi-line) string.
                 * R: returns the edited text as a string.
 
 ==== Custom widgets
 
-HttpLink::      A control containing a text and a hyperlink between <a></a> tags. An URL can 
+HttpLink::      A control containing a text and a hyperlink between `<a></a>` tags. An URL can 
                 be specified to be opened in an external browser.
                 * W: accepts a string with the target URL. 
                 * R: returns the target URL as string.
-                * ATTR: text : the textual content of the control <a></a> denotes the link inside.
+                * ATTR: text : the textual content of the control `<a></a>` denotes the link inside.
                 * ATTR: URL : the target URL where the control points to 
 
 InfoLink::      A control for which displays a text with embedded link(s), and clicking
@@ -523,12 +523,13 @@ GateChooser::   A control for selecting a gate of a NED module type. If the modu
                 * ATTR: gateName : the name of the selected gate
                 * ATTR: nedTypeName : the NED type whose gates should be enumerated.
                 * ATTR: gateFilter : type filter for the enumerated gates. Expects a
-                  binary OR (|) of the following values: GateChooser.INPUT, 
+                  binary OR (|) of the following values: `GateChooser.INPUT, 
                   GateChooser.OUTPUT, GateChooser.INOUT, GateChooser.VECTOR, 
-                  GateChooser.SCALAR.
+                  GateChooser.SCALAR`.
 
-  <gateChooser x:id="gateName" nedTypeName="${nodeType}" 
-       gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
+  <gateChooser x:id="gateName" 
+    nedTypeName="${nodeType}" 
+    gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
                 
 NedTypeChooser:: 
 				A control for selecting a NED module type. An existing type name can be selected
@@ -537,10 +538,10 @@ NedTypeChooser::
                 * R: returns the name of the selected ned type as a string.
                 * ATTR: nedName : the NED module type as a string
                 * ATTR: acceptedTypes : filter for the enumeration of types. Expects a
-                  binary OR (|) of the following values: NedTypeChooser.MODULE, 
+                  binary OR (|) of the following values: `NedTypeChooser.MODULE, 
                 NedTypeChooser.SIMPLE_MODULE, NedTypeChooser.COMPOUND_MODULE, 
                 NedTypeChooser.MODULEINTERFACE, NedTypeChooser.CHANNEL, 
-                NedTypeChooser.CHANNELINTERFACE, NedTypeChooser.NETWORK.
+                NedTypeChooser.CHANNELINTERFACE, NedTypeChooser.NETWORK`.
 
   <nedTypeChooser x:id="channelType" 
        acceptedTypes="NedTypeChooser.CHANNEL"/>
@@ -598,7 +599,7 @@ so values set in the XSWT will take no effect.
 For this reason, defaults should ALWAYS be set in the property file. To do so,
 simply use a key with the ID of the widget; those values will be written
 into the wizard page when the page is created. For example, if you have a
-text widget with id="numNodes" and a checkbox with id="generateTraffic", then
+text widget with `id="numNodes"` and a checkbox with `id="generateTraffic"`, then
 the following lines
 
   numNodes = 100
@@ -623,25 +624,25 @@ The property file takes precedence over values in the XSWT file.
 ==== XSWT Form Creation
 
 Entities and attributes in an XSWT file are directly mapped to the corresponding
-SWT controls and their properties. For example the <styledText> tag is mapped 
+SWT controls and their properties. For example the `<styledText>` tag is mapped 
 to the StyledText SWT control. Similarly the 'text' attribute is mapped to the 
-'text' property of the StyledText control. It is also possible to call any public 
+`text` property of the StyledText control. It is also possible to call any public 
 method on the control by embedding a "call" as a child tag:
 
   <styledtext text="Hello world!">
   	  <setFocus/>
   </styledText>
 
-Constants in controls declared 'public final' can be used in an XSWT file by appending
+Constants in controls declared `public final` can be used in an XSWT file by appending
 the java class name before them:
 
   <gateChooser gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
 
-Constants in the SWT class do not need the "SWT." prefix. You can use:
+Constants in the SWT class do not need the `SWT.` prefix. You can use:
 
   <button x:style="RADIO"/>
 
-Children can be added to a compound control inside the <x:children></x:children> tags.
+Children can be added to a compound control inside the `<x:children></x:children>` tags.
 
   <group text="Hello">
     <x:children>
@@ -668,9 +669,9 @@ XSWT files undergo FreeMarker template processing before giving them to the
 XSWT engine for instantiation. This template processing occurs right before
 the page gets displayed, so data entered on previous pages can also be
 used as input for generating XSWT source. This feature can be useful to make
-conditional widgets (i.e. using <#if> to make part of the page appear only
+conditional widgets (i.e. using `<#if>` to make part of the page appear only
 when a certain option has been activated on earlier pages); to create a
-previously unknown number of widgets (using a <#list>..</#list> loop);
+previously unknown number of widgets (using a `<#list>..</#list>` loop);
 to populate combo boxes, listboxes or other widgets with options; and more.
 If the user navigates in the wizard back and forth several times (using the
 Next and Back buttons), the contents of wizard pages are always re-created
@@ -685,34 +686,34 @@ displayed, so they will always be up to date.
 Defining a wizard page in Java requires that you install the Eclipse PDE 
 (Plug-in Development Environment), and that you have some Eclipse development skills.
 
-The template.properties key for denoting a Java-based wizard page is page.<NN>.class,
+The `template.properties` key for denoting a Java-based wizard page is `page.<NN>.class`,
 and the value should be the fully qualified name of the Java class that implements
 the wizard page. The requirements for the class are:
   - the class must be accessible to the class loader
-  - the class must extend org.omnetpp.common.wizard.ICustomWizardPage;
+  - the class must extend `org.omnetpp.common.wizard.ICustomWizardPage;`
   - the class must have a public constructor with the following argument list:
-    (String name, IContentTemplate creatorTemplate, String condition)
+    (`String name, IContentTemplate creatorTemplate, String condition`)
 
 ==== Creating Custom Widgets
 
 Since XSWT works via Java reflection, your own custom widgets can be used
 the forms very much like normal SWT widgets. No glue or registration code
-is needed, just add their package to the <import> tags at the top of the XSWT
+is needed, just add their package to the `<import>` tags at the top of the XSWT
 file.
 
 However, some Java code is needed so that the wizard knows how to write
 template variables into your widgets and how to extract them after editing.
-This functionality can be added via the org.omnetpp.common.wizard.IWidgetAdapter
+This functionality can be added via the `org.omnetpp.common.wizard.IWidgetAdapter`
 interface. This interface must be implemented either by the widget class
-itself, or by a class named <widgetclass>Adapter in the same package.
+itself, or by a class named `<widgetclass>Adapter` in the same package.
 The interface has methods to tell whether the adapter supports a given widget,
 to read the value out of the widget, and to write a value into the widget.
 
-In addition to basic data types (Boolean, Integer, Double, String, etc),
+In addition to basic data types (`Boolean, Integer, Double, String, etc`),
 it is possible to use compound data types as well, i.e. those composed of
 the List and Map interfaces of the Java Collections API. The default values
 can be given in the template.properties file in the JSON notation, and the
-result can be used in the templates (iteration via <#list>, etc).
+result can be used in the templates (iteration via `<#list>`, etc).
 
 Jar files placed into the plugins/ subdirectory of an OMNeT++ project will be
 loaded automatically, and will be available for all templates. Jar files in
@@ -725,15 +726,15 @@ Jar files placed in the folder of the template will
 be loaded automatically when the template is used, and the classes in it will
 be available for that template. Custom SWT widget classes can be imported and
 used in XSWT forms, and other code can be used in the template files via the
-bean wrapper (e.g. ${classes["org.example.SomeClass"].someStaticMethod(...)},
-see the example wizards.) Like .xswt files and template.properties, jar files
+bean wrapper (e.g. `${classes["org.example.SomeClass"].someStaticMethod(...)}`,
+see the example wizards.) Like .xswt files and `template.properties`, jar files
 are not copied over into the destination folder when the wizard executes.
 
 ==== Extending the Template Processing
 
 If you are skilled in writing Eclipse plug-ins, there are ways you can extend
-content templates. One is to contribute to the org.omnetpp.common.wizard.templatecontributor 
-extension point, which lets you supply IContentTemplateContributor objects
+content templates. One is to contribute to the `org.omnetpp.common.wizard.templatecontributor` 
+extension point, which lets you supply `IContentTemplateContributor` objects
 that can extend the content template implementation in various ways. You can 
 contribute new variables, functions or macros to the template context.
 
@@ -746,7 +747,7 @@ contribute new variables, functions or macros to the template context.
 
  * Default values should be given in template.properties! You need to resist
    the temptation to define them in the XSWT page by pre-filling the corresponding
-   widget (e.g. <text x:id="n" text="100">). If you specify the value in a page,
+   widget (e.g. `<text x:id="n" text="100">`). If you specify the value in a page,
    the assignment will not take effect if the user skips that page (i.e. clicks
    Finish earlier). That causes variable to remain undefined, resulting in a
    runtime error during template processing.
@@ -755,86 +756,94 @@ contribute new variables, functions or macros to the template context.
    errors if the templates are not programmed carefully; for example, comparing a number
    and a string is a runtime error. Worse, widgets in wizard pages may implicitly
    perform type conversion. For example, a numHosts=100 line in template.properties
-   defines a number, but if you have a <text x:id="numHosts"/> widget in the form,
+   defines a number, but if you have a `<text x:id="numHosts"/>` widget in the form,
    the variable will come back from it as a string. Even worse, whether the
    number->string conversion takes place will depend on whether the page gets
    displayed in the wizard session or not. Therefore, it is recommended that
    you explicitly convert numeric variables to numbers at the top of templates,
-   for example like this: <#assign numHosts = numHosts?number>
+   for example like this: `<#assign numHosts = numHosts?number>`
 
- * For some reason, FreeMarker refuses to print boolean variables, i.e. $\{isFoo}
+ * For some reason, FreeMarker refuses to print boolean variables, i.e. `$\{isFoo}`
    results in a runtime error. The common workaround is to write
-   <#if isFoo>true<#else>false</#if>; this can be shortened with our iif() function:
-   ${isFoo, "true", "false"}.
+   `<#if isFoo>true<#else>false</#if>`; this can be shortened with our iif() function:
+   `${isFoo, "true", "false"}`.
 
  * Many string operations are available both as builtin FreeMarker operators
-   (varname?trim) and as Java methods via  FreeMarkers's BeanWrapper (varname.trim()).
+   (varname?trim) and as Java methods via  FreeMarkers's BeanWrapper (`varname.trim()`).
    If you are mixing the two, it is possible that you'll start getting
    spurious errors for the Java method calls. In that case, simply change
    Java method calls to FreeMarker builtins, and all will be well.
 
- * Some Java functionality (the instanceof operator, Class.newInstance(), etc)
+ * Some Java functionality (the instanceof operator, `Class.newInstance()`, etc)
    cannot be accessed via BeanWrapper. If you hit such a limitation, check
    our LangUtils class that provides FreeMarker-callable static methods
    to plug these holes.
 
-=== XSWT Tips and Trick:
+=== XSWT Tips and Tricks:
 
-How can I make a checkbox or radio button? <checkbox> and <radio> are not
-   recognized in my XSWT files!::
-   They are called <button x:style="CHECK"> and <button x:style="RADIO"> in SWT.
+* How can I make a checkbox or radio button? `<checkbox>` and `<radio>` are not recognized in my XSWT files!
 
-My text fields, combo boxes etc look strange, what do I do wrong?::
-   You usually want to add the BORDER option, like this: <text x:style="BORDER">
+They are called `<button x:style="CHECK">` and `<button x:style="RADIO">` in SWT.
 
-Q: How to make a long label wrap nicely?
-A: You will find that specifying x:style="WRAP" is necessary, but not enough. It is
-   also needed that the label widget expands and fills the space horizontally:
+* My text fields, combo boxes etc look strange, what do I do wrong?
+
+You usually want to add the BORDER option, like this: `<text x:style="BORDER">`
+
+* How to make a long label wrap nicely?
+
+You will find that specifying x:style="WRAP" is necessary, but not enough. It is
+also needed that the label widget expands and fills the space horizontally:
+      
       <label text="Some long text...." x:style="WRAP">
-          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+          <layoutData x:class="GridData" horizontalAlignment="FILL" 
+             grabExcessHorizontalSpace="true"/>
       </label>
 
-Q: How to set the focus?
-A: Add <setFocus/> to the XML body of the desired widget.
+* How to set the focus?
 
-Q: How to make widgets conditional on some previous input?
-A: You can use <#if> and other FreeMarker directives in XSWT files. These
-   files undergo template processing each time the corresponding page
-   appears.
+Add `<setFocus/>` to the XML body of the desired widget.
 
-Q: How to carry forward data from a previous page to the next?
-A: Use FreeMarker variables ($\{varName}) in the page.
+* How to make widgets conditional on some previous input?
 
-Q: How can I fill a combo box with values that I'll only know at runtime?
-A: You can generate the <option> children of the combo using FreeMarker
-   directives, e.g. <#list>...</#list>
+You can use `<#if>` and other FreeMarker directives in XSWT files. These
+files undergo template processing each time the corresponding page
+appears.
 
-Q: How can I have some more sophisticated user input than simple textedit
-   fields and checkboxes?
-A: You can implement custom SWT controls in Java, and use them in the
-   wizard pages. The custom controls may even be packaged into jar files
-   in the template's directory, i.e. you do not need to write a separate
-   Eclipse plug-in or something. Have a look at the source files of the
-   existing custom controls (FileChooser, NedTypeChooser, InfoLink, etc).
+* How to carry forward data from a previous page to the next?
 
-Q: How to dynamically enable/disable controls on a page, depending
-   on other controls (i.e. a checkbox or radio button).
-A: Currently you cannot. If you are desperate, you have the following options:
-   (1) put the dependent controls onto a separate page, which you can make
-   conditional; (2) write a custom CheckboxComposite control in Java
-   that features a checkbox, and enables/disables child controls
-   when the checkbox selection changes; (3) write the full custom wizard
-   page entirely in Java, and register it in template.properties with
-   page.xx.class= instead of page.xx.file; (4) implement scripting support
-   for XSWT 1.x and contribute the patch to us :)
+Use FreeMarker variables (`$\{varName}`) in the page.
 
-Q: In the Project wizard, how does it get decided which templates get offered
-   if the "with C++ checkbox" gets selected or not selected on the first page?
-A: If the C++ support checkbox is cleared, templates that require 
-   C++ support will not appear; when it is checked, there is no
-   such filtering. A template is regarded as one that requires C++ support 
-   if the template.properties file contains any of the following:
-   sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true.
+* How can I fill a combo box with values that I'll only know at runtime?
+
+You can generate the `<option>` children of the combo using FreeMarker
+directives, e.g. `<#list>...</#list>`
+
+* How can I have some more sophisticated user input than simple textedit fields and checkboxes?
+
+You can implement custom SWT controls in Java, and use them in the
+wizard pages. The custom controls may even be packaged into jar files
+in the template's directory, i.e. you do not need to write a separate
+Eclipse plug-in or something. Have a look at the source files of the
+existing custom controls (`FileChooser, NedTypeChooser, InfoLink, etc).
+
+* How to dynamically enable/disable controls on a page, depending on other controls (i.e. a checkbox or radio button)
+
+Currently you cannot. If you are desperate, you have the following options:
+(1) put the dependent controls onto a separate page, which you can make
+conditional; (2) write a custom CheckboxComposite control in Java
+that features a checkbox, and enables/disables child controls
+when the checkbox selection changes; (3) write the full custom wizard
+page entirely in Java, and register it in `template.properties` with
+page.xx.class= instead of page.xx.file; (4) implement scripting support
+for XSWT 1.x and contribute the patch to us :)
+
+* In the Project wizard, how does it get decided which templates get offered if the "with C++ checkbox" gets selected or not selected on the first page?
+
+If the C++ support checkbox is cleared, templates that require 
+C++ support will not appear; when it is checked, there is no
+such filtering. A template is regarded as one that requires C++ support 
+if the template.properties file contains any of the following:
+`sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true`.
 
 === Using the IDE
 
@@ -845,10 +854,10 @@ provides basic syntax highlighting. An extremely
 useful feature of the IDE is the XSWT Preview, where you can preview
 the form being edited (it updates when you save the file). The Preview should
 open automatically when you open the XSWT file; if it does not (or you close it),
-you can access it via the Window|Show View... menu item.
+you can access it via the `Window|Show View...` menu item.
 
 Some (custom) widgets may not appear in the Preview; this is because the
-Preview does not load jar files from the projects. (XXX This may get fixed.)
+Preview does not load jar files from the projects.
 
 ==== Editing Template Files
 
@@ -859,7 +868,7 @@ the wizard ignores fti files, i.e. does not copy them into the new project or
 folder.) The Freemarker Editor offers basic syntax highlight, validation
 (error markers appear during editing if the template is not syntactically
 correct), and basic content assist. Content assist can help you with directives
-(<#...> syntax) and builtin operations (like ?number, ?size, ?default, etc).
+(`<#...>` syntax) and builtin operations (like `?number, ?size, ?default`, etc).
 The content assist popup appears automatically when you type '<#' (actually
 a closing '>' is also needed for the editor to recognize the tag), and
 when you hit '?' within a directive or an interpolation ($\{...}).
@@ -869,7 +878,7 @@ when you hit '?' within a directive or an interpolation ($\{...}).
 
 [cols="35%,^10%,^15%,^10%,^10%,^10%,^10%"]
 |==============
-|variable mname | project | simulation | msgfile | inifile | nedfile | wizard
+|variable name | project | simulation | msgfile | inifile | nedfile | wizard
 |`addProjectReference`  | X |   |   |   |   | 
 |`author`  				| X | X | X | X | X | X
 |`date`                 | X | X | X | X | X | X
@@ -955,7 +964,7 @@ targetMainFile (PSNIM):: a file name that can be used as the 'main' output file 
 ==== Project name related variables
 
 rawProjectName (A):: the project name, "as is"
-projectName (A)::  sanitized project name with first letter capitalized // XXX TODO should not be this ProjectName ???
+projectName (A)::  sanitized project name with first letter capitalized
 projectname (A)::  sanitized project name in all lowercase
 PROJECTNAME (A)::  sanitized project name in all uppercase
 
@@ -1022,6 +1031,7 @@ iif(condition, valueIfTrue, valueIfFalse)::
    void/null problem.
 
 The following Java classes are available during template processing:
+
   Math::		    java.lang.Math
   StringUtils::     org.apache.commons.lang.StringUtils
   CollectionUtils::	org.apache.commons.lang.CollectionUtils
@@ -1057,11 +1067,11 @@ See http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html
 
 Math functions:
 
-  method: double cos(double x)
+  double cos(double x)
 
-  method: double sin(double x)
+  double sin(double x)
 
-  method: double pow(double x, double y)
+  double pow(double x, double y)
 
 etc.
 
@@ -1073,23 +1083,23 @@ See http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html
 
 StringUtils methods
 
-  method: boolean isEmpty(String s)
+  boolean isEmpty(String s)
 
-  method: boolean isBlank(String s)
+  boolean isBlank(String s)
 
-  method: String capitalize(String s)
+  String capitalize(String s)
 
-  method: String upperCase(String s)
+  String upperCase(String s)
 
-  method: String lowerCase(String s)
+  String lowerCase(String s)
 
-  method: boolean startsWith(String s, String suffix)
+  boolean startsWith(String s, String suffix)
 
-  method: boolean endsWith(String s, String prefix)
+  boolean endsWith(String s, String prefix)
 
-  method: String[] split(String s)
+  String[] split(String s)
 
-  method: String join(String[] strings)
+  String join(String[] strings)
 
 etc.
 
@@ -1101,11 +1111,11 @@ See http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html
 
 WordUtils methods
 
-  method: String wrap(String str, int wrapLength)
+  String wrap(String str, int wrapLength)
   
-  method: String capitalize(String str)
+  String capitalize(String str)
   
-  method: String swapCase(String str)
+  String swapCase(String str)
   
 etc.
 
@@ -1118,11 +1128,11 @@ See http://commons.apache.org/collections/apidocs/org/apache/commons/collections
 
 CollectionUtils methods
 
-  method: Collection union(Collection a, Collection b)
+  Collection union(Collection a, Collection b)
 
-  method: Collection intersection(Collection a, Collection b)
+  Collection intersection(Collection a, Collection b)
 
-  method: Collection subtract(Collection a, Collection b)
+  Collection subtract(Collection a, Collection b)
 
 etc.
 
@@ -1140,24 +1150,24 @@ which specify their own encoding.)
 
 FileUtils functions:
 
-  method: org.w3c.dom.Document readXMLFile(String fileName)
-  method: org.w3c.dom.Document readExternalXMLFile(String fileName)
+  org.w3c.dom.Document readXMLFile(String fileName)
+  org.w3c.dom.Document readExternalXMLFile(String fileName)
 
 Parses an XML file, and return the Document object of the resulting
 DOM tree.
 
-  method: Object readJSONFile(String fileName)
-  method: Object readExternalJSONFile(String fileName)
+  Object readJSONFile(String fileName)
+  Object readExternalJSONFile(String fileName)
 
 Parses a JSON file. The result is a Boolean, Integer, Double, String,
 List or Map, or any data structure composed of them. The JSON syntax is
 documented at http://json.org; if you want to check whether a particular
 text file corresponds to the JSON syntax, use http://jsonlint.com.
 
-  method: String[][] readCSVFile(String fileName, boolean ignoreFirstLine,
+  String[][] readCSVFile(String fileName, boolean ignoreFirstLine,
                          boolean ignoreBlankLines, 
                          boolean ignoreCommentLines)
-  method: String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine,
+  String[][] readExternalCSVFile(String fileName, boolean ignoreFirstLine,
                          boolean ignoreBlankLines, 
                          boolean ignoreCommentLines)
 
@@ -1169,17 +1179,17 @@ with the # character). Comment lines are not part of the commonly accepted
 CSV format, but they are supported here nevertheless, due to their
 usefulness.
 
-  method: Properties readPropertyFile(String fileName)
-  method: Properties readExternalPropertyFile(String fileName)
+  Properties readPropertyFile(String fileName)
+  Properties readExternalPropertyFile(String fileName)
 
 Parses a Java property file ('key=value' lines) in the workspace.
 The result is a Properties object, which is effectively a hash of
 key-value pairs.
 
-  method: String[][] readSpaceSeparatedTextFile(String fileName, 
+  String[][] readSpaceSeparatedTextFile(String fileName, 
                            boolean ignoreBlankLines, 
                            boolean ignoreCommentLines)
-  method: String[][] readExternalSpaceSeparatedTextFile(String fileName, 
+  String[][] readExternalSpaceSeparatedTextFile(String fileName, 
                            boolean ignoreBlankLines, 
                            boolean ignoreCommentLines)
 
@@ -1189,55 +1199,55 @@ blank lines and/or comment lines (those starting with the # character).
 The result is an array of lines, where each line is a string array of the
 items on the line.
 
-  method: String[] readLineOrientedTextFile(String fileName)
-  method: String[] readExternalLineOrientedTextFile(String fileName)
+  String[] readLineOrientedTextFile(String fileName)
+  String[] readExternalLineOrientedTextFile(String fileName)
 
 Reads a text file in the workspace, and returns its lines. Comment lines
 (those starting with a hash mark, #) are discarded. The result is a
 string array.
 
-  method: String readTextFile(String fileName)
-  method: String readExternalTextFile(String fileName)
+  String readTextFile(String fileName)
+  String readExternalTextFile(String fileName)
 
 Reads a text file, and return its contents unchanged as a single string.
 
-  method: boolean isValidWorkspacePath(String path)
+  boolean isValidWorkspacePath(String path)
 
 Returns true if the given string is syntactically a valid workspace path.
 
-  method: boolean isValidWorkspaceFilePath(String path)
+  boolean isValidWorkspaceFilePath(String path)
 
 Returns true if the given string is syntactically a valid workspace file path.
 This function does not check whether the file exists, or whether the given path
 actually already points to a resource of a different type.
 
-  method: IWorkspaceRoot getWorkspaceRoot()
+  IWorkspaceRoot getWorkspaceRoot()
 
 Returns the workspace root object. The workspace contains the user's
 projects.
 
-  method: IProject asProject(String path)
+  IProject asProject(String path)
 
 Returns the handle for the workspace project with the given name.
 Throws exception if the path is not a valid workspace project path.
 This function does not test whether the project exists. To test that,
 call the exists() method on the returned handle.
 
-  method: IContainer asContainer(String path)
+  IContainer asContainer(String path)
 
 Returns the handle for the workspace container (i.e. project or folder) with the given name.
 Throws exception if the path is not a valid workspace container path.
 This function does not test whether the container exists. To test that,
 call the exists() method on the returned handle.
 
-  method: IFile asFile(String path)
+  IFile asFile(String path)
 
 Returns the handle for the workspace file with the given name.
 Throws exception if the path is not a valid workspace file path.
 This function does not test whether the file exists. To test that,
 call the exists() method on the returned handle.
 
-  method: IResource asResource(String pathName)
+  IResource asResource(String pathName)
 
 Returns the handle for the workspace project, folder or file with
 the given name. If the resource does not exist and the path contains
@@ -1245,59 +1255,59 @@ more than one segment (i.e. it cannot be a project), it is returned as
 a file handle if it has a file extension, and as a folder if it
 does not.
 
-  method: File asExternalFile(String path)
+  File asExternalFile(String path)
 
 Returns a java.io.File object for the given path. The object can be used to
 access operations provided by the File API, such as exists(), length(), etc.
 
-  method: void copy(String path, String destPath, IProgressMonitor monitor)
+  void copy(String path, String destPath, IProgressMonitor monitor)
 
 Copies a workspace resource (file, folder or project) given with its path
 to the destination path. For projects and folders, it copies recursively
 (i.e. copies the whole folder tree). From the project root directory it
 leaves out dot files, hidden files, and team private files.
 
-  methods:  void copyURL(String url, String destFilePath, 
+   void copyURL(String url, String destFilePath, 
                          IProgressMonitor monitor)
 
 Copies the file at the given URL to the given destination workspace file.
 
-  methods:String createTempFile(String content)
+   String createTempFile(String content)
 
 Writes the given string to a temporary file, and returns the path of the
 temporary file in the file system. The file will be automatically deleted
 when the IDE exits, but it can be also deleted earlier via deleteExternalFile().
 
-  method: void createFile(String fileName, String content)
+   void createFile(String fileName, String content)
 
 Creates a workspaces text file with the given contents, in the platform's default encoding.
 
-  method:  void createExternalFile(String fileName, String content)
+   void createExternalFile(String fileName, String content)
 
 Creates a text file in the file system with the given contents, in the platform's default encoding.
 
-  method:  void deleteFile(String fileName)
+   void deleteFile(String fileName)
 
 Deletes the given workspace file. It is OK to invoke it on a nonexistent file.
 
-  method:  void deleteExternalFile(String fileName)
+   void deleteExternalFile(String fileName)
 
 Deletes the given file from the file system. It is OK to invoke it on a nonexistent file.
 
-  method:  void createDirectory(String fileName)
+   void createDirectory(String fileName)
 
 Creates a workspace folder. The parent must exist.
 
-  method:  void createExternalDirectory(String fileName)
+   void createExternalDirectory(String fileName)
 
 Creates a directory in the file system. The parent must exist.
 
-  method:  void removeDirectory(String fileName)
+   void removeDirectory(String fileName)
 
 Deletes a workspace folder. The folder must be empty. It is OK to invoke
 it on a nonexistent folder.
 
-  method:  void removeExternalDirectory(String fileName)
+   void removeExternalDirectory(String fileName)
 
 Deletes a directory in the file system. The directory must be empty.
 It is OK to invoke it on a nonexistent directory.
@@ -1308,7 +1318,7 @@ Provides utility methods to work with NED types and check their existence.
 
 NedUtils methods
 
-  method: boolean isVisibleType(String typeName, String inFolder)
+  boolean isVisibleType(String typeName, String inFolder)
 
 Returns whether the given NED type is visible in the given folder.
 If the type is a fully qualified name, it is recognized if it is
@@ -1316,7 +1326,7 @@ defined in the same project as the given folder, or in one of its
 referenced projects; if the type is a simple name (without package),
 it is recognized if it's in the NED package of the given folder.
 
-  method: INEDTypeInfo getNedType(String typeName, String inFolder)
+  INEDTypeInfo getNedType(String typeName, String inFolder)
 
 Like isVisibleNedType(), but actually returns the given NED type
 if it was found; otherwise it returns null. Useful if you implement
@@ -1333,15 +1343,15 @@ and http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference
 
 IDEUtils methods
 
-  method: boolean openConfirm(String title, String message, 
+  boolean openConfirm(String title, String message, 
                               String detailsMessage)
-  method: boolean openQuestion(String title, String message, 
+  boolean openQuestion(String title, String message, 
                                String detailsMessage)
-  method: boolean openError(String title, String message, 
+  boolean openError(String title, String message, 
                             String detailsMessage)
-  method: boolean openWarning(String title, String message, 
+  boolean openWarning(String title, String message, 
                               String detailsMessage)
-  method: boolean openInformation(String title, String message, 
+  boolean openInformation(String title, String message, 
                               String detailsMessage)
 
 Opens a standard message dialog, with an closable details message.
@@ -1352,49 +1362,49 @@ Provides a collection of Java language related utility functions.
 
 LangUtils methods
 
-  method: boolean hasMethod(Object object, String methodName)
+  boolean hasMethod(Object object, String methodName)
 
 Returns true if the object has a method with the given name.
 Method args and return type are not taken into account.
 Search is performed on the object's class and all super classes.
 
-  method: boolean hasField(Object object, String fieldName)
+  boolean hasField(Object object, String fieldName)
 
 Returns true if the object has a field with the given name.
 Field type is not taken into account. Search is performed on
 the object's class and all super classes.
 
-  method: boolean instanceOf(Object object, String classOrInterfaceName)
+  boolean instanceOf(Object object, String classOrInterfaceName)
 
 Returns true if the given object is instance of (subclasses from or
 implements) the given class or interface. To simplify usage, the class
 or interface name is accepted both with and without the package name.
 
-  method: String toString(Object object)
+  String toString(Object object)
 
 Produces a user-friendly representation of the object. In case of
 collections (lists, maps, etc), the representation is JSON-like.
 
-  method: List<Object> newList()
+  List<Object> newList()
 
 Creates and returns a new mutable List object (currently ArrayList).
 
-  method: Map<Object, Object> newMap()
+  Map<Object, Object> newMap()
 
 Creates and returns a new mutable Map object (currently HashMap).
 
-  method: Set<Object> newSet()
+  Set<Object> newSet()
 
 Creates and returns a new mutable Set object (currently HashSet).
 
-  method: Class<?> getClass(Object object)
+  Class<?> getClass(Object object)
 
 Returns the class of the given object. Provided because BeanWrapper
 seems to have a problem with the getClass() method.
 
 ==== ProcessUtils
 
-  method: ProcessResult exec(String command, String[] arguments, 
+  ProcessResult exec(String command, String[] arguments, 
                              String workingDirectory, 
                              String standardInput, double timeout)
 
@@ -1404,7 +1414,7 @@ until the process finishes or timeout occurs. The timeout value 0 means wait
 infinitely long to finish the process. Arguments at the end of the argument
 list are optional.
 
-  method: String lookupExecutable(String name)
+  String lookupExecutable(String name)
 
 Finds the given executable in the path, and returns it with full path.
 If not found, it returns the original string.
@@ -1426,3 +1436,4 @@ TODO add a little nutshell XSWT tutorial!
 TODO also some minimal FreeMarker tutorial (variables are ${}, there is <#if>,
   <#list>; and there's lots more, see the manual and/or the provided examples
 
+TODO document export/import wizards
