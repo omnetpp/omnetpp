@@ -31,25 +31,25 @@ emphasizes learning by doing.
 
 === Overview
 
-Custom wizards are read from the templates/ folder of OMNeT++ projects.
+Custom wizards are read from the `templates/` folder of OMNeT++ projects.
 Wizards are implemented by mixing a templating engine (for generating
 the output files) and a GUI description language (for custom wizard pages to
 gather user input for the file generation). Because of the use of a 
 templating engine, we'll also refer to custom wizards as "content templates".
 
-In the templates/ folder, every subfolder that contains a template.properties
+In the templates/ folder, every subfolder that contains a `template.properties`
 file is treated as a content template. (Other folders are ignored.) Every
 content template folder may contain several types of files: 
 
-* The template.properties file contains general information about the wizard.
+* The `template.properties` file contains general information about the wizard.
   Defines the initial value for the template variables and specifies the 
-  custom wizard pages to be invoked whenb the wizard is run. 
-* *.ftl files are template files that will be copied (without the .ftl extension)
+  custom wizard pages to be invoked when the wizard is run. 
+* `*.ftl` files are template files that will be copied (without the `.ftl` extension)
   into the target folder after template variable substitution. 
-* *.xswt files describe custom wizard pages to gather user input.  
-* More rarely used files are *.fti (template include) files included by *.ftl 
+* `*.xswt` files describe custom wizard pages to gather user input.  
+* More rarely used files are `*.fti` (template include) files included by `*.ftl` 
   files. This can be used to factor out common parts from the template files.
-*  *.jar files that can be used to extend the wizard's functionality 
+*  `*.jar` files that can be used to extend the wizard's functionality 
   with dynamically loaded Java code.
 * All other files are regarded as files that have to be copied into the
   target folder verbatim when the wizard runs. The wizard folder may contain
@@ -98,7 +98,7 @@ NOTE: There are numerous other configuration keys that can be used in `template.
  
 ==== Creating a new Wizard Page
 
-Files with ".xswt" extension (Wizard Page definitions) are used to define the UI and
+Files with `.xswt` extension (Wizard Page definitions) are used to define the UI and
 add new wizard pages to gather user input for the template generation. In the previous
 section we have specified that the file called `parameters.xswt` will contain the new
 wizard page definition. We will add a 'spinner' control to specify the size of our network 
@@ -137,21 +137,21 @@ automatically copied to the specified template variables.
 
 When the template is used, the contents of the template folder (and subfolders)
 will be copied over into the new project preserving the directory structure,
-with the exception of template.properties and other known special-purpose files.
+with the exception of `template.properties` and other known special-purpose files.
 (It is also possible to specify other files and folders to ignore during copying.)
 
 When the wizard is being used, a pool of variables is kept by the wizard dialog.
-These variables are initialized from the key=value lines in the 
-template.properties files; they can get displayed and/or edited
-on custom wizard pages; and eventually they get substituted into *.ftl files
+These variables are initialized from the `key = value` lines in the 
+`template.properties` files; they can get displayed and/or edited
+on custom wizard pages; and eventually they get substituted into `*.ftl` files
 (using the $\{varname} syntax).
 
 Some variables have special meaning and are interpreted by the wizard dialog
-(e.g. the nedSrcFolders variable determines which folders get denoted as
+(e.g. the `nedSrcFolders` variable determines which folders get denoted as
 NED Source Folders by the New OMNeT++ Project wizard). Variables can be used
 to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
-in the template (*.ftl) files.
+in the template (`*.ftl`) files.
 
 Create a file named `untitled.ned.flt`. 
 
