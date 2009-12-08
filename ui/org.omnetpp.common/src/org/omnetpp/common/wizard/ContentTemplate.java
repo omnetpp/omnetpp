@@ -320,7 +320,9 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
 
     /**
-     * Performs template processing on the given string, and returns the result.
+     * Performs multiple passes of template processing on the given string, and returns the result.
+     * Processing stops when the string is no longer changed by template processing, but at most
+     * 100 passes are done.
      */
     public String evaluate(String value, Map<String, Object> variables) throws TemplateException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
@@ -335,9 +337,8 @@ public abstract class ContentTemplate implements IContentTemplate {
                 StringWriter writer = new StringWriter();
                 template.process(variables, writer);
                 String newValue = writer.toString();
-                if (value.equals(newValue))
-                    return value;
-                value = newValue;
+                if (value.equals(newValue) || k >= 100)
+                    return newValue;
             }
         }
         catch (IOException e) {
@@ -349,6 +350,40 @@ public abstract class ContentTemplate implements IContentTemplate {
         }
     }
 
+    /**
+     * Evaluates the given template, but does not create any file in the workspace;
+     * in fact, non-blank output is reported via the unhandledOutput() method. 
+     * Used by export wizards. (They can create files via FileUtils.)
+     */
+    protected void processTemplateForSideEffects(Configuration freemarkerConfiguration, String fileName, CreationContext context) throws CoreException {
+        // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClassLoader());
+
+        // substitute variables
+        try {
+            // perform template substitution
+            Template template = freemarkerConfiguration.getTemplate(fileName, "utf8");
+            StringWriter writer = new StringWriter();
+            template.process(context.getVariables(), writer);
+            String content = writer.toString();
+            if (!StringUtils.isBlank(content))
+                unhandledOutput(fileName, content);
+        } catch (Exception e) {
+            throw CommonPlugin.wrapIntoCoreException(e);
+        }
+        finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+        
+    }
+
+    /**
+     * Invoked when a template that's supposed to generate no or blank output generates content. 
+     */
+    protected void unhandledOutput(String fileName, String content) {
+        throw new RuntimeException("Template " + fileName + " generated non-blank output: " + StringUtils.abbreviate(content.trim(), 30));
+    }
 
     /**
      * Utility method for performFinish(). Copies a resource into the project,

@@ -35,9 +35,9 @@ import freemarker.template.TemplateException;
 
 /**
  * A generic wizard which supports content templates (IContentTemplate).
- * The wizard may come up with a template selection page, or with a pre-selected template.
- * The former mode is the default; the latter mode can be selected by calling
- * setPreselectedTemplate() right after wizard creation.
+ * The wizard may come up with a template selection page, or with a pre-selected 
+ * template. The former mode is the default; the latter mode can be selected by 
+ * calling setTemplate() right after wizard creation.
  *
  * @author Andras
  */

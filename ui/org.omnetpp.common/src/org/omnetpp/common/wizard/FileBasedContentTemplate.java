@@ -447,6 +447,12 @@ public class FileBasedContentTemplate extends ContentTemplate {
                 if (!matchesAny(fileName, ignoreResourcePatterns))
                     createFolder(fileName, context);
             }
+            else if (context.getFolder()==null) { 
+                // export wizard: only process ftl files but do not save them (they may create files directly, via FileUtils)
+                boolean isFtlFile = StringUtils.defaultString(new Path(fileName).getFileExtension()).equals("ftl");
+                if (isFtlFile && !matchesAny(fileName, ignoreResourcePatterns) && !matchesAny(fileName, verbatimFilePatterns))
+                    processTemplateForSideEffects(getFreemarkerConfiguration(), fileName, context);
+            }
             else {
                 boolean isFtlFile = StringUtils.defaultString(new Path(fileName).getFileExtension()).equals("ftl");
                 InputStream inputStream = openFile(fileName);
