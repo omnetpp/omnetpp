@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,14 +17,14 @@ public class MakemakeOptionsTest extends TestCase {
     private void checkArgs(String args) {
         checkArgs(args, args);
     }
-    
+
     private void checkArgs(String args, String expectedArgs) {
         System.out.println("checking: " + args);
         MakemakeOptions obj = new MakemakeOptions(args);
         String resultArgs = obj.toString();
         Assert.assertEquals(expectedArgs, resultArgs);
     }
-    
+
     @Test
     public void testOptions() {
         checkArgs("-f");
@@ -68,5 +68,5 @@ public class MakemakeOptionsTest extends TestCase {
         //TODO dirs and object files
 
     }
-    
+
 }

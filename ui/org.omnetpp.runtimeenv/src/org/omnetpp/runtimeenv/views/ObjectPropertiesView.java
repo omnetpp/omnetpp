@@ -662,8 +662,8 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 
     /**
      * If the selection contains modules, we want to also show the FES, filtered to
-     * the messages destined to those modules. This method produces the filtered FES 
-     * contents for the tree content provider. 
+     * the messages destined to those modules. This method produces the filtered FES
+     * contents for the tree content provider.
      */
     protected Object[] getFilteredFesContents() {
     	// XXX this should really be in C++, but do it manually for now...

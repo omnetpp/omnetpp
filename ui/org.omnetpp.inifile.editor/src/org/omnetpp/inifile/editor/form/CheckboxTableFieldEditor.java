@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -74,10 +74,10 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		    addTableColumn(table, "Section", 150);
 		    height = table.getHeaderHeight() + 6*table.getItemHeight();
 		}
-        table.setLayoutData(new GridData(305, height)); 
+        table.setLayoutData(new GridData(305, height));
 
 		final CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
-   
+
 		// set up label provider
         tableViewer.setLabelProvider(new TableLabelProvider() {
 			@Override

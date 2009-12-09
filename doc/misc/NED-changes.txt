@@ -206,8 +206,8 @@ subclasses, see later).
 
 As for the value, you can provide either a concrete value, or a default
 (using the "default(...)" syntax). The use of default values is that they
-can be simply applied in the ini files (**.parameterName = default), 
-significantly reducing the size of ini files needed to configure the 
+can be simply applied in the ini files (**.parameterName = default),
+significantly reducing the size of ini files needed to configure the
 simulation model.
 
 

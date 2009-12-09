@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -157,8 +157,8 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		INEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
 
 		if (paramsNode == null) {
-			if (value == false) return; // optimize away property node for default value 
-	
+			if (value == false) return; // optimize away property node for default value
+
 			paramsNode = NEDElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
             ((ParametersElement)paramsNode).setIsImplicit(true);
 			node.appendChild(paramsNode);
@@ -273,7 +273,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
         String uniqueQName = getUniqueNameFor(currentQName, reservedNames);
         return uniqueQName.contains(".") ? StringUtils.substringAfterLast(uniqueQName, ".") : uniqueQName;
     }
-    
+
     /**
      * Checks whether the provided string is a valid NED identifier
      */
@@ -311,8 +311,8 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     /**
      * Given a submodule or connection whose type name is a fully qualified name,
      * this method replaces it with the simple name plus an import in the NED file
-     * if needed/possible. 
-     * 
+     * if needed/possible.
+     *
      * Returns the newly created ImportElement, or null if no import got added.
      * (I.e. it returns null as well if an existing import already covered this type.)
      */
@@ -320,7 +320,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	    String effectiveType = submoduleOrConnection.getEffectiveType();
         if (StringUtils.isEmpty(effectiveType))
 	            return null;
-        
+
 		ImportElement theImport = null;
 		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
 
@@ -334,7 +334,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 				setEffectiveType(submoduleOrConnection, simpleTypeName);
 			}
 			else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
-				// import not needed, this type is already visible: just use short name 
+				// import not needed, this type is already visible: just use short name
 				setEffectiveType(submoduleOrConnection, simpleTypeName);
 			}
 			else {
@@ -345,12 +345,12 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		return theImport;
 	}
 
-	/** 
+	/**
 	 * Sets whichever of "type" and "like-type" is already set on the element
-	 */ 
+	 */
 	public static void setEffectiveType(IHasType submoduleOrConnection, String value) {
 		if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
-			submoduleOrConnection.setLikeType(value); 
+			submoduleOrConnection.setLikeType(value);
 		else
 			submoduleOrConnection.setType(value);
 	}
@@ -384,7 +384,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     public static ArrayList<String> getPropertyValues(IHasProperties element, String propertyName) {
         PropertyElementEx propertyElement = element.getProperties().get(propertyName);
         ArrayList<String> properties = new ArrayList<String>();
-        
+
         if (propertyElement != null)
             for (PropertyKeyElement propertyKey = propertyElement.getFirstPropertyKeyChild(); propertyKey != null; propertyKey = propertyKey.getNextPropertyKeySibling())
                 for (LiteralElement literal = propertyKey.getFirstLiteralChild(); literal != null; literal = literal.getNextLiteralSibling())
@@ -396,7 +396,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     public static void setPropertyValues(IHasProperties element, String propertyName, Collection<String> values) {
         NEDElementFactory factory = NEDElementFactoryEx.getInstance();
         PropertyElementEx propertyElement = element.getProperties().get(propertyName);
-        
+
         if (propertyElement == null) {
             propertyElement = (PropertyElementEx)factory.createElement(NED_PROPERTY);
             propertyElement.setName(propertyName);
@@ -404,14 +404,14 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
         }
         else
             propertyElement.removeAllChildren();
-        
+
         addPropertyValues(element, propertyName, values);
     }
 
     public static void addPropertyValues(IHasProperties element, String propertyName, Collection<String> values) {
         NEDElementFactory factory = NEDElementFactoryEx.getInstance();
         PropertyElementEx propertyElement = element.getProperties().get(propertyName);
-        
+
         if (propertyElement == null) {
             propertyElement = (PropertyElementEx)factory.createElement(NED_PROPERTY);
             propertyElement.setName(propertyName);

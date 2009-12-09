@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -123,7 +123,7 @@ public class InputsPageTest extends ScaveFileTestCase {
 	protected void createTestFiles() throws Exception {
 		createFile(
 			fileName,
-	
+
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 			"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">" +
 			"<inputs>" +
@@ -143,7 +143,7 @@ public class InputsPageTest extends ScaveFileTestCase {
 			"");
 		createFile(
 			"test-inputspage.sca",
-	
+
 			"run run-1\n" +
 			"attr experiment 1\n" +
 			"attr measurement 1\n" +
@@ -158,7 +158,7 @@ public class InputsPageTest extends ScaveFileTestCase {
 			"scalar module-1 scalar-1 2\n");
 		createFile(
 			"test-inputspage.vec",
-	
+
 			"run run-1\n" +
 			"attr experiment 1\n" +
 			"attr measurement 1\n" +

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -71,7 +71,7 @@ public class RefactoringTools {
 
     /**
      * Organizes imports in the file. If there's an ambiguity, a selection
-     * dialog is presented to the user. 
+     * dialog is presented to the user.
      */
     //XXX factor out UI part (dialog), and pass it in as lambda?
     public static void organizeImports(NedFileElementEx nedFileElement) {
@@ -191,7 +191,7 @@ public class RefactoringTools {
     }
 
     /**
-     * This method removes unnecessary elements from the NED tree, such as empty 
+     * This method removes unnecessary elements from the NED tree, such as empty
      * channel spec, empty "parameters", "gates", "submodule" etc elements.
      */
     public static void cleanupTree(INEDElement element) {
@@ -212,7 +212,7 @@ public class RefactoringTools {
                 element.removeFromParent();
             }
         }
-        
+
         // check for empty types, parameters, gates, submodules, connections node
         if ((element instanceof TypesElement
                 || element instanceof ParametersElement
@@ -286,7 +286,7 @@ public class RefactoringTools {
         if (!addedLabels.isEmpty())
             result.add(new AddGateLabels(toGate, addedLabels));
     }
-    
+
     public static class AddGateLabels implements Runnable {
         public GateElementEx gate;
         public Collection<String> labels;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -70,7 +70,7 @@ public class XYTileCache implements ITileCache {
 					memoryUsage += TILE_SIZE_BYTES;
 					if (memoryUsage > memoryUsageLimit)
 						break;
-				} 
+				}
 			}
 			if (memoryUsage > memoryUsageLimit)
 				break;
@@ -146,7 +146,7 @@ public class XYTileCache implements ITileCache {
 	 */
 	private void mergeOrAdd(List<LargeRect> areas, LargeRect r) {
 		// search for a rectangle to which r could be merged. The way XYTileCache works,
-		// we have better chance starting with the most recently added rectangles, 
+		// we have better chance starting with the most recently added rectangles,
 		// i.e. iterate backwards
 		for (int i=areas.size()-1; i>=0; i--) {
 			LargeRect area = areas.get(i);
@@ -156,7 +156,7 @@ public class XYTileCache implements ITileCache {
 				return;
 			}
 			if (area.x == r.x && area.width == r.width && area.bottom()==r.y) {
-				area.height += r.height; // merge vertically (below) 
+				area.height += r.height; // merge vertically (below)
 				mergeOrAdd(areas, areas.remove(i)); // try our luck recursively with the new rectangle as well
 				return;
 			}

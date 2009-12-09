@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,7 +29,7 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 
 
 /**
- * Can launch a single or multiple simulation process. Understands OMNeT++ specific launch attributes. 
+ * Can launch a single or multiple simulation process. Understands OMNeT++ specific launch attributes.
  * see IOmnetppLaunchConstants.
  *
  * @author rhornig
@@ -76,7 +76,7 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
         job.schedule();
         monitor.done();
     }
-    
+
     @Override
     protected IProject[] getProjectsForProblemSearch(ILaunchConfiguration configuration, String mode) throws CoreException {
         // NOTE: we need to do this twice: here and in launch() which is kind of superfluous

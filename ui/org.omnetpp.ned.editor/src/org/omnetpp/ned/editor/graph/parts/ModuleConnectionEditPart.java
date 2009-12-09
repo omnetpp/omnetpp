@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -162,10 +162,10 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();
         cfig.setDisplayString(connectionModel.getDisplayString());
         cfig.setArrowHeadEnabled(connectionModel.getArrowDirection() != NEDElementConstants.NED_ARROWDIR_BIDIR);
-        
+
         boolean isGroup = connectionModel.getParent() instanceof ConnectionGroupElement;
         ConnectionKindFigure figure = new ConnectionKindFigure(isGroup, connectionModel.getFirstConditionChild() != null);
-        
+
         cfig.setMidpointDecoration(figure);
     }
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.Assert;
 
 /**
  * Stores a module tree.
- * 
+ *
  * @author andras
  */
 public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
@@ -41,7 +41,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 
 	/**
 	 * Create an item with the given name and (optionally) parent.
-	 *  
+	 *
 	 * @param moduleName cannot be null
 	 * @param parent null is allowed
 	 */
@@ -183,13 +183,13 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	private Map<Integer, ModuleTreeItem> getModuleIdToModuleMap() {
 	    if (moduleIdToModuleMap == null)
 	        moduleIdToModuleMap = new HashMap<Integer, ModuleTreeItem>();
-	    
+
 	    return moduleIdToModuleMap;
 	}
 
 	public ModuleTreeItem findDescendantModule(final int id) {
 	    ModuleTreeItem descendantModule = getRootModule().getModuleIdToModuleMap().get(id);
-	    
+
 	    if (isDescendantModule(descendantModule))
 	        return descendantModule;
 	    else

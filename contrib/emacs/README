@@ -11,7 +11,7 @@ ned-mode.el
 
 The file ned-mode.el allows syntax highlighting when editing OMNeT++ .ned files
 with GNU Emacs. It has been tested with Emacs 20.3.
- 
+
 To make Emacs recognize .ned files put this in your .emacs:
 
   (autoload 'ned-mode "ned-mode" "Major Mode for editing Ned files" t)

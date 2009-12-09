@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -43,7 +43,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
 			public void dispose() { }
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) { }
 			public Object[] getChildren(Object parentElement) {
-				ModuleTreeItem[] submods = ((ModuleTreeItem)parentElement).getSubmodules(); 
+				ModuleTreeItem[] submods = ((ModuleTreeItem)parentElement).getSubmodules();
 				Arrays.sort(submods, 0, submods.length);
 				return submods;
 			}
@@ -57,7 +57,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
 				return getChildren(inputElement);
 			}
         });
-        
+
         setLabelProvider(new ILabelProvider() {
 			public void addListener(ILabelProviderListener listener) { }
 			public void removeListener(ILabelProviderListener listener) { }
@@ -79,7 +79,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
 					text += " (id=" + mod.getModuleId() + ")";
 				return text;
 			}
-        
+
         });
 
         setInput(root);
@@ -87,7 +87,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
 
         if (root != null && ((ModuleTreeItem)root).getSubmodules().length > 0)
         	reveal(((ModuleTreeItem)root).getSubmodules()[0]); // scroll to top
-        
+
         Control control = getControl();
         Menu menu = new Menu(control);
         MenuItem menuItem;
@@ -197,7 +197,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         for (ModuleTreeItem child : element.getSubmodules())
             setChecked(child, checked);
     }
-    
+
     private void fireCheckStateChanged(Object element) {
         fireCheckStateChanged(new CheckStateChangedEvent(this, element, getChecked(element)));
     }

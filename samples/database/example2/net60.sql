@@ -1,5 +1,5 @@
 #
-# Example network topology. 
+# Example network topology.
 # Use sql/netbuilder.sql to create the tables before running this.
 #
 

@@ -145,7 +145,7 @@ void testReader(const char* readerNodeType, const char *inputFile, int *vectorId
 
     attrs.clear();
     char vectorIdStr[12];
-    
+
     for (size_t i = 0; i < count; ++i)
     {
         sprintf(vectorIdStr, "%d", vectorIds[i]);
@@ -154,7 +154,7 @@ void testReader(const char* readerNodeType, const char *inputFile, int *vectorId
         Port *dest = builderType->getPort(builder, "in");
         manager.connect(src, dest);
     }
-    
+
     {
     	MeasureTime m;
     	manager.execute();

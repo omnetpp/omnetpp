@@ -1,14 +1,14 @@
 function findDescendantNode(node, name, index)
 {
   var temp;
-  if (node == null) 
+  if (node == null)
   {
     return null;
-  } 
+  }
   node = node.firstChild;
-  while (node != null) 
+  while (node != null)
   {
-    if (node.nodeName == name) 
+    if (node.nodeName == name)
     {
       if (index == 0)
         return node;
@@ -16,7 +16,7 @@ function findDescendantNode(node, name, index)
         index--;
     }
     temp = findDescendantNode(node, name, index);
-    if (temp != null) 
+    if (temp != null)
     {
       return temp;
     }
@@ -29,10 +29,10 @@ function setupTree(id, lastNodes)
 {
   var last = true;
   var node = document.getElementById(id);
-  if (node != null) 
+  if (node != null)
   {
     node = node.lastChild;
-    while (node != null) 
+    while (node != null)
     {
       if (node.nodeName == "P")
       {
@@ -87,28 +87,28 @@ function setupTree(id, lastNodes)
   }
 }
 
-function toggleFolder(id, imageNode) 
+function toggleFolder(id, imageNode)
 {
   var folder = document.getElementById(id);
   var l = 0;
   var vl = "ftv2vertline.png";
-  if (imageNode != null && imageNode.nodeName != "IMG") 
+  if (imageNode != null && imageNode.nodeName != "IMG")
   {
     imageNode = findDescendantNode(imageNode, "IMG", 0);
     if (imageNode!=null) l = imageNode.src.length;
   }
-  if (folder == null) 
+  if (folder == null)
   {
-  } 
-  else if (folder.style.display == "block") 
+  }
+  else if (folder.style.display == "block")
   {
-    while (imageNode != null && 
+    while (imageNode != null &&
            imageNode.src.substring(l-vl.length,l) == vl)
     {
       imageNode = imageNode.nextSibling;
       l = imageNode.src.length;
     }
-    if (imageNode != null) 
+    if (imageNode != null)
     {
       l = imageNode.src.length;
       imageNode.nextSibling.src = "ftv2folderclosed.png";
@@ -122,16 +122,16 @@ function toggleFolder(id, imageNode)
       }
     }
     folder.style.display = "none";
-  } 
-  else 
+  }
+  else
   {
-    while (imageNode != null && 
+    while (imageNode != null &&
            imageNode.src.substring(l-vl.length,l) == vl)
     {
       imageNode = imageNode.nextSibling;
       l = imageNode.src.length;
     }
-    if (imageNode != null) 
+    if (imageNode != null)
     {
       l = imageNode.src.length;
       imageNode.nextSibling.src = "ftv2folderopen.png";

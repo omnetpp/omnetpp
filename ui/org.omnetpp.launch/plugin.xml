@@ -78,7 +78,7 @@ point="org.eclipse.debug.ui.launchShortcuts">
 <configurationType
       id="org.omnetpp.launch.simulationLaunchConfigurationType">
 </configurationType>
-</shortcut>   
+</shortcut>
 
 
 </extension>

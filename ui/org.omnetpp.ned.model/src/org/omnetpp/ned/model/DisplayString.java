@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,7 +30,7 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
  * If you want to get notified about display string changes, listen on the IHasDisplayString
  * NED element. This is the only way to get notified about changes that were made
  * directly on the tree, bypassing the DisplayString object.
- * 
+ *
  * @author rhornig
  */
 //XXX use of the Point and Dimension classes force this plugin to depend on draw2d!
@@ -53,10 +53,10 @@ public class DisplayString implements IDisplayString {
     protected IHasDisplayString owner = null;
 
     // cached return value of toString(); null means not calculated.
-    // Every public method that modifies the object's contents must call invalidate() 
-    // to null out this field.  
-    protected String cachedDisplayString = null; 
-    
+    // Every public method that modifies the object's contents must call invalidate()
+    // to null out this field.
+    protected String cachedDisplayString = null;
+
     // map that stores the currently available tag instances
     private final Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
 
@@ -184,7 +184,7 @@ public class DisplayString implements IDisplayString {
     public IHasDisplayString getOwner() {
 		return owner;
 	}
-    
+
     /**
      * Returns the currently set fallback display string
      */
@@ -259,7 +259,7 @@ public class DisplayString implements IDisplayString {
         else
             return false;
     }
-    
+
     /**
      * Sets the value of a tag at a given position. Extends the tag vector if necessary
      * @param tag Name of the tag
@@ -311,8 +311,8 @@ public class DisplayString implements IDisplayString {
 
 	protected void updateNedElement() {
 		if (owner != null) {
-			// Change the underlying NEDElement tree. 
-			// This could be optimized somewhat by remembering the LiteralElement, and quickly 
+			// Change the underlying NEDElement tree.
+			// This could be optimized somewhat by remembering the LiteralElement, and quickly
 			// checking here if that's still where we have to change the display string
 			NEDElementUtilEx.setDisplayStringLiteral(owner, toString());
 		}
@@ -539,17 +539,17 @@ public class DisplayString implements IDisplayString {
             Debug.println("\\tbf{"+prop.getTag()+"}["+prop.getPos()+"] - "+prop.getName());
             Debug.println("&");
 
-            String enumDesc = prop.getEnumDesc(); 
+            String enumDesc = prop.getEnumDesc();
             String defaultValue = prop.getDefaultDesc();
-            String desc = prop.getShortDesc().replace("#","\\#"); 
-            desc += (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : ""); 
+            String desc = prop.getShortDesc().replace("#","\\#");
+            desc += (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : "");
             desc += (StringUtils.isNotEmpty(defaultValue) ? ". Default: "+defaultValue : "");
             Debug.println(desc);
             Debug.println("\\\\ \n \\hline");
         }
         Debug.println("\\end{longtable}");
     }
-    
+
 //    static {
 //      dumpSupportedTagsInTex();
 //    };

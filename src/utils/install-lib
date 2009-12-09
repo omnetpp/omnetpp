@@ -1,5 +1,5 @@
 #!/bin/sh
-if test ! -n "$3"; then 
+if test ! -n "$3"; then
     echo "usage: $0 full_lib_name dest_dir short_lib_name"
     exit 1
 fi
@@ -12,7 +12,7 @@ if test -f $short_lib_name; then
 # no version numbers will be attached
 #	cp $short_lib_name $dest_dir/$full_lib_name
 #	cd $dest_dir
-#	if test -n "$short_lib_name"; then 
+#	if test -n "$short_lib_name"; then
 #		rm -f $short_lib_name
 #		ln -s $full_lib_name $short_lib_name
 #	fi

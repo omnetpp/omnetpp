@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,7 +26,7 @@ public class BookmarkTest
         createFileWithTwoEvents();
         openFileFromProjectExplorerViewInEventLogTableEditor();
         addBookmark(findEditorPart(), 1, "test");
-        
+
         WorkbenchUtils.ensureViewActivated("General", "Bookmarks").findTree().assertNotEmpty();
     }
 
@@ -56,7 +56,7 @@ public class BookmarkTest
         EditorPartAccess editorPart = findEditorPart();
         addBookmark(editorPart, 1, "test");
         editorPart.closeWithHotKey();
-        
+
         ensureBookmarkView().gotoBookmark("test");
         findEditorPart();
     }

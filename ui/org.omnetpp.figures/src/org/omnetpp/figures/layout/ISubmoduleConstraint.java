@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,7 +21,7 @@ public interface ISubmoduleConstraint {
 	 * Returns the position that occurs in the display string, or null. For non-vector
 	 * submodules this should be set as centerLocation; for submodule vectors, centerLocation
 	 * will be this location plus an offset calculated from vectorArrangement, vectorSize,
-	 * vectorIndex and vector arrangement parameters. 
+	 * vectorIndex and vector arrangement parameters.
 	 */
 	public Point getBaseLocation();
 
@@ -42,7 +42,7 @@ public interface ISubmoduleConstraint {
 	public int getVectorIndex();
 
 	/**
-	 * The type of the vector arrangement (exact, column, etc...) 
+	 * The type of the vector arrangement (exact, column, etc...)
 	 */
 	public VectorArrangement getVectorArrangement();
 
@@ -64,7 +64,7 @@ public interface ISubmoduleConstraint {
 	/**
 	 * Sets the location of a submodule (the center point of its main area icon/shape).
 	 * This method must store the currently set value which can be later returned by
-	 * {@link #getCenterLocation()}. Setting it to <code>null</code> is allowed meaning 
+	 * {@link #getCenterLocation()}. Setting it to <code>null</code> is allowed meaning
 	 * that the submodule location must be determined by the layouting algorithm.
 	 * In addition this function MUST set the bounds of the figure correctly based on the
 	 * size of the figure and the currently set center point.
@@ -80,18 +80,18 @@ public interface ISubmoduleConstraint {
 	public Point getCenterLocation();
 
 	/**
-	 * The bounds of the main shape of submodule. This is used during the layouting process. 
-	 * This is NOT the same as the bounds of the figure, because the figure might draw range 
-	 * indicators, and additional text annotation which is not treated as an "important" 
+	 * The bounds of the main shape of submodule. This is used during the layouting process.
+	 * This is NOT the same as the bounds of the figure, because the figure might draw range
+	 * indicators, and additional text annotation which is not treated as an "important"
 	 * part of the figure.
-	 *  
-	 * The size of this bounds also serves as input to the layouter, so this method should 
-	 * return a rectangle with the correct size even if centerLocation is not set.   
+	 *
+	 * The size of this bounds also serves as input to the layouter, so this method should
+	 * return a rectangle with the correct size even if centerLocation is not set.
 	 */
 	public Rectangle getShapeBounds();
 
 	/**
-	 * The bounds of the name label of the submodule.  
+	 * The bounds of the name label of the submodule.
 	 */
 	public Rectangle getNameBounds();
 }

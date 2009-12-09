@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -113,7 +113,7 @@ public class ChartPage extends ScaveEditorPage {
 		chartView = (ChartCanvas) ChartFactory.createChart(getBody(), this.chart, scaveEditor.getResultFileManager());
 		chartView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor); 
+		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
 		chartView.setMenu(menuManager.createContextMenu(chartView));
 	}
 
@@ -129,10 +129,10 @@ public class ChartPage extends ScaveEditorPage {
 											chartSelection.getSeries(),
 											chartSelection.getSeriesKey(),
 											chartSelection.getID(),
-											chartSelection.getIndex(), 
+											chartSelection.getIndex(),
 											chartSelection.getEventNum(),
 											chartSelection.getPreciseX(),
-											chartSelection.getX(), 
+											chartSelection.getX(),
 											chartSelection.getY(),
 											updater.getResultFileManager());
 							scaveEditor.setSelection(new TreeSelection(new TreePath(new Object[] {chart, point})));

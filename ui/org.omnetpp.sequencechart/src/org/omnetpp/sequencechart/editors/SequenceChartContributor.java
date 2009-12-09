@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -127,23 +127,23 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 public class SequenceChartContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_TIMELINE_MODE = TOOL_IMAGE_DIR + "timelinemode.png";
-   
+
     public final static String IMAGE_AXIS_ORDERING_MODE = TOOL_IMAGE_DIR + "axisordering.gif";
-    
+
     public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOL_IMAGE_DIR + "eventnumbers.png";
-    
+
     public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOL_IMAGE_DIR + "messagenames.png";
-    
+
     public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOL_IMAGE_DIR + "reusearrows.png";
-    
+
     public final static String IMAGE_SHOW_ARROW_HEADS = TOOL_IMAGE_DIR + "arrowhead.png";
-    
+
     public final static String IMAGE_INCREASE_SPACING = TOOL_IMAGE_DIR + "incr_spacing.png";
-    
+
     public final static String IMAGE_DECREASE_SPACING = TOOL_IMAGE_DIR + "decr_spacing.png";
-    
+
     public final static String IMAGE_DENSE_AXES = TOOL_IMAGE_DIR + "denseaxes.png";
-    
+
     public final static String IMAGE_BALANCED_AXES = TOOL_IMAGE_DIR + "balancedaxes.png";
 
     public final static String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOL_IMAGE_DIR + "attachvector.png";
@@ -201,7 +201,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	protected SequenceChartAction toggleBookmarkAction;
 
     protected SequenceChartAction releaseMemoryAction;
-    
+
     protected SequenceChartAction copyToClipboardAction;
 
     protected SequenceChartAction exportToSVGAction;
@@ -262,7 +262,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 	@Override
 	public void dispose() {
-	    if (sequenceChart != null) 
+	    if (sequenceChart != null)
 	        sequenceChart.removeSelectionChangedListener(this);
 
 	    sequenceChart = null;
@@ -318,9 +318,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					subMenuManager.add(createGotoConsequenceAction(msg));
                     subMenuManager.add(createZoomToMessageAction(msg));
 				}
-		
+
 				if (msgs.size() != 0)
-					menuManager.add(separatorAction);			
+					menuManager.add(separatorAction);
 
 				// axis submenu
 				final ModuleTreeItem axisModule = sequenceChart.findAxisAt(p.y);
@@ -335,7 +335,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                     subMenuManager.add(createZoomToAxisValueAction(axisModule, p.x));
                     subMenuManager.add(createCenterAxisAction(axisModule));
-                    
+
 					menuManager.add(separatorAction);
 				}
 
@@ -348,7 +348,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				menuManager.add(axisOrderingModeAction);
 			    menuManager.add(filterAction);
 				menuManager.add(separatorAction);
-                
+
 				// show/hide submenu
 				IMenuManager subMenuManager = new MenuManager("Show/Hide");
                 menuManager.add(subMenuManager);
@@ -380,7 +380,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				menuManager.add(createRefreshCommandContributionItem());
                 menuManager.add(releaseMemoryAction);
 				menuManager.add(separatorAction);
-		
+
 		        MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
 		        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		        IContributionItem showInViewItem = ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow);
@@ -430,7 +430,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 			}
 
 			sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
-	
+
 			eventLogInput = sequenceChart.getInput();
 			if (eventLogInput != null)
 				eventLogInput.addEventLogChangedListener(this);
@@ -447,7 +447,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
-		
+
 				if (fieldType == SequenceChartAction.class ||
 					fieldType == SequenceChartMenuAction.class)
 				{
@@ -460,7 +460,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 							fieldValue.setEnabled(false);
 					}
 				}
-		
+
 				if (fieldType == StatusLineContributionItem.class)
 				{
 					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
@@ -538,7 +538,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT);
         return new CommandContributionItem(parameter);
     }
-    
+
 	private SequenceChartMenuAction createTimelineModeAction() {
 		return new SequenceChartMenuAction("Timeline Mode", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_TIMELINE_MODE)) {
 			@Override
@@ -552,7 +552,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 			protected int getMenuIndex() {
 				return sequenceChart.getTimelineMode().ordinal();
 			}
-	
+
 			@Override
 			public IMenuCreator getMenuCreator() {
 				return new AbstractMenuCreator() {
@@ -573,13 +573,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 									private double oldNonLinearMinimumTimelineCoordinateDelta;
 
 									private double oldNonLinearFocus;
-							
+
 									private org.omnetpp.common.engine.BigDecimal[] oldLeftRightSimulationTimeRange;
-							
+
 									private Label minimumLabel;
 
 									private Label focusLabel;
-							
+
 									private Scale minimum;
 
 									private Scale focus;
@@ -618,7 +618,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 										focusLabel = new Label(container, SWT.NONE);
 										focusLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-								
+
 										focus = new Scale(container, SWT.NONE);
 										focus.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 										focus.setMinimum(0);
@@ -635,7 +635,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 										return container;
 									}
-							
+
 									@Override
 									protected void configureShell(Shell newShell) {
 										newShell.setText("Custom nonlinear timeline mode");
@@ -647,29 +647,29 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 										apply();
 										super.okPressed();
 									}
-							
+
 									@Override
 									protected void cancelPressed() {
 										sequenceChartFacade.setNonLinearMinimumTimelineCoordinateDelta(oldNonLinearMinimumTimelineCoordinateDelta);
 										sequenceChartFacade.setNonLinearFocus(oldNonLinearFocus);
 
 										redrawSequenceChart();
-								
+
 										super.cancelPressed();
 									}
 
 									private void apply() {
 										sequenceChartFacade.setNonLinearFocus(getNonLinearFocus());
 										sequenceChartFacade.setNonLinearMinimumTimelineCoordinateDelta(getNonLinearMinimumTimelineCoordinateDelta());
-								
+
 										redrawSequenceChart();
 									}
-							
+
 									private void redrawSequenceChart() {
 										sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
 										sequenceChart.setViewportSimulationTimeRange(oldLeftRightSimulationTimeRange);
 									}
-							
+
 									private void setNonLinearMinimumTimelineCoordinateDeltaText() {
                                         BigDecimal value = new BigDecimal(100 * getNonLinearMinimumTimelineCoordinateDelta());
                                         value = value.round(new MathContext(3));
@@ -683,7 +683,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 									private double getNonLinearMinimumTimelineCoordinateDelta() {
 										return (double)minimum.getSelection() / 1000;
 									}
-							
+
 									private int getNonLinearFocusScale() {
 										return (int)((Math.log10(sequenceChartFacade.getNonLinearFocus()) + 18) * 40);
 									}
@@ -698,7 +698,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 										focusLabel.setText("Nonlinear simulation time focus: " + TimeUtils.secondsToTimeString(value));
 									}
 								};
-						
+
 								dialog.open();
 							}
 						});
@@ -710,7 +710,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
 								MenuItem menuItem = (MenuItem)e.widget;
-						
+
 								if (menuItem.getSelection()) {
 									sequenceChart.setTimelineMode(timelineMode);
 									timelineModeStatus.update();
@@ -736,7 +736,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 			protected int getMenuIndex() {
 				return sequenceChart.getAxisOrderingMode().ordinal();
 			}
-	
+
 			@Override
 			public IMenuCreator getMenuCreator() {
 				return new AbstractMenuCreator() {
@@ -754,9 +754,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
 								MenuItem menuItem = (MenuItem)e.widget;
-						
+
 								if (menuItem.getSelection()) {
-								    if (axisOrderingMode == SequenceChart.AxisOrderingMode.MANUAL && 
+								    if (axisOrderingMode == SequenceChart.AxisOrderingMode.MANUAL &&
 								        sequenceChart.showManualOrderingDialog() == Window.CANCEL)
 								        return;
 
@@ -792,7 +792,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             private boolean isFilteredEventLog() {
                 return getEventLog() instanceof FilteredEventLog;
             }
-            
+
             @Override
             public IMenuCreator getMenuCreator() {
                 return new AbstractMenuCreator() {
@@ -816,7 +816,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                         subMenuItem.addSelectionListener( new SelectionAdapter() {
                             public void widgetSelected(SelectionEvent e) {
                                 MenuItem menuItem = (MenuItem)e.widget;
-                                
+
                                 if (menuItem.getSelection()) {
                                     runnable.run();
                                     update();
@@ -857,10 +857,10 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     sequenceChart.scrollToBegin();
 
                 update();
-            }                   
+            }
         });
     }
-    
+
     private void filter() {
         final EventLogInput eventLogInput = sequenceChart.getInput();
         final boolean wasCanceled = eventLogInput.isCanceled();
@@ -907,7 +907,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				sequenceChart.setShowEventNumbers(!sequenceChart.getShowEventNumbers());
 				update();
 			}
-	
+
 			@Override
 			public void update() {
 				setChecked(sequenceChart.getShowEventNumbers());
@@ -922,7 +922,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				sequenceChart.setShowMessageNames(!sequenceChart.getShowMessageNames());
 				update();
 			}
-	
+
 			@Override
 			public void update() {
 				setChecked(sequenceChart.getShowMessageNames());
@@ -937,7 +937,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				sequenceChart.setShowSelfMessages(!sequenceChart.getShowSelfMessages());
 				update();
 			}
-	
+
 			@Override
 			public void update() {
 				setChecked(sequenceChart.getShowSelfMessages());
@@ -952,14 +952,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 sequenceChart.setShowOtherMessageReuses(!sequenceChart.getShowOtherMessageReuses());
                 update();
             }
-            
+
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowOtherMessageReuses());
             }
         };
     }
-    
+
     private SequenceChartAction createShowSelfMessageReusesAction() {
         return new SequenceChartAction("Show Self Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
             @Override
@@ -967,14 +967,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 sequenceChart.setShowSelfMessageReuses(!sequenceChart.getShowSelfMessageReuses());
                 update();
             }
-            
+
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowSelfMessageReuses());
             }
         };
     }
-    
+
 	private SequenceChartAction createShowArrowHeadsAction() {
 		return new SequenceChartAction("Show Arrowheads", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_ARROW_HEADS)) {
 			@Override
@@ -982,7 +982,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				sequenceChart.setShowArrowHeads(!sequenceChart.getShowArrowHeads());
 				update();
 			}
-	
+
 			@Override
 			public void update() {
 				setChecked(sequenceChart.getShowArrowHeads());
@@ -997,14 +997,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 sequenceChart.setShowZeroSimulationTimeRegions(!sequenceChart.getShowZeroSimulationTimeRegions());
                 update();
             }
-            
+
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowZeroSimulationTimeRegions());
             }
         };
     }
-    
+
     private SequenceChartAction createShowAxisLabelsAction() {
         return new SequenceChartAction("Show Axis Labels", Action.AS_CHECK_BOX) {
             @Override
@@ -1012,14 +1012,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 sequenceChart.setShowAxisLabels(!sequenceChart.getShowAxisLabels());
                 update();
             }
-            
+
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowAxisLabels());
             }
         };
     }
-    
+
     private SequenceChartAction createShowAxesWithoutEventsAction() {
         return new SequenceChartAction("Show Axes Without Events", Action.AS_CHECK_BOX) {
             @Override
@@ -1027,14 +1027,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 sequenceChart.setShowAxesWithoutEvents(!sequenceChart.getShowAxesWithoutEvents());
                 update();
             }
-            
+
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowAxesWithoutEvents());
             }
         };
     }
-    
+
     private SequenceChartAction createShowTransmissionDurationsAction() {
         return new SequenceChartAction("Show Transmission Durations", Action.AS_CHECK_BOX) {
             @Override
@@ -1042,14 +1042,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 sequenceChart.setShowTransmissionDurations(!sequenceChart.getShowTransmissionDurations());
                 update();
             }
-            
+
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowTransmissionDurations());
             }
         };
     }
-    
+
     private SequenceChartAction createShowModuleMethodCallsAction() {
         return new SequenceChartAction("Show Module Method Calls", Action.AS_CHECK_BOX) {
             @Override
@@ -1057,7 +1057,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 sequenceChart.setShowModuleMethodCalls(!sequenceChart.getShowModuleMethodCalls());
                 update();
             }
-            
+
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowModuleMethodCalls());
@@ -1158,9 +1158,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 filterParameters.enableTraceFilter = true;
                 filterParameters.tracedEventNumber = event.getEventNumber();
-		
-				if (!(getEventLog() instanceof FilteredEventLog) && 
-    				(filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled())) 
+
+				if (!(getEventLog() instanceof FilteredEventLog) &&
+    				(filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled()))
 				{
 			        FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
 
@@ -1185,7 +1185,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 filterParameters.enableMessageEncapsulationTreeIdFilter = true;
 
                 EventLogFilterParameters.EnabledInt enabledInt = null;
-                
+
                 if (filterParameters.messageEncapsulationTreeIds != null) {
                     for (EventLogFilterParameters.EnabledInt messageEncapsulationTreeId : filterParameters.messageEncapsulationTreeIds) {
                         if (messageEncapsulationTreeId.value == beginSendEntry.getMessageEncapsulationId()) {
@@ -1196,7 +1196,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             messageEncapsulationTreeId.enabled = false;
                     }
                 }
-                
+
                 if (enabledInt == null) {
                     enabledInt = new EventLogFilterParameters.EnabledInt(true, beginSendEntry.getMessageEncapsulationTreeId());
                     filterParameters.messageEncapsulationTreeIds = (EventLogFilterParameters.EnabledInt[])ArrayUtils.add(filterParameters.messageEncapsulationTreeIds, enabledInt);
@@ -1208,8 +1208,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 filterParameters.lowerEventNumberLimit = Math.max(0, beginSendEntry.getEvent().getEventNumber() - 1000);
                 filterParameters.upperEventNumberLimit = Math.min(getEventLog().getLastEvent().getEventNumber(), beginSendEntry.getEvent().getEventNumber() + 1000);
 
-                if (!(getEventLog() instanceof FilteredEventLog) && 
-                    (filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled())) 
+                if (!(getEventLog() instanceof FilteredEventLog) &&
+                    (filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled()))
                 {
                     FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
 
@@ -1317,7 +1317,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                         @Override
                         public String getText(Object element) {
                             Run run = (Run)element;
-                            
+
                             return run.getRunName();
                         }
                     });
@@ -1336,7 +1336,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
                     messageBox.setText("Run ID mismatch");
                     messageBox.setMessage("The eventlog run ID: " + eventlogRunName + " and the vector file run ID: " + vectorRunName + " does not match. Do you want to continue?");
-                    
+
                     if (messageBox.open() == SWT.CANCEL)
                         return;
 				}
@@ -1344,7 +1344,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				// select a vector from the loaded file and run
 				long id;
                 IDList idList = resultFileManager.getVectorsInFileRun(resultFileManager.getFileRun(resultFile, run));
-		
+
 				if (idList.size() == 0) {
                     MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
                     messageBox.setText("No vectors in run");
@@ -1360,7 +1360,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     					public String getText(Object element) {
     						long id = (Long)element;
     						ResultItem resultItem = resultFileManager.getItem(id);
-    				
+
     						return resultItem.getModuleName() + ":" + resultItem.getName();
     					}
     				});
@@ -1376,7 +1376,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				// attach vector data
 				ResultItem resultItem = resultFileManager.getItem(id);
 				XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
-				sequenceChart.setAxisRenderer(axisModule, 
+				sequenceChart.setAxisRenderer(axisModule,
 			        new AxisVectorBarRenderer(sequenceChart, vectorFileName, vectorRunName, resultItem.getModuleName(), resultItem.getName(), resultItem, data));
 			}
 		};
@@ -1420,7 +1420,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                                 marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
                             }
                         }
-				
+
 						update();
 						sequenceChart.redraw();
 					}
@@ -1451,7 +1451,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 			@Override
 			public void run() {
 			    long[] exportRegion = askExportRegion();
-		
+
 				if (exportRegion != null) {
 					String fileName = askFileName();
 
@@ -1509,14 +1509,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 				if (dialog.open() == Window.OK) {
 					IEventLog eventLog = getEventLog();
-			
+
 					long exportBeginX;
 					long exportEndX;
-			
+
 					switch (dialog.getSelectedRangeType()) {
 						case 0:
 							List<IEvent> selectionEvents = sequenceChart.getSelectionEvents();
-					
+
 							IEvent e0 = selectionEvents.get(0);
 							IEvent e1 = selectionEvents.get(1);
 
@@ -1540,7 +1540,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						default:
 							return null;
 					}
-			
+
 					int extraSpace = dialog.getExtraSpace();
 
 					return new long[] {exportBeginX - extraSpace, exportEndX + extraSpace};
@@ -1583,7 +1583,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				private int extraSpace;
 
 				private int selectedRangeType;
-		
+
 				public ExportToSVGDialog(Shell shell) {
 					super(shell);
 				}
@@ -1591,11 +1591,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				public int getExtraSpace() {
 					return extraSpace;
 				}
-		
+
 				public int getSelectedRangeType() {
 					return selectedRangeType;
 				}
-		
+
 				@Override
 				protected IDialogSettings getDialogBoundsSettings() {
 				    return UIUtils.getDialogSettings(SequenceChartPlugin.getDefault(), getClass().getName());
@@ -1604,7 +1604,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				@Override
 				protected Control createDialogArea(Composite parent) {
 					setHelpAvailable(false);
-			
+
 					Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
 					container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 					container.setLayout(new GridLayout(2, false));
@@ -1624,7 +1624,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					Label label = new Label(container, SWT.NONE);
 					label.setText("Extra space in pixels around both ends: ");
 					label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-			
+
 					final Text text = new Text(container, SWT.BORDER | SWT.SINGLE);
 					text.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 					text.setText(String.valueOf(extraSpace));
@@ -1654,10 +1654,10 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 							selectedRangeType = type;
 						}
 					});
-			
+
 					return button;
 				}
-		
+
 				@Override
 				protected void configureShell(Shell newShell) {
 					newShell.setText("Export to SVG");
@@ -1702,7 +1702,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	}
 
 	private abstract class SequenceChartAction extends Action {
-		public SequenceChartAction(String text, int style) {	
+		public SequenceChartAction(String text, int style) {
 			super(text, style);
 		}
 
@@ -1777,7 +1777,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					createMenu(controlMenu);
 					addMenu(controlMenu);
 				}
-		
+
 				return controlMenu;
 			}
 
@@ -1787,7 +1787,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					createMenu(parentMenu);
 					addMenu(parentMenu);
 				}
-		
+
 				return parentMenu;
 			}
 
@@ -1798,8 +1798,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public static class FindTextHandler extends AbstractHandler {
         public Object execute(ExecutionEvent event) throws ExecutionException {
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
-            
-            if (part instanceof ISequenceChartProvider) 
+
+            if (part instanceof ISequenceChartProvider)
                 ((ISequenceChartProvider)part).getSequenceChart().findText(false);
 
             return null;
@@ -1809,8 +1809,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public static class FindNextHandler extends AbstractHandler {
         public Object execute(ExecutionEvent event) throws ExecutionException {
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
-            
-            if (part instanceof ISequenceChartProvider) 
+
+            if (part instanceof ISequenceChartProvider)
                 ((ISequenceChartProvider)part).getSequenceChart().findText(true);
 
             return null;
@@ -1820,8 +1820,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public static class RefreshHandler extends AbstractHandler {
         public Object execute(ExecutionEvent event) throws ExecutionException {
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
-            
-            if (part instanceof ISequenceChartProvider) 
+
+            if (part instanceof ISequenceChartProvider)
                 ((ISequenceChartProvider)part).getSequenceChart().refresh();
 
             return null;

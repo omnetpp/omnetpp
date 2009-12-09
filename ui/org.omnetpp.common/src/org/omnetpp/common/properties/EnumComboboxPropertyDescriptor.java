@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Editable combobox property descriptor, to be used with IDisplayString.EnumSpec.
- * 
+ *
  * @author Andras
  */
 public class EnumComboboxPropertyDescriptor extends PropertyDescriptor {
@@ -57,8 +57,8 @@ public class EnumComboboxPropertyDescriptor extends PropertyDescriptor {
 			public String isValid(Object value) {
 				String text = value.toString();
 				if (!text.equals("") && enumSpec.getNameFor(text) == null)
-					return "Must be one of: " + StringUtils.join(enumSpec.getNames(), ", ") + 
-					"; or an allowed abbreviation like " + 
+					return "Must be one of: " + StringUtils.join(enumSpec.getNames(), ", ") +
+					"; or an allowed abbreviation like " +
 					StringUtils.join(enumSpec.getShorthands(), ", ");
 				return null;
 			}

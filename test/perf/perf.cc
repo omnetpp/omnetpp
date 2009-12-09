@@ -232,7 +232,7 @@ void ScheduleAndCancel_1::initialize()
 
 void ScheduleAndCancel_1::handleMessage(cMessage *msg)
 {
-  	for (int i=0; i<cancelsPerEvent; i++) 
+  	for (int i=0; i<cancelsPerEvent; i++)
 	{
              scheduleAt(simTime()+iaTime->doubleValue(), msg);
 	     cancelEvent(msg);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -121,10 +121,10 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			IFile file = (IFile)resource;
 			IFile resultFile = IndexFile.isIndexFile(file) ? IndexFile.getVectorFileFor(file) :
 								isResultFile(file) ? file : null;
-	
+
 			if (resultFile == null || isDerived(resultFile) || !inputsMatches(resultFile))
 				return false;
-	
+
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 					if (debug) Debug.format("File added: %s%n", file);
@@ -154,7 +154,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			return;
 
 		if (debug) Debug.println("ResultFileTracker.synchronize()");
-		Set<String> loadedFiles = 
+		Set<String> loadedFiles =
 		ResultFileManager.callWithReadLock(manager, new Callable<Set<String>>() {
 			public Set<String> call() {
 				Set<String> loadedFiles = new HashSet<String>();
@@ -299,7 +299,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 
 	/**
 	 * Returns true if the resource or one of its parents is derived.
-	 * 
+	 *
 	 * @return
 	 */
 	public static boolean isDerived(IResource resource) {
@@ -330,7 +330,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			filePatternPath = baseDir.append(filePatternPath);
 		}
 		String filePath = workspaceFile.getFullPath().toString();
-		String filePattern = filePatternPath.toString(); 
+		String filePattern = filePatternPath.toString();
 		return matchPattern(filePath, filePattern);
 	}
 

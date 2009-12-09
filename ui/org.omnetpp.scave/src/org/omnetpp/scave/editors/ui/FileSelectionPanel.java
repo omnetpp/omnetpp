@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -69,14 +69,14 @@ public class FileSelectionPanel extends Composite {
 
 	private void initialize() {
 		this.setLayout(new GridLayout(3, false));
-	
+
 		Label label = new Label(this, SWT.NONE);
 		label.setText(labelText);
 		fileNameText = new Text(this, SWT.SINGLE | SWT.BORDER);
 		fileNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		browseButton = new Button(this, SWT.NONE);
 		browseButton.setText("Browse...");
-	
+
 		fileNameText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				updateFileName(fileNameText.getText());

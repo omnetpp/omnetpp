@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,7 +27,7 @@ import org.omnetpp.scave.ScavePlugin;
  * and restored when opened.
  * <p>
  * It is saved in persistent properties of the input file of the editor.
- * 
+ *
  * @author tomi
  */
 public class ScaveEditorMemento implements IMemento
@@ -45,7 +45,7 @@ public class ScaveEditorMemento implements IMemento
 	private static final QualifiedName KEY_CHUNK_COUNT = new QualifiedName(QUALIFIER, CHUNK_COUNT);
 	private static final QualifiedName KEY_SCAVE_STATE = new QualifiedName(QUALIFIER, SCAVE_STATE);
 	// keys that can be used with this memento
-	private String[] mementoKeys = {ZOOM, ScaveNavigationLocation.TAG_PAGE_ID, 
+	private String[] mementoKeys = {ZOOM, ScaveNavigationLocation.TAG_PAGE_ID,
 			ScaveNavigationLocation.TAG_TEXT, ScaveNavigationLocation.TAG_PAGE_MEMENTO,
 			ScaveEditor.PAGE, ScaveEditor.PAGE_ID, ScaveEditor.ACTIVE_PAGE };
 
@@ -157,7 +157,7 @@ public class ScaveEditorMemento implements IMemento
 	protected void load(IFile file) throws CoreException {
 		try {
 			String state = file.getPersistentProperty(KEY_SCAVE_STATE);
-	
+
 			if (state == null) {
 				int count = getPersistentIntProperty(file, KEY_CHUNK_COUNT);
 				if (count >= 0 && count < 100) { // limit state to ~200k

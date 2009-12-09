@@ -25,7 +25,7 @@ import org.omnetpp.runtimeenv.figures.QueueInspectorFigure;
  */
 //XXX add tooltip for message items
 //XXX add similar context menu as GraphicalModulePart has
-//XXX lots of stuff common with GraphicalModulePart -- factor them out? 
+//XXX lots of stuff common with GraphicalModulePart -- factor them out?
 public class QueueInspectorPart extends InspectorPart {
 	private Map<cObject,IFigure> objectToFigureMap = new HashMap<cObject, IFigure>();
 	private Map<IFigure,cObject> figureToObjectMap = new HashMap<IFigure, cObject>();

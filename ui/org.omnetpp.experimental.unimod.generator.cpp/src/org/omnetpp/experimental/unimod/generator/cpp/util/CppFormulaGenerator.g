@@ -52,7 +52,7 @@ term [StringBuffer formulaString]
   | lit[formulaString]
   ;
 
-lit [StringBuffer formulaString] 
+lit [StringBuffer formulaString]
   : neg[formulaString]
   | cmp[formulaString]
   | val[formulaString]
@@ -60,7 +60,7 @@ lit [StringBuffer formulaString]
 
 dis [StringBuffer formulaString] {
 	int currentTerm = 0;
-} : #(OR 
+} : #(OR
 		({formulaString.append(currentTerm++ == 0 ? "" : " || ");}
         formula[formulaString])+
      )
@@ -69,7 +69,7 @@ dis [StringBuffer formulaString] {
 con [StringBuffer formulaString] {
 	int currentLiteral = 0;
 } : #(AND
-        ({formulaString.append(currentLiteral++ == 0 ? "" : " && ");} 
+        ({formulaString.append(currentLiteral++ == 0 ? "" : " && ");}
          ({formulaString.append("(");}
           dis[formulaString]
           {formulaString.append(")");}
@@ -78,46 +78,46 @@ con [StringBuffer formulaString] {
       )
   ;
 
-neg [StringBuffer formulaString] 
+neg [StringBuffer formulaString]
   : #(NOT
         ({formulaString.append("!");}
          ({formulaString.append("(");}
-          dis[formulaString]     
+          dis[formulaString]
 		  {formulaString.append(")");}
          |
           {formulaString.append("(");}
-          con[formulaString]     
+          con[formulaString]
 		  {formulaString.append(")");}
-         | 
+         |
           lit[formulaString])
         )
      )
   ;
 
 cmp [StringBuffer formulaString]
-  : #(EQUAL  
-        val[formulaString] 
-        {formulaString.append(" == ");}  
+  : #(EQUAL
+        val[formulaString]
+        {formulaString.append(" == ");}
         val[formulaString])
-  | #(NEQUAL  
-        val[formulaString] 
-        {formulaString.append(" != ");}  
+  | #(NEQUAL
+        val[formulaString]
+        {formulaString.append(" != ");}
         val[formulaString])
-  | #(GE  
-        val[formulaString] 
-        {formulaString.append(" >= ");}  
+  | #(GE
+        val[formulaString]
+        {formulaString.append(" >= ");}
         val[formulaString])
-  | #(GT  
-        val[formulaString] 
-        {formulaString.append(" > ");}  
+  | #(GT
+        val[formulaString]
+        {formulaString.append(" > ");}
         val[formulaString])
-  | #(LE  
-        val[formulaString] 
-        {formulaString.append(" <= ");}  
+  | #(LE
+        val[formulaString]
+        {formulaString.append(" <= ");}
         val[formulaString])
-  | #(LT  
-        val[formulaString] 
-        {formulaString.append(" < ");}  
+  | #(LT
+        val[formulaString]
+        {formulaString.append(" < ");}
         val[formulaString])
   ;
 

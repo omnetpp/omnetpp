@@ -19,7 +19,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
     public CompoundModuleFigureEx() {
     	moduleFigure = new CompoundModuleFigure();
     	setContents(moduleFigure);
-    
+
         setMinimumSize(new Dimension(20,20));
         //setBorder(new LineBorder(2));
 
@@ -45,11 +45,11 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
     public int getDragOperation(int x, int y) {
     	return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
     }
-    
+
     public CompoundModuleFigure getRealModuleFigure() {
 		return moduleFigure;
 	}
-    
+
 	public Layer getSubmoduleLayer() {
 		return moduleFigure.getSubmoduleLayer();
 	}
@@ -70,7 +70,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
     public void setMaximumSize(Dimension d) {
     	throw new UnsupportedOperationException();
     }
-    
+
 	@Override
 	public Dimension getMaximumSize() {
 		return getContents().getSize();

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,7 +25,7 @@ import org.omnetpp.common.util.StringUtils;
 //TODO support a "copy to bin/ or lib/ directory" meta-option
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
-    
+
     // opp_makemake options (note: -r deliberately not supported, there's --meta:recurse instead)
     public boolean isNMake = false;
     public String projectDir = null;  // ignored (implicit)
@@ -51,15 +51,15 @@ public class MakemakeOptions implements Cloneable {
     public List<String> makefileVariables = new ArrayList<String>();
     public List<String> extraArgs = new ArrayList<String>();
 
-    // "meta" options (--meta:...): they get interpreted by MetaMakemake, 
+    // "meta" options (--meta:...): they get interpreted by MetaMakemake,
     // and translated to normal makemake options.
     public boolean metaRecurse = false;
     public boolean metaAutoIncludePath = false;
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
 
-    private List<String> errors = null; 
-    
+    private List<String> errors = null;
+
     /**
      * Create makemake options with the default settings.
      */
@@ -78,11 +78,11 @@ public class MakemakeOptions implements Cloneable {
     }
 
     /**
-     * Create a new MakemakeOptions for a new source folder. 
+     * Create a new MakemakeOptions for a new source folder.
      */
     public static MakemakeOptions createInitial() {
         MakemakeOptions result = new MakemakeOptions();
-        result.outRoot = "out"; 
+        result.outRoot = "out";
         result.isDeep = true;
         result.metaRecurse = true;
         result.metaAutoIncludePath = true;
@@ -90,13 +90,13 @@ public class MakemakeOptions implements Cloneable {
         result.metaUseExportedLibs = true;
         return result;
     }
-    
+
     /**
      * Parse the argument list into the member variables
      */
     public void parseArgs(String[] argv) {
         errors = null;
-        
+
         // process arguments
         int i;
         for (i = 0; i < argv.length; i++) {
@@ -279,7 +279,7 @@ public class MakemakeOptions implements Cloneable {
         }
         return true;
     }
-    
+
     protected void addError(String message) {
         if (errors == null)
             errors = new ArrayList<String>();
@@ -322,7 +322,7 @@ public class MakemakeOptions implements Cloneable {
         if (!StringUtils.isEmpty(userInterface) && !userInterface.equalsIgnoreCase("All"))
             add(result, "-u", userInterface);
         if (!StringUtils.isEmpty(ccext))
-            add(result, "-e", ccext); 
+            add(result, "-e", ccext);
         if (!StringUtils.isEmpty(dllSymbol))
             add(result, "-p" + dllSymbol);
         if (compileForDll && type != Type.SHAREDLIB)
@@ -381,25 +381,25 @@ public class MakemakeOptions implements Cloneable {
     public boolean equals(Object obj) {
         return obj != null && obj.getClass() == getClass() && Arrays.equals(((MakemakeOptions)obj).toArgs(), toArgs());
     }
-    
+
     /**
      * Carry out a eclipse variable substitution on all args in the list
-     * @throws CoreException for unresolved variables  
+     * @throws CoreException for unresolved variables
      */
     private static List<String> makeVariableSubstitution(List<String> args, IProject project) throws CoreException {
 		if (args == null)
 			return null;
 
-    	List<String> substedArgs = new ArrayList<String>(); 
-    	for(String arg : args) 
+    	List<String> substedArgs = new ArrayList<String>();
+    	for(String arg : args)
 			substedArgs.add(makeVariableSubstitution(arg, project));
-    
+
     	return substedArgs;
     }
 
     /**
      * Carry out Eclipse variable substitution on the argument.
-     * @throws CoreException for unresolved variables  
+     * @throws CoreException for unresolved variables
      */
 	private static String makeVariableSubstitution(String arg, IProject project) throws CoreException {
 		if (arg == null)
@@ -414,11 +414,11 @@ public class MakemakeOptions implements Cloneable {
 
 		return arg;
 	}
-    
+
     /**
      * Substitutes all ${} eclipse variables in all String options.
      * project is used for context information to evaluate BuildMacros
-     * @throws CoreException for unresolved variables  
+     * @throws CoreException for unresolved variables
      */
     public void substituteVariables(IProject project) throws CoreException {
         projectDir = makeVariableSubstitution(projectDir, project);
@@ -438,7 +438,7 @@ public class MakemakeOptions implements Cloneable {
         makefileVariables = makeVariableSubstitution(makefileVariables, project);
         extraArgs = makeVariableSubstitution(extraArgs, project);
     }
-    
+
     @Override
     public MakemakeOptions clone() {
         MakemakeOptions result = new MakemakeOptions();

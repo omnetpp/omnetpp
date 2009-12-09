@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,14 +17,14 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 /**
  * Visitor interface for use with NEDTreeTraversal.
- * 
+ *
  * @author Andras
  */
 public interface IModuleTreeVisitor {
 	/**
 	 * Enter a submodule or start recursion. Should return false if submodules
 	 * of this module should be skipped.
-	 * 
+	 *
 	 * @param submodule      null at the root only
 	 * @param submoduleType  type of the submodule or root type, never null
 	 * @return true          go into submodules
@@ -49,8 +49,8 @@ public interface IModuleTreeVisitor {
 
 	/**
 	 * Resolve the "like" parameter of a submodule. The method should return the
-	 * actual (resolved) module type, or null if it cannot (or does not wish to) 
-	 * resolve it. 
+	 * actual (resolved) module type, or null if it cannot (or does not wish to)
+	 * resolve it.
 	 */
 	String resolveLikeType(SubmoduleElementEx submodule);
 

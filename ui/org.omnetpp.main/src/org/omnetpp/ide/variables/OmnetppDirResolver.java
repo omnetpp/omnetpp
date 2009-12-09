@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,7 +21,7 @@ public class OmnetppDirResolver implements IDynamicVariableResolver {
     public static final String OMNETPP_BIN_DIR = "opp_bin_dir";
     public static final String OMNETPP_INCL_DIR = "opp_incl_dir";
     public static final String OMNETPP_LIB_DIR = "opp_lib_dir";
-    
+
 	public String resolveValue(IDynamicVariable variable, String argument)
 			throws CoreException {
 		if (OMNETPP_ROOT.equalsIgnoreCase(variable.getName())) {

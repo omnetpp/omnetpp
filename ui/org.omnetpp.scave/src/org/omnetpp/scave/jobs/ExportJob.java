@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -79,15 +79,15 @@ public class ExportJob extends WorkspaceJob
 					status = exportScalars(exporter, monitor);
 					if (status.getSeverity() != IStatus.OK)
 						return status;
-			
+
 					status = exportHistograms(exporter, monitor);
 					if (status.getSeverity() != IStatus.OK)
 						return status;
-			
+
 					return Status.OK_STATUS;
 				}
 			});
-	
+
 			return status;
 		}
 		catch (Exception e) {
@@ -101,7 +101,7 @@ public class ExportJob extends WorkspaceJob
 				String fileName = exporter.getLastFileName();
 				if (!StringUtils.isEmpty(fileName)) {
 					try {
-						File file = new File(fileName); 
+						File file = new File(fileName);
 						if (file.exists()) {
 							if (!file.delete())
 								ScavePlugin.logError("Cannot delete export file: "+fileName, null);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -35,7 +35,7 @@ public class CreateConnectionAnimation extends AbstractInfiniteAnimation {
 	@Override
 	public void redo() {
 		if (animationEnvironment.getSimulation().getModuleByID(sourceGateId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule() &&
-			animationEnvironment.getSimulation().getModuleByID(targetGateId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule()) //FIXME 
+			animationEnvironment.getSimulation().getModuleByID(targetGateId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule()) //FIXME
 		{
 			ConnectionFigure connectionFigure = new ConnectionFigure();
 			connectionFigure.setSourceAnchor(getGateAnchor(sourceGateId));

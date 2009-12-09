@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -112,13 +112,13 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
      */
     @Override
     public void refresh() {
-        // check if the associated model element is still in the model. if not, we should 
+        // check if the associated model element is still in the model. if not, we should
         // not refresh the element (ie. we cannot determine the icon for example as it requires the
         // display string, which requires type resolve which requires project context...)
         // of course the top level file element do not need a parent
         if (!(getNedModel() instanceof NedFileElementEx) && getNedModel().getParent() == null)
             return;
-        
+
     	super.refresh();
         for (Object child : getChildren())
             ((NedTreeEditPart)child).refresh();

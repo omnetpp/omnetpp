@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -108,8 +108,8 @@ public class DependencyCache {
         List<Include> includes; // list of #includes in the file
         long modificationStamp; // date/time of file when it was parsed
 
-        public String toString() { 
-            return "[" + StringUtils.join(includes, " ") + "] tstamp=" + modificationStamp; 
+        public String toString() {
+            return "[" + StringUtils.join(includes, " ") + "] tstamp=" + modificationStamp;
         }
     }
 
@@ -292,8 +292,8 @@ public class DependencyCache {
             project.accept(new IResourceVisitor() {
                 // variables for caching CDTUtils.isExcluded(), which is expensive
                 IContainer lastFolder = null;
-                boolean lastFolderIsExcluded = false; 
-                
+                boolean lastFolderIsExcluded = false;
+
                 public boolean visit(IResource resource) throws CoreException {
                     // warn for linked resources
                     if (resource.isLinked())
@@ -311,7 +311,7 @@ public class DependencyCache {
                     return MakefileTools.isGoodFolder(resource);
                 }
             });
-            
+
             // project is OK now
             fileIncludesUpToDate.add(project);
         }

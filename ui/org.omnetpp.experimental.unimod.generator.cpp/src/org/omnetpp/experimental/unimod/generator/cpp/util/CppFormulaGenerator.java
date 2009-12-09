@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -110,7 +110,7 @@ public CppFormulaGenerator() {
 				else {
 					if ( _cnt31>=1 ) { break _loop31; } else {throw new NoViableAltException(_t);}
 				}
-		
+
 				_cnt31++;
 			} while (true);
 			}
@@ -227,7 +227,7 @@ public CppFormulaGenerator() {
 				else {
 					if ( _cnt36>=1 ) { break _loop36; } else {throw new NoViableAltException(_t);}
 				}
-		
+
 				_cnt36++;
 			} while (true);
 			}
@@ -482,11 +482,11 @@ public CppFormulaGenerator() {
 				i = (AST)_t;
 				match(_t,IDENT);
 				_t = _t.getNextSibling();
-		
+
 					Action action = ((IdentNode) i).getAction();
 					formulaString.append("i").append(action.getObject().getName())
-				.append(".").append(action.getActionName()).append("L()");  
-			
+				.append(".").append(action.getActionName()).append("L()");
+
 				break;
 			}
 			case CONST_NUM:

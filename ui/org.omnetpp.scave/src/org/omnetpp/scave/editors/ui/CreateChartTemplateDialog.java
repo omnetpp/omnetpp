@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -84,7 +84,7 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayoutData(new GridData(GridData.FILL_BOTH));
         panel.setLayout(new GridLayout(2, false));
-        
+
         Label label = new Label(panel, SWT.NONE);
         label.setText("Dataset name:");
 		datasetnameText = new Text(panel, SWT.BORDER);
@@ -93,7 +93,7 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		label.setText("Chart name:");
 		chartnameText = new Text(panel, SWT.BORDER);
 		chartnameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	
+
 		Group group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		group.setLayout(new GridLayout(1, false));

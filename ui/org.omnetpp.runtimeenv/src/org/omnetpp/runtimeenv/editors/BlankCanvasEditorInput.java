@@ -5,7 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class BlankCanvasEditorInput implements IEditorInput {
@@ -14,7 +14,7 @@ public class BlankCanvasEditorInput implements IEditorInput {
     public BlankCanvasEditorInput(String name) {
         this.name = name;
     }
-    
+
     //@Override
     public boolean exists() {
         return false;

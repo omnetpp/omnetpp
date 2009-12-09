@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -89,7 +89,7 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 				ScaveExport exporter = createExporter();
 				exporter.setPrecision(page.getPrecision());
 				exporter.setBaseFileName(page.getFileName());
-				ExportJob job = new ExportJob(exporter, 
+				ExportJob job = new ExportJob(exporter,
 										selectedScalars, selectedVectors, selectedHistograms,
 										selectedDataset, selectedDatasetItem,
 										page.getGroupBy(), manager);

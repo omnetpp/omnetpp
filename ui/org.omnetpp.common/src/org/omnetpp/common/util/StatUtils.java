@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -13,7 +13,7 @@ import org.apache.commons.math.distribution.TDistribution;
 import org.eclipse.core.runtime.Assert;
 
 /**
- * Utility functions for statistical computations. 
+ * Utility functions for statistical computations.
  *
  * @author tomi
  */
@@ -24,7 +24,7 @@ public class StatUtils {
 	/**
 	 * Computes a symmetric confidence interval for the expected value
 	 * of a normal distribution.
-	 *  
+	 *
 	 * @param p the level of confidence
 	 * @param stddev the experimental standard deviation
 	 * @param n the number of observations

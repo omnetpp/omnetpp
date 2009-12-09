@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -96,7 +96,7 @@ public abstract class FieldEditor extends Composite {
             showErrorDialog(e);
         }
     }
-    
+
 	protected void removeFromFile(String section, String key) {
 		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getName()) : key.equals(entry.getName()));
 	    try {

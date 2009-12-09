@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,14 +22,14 @@ import com.simulcraft.test.gui.recorder.JavaSequence;
 /**
  * Responsible for recording typing. Seems like hotkeys are NOT delivered here, because
  * they get translated earlier on.
- *   
+ *
  * @author Andras
  */
 public class KeyboardEventRecognizer extends EventRecognizer implements ICodeRewriter {
     public KeyboardEventRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
-    
+
     public JavaSequence recognizeEvent(Event e) {
         int modifierState = recorder.getKeyboardModifierState();
         if (e.type == SWT.KeyDown && (e.keyCode & ~SWT.MODIFIER_MASK) != 0) {
@@ -58,14 +58,14 @@ public class KeyboardEventRecognizer extends EventRecognizer implements ICodeRew
         keyString = keyString.length()==1 ? ("'"+keyString+"'") : ("SWT."+keyString);
         if (modifierState == 0)
             return "pressKey(" + keyString + ")";
-        else 
+        else
             return "pressKey(" + keyString + ", " + modifierString + ")";
     }
 
     public void rewrite(JavaSequence list) {
         // merge separate keypresses into typing
         if (list.endMatches(-1, "pressKey\\('.'\\)") && list.endMatches(-2, "pressKey\\('.'\\)") &&
-                list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn()) { 
+                list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn()) {
             String arg1 = list.getEnd(-1).getJavaCode().replaceFirst("pressKey\\('(.)'\\)", "$1");
             String arg2 = list.getEnd(-2).getJavaCode().replaceFirst("pressKey\\('(.)'\\)", "$1");
 
@@ -74,7 +74,7 @@ public class KeyboardEventRecognizer extends EventRecognizer implements ICodeRew
             list.replaceEnd(-2, 2, makeStatement(newExpr));
         }
         if (list.endMatches(-1, "pressKey\\('.'\\)") && list.endMatches(-2, "typeIn\\(\".*\"\\)") &&
-                list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn()) { 
+                list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn()) {
             String arg1 = list.getEnd(-1).getJavaCode().replaceFirst("pressKey\\('(.)'\\)", "$1");
             String arg2 = list.getEnd(-2).getJavaCode().replaceFirst("typeIn\\(\"(.*)\"\\)", "$1");
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -133,10 +133,10 @@ public class VectorChart extends ChartCanvas {
 
 		public SymbolType getSymbolType() {
 			SymbolType symbolType = this.symbolType;
-	
+
 			if (symbolType == null && fallback != null)
 				symbolType = fallback.getSymbolType();
-	
+
 			if (symbolType == null) {
 				switch (series % 6) {
 				case 0: symbolType = SymbolType.Square; break;
@@ -196,7 +196,7 @@ public class VectorChart extends ChartCanvas {
 			Assert.isTrue(this != defaultProperties);
 			LineType type = getLineType();
 			IVectorPlotter plotter = VectorPlotterFactory.createVectorPlotter(type);
-			return plotter; 
+			return plotter;
 		}
 
 		public IChartSymbol getSymbol() {
@@ -370,7 +370,7 @@ public class VectorChart extends ChartCanvas {
 			for (int i = 0; i < keys.length; ++i)
 				keys[i] = dataset.getSeriesKey(i);
 			Arrays.sort(keys, StringUtils.dictionaryComparator);
-	
+
 			for (String key : keys) {
 				LineProperties props = getLineProperties(key);
 				if (props.getDisplayLine()) {

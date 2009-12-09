@@ -73,7 +73,7 @@ from using this trick here.
 Running and exploring the model
 
 * Running the simulation
-Click on the Run icon on the main toolbar. You'll see the Token and data 
+Click on the Run icon on the main toolbar. You'll see the Token and data
 frames circling on the network graphics, and trace output scrolling
 in the main window. You can used the object tree on the left side of
 the main window to explore the internal structure if the model.

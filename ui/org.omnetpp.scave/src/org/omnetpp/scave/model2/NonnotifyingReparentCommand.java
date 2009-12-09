@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 /**
- * 
+ *
  */
 package org.omnetpp.scave.model2;
 
@@ -21,14 +21,14 @@ import org.eclipse.emf.edit.domain.EditingDomain;
  * An undoable command which moves an element under a new parent, without
  * firing REMOVE notifications. By using this command, it can be avoided that
  * editor pages displaying the moved object close because they mistakenly think
- * that the object got removed from the model. (Unfortunately, EMF doesn't seem 
- * to have a REPARENTED or MOVED notification, so the only option is to swallow 
- * the REMOVE.) 
- * 
+ * that the object got removed from the model. (Unfortunately, EMF doesn't seem
+ * to have a REPARENTED or MOVED notification, so the only option is to swallow
+ * the REMOVE.)
+ *
  * NOTE: this command should be used within a CompoundCommmand together with other
  * (notifying!) commands, so that enough notifications get sent to keep the UI
  * up to date.
- * 
+ *
  * @author Andras
  */
 public class NonnotifyingReparentCommand extends CompoundCommand {

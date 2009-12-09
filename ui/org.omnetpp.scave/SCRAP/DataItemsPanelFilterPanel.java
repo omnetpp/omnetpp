@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.omnetpp.scave.model2.FilterHints;
  * A composite for displaying and editing the filter parameters.
  * It is a passive component, needs to be configured
  * to do anything useful.
- * 
+ *
  * It is used in the CreateDatasetDialog (in DataItemsPanel).
  *
  * @author tomi

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,17 +36,17 @@ import org.omnetpp.common.Debug;
  * only *real* marker changes reach the workspace, and excessive
  * updates are prevented.
  *
- * Methods take IResource not IFile, so one can add markers to 
+ * Methods take IResource not IFile, so one can add markers to
  * folders and projects as well, not only to files.
- * 
+ *
  * ProblemMarkerSynchronizers are one-shot objects, they cannot be reused.
  * Clients need to create a new instance for every synchronization.
- * 
+ *
  * @author Andras
  */
 public class ProblemMarkerSynchronizer {
     private static boolean debug = true;
-    
+
     protected static class MarkerData {
 		String type;
 		Map<String, Object> attrs;
@@ -77,9 +77,9 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	/**
-	 * Include the given file (or other resource) in the synchronization process. 
-	 * This is not needed when you call addMarker() for the file; however if there's 
-	 * no addMarker() for that file, that file will be ignored (existing markers left 
+	 * Include the given file (or other resource) in the synchronization process.
+	 * This is not needed when you call addMarker() for the file; however if there's
+	 * no addMarker() for that file, that file will be ignored (existing markers left
 	 * untouched) unless you register them with register().
 	 */
 	public void register(IResource file) {
@@ -143,12 +143,12 @@ public class ProblemMarkerSynchronizer {
                 }
             };
 
-            // the job should not run together with other jobs accessing the workspace resources, 
+            // the job should not run together with other jobs accessing the workspace resources,
             // to prevent subtle deadlocks (for example: progressMonitor does Display.readAndDispatch
             // which invokes a timerExec, whose run() contains validateAllNedFiles, etc...)
             job.setRule(ResourcesPlugin.getWorkspace().getRoot());
             job.setPriority(Job.INTERACTIVE);
-            if (!debug) 
+            if (!debug)
                 job.setSystem(true);
             job.schedule();
         }
@@ -156,9 +156,9 @@ public class ProblemMarkerSynchronizer {
 
 	@SuppressWarnings("unchecked")
     protected void addRemoveMarkers() throws CoreException {
-    
+
 	    long startTime = System.currentTimeMillis();
-	    
+
 	    // process each file registered
 		for (IResource file : markerTable.keySet()) {
 			if (file.exists()) {
@@ -167,14 +167,14 @@ public class ProblemMarkerSynchronizer {
 			    // so we have sets of the attribute maps. Plus, we need a mapping
 			    // back from the attribute set to the original IMarker (or MarkerData),
 			    // hence the two maps of maps below.
-			    
+
 			    // query existing markers
 			    Map<Map,IMarker> existingMarkerAttrs = new HashMap<Map, IMarker>();
 			    IMarker[] tmp = file.findMarkers(markerBaseType, true, 0);
 			    for (IMarker marker : tmp) {
 			        // must convert to HashMap, because MarkerAttributesMap calculates hashCode differently
 			        Map attrs = new HashMap();
-			        attrs.putAll(marker.getAttributes()); 
+			        attrs.putAll(marker.getAttributes());
 			        existingMarkerAttrs.put(attrs, marker);
 			    }
 
@@ -184,14 +184,14 @@ public class ProblemMarkerSynchronizer {
 			    for (MarkerData markerData : list)
 			        newMarkerAttrs.put(markerData.attrs, markerData);
 
-			    // if changed, synchronize (this "if" is not strictly needed, but improves 
-			    // performance of the most common case ("no change")). 
-			    // Small issue: attrMaps don't contain the marker type, so we fail to notice 
-			    // if a marker has been replaced with one with identical attributes but 
+			    // if changed, synchronize (this "if" is not strictly needed, but improves
+			    // performance of the most common case ("no change")).
+			    // Small issue: attrMaps don't contain the marker type, so we fail to notice
+			    // if a marker has been replaced with one with identical attributes but
 			    // different type -- a very-very unlikely case.
-			    // 
+			    //
 			    if (!newMarkerAttrs.keySet().equals(existingMarkerAttrs.keySet())) {
-			        
+
 			        // add markers that aren't on IResource yet.
 			        // note: the "..or types not equal" condition adds about 30% to the runtime cost;
 			        // this can be reduced by eliminating double lookups (results in slightly uglier code)

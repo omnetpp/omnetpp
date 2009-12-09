@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -48,7 +48,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     public static String getVersion() {
         return (String)getDefault().getBundle().getHeaders().get("Bundle-Version");
     }
-    
+
     /*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
@@ -85,7 +85,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     }
 
 	/**
-	 * The main directory (where Makefile.inc or configuser.vc resides). Returns empty string if 
+	 * The main directory (where Makefile.inc or configuser.vc resides). Returns empty string if
 	 * omnetpp location cannot be determined.
 	 */
 	public static String getOmnetppRootDir() {

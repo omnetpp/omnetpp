@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -51,7 +51,7 @@ public class CompoundModuleFigureEx extends CompoundModuleTypeFigure implements
     	// translate the mouse coordinates to root figure relative
         Point mouse = new Point(x,y);
         translateToRelative(mouse);
-        
+
         // translate the client area coordinates to root figure relative
         Rectangle clientArea = mainContainer.getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
         mainContainer.translateToParent(clientArea);

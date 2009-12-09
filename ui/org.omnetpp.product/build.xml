@@ -1,5 +1,5 @@
 <project name="org.omnetpp.product" default="omnetpp">
-    <property environment="env" /> 
+    <property environment="env" />
 	<property file="build.properties" />
 
 	<target name="clean">
@@ -31,7 +31,7 @@
 	</target>
 
 	<!--
-		This target actually executes the PDE Build process by launching the 
+		This target actually executes the PDE Build process by launching the
 		Eclipse antRunner application.
 	-->
 	<target name="pde-build">

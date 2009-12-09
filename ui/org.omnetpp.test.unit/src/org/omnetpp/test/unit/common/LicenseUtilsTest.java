@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,7 +21,7 @@ public class LicenseUtilsTest extends TestCase {
             // there must be a license notice for each license
             String licenseNotice = LicenseUtils.getLicenseNotice(license);
             assertNotNull(licenseNotice);
-            
+
             if (license.equals(LicenseUtils.NONE))
                 assertTrue(licenseNotice.equals(""));
             else

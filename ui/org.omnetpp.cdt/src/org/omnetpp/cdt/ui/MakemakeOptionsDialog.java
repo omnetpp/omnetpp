@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -28,23 +28,23 @@ import org.omnetpp.common.util.UIUtils;
 
 /**
  * Container dialog for a MakemakeOptionsPanel
- * 
+ *
  * @author Andras
  */
 public class MakemakeOptionsDialog extends TitleAreaDialog {
     protected IContainer folder;
     protected BuildSpecification buildSpec;  // needed by the panel
     protected MakemakeOptions resultOptions;
-    
+
     // controls
     protected MakemakeOptionsPanel optionsPanel;
-    
+
     public MakemakeOptionsDialog(Shell parentShell, IContainer folder, BuildSpecification buildSpec) {
         super(parentShell);
         this.folder = folder;
         this.buildSpec = buildSpec;
     }
-    
+
     @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogSettings(Activator.getDefault(), getClass().getName());
@@ -60,16 +60,16 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
     protected Control createDialogArea(Composite parent) {
         setTitle("Makemake Options");
         setMessage("Makefile generation (Makemake) options for " + folder.getFullPath().toString() + ".");
-        
+
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(1,false));
-        
+
         optionsPanel = new MakemakeOptionsPanel(composite, SWT.NONE) {
             @Override
             protected void setErrorMessage(String text) {
                 setMakemakePanelErrorMessage(text);
-            }            
+            }
         };
         optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         optionsPanel.populate(folder, buildSpec);
@@ -81,7 +81,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         Button okButton = getButton(IDialogConstants.OK_ID);
         if (okButton!=null)
             okButton.setEnabled(text==null);
-    }            
+    }
 
     @Override
     protected void okPressed() {

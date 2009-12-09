@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,7 +26,7 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ScalarChartProperties.BarPlacement;
 
 /**
- * Draws the bars of the bar chart. 
+ * Draws the bars of the bar chart.
  */
 class BarPlot {
 	private Rectangle rect = new Rectangle(0,0,1,1);
@@ -59,7 +59,7 @@ class BarPlot {
 		if (bars != null && bars.length > 0 && bars[0].length > 0) {
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
-	
+
 			Rectangle clip = graphics.getClip(new Rectangle());
 			int cColumns = bars[0].length;
 			int[] indices = getRowColumnsInRectangle(clip);
@@ -78,11 +78,11 @@ class BarPlot {
 		if (!Double.isInfinite(baseline)) {
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
-	
+
 			int y = coordsMapping.toCanvasY(baseline);
 			graphics.setForegroundColor(ChartDefaults.DEFAULT_BAR_BASELINE_COLOR);
 			graphics.drawLine(rect.x + 1, y, rect.x + rect.width - 1, y);
-	
+
 			graphics.popState();
 			graphics.dispose();
 		}
@@ -160,7 +160,7 @@ class BarPlot {
 		final double widthBar = 1.0;
 		final double hgapMinor = 0.5;
 		final double hgapMajor = 0.25;
-		final double horizontalInset = 1.0;   // left/right inset relative to the bars' width 
+		final double horizontalInset = 1.0;   // left/right inset relative to the bars' width
 		final double verticalInset = 0.1; 	// top inset relative to the height of the highest bar
 
 		IScalarDataset dataset = chart.getDataset();
@@ -200,7 +200,7 @@ class BarPlot {
 			for (int column = 0; column < cColumns; ++column) {
 				RectangularArea bar = bars[row][column] = new RectangularArea();
 				double value = chart.getDataset().getValue(row, column);
-		
+
 				// calculate x coordinates
 				switch (barPlacement) {
 				case Aligned:
@@ -226,7 +226,7 @@ class BarPlot {
 						x += widthBar * cColumns + hgapMajor * widthBar * cColumns;
 					break;
 				}
-		
+
 				// calculate y coordinates
 				switch (barPlacement) {
 				case Aligned:
@@ -251,7 +251,7 @@ class BarPlot {
 					y += value;
 					break;
 				}
-		
+
 				// extend plot area with the new bar
 				addRectangle(plotArea, bar);
 			}

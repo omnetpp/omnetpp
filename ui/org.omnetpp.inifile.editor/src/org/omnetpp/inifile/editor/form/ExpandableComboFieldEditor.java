@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,13 +14,13 @@ import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
- * An inifile field editor which displays ComboFieldEditor, and lets the user 
- * expand it to a TextTableFieldEditor. 
- * 
+ * An inifile field editor which displays ComboFieldEditor, and lets the user
+ * expand it to a TextTableFieldEditor.
+ *
  * @author Andras
  */
 public class ExpandableComboFieldEditor extends ExpandableFieldEditor {
-    protected List<String> comboContents; 
+    protected List<String> comboContents;
 
 	public ExpandableComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
@@ -28,7 +28,7 @@ public class ExpandableComboFieldEditor extends ExpandableFieldEditor {
 
 	@Override
 	protected FieldEditor createFieldEditor(boolean isExpanded) {
-		FieldEditor result = isExpanded ? 
+		FieldEditor result = isExpanded ?
 				new TextTableFieldEditor(this, entry, inifile, formPage, labelText) : // currently we have no ComboTableFieldEditor
 				new ComboFieldEditor(this, entry, inifile, formPage, labelText);
 		result.setComboContents(comboContents);

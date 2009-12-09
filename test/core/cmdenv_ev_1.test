@@ -27,7 +27,7 @@ void Module::activity()
 {
     ev << "activity line 1" << endl;
     ev << "activity unterminated line 1";
-    
+
     wait(1);
 
     ev << "ENDL\n";

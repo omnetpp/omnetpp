@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -68,12 +68,12 @@ import org.omnetpp.launch.LaunchPlugin;
  *
  * @author rhornig
  */
-public class OmnetppMainTab extends AbstractLaunchConfigurationTab 
+public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 implements ModifyListener {
 
     public final static String VAR_NED_PATH = "opp_ned_path";
     public final static String VAR_SHARED_LIBS = "opp_shared_libs";
-    
+
     // UI widgets
     protected Button fProgOppRunButton;
     protected Button fProgOtherButton;
@@ -107,7 +107,7 @@ implements ModifyListener {
     protected Button fDbgOnErrDefaultButton;
     protected Button fDbgOnErrYesButton;
     protected Button fDbgOnErrNoButton;
-    
+
     private ILaunchConfiguration config;
     private boolean updateDialogStateInProgress = false;
     private boolean debugLaunchMode = false;
@@ -142,7 +142,7 @@ implements ModifyListener {
         Composite advancedGroup = createAdvancedGroup(comp, 1);
         ToggleLink more = new ToggleLink(comp, SWT.NONE);
         more.setControls(new Control[] { advancedGroup });
-        
+
         more.addSelectionListener(new SelectionAdapter() {
         	@Override
         	public void widgetSelected(SelectionEvent e) {
@@ -164,7 +164,7 @@ implements ModifyListener {
            	fProgOtherButton.setSelection(StringUtils.isNotBlank(exeName));
             fProgOppRunButton.setSelection(StringUtils.isBlank(exeName));
 			fProgText.setText(exeName);
-            
+
             fInifileText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES,"" ).trim());
             setConfigName(config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim());
             if (debugLaunchMode)
@@ -212,15 +212,15 @@ implements ModifyListener {
     public void performApply(ILaunchConfigurationWorkingCopy configuration) {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, getWorkingDirectoryText());
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, fProgText.getText());
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, fInifileText.getText());        
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, getConfigName());        
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText());        
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, fInifileText.getText());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, getConfigName());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText());
 
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, fNedPathText.getText());        
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, fNedPathText.getText());
 
         // if we are in debug mode, we should store the run parameter into the command line too
         String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
-        if (debugLaunchMode) 
+        if (debugLaunchMode)
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, strippedRun);
         else
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, strippedRun);
@@ -237,21 +237,21 @@ implements ModifyListener {
         else configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "");
 
         if (fEventLogYesButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "true");        
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "true");
         else if (fEventLogNoButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "false");
         else
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "");
 
         if (fDbgOnErrYesButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "true");        
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "true");
         else if (fDbgOnErrNoButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "false");
         else
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "");
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, fAdditionalText.getText());
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, fShowDebugViewButton.getSelection());        
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, fShowDebugViewButton.getSelection());
 
         try {
         	Set<IResource> assocRes = new HashSet<IResource>();
@@ -289,14 +289,14 @@ implements ModifyListener {
                 if (StringUtils.equals("ini", selFile.getFileExtension()))
                     defIni = selFile.getName();
                 // if executable set the project and program name
-                if (OmnetppLaunchUtils.isExecutable(selFile)) 
+                if (OmnetppLaunchUtils.isExecutable(selFile))
                     defExe = selFile.getFullPath().toString();
             }
             // if we just selected a directory or project use it as working dir
-            if (selectedResource instanceof IContainer) 
+            if (selectedResource instanceof IContainer)
                 defWorkDir = selectedResource.getFullPath().toString();
         }
-        
+
         if (StringUtils.isEmpty(defExe))
         	defExe = getDefaultExeName(defWorkDir);
 
@@ -313,18 +313,18 @@ implements ModifyListener {
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, true);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
     }
-    
+
     protected static String getDefaultExeName(String defWorkDir) {
     	if (StringUtils.isEmpty(defWorkDir))
     		return "";
 
     	String progs = StringUtils.substituteVariables("${opp_simprogs:"+defWorkDir+"}", "");
-        
+
         // return the first program from the list
         String [] splitProgs  = StringUtils.split(progs, ' ');
-        if (splitProgs.length > 0) 
+        if (splitProgs.length > 0)
         	return splitProgs[0];
-    
+
 		return "";
 	}
 
@@ -341,7 +341,7 @@ implements ModifyListener {
         fBrowseForBinaryButton.setEnabled(fProgOtherButton.getSelection());
         if (fProgOppRunButton.getSelection())
         	fProgText.setText("");
-        
+
         // update the config combo
         IFile[] inifiles = getIniFiles();
         if (config == null || inifiles == null)
@@ -421,7 +421,7 @@ implements ModifyListener {
         for (String name : names) {
             if (!name.startsWith("${")) {
                 IPath namePath = new Path(name);
-                if (!namePath.isAbsolute()) 
+                if (!namePath.isAbsolute())
                     namePath = workingDirectory.getFullPath().append(namePath);
 
                 result.add(ResourcesPlugin.getWorkspace().getRoot().getFile(namePath));
@@ -513,7 +513,7 @@ implements ModifyListener {
         if (StringUtils.isNotEmpty(name)) {
             IPath exePath = new Path(name);
             // on windows add the exe extension if not present
-            if (Platform.getOS().equals(Platform.OS_WIN32) && !"exe".equalsIgnoreCase(exePath.getFileExtension())) 
+            if (Platform.getOS().equals(Platform.OS_WIN32) && !"exe".equalsIgnoreCase(exePath.getFileExtension()))
                 exePath = exePath.addFileExtension("exe");
             IFile exefile = exePath.segmentCount() >1 ? ResourcesPlugin.getWorkspace().getRoot().getFile(exePath) : null;
 
@@ -599,7 +599,7 @@ implements ModifyListener {
         String prefix = "";
         if (Platform.getOS().equals(Platform.OS_WIN32 )) {
             extension = "dll";
-        } 
+        }
         else if (Platform.getOS().equals(Platform.OS_MACOSX)) {
             extension = "dylib";
             prefix= "lib";
@@ -609,7 +609,7 @@ implements ModifyListener {
             prefix = "lib";
         }
         extensionRegexp += extension;
-        
+
         ElementTreeSelectionDialog dialog
         = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
                 new OmnetppLaunchUtils.FilteredWorkbenchContentProvider(extensionRegexp));
@@ -631,7 +631,7 @@ implements ModifyListener {
             fLibraryText.setText(libfiles.trim());
         }
     }
-    
+
     /**
      * Removes the given suffix and prefix from the NAME part of the path.
      */
@@ -701,7 +701,7 @@ implements ModifyListener {
         nedText = nedText.replaceAll("\\$\\{"+VAR_NED_PATH+":.*?\\}", "\\${"+VAR_NED_PATH+":"+workingDir+"}");
         fNedPathText.setText(nedText);
     }
-    
+
     // ********************************************************************
     // dialog UI control creation and layout
     public Group createWorkingDirGroup(Composite parent, int colSpan) {
@@ -739,7 +739,7 @@ implements ModifyListener {
         GridLayout innerLd = (GridLayout)innerComposite.getLayout();
         innerLd.marginHeight = 0;
         innerLd.marginWidth = 0;
-        
+
         fProgOppRunButton = createRadioButton(innerComposite, "opp_run");
         fProgOppRunButton.setSelection(true);
         fProgOtherButton = createRadioButton(innerComposite, "Other:");
@@ -899,8 +899,8 @@ implements ModifyListener {
         fDbgOnErrYesButton = createRadioButton(comp, "Yes");
         fDbgOnErrNoButton = createRadioButton(comp, "No");
     }
-    
-    
+
+
     protected Button createRadioButton(Composite comp, String label) {
         Button button = SWTFactory.createRadioButton(comp, label);
         button.setLayoutData(new GridData());

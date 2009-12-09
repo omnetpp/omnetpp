@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -82,8 +82,8 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Creates an image. IMPORTANT: The image is NOT cached! Callers 
-	 * are responsible for disposal of the image. 
+	 * Creates an image. IMPORTANT: The image is NOT cached! Callers
+	 * are responsible for disposal of the image.
 	 */
 	public static Image getImage(String path) {
 		return getImageDescriptor(path).createImage();
@@ -105,10 +105,10 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 
 	/**
 	 * Decorates the given image with the overlay image (either can be null),
-	 * and caches and returns the result. Key is a key which will be used to 
+	 * and caches and returns the result. Key is a key which will be used to
 	 * retrieve the cached image from the plugin image registry, must be unique.
 	 * Flags affects the alignment of the overlay image, use SWT constants like
-	 * BEGINING, END, TOP, BOTTOM. 
+	 * BEGINING, END, TOP, BOTTOM.
 	 */
 	//FIXME copy org.omnetpp.cdt.Activator.getCachedDecoratedImage() instead!
 	public static Image getDecoratedImage(Image image, Image overlayImage, int flags, String key) {

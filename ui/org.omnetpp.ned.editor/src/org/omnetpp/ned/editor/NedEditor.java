@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -274,7 +274,7 @@ public class NedEditor
 	        return;
 
 	    super.setActivePage(pageIndex);
-	    // store the current active page. we should not rely on getActivePage because it accesses 
+	    // store the current active page. we should not rely on getActivePage because it accesses
 	    // SWT widgets so it cannot be called from NON GUI threads.
 	    currentPageIndex = pageIndex;
 	}
@@ -348,7 +348,7 @@ public class NedEditor
 		}
 		else
 			throw new RuntimeException("Unknown page index");
-        
+
         currentPageIndex = newPageIndex;
 	}
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -43,13 +43,13 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Keeps makefiles up to date.
- * 
+ *
  * @author Andras
  */
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
     public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem"; //XXX this is shared with DependencyCache
-    
+
     private BuildSpecification buildSpec = null;  // re-read for each build
     private ProblemMarkerSynchronizer markerSynchronizer = null; // new instance for each build
 
@@ -61,19 +61,19 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         try {
             checkOrderOfProjectBuilders();
             checkActiveCDTConfiguration();
-            
+
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
             buildSpec = BuildSpecification.readBuildSpecFile(getProject());
             if (buildSpec == null)
                 buildSpec = BuildSpecification.createBlank(getProject());
-            
+
             // refresh makefiles
             generateMakefiles(monitor);
         }
         catch (final CoreException e) {
-            // A serious error occurred during Makefile generation. Add it as marker, 
+            // A serious error occurred during Makefile generation. Add it as marker,
             // and also pop up a dialog so that the error is obvious to the user.
-            // Note: we cannot let the CoreException propagate, because Eclipse would 
+            // Note: we cannot let the CoreException propagate, because Eclipse would
             // disable the builder completely! (for the duration of the session)
             Activator.logError(e);
             addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error refreshing Makefiles: " + e.getMessage());
@@ -98,7 +98,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         Activator.getDependencyCache().clean(getProject());
         getProject().deleteMarkers(MARKER_ID, true, IResource.DEPTH_INFINITE);
     }
-    
+
     /**
      * This builder should precede CDT's builder; check it and warn the user if it's not the case.
      */
@@ -117,7 +117,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 if (cdtBuilderPos == -1 && builderId.startsWith("org.eclipse.cdt."))
                     cdtBuilderPos = i;
             }
-            
+
             // log a warning if something looks fishy
             if (thisBuilderPos == -1)
                 Activator.log(IMarker.SEVERITY_WARNING, "Builder " + BUILDER_ID + " is not on project " + project + " and still gets called?");
@@ -128,7 +128,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (thisBuilderPos != -1 && cdtBuilderPos != -1 && cdtBuilderPos < thisBuilderPos) {
                 Display.getDefault().asyncExec(new Runnable() {
                     public void run() {
-                        String message = 
+                        String message =
                             "The C/C++ Project Builder seems to precede the OMNeT++ Makefile Builder " +
                             "in project \"" + project.getName() + "\", which is incorrect. You can fix " +
                             "this problem by removing and adding back the OMNeT++ Nature, using the " +
@@ -144,11 +144,11 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         catch (CoreException e) {
             Activator.logError(e);
         }
-        
+
     }
 
     /**
-     * This is an attempt to advise the user to switch to the correct CDT configuration, 
+     * This is an attempt to advise the user to switch to the correct CDT configuration,
      * if a wrong one is selected.
      */
     protected void checkActiveCDTConfiguration() {
@@ -158,13 +158,13 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         final IToolChain toolChain = activeConfig!=null ? activeConfig.getToolChain() : null;
         if (toolChain==null)
             return;
-        
+
         boolean supported = isToolChainSupported(toolChain);
-        
+
         if (!supported) {
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
-                    String message = 
+                    String message =
                         "Toolchain \"" + toolChain.getName() + "\" is not supported on this platform " +
                         "or installation. Please go to the Project menu, and activate a different " +
                         "build configuration. (You may need to switch to the C/C++ perspective first, " +
@@ -177,10 +177,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             });
         }
     }
-    
+
     /**
-     * Returns true if the toolchain is supported currently. Note: toolChain().isSupported() is 
-     * not good enough, as it doesn't check the toolchain's super classes and platform filters. 
+     * Returns true if the toolchain is supported currently. Note: toolChain().isSupported() is
+     * not good enough, as it doesn't check the toolchain's super classes and platform filters.
      * Here we do both.
      */
     protected static boolean isToolChainSupported(IToolChain toolchain) {
@@ -193,13 +193,13 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     	}
     	return true;
     }
-    
+
     protected static String[] getEffectiveOSList(IToolChain toolchain) {
-    	while(toolchain != null && toolchain.getOSList().length == 0) 
+    	while(toolchain != null && toolchain.getOSList().length == 0)
     		toolchain = toolchain.getSuperClass();
     	return toolchain == null ? new String[0] : toolchain.getOSList();
     }
-    
+
     protected static boolean isToolchainSupportedOnCurrentPlatform(IToolChain toolchain) {
     	List<String> osList = Arrays.asList(getEffectiveOSList(toolchain));
     	return osList.isEmpty() || osList.contains("all") || osList.contains(Platform.getOS());
@@ -223,7 +223,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             Activator.log(IMarker.SEVERITY_WARNING, "No CDT build info for project " + getProject().getName() + ", skipping makefile generation");
             return;
         }
-        
+
         // register folders in the marker synchronizer
         for (IContainer makemakeFolder : makemakeFolders)
             markerSynchronizer.register(makemakeFolder);
@@ -267,5 +267,5 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         map.put(IMarker.MESSAGE, message);
         markerSynchronizer.addMarker(resource, MARKER_ID, map);
     }
-    
+
 }

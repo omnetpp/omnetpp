@@ -1,5 +1,5 @@
 %description:
-Test that activity stack gets cleaned up properly after simulation stops 
+Test that activity stack gets cleaned up properly after simulation stops
 with "no more events"
 
 %global:

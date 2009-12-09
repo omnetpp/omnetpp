@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -60,12 +60,12 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     }
 
     public boolean isNetwork() {
-    	// this isNetwork property should not be inherited so we look only among the local properties  
+    	// this isNetwork property should not be inherited so we look only among the local properties
     	PropertyElementEx networkPropertyElementEx = getNEDTypeInfo().getLocalProperties().get(IS_NETWORK_PROPERTY);
     	if (networkPropertyElementEx == null)
     		return false;
     	String propValue = NEDElementUtilEx.getPropertyValue(networkPropertyElementEx);
-        return !StringUtils.equalsIgnoreCase("false", propValue); 
+        return !StringUtils.equalsIgnoreCase("false", propValue);
     }
 
     public void setIsNetwork(boolean value) {
@@ -99,7 +99,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
 	public INedTypeLookupContext getParentLookupContext() {
 		return getParentLookupContextFor(this);
 	}
-    
+
     // parameter query support
 
     public Map<String, ParamElementEx> getParamAssignments() {

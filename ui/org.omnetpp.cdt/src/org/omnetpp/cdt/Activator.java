@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -44,7 +44,7 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     private static Activator plugin;
 
     private ProjectTemplateStore projectTemplateStore;
-    
+
     /**
      * The constructor
      */
@@ -81,7 +81,7 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     public static void log(int severity, String message) {
         getDefault().getLog().log(new Status(severity, PLUGIN_ID, message));
     }
-    
+
     public static void logError(Throwable exception) {
         logError(exception.toString(), exception);
     }
@@ -103,7 +103,7 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     public static CoreException wrapIntoCoreException(String message, Throwable exception) {
         return new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
     }
-    
+
     /**
      * Returns an image descriptor for the image file at the given
      * plug-in relative path.
@@ -111,10 +111,10 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     public static ImageDescriptor getImageDescriptor(String path) {
         return imageDescriptorFromPlugin(PLUGIN_ID, path);
     }
-    
+
     /**
-     * Creates an image. IMPORTANT: The image is NOT cached! Callers 
-     * are responsible for disposal of the image. 
+     * Creates an image. IMPORTANT: The image is NOT cached! Callers
+     * are responsible for disposal of the image.
      */
     public static Image getImage(String path) {
         return getImageDescriptor(path).createImage();
@@ -135,7 +135,7 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     }
 
     /**
-     * Decorates the given image with the overlay image (may be null), and returns 
+     * Decorates the given image with the overlay image (may be null), and returns
      * the result as a new image. For positioning, use SWT.BEGIN, SWT.CENTER, SWT.END.
      * The result image gets cached in an internal image registry,
      * so clients do not need to (moreover, must not) dispose of the image.
@@ -147,7 +147,7 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
         ImageRegistry imageRegistry = getDefault().getImageRegistry();
         Image result = imageRegistry.get(key);
         if (result == null) {
-            Image image = getCachedImage(imagePath);        
+            Image image = getCachedImage(imagePath);
             Image overlayImage = getCachedImage(overlayImagePath);
             result = ImageFactory.decorateImage(image, overlayImage, hpos, vpos);
             imageRegistry.put(key, result);
@@ -156,8 +156,8 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     }
 
     /**
-     * Decorates the given image with the overlay images (any element may be null), 
-     * and returns the result as a new image. For positioning, use SWT.BEGIN, 
+     * Decorates the given image with the overlay images (any element may be null),
+     * and returns the result as a new image. For positioning, use SWT.BEGIN,
      * SWT.CENTER, SWT.END. The result image gets cached in an internal image registry,
      * so clients do not need to (moreover, must not) dispose of the image.
      */
@@ -168,8 +168,8 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
         ImageRegistry imageRegistry = getDefault().getImageRegistry();
         Image result = imageRegistry.get(key);
         if (result == null) {
-            Image baseImage = getCachedImage(imagePath);        
-            Image image = baseImage;        
+            Image baseImage = getCachedImage(imagePath);
+            Image image = baseImage;
             for (int i=0; i<overlayImagePath.length; i++) {
                 if (overlayImagePath[i] != null) {
                     Image overlayImage = getCachedImage(overlayImagePath[i]);
@@ -188,7 +188,7 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     public static DependencyCache getDependencyCache() {
         return getDefault().dependencyCache;
     }
-    
+
     public static ProjectTemplateStore getProjectTemplateStore() {
         if (getDefault().projectTemplateStore == null)
             getDefault().projectTemplateStore = new ProjectTemplateStore();
@@ -216,8 +216,8 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
                     return true;
                 }
             });
-            
-            // and invalidate discovered info for that project 
+
+            // and invalidate discovered info for that project
             for (IProject project : changedProjects)
                 CDTUtils.invalidateDiscoveredPathInfo(project);
         }

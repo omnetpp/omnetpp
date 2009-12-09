@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -51,14 +51,14 @@ public interface INedTypeElement extends ITypeElement, IHasDisplayString, IHasPa
     public INedTypeElement getFirstExtendsRef();
 
     /**
-     * Returns the list of child elements that hold the "extends" names (usually only 
+     * Returns the list of child elements that hold the "extends" names (usually only
      * a single element, but for interfaces it can be more)
      */
     public List<ExtendsElement> getAllExtends();
 
     /**
      * For an inner type it returns the containing compound module type, and
-     * for a toplevel type it returns the containing NED file. 
+     * for a toplevel type it returns the containing NED file.
      */
 	public INedTypeLookupContext getParentLookupContext();
 

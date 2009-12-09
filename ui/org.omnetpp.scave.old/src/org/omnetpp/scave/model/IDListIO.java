@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -45,7 +45,7 @@ public class IDListIO {
 				String fileType = file.getFileType()==File.SCALAR_FILE ?
 						"scalar" : file.getFileType()==File.VECTOR_FILE ?
 								"vector" : "?";
-		
+
 				writer.writeStartElement(EL_FILE);
 				writer.writeAttribute(ATT_FILENAME, file.getFilePath());
 				writer.writeAttribute(ATT_TYPE, fileType);
@@ -77,7 +77,7 @@ public class IDListIO {
 				writer.writeEndElement(EL_INCLUDE);
 			}
 			writer.writeEndElement(EL_DATASET);
-	
+
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {

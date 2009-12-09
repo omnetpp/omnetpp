@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -67,7 +67,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 		if (getFigure() instanceof IProblemDecorationSupport) {
 			ITooltipTextProvider textProvider = new ITooltipTextProvider() {
 				public String getTooltipText(int x, int y) {
-					String message = "";        
+					String message = "";
 					if (getNedModel().getMaxProblemSeverity() >= IMarker.SEVERITY_INFO) {
 						IMarker[] markers = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNedModel(), 11);
 						int i = 0;
@@ -83,14 +83,14 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 					return StringUtils.strip(message);
 				}
 			};
-		
+
 			((IProblemDecorationSupport)getFigure()).setProblemDecoration(getNedModel().getMaxProblemSeverity(), textProvider);
 		}
 	}
 
 	@Override
 	public void refresh() {
-		Assert.isTrue((getNedModel() instanceof NedFileElementEx) || getNedModel().getParent() != null, 
+		Assert.isTrue((getNedModel() instanceof NedFileElementEx) || getNedModel().getParent() != null,
 		"NedElement must be inside a model (must have parent)");
 		super.refresh();
 		for (Object child : getChildren())

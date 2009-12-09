@@ -5,19 +5,19 @@ basic cDisplayString functionality: parse and regenerate
 cDisplayString ds;
 const char *s;
 
-s="a=foo"; 
+s="a=foo";
 ds.parse(s); ev << ds.str() << endl;
 
-s="a=foo;b=22"; 
+s="a=foo;b=22";
 ds.parse(s); ev << ds.str() << endl;
 
-s="a=,foo,22;;b=,bar,,453"; 
+s="a=,foo,22;;b=,bar,,453";
 ds.parse(s); ev << ds.str() << endl;
 
-s="a=;b="; 
+s="a=;b=";
 ds.parse(s); ev << ds.str() << endl;
 
-s=""; 
+s="";
 ds.parse(s); ev << ds.str() << endl;
 
 ev << ".\n";

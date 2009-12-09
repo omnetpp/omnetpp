@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -41,7 +41,7 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 /**
  * Toolbar as a palette for creating Scave objects.
  * Currently not used.
- * 
+ *
  * @author Andras
  */
 public class ModelObjectPalette1 {
@@ -158,8 +158,8 @@ public class ModelObjectPalette1 {
 				int index = ECollections.indexOf(target.eContainer().eContents(), target, 0);
 				command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, element, index + 1);
 				command.execute();
-			} 
-	
+			}
+
 			// if it got inserted (has parent now), select it in the viewer.
 			// Note: must be in asyncExec(), otherwise setSelection() has no effect on the TreeViewers! (JFace bug?)
 			if (element.eContainer() != null) {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,7 +25,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Records workspace changes into the log.
- *   
+ *
  * @author Andras
  */
 public class ResourceChangeTracker implements IResourceChangeListener {
@@ -55,7 +55,7 @@ public class ResourceChangeTracker implements IResourceChangeListener {
                         // skip empty "CHANGED" notifications (i.e. for folders when one file in it changes)
                         if (delta.getKind() != IResourceDelta.CHANGED || delta.getFlags() != 0) {
                             buffer.append("  " + ResourceChangeTracker.this.toString(delta));
-                            if (delta.getResource() instanceof IFile && (delta.getFlags() & IResourceDelta.CONTENT)!=0){ 
+                            if (delta.getResource() instanceof IFile && (delta.getFlags() & IResourceDelta.CONTENT)!=0){
                                 File file = delta.getResource().getLocation().toFile();
                                 if (file.exists())
                                     printFileInfo(buffer, file);
@@ -106,7 +106,7 @@ public class ResourceChangeTracker implements IResourceChangeListener {
                     if (length<file.length())
                         buffer.append("    [...]\n");
                 }
-                else { 
+                else {
                     buffer.append("  [appears to be binary]");
                 }
             }
@@ -116,8 +116,8 @@ public class ResourceChangeTracker implements IResourceChangeListener {
         }
     }
 
-    /** 
-     * Some heuristics to determine whether file is text. 
+    /**
+     * Some heuristics to determine whether file is text.
      */
     protected static boolean isProbablyText(byte[] content) {
         int n = Math.min(500, content.length);

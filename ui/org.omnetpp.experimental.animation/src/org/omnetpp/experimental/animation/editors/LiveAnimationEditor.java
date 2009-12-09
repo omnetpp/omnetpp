@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -50,13 +50,13 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 
 	protected cStaticFlag staticFlag;
 	protected ToolBar liveToolBar;
-	protected ToolItem liveStopToolItem; 
+	protected ToolItem liveStopToolItem;
 	protected ToolItem liveRestartToolItem;
 	protected ToolItem liveStepToolItem;
 	protected ToolItem liveRunToolItem;
 	protected ToolItem liveFastToolItem;
 	protected ToolItem liveExpressToolItem;
-	protected ToolItem liveFinishToolItem; 
+	protected ToolItem liveFinishToolItem;
 
 	@Override
 	public void dispose() {
@@ -165,7 +165,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		liveRestartToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				getLiveAnimationController().restartSimulation();
-		
+
 				liveStopToolItem.setEnabled(false);
 
 				liveRestartToolItem.setEnabled(true);
@@ -173,7 +173,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				liveRunToolItem.setEnabled(true);
 				liveFastToolItem.setEnabled(true);
 				liveExpressToolItem.setEnabled(true);
-				liveFinishToolItem.setEnabled(true); 
+				liveFinishToolItem.setEnabled(true);
 			}
 		});
 
@@ -262,7 +262,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				liveStopToolItem.setEnabled(true);
 			else
 				liveStopToolItem.setEnabled(false);
-	
+
 			if (getLiveAnimationController().isSimulationFinished()) {
 				liveRestartToolItem.setEnabled(true);
 
@@ -271,7 +271,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				liveRunToolItem.setEnabled(false);
 				liveFastToolItem.setEnabled(false);
 				liveExpressToolItem.setEnabled(false);
-				liveFinishToolItem.setEnabled(false); 
+				liveFinishToolItem.setEnabled(false);
 			}
 		}
 	}

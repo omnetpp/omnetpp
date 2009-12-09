@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -8,7 +8,7 @@
 /**
  * Copy of org.eclipse.ve.internal.cde.core.CustomSashForm from the
  * Visual Editor project. Check https://bugs.eclipse.org/bugs/show_bug.cgi?id=75619.
- * 
+ *
  * Fixed recomputeSashInfo() to make it work horizontally too.
  */
 
@@ -18,7 +18,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -26,7 +26,7 @@
 package org.omnetpp.common.ui;
 /*
  *  $RCSfile: CustomSashForm.java,v $
- *  $Revision: 1.9 $  $Date: 2005/12/05 22:10:14 $ 
+ *  $Revision: 1.9 $  $Date: 2005/12/05 22:10:14 $
  */
 
 import java.util.ArrayList;
@@ -59,11 +59,11 @@ import org.eclipse.swt.widgets.Sash;
 
 /**
  * A SashForm that allows move to/from max controls on sash.
- * 
+ *
  * It only works with one sash (two children). It doesn't make sense
  * for the arrows when there is more than one sash. Things get confusing for
  * a restore position.
- * 
+ *
  * Currently only handle top/bottom orientation. Wouldn't take much to handle left/right.
  * @author richkulp
  */
@@ -92,8 +92,8 @@ public class CustomSashForm extends SashForm {
 		public int weight = NO_WEIGHT;	// If slammed to an edge this is the restore weight. -1 means not slammed. This is the weight in the next form (i.e. sash[0] == weight[1].
 		public int cursorOver = NO_ARROW;	// Which arrow is cursor over,
 		public boolean sashBorderLeft;	// Draw sash border left/top
-		public boolean sashBorderRight;	// Draw sash border right/bottom		  
-		public int[][] sashLocs;	// There is one entry for each arrow, It is arrowType/arrowDrawn/x/y/height/width of the arrow area. 
+		public boolean sashBorderRight;	// Draw sash border right/bottom
+		public int[][] sashLocs;	// There is one entry for each arrow, It is arrowType/arrowDrawn/x/y/height/width of the arrow area.
 									// There may not be a second entry, in which case we have only one arrow.
 		public SashInfo(Sash sash) {
 			this.sash = sash;
@@ -105,17 +105,17 @@ public class CustomSashForm extends SashForm {
 	}
 
 	protected SashInfo currentSashInfo = null;	// When the sash goes away, its entry is made null.
-	protected boolean inMouseClick = false;	// Because we can't stop drag even when we are in the arrow area, we need 
+	protected boolean inMouseClick = false;	// Because we can't stop drag even when we are in the arrow area, we need
 												// to know that mouse down is in process so that when drag is completed, we
 												// know not to recompute our position because a mouse up is about to happen
 												// and we want the correct arrow handled correctly.
-			
+
 	protected boolean sashBorders[];	// Whether cooresponding control needs a sash border
-					
+
 	protected boolean noMaxUp, noMaxDown;
 	protected List<ICustomSashFormListener> customSashFormListeners = null;
 
-	protected static final int 
+	protected static final int
 		UP_ARROW = 0,
 		UP_MAX_ARROW = 1,
 		DOWN_ARROW = 2,
@@ -159,7 +159,7 @@ public class CustomSashForm extends SashForm {
 
 		if (noMaxUp & noMaxDown)
 			return;	// If you can't max up or down, there there is no need for arrows.
-		
+
 		SASH_WIDTH = 3+ getOrientation() == SWT.VERTICAL ? ARROW_HEIGHT : ARROW_SIZE;
 
 		arrowColor = new Color(parent.getDisplay(), 99, 101, 156);
@@ -204,7 +204,7 @@ public class CustomSashForm extends SashForm {
 	public void maxDown() {
 		if (noMaxDown)
 			return;
-	
+
 		if (currentSashInfo == null)
 			currentSashInfo = new SashInfo(null);
 
@@ -237,17 +237,17 @@ public class CustomSashForm extends SashForm {
 
 		if (noMaxUp && noMaxDown)
 			return;	// No arrows to handle in this case.
-	
+
 		if (getMaximizedControl() != null)
 			return;	// We have a maximized control, so we don't need to worry about the sash.
-	
+
 		// Let's get the list of all sashes the sash form now has. If there is more than one then just disable the sashinfo.
 		// If there is no current sash, and there is only one sash, then create the sashinfo for it.
 		Control[] children = getChildren();
 		Sash newSash = null;
 		for (int i = 0; i < children.length; i++) {
 			if (children[i] instanceof Sash)
-				if (newSash == null) 
+				if (newSash == null)
 					newSash = (Sash) children[i];
 				else {
 					// We have more than one sash, so need to disable current sash, if we have one.
@@ -266,32 +266,32 @@ public class CustomSashForm extends SashForm {
 				currentSashInfo = new SashInfo(newSash);
 			else
 				currentSashInfo.sash = newSash;
-			newSash.addPaintListener(new PaintListener() { 
+			newSash.addPaintListener(new PaintListener() {
 				/**
 				 * @see org.eclipse.swt.events.PaintListener#paintControl(PaintEvent)
 				 */
 				public void paintControl(PaintEvent e) {
 					// Need to find the index of the sash we're interested in.
-			
+
 					GC gc = e.gc;
 					Color oldFg = gc.getForeground();
 					Color oldBg = gc.getBackground();
-			
+
 					drawArrow(gc, currentSashInfo.sashLocs[0], currentSashInfo.cursorOver == 0);	// Draw first arrow
 					if (currentSashInfo.sashLocs.length > 1)
-						drawArrow(gc, currentSashInfo.sashLocs[1], currentSashInfo.cursorOver == 1);	// Draw second arrow			
-			
+						drawArrow(gc, currentSashInfo.sashLocs[1], currentSashInfo.cursorOver == 1);	// Draw second arrow
+
 					if (currentSashInfo.sashBorderLeft)
 						drawSashBorder(gc, currentSashInfo.sash, true);
 					if (currentSashInfo.sashBorderRight)
 						drawSashBorder(gc, currentSashInfo.sash, false);
-				
+
 					gc.setForeground(oldFg);
 					gc.setBackground(oldBg);
 				}
 
 			});
-	
+
 			newSash.addControlListener(new ControlListener() {
 				/**
 				 * @see org.eclipse.swt.events.ControlAdapter#controlMoved(ControlEvent)
@@ -299,17 +299,17 @@ public class CustomSashForm extends SashForm {
 				public void controlMoved(ControlEvent e) {
 					recomputeSashInfo();
 				}
-		
+
 				/**
 				 * @see org.eclipse.swt.events.ControlAdapter#controlResized(ControlEvent)
 				 */
 				public void controlResized(ControlEvent e) {
 					recomputeSashInfo();
 				}
-						
+
 
 			});
-	
+
 			newSash.addDisposeListener(new DisposeListener() {
 				/**
 				 * @see org.eclipse.swt.events.DisposeListener#widgetDisposed(DisposeEvent)
@@ -319,7 +319,7 @@ public class CustomSashForm extends SashForm {
 					currentSashInfo= null;
 				}
 			});
-	
+
 			// This is a kludge because we can't override the set cursor hit test.
 			newSash.addMouseMoveListener(new MouseMoveListener() {
 				/**
@@ -335,7 +335,7 @@ public class CustomSashForm extends SashForm {
 						int loc = vertical ? x : y;
 						int locIndex = vertical ? X_INDEX : Y_INDEX;
 						int sizeIndex = vertical ? WIDTH_INDEX : HEIGHT_INDEX;
-						if (locs[locIndex] <= loc && loc <= locs[locIndex]+locs[sizeIndex]) {			
+						if (locs[locIndex] <= loc && loc <= locs[locIndex]+locs[sizeIndex]) {
 							if (currentSashInfo.cursorOver == NO_ARROW) {
 								currentSashInfo.sash.setCursor(Cursors.ARROW);
 							}
@@ -345,13 +345,13 @@ public class CustomSashForm extends SashForm {
 								switch (locs[ARROW_TYPE_INDEX]) {
 									case UP_ARROW:
 									case DOWN_ARROW:
-										//currentSashInfo.sash.setToolTipText(CDEMessages.CustomSashForm_Restore); 
+										//currentSashInfo.sash.setToolTipText(CDEMessages.CustomSashForm_Restore);
 										currentSashInfo.sash.setToolTipText("Restore Previous Location");
 										break;
 									case UP_MAX_ARROW:
 									case DOWN_MAX_ARROW:
-										//currentSashInfo.sash.setToolTipText(CDEMessages.CustomSashForm_Maximize); 
-										currentSashInfo.sash.setToolTipText("Maximize Pane"); 
+										//currentSashInfo.sash.setToolTipText(CDEMessages.CustomSashForm_Maximize);
+										currentSashInfo.sash.setToolTipText("Maximize Pane");
 										break;
 								}
 							}
@@ -365,9 +365,9 @@ public class CustomSashForm extends SashForm {
 						currentSashInfo.sash.setToolTipText(null);
 					}
 				}
-		
+
 			});
-	
+
 			// Need to know when we leave so that we can clear the cursor feedback if set.
 			newSash.addMouseTrackListener(new MouseTrackAdapter() {
 				/**
@@ -380,10 +380,10 @@ public class CustomSashForm extends SashForm {
 						currentSashInfo.cursorOver = NO_ARROW;
 						currentSashInfo.sash.redraw();
 						currentSashInfo.sash.setToolTipText(null);
-					}				
-				}		
+					}
+				}
 			});
-	
+
 			// Want to handle mouse down as a selection.
 			newSash.addMouseListener(new MouseAdapter() {
 				/**
@@ -399,20 +399,20 @@ public class CustomSashForm extends SashForm {
 						boolean vertical = getOrientation() == SWT.VERTICAL;
 						int loc = vertical ? x : y;
 						int locIndex = vertical ? X_INDEX : Y_INDEX;
-						int sizeIndex = vertical ? WIDTH_INDEX : HEIGHT_INDEX;				
+						int sizeIndex = vertical ? WIDTH_INDEX : HEIGHT_INDEX;
 						if (locs[locIndex] <= loc && loc <= locs[locIndex]+locs[sizeIndex]) {
 							currentSashInfo.sash.redraw();
 							break;
 						}
 					}
 				}
-		
+
 				/**
 				 * @see org.eclipse.swt.events.MouseListener#mouseDown(MouseEvent)
 				 */
 				public void mouseUp(MouseEvent e) {
 					// See if within one of the arrows.
-					inMouseClick = false;	// No longer in down click			
+					inMouseClick = false;	// No longer in down click
 					int x = e.x;
 					int y = e.y;
 					for (int i=0; i<currentSashInfo.sashLocs.length; i++) {
@@ -420,7 +420,7 @@ public class CustomSashForm extends SashForm {
 						boolean vertical = getOrientation() == SWT.VERTICAL;
 						int loc = vertical ? x : y;
 						int locIndex = vertical ? X_INDEX : Y_INDEX;
-						int sizeIndex = vertical ? WIDTH_INDEX : HEIGHT_INDEX;				
+						int sizeIndex = vertical ? WIDTH_INDEX : HEIGHT_INDEX;
 						if (locs[locIndex] <= loc && loc <= locs[locIndex]+locs[sizeIndex]) {
 							// We found it.
 							switch (locs[ARROW_TYPE_INDEX]) {
@@ -440,13 +440,13 @@ public class CustomSashForm extends SashForm {
 							break;
 						}
 					}
-			
+
 					currentSashInfo.sash.redraw();	// Make sure stipple goes away from the mouse up if not over an arrow button.
 					fireDividerMoved();
 				}
 
 			});
-			recomputeSashInfo();	// Get initial setting	
+			recomputeSashInfo();	// Get initial setting
 		}
 
 	}
@@ -455,7 +455,7 @@ public class CustomSashForm extends SashForm {
 	protected void recomputeSashInfo() {
 		if (inMouseClick && currentSashInfo.cursorOver != NO_WEIGHT)
 			return;	// Don't process because we are in the down mouse button on an arrow.
-	
+
 		// We need to refigure size for the sash arrows.
 		int[] addArrows = null;
 		int[] drawArrows = null;
@@ -474,11 +474,11 @@ public class CustomSashForm extends SashForm {
 			else {
 				// Not slammed
 				addArrows[0] = DOWN_MAX_ARROW;
-				drawArrows[0] = DOWN_ARROW;	
+				drawArrows[0] = DOWN_ARROW;
 				currentSashInfo.weight = NO_WEIGHT;	// Since we are in the middle, there is no weight. We've could of been dragged here.
 				currentSashInfo.sashBorderLeft = sashBorders != null ? sashBorders[0] : false;
 				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;
-			}		
+			}
 		}
 		else if (noMaxDown) {
 			addArrows = new int[1];
@@ -488,16 +488,16 @@ public class CustomSashForm extends SashForm {
 				addArrows[0] = DOWN_ARROW;
 				drawArrows[0] = DOWN_ARROW;
 				currentSashInfo.sashBorderLeft = false;
-				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;		
+				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;
 			}
 			else {
 				// Not slammed
 				addArrows[0] = UP_MAX_ARROW;
-				drawArrows[0] = UP_ARROW;	
+				drawArrows[0] = UP_ARROW;
 				currentSashInfo.weight = NO_WEIGHT;	// Since we are in the middle, there is no weight. We've could of been dragged here.
 				currentSashInfo.sashBorderLeft = sashBorders != null ? sashBorders[0] : false;
-				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;		
-			}		
+				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;
+			}
 		}
 		else {
 			addArrows = new int[2];
@@ -505,12 +505,12 @@ public class CustomSashForm extends SashForm {
 			// TODO: SashForm as changed the folllwing is a temporary kludge
 			Rectangle sashBounds = currentSashInfo.sash.getBounds();
 			Rectangle clientArea = getClientArea();
-			final int DRAG_MINIMUM = 20; // TODO: kludge see SashForm.DRAG_MINIMUM 
-			if (weights[0] == 0 || (currentSashInfo.weight != NO_WEIGHT && 
-					(vertical && sashBounds.y <= DRAG_MINIMUM || !vertical && sashBounds.x <= DRAG_MINIMUM))) {  
+			final int DRAG_MINIMUM = 20; // TODO: kludge see SashForm.DRAG_MINIMUM
+			if (weights[0] == 0 || (currentSashInfo.weight != NO_WEIGHT &&
+					(vertical && sashBounds.y <= DRAG_MINIMUM || !vertical && sashBounds.x <= DRAG_MINIMUM))) {
 				// Slammed to the top.
 				addArrows[0] = DOWN_MAX_ARROW;
-				drawArrows[0] = DOWN_MAX_ARROW;	
+				drawArrows[0] = DOWN_MAX_ARROW;
 				addArrows[1] = DOWN_ARROW;
 				drawArrows[1] = DOWN_ARROW;
 				currentSashInfo.sashBorderLeft = false;
@@ -530,12 +530,12 @@ public class CustomSashForm extends SashForm {
 			else {
 				// Not slammed
 				addArrows[0] = UP_MAX_ARROW;
-				drawArrows[0] = UP_ARROW;	
+				drawArrows[0] = UP_ARROW;
 				addArrows[1] = DOWN_MAX_ARROW;
 				drawArrows[1] = DOWN_ARROW;
 				currentSashInfo.weight = NO_WEIGHT;	// Since we are in the middle, there is no weight. We've could of been dragged here.
 				currentSashInfo.sashBorderLeft = sashBorders != null ? sashBorders[0] : false;
-				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;		
+				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;
 			}
 		}
 		getNewSashArray(currentSashInfo, addArrows, drawArrows);
@@ -564,7 +564,7 @@ public class CustomSashForm extends SashForm {
 
 		weights[1] = 1000;
 		weights[0] = 0;
-			
+
 		// If the upper panel has focus, flip focus to the lower panel because the upper panel is now hidden.
 		Control[] children = getChildren();
 		boolean upperFocus = isFocusAncestorA(children[0]);
@@ -590,7 +590,7 @@ public class CustomSashForm extends SashForm {
 		int[] weights = getWeights();
 
 		// Down max, so save the current weight of 1 into the sash info, and move to the bottom.
-		if (currentSashInfo.weight == NO_WEIGHT) 
+		if (currentSashInfo.weight == NO_WEIGHT)
 			currentSashInfo.weight = weights[1];	// Not currently maxed, save current weight.
 		weights[0] = 1000;
 		weights[1] = 0;
@@ -620,7 +620,7 @@ public class CustomSashForm extends SashForm {
 	protected void getNewSashArray(SashInfo sashInfo, int[] addArrowTypes, int[] drawArrowTypes) {
 
 		int[][] thisSash = sashInfo.sashLocs;
-		if (thisSash == null) 
+		if (thisSash == null)
 			thisSash = sashInfo.sashLocs = new int[addArrowTypes.length][];
 
 		int aSize = ARROW_SIZE;	// Width of arrow
@@ -654,14 +654,14 @@ public class CustomSashForm extends SashForm {
 			else {
 				// Reuse the array
 				thisSash[j][ARROW_TYPE_INDEX] = addArrowTypes[j];
-				thisSash[j][ARROW_DRAWN_INDEX] = drawArrowTypes[j];		
+				thisSash[j][ARROW_DRAWN_INDEX] = drawArrowTypes[j];
 				thisSash[j][X_INDEX] = x;
 				thisSash[j][Y_INDEX] = y;
 				thisSash[j][WIDTH_INDEX] = width;
-				thisSash[j][HEIGHT_INDEX] = height;		
+				thisSash[j][HEIGHT_INDEX] = height;
 			}
 			if (vertical)
-				x+=tSize;		
+				x+=tSize;
 			else
 				y+=tSize;
 		}
@@ -681,7 +681,7 @@ public class CustomSashForm extends SashForm {
 			if (leftBorder)
 				gc.drawLine(0, 0, 0, s.y-1);
 			else
-				gc.drawLine(s.x-1, 0, s.x-1, s.y-1);	
+				gc.drawLine(s.x-1, 0, s.x-1, s.y-1);
 		}
 	}
 
@@ -695,10 +695,10 @@ public class CustomSashForm extends SashForm {
 				gc.setForeground(highlightShadow);
 				gc.drawLine(sashLoc[X_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX], sashLoc[Y_INDEX]);
 				gc.drawLine(sashLoc[X_INDEX], sashLoc[Y_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]);
-		
+
 				gc.setForeground(normalShadow);
 				gc.drawLine(sashLoc[X_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX]);
-				gc.drawLine(sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]);	
+				gc.drawLine(sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]);
 			}
 			else {
 				// Draw pushed selection box.
@@ -708,11 +708,11 @@ public class CustomSashForm extends SashForm {
 				gc.setForeground(normalShadow);
 				gc.drawLine(sashLoc[X_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX], sashLoc[Y_INDEX]);
 				gc.drawLine(sashLoc[X_INDEX], sashLoc[Y_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]);
-		
+
 				gc.setForeground(highlightShadow);
 				gc.drawLine(sashLoc[X_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX]);
-				gc.drawLine(sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]);	
-			}			
+				gc.drawLine(sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]);
+			}
 		}
 		if (getOrientation() == SWT.VERTICAL) {
 			switch (sashLoc[ARROW_DRAWN_INDEX]) {
@@ -744,12 +744,12 @@ public class CustomSashForm extends SashForm {
 				case DOWN_MAX_ARROW:
 					drawRightMaxArrow(gc, sashLoc[X_INDEX]+indent, sashLoc[Y_INDEX]+indent);
 					break;
-			}	
+			}
 		}
 	}
 
 	// These are for the up/down arrow. Just swap them for left/right arrow.
-	protected static final int 
+	protected static final int
 		ARROW_SIZE = 8,
 		ARROW_HEIGHT = 8,
 		ARROW_MARGIN = 3;	// Margin on each side of arrow
@@ -757,7 +757,7 @@ public class CustomSashForm extends SashForm {
 	protected Color arrowColor, borderColor;
 
 	// Draw at the given x/y (upper left corner of arrow area).
-	protected void drawUpArrow(GC gc, int x, int y) { 
+	protected void drawUpArrow(GC gc, int x, int y) {
 		gc.setForeground(arrowColor);
 
 		x+=ARROW_MARGIN;
@@ -815,7 +815,7 @@ public class CustomSashForm extends SashForm {
 	}
 
 	// Draw at the given x/y (upper left corner of arrow area).
-	protected void drawLeftArrow(GC gc, int x, int y) { 
+	protected void drawLeftArrow(GC gc, int x, int y) {
 		gc.setForeground(arrowColor);
 
 		y+=ARROW_MARGIN;
@@ -885,7 +885,7 @@ public class CustomSashForm extends SashForm {
 		Control[] kids = getChildren();
 		for (int i = 0; i < kids.length; i++) {
 			if (kids[i] instanceof Sash)
-				return (Sash)kids[i];	
+				return (Sash)kids[i];
 		}
 		return null;
 	}
@@ -898,11 +898,11 @@ public class CustomSashForm extends SashForm {
 	}
 
 	/**
-	 * Adds a custom sashform listener. This listener will be removed when 
+	 * Adds a custom sashform listener. This listener will be removed when
 	 * this control is disposed.
-	 * 
+	 *
 	 * @param listener
-	 * 
+	 *
 	 * @since 1.2.0
 	 */
 	public void addCustomSashFormListener(ICustomSashFormListener listener){
@@ -913,9 +913,9 @@ public class CustomSashForm extends SashForm {
 
 	/**
 	 * Removes the custom sashform listener.
-	 * 
+	 *
 	 * @param listener
-	 * 
+	 *
 	 * @since 1.2.0
 	 */
 	public void removeCustomSashFormListener(ICustomSashFormListener listener){

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,9 +18,9 @@ public class GenericTreeUtils {
 
 	/**
 	 * Tree comparison. Payload objects are compared with equals().
-	 * 
-	 * Comparison is useful if a tree is displayed in a view, and we want 
-	 * to avoid replacing tree input with an identical one (which would 
+	 *
+	 * Comparison is useful if a tree is displayed in a view, and we want
+	 * to avoid replacing tree input with an identical one (which would
 	 * cause the tree widget to lose its state, like node open/close states).
 	 */
 	public static boolean treeEquals(GenericTreeNode root1, GenericTreeNode root2) {
@@ -38,7 +38,7 @@ public class GenericTreeUtils {
 		GenericTreeNode[] children2 = node2.getChildren();
 		if (children1.length != children2.length)
 			return false;
-		for (int i=0; i<children1.length; i++) 
+		for (int i=0; i<children1.length; i++)
 			if (!internalTreeEquals(children1[i], children2[i]))
 				return false;
 		return true;
@@ -49,7 +49,7 @@ public class GenericTreeUtils {
 	}
 
 	private static Object internalFindFirstMatchingNode(GenericTreeNode node, IPredicate payloadMatcher) {
-		if (payloadMatcher.matches(node.getPayload())) 
+		if (payloadMatcher.matches(node.getPayload()))
 			return node.getPayload();
 		for (GenericTreeNode child : node.getChildren()) {
 			Object foundObject = internalFindFirstMatchingNode(child, payloadMatcher);

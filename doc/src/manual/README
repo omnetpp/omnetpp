@@ -19,7 +19,7 @@ Type "make html". It uses local perl scripts for the conversion.
 
 Making PDF output
 -----------------
-Make sure that <MiKTeX>/miktex/bin is in the path, then type "make pdf". 
+Make sure that <MiKTeX>/miktex/bin is in the path, then type "make pdf".
 
 
 Graphics

@@ -12,7 +12,7 @@
 
 2005-07-25  Andras Varga
 
-	* several files: adopted to cCommBuffer change (packObject(), 
+	* several files: adopted to cCommBuffer change (packObject(),
 	unpackObject() moved into the class)
 
 2005-05-01  Andras Varga

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,10 +49,10 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
 
         if (parent != null) parent.add(child);
 
-        Rectangle childBounds = part.getFigure() instanceof ISelectionHandleBounds ? 
-        				((ISelectionHandleBounds)part.getFigure()).getHandleBounds().getCopy() 
-        				: part.getFigure().getBounds().getCopy(); 
-        
+        Rectangle childBounds = part.getFigure() instanceof ISelectionHandleBounds ?
+        				((ISelectionHandleBounds)part.getFigure()).getHandleBounds().getCopy()
+        				: part.getFigure().getBounds().getCopy();
+
         IFigure walker = part.getFigure().getParent();
         while (walker != ((GraphicalEditPart) part.getParent()).getFigure()) {
             walker.translateToParent(childBounds);
@@ -88,7 +88,7 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
      */
     @Override
     protected Rectangle getInitialFeedbackBounds() {
-        return getHostFigure() instanceof ISelectionHandleBounds ? 
+        return getHostFigure() instanceof ISelectionHandleBounds ?
         		((ISelectionHandleBounds)getHostFigure()).getHandleBounds() : getHostFigure().getBounds();
     }
 

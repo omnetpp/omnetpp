@@ -25,9 +25,9 @@ They can also be seen in the object tree in the main window -- just
 open the "server" node in the tree.
 
 Note that the modelled protocol (CONN_REQ, CONN_ACK, etc) is rather a "metaphor"
-of a transport-level protocol than a model of any existing protocol. (For one 
+of a transport-level protocol than a model of any existing protocol. (For one
 thing, it doesn't contain three-way handshake, a proper retransmission scheme
-etc.) It serves only demonstation purposes. 
+etc.) It serves only demonstation purposes.
 
 The module types are:
   Client:

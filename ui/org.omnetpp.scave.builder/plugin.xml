@@ -13,7 +13,7 @@
          id="scaveproblem"
          name="Result File Problem"
          point="org.eclipse.core.resources.markers">
-      <persistent value="false"/> 
-      <super type="org.eclipse.core.resources.problemmarker"/> 
+      <persistent value="false"/>
+      <super type="org.eclipse.core.resources.problemmarker"/>
    </extension>
 </plugin>

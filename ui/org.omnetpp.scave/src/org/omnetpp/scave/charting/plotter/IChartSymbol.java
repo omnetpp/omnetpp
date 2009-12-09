@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -11,12 +11,12 @@ import org.eclipse.swt.graphics.GC;
 
 /**
  * Interface for chart symbol drawing classes
- * 
+ *
  * @author andras
  */
 public interface IChartSymbol {
 
-//XXX implementation note: fillOval(), fillPolygon() etc are more efficient than bltting images of the same size. see test code below. 
+//XXX implementation note: fillOval(), fillPolygon() etc are more efficient than bltting images of the same size. see test code below.
 //	graphics.setBackgroundColor(new Color(null,100,0,0));
 //	Image img = new Image(Display.getCurrent(), 11, 11);
 //	GC gc = new GC(img);

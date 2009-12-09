@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -97,7 +97,7 @@ class HistogramPlot {
 								(minValue < upperBound ? minValue : upperBound) : lowerBound;
 				double xRight = (index == count - 1 && Double.isInfinite(upperBound)) ?
 								(maxValue > lowerBound ? maxValue : lowerBound) : upperBound;
-		
+
 				bars[series][i++] = new RectangularArea(xLeft, yBottom, xRight, yTop);
 				minX = Math.min(minX, xLeft);
 				maxX = Math.max(maxX, xRight);
@@ -128,7 +128,7 @@ class HistogramPlot {
 		if (Double.isInfinite(baseline)) {
 			IHistogramDataset dataset = canvas.getDataset();
 			int histCount = dataset.getSeriesCount();
-	
+
 			double newBaseline = baseline < 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
 			for (int series = 0; series < histCount; ++series) {
 				int cellCount = dataset.getCellsCount(series);
@@ -165,7 +165,7 @@ class HistogramPlot {
 					double xr = bars[series][index].maxX;
 					double yt = bars[series][index].maxY;
 					double yb = bars[series][index].minY;
-			
+
 					if (yt != yb) {
 						int left = coordsMapping.toCanvasX(xl);
 						int right = coordsMapping.toCanvasX(xr);
@@ -197,11 +197,11 @@ class HistogramPlot {
 					int left = coordsMapping.toCanvasX(xl);
 					int right = coordsMapping.toCanvasX(xr);
 					int yy = Double.isInfinite(y) ? (y<0?area.bottom():area.y): coordsMapping.toCanvasY(y);
-			
+
 					points[i++] = left; points[i++] = prevY;
 					points[i++] = left; points[i++] = yy;
 					points[i++] = right; points[i++] = yy;
-			
+
 					prevY = yy;
 				}
 				gc.drawPolyline(points);
@@ -276,7 +276,7 @@ class HistogramPlot {
 				switch (barType) {
 				case Solid: isOver = bar.contains(xx, yy);	break;
 				case Outline:
-					double dy = yy > transformedBaseline ? yy - bar.maxY : yy - bar.minY;  
+					double dy = yy > transformedBaseline ? yy - bar.maxY : yy - bar.minY;
 					isOver = Math.abs(canvas.toCanvasDistY(dy)) <= 2;
 					break;
 				default: isOver = false; Assert.isTrue(false, "Unknown HistogramBar type: " + barType); break;
@@ -352,7 +352,7 @@ class HistogramPlot {
 			if (Double.isInfinite(cellMax))
 				cellMax = dataset.getMaxValue(series);
 			double cellWidth = cellMax > cellMin ? cellMax - cellMin : 0.0;
-	
+
 			return cellWidth > 0.0 ? value / cellWidth / count : 0.0;
 		}
 	}

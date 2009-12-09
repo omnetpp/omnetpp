@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -67,10 +67,10 @@ public class NEDTreeUtil {
 
 	/**
 	 * Load and parse NED file to a NEDElement tree. Returns a non-null,
-	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
-     * The passed displayFileName will only be used to fill in the NedFileElement element 
-     * and source location attributes. Callers should check NEDErrorStore to determine 
-     * whether a parse error occurred. All errors produced here will be syntax errors 
+	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors.
+     * The passed displayFileName will only be used to fill in the NedFileElement element
+     * and source location attributes. Callers should check NEDErrorStore to determine
+     * whether a parse error occurred. All errors produced here will be syntax errors
      * (see NEDSYNTAXPROBLEM_MARKERID).
 	 */
 	public static synchronized NedFileElementEx parseNedFile(String filesystemFilename, INEDErrorStore errors, String displayFilename) {
@@ -78,11 +78,11 @@ public class NEDTreeUtil {
 	}
 
     /**
-     * Parse the NED source and return it as a NEDElement tree. Returns a non-null, 
-     * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
-     * The passed displayFileName will only be used to fill in the NedFileElement element 
-     * and source location attributes. Callers should check INEDErrorStore to determine 
-     * whether a parse error occurred. All errors produced here will be syntax errors 
+     * Parse the NED source and return it as a NEDElement tree. Returns a non-null,
+     * DTD-conforming (but possibly incomplete) tree even in case of parse errors.
+     * The passed displayFileName will only be used to fill in the NedFileElement element
+     * and source location attributes. Callers should check INEDErrorStore to determine
+     * whether a parse error occurred. All errors produced here will be syntax errors
      * (see NEDSYNTAXPROBLEM_MARKERID).
      */
 	public static synchronized NedFileElementEx parseNedText(String source, INEDErrorStore errors, String displayFilename) {
@@ -120,7 +120,7 @@ public class NEDTreeUtil {
 			NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
 			dtdvalidator.validate(swigTree);
 			dumpSwigErrors(swigErrors); //XXX remove -- debugging only
-	
+
 			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
 			// additional syntax-related validation

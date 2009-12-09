@@ -17,7 +17,7 @@ import org.omnetpp.runtimeenv.editors.IInspectorPart;
 
 /**
  * Figure for QueueInspectorPart
- * 
+ *
  * @author Andras
  */
 //FIXME messages are not clickable or hoverable
@@ -42,16 +42,16 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
 			r.width -= serverWidth+lineWidth;
 			r.y += 3*lineWidth/2;
 			r.height -= 3*lineWidth;
-	
+
 			Dimension cornerRadii = new Dimension(lineWidth, lineWidth);
-	
+
 			int x = r.x;
 			for (IFigure child : (List<IFigure>)getChildren()) {
 				child.setBounds(new Rectangle(x, r.y, r.height/2, r.height));
 				x += r.height/2 + lineWidth/2;
 				if (child instanceof RoundedRectangle)
 					((RoundedRectangle)child).setCornerDimensions(cornerRadii);
-			
+
 			}
 		}
 	}

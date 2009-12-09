@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -76,14 +76,14 @@ public class WorkbenchUtils
 	}
 
 	public static void assertNoErrorMessageInProblemsView() {
-        ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems"); 
+        ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems");
 		// TODO: how do we know that validation has already taken place?
 		problemsView.findTree().assertEmpty();
 	}
 
 	// FIXME should work in a case when two or more message is matching
 	public static void assertErrorMessageInProblemsView(String errorText) {
-		ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems"); 
+		ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems");
 		problemsView.findTree().findTreeItemByContent(errorText);
 	}
 
@@ -91,8 +91,8 @@ public class WorkbenchUtils
 	public static void waitUntilProgressViewContains(String text, double timeout) {
 	    double oldRetryTimeout = GUITestCase.getRetryTimeout();
 	    try {
-	        ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
-	        GUITestCase.setRetryTimeout(timeout); 
+	        ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*");
+	        GUITestCase.setRetryTimeout(timeout);
 	        progressView.getComposite().findLabel(text);
 	    } finally {
 	        GUITestCase.setRetryTimeout(oldRetryTimeout);
@@ -103,7 +103,7 @@ public class WorkbenchUtils
 	public static void waitUntilProgressViewNotContains(String text, double timeout) {
 	    double oldRetryTimeout = GUITestCase.getRetryTimeout();
 	    try {
-	        ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
+	        ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*");
 	        GUITestCase.setRetryTimeout(timeout);
 	        ensureNoSuchLabel(progressView.getComposite(), text);
 	    } finally {

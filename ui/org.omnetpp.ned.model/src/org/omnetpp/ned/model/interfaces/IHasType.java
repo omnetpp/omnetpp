@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -44,7 +44,7 @@ public interface IHasType extends INEDElement {
      * Sets the like parameter
      */
     public void setLikeParam(String type);
-    
+
     /**
      * Returns the type, or the likeType if type was not specified
      */
@@ -52,18 +52,18 @@ public interface IHasType extends INEDElement {
 
     /**
      * Returns the typeinfo for the effective type.
-     * 
-     * Returns null if the effective type is not filled in, or is not a valid NED type, 
-     * or not a type that's accepted at the given place (e.g. a channel for submodule type). 
+     *
+     * Returns null if the effective type is not filled in, or is not a valid NED type,
+     * or not a type that's accepted at the given place (e.g. a channel for submodule type).
      */
     public INEDTypeInfo getNEDTypeInfo();
 
     /**
-     * Returns the model element for the effective type. Equivalent to 
+     * Returns the model element for the effective type. Equivalent to
      * getNEDTypeInfo().getNEDElement(), but handles nulls.
-     * 
+     *
      * Returns null if the effective type is not filled in, or is not a valid NED type,
-     * or not a type that's accepted at the given place (e.g. a channel for submodule type). 
+     * or not a type that's accepted at the given place (e.g. a channel for submodule type).
      */
     public INedTypeElement getEffectiveTypeRef();
 }

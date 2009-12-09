@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -67,7 +67,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Performs various tasks when the workbench starts up.
- * 
+ *
  * @author Andras
  */
 @SuppressWarnings("restriction")
@@ -88,7 +88,7 @@ public class OmnetppStartup implements IStartup {
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
                 if (isInitialDefaultStartup()) {
-                    // We need to turn off "build automatically", otherwise it'll start 
+                    // We need to turn off "build automatically", otherwise it'll start
                     // building during the import process and will take forever.
                     // Also, CDT is a pain with autobuild on.
                     disableAutoBuild();
@@ -111,7 +111,7 @@ public class OmnetppStartup implements IStartup {
 			} catch (IOException e) {
 				OmnetppMainPlugin.logError("Cannot store installDate preference", e);
 			}
-	        
+
 	    }
 	    return installDate;
 	}
@@ -132,18 +132,18 @@ public class OmnetppStartup implements IStartup {
         } catch (IOException e) {
             OmnetppMainPlugin.logError("Cannot store lastCheck preference", e);
         }
-        
+
         // Show the version check URL in the New Version view if it's not empty -- the page should
         // contain download information etc.
         //
-        // NOTE: web page will decide whether there is a new version, by checking 
-        // the version number we send to it; it may also return a page specific 
+        // NOTE: web page will decide whether there is a new version, by checking
+        // the version number we send to it; it may also return a page specific
         // to the installed version.
         //
-        Job job = new Job("Version check") { 
+        Job job = new Job("Version check") {
         	public IStatus run(IProgressMonitor pm) {
         		String versionCheckURL = OmnetppStartup.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
-        		final String content = getWebPage(versionCheckURL); 
+        		final String content = getWebPage(versionCheckURL);
         		if (StringUtils.isNotBlank(content)) {
         			Display.getDefault().asyncExec(new Runnable() {
         				public void run() {
@@ -154,7 +154,7 @@ public class OmnetppStartup implements IStartup {
         							NewVersionView view = (NewVersionView)workbenchPage.showView(IConstants.NEW_VERSION_VIEW_ID);
         							view.setText(content);
         						}
-        					} 
+        					}
         					catch (PartInitException e) {
         						CommonPlugin.logError(e);
         					}
@@ -175,7 +175,7 @@ public class OmnetppStartup implements IStartup {
 //         byte[] buf = new byte[10];
 //         new URL(url).openStream().read(buf); // probe it by reading a few bytes
 //         return new String(buf).trim().length() > 0;
-//     } 
+//     }
 //     catch (IOException e) {
 //         return false;
 //     }
@@ -202,14 +202,14 @@ public class OmnetppStartup implements IStartup {
 //						Debug.println("activeShel:"+activeShell);
 //						Debug.println("new active shell:"+Display.getDefault().getActiveShell());
 //					}
-//		
+//
 //				});
 //			}
-//    
+//
 //    	});
 //    	return true;
 //    }
-    
+
 //    /**
 //     * Checks whether the given web page is available and contains something (i.e. is not empty).
 //     */
@@ -242,7 +242,7 @@ public class OmnetppStartup implements IStartup {
 //        }
 //    }
 
-    
+
     /**
      * Downloads the given web page and returns it. Returns NULL if cannot download.
      * Proxy detection is a royal pain here.
@@ -279,11 +279,11 @@ public class OmnetppStartup implements IStartup {
                             return content;
                     }
                 }
-            } 
+            }
             catch (Exception e) {
             }
         }
-        
+
         // try with Firefox proxy settings
         String HOME = System.getenv("HOME");
         if (HOME != null) {
@@ -355,8 +355,8 @@ public class OmnetppStartup implements IStartup {
                         if (content != null)
                             return content;
                     }
-                } 
-                catch (Exception e) { 
+                }
+                catch (Exception e) {
                 }
             }
 
@@ -381,8 +381,8 @@ public class OmnetppStartup implements IStartup {
                             }
                         }
                     }
-                } 
-                catch (Exception e) { 
+                }
+                catch (Exception e) {
                 }
             }
 
@@ -434,7 +434,7 @@ public class OmnetppStartup implements IStartup {
         }
         return list.toArray(new IProxyData[]{});
     }
-    
+
     /**
      * Parse URL of the syntax http://host:port/ or http://username:password@host:port/,
      * being a little flexible (allow http:// to be missing, trailing slash to be missing, etc)
@@ -460,9 +460,9 @@ public class OmnetppStartup implements IStartup {
         Log log = LogFactory.getLog("org.apache.commons.httpclient");
         if (log instanceof Jdk14Logger)
             ((Jdk14Logger)log).getLogger().setLevel(Level.OFF);
-        
+
         HttpClient client = new HttpClient();
-        client.getParams().setSoTimeout(10000);       
+        client.getParams().setSoTimeout(10000);
         if (proxyData != null && !StringUtils.isEmpty(proxyData.getHost())) {
             if (!StringUtils.isEmpty(proxyData.getUserId()) && !StringUtils.isEmpty(proxyData.getPassword()))
                 client.getState().setProxyCredentials(
@@ -473,7 +473,7 @@ public class OmnetppStartup implements IStartup {
             client.setHostConfiguration(hc);
         }
 
-        // do not retry 
+        // do not retry
         HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
             public boolean retryMethod(final HttpMethod method,final IOException exception, int executionCount) {
                 return false;
@@ -484,7 +484,7 @@ public class OmnetppStartup implements IStartup {
         method.getProxyAuthState().setAuthScheme(new BasicScheme());
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
         method.setDoAuthentication(true);
-        
+
         try {
             int status = client.executeMethod(method);
             String responseBody = method.getResponseBodyAsString();
@@ -498,12 +498,12 @@ public class OmnetppStartup implements IStartup {
         }
     }
 
-    
+
     /**
-     * Determines whether this is the first IDE startup after the installation, with the 
+     * Determines whether this is the first IDE startup after the installation, with the
      * default workspace (the "samples" directory). We check two things:
      * - the workspace location points to the OMNeT++ "samples" directory
-     * - there are no projects in the workspace yet (none have been created or imported) 
+     * - there are no projects in the workspace yet (none have been created or imported)
      */
     protected boolean isInitialDefaultStartup() {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();

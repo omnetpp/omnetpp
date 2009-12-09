@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -56,15 +56,15 @@ public class RemoveAction extends AbstractScaveAction {
 
 	/**
 	 * Creates a command that removes the selected objects.
-	 * 
+	 *
 	 * Simple DeleteCommand.create(ed, selection.toList()) does not work,
 	 * because it would delete the referenced node when the references are
 	 * displayed under their parent (Edit.Children=true).
-	 * 
+	 *
 	 * The solution is to wrap the reference values
 	 * (overriding isWrappingNeeded() in the ItemProvider) and execute
 	 * RemoveCommand on them (instead of DeleteCommand).
-	 * 
+	 *
 	 * TODO: fix EditingDomainActionBarContributor.deleteAction too.
 	 */
 	private Command createCommand(EditingDomain ed, IStructuredSelection selection) {

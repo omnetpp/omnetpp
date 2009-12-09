@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public class ChartMenuManager extends MenuManager {
 		this.chart = chart;
 		this.editorContributor = ScaveEditorContributor.getDefault();
 		this.labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
-	
+
 		setRemoveAllWhenShown(true);
 		addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager submenuManager) {
@@ -124,7 +124,7 @@ public class ChartMenuManager extends MenuManager {
 		// list all chart processing operations in the menu
 		//XXX when Chart would remain the only item in the Group, ungroup it!
 		for (EObject child : chart.eContainer().eContents()) {
-			if (child == chart) 
+			if (child == chart)
 				break; // only list objects *before* the chart
 			if (child instanceof ProcessingOp) {
 				String text = StringUtils.capitalize(labelProvider.getText(child));

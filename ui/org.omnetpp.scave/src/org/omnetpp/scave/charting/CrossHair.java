@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,7 +49,7 @@ import org.omnetpp.scave.model2.StatUtils;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
- * 
+ *
  * Note: add the CrossHair to the chart AFTER the {@link ZoomableCanvasMouseSupport}.
  */
 class CrossHair {
@@ -63,7 +63,7 @@ class CrossHair {
 
 	private final VectorChart chart;
 
-	private boolean detailedTooltip = false; // turned on while hovering 
+	private boolean detailedTooltip = false; // turned on while hovering
 
 	Rectangle plotArea;
 
@@ -182,7 +182,7 @@ class CrossHair {
 
 			// collect points close to cursor (x,y)
 			ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
-			int totalFound = dataPointsNear(canvasX, canvasY, HALO, dataPoints, 1, coordsMapping); 
+			int totalFound = dataPointsNear(canvasX, canvasY, HALO, dataPoints, 1, coordsMapping);
 
 			// snap to data point
 			DataPoint dataPoint = dataPoints.isEmpty() ? null : dataPoints.get(0);
@@ -244,7 +244,7 @@ class CrossHair {
 					return StringUtils.dictionaryCompare(key1, key2);
 				}
 			});
-	
+
 			StringBuilder htmlText = new StringBuilder();
 			StringBuilder plainText  = new StringBuilder();
 			int maxTextLength = 0;
@@ -274,18 +274,18 @@ class CrossHair {
 			if (totalFound > dataPoints.size())
 				htmlText.append(String.format("<tr><td></td><td>... and %d more</td></tr>", totalFound - dataPoints.size()));
 			htmlText.append("</table>");
-	
+
 			TextLayout textLayout = new TextLayout(chart.getDisplay());
 			textLayout.setText(plainText.toString());
 			textLayout.setWidth(320); // comes from HoverSupport
 			org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
 			preferredSize.preferredWidth = 20 + bounds.width;
 			preferredSize.preferredHeight = 25 + bounds.height + (lineNo > 1 ? (lineNo - 1) * 6 : 0);
-	
+
 //			Point preferredSize2 = computePreferedSize(htmlText.toString(), 320);
 //			preferredSize.preferredWidth =  preferredSize2.x; //20 + maxTextLength * 7;
 //			preferredSize.preferredHeight = preferredSize2.y; //25 + dataPoints.size() * 12;
-	
+
 			return HoverSupport.addHTMLStyleSheet(htmlText.toString());
 		}
 		else

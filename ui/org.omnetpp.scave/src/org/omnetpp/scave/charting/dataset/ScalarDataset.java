@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -53,7 +53,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
     /**
      * Creates a dataset from the given scalars.
      * Groups are formed by {@code groupingFields}, other fields
-     * determines the columns. 
+     * determines the columns.
      */
     public ScalarDataset(IDList idlist, List<String> groupByFields, List<String> barFields,
     						List<String> averagedFields, ResultFileManager manager) {
@@ -65,7 +65,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
     	this.rowKeys = computeRowKeys(this.data, rowFields);
     	this.columnKeys = computeColumnKeys(this.data, columnFields);
     }
-    
+
     public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;
@@ -79,8 +79,8 @@ public class ScalarDataset implements IAveragedScalarDataset {
     public int getRowCount() {
         return this.rowKeys.size();
     }
-    
-    
+
+
     /**
      * Returns the key for a given row.
      *
@@ -100,7 +100,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
     public int getColumnCount() {
         return this.columnKeys.size();
     }
-    
+
     /**
      * Returns the key for a given column.
      *
@@ -123,16 +123,16 @@ public class ScalarDataset implements IAveragedScalarDataset {
     public double getValue(int row, int column) {
        	return data.getValue(row, column).getMean();
     }
-    
+
 	/**
 	 * Returns the statistics for a given row and column.
-	 * 
+	 *
 	 * @see IScalarDataset#getStatistics(int, int)
 	 */
     public Statistics getStatistics(int row, int column) {
 		return data.getValue(row, column);
 	}
-    
+
     private void computeFields(List<String> groupByFields, List<String> barFields, List<String> averagedFields,
     							IDList idlist, ResultFileManager manager) {
    		List<String> fields = Arrays.asList(ResultItemFields.getFieldNames().toArray());
@@ -140,7 +140,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
    		List<String> columnFields = new ArrayList<String>();
    		List<String> unusedFields = new ArrayList<String>();
    		unusedFields.addAll(fields);
-   	
+
    		if (groupByFields != null) {
    			rowFields.addAll(groupByFields);
    			unusedFields.removeAll(groupByFields);
@@ -158,14 +158,14 @@ public class ScalarDataset implements IAveragedScalarDataset {
 	   		columnFields = addDependentFields(columnFields, unusedFields, dependencies);
 	   		applyDefaults(rowFields, columnFields, unusedFields);
    		}
-   	
+
    		//Debug.format("Row fields: %s%n", StringUtils.formatList(rowFields, "%s", ","));
    		//Debug.format("Column fields: %s%n", StringUtils.formatList(columnFields, "%s", ","));
 
    		this.rowFields = new ResultItemFields(StringVector.fromArray(rowFields.toArray(new String[rowFields.size()])));
    		this.columnFields = new ResultItemFields(StringVector.fromArray(columnFields.toArray(new String[columnFields.size()])));
     }
-    
+
     private Map<String,List<String>> buildDependencyMap(List<String> fields, IDList idlist, ResultFileManager manager) {
     	int size = fields.size();
     	Map<String,List<String>> map = new HashMap<String,List<String>>();
@@ -188,11 +188,11 @@ public class ScalarDataset implements IAveragedScalarDataset {
     	}
     	return map;
     }
-    
+
     private static List<String> addDependentFields(List<String> fields, List<String> unusedFields, Map<String,List<String>> dependencies) {
     	if (unusedFields.isEmpty())
     		return fields;
-    
+
    		List<String> result = new ArrayList<String>();
     	for (String field1 : fields) {
     		result.add(field1);
@@ -206,7 +206,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
    		}
     	return result;
     }
-    
+
     private static void applyDefaults(List<String> rowFields, List<String> columnFields, List<String> unusedFields) {
     	for (String field : unusedFields) {
     		if (field.equals(MODULE))
@@ -216,14 +216,14 @@ public class ScalarDataset implements IAveragedScalarDataset {
     		// other fields are averaged
     	}
     }
-    
+
     private static final ResultItemField[] allFields = new ResultItemField[] {
     	new ResultItemField(FILE), new ResultItemField(RUN), new ResultItemField(MODULE),
-    	new ResultItemField(NAME), 
-    	new ResultItemField(EXPERIMENT), new ResultItemField(MEASUREMENT), new ResultItemField(REPLICATION) 
+    	new ResultItemField(NAME),
+    	new ResultItemField(EXPERIMENT), new ResultItemField(MEASUREMENT), new ResultItemField(REPLICATION)
     };
     private static final char separator = ';';
-    
+
     private static List<String> computeRowKeys(XYDataset data, ResultItemFields rowFields) {
     	List<String> keys = new ArrayList<String>(data.getRowCount());
     	for (int i = 0; i < data.getRowCount(); ++i) {
@@ -238,7 +238,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
     	}
     	return keys;
     }
-    
+
     private static List<String> computeColumnKeys(XYDataset data, ResultItemFields columnFields) {
     	int count = data.getColumnCount();
     	List<String> keys = new ArrayList<String>(count);

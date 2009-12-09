@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -108,7 +108,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 
 		// set up cell editor for value column
 		tableViewer.setColumnProperties(entry.isPerObject() ?
-		        new String[] {"section", "object", "value"} : 
+		        new String[] {"section", "object", "value"} :
 		        new String[] {"section", "value"});
 		final TableTextCellEditor[] cellEditors = entry.isPerObject() ?
 		        new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1), new TableTextCellEditor(tableViewer,2)} :
@@ -126,7 +126,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 			        return getValueFromFile(sectionKey.section, sectionKey.key);
 			    else if (property.equals("object"))
 			        return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
-			    else 
+			    else
 			        throw new IllegalArgumentException();
 			}
 
@@ -138,7 +138,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
                     setValueInFile(sectionKey.section, sectionKey.key, (String) value);
                 else if (property.equals("object"))
                     renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getName());
-                else 
+                else
                     throw new IllegalArgumentException();
 				tableViewer.refresh();
 			}

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -64,7 +64,7 @@ public abstract class RubberbandSupport {
 
 	/**
 	 * Return the modifier key(s) that need to be held down for rubber-band (e.g. SWT.CTRL).
-	 * Corresponds to SWT Event's stateMask. 
+	 * Corresponds to SWT Event's stateMask.
 	 */
 	public int getModifierKeys() {
 		return modifierKeys;
@@ -72,7 +72,7 @@ public abstract class RubberbandSupport {
 
 	/**
 	 * Sets the modifier key(s) that need to be held down for rubber-band (e.g. SWT.CTRL).
-	 * Corresponds to SWT Event's stateMask. Zero means no modifier key is needed.  
+	 * Corresponds to SWT Event's stateMask. Zero means no modifier key is needed.
 	 */
 	public void setModifierKeys(int modifierKeys) {
 		this.modifierKeys = modifierKeys;
@@ -90,9 +90,9 @@ public abstract class RubberbandSupport {
 	private void addListeners() {
 		canvas.addMouseListener(new MouseListener() {
 			public void mouseDown(MouseEvent e) {
-	    		if (rubberBand==null && e.button==1 && 
-	    			((e.stateMask & SWT.MODIFIER_MASK)==modifierKeys) && 
-	    			(rubberBandBounds==null || rubberBandBounds.contains(e.x, e.y))) 
+	    		if (rubberBand==null && e.button==1 &&
+	    			((e.stateMask & SWT.MODIFIER_MASK)==modifierKeys) &&
+	    			(rubberBandBounds==null || rubberBandBounds.contains(e.x, e.y)))
 	    		{
 					// start selection
 					rubberBand = new Rectangle(e.x, e.y, 0, 0);
@@ -134,13 +134,13 @@ public abstract class RubberbandSupport {
 					rubberBand.width = e.x - rubberBand.x;
 					rubberBand.height = e.y - rubberBand.y;
 					clipToBounds(rubberBand, rubberBandBounds==null ? canvas.getClientArea() : rubberBandBounds);
-			
+
 					if ((e.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
 						int direction = (rubberBand.width >= 0 ? EAST : WEST) |
 										(rubberBand.height >= 0 ? SOUTH : NORTH);
 						canvas.setCursor(Cursors.getDirectionalCursor(direction));
 					}
-			
+
 					// erase, then draw new with updated coordinates
 					if (drawRubberBand) {
 						GC gc = new GC(canvas);
@@ -164,13 +164,13 @@ public abstract class RubberbandSupport {
 
 		if (drawRubberBand) {
 			// On windows when Desktop Control Panel/Appearance/Effects/"Hide underlined letters for keyboard navigation until I press the Alt key"
-			// is turned on, the focus rectangles are not displayed until the user press the Alt key or switch to another 
+			// is turned on, the focus rectangles are not displayed until the user press the Alt key or switch to another
 			// window and back. See WM_QUERYUISTATE,WM_UPDATEUISTATE.
 			// Commenting out the following lines can solve the problem, but uses discouraged access
-	
+
 //					GCData data = gc.getGCData();
 //					data.uiState &= (~OS.UISF_HIDEFOCUS);
-			gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));	// used if drawFocus() is not supported by the OS 
+			gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));	// used if drawFocus() is not supported by the OS
 			gc.drawFocus(r.x, r.y, r.width, r.height);
 		}
 		else {

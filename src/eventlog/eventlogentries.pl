@@ -222,7 +222,7 @@ close(ENTRIES_H_FILE);
 
 open(ENTRIES_CC_FILE, ">eventlogentries.cc");
 
-print ENTRIES_CC_FILE 
+print ENTRIES_CC_FILE
 "//=========================================================================
 //  EVENTLOGENTRIES.CC - part of
 //                  OMNeT++/OMNEST
@@ -410,7 +410,7 @@ close(ENTRIES_CC_FILE);
 
 open(FACTORY_CC_FILE, ">eventlogentryfactory.cc");
 
-print FACTORY_CC_FILE 
+print FACTORY_CC_FILE
 "//=========================================================================
 //  EVENTLOGENTRYFACTORY.CC - part of
 //                  OMNeT++/OMNEST

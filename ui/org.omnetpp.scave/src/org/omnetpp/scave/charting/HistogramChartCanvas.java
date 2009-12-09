@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -119,7 +119,7 @@ public class HistogramChartCanvas extends ChartCanvas {
 			setHistogramColor(getElementId(name), ColorFactory.asRGB(value));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
 			setLogarithmicY(Converter.stringToBoolean(value));
-		else 
+		else
 			super.setProperty(name, value);
 	}
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -169,7 +169,7 @@ public class ChartProperties extends PropertySource {
 		@Property(descriptorClass = EnumPropertyDescriptor.class)
 		public RectangleEdge getPosition() { return legend.getPosition(); }
 		public void setPosition(RectangleEdge pos) { legend.setPosition(pos); refresh(); }
-		public RectangleEdge defaultPosition() { return LegendTitle.DEFAULT_POSITION; } 
+		public RectangleEdge defaultPosition() { return LegendTitle.DEFAULT_POSITION; }
 		@Property
 		public FontData getItemFont() { return fontToFontData(legend.getItemFont()); }
 		public void setItemFont(FontData fd) { legend.setItemFont(fontDataToFont(fd)); refresh(); }
@@ -243,7 +243,7 @@ public class ChartProperties extends PropertySource {
 		}
 
 		public final static CategoryRendererKind
-			BAR = new CategoryRendererKind(new BarRenderer()), 
+			BAR = new CategoryRendererKind(new BarRenderer()),
 			BAR3D = new CategoryRendererKind(new BarRenderer3D()),
 			STACKED_BAR = new CategoryRendererKind(new StackedBarRenderer()),
 			STACKED_BAR3D = new CategoryRendererKind(new StackedBarRenderer3D()),
@@ -497,7 +497,7 @@ public class ChartProperties extends PropertySource {
 
 		@Property(filterFlags = {IPropertySheetEntry.FILTER_ID_EXPERT})
 		public InsetsProperties getMargin() { return new InsetsProperties(block.getMargin()); }
-		public void setMargin(InsetsProperties margin) { block.setMargin(margin.getValue()); refresh(); }; 
+		public void setMargin(InsetsProperties margin) { block.setMargin(margin.getValue()); refresh(); };
 		public InsetsProperties defaultMargin() { return new InsetsProperties(RectangleInsets.ZERO_INSETS); }
 
 		@Property
@@ -611,11 +611,11 @@ public class ChartProperties extends PropertySource {
 
 		@Property
 		public RGB getColor() { return paintToRGB(paint); }
-		public void setColor(RGB rgb) { paint = rgbToPaint(rgb); } 
+		public void setColor(RGB rgb) { paint = rgbToPaint(rgb); }
 	}
 
 	/*
-	 * Conversions between AWT and SWT types. 
+	 * Conversions between AWT and SWT types.
 	 */
 
 	private static RGB paintToRGB(Paint paint)

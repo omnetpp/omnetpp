@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -70,7 +70,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     // dialog state
     private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, ANYNETWORK_FULLPATH, FULLPATH };
     private KeyType keyType;
-    
+
     private enum FilterType { ALL, IMPLICITLY_ASSIGNED_AND_UNASSIGNED, UNASSIGNED }; // filterCombo items
 
 	// the result
@@ -93,7 +93,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         if (analyzer.getDocument().getSectionNames().length==0)
         	throw new IllegalStateException("Inifile should contain at least one section.");
     }
-    
+
     @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogSettings(InifileEditorPlugin.getDefault(), getClass().getName());
@@ -111,7 +111,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     protected Control createDialogArea(Composite parent) {
         setTitle("Add Inifile Keys");
         setMessage("Generate parameter assignment keys into the ini file.");
-    
+
         // page group
         Composite dialogArea = (Composite) super.createDialogArea(parent);
 
@@ -152,13 +152,13 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		createRadioButton(group, "F&ull path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
 		b.setSelection(true);
 		keyType = KeyType.MODULE_AND_PARAM; // must agree with selected radiobutton
-        
+
 		// table group
         Group group2 = new Group(composite, SWT.NONE);
 		group2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group2.setText("Select keys to insert");
 		group2.setLayout(new GridLayout(1, false));
-      
+
 		// filter
 		Composite filterComposite = new Composite(group2, SWT.NONE);
         filterComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -206,9 +206,9 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         addSelectionButtons(group2);
 
         buildTableContents();
-        
+
         Dialog.applyDialogFont(composite);
-        
+
         return composite;
     }
 
@@ -231,7 +231,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		rb.setText(label);
 		rb.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (keyType != value) { 
+				if (keyType != value) {
 					keyType = value;
 					buildTableContents();
 				}
@@ -278,7 +278,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		if (!sectionsCombo.getText().equals(""))
 			selectedSection = sectionsCombo.getText();
 		String[] sectionNames = doc.getSectionNames();
-		if (sectionNames.length==0) 
+		if (sectionNames.length==0)
 			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
 		sectionsCombo.setItems(sectionNames);
 		sectionsCombo.setVisibleItemCount(Math.min(20, sectionsCombo.getItemCount()));
@@ -334,7 +334,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 
 		listViewer.refresh();
 	}
-    
+
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
@@ -353,9 +353,9 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 	}
 
 	protected void okPressed() {
-    	// save dialog state into variables, so that client can retrieve them after 
+    	// save dialog state into variables, so that client can retrieve them after
     	// the dialog was disposed
-    	ArrayList<String> result = new ArrayList<String>(); 
+    	ArrayList<String> result = new ArrayList<String>();
     	for (Object res : listViewer.getCheckedElements())
     		result.add(getKeyFor((ParamResolution)res));
     	this.keysToAdd = result.toArray(new String[]{});

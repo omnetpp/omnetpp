@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -28,11 +28,11 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * Resolves the variable containing all executables/shared libs/static libs built 
+ * Resolves the variable containing all executables/shared libs/static libs built
  * by the given project and the project it depends on. Libs and executables are
- * returned WITHOUT possible prefixes ("lib") and suffixes (".exe", ".so", 
+ * returned WITHOUT possible prefixes ("lib") and suffixes (".exe", ".so",
  * ".dll", ".a", ".lib" etc.)
- * 
+ *
  * @author rhornig, andras
  */
 public class OppVariableResolver implements IDynamicVariableResolver {
@@ -45,7 +45,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 
     public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
 	    String varName = variable.getName();
-	    
+
 		if (argument == null)
 			abort("${" + varName +"} requires an argument", null);
 
@@ -58,9 +58,9 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 		String result = "";
 		try {
 			result = resolveForProject(project, varName);
-	
+
 			// do the same for the referenced projects
-			for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project)) 
+			for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project))
 				result += resolveForProject(p, varName);
 		}
 		catch (Exception e) {
@@ -74,18 +74,18 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 			String result = "";
 			boolean isLocation = varName.endsWith(LOC_SUFFIX);
 			varName = StringUtils.removeEnd(varName, LOC_SUFFIX);
-	
+
 			BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
 			if (buildSpec == null)
 				return ""; // no build spec file
-	
+
 	        List<IContainer> makemakeFolders = buildSpec.getMakemakeFolders();
 			for (IContainer folder : makemakeFolders) {
 				MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
 				Assert.isTrue(options!=null);
-		
+
 				if (varName.equals(OPP_SIMPROGS)) {
-				    if (options.type == MakemakeOptions.Type.EXE) { 
+				    if (options.type == MakemakeOptions.Type.EXE) {
 				        String target = options.target != null ? options.target : project.getName();
 				        IFile file = folder.getFile(new Path(target));
 				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
@@ -93,7 +93,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 				    }
 				}
 				else if (varName.equals(OPP_SHARED_LIBS)) {
-                    if (options.type == MakemakeOptions.Type.SHAREDLIB) { 
+                    if (options.type == MakemakeOptions.Type.SHAREDLIB) {
                         String target = options.target != null ? options.target : project.getName();
 				        IFile file = folder.getFile(new Path(target));
 				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
@@ -101,7 +101,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
                     }
                 }
                 else if (varName.equals(OPP_STATIC_LIBS)) {
-                    if (options.type == MakemakeOptions.Type.STATICLIB) { 
+                    if (options.type == MakemakeOptions.Type.STATICLIB) {
                         String target = options.target != null ? options.target : project.getName();
 				        IFile file = folder.getFile(new Path(target));
 				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
@@ -109,7 +109,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
                     }
                 }
                 else if (varName.equals(OPP_LD_LIBRARY_PATH)) {
-                    if (options.type == MakemakeOptions.Type.SHAREDLIB) { 
+                    if (options.type == MakemakeOptions.Type.SHAREDLIB) {
 				        String targetPath = (isLocation ? folder.getLocation() : folder.getFullPath()).toString();
                         result += System.getProperty("path.separator") + targetPath;
                     }
@@ -119,7 +119,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
                 }
 			}
 			return result;
-		} 
+		}
 		catch (CoreException e) {
 			Activator.logError(e);
 			return "";

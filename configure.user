@@ -25,10 +25,10 @@
 #CFLAGS_RELEASE='-O2 -DNDEBUG=1'
 
 #
-# Linker switches used for linking. 
+# Linker switches used for linking.
 # For example use the -m64 switch to build 64 bit binaies on a 32bit operating system
 # (only if the 64bit libraries are installed of course). You should add the -m64 flag
-# to the CFLAGS_... variables too !!! 
+# to the CFLAGS_... variables too !!!
 # NOTE: that not all 64 bit libraries may be present on your system (i.e. Tcl/Tk and other
 # libraries may be missing. Use the NO_TCL=yes if you want to skip the Tcl/Tk based parts)
 #
@@ -83,7 +83,7 @@ SHARED_LIBS=yes
 # case add -lX11 to TK_LIBS.
 #
 # With MinGW I use the following:
-# Note that we are using the "bin" directory as the LIB dir. 
+# Note that we are using the "bin" directory as the LIB dir.
 # i.e. directly linking to the DLLs instead of the importlibs in the "lib" directory.
 #
 #TK_CFLAGS="-I/c/Tools/Tcl-8.4.11/include"
@@ -109,7 +109,7 @@ SHARED_LIBS=yes
 # Default setting is:
 #  BLT_LIBS="-lBLT24"
 #
-# 
+#
 #BLT_LIBS=
 
 #
@@ -199,5 +199,5 @@ SHARED_LIBS=yes
 
 #
 # On MinGW we use the following
-#JDK=/c/Tools/jdk1.6.0 
+#JDK=/c/Tools/jdk1.6.0
 #SWIG=/c/Tools/swigwin-1.3.31/swig

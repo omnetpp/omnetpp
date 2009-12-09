@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -101,7 +101,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
                         // IEventLogSelection does not return the event numbers only and we can get more than that here
                         if (object instanceof Long) {
                             IEvent event = eventLogInput.getEventLog().getEventForEventNumber((Long)object);
-                            
+
                             if (event != null)
                                 return new EventLogEntryPropertySource(event.getEventEntry());
                         }
@@ -125,7 +125,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
     @Override
 	public String getTitleToolTip() {
         IEventLog eventLog = eventLogInput.getEventLog();
-        
+
         if (eventLog == null)
             return super.getTitleToolTip();
         else {

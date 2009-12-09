@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,7 +23,7 @@ public abstract class ObjectRecognizer extends RecognizerBase implements IObject
 
     /**
      * Walks parent chain of the control up to the shell, and tries
-     * to choose a Composite which can be identified well. 
+     * to choose a Composite which can be identified well.
      */
     public Composite findContainer(Control control) {
         // walk up, and choose first local maximum in quality
@@ -33,7 +33,7 @@ public abstract class ObjectRecognizer extends RecognizerBase implements IObject
             double parentQuality = qualityOf(composite.getParent());
             if (quality > parentQuality)
                 return composite;
-            
+
             composite = composite.getParent();
             quality = parentQuality;
         }

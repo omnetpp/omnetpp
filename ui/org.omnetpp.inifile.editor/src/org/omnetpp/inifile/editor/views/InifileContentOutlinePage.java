@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -143,7 +143,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 
 	/**
 	 * Sets the input of the outline page
-	 * 
+	 *
 	 * @param input the input of this outline page
 	 */
 	public void setInput(Object input) {
@@ -153,7 +153,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		Assert.isTrue(input instanceof IInifileDocument || input == null);
 		inifileDocument = (IInifileDocument) input;
 		// Note: when first invoked, treeViewer==null yet
-		if (getTreeViewer() != null && !getTreeViewer().getTree().isDisposed()) 
+		if (getTreeViewer() != null && !getTreeViewer().getTree().isDisposed())
 			getTreeViewer().setInput(inifileDocument);
 		if (inifileDocument != null)
 			inifileDocument.addInifileChangeListener(this);

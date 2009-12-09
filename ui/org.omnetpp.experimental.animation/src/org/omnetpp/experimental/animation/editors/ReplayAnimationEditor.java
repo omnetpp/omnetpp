@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -155,7 +155,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				animationController.stepAnimationBack();
 			}
 	    });
-	    
+
 	    replayStopToolItem = new ToolItem(replayToolBar, SWT.PUSH);
 	    replayStopToolItem.setEnabled(false);
 	    replayStopToolItem.setToolTipText("Stop");
@@ -301,13 +301,13 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	    Scale scale = new Scale(coolBar, SWT.HORIZONTAL);
 	    scale.setMinimum(0);
 	    scale.setMaximum(100);
-	    scale.setSelection((scale.getMaximum() - scale.getMinimum()) / 2); 
+	    scale.setSelection((scale.getMaximum() - scale.getMinimum()) / 2);
 	    scale.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Scale scale = (Scale)e.widget;
 				int value = scale.getSelection() - (scale.getMaximum() - scale.getMinimum()) / 2;
 				animationController.setRealTimeToAnimationTimeScale(Math.pow(1.1, value));
-			}	    
+			}
 	    });
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(scale);
@@ -372,7 +372,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 
 		public void mouseDoubleClick(MouseEvent e) {
 			extractDragControlInformation(e);
-	
+
 			if ((e.stateMask & SWT.CONTROL) != 0) {
 				if (dragControl.getChildren()[0] instanceof AnimationCanvas) {
 					AnimationCanvas animationCanvas = (AnimationCanvas)dragControl.getChildren()[0];
@@ -396,19 +396,19 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				dragLeft = oldDragLeft & allowHorizontalResize;
 				moveOrResizeDraggedControl(delta, dockingLimits);
 				parent.layout();
-		
+
 				calculateDragMode(e);
 				dragLeft = dragTop = dragBottom = false;
 				dragRight = oldDragRight & allowHorizontalResize;
 				moveOrResizeDraggedControl(delta, dockingLimits);
 				parent.layout();
-		
+
 				calculateDragMode(e);
 				dragLeft = dragRight = dragBottom = false;
 				dragTop = oldDragTop & allowVerticalResize;
 				moveOrResizeDraggedControl(delta, dockingLimits);
 				parent.layout();
-		
+
 				calculateDragMode(e);
 				dragLeft = dragRight = dragTop = false;
 				dragBottom = oldDragBottom & allowVerticalResize;
@@ -423,7 +423,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			extractDragControlInformation(e);
 			dragControl.moveAbove(null);
 			dragStart = dragControl.toDisplay(e.x, e.y);
-	
+
 			calculateDragMode(e);
 		}
 
@@ -459,9 +459,9 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 
 		protected class DockingLimits {
 			public int maximumSmallerValueDecrease;
-	
+
 			public int maximumSmallerValueIncrease;
-	
+
 			public int maximumBiggerValueDecrease;
 
 			public int maximumBiggerValueIncrease;
@@ -507,7 +507,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			Control control = (Control)e.widget;
 
 			calculateDragMode(e);
-	
+
 			int cursorType;
 			if (dragMove)
 				cursorType = SWT.CURSOR_SIZEALL;
@@ -597,7 +597,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				bestDockingDistance = setDockingFormAttachments(formAttachments, bestDockingDistance, dockingLimits, childControl, dragBigger, biggerValue, childSmallerValue, false, 0, size);
 				bestDockingDistance = setDockingFormAttachments(formAttachments, bestDockingDistance, dockingLimits, childControl, dragBigger, biggerValue, childBiggerValue, false, 0, size);
 			}
-	
+
 			if (bestDockingDistance != Integer.MAX_VALUE)
 				return formAttachments;
 			else
@@ -631,7 +631,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 */
 				formAttachments[0] = new FormAttachment(parentPercent, (parentPercent == 0 ? dockingValue : 0) + (smallerValue ? 0 : -size));
 				formAttachments[1] = new FormAttachment(parentPercent, (parentPercent == 0 ? dockingValue : 0) + (smallerValue ? size : 0));
-				
+
 				return currentDockingDistance;
 			}
 			else
@@ -715,14 +715,14 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	protected void valueChanged(Text widget, Number newValue) {
 		if (!widget.isDisposed()) {
 			Number oldValue = null;
-	
+
 			try {
 				oldValue = numberFormat.parse(widget.getText());
 			}
 			catch (ParseException e) {
 				// void
 			}
-	
+
 			if (oldValue == null || newValue.doubleValue() != oldValue.doubleValue())
 				widget.setText(numberFormat.format(newValue));
 		}

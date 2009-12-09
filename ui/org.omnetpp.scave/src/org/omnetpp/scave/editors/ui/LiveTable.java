@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Holds a several controls that can be selected and 
+ * Holds a several controls that can be selected and
  * reordered with the mouse. Typically the user wants to
  * set a GridLayout on the control, but this is not mandatory.
  *
@@ -43,14 +43,14 @@ import org.eclipse.swt.widgets.Control;
  * gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 5;
  * liveTable.setLayout(gridLayout);
  * </pre>
- * 
+ *
  * @author andras
  */
 //XXX move to common plug-in
 public class LiveTable extends Composite  implements ISelectionProvider {
 	private static final Color SELECTBORDER_COLOR = new Color(null,255,0,0);
 	private static final Color INSERTMARK_COLOR = new Color(null,0,0,0);
- 
+
 	private ArrayList<Control> orderedChildren = new ArrayList<Control>();
 	private ArrayList<Control> selection = new ArrayList<Control>();
 	private ListenerList selectionChangedListeners = new ListenerList();
@@ -71,7 +71,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	}
 
 	/**
-	 * Overridden so that we can reorder the children. 
+	 * Overridden so that we can reorder the children.
 	 */
 	@Override
 	public Control[] getChildren() {
@@ -141,7 +141,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 
 	/**
 	 * Returns the child control under the given mouse position, or null.
-	 * Expects screen coordinates. 
+	 * Expects screen coordinates.
 	 */
 	private Control findControlUnder(Point p) {
 		for (Control child : getChildren()) {
@@ -191,7 +191,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	}
 
 	/**
-	 * Changes the order of children so that "item" is moved to 
+	 * Changes the order of children so that "item" is moved to
 	 * where the "target" child currently is.
 	 */
 	public void moveChild(Control item, Control atItem) {

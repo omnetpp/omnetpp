@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -226,9 +226,9 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    if (nodes.isEmpty() || allNodesAreFixed)
 	        return;
 
-	    if (debug) 
+	    if (debug)
 			Debug.println("running layouter: " + nodes.size() + " nodes, " + "allNodesAreFixed=" + allNodesAreFixed + ", haveAnchoredNode=" + haveAnchoredNode + ", haveFixedNode=" + haveFixedNode);
-	    
+
 	    // consume a some values (manually given seeds are usually small!)
 	    privRand01();
 	    privRand01();
@@ -306,7 +306,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	        }
 	    }
 
-	    if (debug) 
+	    if (debug)
 			Debug.println("layout done: " + nodes.size() + " nodes, " + i + " iterations");
 
 	    // scale back if too big -- BUT scale back only non fixed nodes.
@@ -336,7 +336,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	            double yfact = (height-2*border) / (y2-y1);
 	            if (xfact>1) {xfact=1;} // only scale down if needed, but never magnify
 	            if (yfact>1) {yfact=1;}
-	    	    if (debug) 
+	    	    if (debug)
 	    			Debug.println("layout scaled back by (" + (1/xfact) + ", " + (1/yfact) + ")");
 	            for (Node n : nodes)
 	            {
@@ -679,7 +679,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     		Debug.println("  " + n.key + ": color=" + n.color + " x=" + n.x + " y=" + n.y + " dx=" + n.dx + " dy=" + n.dy);
     	}
     }
-    
+
     @Override
     public Point getAnchorPosition(Object anchor) {
         // TODO NOT YET IMPLEMENTED

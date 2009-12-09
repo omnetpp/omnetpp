@@ -13,13 +13,13 @@ can be investigated by the summary command:
 
 <pre>summary(aloha)
 
-                             Length Class  Mode     
+                             Length Class  Mode
 channel_utilization_descr       1   -none- character
-channel_utilization          4348   -none- numeric  
+channel_utilization          4348   -none- numeric
 collision_multiplicity_descr    1   -none- character
-collision_multiplicity        226   -none- numeric  
+collision_multiplicity        226   -none- numeric
 collision_length_descr          1   -none- character
-collision_length              226   -none- numeric  
+collision_length              226   -none- numeric
 </pre>
 
 The individual data items in the data frame can be accessed by the $ notation:
@@ -37,7 +37,7 @@ The individual data items in the data frame can be accessed by the $ notation:
 [112,] 3468.30118 0.1153605
 [113,] 3471.44969 0.1866665
  </pre>
- 
+
 The value is a matrix whose first column contains the time and the second column
 contains the value of the <i>collision_length</i>.
 
@@ -64,13 +64,13 @@ Then we can use the following command to read the file as a data frame into a va
 The summary is
 <pre>summary(aloha)
 
-       V1              V2                  V3         
- Min.   :15.00   Min.   :   0.5919   Min.   :0.04019  
- 1st Qu.:17.00   1st Qu.: 904.5143   1st Qu.:0.05667  
- Median :17.00   Median :1866.0008   Median :0.05698  
- Mean   :16.86   Mean   :1815.9080   Mean   :0.15722  
- 3rd Qu.:17.00   3rd Qu.:2719.6075   3rd Qu.:0.05877  
- Max.   :17.00   Max.   :3596.3376   Max.   :3.00000  
+       V1              V2                  V3
+ Min.   :15.00   Min.   :   0.5919   Min.   :0.04019
+ 1st Qu.:17.00   1st Qu.: 904.5143   1st Qu.:0.05667
+ Median :17.00   Median :1866.0008   Median :0.05698
+ Mean   :16.86   Mean   :1815.9080   Mean   :0.15722
+ 3rd Qu.:17.00   3rd Qu.:2719.6075   3rd Qu.:0.05877
+ Max.   :17.00   Max.   :3596.3376   Max.   :3.00000
 </pre>
 
 The first column contain the vector ids, the second the time and the third is the
@@ -91,21 +91,21 @@ function:
 <pre>aloha <- read.table("c:/Omnet/samples/aloha/aloha.r",col.names=c("id","t","value"),colClasses=c("factor","numeric","numeric"))
 summary(aloha)
 
-  id             t                 value        
- 15: 113   Min.   :   0.5919   Min.   :0.04019  
- 16: 113   1st Qu.: 904.5143   1st Qu.:0.05667  
- 17:2174   Median :1866.0008   Median :0.05698  
-           Mean   :1815.9080   Mean   :0.15722  
-           3rd Qu.:2719.6075   3rd Qu.:0.05877  
-           Max.   :3596.3376   Max.   :3.00000  
+  id             t                 value
+ 15: 113   Min.   :   0.5919   Min.   :0.04019
+ 16: 113   1st Qu.: 904.5143   1st Qu.:0.05667
+ 17:2174   Median :1866.0008   Median :0.05698
+           Mean   :1815.9080   Mean   :0.15722
+           3rd Qu.:2719.6075   3rd Qu.:0.05877
+           Max.   :3596.3376   Max.   :3.00000
 
 </pre>
 
 Now we can apply functions to each group by the <i>tapply()</i> function:
 
 <pre>tapply(value,id,mean)
-        15         16         17 
-2.07079646 0.14934737 0.05816487 
+        15         16         17
+2.07079646 0.14934737 0.05816487
 </pre>
 
 Or extract a specific vector to a new data frame:
@@ -118,14 +118,14 @@ at that time:
 
 <pre>aloha.wide <- reshape(aloha,timevar="id",idvar="t",direction="wide")
 summary(aloha.wide)
-       t                value.17          value.15           value.16        
- Min.   :   0.5919   Min.   :0.04019   Min.   :   2.000   Min.   :   0.1008  
- 1st Qu.: 888.9211   1st Qu.:0.05664   1st Qu.:   2.000   1st Qu.:   0.1240  
- Median :1821.0937   Median :0.05691   Median :   2.000   Median :   0.1437  
- Mean   :1802.4315   Mean   :0.05816   Mean   :   2.071   Mean   :   0.1493  
- 3rd Qu.:2712.9278   3rd Qu.:0.05806   3rd Qu.:   2.000   3rd Qu.:   0.1735  
- Max.   :3596.3376   Max.   :0.16755   Max.   :   3.000   Max.   :   0.2390  
-                                       NA's   :2061.000   NA's   :2061.0000  
+       t                value.17          value.15           value.16
+ Min.   :   0.5919   Min.   :0.04019   Min.   :   2.000   Min.   :   0.1008
+ 1st Qu.: 888.9211   1st Qu.:0.05664   1st Qu.:   2.000   1st Qu.:   0.1240
+ Median :1821.0937   Median :0.05691   Median :   2.000   Median :   0.1437
+ Mean   :1802.4315   Mean   :0.05816   Mean   :   2.071   Mean   :   0.1493
+ 3rd Qu.:2712.9278   3rd Qu.:0.05806   3rd Qu.:   2.000   3rd Qu.:   0.1735
+ Max.   :3596.3376   Max.   :0.16755   Max.   :   3.000   Max.   :   0.2390
+                                       NA's   :2061.000   NA's   :2061.0000
 </pre>
 
 <h3>How to compute confidence intervals for the expected values of vectors?</h3>
@@ -134,13 +134,13 @@ We use the aloha data frame from the previous section:
 
 <pre>summary(aloha)
 
-  id             t                 value        
- 15: 113   Min.   :   0.5919   Min.   :0.04019  
- 16: 113   1st Qu.: 904.5143   1st Qu.:0.05667  
- 17:2174   Median :1866.0008   Median :0.05698  
-           Mean   :1815.9080   Mean   :0.15722  
-           3rd Qu.:2719.6075   3rd Qu.:0.05877  
-           Max.   :3596.3376   Max.   :3.00000  
+  id             t                 value
+ 15: 113   Min.   :   0.5919   Min.   :0.04019
+ 16: 113   1st Qu.: 904.5143   1st Qu.:0.05667
+ 17:2174   Median :1866.0008   Median :0.05698
+           Mean   :1815.9080   Mean   :0.15722
+           3rd Qu.:2719.6075   3rd Qu.:0.05877
+           Max.   :3596.3376   Max.   :3.00000
 </pre>
 
 Means of the individual vectors can be computed by grouping the rows by the id
@@ -148,14 +148,14 @@ and applying the <i>mean</i> function to values in the groups:
 
 <pre>attach(aloha)
 tapply(value,id,mean)
-        15         16         17 
-2.07079646 0.14934737 0.05816487 
+        15         16         17
+2.07079646 0.14934737 0.05816487
 </pre>
 
 The standard deviations:
 <pre>tapply(value,id,sd)
-         15          16          17 
-0.257627020 0.030192164 0.004114073 
+         15          16          17
+0.257627020 0.030192164 0.004114073
 </pre>
 
 For the confidence interval we define a function, which gives the half interval
@@ -170,12 +170,12 @@ And a specialized version for computing the confidence interval with 95% confide
 Now we can apply it to the vectors in the data frame:
 
 <pre>tapply(value,id,conf95)
-          15           16           17 
-0.0480195592 0.0056275712 0.0001730343 
+          15           16           17
+0.0480195592 0.0056275712 0.0001730343
 </pre>
 
 
-Note: the <i>conf()</i> function can be used to calculate the confidence interval only if 
+Note: the <i>conf()</i> function can be used to calculate the confidence interval only if
 the elements of the vector are independent and have a normal distribution.
 Neither is likely true for the time series.
 </body>

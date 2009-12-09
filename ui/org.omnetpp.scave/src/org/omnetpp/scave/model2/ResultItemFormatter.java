@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -35,7 +35,7 @@ import org.omnetpp.scave.engine.ResultItemFields;
  * by "{fieldname}" syntax. Use "\{" to quote a '{'.
  * Accepted field names are defined by {@link FilterUtil.getFieldNames()}.
  * Use {index} to refer to the index of the item in the collection.
- *  
+ *
  * @author tomi
  */
 public class ResultItemFormatter {

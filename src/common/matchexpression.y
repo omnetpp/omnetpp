@@ -56,7 +56,7 @@ typedef struct _MatchExpressionParserState {
     MatchExpressionLexer *lexer;
 } MatchExpressionParserState;
 
-#define YYPARSE_PARAM statePtr 
+#define YYPARSE_PARAM statePtr
 #define YYLEX_PARAM statePtr
 inline int matchexpressionyylex (YYSTYPE *yylval, void *statePtr)
 {

@@ -40,7 +40,7 @@ LogBuffer log(800);  // small buffer, so that we can test discards as well
 
 LogBufferViewInput input;
 input.addModuleTree(2, std::vector<int>()); // filter for module id=2
-LogBufferView logView(&log, input); 
+LogBufferView logView(&log, input);
 
 log.addInfo("init line 1");
 log.addInfo("init line 2");

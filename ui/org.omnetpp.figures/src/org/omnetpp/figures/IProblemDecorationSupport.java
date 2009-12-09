@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ public interface IProblemDecorationSupport {
 	/**
      * Display a "problem" image decoration on the submodule.
      * @param maxSeverity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
-     * @param textProvider callback to get the text to be displayed as a tooltip on hover event 
+     * @param textProvider callback to get the text to be displayed as a tooltip on hover event
      */
 	void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider);
 }

@@ -26,25 +26,25 @@ you need. (In most cases you don't need to change anything.)
 NOTE: If you want to build 64bit binaries, you should add the '-m64' option to
       the CFLAGS_RELEASE, CFLAGS_DEBUG and LDFLAGS variable in the configure.user
       file. Beacuse Tcl/Tk does ot have a 64 bit version you will be able to use
-      only Cmdenv (the command line environment). Set the NO_TCL=yes in configure.user 
+      only Cmdenv (the command line environment). Set the NO_TCL=yes in configure.user
       too.
-      
+
 For Mac OS X 10.5:
- 
-    1. Install XCode 3 on your machine 
-    2. ./configure 
-    3. make 
- 
+
+    1. Install XCode 3 on your machine
+    2. ./configure
+    3. make
+
 For Mac OS X 10.4:
 
-    1. Install XCode 2.5 on your machine 
-    2. Install fink on your machine (install required packages: at least  
-       bison 2.x must be present on your system) (XCode 2.x comes with bison 1.x) 
-    3. The default gcc 4.0.1 compiler will not work. Either upgrade to 4.2, or 
+    1. Install XCode 2.5 on your machine
+    2. Install fink on your machine (install required packages: at least
+       bison 2.x must be present on your system) (XCode 2.x comes with bison 1.x)
+    3. The default gcc 4.0.1 compiler will not work. Either upgrade to 4.2, or
        switch back to the 3.3 version (sudo gcc_select 3.3)
-    4. ./configure 
+    4. ./configure
     5. make
-      
+
 This will create both debug and release binaries.
 
 You should now test all samples and check they run correctly. As an example,
@@ -86,23 +86,23 @@ of the library and type:
     make clean
     make
 
-If you want to build ONLY release or debug builds use: 
+If you want to build ONLY release or debug builds use:
 (if MODE is not specified both debug and release will be created)
-   
-    make MODE=release
-    
-If you want to create static libraries use: 
-(by default shared libraries will be created)
-    
-    make SHARED_LIBS=no    
 
-NOTE: The built libraries and programs are immediately copied 
+    make MODE=release
+
+If you want to create static libraries use:
+(by default shared libraries will be created)
+
+    make SHARED_LIBS=no
+
+NOTE: The built libraries and programs are immediately copied
 to the lib/ and bin/ subdirs.
 
 
 4. Notes
 
-The Tcl/Tk environment is using the native Aqua version of Tcl/Tk, so you 
+The Tcl/Tk environment is using the native Aqua version of Tcl/Tk, so you
 will see native widgets. However, due to problems in the Tk/Aqua port,
 you may experience focus problems and other UI quirks. We are aware
 of these problems, but have not found a workaround yet.

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,7 +14,7 @@ import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.core.UIStep;
 
-public class TextEditorAccess extends EditorPartAccess 
+public class TextEditorAccess extends EditorPartAccess
 {
 	public TextEditorAccess(ITextEditor editorPart) {
 		super(editorPart);
@@ -61,7 +61,7 @@ public class TextEditorAccess extends EditorPartAccess
         String documentContent = getTextContent();
         Assert.assertTrue("editor content does not match", StringUtils.areEqualIgnoringWhiteSpace(documentContent, content));
     }
-    
+
     /**
      * Checks editor contents with regex match.
      * NOTE: this method is NOT equivalent to StyledText.assertContent, because

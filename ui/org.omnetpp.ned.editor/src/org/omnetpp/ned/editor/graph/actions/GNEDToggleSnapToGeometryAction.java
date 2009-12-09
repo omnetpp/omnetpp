@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,9 +19,9 @@ import org.omnetpp.ned.editor.NedEditorPreferenceInitializer;
  * Re-implementation of GEF ToggleSnapToGeometryAction to toggle the PROPERTY_SNAP_ENABLED property
  * on the graphical viewer. The GEF version had a bug as it never called setChecked on the action
  * resulting in missing notification. This caused the contributor items to get out of sync.
- * 
+ *
  * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=130728
- * 
+ *
  * @author rhornig
  */
 public class GNEDToggleSnapToGeometryAction extends Action {
@@ -32,7 +32,7 @@ public class GNEDToggleSnapToGeometryAction extends Action {
     public static final ImageDescriptor IMAGE = NedEditorPlugin.getImageDescriptor("icons/full/etool16/snaptogeometry.png");
 
     private GraphicalViewer diagramViewer;
-    
+
 
     /**
      * Constructor

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -33,7 +33,7 @@ public class StringUtils_ToInstanceName extends TestCase {
         check("TCP_SACK", "tcp_sack");
         check("TCP_Reno", "tcp_Reno");
     }
-    
+
     private static void check(String input, String expectedOutput) {
         String actualOutput = StringUtils.toInstanceName(input);
         assertEquals("StringUtils.tInstanceName: wrong output for "+input, expectedOutput, actualOutput);

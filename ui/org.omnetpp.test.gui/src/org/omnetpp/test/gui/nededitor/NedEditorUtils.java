@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -54,7 +54,7 @@ public class NedEditorUtils
     public static void setDefaultNedPath(String projectName) {
         setNedPath(projectName, null);
     }
-    
+
     public static void setNedPath(String projectName, String path) {
         ShellAccess shell = WorkbenchUtils.openProjectPropertiesFromProjectExplorerView(projectName);
         List<Control> trees = shell.collectDescendantControls(instanceOf(Tree.class));

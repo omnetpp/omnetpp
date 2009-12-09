@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -695,14 +695,14 @@ public class ColorFactory {
     }
 
     /**
-     * Returns a color from a color factory or defaultColor 
+     * Returns a color from a color factory or defaultColor
      * if value is invalid or a nonexistent color.
      */
     public static Color asColor(String value, Color defaultColor) {
     	Color color = asColor(value);
     	return color == null ? defaultColor : color;
     }
-    
+
     /**
      * @param value The colors id
      * @return a 16x16 rectangle image filled with the given color (or null, if color id is not valid)
@@ -778,7 +778,7 @@ public class ColorFactory {
         RGB black = new RGB(0, 0, 0);
         RGB color = ColorFactory.asRGB(colorId);
         PaletteData dataPalette;
-        
+
         if (color == null) {
         	if (createNullImage)
         		dataPalette = new PaletteData(new RGB[] { black, black});
@@ -798,7 +798,7 @@ public class ColorFactory {
             for (int x = 0; x < size; x++) {
                 if (x == 0 || y == 0 || x == end || y == end ||
                 	(color == null && (y == x || y == size - x - 1))) {
-                
+
                     data.setPixel(x + xoffset, y + yoffset, lineColor);
                 }
                 else {
@@ -809,7 +809,7 @@ public class ColorFactory {
 
         return data;
     }
-    
+
     /**
      * Creates an image without caching.
      * @param colorId the colorId

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -28,7 +28,7 @@ public class ScaveEditorUtils {
 
 	public static ScaveEditorAccess findScaveEditor(String analysisFile) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		MultiPageEditorPartAccess editor = workbenchWindow.findMultiPageEditorPartByTitle(analysisFile); 
+		MultiPageEditorPartAccess editor = workbenchWindow.findMultiPageEditorPartByTitle(analysisFile);
 		return editor instanceof ScaveEditorAccess ? (ScaveEditorAccess)editor : null;
 	}
 

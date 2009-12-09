@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -117,11 +117,11 @@ public class PropertySourceIO {
 				stack.push(propertySource);
 				return;
 			}
-	
+
 			descriptor = getDescriptor(qName);
 			if (descriptor == null)
 				throw new SAXException("Unexpected element: " + qName);
-	
+
 			value = null;
 			if (descriptor.getClass() == PropertyDescriptor.class) {
 				stack.push(propertySource);
@@ -147,7 +147,7 @@ public class PropertySourceIO {
 			 // ignore whitespace
 			if (stack.peek() != null)
 				return;
-	
+
 			String str = new String(ch, start, length);
 			value = PropertySourceIO.fromString(str, descriptor);
 		}

@@ -24,7 +24,7 @@
 ;;
 ;; This is a simple hack to allow syntax highlighting when editing
 ;; OMNeT++ .ned files with Emacs. It has been tested with Emacs 20.3.
-;; 
+;;
 ;; To make Emacs recognize .ned files put this in your .emacs:
 ;;
 ;; (autoload 'ned-mode "ned-mode" "Major Mode for editing Ned files" t)

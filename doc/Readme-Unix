@@ -62,7 +62,7 @@ NOTE: The IDE is supported ONLY on the following platforms:
 3. Reconfiguring the libraries
 
 If you need to recompile the OMNeT++ components with different flags (e.g.
-different optimization), then cd to the top-level omnetpp directory, edit 
+different optimization), then cd to the top-level omnetpp directory, edit
 configure.user accordingly, then say:
 
     ./configure
@@ -85,16 +85,16 @@ If you want to create static libraries use:
 
     make SHARED_LIBS=no
 
-NOTE: The built libraries and programs are immediately copied to the 
+NOTE: The built libraries and programs are immediately copied to the
 lib/ and bin/ subdirs.
 
 
 4. Portability issues
 
 OMNeT++ has been tested on Linux, but it should work on other Unixes too,
-although the IDE may not be supported. It probably makes things easier 
-if you have gcc and the usual GNU tools installed, but you should be 
-able to get along using other C++ compilers too. If you get it to work, 
+although the IDE may not be supported. It probably makes things easier
+if you have gcc and the usual GNU tools installed, but you should be
+able to get along using other C++ compilers too. If you get it to work,
 please send a mail to the mailing list!
 
 5. TIPS

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,7 +23,7 @@ public class ProjectTemplateStore {
     private List<IProjectTemplate> noncppTemplates = new ArrayList<IProjectTemplate>();
 
     public static final Image ICON_TEMPLATE = Activator.getCachedImage("icons/full/obj16/template.png");
-    
+
     public ProjectTemplateStore() {
         createTemplates();
     }
@@ -31,7 +31,7 @@ public class ProjectTemplateStore {
     public List<IProjectTemplate> getCppTemplates() {
         return cppTemplates;
     }
-    
+
     public List<IProjectTemplate> getNoncppTemplates() {
         return noncppTemplates;
     }
@@ -39,7 +39,7 @@ public class ProjectTemplateStore {
     protected void createTemplates() {
         final String DEFAULT_SRCFOLDER_OPTIONS = "--deep --meta:recurse --meta:auto-include-path --meta:export-library --meta:use-exported-libs";
         final String DEFAULT_ROOTFOLDER_OPTIONS = "--nolink --meta:recurse";
-        
+
         // non-C++ projects
         final String NONCPP_SINGLEDIR = "Single-directory project";
         noncppTemplates.add(new ProjectTemplate("Empty project", NONCPP_SINGLEDIR, null, ICON_TEMPLATE) {
@@ -78,7 +78,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
-                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});
                 createFileFromResource("package.ned", "templates/package.ned");
             }
         });
@@ -88,7 +88,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
-                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});
                 createFileFromResource("package.ned", "templates/package.ned");
                 createFileFromResource("Txc.ned", "templates/Txc.ned");
                 createFileFromResource("Txc.h", "templates/Txc.h");
@@ -103,7 +103,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
-                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});
                 createFileFromResource("package.ned", "templates/package.ned");
                 createFileFromResource("Source.ned", "templates/Source.ned");
                 createFileFromResource("Source.cc", "templates/Source.cc");
@@ -125,7 +125,7 @@ public class ProjectTemplateStore {
                 setVariable("simulationspackage", "");
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});
                 createFileFromResource("src/package.ned", "templates/package.ned");
                 createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
             }
@@ -136,7 +136,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
-                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createFileFromResource("src/package.ned", "templates/package.ned");
@@ -156,7 +156,7 @@ public class ProjectTemplateStore {
                 setVariable("simulationspackage", "{{rootpackage}}.simulations");
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});
                 createFileFromResource("src/package.ned", "templates/package.ned");
                 createFileFromResource("src/Source.ned", "templates/Source.ned");
                 createFileFromResource("src/Source.cc", "templates/Source.cc");
@@ -173,5 +173,5 @@ public class ProjectTemplateStore {
         //final String SRC_AND_EXAMPLES = "Project with \"src\" and \"examples\" folders";
         //TODO like the above!
     }
-    
+
 }

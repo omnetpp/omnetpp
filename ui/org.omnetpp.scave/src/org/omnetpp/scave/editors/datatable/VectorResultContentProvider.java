@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ import org.omnetpp.scave.engineext.IndexedVectorFileReaderEx;
 import org.omnetpp.scave.model2.ResultItemRef;
 
 /**
- * Implementation of the IVirtualTableContentProvider interface for 
+ * Implementation of the IVirtualTableContentProvider interface for
  * the table of vector data.
  *
  * @author tomi
@@ -58,7 +58,7 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 			else
 				return delta;
 		}
-		else 
+		else
 			return 0;
 	}
 
@@ -137,7 +137,7 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 				VectorResult vector = (VectorResult)item;
 				int vectorId = vector.getVectorId();
 				String filename = vector.getFileRun().getFile().getFileSystemFilePath();
-			
+
 				try {
 					reader = new IndexedVectorFileReaderEx(filename, vectorId);
 				}

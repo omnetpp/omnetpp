@@ -128,7 +128,7 @@
       <buildOutputProvider>
          <open/>
          <scannerInfoConsoleParser class="org.eclipse.cdt.make.internal.core.scannerconfig.gnu.GCCScannerInfoConsoleParser"/>
-      </buildOutputProvider>      
+      </buildOutputProvider>
       <scannerInfoProvider providerId="specsFile">
          <run
                command="gcc"
@@ -395,7 +395,7 @@
             sequence="M1+TAB">
       </key>
    </extension>
-   
+
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
@@ -414,5 +414,5 @@
          </description>
       </wizard>
    </extension>
-   
+
 </plugin>

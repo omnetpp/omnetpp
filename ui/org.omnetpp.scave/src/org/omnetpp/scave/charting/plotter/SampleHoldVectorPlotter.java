@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,7 +15,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
  * Sample-hold vector plotter
- * 
+ *
  * @author Andras
  */
 public class SampleHoldVectorPlotter extends VectorPlotter {
@@ -32,7 +32,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		if (n==0)
 			return;
 
-		// dataset index range to iterate over 
+		// dataset index range to iterate over
 		int[] range = indexRange(plot, series, gc, mapping);
 		int first = range[0], last = range[1];
 
@@ -63,9 +63,9 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		for (int i = first+1; i <= last; i++) {
 			double value = plot.transformY(dataset.getY(series, i));
 
-			// for testing: 
+			// for testing:
 			//if (i%5==0) value = 0.0/0.0; //NaN
-	
+
 			boolean isNaN = Double.isNaN(value); // see isNaN handling later
 
 			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
@@ -73,7 +73,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 
 			// for testing:
 			//if (i%5==1) x = prevX;
-	
+
 			if (x != prevX) {
 				if (!isNaN && backward) {
 					gc.setLineStyle(SWT.LINE_SOLID);
@@ -93,13 +93,13 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 						gc.drawLine(x, prevY, x, y); // vertical
 					}
 				}
-		
+
 				minY = maxY = y;
 			}
 			else if (!isNaN) {
 				// same x coord, only vertical line needs to be drawn
 				if (y < minY) {
-					gc.drawLine(x, minY, x, y);  // in lineDash(dots) mode 
+					gc.drawLine(x, minY, x, y);  // in lineDash(dots) mode
 					minY = y;
 				}
 				else if (y > maxY) {

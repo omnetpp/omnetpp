@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,8 +24,8 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
- * This class has one instance per NED text editor. It performs background NED parsing, 
- * and refreshes folding regions in the text editor. 
+ * This class has one instance per NED text editor. It performs background NED parsing,
+ * and refreshes folding regions in the text editor.
  *
  * @author andras
  */
@@ -42,7 +42,7 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 	}
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
-		// this method is not called, because reconciler is configured 
+		// this method is not called, because reconciler is configured
 		// to be a non-incremental reconciler in NedSourceViewerConfiguration
 		throw new IllegalStateException();
 	}
@@ -87,7 +87,7 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 			int startLine = element.getSourceRegion().getStartLine();
 			int endLine = element.getSourceRegion().getEndLine();
 			if (startLine != endLine) {
-				int startOffset = doc.getLineOffset(startLine - 1); 
+				int startOffset = doc.getLineOffset(startLine - 1);
 				int endOffset = doc.getLineOffset(endLine - 1 + 1);
 				posList.put(key, new Position(startOffset, endOffset - startOffset));
 			}

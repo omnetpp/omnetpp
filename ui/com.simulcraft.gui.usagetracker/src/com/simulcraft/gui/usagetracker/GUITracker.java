@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -16,7 +16,7 @@ import com.simulcraft.test.gui.recorder.JavaSequence;
 
 /**
  * Records user activities into the log, as Java code
- *   
+ *
  * @author Andras
  */
 public class GUITracker implements IGuiRecorderListener {

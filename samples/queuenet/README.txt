@@ -3,14 +3,14 @@ QueueNET & Queuinglib
 
 Queueinglib is a queuing network tutorial and queuing library for OMNeT++.
 It is the successor of the Queue, Queueing, Fifo samples from earlier
-versions of OMNeT++. It contains several basic building blocks in 
-a shared library that can be used to build more complex queueing theory 
+versions of OMNeT++. It contains several basic building blocks in
+a shared library that can be used to build more complex queueing theory
 related networks. Jobs are passed between these blocks.
 
-The QueueNET project demonstrates how to use an already existing model library 
+The QueueNET project demonstrates how to use an already existing model library
 (Queueinglib) from a different project. QueueNET contains no C++ code and
 uses only the building blocks (simple modules) provided by the queueinglib.
-The 'opp_run -l sharedlibname' command can be used to start simulations 
+The 'opp_run -l sharedlibname' command can be used to start simulations
 in shared libraries.
 
 Basic building blocks:
@@ -43,14 +43,14 @@ Basic building blocks:
 - PQueue
   A PassiveQueue without processing. Its output MUST be attached to a Server
   to be able to consume Jobs. Queue size can be limited and Jobs over
-  the size limit will be dropped (capacity). Queuing strategy can be set 
-  eiter to FIFO or LIFO. If more than one server is attached to the PQueue's 
-  output it uses the sendingAlgorithm parameter to decide where the newly 
+  the size limit will be dropped (capacity). Queuing strategy can be set
+  eiter to FIFO or LIFO. If more than one server is attached to the PQueue's
+  output it uses the sendingAlgorithm parameter to decide where the newly
   received Job should be sent. Gathers statistics like max, min, average
   queue length. Average queuing time.
 
 - Server
-  A Job processing unit. Only PQueue-s should be attached to its input. If 
+  A Job processing unit. Only PQueue-s should be attached to its input. If
   more than one PQueue is attached 'fetchingStrategy' is used to decide which
   queue is queried if the Server becomes idle. 'serviceTime' should be set
   to define how Jobs are processed by the Server.
@@ -75,7 +75,7 @@ QueueNET - queuinglib examples
   Several servers connected to each other in a row.
 
 - A closed queuing network (ring)
-  Several servers connected in a ring. Demonstrates how to inject Jobs into 
+  Several servers connected in a ring. Demonstrates how to inject Jobs into
   a queue.
 
 - Airport Terminal
@@ -83,6 +83,6 @@ QueueNET - queuinglib examples
 
 - Call Center
   An example demonstrating a call center where incoming calls are categorized
-  and routed to different queues based on user selecion. Operators are 
+  and routed to different queues based on user selecion. Operators are
   processing either one or more queues. After speaking with an operator a
   customer may be re-routed to a different queue.

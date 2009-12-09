@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
  * Declares utility functions for subclasses
- * 
+ *
  * @author andras
  */
 public abstract class VectorPlotter implements IVectorPlotter {
@@ -57,7 +57,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		double lo = mapping.fromCanvasY(clip.y + clip.height + extra);
 		return new double[] {lo, hi};
 	}
-	              
+
 	/**
 	 * Utility function to plot the symbols
 	 */
@@ -65,7 +65,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		if (symbol == null)
 			return;
 
-		// dataset index range to iterate over 
+		// dataset index range to iterate over
 		IXYDataset dataset = plot.getDataset();
 		int[] range = indexRange(plot, series, gc, mapping);
 		int first = range[0], last = range[1];
@@ -84,13 +84,13 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		int prevCanvasX = Integer.MIN_VALUE;
 		for (int i = first; i <= last; i++) {
 			double y = plot.transformY(dataset.getY(series, i));
-			if (y < lo || y > hi || Double.isNaN(y))  // even skip coord transform for off-screen values 
+			if (y < lo || y > hi || Double.isNaN(y))  // even skip coord transform for off-screen values
 				continue;
-	
+
 			double x = plot.transformX(dataset.getX(series, i));
 			int canvasX = mapping.toCanvasX(x);
 			int canvasY = mapping.toCanvasY(y);
-	
+
 			if (prevCanvasX != canvasX) {
 				yset.clear();
 				prevCanvasX = canvasX;

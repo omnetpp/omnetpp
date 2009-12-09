@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,14 +21,14 @@ public interface IConnectableElement extends IHasName, IHasGates, IHasDisplayStr
      * Returns the typeinfo for the effective type.
      *
      * Returns null if the effective type is not filled in, or is not a valid NED type,
-     * or not a type that's accepted at the given place (e.g. a channel for submodule type). 
+     * or not a type that's accepted at the given place (e.g. a channel for submodule type).
      */
     public INEDTypeInfo getNEDTypeInfo();
 
     /**
-     * Returns ALL VALID connections contained in / and inherited by 
-     * this module where this module is the source. 
-     * 
+     * Returns ALL VALID connections contained in / and inherited by
+     * this module where this module is the source.
+     *
      * IMPORTANT: Cannot use this method to get the connections inside a compound module
      * where this module is an inherited submodule! The returned list won't contain
      * connections added in the derived compound module. Use editparts instead.
@@ -36,9 +36,9 @@ public interface IConnectableElement extends IHasName, IHasGates, IHasDisplayStr
     public List<ConnectionElementEx> getSrcConnections();
 
     /**
-     * Returns ALL VALID connections contained in / and inherited by 
+     * Returns ALL VALID connections contained in / and inherited by
      * this module where this module is the destination.
-     * 
+     *
      * IMPORTANT: Cannot use this method to get the connections inside a compound module
      * where this module is an inherited submodule! The returned list won't contain
      * connections added in the derived compound module. Use editparts instead.

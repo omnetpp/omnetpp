@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
  */
 // TODO handling of subgates $i and $o is missing
 public class ReconnectCommand extends Command {
-    
+
     // contains the provided original ConnectionElement
     protected ConnectionElementEx modelConn;
     protected ConnectionElementEx oldConn;
@@ -33,20 +33,20 @@ public class ReconnectCommand extends Command {
      */
     public ReconnectCommand(ConnectionElementEx conn, boolean destIsConnecting) {
         Assert.isNotNull(conn, "Connection must be specified");
-        
+
         this.modelConn = conn;
         this.isDestReconnect = destIsConnecting;
         templateConn = (ConnectionElementEx)conn.dup();
         setLabel("Reconnect");
     }
-    
+
 
     @Override
     public void execute() {
         oldConn = (ConnectionElementEx)modelConn.dup();
         redo();
     }
-    
+
     @Override
     public void redo() {
         copyConn(templateConn, modelConn);
@@ -91,7 +91,7 @@ public class ReconnectCommand extends Command {
     }
 
     /**
-     * Tells whether the command reconnects the destination side of the connection 
+     * Tells whether the command reconnects the destination side of the connection
      */
     public boolean isDestReconnect() {
         return isDestReconnect;

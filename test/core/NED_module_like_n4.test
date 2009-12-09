@@ -9,11 +9,11 @@ moduleinterface IModule
         output out;
 }
 
-module Foo like IModule 
+module Foo like IModule
 {
 }
 
-network Test 
+network Test
 {
 }
 

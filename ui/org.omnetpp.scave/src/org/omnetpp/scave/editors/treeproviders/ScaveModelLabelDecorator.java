@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -113,7 +113,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
                         new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) {
                                 // we are interested only in marker annotation changes
-                                if ((delta.getFlags() & IResourceDelta.MARKERS) != 0 && 
+                                if ((delta.getFlags() & IResourceDelta.MARKERS) != 0 &&
                                 		delta.getResource() instanceof IFile) {
                                 	someMarkerChanged[0] = true;
                                 }

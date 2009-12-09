@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -98,17 +98,17 @@ public class CsvExportWizard extends AbstractExportWizard {
 			group.setText("Output files");
 			group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			group.setLayout(new GridLayout(1, false));
-	
-			fileSelectionPanel = 
+
+			fileSelectionPanel =
 				new FileSelectionPanel(group, SWT.NONE, "Base file name:", SWT.SAVE, "Save to file",
 						getFileDialogFilterExtensions());
 			fileSelectionPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			setControl(fileSelectionPanel);
-	
+
 			Label label = new Label(group, SWT.WRAP);
 			label.setText("When several files are generated the file names are formed by appending '-1','-2',... to the base file name.");
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	
+
 			fileSelectionPanel.addPropertyChangeListener(new IPropertyChangeListener() {
 				public void propertyChange(PropertyChangeEvent event) {
 					if (FileSelectionPanel.PROP_FILENAME.equals(event.getProperty()))
@@ -164,7 +164,7 @@ public class CsvExportWizard extends AbstractExportWizard {
 		public String getEOL() {
 			String text = eolCombo.getText();
 			if ("CR LF".equals(text))
-				return "\r\n"; 
+				return "\r\n";
 			else if ("CR".equals(text))
 				return "\r";
 			else if ("LF".equals(text))

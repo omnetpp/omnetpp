@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -41,7 +41,7 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     protected boolean calculateEnabled() {
         if (getSelectedObjects().size() == 1 && getSelectedObjects().get(0) instanceof INedModelProvider) {
            INEDElement element = ((INedModelProvider)getSelectedObjects().get(0)).getNedModel();
-           return element instanceof IHasParameters && 
+           return element instanceof IHasParameters &&
                element.getConsistencyProblemMaxCumulatedSeverity() == NEDElement.SEVERITY_NONE &&
                element.getSyntaxProblemMaxCumulatedSeverity() == NEDElement.SEVERITY_NONE;
         }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -31,7 +31,7 @@ abstract public class NedBasePropertySource implements IPropertySource2 {
     public Object getPropertyValue(Object id) {
         return "";
     }
-    
+
     public boolean isPropertyResettable(Object id) {
         return false;
     }

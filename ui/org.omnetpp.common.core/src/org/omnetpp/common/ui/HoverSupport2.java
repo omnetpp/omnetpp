@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -37,15 +37,15 @@ import org.eclipse.swt.widgets.Shell;
  *
  * This class uses keyboard/mouse listeners added to the widget ONLY. It has limitations,
  * e.g. tooltips that appear during cell editing/content assist don't go away
- * on user typing etc. Another flavor of this class, HoverSupport, uses global 
- * event filters  to circumvent this problem, which however might a bit too strong 
+ * on user typing etc. Another flavor of this class, HoverSupport, uses global
+ * event filters  to circumvent this problem, which however might a bit too strong
  * and potentially dangerous.
- * 
+ *
  * @author Andras
  */
 public class HoverSupport2 {
     // Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
-    private static final String HTML_PROLOG = 
+    private static final String HTML_PROLOG =
         "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
         "/* Font definitions*/\n" +
         "html   { font-family: 'Tahoma',sans-serif; font-size: 8pt; font-style: normal; font-weight: normal; }\n" +
@@ -76,14 +76,14 @@ public class HoverSupport2 {
         "em        { font-style: italic; }\n" +
         "var       { font-style: italic; }\n" +
         "th        { font-weight: bold; }\n" +
-        "</style></head>\n" + 
+        "</style></head>\n" +
         "<body text=\"#000000\" bgcolor=\"#ffffe1\">\n";
-    private static final String HTML_EPILOG = 
+    private static final String HTML_EPILOG =
         "</body></html>\n";
 
     protected AllInOneListener eventListener = new AllInOneListener();
 	protected IHoverTextProvider defaultHoverTextProvider = null;
-	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>(); 
+	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>();
 	protected Point hoverSizeConstaints = new Point(320, 200);
 
 	protected IInformationControl hoverControl;
@@ -177,7 +177,7 @@ public class HoverSupport2 {
 	}
 
 	/**
-	 * Removes hover support from the given control. This does NOT need to 
+	 * Removes hover support from the given control. This does NOT need to
 	 * be called when the widget gets disposed, because this class listens on
 	 * widgetDisposed() automatically.
 	 */
@@ -216,7 +216,7 @@ public class HoverSupport2 {
 
 	/**
 	 * Makes the currently displayed hover "sticky". This is the method to be called
-	 * from the hander of the SHOW_INFORMATION command (bound to "F2" by default). 
+	 * from the hander of the SHOW_INFORMATION command (bound to "F2" by default).
 	 */
 	public void makeHoverSticky() {
 		removeHover();
@@ -233,8 +233,8 @@ public class HoverSupport2 {
 			informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
 			configureControl(informationControl, hoverText, p);
 			informationControl.setFocus();
-	
-			// it should close on losing the focus 
+
+			// it should close on losing the focus
 			informationControl.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent e) {
 					informationControl = null;

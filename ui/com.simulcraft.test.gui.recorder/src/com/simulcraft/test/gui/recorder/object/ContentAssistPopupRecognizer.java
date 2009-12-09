@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,7 +15,7 @@ import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.JavaSequence;
 
 public class ContentAssistPopupRecognizer extends ObjectRecognizer {
-    
+
     public ContentAssistPopupRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
@@ -35,7 +35,7 @@ public class ContentAssistPopupRecognizer extends ObjectRecognizer {
         Composite grandParent = parent == null ? null : parent.getParent();
         if (parent.getClass() == Shell.class && parent.getChildren().length == 1)
             shell = (Shell)parent;
-        if (parent.getClass() == Composite.class && parent.getChildren().length == 1 && 
+        if (parent.getClass() == Composite.class && parent.getChildren().length == 1 &&
             grandParent.getClass() == Shell.class && grandParent.getChildren().length == 1)
             shell = (Shell)grandParent;
         return shell != null;

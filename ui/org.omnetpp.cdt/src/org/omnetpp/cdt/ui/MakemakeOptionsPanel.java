@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -67,7 +67,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * UI for editing MakemakeOptions.
- * 
+ *
  * @author Andras
  */
 //XXX kezzel beirt -D elveszik!!! ezek szinten: defaultMode, exceptSubdirs, includeDirs, libDirs, defines, makefileDefines. Store them separately!
@@ -136,7 +136,7 @@ public class MakemakeOptionsPanel extends Composite {
     private FileListControl makefileVariables;
     private Text makefragText;
     private Text makefragvcText;
-    private ToggleLink customPageToggle; 
+    private ToggleLink customPageToggle;
     private FileListControl makefragsList;
 
     // "Preview" page
@@ -203,11 +203,11 @@ public class MakemakeOptionsPanel extends Composite {
         Label submakeDirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         submakeDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
         scopePageToggle = createToggleLink(scopePage, new Control[] {submakeDirsLabel, submakeDirsList.getListControl().getParent()});
-        
+
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include Path", 1);
-        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all source folders under this deep makefile", null); 
+        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all source folders under this deep makefile", null);
         autoIncludePathCheckbox = createCheckbox(includeGroup, "Automatically add other folders where included files are located", "This project and its referenced projects are considered.");
         Link pathsPageLink1 = createLink(includeGroup, "NOTE: Additional include directories can be specified in the <A>Paths and symbols</A> page.");
 
@@ -223,7 +223,7 @@ public class MakemakeOptionsPanel extends Composite {
         setColumnSpan(dllHelpLink, 2);
         compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines the FOO_EXPORT macro, where FOO is the DLL export/import symbol");
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-        dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros"); 
+        dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros");
         Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and symbols</A> page.");
 
         // "Link" page
@@ -326,7 +326,7 @@ public class MakemakeOptionsPanel extends Composite {
     protected void setColumnSpan(Control control, int columnSpan) {
         ((GridData)control.getLayoutData()).horizontalSpan = columnSpan;
     }
-    
+
     protected Group createGroup(Composite composite, String text, int numColumns) {
         Group group = new Group(composite, SWT.NONE);
         group.setText(text);
@@ -445,7 +445,7 @@ public class MakemakeOptionsPanel extends Composite {
         useExportedLibsCheckbox.addSelectionListener(selectionChangeListener);
         libsList.addChangeListener(fileListChangeListener);
         linkObjectsList.addChangeListener(fileListChangeListener);
-        
+
         makefileVariables.addChangeListener(fileListChangeListener);
 
         makefragText.addModifyListener(modifyListener);
@@ -470,7 +470,7 @@ public class MakemakeOptionsPanel extends Composite {
 
     /**
      * Set the makemake options to be edited. Note: buildSpec will NOT be modified;
-     * to store the results, the user has to obtain the new options with getResult(), 
+     * to store the results, the user has to obtain the new options with getResult(),
      * and set it back on the buildSpec.
      */
     public void populate(IContainer folder, BuildSpecification buildSpec) {
@@ -505,7 +505,7 @@ public class MakemakeOptionsPanel extends Composite {
         targetExecutableRadioButton.setSelection(options.type==Type.EXE);
         targetSharedLibRadioButton.setSelection(options.type==Type.SHAREDLIB);
         targetStaticLibRadioButton.setSelection(options.type==Type.STATICLIB);
-        targetCompileOnlyRadioButton.setSelection(options.type==Type.NOLINK); 
+        targetCompileOnlyRadioButton.setSelection(options.type==Type.NOLINK);
 
         defaultTargetNameRadionButton.setSelection(StringUtils.isEmpty(options.target));
         defaultTargetNameRadionButton.setText("Default: " + folder.getProject().getName());
@@ -534,7 +534,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Variables" page
         makefileVariables.setList(options.makefileVariables.toArray(new String[]{}));
-        
+
         // "Custom" page
         // Note: makefrag texts need to be set differently
         makefragsList.setList(options.fragmentFiles.toArray(new String[]{}));
@@ -579,7 +579,7 @@ public class MakemakeOptionsPanel extends Composite {
 
                 // clear checkboxes that do not apply to the given target type
                 // NOTE: we don't do it, because we'd lose settings when user
-                // selects a different radio button then the original one 
+                // selects a different radio button then the original one
                 //if (type!=Type.STATICLIB && type!=Type.SHAREDLIB)
                 //    exportLibraryCheckbox.setSelection(false);
                 //if (type!=Type.EXE && type!=Type.SHAREDLIB) {
@@ -622,7 +622,7 @@ public class MakemakeOptionsPanel extends Composite {
                     tempBuildSpec.setMakemakeOptions(folder, updatedOptions);
                     final String translatedOptions = MetaMakemake.translateOptions(folder, tempBuildSpec, configuration).toString();
 
-                    // display result if it's still relevant 
+                    // display result if it's still relevant
                     if (jobSerial == thisJobSerial) {
                         Display.getDefault().asyncExec(new Runnable() {
                             public void run() {
@@ -732,12 +732,12 @@ public class MakemakeOptionsPanel extends Composite {
         String makefragvcContents = readMakefrag(folder, MAKEFRAGVC_FILENAME);
         makefragvcText.setText(StringUtils.nullToEmpty(makefragvcContents));
     }
-    
+
     public void saveMakefragFiles() throws CoreException {
         saveMakefrag(folder, MAKEFRAG_FILENAME, getMakefragContents());
         saveMakefrag(folder, MAKEFRAGVC_FILENAME, getMakefragvcContents());
     }
-    
+
     protected String readMakefrag(IContainer sourceFolder, String makefragFilename) throws CoreException  {
         IFile makefragFile = sourceFolder.getFile(new Path(makefragFilename));
         if (makefragFile.exists()) {
@@ -775,38 +775,38 @@ public class MakemakeOptionsPanel extends Composite {
         IStatus status = new Status(IMarker.SEVERITY_ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
         ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
     }
-    
+
     protected String getHelpTextForBuildingDLLs() {
-        return 
-        "Unlike Linux shared libraries which can be built from any C/C++ code,\n" + 
-        "Windows has special rules for code that goes into DLLs.\n" + 
-        "When a DLL is built, all symbols (functions, global variables, etc.)\n" + 
-        "that you want to expose as C/C++ API to users of your DLL need to be\n" + 
-        "marked with the <tt>__declspec(dllexport)</tt> qualifier.\n" + 
-        "Likewise, when you refer a symbol (function, variable, etc) that\n" + 
-        "comes from a DLL, the C/C++ declaration of that symbol needs to be\n" + 
-        "annotated with <tt>__declspec(dllimport)</tt>.\n" + 
-        "\n" + 
-        "<p>\n" + 
-        "In OMNeT++, we introduce a convention to automate the process\n" + 
-        "as far as possible, using macros. To build a DLL, you need to pick\n" + 
-        "a short name for it, say <tt>FOO</tt>, and add the following code\n" + 
-        "to a header file (say <tt>foodefs.h</tt>):\n" + 
-        "\n" + 
-        "<pre>\n" + 
-        "#include &lt;omnetpp.h&gt;\n" + 
-        "\n" + 
-        "#if defined(FOO_EXPORT)\n" + 
-        "#  define FOO_API OPP_DLLEXPORT\n" + 
-        "#elif defined(FOO_IMPORT)\n" + 
-        "#  define FOO_API OPP_DLLIMPORT\n" + 
-        "#else\n" + 
-        "#  define FOO_API\n" + 
-        "#endif\n" + 
-        "</pre>\n" + 
-        "\n" + 
-        "<p>\n" + 
-        "Then you need to include <tt>foodefs.h</tt> into all your header files, and\n" + 
+        return
+        "Unlike Linux shared libraries which can be built from any C/C++ code,\n" +
+        "Windows has special rules for code that goes into DLLs.\n" +
+        "When a DLL is built, all symbols (functions, global variables, etc.)\n" +
+        "that you want to expose as C/C++ API to users of your DLL need to be\n" +
+        "marked with the <tt>__declspec(dllexport)</tt> qualifier.\n" +
+        "Likewise, when you refer a symbol (function, variable, etc) that\n" +
+        "comes from a DLL, the C/C++ declaration of that symbol needs to be\n" +
+        "annotated with <tt>__declspec(dllimport)</tt>.\n" +
+        "\n" +
+        "<p>\n" +
+        "In OMNeT++, we introduce a convention to automate the process\n" +
+        "as far as possible, using macros. To build a DLL, you need to pick\n" +
+        "a short name for it, say <tt>FOO</tt>, and add the following code\n" +
+        "to a header file (say <tt>foodefs.h</tt>):\n" +
+        "\n" +
+        "<pre>\n" +
+        "#include &lt;omnetpp.h&gt;\n" +
+        "\n" +
+        "#if defined(FOO_EXPORT)\n" +
+        "#  define FOO_API OPP_DLLEXPORT\n" +
+        "#elif defined(FOO_IMPORT)\n" +
+        "#  define FOO_API OPP_DLLIMPORT\n" +
+        "#else\n" +
+        "#  define FOO_API\n" +
+        "#endif\n" +
+        "</pre>\n" +
+        "\n" +
+        "<p>\n" +
+        "Then you need to include <tt>foodefs.h</tt> into all your header files, and\n" +
         "annotate public symbols in them with <tt>FOO_API</tt>. Also, insert the following in" +
         " your .msg files: \n" +
         "<pre>\n" +
@@ -814,28 +814,28 @@ public class MakemakeOptionsPanel extends Composite {
         "  #include \"foodefs.h\"\n" +
         "}}\n" +
         "</pre>\n" +
-        "<p>\n" + 
-        "When building the DLL, OMNeT++-generated makefiles will ensure that <tt>FOO_EXPORT</tt> is\n" + 
-        "defined, and so <tt>FOO_API</tt> becomes <tt>__declspec(dllexport)</tt>.\n" + 
-        "Likewise, when you use the DLL from external code, the makefile will define\n" + 
-        "<tt>FOO_IMPORT</tt>, causing <tt>FOO_API</tt> to become\n" + 
-        "<tt>__declspec(dllimport)</tt>. In all other cases, for example when compiling on\n" + 
-        "Linux, <tt>FOO_API</tt> will be empty.\n" + 
-        "\n" + 
-        "<p>\n" + 
-        "Here\'s how to annotate classes, functions and global variables:\n" + 
-        "\n" + 
-        "<pre>\n" + 
-        "class FOO_API SomeClass {\n" + 
-        "  ...\n" + 
-        "};\n" + 
-        "\n" + 
-        "int FOO_API someFunction(double a, int b);\n" + 
-        "\n" + 
-        "extern int FOO_API globalVariable; //note: global variables are discouraged\n" + 
+        "<p>\n" +
+        "When building the DLL, OMNeT++-generated makefiles will ensure that <tt>FOO_EXPORT</tt> is\n" +
+        "defined, and so <tt>FOO_API</tt> becomes <tt>__declspec(dllexport)</tt>.\n" +
+        "Likewise, when you use the DLL from external code, the makefile will define\n" +
+        "<tt>FOO_IMPORT</tt>, causing <tt>FOO_API</tt> to become\n" +
+        "<tt>__declspec(dllimport)</tt>. In all other cases, for example when compiling on\n" +
+        "Linux, <tt>FOO_API</tt> will be empty.\n" +
+        "\n" +
+        "<p>\n" +
+        "Here\'s how to annotate classes, functions and global variables:\n" +
+        "\n" +
+        "<pre>\n" +
+        "class FOO_API SomeClass {\n" +
+        "  ...\n" +
+        "};\n" +
+        "\n" +
+        "int FOO_API someFunction(double a, int b);\n" +
+        "\n" +
+        "extern int FOO_API globalVariable; //note: global variables are discouraged\n" +
         "</pre>\n" +
         "If you have 3rd-party DLLs which use a different convention to handle " +
         "dllexport/dllimport, you need to manually specify the corresponding " +
-        "macros on the \"Paths and symbols\" page of the project properties dialog."; 
+        "macros on the \"Paths and symbols\" page of the project properties dialog.";
     }
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,7 +21,7 @@ public class StringUtils_normalizeWhiteSpace extends TestCase {
         check("\n  foo \n\n  bar     baz\n\n\n \n", "foo\nbar baz");
         check("\t  foo \n\t\n  bar \t    baz\n\n", "foo\nbar baz");
     }
-    
+
     private static void check(String input, String expectedOutput) {
         String actualOutput = StringUtils.normalizeWhiteSpace(input);
         assertEquals("StringUtils.normalizeWhiteSpace: wrong output for "+input, expectedOutput, actualOutput);

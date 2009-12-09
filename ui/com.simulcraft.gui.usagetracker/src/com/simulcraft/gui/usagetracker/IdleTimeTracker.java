@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,7 +15,7 @@ import org.omnetpp.common.util.DisplayUtils;
 
 /**
  * Records user idle periods into the log.
- *   
+ *
  * @author Andras
  */
 public class IdleTimeTracker implements Listener {
@@ -24,10 +24,10 @@ public class IdleTimeTracker implements Listener {
     protected long startActivityTimeMillis;
     protected long lastActivityTimeMillis;
     protected long idleThresholdSeconds = 60;
-    
+
     public IdleTimeTracker() {
     }
-    
+
     public void hookListeners() {
         // We must ensure our listener runs before the key binding service. Otherwise we'll miss all hotkeys.
         for (int eventType : eventTypes)
