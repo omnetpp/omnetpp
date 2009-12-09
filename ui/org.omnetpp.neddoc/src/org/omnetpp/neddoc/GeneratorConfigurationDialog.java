@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -117,7 +117,7 @@ public class GeneratorConfigurationDialog
                 return ((IProject)element).getName();
             }
         });
-        
+
         selectedProjects.addCheckStateListener(new ICheckStateListener() {
             public void checkStateChanged(CheckStateChangedEvent event) {
                 setOkButtonEnabled();
@@ -139,7 +139,7 @@ public class GeneratorConfigurationDialog
 
         createProjectListButtons(container);
     }
-    
+
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         super.createButtonsForButtonBar(parent);
@@ -173,11 +173,11 @@ public class GeneratorConfigurationDialog
                     IProject selectedProject = (IProject)structuredSelection.getFirstElement();
                     if (selectedProject != null) {
                         addReferencedProjects(selectedProject, referencedProjects);
-    
+
                         // keep old selection
                         for (Object project : selectedProjects.getCheckedElements())
                             referencedProjects.add((IProject)project);
-    
+
                         selectedProjects.setCheckedElements(referencedProjects.toArray());
                         setOkButtonEnabled();
                     }

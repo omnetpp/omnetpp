@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,14 +20,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /**
  * A FormToolkit which also configures the colors of CTabFolder tabs.
  * (By default, both selected and unselected tabs are white).
- * 
+ *
  * @author Andras
  */
 public class FormToolkit2 extends FormToolkit {
     public FormToolkit2(Display display) {
         super(display);
     }
-    
+
     public FormToolkit2(FormColors colors) {
         super(colors);
     }

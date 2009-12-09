@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.omnetpp.common.color.ColorFactory;
 public class ColorPropertyDescriptor extends PropertyDescriptor {
     /**
      * Creates an property descriptor with the given id and display name.
-     * 
+     *
      * @param id the id of the property
      * @param displayName the name to display for the property
      */
@@ -30,7 +30,7 @@ public class ColorPropertyDescriptor extends PropertyDescriptor {
     }
 
     /**
-     * The <code>ColorPropertyDescriptor</code> implementation of this 
+     * The <code>ColorPropertyDescriptor</code> implementation of this
      * <code>IPropertyDescriptor</code> method creates and returns a new
      * <code>ColorCellEditor</code>.
      * <p>

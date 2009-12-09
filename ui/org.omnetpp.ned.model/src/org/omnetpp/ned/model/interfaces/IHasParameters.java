@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,18 +22,18 @@ public interface IHasParameters extends INEDElement {
 
 	/**
      * Returns the name - parameter node association. The returned map must not be modified.
-     * 
+     *
      * "Best-Effort": This method never returns null, but the returned list
-     * may be incomplete if some NED type is incorrect, missing, or duplicate. 
+     * may be incomplete if some NED type is incorrect, missing, or duplicate.
      */
     public Map<String, ParamElementEx> getParamDeclarations();
 
     /**
      * Returns the name - parameter node association where the last parameter - value
      * assignment was done. The returned map must not be modified.
-     * 
+     *
      * "Best-Effort": This method never returns null, but the returned list
-     * may be incomplete if some NED type is incorrect, missing, or duplicate. 
+     * may be incomplete if some NED type is incorrect, missing, or duplicate.
      */
     public Map<String, ParamElementEx> getParamAssignments();
 

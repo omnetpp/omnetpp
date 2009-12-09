@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -50,7 +50,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
-    
+
     /**
      * Returns either the module name or "" if the module is a compound
      */
@@ -59,7 +59,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
             return "";
         return connectable.getName();
     }
-    
+
 	// called during connection creation on the first click
 	@Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
@@ -99,7 +99,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         // allow the reconnection only inside the same compound module
         if (srcEP.getCompoundModulePart() != targetEP.getCompoundModulePart())
             return UnexecutableCommand.INSTANCE;
-        
+
         ConnectionElementEx conn = (ConnectionElementEx)request.getConnectionEditPart().getModel();
         ReconnectCommand command = new ReconnectCommand(conn, false);
         command.getTemplateConnection().setSrcModule(getModuleNameForConnection(getGraphNodeModel()));

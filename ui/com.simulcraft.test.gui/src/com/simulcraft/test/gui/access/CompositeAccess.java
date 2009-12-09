@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -66,7 +66,7 @@ public class CompositeAccess extends ControlAccess
 				}
 				return false;
 			}
-		
+
 			@Override
 			public String toString() {
 			    return "button with label '"+label+"'";
@@ -102,7 +102,7 @@ public class CompositeAccess extends ControlAccess
 				}
 				return false;
 			}
-            
+
 			@Override
             public String toString() {
                 return "button with label '"+label+"'";
@@ -205,7 +205,7 @@ public class CompositeAccess extends ControlAccess
     public ControlAccess findControlWithID(String id) {
         return (ControlAccess)createAccess(findDescendantControl(Predicate.hasID(id)));
     }
-    
+
     @UIStep
     public ToolItemAccess findToolItemWithTooltip(final String toolTip) {
         ToolBar toolBar = (ToolBar)findDescendantControl(new IPredicate() {
@@ -217,7 +217,7 @@ public class CompositeAccess extends ControlAccess
                 }
                 return false;
             }
-            
+
             public String toString() {
                 return "a ToolItem with tool tip: " + toolTip;
             }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,15 +40,15 @@ public class RandomTest
 {
     private static long SECOND = 1000;
     private static long MINUTE = SECOND * 60;
-    
+
     private static boolean debug = true;
-    
+
     private long testMillis;
 
     private Random random = new Random(0);
-    
+
     private SequenceChart control;
-    
+
     private boolean showGUI;
 
     public RandomTest() {
@@ -68,7 +68,7 @@ public class RandomTest
         if (showGUI)
             openFileFromProjectExplorerViewInSequenceChartEditor();
     }
-    
+
     public void testRandom() {
         if (debug)
             System.out.println("Started testing, file name: " + fileName);
@@ -107,7 +107,7 @@ public class RandomTest
             if (!showGUI)
                 paint();
         }
-        
+
         if (debug)
             System.out.println("Finished testing, file name: " + fileName + " Paint count: " + count);
     }
@@ -115,7 +115,7 @@ public class RandomTest
     @UIStep
     private void initialize() {
         if (showGUI)
-            control = findSequenceChart().getControl();            
+            control = findSequenceChart().getControl();
         else
         {
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
@@ -138,7 +138,7 @@ public class RandomTest
         NullGraphics graphics = new NullGraphics();
         graphics.setClip(new Rectangle(0, 0, 1000, 1000));
         control.paintArea(graphics);
-        
+
         if (debug)
             System.out.println("Draw called " + graphics.getDrawCount() + " times");
     }
@@ -210,7 +210,7 @@ public class RandomTest
                         if (debug)
                             System.out.println("Setting zoom level to default");
 
-                        control.defaultZoom(); 
+                        control.defaultZoom();
                     }}
             });
     }
@@ -218,7 +218,7 @@ public class RandomTest
     @UIStep
     private void doRandomAxisOrdering() {
         AxisOrderingMode axisOrderingMode = AxisOrderingMode.values()[random.nextInt(AxisOrderingMode.values().length)];
-        
+
         if (debug)
             System.out.println("Changing ordering mode to " + axisOrderingMode.name());
 
@@ -250,37 +250,37 @@ public class RandomTest
                 int lastMessageId = lastEvent.getMessageId();
                 double lastSimulationTime = lastEvent.getSimulationTime().doubleValue();
                 EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
-                
+
                 // range filter
                 filterParameters.enableRangeFilter = random.nextBoolean();
-                
+
                 if (filterParameters.enableRangeFilter) {
                     boolean enable = random.nextBoolean();
-    
+
                     // event number range
                     filterParameters.enableEventNumberFilter = enable;
                     filterParameters.lowerEventNumberLimit = random.nextInt(lastEventNumber);
                     filterParameters.upperEventNumberLimit = filterParameters.lowerEventNumberLimit + random.nextInt(lastEventNumber - (int)filterParameters.lowerEventNumberLimit);
-    
+
                     // simulation time range
                     filterParameters.enableEventNumberFilter = !enable;
                     filterParameters.lowerSimulationTimeLimit = new BigDecimal(random.nextDouble() * lastSimulationTime);
                     filterParameters.upperSimulationTimeLimit = filterParameters.lowerSimulationTimeLimit.add(new BigDecimal(random.nextDouble() * (lastSimulationTime - filterParameters.lowerSimulationTimeLimit.doubleValue())));
                 }
-    
+
                 // module filter
                 filterParameters.enableModuleFilter = random.nextBoolean();
-                
+
                 if (filterParameters.enableModuleFilter) {
                     boolean enable = random.nextBoolean();
-    
+
                     // module id filter
                     filterParameters.enableModuleIdFilter = enable;
                     count = random.nextInt(eventLog.getNumModuleCreatedEntries()) + 1;
                     filterParameters.moduleIds = new int[count];
                     for (int i = 0; i < count; i++)
                         filterParameters.moduleIds[i] = random.nextInt(eventLog.getNumModuleCreatedEntries());
-                    
+
                     // module type filter
                     filterParameters.enableModuleNEDTypeNameFilter = !enable;
                     count = random.nextInt(5) + 1;
@@ -291,20 +291,20 @@ public class RandomTest
                         filterParameters.moduleNEDTypeNames[i] = moduleCreatedEntries.get(index).getNedTypeName();
                     }
                 }
-    
+
                 // message filter
                 filterParameters.enableMessageFilter = random.nextBoolean();
-    
+
                 if (filterParameters.enableMessageFilter) {
                     boolean enable = random.nextBoolean();
-    
+
                     // message encapsulation tree id
                     filterParameters.enableMessageEncapsulationTreeIdFilter = enable;
                     count = random.nextInt(100) + 1;
                     filterParameters.messageEncapsulationTreeIds = new EventLogFilterParameters.EnabledInt[count];
                     for (int i = 0; i < count; i++)
                         filterParameters.messageEncapsulationTreeIds[i] = new EventLogFilterParameters.EnabledInt(true, random.nextInt(lastMessageId));
-                    
+
                     // message class name filter
                     filterParameters.enableMessageClassNameFilter = !enable;
                     PStringVector names = eventLog.getMessageClassNames().keys();
@@ -313,7 +313,7 @@ public class RandomTest
                     for (int i = 0; i < count; i++)
                         filterParameters.messageClassNames[i] = names.get(random.nextInt((int)names.size()));
                 }
-    
+
                 if (debug)
                     System.out.println(filterParameters.toString());
 
@@ -328,7 +328,7 @@ public class RandomTest
 
         if (debug)
             System.out.println("Changing timeline mode to " + timelineMode.name());
-        
+
         control.setTimelineMode(timelineMode);
     }
 
@@ -336,17 +336,17 @@ public class RandomTest
         Runnable operation = null;
         double total = 0;
         double variable = random.nextDouble();
-        
+
         for (int i = 0; i < parameters.length; i += 2) {
             double probability = (Double)parameters[i];
-            
+
             if (total <= variable && variable <= total + probability)
                 operation = (Runnable)parameters[i + 1];
 
             if (i % 2 == 0)
                 total += probability;
         }
-        
+
         Assert.isTrue(total == 1.0);
         operation.run();
     }

@@ -1,6 +1,6 @@
 %description:
 Double to int64 cast. The conversion of the below number to long long type
-returns different result if the program is runniong under valgrind. 
+returns different result if the program is runniong under valgrind.
 This is a valgrind issue.
 
 %includes:

@@ -1,6 +1,6 @@
 graph g {
         // should probably rendered with neato not dot
-        fontsize=12; size="5,5"; 
+        fontsize=12; size="5,5";
         //rotate=90; orientation=landscape;
         //node [ orientation=90 ];
 

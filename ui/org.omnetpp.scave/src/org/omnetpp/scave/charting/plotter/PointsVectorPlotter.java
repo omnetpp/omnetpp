@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -12,10 +12,10 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.ILinePlot;
 
 /**
- * Vector plotter simply drawing pixels (and no lines or symbols). Note that despite 
+ * Vector plotter simply drawing pixels (and no lines or symbols). Note that despite
  * common sense, LinesVectorPlotter is *faster* than this one, probably due to the
  * HashSet in plotSymbols().
- * 
+ *
  * @author Andras
  */
 public class PointsVectorPlotter extends VectorPlotter {

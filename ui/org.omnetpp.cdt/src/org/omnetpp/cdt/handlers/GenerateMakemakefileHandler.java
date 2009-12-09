@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,27 +34,27 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Generate a "makemakefile" for the selected projects.
- * 
+ *
  * @author Andras
  */
 //XXX half-cooked
 public class GenerateMakemakefileHandler extends AbstractHandler {
     // boilerplate code for Makemakefile
-    public static final String BOILERPLATE = 
-        "#\n" + 
-        "# Makefile to create all other makefiles for the project.\n" + 
-        "# This same file is used on all platforms including Linux (gnu make) and Windows (nmake).\n" + 
-        "#\n" + 
-        "# GENERATED FILE -- DO NOT MODIFY.\n" + 
-        "#\n" + 
-        "# The vars ROOT, MAKEMAKE and EXT have to be specified externally, on the 'make' command line.\n" + 
-        "#ROOT=/home/user/projects/foo\n" + 
-        "#MAKEMAKE=opp_nmakemake\n" + 
-        "#EXT=.vc\n" + 
-        "\n" + 
-        "# To build Windows DLLs, add this to OPTS below: -PINET_API\n" + 
-        "OPTS=-f -b $(ROOT) -c $(ROOT)/inetconfig$(EXT)\n" + 
-        "\n" + 
+    public static final String BOILERPLATE =
+        "#\n" +
+        "# Makefile to create all other makefiles for the project.\n" +
+        "# This same file is used on all platforms including Linux (gnu make) and Windows (nmake).\n" +
+        "#\n" +
+        "# GENERATED FILE -- DO NOT MODIFY.\n" +
+        "#\n" +
+        "# The vars ROOT, MAKEMAKE and EXT have to be specified externally, on the 'make' command line.\n" +
+        "#ROOT=/home/user/projects/foo\n" +
+        "#MAKEMAKE=opp_nmakemake\n" +
+        "#EXT=.vc\n" +
+        "\n" +
+        "# To build Windows DLLs, add this to OPTS below: -PINET_API\n" +
+        "OPTS=-f -b $(ROOT) -c $(ROOT)/inetconfig$(EXT)\n" +
+        "\n" +
         "all:\n";
 
     private ISelection selection;
@@ -74,7 +74,7 @@ public class GenerateMakemakefileHandler extends AbstractHandler {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        
+
         return null;
     }
 
@@ -133,7 +133,7 @@ public class GenerateMakemakefileHandler extends AbstractHandler {
         // generate unique target name for each folder
         String reservedNames = "all clean makefiles dist install";
         for (IContainer folder : containers)
-            reservedNames += " " + folder.getName(); 
+            reservedNames += " " + folder.getName();
         Map<IContainer,String> targetNames = new LinkedHashMap<IContainer, String>();
         for (IContainer folder : containers) {
             String targetName = folder.getName().toString().replaceAll("[^a-zA-Z0-9]+", "_") + "_dir";

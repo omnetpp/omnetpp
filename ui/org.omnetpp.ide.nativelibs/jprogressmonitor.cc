@@ -58,7 +58,7 @@ bool JniProgressMonitor::isCanceled()
 	{
 		return env->CallBooleanMethod(jProgressMonitor, isCanceledID);
 	}
-	return false; 
+	return false;
 }
 
 void JniProgressMonitor::setCanceled(bool value)

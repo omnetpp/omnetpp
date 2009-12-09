@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.omnetpp.scave.model2.FilterUtil;
 
 /**
  * Sets the filter of a filtered data panel.
- * The filter is determined by the selected cell of the panel's control. 
+ * The filter is determined by the selected cell of the panel's control.
  *
  * @author tomi
  */
@@ -51,7 +51,7 @@ public class SetFilterAction2 extends Action
 						ResultItemField field = new ResultItemField(control.getSelectedField());
 						fieldName = field.getName();
 						fieldValue = field.getFieldValue(item);
-				
+
 						if (fieldValue != null) {
 							setText(String.format("Set filter: %s=%s", field.getName(), fieldValue));
 							setEnabled(true);

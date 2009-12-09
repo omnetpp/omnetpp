@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -123,7 +123,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
     }
 
     /**
-     * Returns whether we can schedule this job (the number scheduled and 
+     * Returns whether we can schedule this job (the number scheduled and
      * unfinished jobs are < maxParalellJobs)
      */
     protected synchronized boolean isSchedulable() {

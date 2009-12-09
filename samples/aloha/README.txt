@@ -26,8 +26,8 @@ The supplied omnetpp.ini file contains six predefined 6 predefined configuration
 - slotted Aloha at moderate load (utilization =~ max)
 - slotted Aloha at low load
 
-- In addition it contains a predefined experiment scenario called 
-  PureAlohaExperiment where it explores the channel utilization in the 
+- In addition it contains a predefined experiment scenario called
+  PureAlohaExperiment where it explores the channel utilization in the
   function of number of hosts and packet generation frequency.
 
 According to some descriptions of the Aloha protocol, hosts have to listen

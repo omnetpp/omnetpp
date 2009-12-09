@@ -1,9 +1,9 @@
 %description:
-Test double-to-long conversions: 
+Test double-to-long conversions:
 - fraction part gets truncated
 
 The rest is inconsistent:
-- when converting a negative double to unsigned long, the result may be 
+- when converting a negative double to unsigned long, the result may be
   (MAX_ULONG-x) or zero (newer gcc [4.0>=?] yields zero)
 - if doesn't fit into a long, result is MAX_LONG (gcc), or something else (msvc)
 

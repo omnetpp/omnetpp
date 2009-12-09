@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -78,7 +78,7 @@ public class VirtualTable<T>
 
 	/**
 	 * The distance of the fix point element from the top of the visible area.
-	 * 0 means the fix point element is display as the top visible element, positive value means below it. 
+	 * 0 means the fix point element is display as the top visible element, positive value means below it.
 	 */
 	protected int fixPointDistance;
 
@@ -161,7 +161,7 @@ public class VirtualTable<T>
 		createCanvas(composite);
 		createTable(composite);
 
-		scrolledComposite.setContent(composite); 
+		scrolledComposite.setContent(composite);
 
 		getVerticalBar().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -194,7 +194,7 @@ public class VirtualTable<T>
     	hoverSupport.adapt(canvas, new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				T element = getElementAtDistanceFromFixPoint(y / getRowHeight() + getTopVisibleElementDistanceFromFixPoint());
-		
+
 				if (element == null)
 					return null;
 				else
@@ -284,14 +284,14 @@ public class VirtualTable<T>
 				if (input != null && contentProvider != null) {
 					T element = getVisibleElementAt(e.y / getRowHeight());
 
-					if (element != null && 
+					if (element != null &&
 						(e.button == 1 || selectionElements == null || !selectionElements.contains(element))) {
 						if ((e.stateMask & SWT.MOD1) != 0) {
 							if (selectionElements.contains(element))
 								selectionElements.remove(element);
 							else
 								selectionElements.add(element);
-					
+
 							fireSelectionChanged();
 						}
 						else
@@ -620,7 +620,7 @@ public class VirtualTable<T>
 			percentage = bottomPercentage;
 		else
 			percentage = (topPercentage * topWeight + bottomPercentage * bottomWeight) / (topWeight + bottomWeight);
-	
+
 		ScrollBar verticalBar = getVerticalBar();
 		verticalBar.setSelection((int)((verticalBar.getMaximum() - verticalBar.getThumb()) * percentage));
 	}
@@ -633,7 +633,7 @@ public class VirtualTable<T>
 
 		if (element == null) {
 			element = getTopVisibleElement();
-	
+
 			if (element == null)
 			    return;
 		}
@@ -782,7 +782,7 @@ public class VirtualTable<T>
 
 				if (element != null) {
 					boolean isSelectedElement = selectionElements != null && selectionElements.contains(element);
-			
+
 					if (isSelectedElement) {
 						gc.setBackground(Display.getCurrent().getSystemColor(canvas.isFocusControl() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_BACKGROUND));
 						gc.fillRectangle(new Rectangle(0, i * getRowHeight(), clipping.x + clipping.width, getRowHeight()));
@@ -811,7 +811,7 @@ public class VirtualTable<T>
 
 						rowRenderer.drawCell(gc, element, columnOrder[j]);
 						x += column.getWidth();
-				
+
 						if (drawLines) {
 							gc.setForeground(LINE_COLOR);
 							gc.drawLine(0, 0, 0, getRowHeight());
@@ -837,7 +837,7 @@ public class VirtualTable<T>
 
 		if (contentProvider != null && input != null && fixPointElement != null && isVisible()) {
 			T topElement = getTopVisibleElement();
-	
+
 			if (topElement != null)
 				relocateFixPoint(topElement, 0);
 		}
@@ -873,7 +873,7 @@ public class VirtualTable<T>
     public Point getVisibleElementLocation(T visibleElement) {
         int visibleElementCount = getVisibleElementCount();
         int rowNumber = (int)contentProvider.getDistanceToElement(getTopVisibleElement(), visibleElement, visibleElementCount);
-        
+
         if (rowNumber == visibleElementCount)
             throw new IllegalArgumentException("Element is not visisble: " + visibleElement);
 
@@ -888,7 +888,7 @@ public class VirtualTable<T>
 	 * Returns the top visible element.
 	 */
 	public T getTopVisibleElement() {
-		if (contentProvider == null || fixPointElement == null) 
+		if (contentProvider == null || fixPointElement == null)
 			return null;
 		else
 			return getElementAtDistanceFromFixPoint(getTopVisibleElementDistanceFromFixPoint());
@@ -898,7 +898,7 @@ public class VirtualTable<T>
 	 * Returns the bottom visible element even if it is not fully visible.
 	 */
 	public T getBottomVisibleElement() {
-		if (contentProvider == null || fixPointElement == null) 
+		if (contentProvider == null || fixPointElement == null)
 			return null;
 		else
 			return getElementAtDistanceFromFixPoint(getBottomVisibleElementDistanceFromFixPoint());
@@ -908,7 +908,7 @@ public class VirtualTable<T>
 	 * Returns the bottom fully visible element.
 	 */
 	public T getBottomFullyVisibleElement() {
-		if (contentProvider == null || fixPointElement == null) 
+		if (contentProvider == null || fixPointElement == null)
 			return null;
 		else
 			return getElementAtDistanceFromFixPoint(getBottomFullyVisibleElementDistanceFromFixPoint());
@@ -999,7 +999,7 @@ class VirtualTableCompositeLayout extends Layout {
 
 			Rectangle r = composite.getParent().getClientArea();
 			int headerHeight = table.getHeaderHeight();
-	
+
 			if (debug)
 				Debug.println("Relayouting virtual table: " + r.height);
 

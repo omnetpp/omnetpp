@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,8 +30,8 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * Looks for environment variables VCINSTALLDIR, VSINSTALLDIR, MSSdk. If you have several versions
  * of SDK / Visual C on your machine, and need a specific one (not the latest) define these variables
  * to point to the needed installation.
- * 
- * @author DSchaefer 
+ *
+ * @author DSchaefer
  * @author rhornig
  */
 @SuppressWarnings("deprecation")
@@ -86,7 +86,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         String vsDir = Activator.getDefault().getPreferenceStore().getString(MSVCPreferencePage.PREFKEY_VSDIR);
         return StringUtils.isEmpty(vsDir) ? null : vsDir;
     }
-    
+
     /**
      * Returns the VC dir from the preferences; null if unset.
      */
@@ -110,7 +110,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
     private void addvar(Map<String, IBuildEnvironmentVariable> variables, IBuildEnvironmentVariable var) {
         variables.put(var.getName(), var);
     }
-    
+
 	private Map<String, IBuildEnvironmentVariable> createVars() {
 	    Map<String, IBuildEnvironmentVariable> vars = new HashMap<String, IBuildEnvironmentVariable>();
 

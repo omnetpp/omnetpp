@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -53,7 +53,7 @@ public class GotoDeclarationAction extends NedTextEditorAction {
         ISourceViewer viewer = ((TextualNedEditor)getTextEditor()).getSourceViewerPublic();
         if (viewer == null)
             return null;
-        IRegion region = new Region(viewer.getSelectedRange().x, viewer.getSelectedRange().y); 
+        IRegion region = new Region(viewer.getSelectedRange().x, viewer.getSelectedRange().y);
         return NedTextUtils.getNedReferenceFromSource(getTextEditor(), viewer, region);
     }
 

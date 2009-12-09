@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -47,11 +47,11 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
 /**
  * Event log table display tool. (It is not actually an editor; it is only named so
  * because it extends EditorPart).
- * 
+ *
  * @author levy
  */
-public class EventLogTableEditor 
-    extends EventLogEditor 
+public class EventLogTableEditor
+    extends EventLogEditor
     implements IEventLogTableProvider, INavigationLocationProvider, IGotoMarker, IShowInSource, IShowInTargetList
 {
 	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
@@ -79,7 +79,7 @@ public class EventLogTableEditor
 				site.getPage().showView("org.omnetpp.sequencechart.editors.SequenceChartView");
 		}
 		catch (PartInitException e) {
-			EventLogTablePlugin.getDefault().logException(e);			
+			EventLogTablePlugin.getDefault().logException(e);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class EventLogTableEditor
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != EventLogTableEditor.this && selection instanceof IEventLogSelection) {
 					IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
-			
+
 					if (eventLogSelection.getEventLogInput() == eventLogTable.getInput()) {
 						eventLogTable.setSelection(selection);
 						markLocation();
@@ -155,14 +155,14 @@ public class EventLogTableEditor
 		public void restoreLocation() {
 			IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
 			EventLogEntry eventLogEntry = event != null ? event.getEventEntry() : null;
-	
+
 			if (eventLogEntry != null)
 				eventLogTable.scrollToElement(new EventLogEntryReference(eventLogEntry));
 		}
 
 		public void restoreState(IMemento memento) {
 			Integer integer = memento.getInteger("EventNumber");
-	
+
 			if (integer != null)
 				eventNumber = integer;
 		}
@@ -242,7 +242,7 @@ public class EventLogTableEditor
                             if (((FileEditorInput)thisEditor.getEditorInput()).getFile().getProject().equals(resource)) {
                                 thisEditor.getSite().getPage().closeEditor(thisEditor, true);
                             }
-                        }            
+                        }
                     });
                 }
 
@@ -262,7 +262,7 @@ public class EventLogTableEditor
 					public void run() {
 					    if (!eventLogTable.isDisposed())
 					        eventLogTable.redraw();
-					}            
+					}
             	});
             }
 
@@ -283,7 +283,7 @@ public class EventLogTableEditor
     public String[] getShowInTargetIds() {
         // contents of the "Show In..." context menu
         return new String[] {
-                IConstants.SEQUENCECHART_VIEW_ID, 
+                IConstants.SEQUENCECHART_VIEW_ID,
                 //TODO IConstants.MODULEHIERARCHY_VIEW_ID,
                 };
     }

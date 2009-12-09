@@ -17,7 +17,7 @@ Additions:
 Fixes:
 
    + When the scatter plot used iso lines, the same names might have been generated
-     for the lines. Now the line name includes the names and values of the iso scalars. 
+     for the lines. Now the line name includes the names and values of the iso scalars.
 
 2008-08-01
 ----------
@@ -74,7 +74,7 @@ Additions:
 
    + New 'timetoserial' filter node: it replaces the X coordinates with their serial number.
 
-   + Histogram charts have three options: show counts/probability density function/cumulative 
+   + Histogram charts have three options: show counts/probability density function/cumulative
      density function.
 
 Fixes:
@@ -94,7 +94,7 @@ Fixes:
 
 Additions:
 
-   + Generate default title for vector charts from the dataset by concatenating the 
+   + Generate default title for vector charts from the dataset by concatenating the
      common fields.
 
 Fixes:
@@ -139,7 +139,7 @@ Fixes:
 Additions:
 
    + Edit dialog for histogram charts.
-   
+
    + New columns in data tables: 'Vector id', 'Min time', 'Max time'.
 
 Fixes:
@@ -148,28 +148,28 @@ Fixes:
        added 'Content' tab,
        fields can be "unused" (meaning grouping for file/module, separate bars
          for names, and averaging for others)
-         
+
    + Missing 'attr:' prefix in filter patterns when the filter was set
      by clicking in the Inputs page/Logical view tree or by selecting 'Set filter'
      from the context menu of data tables.
-     
+
    + Fix label of 'Set filter' menu item.
-     
-   + Inputs page/Input files section/double click on a file -> 
+
+   + Inputs page/Input files section/double click on a file ->
      switched to 'Browse data' page before opening the edit dialog.
-   
-   + When the 'New Analysis file' wizard opened by double clicking on a 
-     result file, the default location of the analysis file is outside the 
+
+   + When the 'New Analysis file' wizard opened by double clicking on a
+     result file, the default location of the analysis file is outside the
      directory of the result file (so results can be deleted by removing their
      directory).
 
    + Fix legend button size (gtk only).
-   
+
    + Select all lines by default in LineChart edit dialog,
      add 'Select all' button.
-     
+
    + Limit the number of items in filter combos (~10000 items halts the gui
-     for a minute on linux). If the number of modules > 100 then numbers 
+     for a minute on linux). If the number of modules > 100 then numbers
      in module name hints are replaced with '*'.
 
 2008-04-12
@@ -185,7 +185,7 @@ Additions:
 
 Fixes:
 
-   + Run attributes are saved into the scalar files too. 
+   + Run attributes are saved into the scalar files too.
 
 
 2008-03-28
@@ -242,7 +242,7 @@ Fixes:
 
 Fixes:
 
-   + cIndexedFileOutputVectorManager supports >2GB files. The scave module still needs to be 
+   + cIndexedFileOutputVectorManager supports >2GB files. The scave module still needs to be
      updated.
 
    + Fix performance bug in vector file reading, thanks to Levy.
@@ -391,7 +391,7 @@ Fixes:
 
 Additions:
 
-   + Compute/Apply operations writes temporary files in the background containing the 
+   + Compute/Apply operations writes temporary files in the background containing the
      computed vectors. The computation starts only when the file is needed by the
      Output Vector view.
 
@@ -455,10 +455,10 @@ Fixes:
 
    + Palette on Dataset page is scrollable if not entirely visible.
 
-   + Show 'x' in place of the color image in the Chart Edit dialog/Lines when 
+   + Show 'x' in place of the color image in the Chart Edit dialog/Lines when
      the color field is not valid.
 
-   + Fix: crash when result files are loaded in scalar/vector/scalar order and 
+   + Fix: crash when result files are loaded in scalar/vector/scalar order and
      the vector file added new modules.
 
 
@@ -510,9 +510,9 @@ Additions:
 
 Fixes:
 
-   + Usability of the Inputs page: 
+   + Usability of the Inputs page:
         the 3 tree view is displayed on a single tabbed panel
-        the tree nodes are ordered (dictionary sort) 
+        the tree nodes are ordered (dictionary sort)
         logical view: display files too
 
    + Bar charts: limit height of domain labels to 50% of the bar chart max.
@@ -520,7 +520,7 @@ Fixes:
    + Bar chart: tooltip has "F2 to focus" now
 
    + "Add Selected To Dataset" action offers to add the items by the filter
-      when all is selected 
+      when all is selected
 
 
 2007-08-03
@@ -583,10 +583,10 @@ Additions:
 Fixes:
 
   + Mouse cursor changes to "Zoom out" when SHIFT key is pressed in zoom mode
-  
-  + Wrong index files are marked with an error and the corresponding vector file (which could 
+
+  + Wrong index files are marked with an error and the corresponding vector file (which could
     not be loaded because of the error) with a warning in the Navigator view.
- 
+
   + Ctrl+A select all items on BrowseDataPage and DatasetView.
 
   + Fixed exceptions that occured when the project was not stored under the workspace root
@@ -618,7 +618,7 @@ Additions:
   + Backward Sample-Hold plotter is implemented.
 
   + The editor switches to the page showing the object selected in the Outline view.
-  
+
 
 Fixes:
 
@@ -714,7 +714,7 @@ Fixes:
 
 Additions:
 
-   + Enum attributes are read from the vector files and enum values are 
+   + Enum attributes are read from the vector files and enum values are
      displayed as strings in the "VectorBrowser" view.
 
    + Groups can be specified for bar charts.
@@ -745,7 +745,7 @@ Additions:
      Output vector now may contain time values with different scale. The precise
      values are kept by the dataflow network, when there is no computation with
      the simulation time.
-     
+
 
 Fixes:
 
@@ -767,7 +767,7 @@ Fixes:
      by the indexer. These exceptions are converted to an error marker, while other exceptions
      are converted to a warning marker.
 
-   + Simulation times are represented by int64 values (long in Java) to prevent loss of 
+   + Simulation times are represented by int64 values (long in Java) to prevent loss of
      precision. Dataflow network still represents them as doubles though.
 
    + Fixed crashes during indexing by blocking the ResultFilesTracker while indexing.
@@ -804,9 +804,9 @@ Additions:
      file is the file name of the result file with the ".scave" extension. If an analysis
      file exists with this name, it is opened instead of the wizard.
 
-   + Selected vectors and scalars can be put on a chart by choosing "Open chart" from the 
+   + Selected vectors and scalars can be put on a chart by choosing "Open chart" from the
      context menu of the table on the "Browse Data" page. The created dataset and chart nodes
-     are not saved and not visible on the UI. The user can persist them using the toolbar 
+     are not saved and not visible on the UI. The user can persist them using the toolbar
      button.
 
    + Some toolbar buttons were added.
@@ -871,7 +871,7 @@ Fixes:
 
 Fixes:
 
-   + Content assist and field assist of the filter completed. Content assist can offer 
+   + Content assist and field assist of the filter completed. Content assist can offer
      operator, field name, field value completions (when asked at the end of a token)
      and replacements (when asked inside the token).
 
@@ -897,7 +897,7 @@ Additions
    + A new view was added for displaying the content of a vector file. Open the view and
      select a vector in the "Browse Data" page to try it out.
 
-   + The filter panel gets reorganized. There is an advanced filter, where the user can 
+   + The filter panel gets reorganized. There is an advanced filter, where the user can
      enter a match expression and a simple filter, where the patterns for fields can be
      selected from combos. The two filter are synchronized. The advanced filter has a content
      assist (Ctrl+Space), but it not yet finished.
@@ -922,11 +922,11 @@ Additions
 
    + Scave editor automatically indexes the vector files in the background. Indexing starts
      when the plugin is loaded, and when changes happened in the workspace. (Turning on/off
-     indexing from the Preferences dialog is not yet implemented.) 
+     indexing from the Preferences dialog is not yet implemented.)
 
-   + 'Browse data' page shows 'Count', 'Min', 'Max', 'Mean' and 'Stddev' of vectors having an 
+   + 'Browse data' page shows 'Count', 'Min', 'Max', 'Mean' and 'Stddev' of vectors having an
      index file.
-   
+
 
 2006-11-17
 ----------

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,7 +29,7 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * Property source for chart sheets.  
+ * Property source for chart sheets.
  * @author levy
  */
 public class ChartSheetProperties extends PropertySource {
@@ -42,7 +42,7 @@ public class ChartSheetProperties extends PropertySource {
 		PROP_MIN_CHART_WIDTH       = "MinChartWidth",
 		PROP_MIN_CHART_HEIGHT      = "MinChartHeight",
         PROP_DISPLAY_CHART_DETAILS = "DisplayChartDetails";
-	
+
 	public static final Integer DEFAULT_COLUMN_COUNT          = 2;
 	public static final Integer DEFAULT_MIN_CHART_WIDTH       = 320;
 	public static final Integer DEFAULT_MIN_CHART_HEIGHT      = 200;
@@ -71,12 +71,12 @@ public class ChartSheetProperties extends PropertySource {
 	public List<Property> getProperties() {
 		return properties;
 	}
-    
+
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         return (IPropertyDescriptor[])ArrayUtils.addAll(delegate.getPropertyDescriptors(), super.getPropertyDescriptors());
     }
-    
+
     @Override
     public Object getPropertyValue(Object id) {
         if (!isKnownProperty(id))
@@ -84,7 +84,7 @@ public class ChartSheetProperties extends PropertySource {
         else
             return super.getPropertyValue(id);
     }
-    
+
     @Override
     public void setPropertyValue(Object id, Object value) {
         if (!isKnownProperty(id))
@@ -92,7 +92,7 @@ public class ChartSheetProperties extends PropertySource {
         else
             super.setPropertyValue(id, value);
     }
-    
+
     @Override
     public boolean isPropertySet(Object id) {
         if (!isKnownProperty(id))
@@ -100,7 +100,7 @@ public class ChartSheetProperties extends PropertySource {
         else
             return super.isPropertySet(id);
     }
-    
+
     @Override
     public boolean isPropertyResettable(Object id) {
         if (!isKnownProperty(id)) {
@@ -112,7 +112,7 @@ public class ChartSheetProperties extends PropertySource {
         else
             return super.isPropertyResettable(id);
     }
-    
+
     @Override
     public void resetPropertyValue(Object id) {
         if (!isKnownProperty(id)) {
@@ -187,7 +187,7 @@ public class ChartSheetProperties extends PropertySource {
 		ScaveModelPackage model = ScaveModelPackage.eINSTANCE;
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 		Property property = getProperty(propertyName);
-		
+
 		if (property == null && propertyValue != null ) { // add new property
 			property = factory.createProperty();
 			property.setName(propertyName);

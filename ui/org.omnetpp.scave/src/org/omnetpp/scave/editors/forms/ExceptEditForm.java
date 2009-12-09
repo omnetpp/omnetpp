@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -76,7 +76,7 @@ public class ExceptEditForm implements IScaveObjectEditForm {
 		Label label;
 
 		panel.setLayout(new GridLayout(2, false));
-	
+
 		label = new Label(panel, SWT.NONE);
 		label.setText("Filter pattern:");
 		label.setLayoutData(new GridData());
@@ -103,7 +103,7 @@ public class ExceptEditForm implements IScaveObjectEditForm {
 		default:
 			throw new IllegalArgumentException("Unexpected feature: " + feature.getName());
 		}
-	
+
 	}
 
 	public void setValue(EStructuralFeature feature, Object value) {

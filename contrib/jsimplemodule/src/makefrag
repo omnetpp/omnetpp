@@ -53,7 +53,7 @@ EXPERIMENTAL_SRC_FILES = \
   patchownership.pl \
   ProxyObjectMap.java.in
 
-all: dist 
+all: dist
 
 binaries: $(TARGET)
 
@@ -86,7 +86,7 @@ javafiles:
 	-rm listfile.tmp
 
 dist: $(GENERATED_FILES) javafiles
-	-mkdir $(DISTDIR) 
+	-mkdir $(DISTDIR)
 	$(JAR) cvf $(DISTDIR)/simkernel.jar -C $(CLASSDIR) org
 	$(JAR) cvf $(DISTDIR)/simkernel-src.jar -C $(OUTDIR)/java org
 	$(JAR) cvfM $(DISTDIR)/src.zip $(DIST_SRC_FILES)

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -267,7 +267,7 @@ public class DataTable extends Table implements IDataControl {
                 tableColumn.dispose();
 			}
 		}
-		
+
 		int position = 0;
 		int[] columnOrder = new int[getColumns().length];
         for (Column column : getAllColumns())
@@ -275,7 +275,7 @@ public class DataTable extends Table implements IDataControl {
                 columnOrder[position++] = getTableColumnIndex(column);
 
         setColumnOrder(columnOrder);
-		    
+
 		saveState();
 		refresh();
 	}
@@ -357,7 +357,7 @@ public class DataTable extends Table implements IDataControl {
 		        saveState();
 		    }
 		});
-        
+
         return tableColumn;
 	}
 
@@ -639,7 +639,7 @@ public class DataTable extends Table implements IDataControl {
 	}
 
 	/*
-	 * Select cells. 
+	 * Select cells.
 	 */
 	void handleMouseDown(MouseEvent event) {
 		if (isDisposed() || !isVisible()) return;

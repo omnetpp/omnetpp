@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,7 +49,7 @@ class DomainAxis {
 	Font labelsFont = DEFAULT_LABELS_FONT;
 	double rotation = DEFAULT_X_LABELS_ROTATED_BY;
 	boolean wrapLabels = DEFAULT_WRAP_LABELS;
-	int gap = 4;  // between chart and axis 
+	int gap = 4;  // between chart and axis
 
 	static class LabelData {
 		TextLayout textLayout;
@@ -103,7 +103,7 @@ class DomainAxis {
 
 	/**
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
-	 * Also returns insets for convenience. 
+	 * Also returns insets for convenience.
 	 */
 	public Insets layout(GC gc, Rectangle bounds, Insets insets, ICoordsMapping coordsMapping, int pass) {
 		if (pass == 1) {
@@ -190,7 +190,7 @@ class DomainAxis {
 		if (maxSize.width > 0)
 			data.textLayout.setWidth(maxSize.width);
 		//Debug.format("width=%s%n", maxWidth);
-		org.eclipse.swt.graphics.Rectangle bounds = data.textLayout.getBounds(); 
+		org.eclipse.swt.graphics.Rectangle bounds = data.textLayout.getBounds();
 		data.size = new Dimension(bounds.width, Math.min(bounds.height, maxSize.height)); //new Dimension(gc.textExtent(data.label));
 		data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);
 		return data;
@@ -216,14 +216,14 @@ class DomainAxis {
     		if (dataset != null) {
     			int cColumns = dataset.getColumnCount();
     			int cRows = dataset.getRowCount();
-    	
+
     			// draw lines
     			for (int row = 0; row < cRows; ++row) {
     				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
     				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
     				graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
     			}
-    	
+
     			// draw labels
     			graphics.setFont(labelsFont);
     			graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
@@ -235,7 +235,7 @@ class DomainAxis {
     					int right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
     					Dimension size = label.size;
     					Dimension rotatedSize = label.rotatedSize;
-    			
+
     					if (isRectangularAngle(rotation)) // center into the cell
     						graphics.translate((left + right) / 2, rect.y + gap + 1 + label.centerY);
     					else // left at the bottom of the bar

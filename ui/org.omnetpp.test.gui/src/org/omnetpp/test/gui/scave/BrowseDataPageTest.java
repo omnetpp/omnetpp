@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -176,7 +176,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 	}
 
 	private void fillSelectDatasetDialog() {
-		ShellAccess dialogShell = Access.findShellWithTitle("Select.*[dD]ataset.*"); 
+		ShellAccess dialogShell = Access.findShellWithTitle("Select.*[dD]ataset.*");
 		dialogShell.findButtonWithLabel("New.*").selectWithMouseClick();
 		ShellAccess dialogShell2 = Access.findShellWithTitle("New [dD]ataset.*");
 		TextAccess text = dialogShell2.findTextAfterLabel("Enter.*name.*");

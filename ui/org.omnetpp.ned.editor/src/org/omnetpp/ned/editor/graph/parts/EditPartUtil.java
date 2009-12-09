@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,7 +17,7 @@ import org.eclipse.gef.EditPart;
 
 /**
  * Utility functions for editparts.
- * 
+ *
  * @author rhornig, andras
  */
 public class EditPartUtil {
@@ -38,7 +38,7 @@ public class EditPartUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<ConnectionEditPart> getAttachedConnections(List<EditPart> editParts) {
-		// collect selected objects. 
+		// collect selected objects.
 		// Note: getSelectedObjects() seems to return the editparts not the model objects
 		List<ConnectionEditPart> result = new ArrayList<ConnectionEditPart>();
 

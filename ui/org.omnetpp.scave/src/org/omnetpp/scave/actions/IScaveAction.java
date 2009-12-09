@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,7 +21,7 @@ public interface IScaveAction extends IAction {
 	/**
 	 * To automatically enable/disable the action based on the selection,
 	 * this method needs to be called from a JFace {@link ISelectionChangedListener}
-	 * or the selection service's {@link ISelectionListener}, and 
+	 * or the selection service's {@link ISelectionListener}, and
 	 * this method should be implemented to enable/disable the action accordingly.
 	 */
 	public void selectionChanged(ISelection selection);

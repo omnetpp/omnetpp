@@ -72,7 +72,7 @@
     return (int)getCPtr(this);
   }
 %}
-%enddef 
+%enddef
 
 /*
  * ILock

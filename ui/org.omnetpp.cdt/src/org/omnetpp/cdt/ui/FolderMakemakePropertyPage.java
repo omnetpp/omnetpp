@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,7 +30,7 @@ import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
- * This property page is shown for folders in an OMNeT++ CDT Project, and lets the user 
+ * This property page is shown for folders in an OMNeT++ CDT Project, and lets the user
  * edit the contents of the ".oppbuildspec" file.
  *
  * @author Andras
@@ -63,7 +63,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
         GridLayout layout = new GridLayout(1,false);
         layout.marginWidth = layout.marginHeight = 0;
         composite.setLayout(layout);
-        
+
         errorMessageLabel = new Label(composite, SWT.WRAP);
         errorMessageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
         errorMessageLabel.setForeground(ColorFactory.RED2);
@@ -86,16 +86,16 @@ public class FolderMakemakePropertyPage extends PropertyPage {
         if (isMakemakeFolder) {
             createLabel(composite, "Configure makefile generation here. Settings apply to all build configurations.");
 
-            optionsPanel = new MakemakeOptionsPanel(composite, SWT.NONE); 
+            optionsPanel = new MakemakeOptionsPanel(composite, SWT.NONE);
             optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
             optionsPanel.setOwnerPage(this);
-            
+
             optionsPanel.populate(folder, buildSpec);
         }
         else {
             createLabel(composite, "Makefile generation is not enabled for this folder. You can enable it in the Project Properties dialog.");
-        }        
-        
+        }
+
         return composite; //???
     }
 
@@ -129,10 +129,10 @@ public class FolderMakemakePropertyPage extends PropertyPage {
         // note: performApply() delegates here too
         if (optionsPanel != null) {
             IContainer folder = getFolder();
-            
+
             buildSpec.setMakemakeOptions(folder, optionsPanel.getResult());
             saveBuildSpecFile();
-            
+
             try {
                 optionsPanel.saveMakefragFiles();
             }
@@ -148,7 +148,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
         IProject project = getFolder().getProject();
         try {
             buildSpec = BuildSpecification.readBuildSpecFile(project);
-        } 
+        }
         catch (CoreException e) {
             errorDialog("Cannot read build specification, reverting page content to the default settings.", e);
         }
@@ -160,11 +160,11 @@ public class FolderMakemakePropertyPage extends PropertyPage {
     protected void saveBuildSpecFile() {
         try {
             buildSpec.save();
-        } 
+        }
         catch (CoreException e) {
             errorDialog("Cannot store build specification", e);
         }
-    } 
+    }
 
     protected void errorDialog(String message, Throwable e) {
         Activator.logError(message, e);

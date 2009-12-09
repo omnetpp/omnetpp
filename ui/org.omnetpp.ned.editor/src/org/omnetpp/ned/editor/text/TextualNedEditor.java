@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -179,10 +179,10 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         nedSelectionProvider = new NedSelectionProvider(this);
 		getSite().setSelectionProvider(nedSelectionProvider);
     }
-    
+
     @Override
     protected boolean isEditorInputIncludedInContextMenu() {
-    	// do not include the contributions for the editor input 
+    	// do not include the contributions for the editor input
     	// (otherwise we will get a ton of unnecessary menus like Debug As, Run As, Team menus etc.)
     	return false;
     }
@@ -214,7 +214,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         }
         return fRegistry;
     }
-    
+
     /**
      * Makes getSourceViewer() public. (Name differs because original method is final.)
      */
@@ -285,8 +285,8 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, InferAllGateLabelsAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, DistributeAllGateLabelsAction.ID);
 
-        addAction(menu, ITextEditorActionConstants.GROUP_FIND, GotoDeclarationAction.ID); 
-        addAction(menu, ITextEditorActionConstants.GROUP_FIND, FindTextInNedFilesActionDelegate.ID); 
+        addAction(menu, ITextEditorActionConstants.GROUP_FIND, GotoDeclarationAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_FIND, FindTextInNedFilesActionDelegate.ID);
     }
 
 	/**
@@ -440,12 +440,12 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 	}
 
     /**
-     * Unconditionally pulls changes from NEDResources and applies them to the 
-     * document as text changes. 
-     * 
-     * This needs to be called from all text editor actions that modify the 
+     * Unconditionally pulls changes from NEDResources and applies them to the
+     * document as text changes.
+     *
+     * This needs to be called from all text editor actions that modify the
      * NED tree and want those changes to be reflected in the text editor.
-     * (e.g. reformat source, organize imports, etc). 
+     * (e.g. reformat source, organize imports, etc).
      */
     public void pullChangesFromNEDResources() {
         Assert.isTrue(Display.getCurrent() != null);
@@ -456,9 +456,9 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         // TODO: then parse in again, and update line numbers with the resulting tree? I think this should not be done here but somewhere else
     }
 
-    
+
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		// do not react to notification changes if we are the active editor or we are currently 
+		// do not react to notification changes if we are the active editor or we are currently
 		// setting our selection
 		if (isActivePart() || nedSelectionProvider.isNotificationInProgress())
 			return;

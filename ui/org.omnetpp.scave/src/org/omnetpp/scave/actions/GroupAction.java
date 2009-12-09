@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -87,7 +87,7 @@ public class GroupAction extends AbstractScaveAction {
 			if (feature == null || !feature.isMany())
 				return null;
 			int index = ((EList<?>)owner.eGet(feature)).indexOf(element);
-	
+
 			if (range.owner == null) { // first iteration
 				range.owner = owner;
 				range.feature = feature;

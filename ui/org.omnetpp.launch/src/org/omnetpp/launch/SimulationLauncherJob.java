@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -92,9 +92,9 @@ public class SimulationLauncherJob extends Job {
         if (monitor.isCanceled())
             return;
 
-        if (reportProgress) 
+        if (reportProgress)
         	monitor.subTask("run #"+runNo+" - Initializing...");
-        
+
         monitor.setWorkRemaining(100);
         StringBuilder info = new StringBuilder();
         Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, " -r "+runNo, false, info);
@@ -122,7 +122,7 @@ public class SimulationLauncherJob extends Job {
         	});
         else
         	monitor.worked(50);
-        
+
         refreshDebugView();
         // poll the state of the monitor and terminate the process if cancel was requested
         while (!iprocess.isTerminated()) {

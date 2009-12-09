@@ -250,7 +250,7 @@
           </tbody>
         </tgroup>
       </table>
-      <tip>Right clicking on any line will show a context menu that allows you to navigate 
+      <tip>Right clicking on any line will show a context menu that allows you to navigate
       to the definition of that parameter or module.</tip>
     </sect2>
     <sect2>
@@ -261,10 +261,10 @@
         ned file or unassigned).
       </para>
       <picture file="pictures/INI-ModuleHierarchyView.png">Module Hierarchy View</picture>
-      <tip>Before you use the context menu to navigate to the [[NED]] definition, pin down the 
-      hierarchy view. This way you won't lose the context you are currently in and the the 
+      <tip>Before you use the context menu to navigate to the [[NED]] definition, pin down the
+      hierarchy view. This way you won't lose the context you are currently in and the the
       content if the view will not follow the selection.</tip>
-      
+
       <!-- TODO screenshot, context mem pinning -->
     </sect2>
     <sect2>

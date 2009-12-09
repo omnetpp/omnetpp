@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -214,7 +214,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		chartsArea.layout();
 		chartsArea.redraw();
 	}
-	
+
 	private void initialize() {
 		// set up UI
 		setPageTitle("Charts: " + getChartSheetName(chartSheet));
@@ -251,7 +251,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		// set up contents
 		for (Chart chart : chartSheet.getCharts())
 			addChartView(chart);
-		
+
 		for (Property property : chartSheet.getProperties())
 		    setChartSheetProperty(property.getName(), property.getValue());
 	}
@@ -323,14 +323,14 @@ public class ChartSheetPage extends ScaveEditorPage {
         else if (ChartSheetProperties.PROP_MIN_CHART_WIDTH.equals(name)) {
             int minWidth = value == null ? ChartSheetProperties.DEFAULT_MIN_CHART_WIDTH : Integer.parseInt(value);
             for (Control child : chartsArea.getChildren())
-                ((GridData)child.getLayoutData()).minimumWidth = minWidth; 
+                ((GridData)child.getLayoutData()).minimumWidth = minWidth;
             chartsArea.layout(true);
             reflow(true);
         }
         else if (ChartSheetProperties.PROP_MIN_CHART_HEIGHT.equals(name)) {
             int minHeight = value == null ? ChartSheetProperties.DEFAULT_MIN_CHART_HEIGHT : Integer.parseInt(value);
             for (Control child : chartsArea.getChildren())
-                ((GridData)child.getLayoutData()).minimumHeight = minHeight; 
+                ((GridData)child.getLayoutData()).minimumHeight = minHeight;
             chartsArea.layout(true);
             reflow(true);
         }
@@ -380,5 +380,5 @@ public class ChartSheetPage extends ScaveEditorPage {
         public int computeMaximumWidth(Composite composite, boolean changed) {
             return computeSize(composite, SWT.DEFAULT, SWT.DEFAULT, false).x;
         }
-    }    
+    }
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -64,7 +64,7 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
         IFigure fig;
         for(fig = fa.getFigure(); !(fig instanceof Clickable) && fig != null; fig = fig.getParent());
         Assert.assertNotNull("Figure must be clickable", fig);
-        
+
         if (!((Clickable)fig).isSelected())
             fa.click(LEFT_MOUSE_BUTTON);
     }

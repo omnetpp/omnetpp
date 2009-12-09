@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,7 +21,7 @@ public class ChartSheetItemProvider extends
 	}
 
 	/**
-	 * Override default implementation to wrap the values of the 
+	 * Override default implementation to wrap the values of the
 	 * 'charts' reference.
 	 */
 	protected boolean isWrappingNeeded(Object object) {

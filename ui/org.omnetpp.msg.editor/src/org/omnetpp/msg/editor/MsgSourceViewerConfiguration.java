@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -32,7 +32,7 @@ public class MsgSourceViewerConfiguration extends SourceViewerConfiguration {
 
     @Override
 	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
-        return new String[] { "    ", "" }; 
+        return new String[] { "    ", "" };
     }
 
 	@Override
@@ -58,11 +58,11 @@ public class MsgSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
-        // colorizer for normal ned doc 
+        // colorizer for normal ned doc
 		dr = new DefaultDamagerRepairer(new MsgDocColorizerScanner());
 		reconciler.setDamager(dr, MsgSyntaxHighlightPartitionScanner.MSG_DOC);
 		reconciler.setRepairer(dr, MsgSyntaxHighlightPartitionScanner.MSG_DOC);
-        
+
         // colorizer for private ned doc
         dr = new DefaultDamagerRepairer(new MsgPrivateDocColorizerScanner());
 		reconciler.setDamager(dr, MsgSyntaxHighlightPartitionScanner.MSG_PRIVATE_DOC);

@@ -6,7 +6,7 @@ import org.eclipse.ui.PartInitException;
 
 public class DetailedPartInitException extends PartInitException {
     private static final long serialVersionUID = 1L;
-    
+
     String detailMessage;
 
     public DetailedPartInitException(String message) {
@@ -25,7 +25,7 @@ public class DetailedPartInitException extends PartInitException {
         else
             super.printStackTrace();
     }
-    
+
     public void realPrintStackTrace(PrintWriter output) {
         super.printStackTrace(output);
     }

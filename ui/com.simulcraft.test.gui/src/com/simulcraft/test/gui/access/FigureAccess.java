@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -79,7 +79,7 @@ public class FigureAccess
         reveal();
         IFigure rootFigure = getRootFigure();
         Rectangle bounds = getAbsoluteBounds();
-        Point[] testSpots = { bounds.getCenter(), 
+        Point[] testSpots = { bounds.getCenter(),
                               bounds.getTop().translate(0, 1), bounds.getBottom().translate(0, -1),
                               bounds.getLeft().translate(1, 0), bounds.getRight().translate(-1, 0),
                               bounds.getTopLeft().translate(1,1), bounds.getTopRight().translate(-1,0),
@@ -130,7 +130,7 @@ public class FigureAccess
 	@UIStep
 	public void reveal() {
 	    // TODO rather call the viewer's reveal (see. FlyoutPaletteCompositeAccess.reveal()
-	    // copied from ScrollingGraphicalViewer.reveal(EditPart)	    
+	    // copied from ScrollingGraphicalViewer.reveal(EditPart)
 	    IFigure target = getFigure();
 	    Viewport port = ((FigureCanvas)getCanvas()).getViewport();
 	    Rectangle exposeRegion = target.getBounds().getCopy();
@@ -140,7 +140,7 @@ public class FigureAccess
 	        target = target.getParent();
 	    }
 	    exposeRegion.expand(5, 5);
-	    
+
 	    Dimension viewportSize = port.getClientArea().getSize();
 
 	    Point topLeft = exposeRegion.getTopLeft();
@@ -156,7 +156,7 @@ public class FigureAccess
 	    else
 	        finalLocation.y = Math.min(topLeft.y, Math.max(bottomRight.y, port.getViewLocation().y));
 
-	    ((FigureCanvas)getCanvas()).scrollSmoothTo(finalLocation.x, finalLocation.y); 
+	    ((FigureCanvas)getCanvas()).scrollSmoothTo(finalLocation.x, finalLocation.y);
 	}
 
     public Rectangle getBounds() {

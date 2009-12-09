@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -79,7 +79,7 @@ import org.omnetpp.scave.model.SetOperation;
 /**
  * This class calculates the content of a dataset
  * applying the operations described by the dataset.
- * 
+ *
  * @author tomi
  */
 public class DatasetManager {
@@ -99,8 +99,8 @@ public class DatasetManager {
 	}
 
 	/**
-	 * Visitor-like thingy, where doSwitch() traverses the dataset (or whatever model item was 
-	 * passed into it), and calculates an IDList of the given type. It stops at the "target" item. 
+	 * Visitor-like thingy, where doSwitch() traverses the dataset (or whatever model item was
+	 * passed into it), and calculates an IDList of the given type. It stops at the "target" item.
 	 */
 	static class IDListCollector extends ProcessDatasetSwitch {
 
@@ -290,24 +290,24 @@ public class DatasetManager {
 		if (dataset != null) {
 			IDList scalars = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 			IDList vectors = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
-	
+
 			// process scalars
 			XYDatasetVector xyScalars = null;
 			List<IsoLineData[]> isoLineIds = null;
 			if (!scalars.isEmpty()) {
 				IsoLineData xData = IsoLineData.fromFilterPattern(chart.getXDataPattern());
 				Assert.isLegal(xData != null && xData.getModuleName() != null && xData.getDataName() != null, "X data is not selected.");
-		
+
 				String xModuleName = xData.getModuleName();
 				String xScalarName = xData.getDataName();
 				List<String> isoPatterns = chart.getIsoDataPattern();
 				boolean averageReplications = chart.isAverageReplications();
-		
+
 				StringVector isoModuleNames = new StringVector();
 				StringVector isoScalarNames = new StringVector();
 				StringVector isoAttrNames = new StringVector();
 				collectIsoParameters(isoPatterns, isoModuleNames, isoScalarNames, isoAttrNames);
-		
+
 				DataSorter sorter = new DataSorter(manager);
 				ResultItemFields rowFields = new ResultItemFields(MODULE, NAME);
 				ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT, MEASUREMENT) :
@@ -319,7 +319,7 @@ public class DatasetManager {
 				isoLineIds = collectIsoLineIds(scalars, isoModuleNames, isoScalarNames, isoAttrNames, xyScalars, manager);
 				// assertOrdered(xyScalars);
 			}
-	
+
 			// process vectors
 			XYArray[] xyVectors = null;
 			IDList yVectors = null;
@@ -344,7 +344,7 @@ public class DatasetManager {
 					}
 				}
 			}
-	
+
 			// compose results
 			if (xyScalars != null && xyVectors == null)
 				return createScatterPlotDataset(xyScalars, isoLineIds, manager);
@@ -354,13 +354,13 @@ public class DatasetManager {
 				return new CompoundXYDataset(
 						createScatterPlotDataset(xyScalars, isoLineIds, manager),
 						new VectorScatterPlotDataset(yVectors, xyVectors, manager));
-	
+
 		}
 		return null;
 	}
 
 	/**
-	 * Collect the module/scalar names or attribute names from the filter patterns. 
+	 * Collect the module/scalar names or attribute names from the filter patterns.
 	 */
 	private static void collectIsoParameters(List<String> isoPatterns,
 							StringVector isoModuleNames, StringVector isoScalarNames, StringVector isoAttrNames) {
@@ -411,7 +411,7 @@ public class DatasetManager {
 					isoLineId.add(data);
 				}
 			}
-			isoLineIds.add(isoLineId.toArray(new IsoLineData[isoLineId.size()])); 
+			isoLineIds.add(isoLineId.toArray(new IsoLineData[isoLineId.size()]));
 		}
 
 		return isoLineIds;
@@ -458,7 +458,7 @@ public class DatasetManager {
 	public static IHistogramDataset createHistogramDataset(HistogramChart chart, ResultFileManager manager, IProgressMonitor monitor) {
 		checkReadLock(manager);
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		IDList idlist = dataset != null ? getIDListFromDataset(manager, dataset, chart, ResultType.HISTOGRAM_LITERAL): new IDList(); 
+		IDList idlist = dataset != null ? getIDListFromDataset(manager, dataset, chart, ResultType.HISTOGRAM_LITERAL): new IDList();
 		return new HistogramDataset(idlist, manager);
 	}
 
@@ -496,8 +496,8 @@ public class DatasetManager {
 	 * Returns the default format string for names of the {@code items}.
 	 * It is "{file} {run} {run-number} {module} {name} {experiment} {measurement} {replication}",
 	 * but fields that are the same for each item are omitted.
-	 * If all the fields has the same value in {@code items}, then the "{index}" is used as 
-	 * the format string. 
+	 * If all the fields has the same value in {@code items}, then the "{index}" is used as
+	 * the format string.
 	 */
 	private static String defaultNameFormat(ResultItem[] items) {
 
@@ -558,7 +558,7 @@ public class DatasetManager {
 	}
 
 	/**
-	 * Generates a format string from the specified fields 
+	 * Generates a format string from the specified fields
 	 * for formatting result items.
 	 */
 	private static String nameFormatUsingFields(List<ResultItemField> fields) {
@@ -575,7 +575,7 @@ public class DatasetManager {
 
 	/**
 	 * Selects ids from a {@code source} IDList.
-	 * If no filters given or the first filter is a Deselect, then a "Select all" is implicitly 
+	 * If no filters given or the first filter is a Deselect, then a "Select all" is implicitly
 	 * executed first.
 	 */
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, ResultType type) {

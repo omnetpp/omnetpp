@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -156,7 +156,7 @@ public class FilteredDataPanel extends Composite {
 		else {
 			// fallback: if filter is not valid, just show an unfiltered list. This should be
 			// done because we get invoked indirectly as well, like when files get added/removed
-			// on the Inputs page. For the same reason, this function should not bring up an 
+			// on the Inputs page. For the same reason, this function should not bring up an
 			// error dialog (but the Filter button itself may do so).
 			data.setIDList(idlist);
 		}
@@ -203,7 +203,7 @@ public class FilteredDataPanel extends Composite {
 	/**
 	 * Switches the filter from "Advanced" to "Basic" mode. If this cannot be done
 	 * (filter string invalid or too complex), the user is prompted with a dialog,
-	 * and switching may or may not actually take place depending on the answer. 
+	 * and switching may or may not actually take place depending on the answer.
 	 * @return true if switching was actually done.
 	 */
 	public boolean trySwitchToSimpleFilter() {

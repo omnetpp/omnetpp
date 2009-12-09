@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.omnetpp.common.util.DisplayUtils;
 
 /**
  * Data for syntax highlighting
- * 
+ *
  * @author rhornig, andras
  */
 public class SyntaxHighlightHelper {
@@ -78,7 +78,7 @@ public class SyntaxHighlightHelper {
 	}
 
 	/**
-	 * Detector for a NED qualified type names (a sequence of identifiers, separated by dots) 
+	 * Detector for a NED qualified type names (a sequence of identifiers, separated by dots)
 	 */
 	public static class NedDottedWordDetector implements IWordDetector {
 	    public boolean isWordStart(char character) {

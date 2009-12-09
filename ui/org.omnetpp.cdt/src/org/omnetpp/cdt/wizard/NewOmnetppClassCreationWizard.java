@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,10 +29,10 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
- * Modified C++ Class Creation Wizard that: (1) generates .cc files not .cpp 
+ * Modified C++ Class Creation Wizard that: (1) generates .cc files not .cpp
  * like the original; (2) observes @namespace() declared in package.ned files;
  * (3) puts in correct copyright line and license header.
- *  
+ *
  * @author Andras
  */
 @SuppressWarnings("restriction")
@@ -51,7 +51,7 @@ public class NewOmnetppClassCreationWizard extends NewClassCreationWizard {
                 setNamespaceText(empty ? "" : namespace, true);
                 setNamespaceSelection(!empty, !empty);
             }
-            
+
             return super.sourceFolderChanged();
         }
 
@@ -66,23 +66,23 @@ public class NewOmnetppClassCreationWizard extends NewClassCreationWizard {
         @Override
         public void createClass(IProgressMonitor monitor) throws CoreException, InterruptedException {
             super.createClass(monitor);
-            
-            // Replace generated comments with our own. CDT's comment generation 
+
+            // Replace generated comments with our own. CDT's comment generation
             // is embedded deep in CDT internal code with lots of static methods;
             // it must come from a template (see StubUtility.getDefaultFileTemplate())
             //
-            // So the easiest and most robust solution is to simply replace the comment 
+            // So the easiest and most robust solution is to simply replace the comment
             // in the generated files afterwards.
             //
             String license = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(getCreatedHeaderFile().getParent(), INEDTypeResolver.LICENSE_PROPERTY);
             if (license==null || !LicenseUtils.isAcceptedLicense(license))
                 license = LicenseUtils.getDefaultLicense();
             String bannerComment = LicenseUtils.getBannerComment(license, "//");
-            
+
             replaceBannerComment(getCreatedHeaderFile(), bannerComment, monitor);
             replaceBannerComment(getCreatedSourceFile(), bannerComment, monitor);
         }
-        
+
         protected void replaceBannerComment(IFile file, String bannerComment, IProgressMonitor monitor) throws CoreException {
             try {
                 String contents = FileUtils.readTextFile(file.getContents());

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,7 +39,7 @@ public class ResultItemNamePatternField {
 		for (int i = 0; i < proposals.length; ++i)
 			proposals[i] = "{" + fieldNames[i] + "}";
 		SimpleContentProposalProvider proposalProvider = new SimpleContentProposalProvider(proposals);
-	
+
 		new ContentAssistCommandAdapter(text,
 				new TextContentAdapter(),
 				proposalProvider,

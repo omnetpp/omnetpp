@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,13 +23,13 @@ public class ShowViewAction extends Action {
 	private String viewID;
 
 	/**
-     * A generic view displayer. the action's id is the same as the view id 
+     * A generic view displayer. the action's id is the same as the view id
 	 * @param viewID to be shown
 	 */
 	public ShowViewAction(String viewID) {
         setId(viewID);
 		IViewDescriptor viewDesc = PlatformUI.getWorkbench().getViewRegistry().find(viewID);
-		if (viewDesc == null) 
+		if (viewDesc == null)
 			throw new IllegalArgumentException("No such view registered: "+viewID);
 		this.viewID = viewID;
 		setText("Show " + viewDesc.getLabel());
@@ -42,7 +42,7 @@ public class ShowViewAction extends Action {
 		try {
 			IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			workbenchPage.showView(viewID);
-		} 
+		}
 		catch (PartInitException e) {
 			CommonPlugin.logError(e);
 		}

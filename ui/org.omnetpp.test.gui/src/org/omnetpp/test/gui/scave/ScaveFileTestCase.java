@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,7 +25,7 @@ public class ScaveFileTestCase
     public ScaveFileTestCase() {
         super("test.anf");
     }
-    
+
 	protected void createFile(String fileName, String content) throws Exception {
 		WorkspaceUtils.createFileWithContent(projectName + "/" + fileName, content);
 	}
@@ -58,7 +58,7 @@ public class ScaveFileTestCase
 	protected GenericTreeNode[] add(GenericTreeNode[] array, GenericTreeNode... elements) {
 		GenericTreeNode[] result = array;
 		for (GenericTreeNode element : elements)
-			result = (GenericTreeNode[])ArrayUtils.add(result, element); 
+			result = (GenericTreeNode[])ArrayUtils.add(result, element);
 		return result;
 	}
 
@@ -212,7 +212,7 @@ public class ScaveFileTestCase
 	}
 
 	protected String createHistogramFileContent(int runNumber) throws Exception {
-		return	createRun(runNumber) + 
+		return	createRun(runNumber) +
 				String.format(
 				"statistic module-%1$d histogram-%1$d %1$d\n" +
 				"field count 1\n" +
@@ -236,7 +236,7 @@ public class ScaveFileTestCase
 	}
 
 	protected String createVectorFileContent(int runNumber) {
-		return	createRun(runNumber) + 
+		return	createRun(runNumber) +
 				String.format(
 				"vector 1 module-%1$d vector-%1$d TV\n" +
 				"1	0.0	%2$f\n",

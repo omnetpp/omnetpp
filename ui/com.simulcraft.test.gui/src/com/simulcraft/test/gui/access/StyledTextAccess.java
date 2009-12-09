@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -62,7 +62,7 @@ public class StyledTextAccess extends CompositeAccess
 		Assert.assertFalse("more than one match for "+patternString, matcher.matches());
         return targetOffset;
     }
-    
+
     /**
      * Checks StyledText contents with String.equals(). Note: the StyledText
      * control does NOT contain the content of collapsed folding regions.
@@ -74,8 +74,8 @@ public class StyledTextAccess extends CompositeAccess
     }
 
     /**
-     * Checks StyledText contents after normalizing all whitespace. Note: 
-     * the StyledText control does NOT contain the content of collapsed 
+     * Checks StyledText contents after normalizing all whitespace. Note:
+     * the StyledText control does NOT contain the content of collapsed
      * folding regions.
      */
     @UIStep
@@ -83,7 +83,7 @@ public class StyledTextAccess extends CompositeAccess
         String actualContent = getTextContent();
         Assert.assertTrue("StyledText content does not match", StringUtils.areEqualIgnoringWhiteSpace(actualContent, expectedContent));
     }
-    
+
     /**
      * Checks StyledText contents with regex match. Note: the StyledText
      * control does NOT contain the content of collapsed folding regions.

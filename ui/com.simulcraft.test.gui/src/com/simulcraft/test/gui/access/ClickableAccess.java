@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,7 +23,7 @@ import com.simulcraft.test.gui.core.InAnyThread;
 import com.simulcraft.test.gui.core.UIStep;
 
 public class ClickableAccess
-	extends Access 
+	extends Access
 {
     public static int delayBeforeMouseMove = 300;
     public static int delayAfterMouseMove = 300;
@@ -33,7 +33,7 @@ public class ClickableAccess
 
     // mouse trajectory: two functions fx(t),fy(t) needed, f(0)=0 and f(1)=1 for both, 0<=t<1
     interface Ft01 { double f(double t); };
-    
+
     //private Ft01 xt = new Ft01() { public double f(double t) { return pow(t, 0.2); } };
     //private Ft01 yt = new Ft01() { public double f(double t) { return pow(t, 0.2); } };
 
@@ -124,7 +124,7 @@ public class ClickableAccess
 
         if (Display.getCurrent() != null)
             AnimationEffects.beginAnimateDragDrop(x1, y1, x2, y2);
-        
+
         moveMouseAbsolute(x2, y2);
 
         if (Display.getCurrent() != null)

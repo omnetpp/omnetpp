@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,7 +36,7 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * Property source for charts.  
+ * Property source for charts.
  * @author tomi
  */
 public class ChartProperties extends PropertySource {
@@ -107,7 +107,7 @@ public class ChartProperties extends PropertySource {
 			return new HistogramChartProperties(chart, properties, manager);
 		else if (chart instanceof ScatterChart)
 			return new ScatterChartProperties(chart, properties, manager);
-		else 
+		else
 			ScavePlugin.logError(new IllegalArgumentException("chart type unrecognized"));
 		return new ChartProperties(chart, properties, manager);
 	}
@@ -265,7 +265,7 @@ public class ChartProperties extends PropertySource {
 
 	public String getStringProperty(String propertyName) {
 		Property property = getProperty(propertyName);
-		return property != null ? StringUtils.defaultString(property.getValue()) : 
+		return property != null ? StringUtils.defaultString(property.getValue()) :
 								  getDefaultStringProperty(propertyName);
 	}
 

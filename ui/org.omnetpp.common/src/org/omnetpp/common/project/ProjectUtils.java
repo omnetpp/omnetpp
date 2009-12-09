@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -143,7 +143,7 @@ public class ProjectUtils {
 				if (line.equals("."))
 					result.add(project);
 				else if (line.length()>0)
-					result.add(project.getFolder(line)); 
+					result.add(project.getFolder(line));
 			}
 		}
 		if (result.isEmpty())
@@ -179,7 +179,7 @@ public class ProjectUtils {
             IProjectDescription description = project.getDescription();
             String[] natures = description.getNatureIds();
             return ArrayUtils.contains(natures, IConstants.OMNETPP_NATURE_ID);
-        } 
+        }
         catch (CoreException e) {
             CommonPlugin.logError(e);
             return false;
@@ -198,7 +198,7 @@ public class ProjectUtils {
             description.setNatureIds((String[])ArrayUtils.add(natures, IConstants.OMNETPP_NATURE_ID));
             project.setDescription(description, monitor);
             // note: builders are added automatically, by OmnetppNature.configure()
-        } 
+        }
         catch (CoreException e) {
             CommonPlugin.logError(e);
         }
@@ -216,7 +216,7 @@ public class ProjectUtils {
             description.setNatureIds((String[])ArrayUtils.removeElement(natures, IConstants.OMNETPP_NATURE_ID));
             project.setDescription(description, null);
             // note: builders are removed automatically, by OmnetppNature.deconfigure()
-        } 
+        }
         catch (CoreException e) {
             CommonPlugin.logError(e);
         }
@@ -235,7 +235,7 @@ public class ProjectUtils {
             Set<String> wsProjectNames = new HashSet<String>();
             for (IProject p : wsProjects)
                 wsProjectNames.add(p.getName());
-            
+
             // iterate through all dirs in the workspace directory and check them
             File[] contents = directory.listFiles();
             final String dotProject = IProjectDescription.DESCRIPTION_FILE_NAME;
@@ -258,23 +258,23 @@ public class ProjectUtils {
     public static IProject importProjectFromWorkspaceDirectory(String projectName, boolean open, IProgressMonitor monitor) throws CoreException {
         //
         // Note: code based on WizardProjectsImportPage.createExistingProject().
-        // Note2: description.setLocation() would only be needed when linking to a project 
+        // Note2: description.setLocation() would only be needed when linking to a project
         // outside the workspace directory
         //
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         final IProject project = workspace.getRoot().getProject(projectName);
         IProjectDescription description = workspace.newProjectDescription(projectName);
-        
+
         try {
             monitor.beginTask("Importing project", 100);
             project.create(description, new SubProgressMonitor(monitor, 30));
             if (open)
                 project.open(IResource.NONE, new SubProgressMonitor(monitor, 30));
-        } 
+        }
         finally {
             monitor.done();
         }
-        
+
         return project;
     }
 

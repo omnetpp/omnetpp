@@ -1,7 +1,7 @@
 //
 // OMNeT++ network description -- exported from BRITE100 topology
 // Generator Model Used:
-//   Model (3 - ASWaxman):  100 1000 100 1  2  0.15000000596046448 0.20000000298023224 1 1 10.0 1024.0 
+//   Model (3 - ASWaxman):  100 1000 100 1  2  0.15000000596046448 0.20000000298023224 1 1 10.0 1024.0
 //
 
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -52,7 +52,7 @@ public final class NedCompletionHelper {
     public final static Template[] proposedNedSubmoduleDisplayStringTempl;
 
     public final static Template[] proposedNedConnectionDisplayStringTempl;
-    
+
     static {
         ArrayList<Template> componentTemplates = new ArrayList<Template>();
         ArrayList<Template> submoduleTemplates = new ArrayList<Template>();
@@ -93,7 +93,7 @@ public final class NedCompletionHelper {
                 case tt: break;
                 case ls: shortParameterCount = 1; break;
             }
-            
+
             String description = tag.getDescription();
             String shortPattern = shortParameterCount == -1 ? null : fullPattern;
             int index = -1;
@@ -123,7 +123,7 @@ public final class NedCompletionHelper {
                     connectionTemplates.add(makeShortTemplate(shortPattern, description));
             }
         }
-        
+
         proposedNedComponentDisplayStringTempl = componentTemplates.toArray(new Template[0]);
         proposedNedSubmoduleDisplayStringTempl = submoduleTemplates.toArray(new Template[0]);
         proposedNedConnectionDisplayStringTempl = connectionTemplates.toArray(new Template[0]);
@@ -178,13 +178,13 @@ public final class NedCompletionHelper {
     	makeShortTemplate("hypot(${x},${y})", "function"),
     	makeShortTemplate("log(${x})", "function"),
     	makeShortTemplate("log10(${x})", "function"),
-    
+
     	// unit
     	makeShortTemplate("dropUnit(${quantity})", "function"),
     	makeShortTemplate("replaceUnit(${quantity}, ${string})", "function"),
     	makeShortTemplate("convertUnit(${quantity}, ${string})", "function"),
     	makeShortTemplate("unitOf(${quantity})", "function"),
-    
+
     	// string
     	makeShortTemplate("length(${string})", "function"),
     	makeShortTemplate("contains(${string}, ${string})", "function"),
@@ -206,12 +206,12 @@ public final class NedCompletionHelper {
     	makeShortTemplate("choose(${int}, ${string})", "function"),
     	makeShortTemplate("toUpper(${string})", "function"),
     	makeShortTemplate("toLower(${string})", "function"),
-    
+
     	// conversion
     	makeShortTemplate("int(${x})", "function"),
     	makeShortTemplate("double(${x})", "function"),
     	makeShortTemplate("string(${x})", "function"),
-    
+
     	// reflection
     	makeShortTemplate("fullPath()", "function"),
     	makeShortTemplate("fullName()", "function"),
@@ -373,31 +373,31 @@ public final class NedCompletionHelper {
                 "        }\n"+
                 "}"),
         makeTemplate("moduletrimesh", "module with triangle mesh topology",
-                "//\n// Triangle mesh node\n//\n" + 
-                "simple ${TriMeshNode}\n" + 
-                "{\n" + 
-                "    gates:\n" + 
-                "        inout ${w};\n" + 
-                "        inout ${nw};\n" + 
-                "        inout ${sw};\n" + 
-                "        inout ${e};\n" + 
-                "        inout ${se};\n" + 
-                "        inout ${ne};\n" + 
-                "}\n\n" + 
-                "//\n// TODO documentation\n//\n" + 
-                "// @author ${user}\n//\n" + 
-                "module ${TriMesh}\n{\n" + 
-                "    parameters:\n" + 
-                "        int rows = default(3);\n" + 
-                "        int cols = default(7);\n" + 
-                "    submodules:\n" + 
-                "        ${node}[rows*cols]: ${TriMeshNode};\n" + 
-                "    connections allowunconnected:\n" + 
-                "        for x=0..cols-1, for y=0..rows-1 {\n" + 
-                "            ${node}[y*cols+x].${e} <--> ${node}[y*cols+x+1].${w} if x<cols-1;\n" + 
-                "            ${node}[y*cols+x].${se} <--> ${node}[(y+1)*cols+x].${nw} if y<rows-1;\n" + 
-                "            ${node}[y*cols+x].${sw} <--> ${node}[(y+1)*cols+x-1].${ne} if x>0 && y<rows-1;\n" + 
-                "        }\n" + 
+                "//\n// Triangle mesh node\n//\n" +
+                "simple ${TriMeshNode}\n" +
+                "{\n" +
+                "    gates:\n" +
+                "        inout ${w};\n" +
+                "        inout ${nw};\n" +
+                "        inout ${sw};\n" +
+                "        inout ${e};\n" +
+                "        inout ${se};\n" +
+                "        inout ${ne};\n" +
+                "}\n\n" +
+                "//\n// TODO documentation\n//\n" +
+                "// @author ${user}\n//\n" +
+                "module ${TriMesh}\n{\n" +
+                "    parameters:\n" +
+                "        int rows = default(3);\n" +
+                "        int cols = default(7);\n" +
+                "    submodules:\n" +
+                "        ${node}[rows*cols]: ${TriMeshNode};\n" +
+                "    connections allowunconnected:\n" +
+                "        for x=0..cols-1, for y=0..rows-1 {\n" +
+                "            ${node}[y*cols+x].${e} <--> ${node}[y*cols+x+1].${w} if x<cols-1;\n" +
+                "            ${node}[y*cols+x].${se} <--> ${node}[(y+1)*cols+x].${nw} if y<rows-1;\n" +
+                "            ${node}[y*cols+x].${sw} <--> ${node}[(y+1)*cols+x-1].${ne} if x>0 && y<rows-1;\n" +
+                "        }\n" +
                 "}"),
         makeTemplate("modulehexmesh", "module with hexagonal mesh topology",
                 "//\n// Hexagonal mesh node\n//\n"+

@@ -1,5 +1,5 @@
 2009-08-30  Andras Varga
 
-	* JSimpleModule.cast() to return the java peer, instead of a newly 
+	* JSimpleModule.cast() to return the java peer, instead of a newly
 	created SWIG wrapper every time
 

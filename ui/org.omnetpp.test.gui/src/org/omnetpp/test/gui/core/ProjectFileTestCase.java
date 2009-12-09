@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,7 +42,7 @@ public class ProjectFileTestCase
 	}
 
 	public void setFileName(String filePath) {
-	    // I think the following assert does not always hold true, because there might be files 
+	    // I think the following assert does not always hold true, because there might be files
 	    // checked in without starting with 'test' so that they don't get deleted in cleanup
 	    // FIXME: remove this commented assert eventually
 	    // Assert.assertTrue("Filename must start with 'test'", fileName.startsWith("test"));
@@ -76,7 +76,7 @@ public class ProjectFileTestCase
 	}
 
     /**
-     * Deletes all test generated files, folders and projects. (those starting with "test*") 
+     * Deletes all test generated files, folders and projects. (those starting with "test*")
      */
     protected void cleanupWorkspace() {
         try {
@@ -99,7 +99,7 @@ public class ProjectFileTestCase
             throw new RuntimeException(e);
         }
     }
-    
+
 	@Override
 	/**
 	 * These must be advised exactly once.
@@ -127,7 +127,7 @@ public class ProjectFileTestCase
 		cleanupWorkspace();
 		assertProjectCorrect();
 	}
-    
+
     /**
      * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
      */
@@ -140,24 +140,24 @@ public class ProjectFileTestCase
         WorkspaceUtils.assertProjectExists(projectName);
 		String projectFileName = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getLocation().toOSString()+"/.project";
 		String projectFileContent = FileUtils.readTextFile(projectFileName);
-        Assert.assertTrue("Project file content differs from expected", 
+        Assert.assertTrue("Project file content differs from expected",
                           StringUtils.areEqualIgnoringWhiteSpace(projectFileContent,
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
-        		"<projectDescription>\r\n" + 
-        		"    <name>project</name>\r\n" + 
-        		"    <comment></comment>\r\n" + 
-        		"    <projects>\r\n" + 
-        		"    </projects>\r\n" + 
-        		"    <buildSpec>\r\n" + 
-        		"        <buildCommand>\r\n" + 
-        		"            <name>org.omnetpp.scave.builder.vectorfileindexer</name>\r\n" + 
-        		"            <arguments>\r\n" + 
-        		"            </arguments>\r\n" + 
-        		"        </buildCommand>\r\n" + 
-        		"    </buildSpec>\r\n" + 
-        		"    <natures>\r\n" + 
-        		"        <nature>org.omnetpp.main.omnetppnature</nature>\r\n" + 
-        		"    </natures>\r\n" + 
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+        		"<projectDescription>\r\n" +
+        		"    <name>project</name>\r\n" +
+        		"    <comment></comment>\r\n" +
+        		"    <projects>\r\n" +
+        		"    </projects>\r\n" +
+        		"    <buildSpec>\r\n" +
+        		"        <buildCommand>\r\n" +
+        		"            <name>org.omnetpp.scave.builder.vectorfileindexer</name>\r\n" +
+        		"            <arguments>\r\n" +
+        		"            </arguments>\r\n" +
+        		"        </buildCommand>\r\n" +
+        		"    </buildSpec>\r\n" +
+        		"    <natures>\r\n" +
+        		"        <nature>org.omnetpp.main.omnetppnature</nature>\r\n" +
+        		"    </natures>\r\n" +
         		"</projectDescription>\r\n"
         		));
 		WorkspaceUtils.ensureFileNotExists(projectName+"/.nedfolders");
@@ -174,7 +174,7 @@ public class ProjectFileTestCase
         workbenchWindow.ensureAllEditorPartsAreClosed();
         workbenchWindow.assertNoOpenEditorParts();
     }
-    
+
     protected void ensureEditorPartIsSaved() {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         if (workbenchWindow.hasEditorPartWithTitle(fileName)) {

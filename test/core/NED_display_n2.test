@@ -7,7 +7,7 @@ import testlib.Dump;
 
 network Test {
     @display(",foo");  // missing tagname
-    submodules: 
+    submodules:
         dump: Dump;
 }
 

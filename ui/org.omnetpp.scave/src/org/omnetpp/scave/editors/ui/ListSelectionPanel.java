@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,10 +20,10 @@ import org.eclipse.swt.widgets.List;
 
 /**
  * Panel for choosing multiple elements from a list.
- * 
+ *
  * When created the left list is filled with the selectable elements.
  * The selected elements are shown in the right list.
- * 
+ *
  * Elements can be moved between the two list with the "Add", "Add all",
  * "Remove", "Remove all" buttons.
  *

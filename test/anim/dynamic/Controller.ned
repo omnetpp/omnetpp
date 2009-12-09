@@ -1,3 +1,3 @@
-simple Controller 
-{   
+simple Controller
+{
 }

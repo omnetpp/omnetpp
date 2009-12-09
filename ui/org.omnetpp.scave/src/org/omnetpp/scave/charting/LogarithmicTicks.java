@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.Assert;
  * <p>
  * There are ticks at ... 0.2, 0.5, 1, 2, 5, 10, ...
  * from which the ... 1, 10, ... are the major ticks.
- * 
+ *
  * @author tomi
  */
 public class LogarithmicTicks implements ITicks {
@@ -75,9 +75,9 @@ public class LogarithmicTicks implements ITicks {
 
 	public Iterator<BigDecimal> iterator() {
 		class TickIterator implements Iterator<BigDecimal> {
-	
+
 			BigDecimal current;
-	
+
 			public TickIterator() {
 				current = start;
 			}

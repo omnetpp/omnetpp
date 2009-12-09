@@ -28,7 +28,7 @@ NAMESPACE_BEGIN
 
 /**
  * GENERATED CLASS. Abtract base class for NED validators.
- * 
+ *
  * @ingroup Validation
  */
 class NEDXML_API NEDValidatorBase

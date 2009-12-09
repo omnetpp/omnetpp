@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,7 +40,7 @@ public class SelectAllAction extends AbstractScaveAction {
 
 		Control focusControl = Display.getDefault().getFocusControl();
 		if ((focusControl instanceof Table || focusControl instanceof Tree ||
-			 focusControl instanceof Text || focusControl instanceof Combo) 
+			 focusControl instanceof Text || focusControl instanceof Combo)
 				&& hasAncestor(focusControl, activePage)) {
 			if (focusControl instanceof Table)
 				((Table)focusControl).selectAll();

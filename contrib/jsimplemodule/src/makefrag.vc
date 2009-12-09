@@ -29,7 +29,7 @@ CLASSDIR = $(OUTDIR)\classes
 DISTDIR  = ..\jsimple
 
 GENERATED_FILES = $(OUTDIR)\simkernel_wrap.cc  $(OUTDIR)\SimkernelJNI_registerNatives.cc
-EXTRA_OBJS =      $(OUTDIR)\simkernel_wrap.obj $(OUTDIR)\SimkernelJNI_registerNatives.obj 
+EXTRA_OBJS =      $(OUTDIR)\simkernel_wrap.obj $(OUTDIR)\SimkernelJNI_registerNatives.obj
 
 DIST_SRC_FILES = \
     commondefs.i \
@@ -54,7 +54,7 @@ EXPERIMENTAL_SRC_FILES = \
   patchownership.pl \
   ProxyObjectMap.java.in
 
-all: dist 
+all: dist
 
 binaries: $(TARGET)
 

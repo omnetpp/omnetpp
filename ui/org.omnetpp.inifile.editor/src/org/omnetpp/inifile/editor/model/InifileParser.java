@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,10 +24,10 @@ import org.omnetpp.common.Debug;
  * @author Andras
  */
 public class InifileParser {
-	/** 
-	 * Implement this interface to store ini file contents as it gets parsed. Comments are 
+	/**
+	 * Implement this interface to store ini file contents as it gets parsed. Comments are
 	 * passed back with leading "#" and preceding whitespace, or as "" if there's no comment
-	 * on that line. Lines that end in backslash are passed to incompleteLine(), with all 
+	 * on that line. Lines that end in backslash are passed to incompleteLine(), with all
 	 * content assigned to their completing (non-backslash) line.
 	 */
 	public interface ParserCallback {
@@ -106,11 +106,11 @@ public class InifileParser {
 				}
 				if (rawLine == null)
 					callback.parseError(lineNumber, numLines, "Stray backslash at end of file");
-				else 
+				else
 					concatenatedLines.append(rawLine);
 				line = concatenatedLines.toString();
 			}
-	
+
 			// process the line
 			line = line.trim();
 			char lineStart = line.length()==0 ? 0 : line.charAt(0);
@@ -180,7 +180,7 @@ public class InifileParser {
 	 * Returns the position of the comment on the given line (i.e. the position of the
 	 * # character), or line.length() if no comment is found. String literals
 	 * are recognized and skipped properly.
-	 * 
+	 *
 	 * Returns -1 if line contains an unterminated string literal.
 	 */
 	private static int findEndContent(String line, int fromPos) {
@@ -192,8 +192,8 @@ public class InifileParser {
 				k++;
 				while (k < line.length() && line.charAt(k) != '"') {
 					if (line.charAt(k) == '\\')  // skip \", \\, etc.
-						k++; 
-					k++;  
+						k++;
+					k++;
 				}
 				if (k >= line.length())
 					return -1; // meaning "unterminated string literal"

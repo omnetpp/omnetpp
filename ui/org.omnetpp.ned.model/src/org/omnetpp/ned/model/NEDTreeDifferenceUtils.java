@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,10 +30,10 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 public class NEDTreeDifferenceUtils {
 	/**
-	 * Applies changes identified by the tree diff algorithm to the tree. 
+	 * Applies changes identified by the tree diff algorithm to the tree.
 	 */
 	public interface IApplier {
-		public void replaceNonAttributeData(INEDElement element, String sourceLocation, NEDSourceRegion sourceRegion, 
+		public void replaceNonAttributeData(INEDElement element, String sourceLocation, NEDSourceRegion sourceRegion,
 				int syntaxProblemMaxLocalSeverity, int consistencyProblemMaxLocalSeverity);
 
 		public void replaceElements(INEDElement parent, int start, int end, int offset, INEDElement[] replacement);
@@ -44,7 +44,7 @@ public class NEDTreeDifferenceUtils {
 	@SuppressWarnings("unchecked")
 	public static void applyTreeDifferences(INEDElement original, INEDElement target, IApplier applier) {
 		applier.replaceNonAttributeData(original, target.getSourceLocation(), target.getSourceRegion(),
-				target.getSyntaxProblemMaxLocalSeverity(), target.getConsistencyProblemMaxLocalSeverity()); 
+				target.getSyntaxProblemMaxLocalSeverity(), target.getConsistencyProblemMaxLocalSeverity());
 
 		applyAttributeDifferences(original, target, applier);
 
@@ -151,7 +151,7 @@ public class NEDTreeDifferenceUtils {
 		public String toString() {
 			return "element replacements: " + numElementReplacements +
 				   ", attribute changes: " + numAttributeChanges +
-			       ", srcloc/markers: " + numNonAttributeDataChanges; 
+			       ", srcloc/markers: " + numNonAttributeDataChanges;
 		}
 	}
 
@@ -172,8 +172,8 @@ class NEDElementChildrenComparator implements IRangeComparator {
 	}
 
 	public boolean rangesEqual(int thisIndex, IRangeComparator other, int otherIndex) {
-		// NOTE: In this tree diff algorithm, we return true iff two the nodes are 
-		// the same type AND we want to synchronize them by changing differing attributes 
+		// NOTE: In this tree diff algorithm, we return true iff two the nodes are
+		// the same type AND we want to synchronize them by changing differing attributes
 		// and recursively synchronizing child elements. I.e. this is the case when the
 		// two nodes are submodules of the same *name* but potentially different
 		// vector size etc and contents: we return true.  If we just want one to be thrown
@@ -188,7 +188,7 @@ class NEDElementChildrenComparator implements IRangeComparator {
 		if (thisElement.getTagCode() == NEDElementTags.NED_CONNECTION) {
 			ConnectionElement thisConnection = (ConnectionElement)thisElement;
 			ConnectionElement otherConnection = (ConnectionElement)otherElement;
-	
+
 			String thisId = getConnectionId(thisConnection);
 			String otherId = getConnectionId(otherConnection);
 
@@ -198,7 +198,7 @@ class NEDElementChildrenComparator implements IRangeComparator {
 			// if they have the same name: synchronize (true), otherwise do remove+add (false)
 			String thisName = ((IHasName)thisElement).getName();
 			String otherName = ((IHasName)otherElement).getName();
-	
+
 			return StringUtils.equals(thisName, otherName);
 		}
 		else {

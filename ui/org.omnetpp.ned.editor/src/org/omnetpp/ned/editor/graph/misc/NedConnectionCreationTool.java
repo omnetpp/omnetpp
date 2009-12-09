@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -58,17 +58,17 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 	protected boolean handleCreateConnection() {
 		Command command = getCommand();
 		if (command == null || !(command instanceof CreateConnectionCommand))
-		    return false; 
+		    return false;
 
 		CreateConnectionCommand endCommand = (CreateConnectionCommand)command;
-        ModuleEditPart destMod = (ModuleEditPart)getTargetEditPart(); 
-        CompoundModuleElementEx compoundMod = destMod.getCompoundModulePart().getCompoundModuleModel(); 
+        ModuleEditPart destMod = (ModuleEditPart)getTargetEditPart();
+        CompoundModuleElementEx compoundMod = destMod.getCompoundModulePart().getCompoundModuleModel();
     	// ask the user about which gates should be connected, ask for both source and destination gates
 		ConnectionElementEx connection = endCommand.getConnection();
         ConnectionElementEx templateConn = new ConnectionChooser().open(compoundMod, connection, true, true);
 
     	eraseSourceFeedback();
-    
+
     	// if no selection was made, cancel the command
 		if (templateConn == null)
             // revert the connection change (user cancel - do not execute the command)
@@ -77,7 +77,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
         ReconnectCommand.copyConn(templateConn, connection);
         if (connection.getType() == null && templateConn.getType() != null)
             connection.setType(templateConn.getType());
-        
+
         setCurrentCommand(endCommand);
     	executeCurrentCommand();
     	return true;

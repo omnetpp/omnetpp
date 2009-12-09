@@ -4,7 +4,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.CodeSignature;
 
 /**
- * Based on GetInfo.aj, TJP Example project, AJDT. 
+ * Based on GetInfo.aj, TJP Example project, AJDT.
  */
 public aspect Tracing {
 	   static final void println(String s){ System.out.println(s); }

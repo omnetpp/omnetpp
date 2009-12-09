@@ -3,7 +3,7 @@
         copyright=""
         id="org.omnetpp.cdt.templates.EmptyMake" label="Empty Simulation Project (executable) - Standard make" description="Description"
          help="help.html">
-    
+
     <property-group id="basics" label="%HelloWorld.basics.label" description="%HelloWorld.basics.description" type="PAGES-ONLY" help="help.html">
         <property id="sourceDir"
                 label="%HelloWorld.sourceDir.label"
@@ -13,11 +13,11 @@
                 pattern="[a-zA-Z0-9]+"
                 persist="true"/>
     </property-group>
-    
+
     <process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
-        <simple name="name" value="$(projectName)" /> 
-        <simple name="artifactExtension" value="exe" /> 
-        <simple name="isCProject" value="false" /> 
+        <simple name="name" value="$(projectName)" />
+        <simple name="artifactExtension" value="exe" />
+        <simple name="isCProject" value="false" />
     </process>
 
     <process type="org.eclipse.cdt.managedbuilder.gnu.ui.SimpleGNUMakefileGenerator">

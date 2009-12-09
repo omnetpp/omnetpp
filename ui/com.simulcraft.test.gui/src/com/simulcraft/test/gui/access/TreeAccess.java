@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -80,7 +80,7 @@ public class TreeAccess extends ControlAccess
     		treeItems[i] = (TreeItemAccess)createAccess(items[i]);
     	return treeItems;
     }
-    
+
     @InBackgroundThread
     public void expandAll() {
     	for (TreeItemAccess item : getItems()) {
@@ -116,12 +116,12 @@ public class TreeAccess extends ControlAccess
                 String treeItemContent = treeItem.getText();
                 return parentTreeItem == treeItem.getParentItem() && treeItemContent.matches(content);
             }
-            
+
             public String toString() {
                 return "a TreeItem with content: " + content + " under: " + parentTreeItem;
             }
         });
-        log(debug, treeItem + ":" + treeItem.getBounds()); 
+        log(debug, treeItem + ":" + treeItem.getBounds());
         return new TreeItemAccess(treeItem);
     }
 
@@ -134,12 +134,12 @@ public class TreeAccess extends ControlAccess
 				String treeItemContent = treeItem.getText();
 				return treeItemContent.matches(content);
 			}
-		
+
 			public String toString() {
 			    return "a TreeItem with content: " + content;
 			}
 		});
-		log(debug, treeItem + ":" + treeItem.getBounds()); 
+		log(debug, treeItem + ":" + treeItem.getBounds());
 		return new TreeItemAccess(treeItem);
 	}
 
@@ -170,11 +170,11 @@ public class TreeAccess extends ControlAccess
             System.out.format("Tree content mismatch. Expected %d children, found %d", expectedItems.length, treeItems.length);
 			return false;
 		}
-		
+
 		for (int i = 0; i < treeItems.length; ++i) {
 			TreeItem item = treeItems[i];
 			GenericTreeNode expected = expectedItems[i];
-		
+
 			if (!item.getText().matches((String)expected.getPayload())) {
 				System.out.format("Tree content mismatch. Expected regex: %s, found: %s%n", expected.getPayload(), item.getText());
 				return false;
@@ -182,20 +182,20 @@ public class TreeAccess extends ControlAccess
 			if (!compareContent(item.getItems(), expected.getChildren()))
 				return false;
 		}
-	
+
 		return true;
 	}
 
     @UIStep
     public TreeColumnAccess[] getTreeColumns() {
-        ArrayList<TreeColumnAccess> result = new ArrayList<TreeColumnAccess>(); 
+        ArrayList<TreeColumnAccess> result = new ArrayList<TreeColumnAccess>();
         for (TreeColumn item : getControl().getColumns())
             result.add((TreeColumnAccess)createAccess(item));
         return result.toArray(new TreeColumnAccess[]{});
     }
 
     /**
-     * Return the given column; columns are in creation order. 
+     * Return the given column; columns are in creation order.
      */
 	@UIStep
 	public TreeColumnAccess getTreeColumn(int index) {
@@ -209,7 +209,7 @@ public class TreeAccess extends ControlAccess
 
     @UIStep
     public TreeItemAccess[] getSelection() {
-        ArrayList<TreeItemAccess> result = new ArrayList<TreeItemAccess>(); 
+        ArrayList<TreeItemAccess> result = new ArrayList<TreeItemAccess>();
         for (TreeItem item : getControl().getSelection())
             result.add((TreeItemAccess)createAccess(item));
         return result.toArray(new TreeItemAccess[]{});

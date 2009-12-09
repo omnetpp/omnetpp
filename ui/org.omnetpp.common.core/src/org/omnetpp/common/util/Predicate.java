@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Widget;
 public class Predicate {
 
 	public static final String WIDGET_ID = "com.simulcraft.test.gui.WidgetID";
-    
+
     public static IPredicate and(final IPredicate ... args) {
         return new IPredicate() {
             public boolean matches(Object object) {
@@ -56,7 +56,7 @@ public class Predicate {
             public boolean matches(Object object) {
                 return clazz.isInstance(object);
             }
-            
+
             public String toString() {
                 return "an instance of " + clazz.getSimpleName();
             }
@@ -68,7 +68,7 @@ public class Predicate {
             public boolean matches(Object object) {
                 return object.getClass().getName().matches(classNamePattern);
             }
-            
+
             public String toString() {
                 return "an instance of \"" + classNamePattern + "\"";
             }
@@ -121,7 +121,7 @@ public class Predicate {
 	    };
 	}
 
-	//FIXME one single getText(Control control) method, and one single controlWithText() predicate based on it! 
+	//FIXME one single getText(Control control) method, and one single controlWithText() predicate based on it!
     public static IPredicate labelWithText(final String text) {
         return new IPredicate() {
             public boolean matches(Object object) {

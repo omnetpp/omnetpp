@@ -5,7 +5,7 @@ import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,7 +25,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 /**
  * Action to open a NED type selection dialog.
- * 
+ *
  * @author andras, rhornig
  */
 public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
@@ -34,10 +34,10 @@ public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
 
     public void dispose() {
     }
-    
+
     public void run(IAction action) {
         NEDResources ned = NEDResourcesPlugin.getNEDResources();
-        
+
         // pop up a chooser dialog
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         ElementListSelectionDialog dialog = new ElementListSelectionDialog(window.getShell(), new LabelProvider() {
@@ -58,8 +58,8 @@ public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
                 else
                 	return nedType.getName() + " -- " + typeName + " (" + fullyQualifiedName + ")";
             }
-            
-        }); 
+
+        });
         dialog.setElements(ned.getNedTypesFromAllProjects().toArray());
         dialog.setMessage("Select NED type to open:");
         dialog.setTitle("Open NED Type");

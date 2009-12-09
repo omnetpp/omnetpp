@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -425,7 +425,7 @@ public class ScaveModelActionBarContributor
         menuManager.insertAfter("additions-end", new Separator("ui-actions"));
         menuManager.insertAfter("ui-actions", showPropertiesViewAction);
 
-        refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());		
+        refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());
         menuManager.insertAfter("ui-actions", refreshViewerAction);
 
         super.addGlobalActions(menuManager);

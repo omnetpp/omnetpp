@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,8 +25,8 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
- * NED text hover. Currently it displays fully qualified name and the documentation 
- * of the NED type name hovered. 
+ * NED text hover. Currently it displays fully qualified name and the documentation
+ * of the NED type name hovered.
  *
  * @author rhornig, andras
  */
@@ -44,7 +44,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 		if (info.referredElement instanceof INedTypeElement)
 		    return getHoverTextFor(((INedTypeElement)info.referredElement).getNEDTypeInfo());
-	
+
 		return HoverSupport.addHTMLStyleSheet("<pre>" + info.referredElement.getNEDSource() + "</pre>"); //FIXME refine!!! ie docu, etc
 	}
 

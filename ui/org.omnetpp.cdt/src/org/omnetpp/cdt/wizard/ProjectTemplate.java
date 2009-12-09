@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -46,8 +46,8 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     private String description;
     private String category;
     private Image image;
-    
-    // fields set by and used during configure():   
+
+    // fields set by and used during configure():
     private IProject project; // the project being configured
     private IProgressMonitor monitor;
     private Map<String,Object> vars = new HashMap<String, Object>(); // variables to be substituted into generated text files
@@ -82,7 +82,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     public IProject getProject() {
         return project;
     }
-    
+
     /**
      * Valid only during configuring a project.
      */
@@ -111,33 +111,33 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         String licenseProperty = license.equals(LicenseUtils.NONE) ? "" : license; // @license(custom) is needed, so that wizards know when to create banners
         setVariable("license", licenseProperty); // for @license in package.ned
         setVariable("bannercomment", LicenseUtils.getBannerComment(license, "//"));
-        
+
         // add user-defined variables (they may overwrite the defaults above)
         if (variables != null)
             for (String var : variables.keySet())
                 setVariable(var, variables.get(var));
-        
+
         // do it!
         doConfigure();
-        
+
         project = null;
         monitor = null;
         vars.clear();
     }
-    
+
     /**
      * Configure the project.
      */
     protected abstract void doConfigure() throws CoreException;
-    
+
     /**
-     * Sets (creates or overwrites) a variable to be substituted into files 
+     * Sets (creates or overwrites) a variable to be substituted into files
      * created with createFile(). Pass value==null to remove an existing variable.
      */
     protected void setVariable(String name, Object value) {
         if (value == null)
             vars.remove(name);
-        else 
+        else
             vars.put(name, value);
     }
 
@@ -147,7 +147,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     protected String readResource(String resourcePath) throws CoreException {
         try {
             return FileUtils.readTextFile(getClass().getResourceAsStream(resourcePath));
-        } 
+        }
         catch (IOException e) {
             throw Activator.wrapIntoCoreException(e);
         }
@@ -158,10 +158,10 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     }
 
     /**
-     * Utility method for doConfigure. Copies a resource into the project,  
-     * performing variable substitutions in it. 
-     * evenIfBlank==false: do not save the file if contents would be blank (i.e. whitespace only). 
-     * evenIfBlank==true: always save. 
+     * Utility method for doConfigure. Copies a resource into the project,
+     * performing variable substitutions in it.
+     * evenIfBlank==false: do not save the file if contents would be blank (i.e. whitespace only).
+     * evenIfBlank==true: always save.
      */
     protected void createFileFromResource(String projectRelativePath, String resourcePath, boolean evenIfBlank) throws CoreException {
         String content = readResource(resourcePath);
@@ -170,7 +170,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     }
 
     /**
-     * Utility method for doConfigure. Saves the given text into the project as a file, 
+     * Utility method for doConfigure. Saves the given text into the project as a file,
      * performing variable substitutions in it.
      */
     protected void createFile(String projectRelativePath, String content, boolean evenIfBlank) throws CoreException {
@@ -185,7 +185,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             content = content.trim() + "\n";
 
             // save it
-            byte[] bytes = content.getBytes(); 
+            byte[] bytes = content.getBytes();
             IFile file = project.getFile(new Path(projectRelativePath));
             if (!file.exists())
                 file.create(new ByteArrayInputStream(bytes), true, monitor);
@@ -204,7 +204,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         if (!folder.exists())
             folder.create(true, true, monitor);
     }
-    
+
     /**
      * Creates the given folders, and a folder. If the parent folder(s) do not exist, they are created.
      */
@@ -228,10 +228,10 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             folders[i] = getProject().getFolder(new Path(projectRelativePaths[i]));
         setSourceLocations(project, folders);
     }
-    
+
     /**
-     * Sets the project's source locations list to the given list of folders, in all configurations. 
-     * (Previous source entries get overwritten.)  
+     * Sets the project's source locations list to the given list of folders, in all configurations.
+     * (Previous source entries get overwritten.)
      */
     protected static void setSourceLocations(IProject project, IContainer[] folders) throws CoreException {
         if (System.getProperty("org.omnetpp.test.unit.running") != null)
@@ -263,7 +263,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     }
 
     /**
-     * Sets the makemake options on the given project. Array must contain folderPath1, options1, 
+     * Sets the makemake options on the given project. Array must contain folderPath1, options1,
      * folderPath2, options2, etc.
      */
     protected void createBuildSpec(String[] pathsAndMakemakeOptions) throws CoreException {
@@ -273,7 +273,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         for (int i=0; i<pathsAndMakemakeOptions.length; i+=2) {
             String folderPath = pathsAndMakemakeOptions[i];
             String args = pathsAndMakemakeOptions[i+1];
-            
+
             IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
             buildSpec.setFolderMakeType(folder, BuildSpecification.MAKEMAKE);
             MakemakeOptions options = new MakemakeOptions(args);

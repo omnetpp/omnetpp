@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -118,7 +118,7 @@ public class DataflowNetworkBuilder {
 		}
 
 		/**
-		 * Creates the nodes in the dataflowManager. 
+		 * Creates the nodes in the dataflowManager.
 		 */
 		public abstract void createNodes(DataflowManager dataflowManager);
 
@@ -234,7 +234,7 @@ public class DataflowNetworkBuilder {
 			this.operation = operation;
 			this.outVectorId = outVectorId;
 			addOutputPort(new PortWrapper("out"));
-	
+
 		}
 
 		public PortWrapper nextInPort() {
@@ -366,13 +366,13 @@ public class DataflowNetworkBuilder {
 		public void createNodes(DataflowManager manager) {
 			Assert.isLegal(NodeTypeRegistry.getInstance().exists(operation.getOperation()),
 					"Unknown node type: " + operation.getOperation());
-	
+
 			NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
 			StringMap attrs = new StringMap();
 			for (Param param : operation.getParams())
 				attrs.set(param.getName(), param.getValue());
 			computeNode = registry.getNodeType(operation.getOperation()).create(manager, attrs);
-	
+
 			for (int i = 0; i < inPorts.size(); ++i) {
 				PortWrapper inPort = inPorts.get(i);
 				PortWrapper outPort = getOutPortFor(inPort);
@@ -463,7 +463,7 @@ public class DataflowNetworkBuilder {
 			Assert.isLegal(index >= 0);
 			PortWrapper inPort = inPorts.get(index + 1);
 			removePorts(index);
-	
+
 			if (inPort.channel != null) {
 				idToOutputPortMap.put(inPort.id, inPort.channel.out);
 				disconnect(inPort.channel);
@@ -524,7 +524,7 @@ public class DataflowNetworkBuilder {
 					StringUtils.quoteStringIfNeeded(module),
 					StringUtils.quoteStringIfNeeded(vector),
 					columns);
-			PortWrapper inPort = new PortWrapper(name); 
+			PortWrapper inPort = new PortWrapper(name);
 			addInputPort(inPort);
 			return inPort;
 		}
@@ -560,7 +560,7 @@ public class DataflowNetworkBuilder {
 			this.in = in;
 			out.channel = this;
 			in.channel = this;
-	
+
 			in.id = out.id;
 		}
 	}
@@ -590,7 +590,7 @@ public class DataflowNetworkBuilder {
 	}
 
 	/**
-	 * Builds a dataflow network for reading the data of {@code dataset} at 
+	 * Builds a dataflow network for reading the data of {@code dataset} at
 	 * the given dataset item.
 	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, boolean createDataflowManager) {
@@ -738,7 +738,7 @@ public class DataflowNetworkBuilder {
 				// select x data
 				String xDataPattern = chart.getXDataPattern();
 				if (!StringUtils.isEmpty(xDataPattern)) {
-			
+
 					IDList xData = manager.filterIDList(displayedIds, xDataPattern);
 					for (int i = 0; i < xData.size(); ++i) {
 						long id = xData.get(i);
@@ -747,7 +747,7 @@ public class DataflowNetworkBuilder {
 						fileruns.add(item.getFileRun());
 						IDList yData = manager.filterIDList(displayedIds, fileruns, "", "");
 						yData.substract(id);
-				
+
 						addXYPlotNode(id, yData);
 					}
 				}
@@ -775,23 +775,23 @@ public class DataflowNetworkBuilder {
 		try {
 
 			for (SinkNode sinkNode : sinkNodes) {
-		
+
 				// create the arraybuilder node
 				if (debug) Debug.format("Creating: %s%n", sinkNode);
 				sinkNode.createNodes(dataflowManager);
-		
+
 				// follow the channels backwards
 				// until a reader node or a previously created node reached
 				Queue<ChannelWrapper> pendingChannels = new LinkedList<ChannelWrapper>();
 				for (PortWrapper inPort : sinkNode.inPorts)
 					pendingChannels.offer(inPort.channel);
-		
+
 				while (!pendingChannels.isEmpty()) {
 					ChannelWrapper channel = pendingChannels.poll();
-			
+
 					NodeWrapper fromNode = channel.out.owner;
 					NodeWrapper toNode = channel.in.owner;
-			
+
 					// create fromNode if needed
 					if (!fromNode.created) {
 						if (debug) Debug.format("Creating: %s%n", fromNode);
@@ -812,7 +812,7 @@ public class DataflowNetworkBuilder {
 				}
 			}
 			return dataflowManager;
-		} 
+		}
 		catch (RuntimeException e) {
 		    // clean up before re-throwing exception
 			if (dataflowManager != null)

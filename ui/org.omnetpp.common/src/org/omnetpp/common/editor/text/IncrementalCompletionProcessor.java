@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,7 +39,7 @@ import org.omnetpp.common.util.StringUtils;
  * @author rhornig
  */
 public abstract class IncrementalCompletionProcessor extends TemplateCompletionProcessor {
-    private static final String DEFAULT_IMAGE = "icons/obj16/template.png"; 
+    private static final String DEFAULT_IMAGE = "icons/obj16/template.png";
 
     public class  IndentTemplateVariableResolver extends SimpleTemplateVariableResolver {
         protected IndentTemplateVariableResolver(String value) {
@@ -47,22 +47,22 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             setEvaluationString(value);
         }
     }
-    
+
     /**
-     * Helper comparator class to compare CompletionProposals using relevance and the the display name 
+     * Helper comparator class to compare CompletionProposals using relevance and the the display name
      */
     @SuppressWarnings("unchecked")
 	protected static class CompletionProposalComparator implements Comparator {
         private static CompletionProposalComparator instance = null;
-        
+
         public static CompletionProposalComparator getInstance() {
             if (instance == null)
                 instance = new CompletionProposalComparator();
             return instance;
         }
-        
+
         public int compare(Object arg0, Object arg1) {
-           
+
             // first order according to the relevance
             if (arg0 instanceof TemplateProposal && arg1 instanceof TemplateProposal) {
                 int compRes = ((TemplateProposal) arg1).getRelevance() - ((TemplateProposal) arg0).getRelevance();
@@ -81,10 +81,10 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * position and filters the proposal accordingly.
      */
     protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String description) {
-        String descriptions[] = new String[proposalString.length]; 
+        String descriptions[] = new String[proposalString.length];
         Arrays.fill(descriptions, description);
         return createProposals(viewer, documentOffset, wordDetector, startStr, proposalString, endStr, descriptions, null);
-        
+
     }
 
     /**
@@ -96,9 +96,9 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         String prefix;
         IRegion wordRegion;
         try {
-        	wordRegion = TextEditorUtil.detectWordRegion(viewer, documentOffset, wordDetector); 
+        	wordRegion = TextEditorUtil.detectWordRegion(viewer, documentOffset, wordDetector);
             prefix = viewer.getDocument().get(wordRegion.getOffset(), documentOffset - wordRegion.getOffset());
-        } catch (BadLocationException e) { 
+        } catch (BadLocationException e) {
         	CommonPlugin.logError(e);
         	return propList;
         }
@@ -110,9 +110,9 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             Assert.isTrue(!proposals[i].contains(SEPARATOR), "Proposal string contains an internal terminator char.");
             displayLine[i] = proposals[i]+SEPARATOR+StringUtils.nullToEmpty(descriptions[i]);
         }
-        
+
         Arrays.sort(displayLine, StringUtils.dictionaryComparator);
-        
+
         for (int i = 0 ;i < displayLine.length; ++i) {
             String prop = startStr + StringUtils.substringBefore(displayLine[i], SEPARATOR) + endStr;
             String descr = StringUtils.substringAfter(displayLine[i], SEPARATOR);
@@ -129,7 +129,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 	 * This method is necessary because TemplateCompletionProcessor.computeCompletionProposals()
 	 * doesn't let us specify what templates we want to add, but insists on calling
 	 * getTemplates() instead. This is a copy of that computeCompletionProposals(), with
-	 * Template[] added to the arg list. 
+	 * Template[] added to the arg list.
 	 *
 	 * @author andras
 	 * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer, int)
@@ -143,10 +143,10 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 		if (selection.getOffset() == offset)
 			offset= selection.getOffset() + selection.getLength();
 
-        IRegion wordRegion; 
+        IRegion wordRegion;
         String prefix;
         try {
-            wordRegion = TextEditorUtil.detectWordRegion(viewer, offset, wordDetector); 
+            wordRegion = TextEditorUtil.detectWordRegion(viewer, offset, wordDetector);
             prefix = viewer.getDocument().get(wordRegion.getOffset(), offset - wordRegion.getOffset());
         } catch (BadLocationException e) {
         	CommonPlugin.logError(e);
@@ -166,7 +166,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             indentPrefix = StringUtils.repeat(" ", indentPrefix.length());
         } catch (BadLocationException e1) { }
         context.getContextType().addResolver(new IndentTemplateVariableResolver(indentPrefix));
-        
+
 		if (context == null)
 			return new ICompletionProposal[0];
 
@@ -188,10 +188,10 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 
 		return (ICompletionProposal[]) matches.toArray(new ICompletionProposal[matches.size()]);
 	}
-    
+
     /**
      * Always return the default image.
-     * 
+     *
      * @param template the template, ignored in this implementation
      * @return the default template image
      */

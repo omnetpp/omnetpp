@@ -1,4 +1,4 @@
-module BoxedNode 
+module BoxedNode
 {
     gates:
         inout g;

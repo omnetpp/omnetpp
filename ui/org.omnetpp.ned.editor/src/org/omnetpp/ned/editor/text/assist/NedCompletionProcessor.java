@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -50,7 +50,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		// if the position is invalid return no proposals
 		if (info == null || info.linePrefix == null || info.linePrefixTrimmed == null)
 		    return new ICompletionProposal[0];
-	
+
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 		NedFileElementEx nedFileElement = res.getNedFileElement(file);
@@ -66,7 +66,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		    if (nedTypeInfo != null && nedTypeInfo.getNEDElement() instanceof CompoundModuleElementEx)
 		        context = (CompoundModuleElementEx)nedTypeInfo.getNEDElement();
 		}
-	
+
 		INEDTypeInfo nedEnclosingTypeInfo = null;
 		if (info.enclosingNedTypeName != null) { // we are inside an inner type
 		    nedEnclosingTypeInfo = res.lookupNedType(info.enclosingNedTypeName, nedFileElement);
@@ -234,7 +234,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		if (info.sectionType == SECT_SUBMODULES) {
 			// Debug.println("testing proposals for SUBMODULES scope");
 			if (line.matches(".*:")) {
-			    if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types) 
+			    if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types)
 	                addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULE_FILTER);
 			    else  // top level type
 			        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULE_FILTER);
@@ -247,7 +247,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 					addProposals(viewer, documentOffset, result, new String[]{" like "}, "keyword");
 			}
 			else if (line.matches(".*\\blike")) {
-                if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types) 
+                if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types)
                     addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
                 else  // top level type
                     addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);

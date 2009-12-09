@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,12 +27,12 @@ public class CTabItemAccess extends ClickableWidgetAccess
 	public CTabItem getWidget() {
 		return (CTabItem)widget;
 	}
-    
+
     @UIStep
     public CTabFolderAccess getCTabFolder() {
         return (CTabFolderAccess)createAccess(getWidget().getParent());
     }
-    
+
     @UIStep
     public boolean isClosable() {
 		return (Boolean)ReflectionUtils.getFieldValue(getWidget(), "showClose");

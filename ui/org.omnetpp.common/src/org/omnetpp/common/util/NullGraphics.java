@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.omnetpp.common.color.ColorFactory;
 public class NullGraphics extends Graphics
 {
     private int drawCount = 0;
-    
+
     private Rectangle clipping;
 
     private Color foregroundColor = ColorFactory.BLACK;
@@ -28,7 +28,7 @@ public class NullGraphics extends Graphics
     private Color backgroundColor = ColorFactory.WHITE;
 
     private FontMetrics fontMetrics = new TextLayout(null).getLineMetrics(0);
-    
+
     public int getDrawCount() {
         return drawCount;
     }
@@ -231,11 +231,11 @@ public class NullGraphics extends Graphics
     @Override
     public void setXORMode(boolean b) {
     }
-    
+
     @Override
     public void setAlpha(int alpha) {
     }
-    
+
     @Override
     public void setLineDash(int[] dash) {
     }

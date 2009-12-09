@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -74,7 +74,7 @@ public class Legend implements ILegend {
 					symbol.setSizeHint(size);
 				}
 			}
-	
+
 			// draw text
 			if (font != null) gc.setFont(font);
 			gc.setForeground(ColorFactory.BLACK);
@@ -198,7 +198,7 @@ public class Legend implements ILegend {
 			int dx, dy;
 			switch (anchor) {
 			case North:		dx = 0; dy = -1; break;
-			case NorthEast:	dx = 1; dy = -1; break; 
+			case NorthEast:	dx = 1; dy = -1; break;
 			case East:		dx = 1; dy = 0; break;
 			case SouthEast:	dx = 1; dy = 1; break;
 			case South:		dx = 0; dy = 1; break;
@@ -247,11 +247,11 @@ public class Legend implements ILegend {
 		else {
 			if (!visible || position != LegendPosition.Inside)
 				return parent;
-	
+
 			int dx, dy;
 			switch (anchor) {
 			case North:		dx = 0; dy = -1; break;
-			case NorthEast:	dx = 1; dy = -1; break; 
+			case NorthEast:	dx = 1; dy = -1; break;
 			case East:		dx = 1; dy = 0; break;
 			case SouthEast:	dx = 1; dy = 1; break;
 			case South:		dx = 0; dy = 1; break;
@@ -260,13 +260,13 @@ public class Legend implements ILegend {
 			case NorthWest:	dx = -1; dy = -1; break;
 			default: throw new IllegalStateException();
 			}
-	
+
 			bounds.width = Math.min(bounds.width, Math.max(0, parent.width - 2 * horizontalMargin));
 			bounds.height = Math.min(bounds.height, Math.max(0, parent.height - 2 * verticalMargin));
 			bounds.x = parent.x + horizontalMargin + (parent.width - bounds.width - 2 * horizontalMargin) * (dx + 1) / 2;
 			bounds.y = parent.y + verticalMargin + (parent.height - bounds.height - 2 * verticalMargin) * (dy + 1) / 2;
 			updateVisibleItemCount();
-	
+
 			return parent;
 		}
 	}
@@ -305,7 +305,7 @@ public class Legend implements ILegend {
 					bounds.width += columnWidths[i];
 				for (int i = 0; i < rows; ++i)
 					bounds.height += rowHeights[i];
-		
+
 
 				// retry with fewer columns if too wide
 				if (columns > 1 && bounds.width > maxSize.x)
@@ -319,7 +319,7 @@ public class Legend implements ILegend {
 					Item item = items.get(i);
 					int row = i / columns;
 					int col = i % columns;
-			
+
 					if (col == 0) {
 						if(y + rowHeights[row] + verticalPadding > maxSize.y) {
 							bounds.height = y + verticalPadding;
@@ -331,10 +331,10 @@ public class Legend implements ILegend {
 					else { // col > 0
 						x += horizontalSpacing;
 					}
-			
+
 					item.x = x;
 					item.y = y;
-			
+
 					if (col == columns - 1) {
 						x = horizontalPadding;
 						y += rowHeights[row];
@@ -356,17 +356,17 @@ public class Legend implements ILegend {
 			int y = verticalPadding;
 			for (int i = 0; i < items.size(); ++i) {
 				Item item = items.get(i);
-		
+
 				if (y + item.height + verticalPadding > maxSize.y) {
 					break;
 				}
-		
+
 				item.x = x;
 				item.y = y;
-		
+
 				bounds.width = Math.max(bounds.width, item.width + 2 * horizontalPadding);
 				bounds.height = Math.max(bounds.height, y + item.height + verticalPadding);
-		
+
 				y += item.height + verticalSpacing;
 				++visibleItemCount;
 			}

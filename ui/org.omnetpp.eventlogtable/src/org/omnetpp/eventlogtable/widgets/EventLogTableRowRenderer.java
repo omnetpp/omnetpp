@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -159,8 +159,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 						marked = true;
 						break;
 					}
-		
-				if (marked && 
+
+				if (marked &&
 					(gc.getBackground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND)) ||
 					 gc.getBackground().equals(BOOKMARK_COLOR))) {
 					gc.setBackground(BOOKMARK_COLOR);
@@ -177,11 +177,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				drawText("#" + eventNumber, isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_COLOR : EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR, false);
 				break;
 			case 1:
-				drawText(simulationTime + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_COLOR : EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR, false); 
+				drawText(simulationTime + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_COLOR : EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR, false);
 				break;
 			case 2:
 				x += eventLogEntry.getLevel() * INDENT_SPACING;
-		
+
 				if (!(eventLogEntry instanceof EventEntry))
 					x += INDENT_SPACING;
 
@@ -191,19 +191,19 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				Image image = getEventLogEntryImage(eventLogEntry);
 				gc.drawImage(image, x, 0);
 				x += image.getBounds().width + HORIZONTAL_SPACING;
-		
+
 				switch (eventLogTable.getDisplayMode()) {
 					case DESCRIPTIVE:
 						if (eventLogEntry instanceof EventEntry) {
 							IMessageDependency cause = contextEvent.getCause();
-		
+
 							drawText("Event in ", CONSTANT_TEXT_COLOR);
 							drawModuleDescription(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
-					
+
 							BeginSendEntry beginSendEntry = cause != null ? cause.getBeginSendEntry() : null;
 							if (beginSendEntry != null) {
 								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
-						
+
 								if (contextEvent.isSelfMessageProcessingEvent())
 									drawText("self ", CONSTANT_TEXT_COLOR);
 
@@ -213,7 +213,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 									drawText(" from ", CONSTANT_TEXT_COLOR);
 									drawModuleDescription(beginSendEntry.getContextModuleId());
 								}
-						
+
 								IEvent causeEvent = cause.getCauseEvent();
 								if (causeEvent != null && causeEvent.getModuleId() != beginSendEntry.getContextModuleId()) {
 									drawText(" called from ", CONSTANT_TEXT_COLOR);
@@ -242,7 +242,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								ModuleMethodBeginEntry moduleMethodBeginEntry = (ModuleMethodBeginEntry)eventLogEntry;
 								drawText("Begin calling ", CONSTANT_TEXT_COLOR);
 								String method = moduleMethodBeginEntry.getMethod();
-						
+
 								if (StringUtils.isEmpty(method))
 								    drawText("method", CONSTANT_TEXT_COLOR);
 								else
@@ -318,7 +318,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 									drawModuleDescription(moduleDisplayStringChangedEntry.getModuleId());
 								}
 
-								drawText(" to ", CONSTANT_TEXT_COLOR);					
+								drawText(" to ", CONSTANT_TEXT_COLOR);
 								drawText(moduleDisplayStringChangedEntry.getDisplayString(), DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof CancelEventEntry) {
@@ -346,9 +346,9 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                                     drawText(" for ", CONSTANT_TEXT_COLOR);
                                 else
                                     drawText(" arriving at ", CONSTANT_TEXT_COLOR);
-                                
+
                                 EndSendEntry endSendEntry = contextEvent.getEndSendEntry(beginSendEntry);
-                                
+
                                 if (endSendEntry == null)
                                     drawText("<unknown>", DATA_COLOR);
                                 else
@@ -370,7 +370,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawModuleDescription(sendHopEntry.getSenderModuleId());
 								drawText(" ", CONSTANT_TEXT_COLOR);
 								drawGateDescription(sendHopEntry.getSenderModuleId(), sendHopEntry.getSenderGateId());
-						
+
 								if (sendHopEntry.getTransmissionDelay().doubleValue() != 0) {
     								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
     								drawText(sendHopEntry.getTransmissionDelay() + "s", DATA_COLOR);
@@ -456,7 +456,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
 			if (event != null) {
 				int index = event.findBeginSendEntryIndex(messageId);
-		
+
 				if (index != -1)
 					return (BeginSendEntry)event.getEventLogEntry(index);
 			}
@@ -491,9 +491,9 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                     typeName = moduleCreatedEntry.getModuleClassName();
                     break;
 		    }
-	
+
 		    drawText("(" + typeName + ") ", TYPE_COLOR);
-	
+
 			switch (nameMode) {
                 case SMART_NAME:
                     if (contextEvent.getModuleId() == moduleCreatedEntry.getModuleId())
@@ -542,7 +542,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
 	private void drawConnectionDescription(int sourceModuleId, int sourceGateId, int destModuleId, int destGateId) {
         drawText("connection from ", CONSTANT_TEXT_COLOR);
-        
+
         ModuleCreatedEntry sourceModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(sourceModuleId);
 
         if (sourceModuleCreatedEntry != null) {
@@ -624,10 +624,10 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		else if (eventLogEntry instanceof BeginSendEntry) {
 			int index = eventLogEntry.getEntryIndex();
 			int count = event.getNumEventLogEntries();
-	
+
 			if (count > index + 1) {
                 EventLogEntry nextEventLogEntry = event.getEventLogEntry(index + 1);
-    
+
     			if (nextEventLogEntry instanceof EndSendEntry)
     				return ImageFactory.getImage(ImageFactory.EVENLOG_IMAGE_SCHEDULE_AT);
 			}

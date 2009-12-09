@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -37,7 +37,7 @@ public class ExportTest extends ScaveFileTestCase {
             	"/project/test-1.sca_run-1_module-1_scalar-1,/project/test-2.sca_run-2_module-2_scalar-2\n" +
             	"1,2\n");
     }
-    
+
     public void testCsvExportVectors() throws Exception { // FIXME order of vectors is not deterministic
     	testExport(".*vector-dataset.*", "CSV", "test-vectors.csv",
     			"test-vectors-1.csv",
@@ -51,7 +51,7 @@ public class ExportTest extends ScaveFileTestCase {
     public void testMatlabExportScalars() throws Exception {
     	testExport(".*scalar-dataset.*", "Matlab", "test-scalars.m",
     			"test-scalars.m",
-    	
+
     			"scalars.description=\"\"\n" +
     			"scalars._project_test_1_sca_run_1_module_1_scalar_1=[\n" +
     			"1;\n" +
@@ -62,11 +62,11 @@ public class ExportTest extends ScaveFileTestCase {
     			"]\n" +
     			"\n");
     }
-    
+
     public void testMatlabExportVectors() throws Exception {
     	testExport(".*vector-dataset.*", "Matlab", "test-vectors.m",
     			"test-vectors.m",
-    	
+
     			"vector_2.description=\"\"\n" +
     			"vector_2.X=[\n" +
     			"0;\n" +
@@ -86,11 +86,11 @@ public class ExportTest extends ScaveFileTestCase {
     			"]\n" +
     			"\n");
     }
-    
+
     public void testOctaveExportScalars() throws Exception {
     	testExport(".*scalar-dataset.*", "Octave", "test-scalars.octave",
     			"test-scalars.octave",
-    	
+
     			"# name: scalars\n" +
     			"# type: struct\n" +
     			"# length: 3\n" +
@@ -122,11 +122,11 @@ public class ExportTest extends ScaveFileTestCase {
     			"# columns: 1\n" +
     			"2\n");
     }
-    
+
     public void testOctaveExportVectors() throws Exception {
     	testExport(".*vector-dataset.*", "Octave", "test-vectors.octave",
     			"test-vectors.octave",
-    	
+
     			"# name: vector_2\n" +
     			"# type: struct\n" +
     			"# length: 3\n" +
@@ -188,12 +188,12 @@ public class ExportTest extends ScaveFileTestCase {
     			"# columns: 1\n" +
     			"1\n");
     }
-    
+
     protected void testExport(String datasetLabel, String fileType, String fileName, String... resultFileAndContentPairs) throws Exception {
     	Assert.assertTrue("Expects event number of parameters after fileName", resultFileAndContentPairs.length % 2 == 0);
-    
+
     	String filePath = "/" + projectName + "/" + fileName;
-    
+
         TreeAccess tree = datasetsPage.getDatasetsTree();
         tree.findTreeItemByContent(datasetLabel).chooseFromContextMenu("Export to File|" + fileType + ".*");
 
@@ -208,7 +208,7 @@ public class ExportTest extends ScaveFileTestCase {
         	WorkspaceUtils.assertFileExistsWithContentIgnoringWhiteSpace(path, content);
         }
     }
-    
+
 	@Override
     protected String createAnalysisFileContent() {
 		return

@@ -6,7 +6,7 @@ Test that an inner type takes precedence over a standalone type
 import testlib.Dump;
 
 // Note: this one has no gates which would cause an error in the network
-module Node {  
+module Node {
 }
 
 // Note: this one has no 'cost' parameter which would cause an error in the network

@@ -7,7 +7,7 @@ import testlib.Dump;
 
 network Test {
     @display("x=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"); // too many args
-    submodules: 
+    submodules:
         dump: Dump;
 }
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -94,7 +94,7 @@ import com.simulcraft.test.gui.recorder.object.WorkbenchWindowShellRecognizer;
 /**
  * Records GUI events for playback.
  * Must be installed on Display as an event filter.
- *   
+ *
  * @author Andras
  */
 public class GUIRecorder implements Listener {
@@ -107,18 +107,18 @@ public class GUIRecorder implements Listener {
     private List<IEventRecognizer> eventRecognizers = new ArrayList<IEventRecognizer>();
     private List<IObjectRecognizer> objectRecognizers = new ArrayList<IObjectRecognizer>();
     private List<ICodeRewriter> codeRewriters = new ArrayList<ICodeRewriter>();
-    
+
     private ListenerList listeners = new ListenerList();
 
-    private static final int[] eventTypes = { 
-            SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.MouseMove, 
-            SWT.MouseEnter, SWT.MouseExit, SWT.MouseDoubleClick, SWT.Paint, SWT.Move, 
-            SWT.Resize, SWT.Dispose, SWT.Selection, SWT.DefaultSelection, SWT.FocusIn, 
-            SWT.FocusOut, SWT.Expand, SWT.Collapse, SWT.Iconify, SWT.Deiconify, 
-            SWT.Close, SWT.Show, SWT.Hide, SWT.Modify, SWT.Verify, SWT.Activate, 
-            SWT.Deactivate, SWT.Help, SWT.DragDetect, SWT.Arm, SWT.Traverse, 
-            SWT.MouseHover, SWT.HardKeyDown, SWT.HardKeyUp, SWT.MenuDetect, 
-            SWT.SetData, SWT.MouseWheel, SWT.Settings, SWT.EraseItem, SWT.MeasureItem, 
+    private static final int[] eventTypes = {
+            SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.MouseMove,
+            SWT.MouseEnter, SWT.MouseExit, SWT.MouseDoubleClick, SWT.Paint, SWT.Move,
+            SWT.Resize, SWT.Dispose, SWT.Selection, SWT.DefaultSelection, SWT.FocusIn,
+            SWT.FocusOut, SWT.Expand, SWT.Collapse, SWT.Iconify, SWT.Deiconify,
+            SWT.Close, SWT.Show, SWT.Hide, SWT.Modify, SWT.Verify, SWT.Activate,
+            SWT.Deactivate, SWT.Help, SWT.DragDetect, SWT.Arm, SWT.Traverse,
+            SWT.MouseHover, SWT.HardKeyDown, SWT.HardKeyUp, SWT.MenuDetect,
+            SWT.SetData, SWT.MouseWheel, SWT.Settings, SWT.EraseItem, SWT.MeasureItem,
             SWT.PaintItem
     };
 
@@ -134,7 +134,7 @@ public class GUIRecorder implements Listener {
         register(new ComboSelectionRecognizer(this));
         register(new ContentAssistSelectionRecognizer(this));
         register(new WorkbenchPartCTabClickRecognizer(this));
-        
+
         // object recognizers
         register(new ItemRecognizer(this));
         register(new ShellRecognizer(this));
@@ -169,7 +169,7 @@ public class GUIRecorder implements Listener {
         if (object instanceof ICodeRewriter)
             codeRewriters.add((ICodeRewriter)object);
     }
-    
+
     public void hookListeners() {
         // We must ensure our listener runs before the key binding service. Otherwise we'll miss all hotkeys.
         for (int eventType : eventTypes)
@@ -192,7 +192,7 @@ public class GUIRecorder implements Listener {
     public void startRecording() {
         isRecording = true;
     }
-    
+
     public void stopRecording() {
         isRecording = false;
     }
@@ -200,7 +200,7 @@ public class GUIRecorder implements Listener {
     public JavaSequence getResult() {
         return result;
     }
-    
+
     public Shell getShellToIgnore() {
         return shellToIgnore;
     }
@@ -217,7 +217,7 @@ public class GUIRecorder implements Listener {
     public void removeGuiRecorderListener(IGuiRecorderListener listener) {
         listeners.remove(listener);
     }
-    
+
     public void handleEvent(final Event e) {
         if (isRecording && (!(e.widget instanceof Control) || ((Control)e.widget).getShell() != shellToIgnore)) {
             // record event, catching potential exceptions meanwhile
@@ -234,11 +234,11 @@ public class GUIRecorder implements Listener {
     }
 
     protected void recordEvent(Event e) {
-        // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event) 
+        // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event)
         updateModifierState(e);
 
         int oldResultLength = result.length();
-        
+
         // collect the best one of the guesses
         int modificationCount = result.getModificationCount();
 
@@ -260,14 +260,14 @@ public class GUIRecorder implements Listener {
             //if (e.type==SWT.KeyDown)
             //    add(new JavaExpr("Access." + KeyboardEventRecognizer.toPressKeyInvocation(e, modifierState)+ "; //TODO unrecognized keypress - revise", 1.0, null, null));
         }
-        
+
         // invoke code rewriters if anything changed
         while (result.getModificationCount() != modificationCount) {
             modificationCount = result.getModificationCount();
             for (ICodeRewriter rewriter : codeRewriters)
                 rewriter.rewrite(result);
         }
-        
+
         // release stale UI objects
         result.forgetDisposedUIObjects();
 
@@ -290,7 +290,7 @@ public class GUIRecorder implements Listener {
     public JavaExpr lookup(Object uiObject) {
         return result.lookupUIObject(uiObject);
     }
-    
+
     public JavaSequence identifyObject(Object uiObject) {
         // collect the best one of the guesses
         List<JavaSequence> proposals = new ArrayList<JavaSequence>();
@@ -344,13 +344,13 @@ public class GUIRecorder implements Listener {
     /**
      * Find item within the containing control (ie. TableItem in Tree, Figure
      * within a GEF canvas). Returns the control itself if it doesn't contain
-     * identifiable items.  
+     * identifiable items.
      */
     //TODO make this extensible
     @SuppressWarnings("deprecation")
     public Object resolveUIObject(Control control, Point point) {
-        // Note: the following Item subclasses cannot be recognized, because 
-        // there is no getItem(point) or item.getBounds() method for them: 
+        // Note: the following Item subclasses cannot be recognized, because
+        // there is no getItem(point) or item.getBounds() method for them:
         //  TabFolder/TabItem, ExpandBar/ExpandItem, Tray/TrayItem,
         //  TableColumn, TreeColumn, MenuItem
         //
@@ -377,7 +377,7 @@ public class GUIRecorder implements Listener {
         }
         return control;
     }
-    
+
     //TODO make this extensible
     @SuppressWarnings("deprecation")
     public static Control getParentControl(Widget widget) {

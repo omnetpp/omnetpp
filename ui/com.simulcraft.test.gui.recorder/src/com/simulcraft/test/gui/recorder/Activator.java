@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -59,7 +59,7 @@ public class Activator extends AbstractUIPlugin {
     public static void logError(Throwable exception) {
         logError(exception.toString(), exception);
     }
-    
+
     public static void logError(String message, Throwable exception) {
         getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
     }

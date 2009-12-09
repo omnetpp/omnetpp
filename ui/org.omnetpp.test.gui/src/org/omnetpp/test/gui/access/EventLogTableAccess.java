@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,17 +27,17 @@ public class EventLogTableAccess
     public EventLogTableAccess(EventLogTable eventLogTable) {
         super(eventLogTable);
     }
-    
+
     @Override
     public EventLogTable getControl() {
         return (EventLogTable)widget;
     }
-    
+
     @Override @UIStep
     protected Menu getContextMenu() {
         return getControl().getCanvas().getMenu();
     }
-    
+
     @UIStep
     public void assertTopVisibleEventNumber(int eventNumber) {
         EventLogTable eventLogTable = getControl();
@@ -60,7 +60,7 @@ public class EventLogTableAccess
     public int getPageJumpCount() {
         return getControl().getPageJumpCount();
     }
-    
+
     @UIStep
     public MenuAccess activateContextMenuWithMouseClickAtSelectedElement() {
         EventLogTable eventLogTable = getControl();
@@ -78,10 +78,10 @@ public class EventLogTableAccess
             gotoEventNumber(eventNumber);
             activateContextMenuWithMouseClickForVisibleEvent(eventNumber);
         }
-        
+
         return new MenuAccess(getContextMenu());
     }
-    
+
     @UIStep
     public boolean isEventNumberVisible(int eventNumber) {
         EventLogTable eventLogTable = getControl();
@@ -92,7 +92,7 @@ public class EventLogTableAccess
     @UIStep
     public void activateContextMenuWithMouseClickForVisibleEvent(int eventNumber) {
         EventLogTable eventLogTable = getControl();
-        
+
         for (int i = 0; i < eventLogTable.getVisibleElementCount(); i++) {
             EventLogEntryReference reference = eventLogTable.getVisibleElementAt(i);
 
@@ -105,7 +105,7 @@ public class EventLogTableAccess
 
         Assert.fail("Event number " + eventNumber + " not visible");
     }
-    
+
     @InBackgroundThread
     public void gotoEventNumber(int eventNumber) {
         activateContextMenuWithMouseClick().activateMenuItemWithMouse("Goto event...");

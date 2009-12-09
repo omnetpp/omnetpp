@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -120,10 +120,10 @@ public class BarChartEditForm extends ChartEditForm {
 			Label label = new Label(panel, SWT.WRAP);
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			label.setText("You can move fields by dragging.");
-		
+
 			CustomSashForm sashForm = new CustomSashForm(panel, SWT.VERTICAL);
 			sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		
+
 			unusedFieldsList = createFieldsList(sashForm, null, true);
 			unusedFieldsList.setInput(Arrays.asList(fieldNames));
 
@@ -152,18 +152,18 @@ public class BarChartEditForm extends ChartEditForm {
 		viewer.setLabelProvider(new LabelProvider());
 		viewer.setContentProvider(new ListContentProvider());
 		viewer.setInput(EMPTY_STRING_LIST);
-		final Table control = viewer.getTable();  
+		final Table control = viewer.getTable();
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		//gridData.minimumHeight = control.getItemHeight() * fieldNames.length; 
+		//gridData.minimumHeight = control.getItemHeight() * fieldNames.length;
 		control.setLayoutData(gridData);
 		control.setLinesVisible(false);
 		control.setHeaderVisible(false);
-	
+
 		final Widget[] dropTarget = new Widget[1], dragSource = new Widget[1];
-	
+
 		// configure as drag source
 		final Transfer transfer = LocalTransfer.getInstance();
-		viewer.addDragSupport(DND.DROP_MOVE, new Transfer[] { transfer }, 
+		viewer.addDragSupport(DND.DROP_MOVE, new Transfer[] { transfer },
 			new DragSourceListener() {
 				public void dragStart(DragSourceEvent event) {
 					dropTarget[0] = null;
@@ -171,12 +171,12 @@ public class BarChartEditForm extends ChartEditForm {
 					if (!selection.isEmpty()) {
 						event.doit = true;
 						dragSource[0] = control;
-					
+
 					}
 					else
 						event.doit = false;
 				}
-			
+
 				public void dragSetData(DragSourceEvent event) {
 					if (transfer.isSupportedType(event.dataType)) {
 						ISelection selection = viewer.getSelection();
@@ -198,7 +198,7 @@ public class BarChartEditForm extends ChartEditForm {
 					dragSource[0] = null;
 				}
 		});
-	
+
 		// configure drop target
 		viewer.addDropSupport(DND.DROP_MOVE, new Transfer[] { transfer },
 			new TableDropTargetEffect(control) {
@@ -230,7 +230,7 @@ public class BarChartEditForm extends ChartEditForm {
 						List<String> data = (List<String>)event.data;
 						ListOrderedSet items = new ListOrderedSet();
 						items.addAll(getInput(viewer));
-					
+
 						if (sorted) {
 							items.addAll(data);
 							viewer.setInput(sortFields((Set<String>)items));
@@ -246,7 +246,7 @@ public class BarChartEditForm extends ChartEditForm {
 						event.detail = DND.DROP_NONE;
 					}
 				}
-			
+
 				@SuppressWarnings("unchecked")
 				private int getInsertionIndex(DropTargetEvent event) {
 					if (event.item instanceof Item) {
@@ -263,13 +263,13 @@ public class BarChartEditForm extends ChartEditForm {
 					return control.getItemCount();
 				}
 			});
-	
+
 		return viewer;
 	}
 
 	private List<String> sortFields(Set<String> fields) {
 		List<String> result = new ArrayList<String>(fields.size());
-	
+
 		for (String field : fieldNames) {
 			if (fields.contains(field))
 				result.add(field);

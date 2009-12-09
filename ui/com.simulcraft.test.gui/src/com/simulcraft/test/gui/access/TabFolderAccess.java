@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,7 +23,7 @@ public class TabFolderAccess extends CompositeAccess {
 	public TabFolder getControl() {
 		return (TabFolder)super.getControl();
 	}
-    
+
     public TabItemAccess[] getItems() {
     	return wrapItems(getControl().getItems());
     }
@@ -32,7 +32,7 @@ public class TabFolderAccess extends CompositeAccess {
         Assert.assertTrue(0 <= index && index < getControl().getItemCount());
         return wrapItem(getControl().getItem(index));
     }
-    
+
     public TabItemAccess findItemByText(final String label) {
     	return wrapItem(
     			(TabItem)findObject(
@@ -43,17 +43,17 @@ public class TabFolderAccess extends CompositeAccess {
     							}
     						}));
     }
-    
+
     public TabItemAccess getSelection() {
     	TabItem[] selection = getControl().getSelection();
     	return selection.length == 0 ? null : wrapItem(selection[0]);
     }
-    
+
     public boolean isSelected(String label) {
     	TabItem[] selection = getControl().getSelection();
     	return selection.length == 1 && selection[0].getText().matches(label);
     }
-    
+
 	public void selectItem(String label) {
 		findItemByText(label).select();
 	}

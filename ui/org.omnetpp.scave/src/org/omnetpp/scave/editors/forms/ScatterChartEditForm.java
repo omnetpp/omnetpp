@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -76,7 +76,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 	protected void updateLineNames(String formatString) {
 		Line[] lines = NO_LINES;
 		IXYDataset xydataset;
-	
+
 		try {
 			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 			xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
@@ -92,7 +92,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 				lines[i] = new Line(xydataset.getSeriesKey(i));
 			Arrays.sort(lines);
 		}
-	
+
 		setLines(lines);
 	}
 
@@ -130,7 +130,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			xModuleAndDataCombo = createComboField("", group, items);
 			if (items.length > 0)
 				xModuleAndDataCombo.setText(items[0]);
-		
+
 			// iso data
 			group = createGroup("Iso lines", panel, 2, 1);
 			createLabel("Select scalars and run attributes whose values must be equal on data points connected by lines.",
@@ -145,7 +145,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			scalars.setText("scalars");
 			TreeItem attributes = new TreeItem(isoLineSelectionTree, SWT.NONE);
 			attributes.setText("run attributes");
-	
+
 			isoLineSelectionTreeItems = new ArrayList<TreeItem>();
 			for (int i = 0; i < isoData.length; ++i) {
 				TreeItem parent = isoData[i].getModuleName() != null && isoData[i].getDataName() != null ?
@@ -158,7 +158,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			}
 			scalars.setExpanded(true);
 			attributes.setExpanded(false);
-		
+
 			group = createGroup("Average replications", panel, 2, 1);
 			createLabel("Check if the values that are the replications of the same measurement must be averaged.", group, 1);
 			avgReplicationsCheckbox = createCheckboxField("average replications", group);
@@ -171,7 +171,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		Composite panel = new Composite(parent, SWT.NONE);
 		panel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, columns, 1));
 		panel.setLayout(new RowLayout(SWT.VERTICAL));
-	
+
 		Label label = new Label(panel, SWT.WRAP); // XXX WRAP does not work
 		label.setText(text);
 		return label;
@@ -182,7 +182,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
 			int index = xModuleAndDataCombo.getSelectionIndex();
-			return index >= 0 ? xData[index].asFilterPattern() : null; 
+			return index >= 0 ? xData[index].asFilterPattern() : null;
 		case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
 			List<String> patterns = new ArrayList<String>();
 			for (TreeItem item : isoLineSelectionTreeItems) {
@@ -207,7 +207,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 					if (index >= 0)
 						xModuleAndData = xData[index];
 				}
-			
+
 				if (xModuleAndData != null)
 					xModuleAndDataCombo.setText(xModuleAndData.asListItem());
 				else

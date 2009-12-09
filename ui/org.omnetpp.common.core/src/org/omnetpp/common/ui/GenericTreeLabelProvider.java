@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -13,9 +13,9 @@ import org.eclipse.swt.graphics.Image;
 
 /**
  * A delegating label provider that can be used with a GenericTreeNode
- * tree. It accepts a label provider written for the tree node <i>payload</i> 
+ * tree. It accepts a label provider written for the tree node <i>payload</i>
  * objects, and delegates everything to it.
- *  
+ *
  * @author Andras
  */
 public class GenericTreeLabelProvider implements ILabelProvider {

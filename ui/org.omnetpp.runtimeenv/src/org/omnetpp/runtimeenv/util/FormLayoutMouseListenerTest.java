@@ -16,7 +16,7 @@ public class FormLayoutMouseListenerTest {
         parent.setActive();
         parent.setLayout(new FormLayout());
         parent.setBackground(new Color(null, 228, 228, 228));
-        
+
         for (int i=0; i<5; i++) {
             //BorderedComposite child = new BorderedComposite(parent, SWT.BORDER);
             //Canvas child = new Canvas(parent, SWT.BORDER);
@@ -25,7 +25,7 @@ public class FormLayoutMouseListenerTest {
             //IFigure rootFigure = child.getLightweightSystem().getRootFigure();
             Button child = new Button(parent, SWT.PUSH);
             child.setText("Move/Resize!");
-            
+
             FormData formData = new FormData();
             formData.height = 100;
             formData.width = 100;
@@ -34,17 +34,17 @@ public class FormLayoutMouseListenerTest {
             //formData.right = new FormAttachment(100, 0);
             //formData.bottom = new FormAttachment(100, 0);
             child.setLayoutData(formData);
-            
+
             FormLayoutMouseListener listener = new FormLayoutMouseListener(parent, true, true);
             child.addMouseListener(listener);
             child.addMouseMoveListener(listener);
             child.addMouseTrackListener(listener);
         }
-        
+
         parent.setSize(500, 500);
         parent.layout(true);
         parent.setVisible(true);
-        
+
         parent.addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {

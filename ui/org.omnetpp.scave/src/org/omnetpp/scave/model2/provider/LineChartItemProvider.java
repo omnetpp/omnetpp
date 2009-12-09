@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,7 +34,7 @@ public class LineChartItemProvider extends
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
-	
+
 		if (object instanceof LineChart) {
 			for (Object descriptor : newChildDescriptors) {
 				CommandParameter param = (CommandParameter)descriptor;

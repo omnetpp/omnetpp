@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -135,7 +135,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 		if (!(editorInput instanceof NonExistingFileEditorInput) &&
 			!(editorInput instanceof IFileEditorInput))
 			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
-	
+
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
 
@@ -244,7 +244,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 	 * and simplified significantly. Look it up for more sophistication.)
 	 */
 	public void doSaveAs() {
-		IProgressMonitor progressMonitor = getProgressMonitor(); 
+		IProgressMonitor progressMonitor = getProgressMonitor();
 
 		Shell shell= getSite().getShell();
 		IEditorInput input = getEditorInput();
@@ -315,7 +315,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 			writer.writeXMLHeader();
 			writer.writeStartElement(EL_SCAVE);
 	        writer.writeAttribute(ATT_VERSION, FILEFORMAT_VERSION);
-	        
+
 	        for (IDatasetEditorPage page : pages)
 	        	page.save(writer, progressMonitor);
 
@@ -349,7 +349,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 			for (IDatasetEditorPage page : pages)
 				handlers.putAll(page.getLoader(progressMonitor));
 			handler.addContentHandlers(handlers);
-	
+
 			parser.parse(file, handler);
 			System.out.println("loading "+file.getName()+": " + (System.currentTimeMillis()-t0));
 		} catch (ParserConfigurationException e) {
@@ -426,7 +426,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 				}
 			}
 		}
-	
+
 
 		return super.getAdapter(required);
 	}

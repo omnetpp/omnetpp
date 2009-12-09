@@ -1,6 +1,6 @@
 This directory contains several simulation models to demonstrate the features
-of the simulation framework. These simulations are intentionally kept simple to 
-facilitate understanding, even at the cost of sacrificing some realistic 
+of the simulation framework. These simulations are intentionally kept simple to
+facilitate understanding, even at the cost of sacrificing some realistic
 details.
 
 There is a step-by-step tutorial (TicToc), some queueing simulations (Fifo,

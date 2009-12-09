@@ -10,7 +10,7 @@
   </files>
 
   <dataset>
-    <!-- 
+    <!--
     optimize-subset(idlist, mode={include|exclude}):
       s0 := basic_estimate(idlist);
       write: "<$mode basic-estimate-params>"
@@ -21,7 +21,7 @@
     // NOTE: optimize-subset must converge to the solution, i.e.
     // both recursive calls MUST operate on SMALLER (and not eq) subsets
     // What follows for basic_estimate for this?
-    
+
     basic_estimate(idlist):
       // note: this OVERestimates -- can be done better
       1. let um = getUniqueModuleNames(s0), am = getAllModuleNames(file)
@@ -37,13 +37,13 @@
 
     <include mod="*" name="processed frames|name2|name3">
 	    <include ...>
-	    </include>   
+	    </include>
 	    <exclude>
 	      <set ...>
-	    </exclude>   
+	    </exclude>
     </set>
-    
-    
+
+
     <include mod="mod1|mod2|mod3|mod4" name="processed frames|name2|name3"/>
 
   </dataset>

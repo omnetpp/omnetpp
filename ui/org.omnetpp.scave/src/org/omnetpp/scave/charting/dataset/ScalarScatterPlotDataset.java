@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,7 +24,7 @@ import org.omnetpp.scave.model2.IsoLineData;
  * Each series contains as many data points as many scalars are with the
  * module/data name, scalars differing only in their replications may optionally
  * be averaged.
- * 
+ *
  * @author tomi
  */
 public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAveragedXYDataset {
@@ -93,7 +93,7 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 				else
 					sb.append(" ");
 
-				// add "name=value"; leave out where value is empty (that's usually 
+				// add "name=value"; leave out where value is empty (that's usually
 				// an itervar which is missing from the given run)
 				IsoLineData isoData = isoLineId[i];
 				if (!StringUtils.isEmpty(isoData.getValue())) {
@@ -106,7 +106,7 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 			}
 		}
 		String isoScalarValues = sb.toString();
-	
+
 		// first row contains the common X coordinates
 		// name the lines after their Y data
 		String[] keys = new String[data.getRowCount()-1];

@@ -15,7 +15,7 @@ public class NedDisplayStringCompletionProcessor extends AbstractNedCompletionPr
     public NedDisplayStringCompletionProcessor(ITextEditor editor) {
         super(editor);
     }
-    
+
     @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         // long startMillis = System.currentTimeMillis(); // measure time
@@ -27,7 +27,7 @@ public class NedDisplayStringCompletionProcessor extends AbstractNedCompletionPr
         // if the position is invalid return no proposals
         if (info == null || info.linePrefix == null || info.linePrefixTrimmed == null)
             return new ICompletionProposal[0];
-    
+
         String line = info.linePrefixTrimmed;
 
         // display string

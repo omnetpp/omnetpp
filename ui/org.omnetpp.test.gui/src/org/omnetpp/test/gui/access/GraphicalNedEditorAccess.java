@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -111,7 +111,7 @@ public class GraphicalNedEditorAccess
                     ModuleConnectionEditPart connectionEditPart = (ModuleConnectionEditPart)object;
                     String sourceName = ((INEDElement)connectionEditPart.getSource().getModel()).getAttribute("name");
                     String targetName = ((INEDElement)connectionEditPart.getTarget().getModel()).getAttribute("name");
-                    
+
                     return sourceName.matches(label1) && targetName.matches(label2);
                 }
 
@@ -125,11 +125,11 @@ public class GraphicalNedEditorAccess
                     GraphicalEditPart graphicalEditPart = (GraphicalEditPart)object;
                     return hasObject(graphicalEditPart.getSourceConnections(), predicate);
                 }
-                
+
                 return false;
             }
         });
-        
+
         ConnectionEditPart connectionEditPart = (ConnectionEditPart)findObject(graphicalEditPart.getSourceConnections(), predicate);
         ConnectionFigure connectionFigure = (ConnectionFigure)connectionEditPart.getFigure();
         new FigureAccess(connectionFigure).click(LEFT_MOUSE_BUTTON);
@@ -154,8 +154,8 @@ public class GraphicalNedEditorAccess
 		return findCompoundModule(name);
 	}
 
-    
-    
+
+
     @UIStep
     public EditPartAccess findModule(final String name, final Class<?> type) {
         return (EditPartAccess)createAccess((EditPart)findDescendantEditPart(getRootEditPart(), new IPredicate() {
@@ -183,7 +183,7 @@ public class GraphicalNedEditorAccess
         clickPaletteItem(elementTypeName);
         // TODO: inserting sleep(1); causes the palette button to be released even if clicked and thus fail to create the element
         clickBackground();
-        
+
         if (elementName != null)
             renameElement("Unnamed.*", elementName);
     }
@@ -196,7 +196,7 @@ public class GraphicalNedEditorAccess
     private RootEditPart getRootEditPart() {
         return getGraphicalViewer().getRootEditPart();
     }
-    
+
     private IFigure getRootFigure() {
         FigureCanvas figureCanvas = getWorkbenchPart().getFigureCanvas();
         IFigure rootFigure = figureCanvas.getLightweightSystem().getRootFigure();

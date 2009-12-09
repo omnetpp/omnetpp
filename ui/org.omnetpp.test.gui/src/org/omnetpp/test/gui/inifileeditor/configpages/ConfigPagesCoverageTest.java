@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -51,9 +51,9 @@ public class ConfigPagesCoverageTest extends InifileEditorTestCase {
             for (ConfigOption key : page.getSupportedKeys())
                 supportedKeys.add(key);
         }
-        
+
         String expectedForgottenKeys = "seed-%-mt-p%  seed-%-lcg32  seed-%-mt"; // we know these are missing from the forms
-        
+
         // see which keys are not supported anywhere
         Set<String> forgottenKeys = new HashSet<String>();
         for (ConfigOption key : ConfigRegistry.getEntries())

@@ -84,7 +84,7 @@ Name lookups
 Base types and submodules.
 
 Fully qualified names and simple names are accepted. Simple names
-are looked up among the inner types of the enclosing type (compound 
+are looked up among the inner types of the enclosing type (compound
 module), then using imports, then in the same package.
 
 
@@ -95,14 +95,14 @@ lookups. This lookup ignores the imports in the file altogether.
 Instead, it collects all modules that support the given interface
 and match the given type name string (i.e. end in the same simple name,
 or have the same fully qualified name). The result must be exactly
-one module type. 
+one module type.
 
 The algorithm for parametric channel types works in the same way.
 
 
 Network name in the ini file.
 
-Simple (unqualified) names are tried with the same package as the 
+Simple (unqualified) names are tried with the same package as the
 ini file is in (provided it's in a NED directory).
 
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -41,7 +41,7 @@ import org.omnetpp.ide.wizard.NewOmnetppProjectWizard.NewOmnetppProjectCreationP
 public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
 
     class NewProjectPage extends NewOmnetppProjectCreationPage implements IWizardDataPage {
-        
+
         public Map getPageData() {
                 Map data = new HashMap();
                 String projName = super.getProjectName().trim();
@@ -56,13 +56,13 @@ public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
 
         public void setNextPage(IWizardPage next) {
             // TODO Auto-generated method stub
-            
+
         }
     }
 
     IWizardDataPage[] beforePages = new IWizardDataPage[] { new NewProjectPage() };
-    
-    public OmnetCDTNewProjectWizard() {       
+
+    public OmnetCDTNewProjectWizard() {
     }
 
     @Override
@@ -112,9 +112,9 @@ public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
 
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
         // TODO Auto-generated method stub
-        
+
     }
-    
+
     @Override
     public boolean performFinish() {
 //        boolean result = true;
@@ -145,7 +145,7 @@ public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
 //            e.printStackTrace();
 //        }
         //ICProjectDescription pd = CCorePlugin.getDefault().createProjectDescription(project, true, true);
-        
+
         try {
             CCorePlugin.getDefault().createCDTProject(project.getDescription(), project, null);
         }
@@ -169,10 +169,10 @@ public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
 
 //        cfgs = CfgHolder.unique(fConfigPage.getCfgItems(defaults));
 //        cfgs = CfgHolder.reorder(cfgs);
-            
+
         IConfiguration conf = ManagedBuildManager.getExtensionConfiguration("cdt.managedbuild.config.gnu.mingw.exe.release");
         CfgHolder cfgs[] = new CfgHolder[] {new CfgHolder(conf.getToolChain(),conf)};
-        
+
         for (int i=0; i<cfgs.length; i++) {
             String s = (cfgs[i].getToolChain() == null) ? "0" : ((ToolChain)(cfgs[i].getToolChain())).getId();  //$NON-NLS-1$
             Configuration cfg = new Configuration(mProj, (ToolChain)cfgs[i].getToolChain(), ManagedBuildManager.calculateChildId(s, null), cfgs[i].getName());

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,7 +27,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 
 	protected static char[] fgBrackets= { '{', '}', '(', ')', '[', ']', '"', '"' };
 
-	/* 
+	/*
 	 * Create a NedDoubleClickSelector.
 	 */
 	 public NedDoubleClickSelector() {
@@ -53,7 +53,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 	/**
 	 * Match the brackets at the current selection. Return <code>true</code> if successful,
 	 * <code>false</code> otherwise.
-	 * 
+	 *
 	 * @return <code>true</code> if brackets match, <code>false</code> otherwise
 	 */
 	 protected boolean matchBracketsAt() {
@@ -111,7 +111,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 	/**
 	 * Select the word at the current selection location. Return <code>true</code> if successful,
 	 * <code>false</code> otherwise.
-	 * 
+	 *
 	 * @return <code>true</code> if a word can be found at the current selection location, <code>false</code> otherwise
 	 */
 	 protected boolean matchWord() {
@@ -154,7 +154,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 
 	/**
 	 * Returns the position of the closing bracket after <code>startPosition</code>.
-	 * 
+	 *
 	 * @param startPosition - the beginning position
 	 * @param openBracket - the character that represents the open bracket
 	 * @param closeBracket - the character that represents the close bracket
@@ -185,7 +185,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 
 	/**
 	 * Returns the position of the open bracket before <code>startPosition</code>.
-	 * 
+	 *
 	 * @param startPosition - the beginning position
 	 * @param openBracket - the character that represents the open bracket
 	 * @param closeBracket - the character that represents the close bracket
@@ -214,7 +214,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 
 	/**
 	 * Select the area between the selected bracket and the closing bracket.
-	 * 
+	 *
 	 * @return <code>true</code> if selection was successful, <code>false</code> otherwise
 	 */
 	 protected boolean selectBracketBlock() {
@@ -231,7 +231,7 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 	}
 
 	/**
-	 * Select the word at the current selection. 
+	 * Select the word at the current selection.
 	 */
 	 protected void selectWord() {
 		if (matchWord()) {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -77,7 +77,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the label provider
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
-	// hashmap to save/restore view's state when switching across editors 
+	// hashmap to save/restore view's state when switching across editors
 	private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
 
 	public ModuleParametersView() {
@@ -147,7 +147,7 @@ public class ModuleParametersView extends AbstractModuleView {
 					if (res.section != null && res.key != null)
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
-					else 
+					else
 						return InifileHoverUtils.getParamHoverText(res.pathModules, res.paramDeclNode, res.paramValueNode);
 				}
 				return null;
@@ -195,7 +195,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	private void createActions() {
 		IAction pinAction = getOrCreatePinAction();
 
-		Action toggleModeAction = new ActionExt("Show unassigned only", IAction.AS_CHECK_BOX, 
+		Action toggleModeAction = new ActionExt("Show unassigned only", IAction.AS_CHECK_BOX,
 				InifileEditorPlugin.getImageDescriptor("icons/full/elcl16/filter_ps.gif")) {
 			@Override
 			public void run() {
@@ -240,7 +240,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
-					//return gotoDecl ? res.paramDeclNode : res.paramValueNode; 
+					//return gotoDecl ? res.paramDeclNode : res.paramValueNode;
 					// experimental: disable "Open NED declaration" if it's the same as "Open NED value"
 					//return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
 					// experimental: disable "Open NED Value" if it's the same as the declaration
@@ -249,8 +249,8 @@ public class ModuleParametersView extends AbstractModuleView {
 				return null;
 			}
 		};
-		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Open NED Declaration", null, true); 
-		ActionExt gotoNedValueAction = new GotoNedFileAction("Open NED Value", null, false); 
+		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Open NED Declaration", null, true);
+		ActionExt gotoNedValueAction = new GotoNedFileAction("Open NED Value", null, false);
 
 		tableViewer.addSelectionChangedListener(gotoInifileAction);
 		tableViewer.addSelectionChangedListener(gotoNedValueAction);
@@ -337,7 +337,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	public void setFocus() {
 		if (isShowingMessage())
 			super.setFocus();
-		else 
+		else
 			tableViewer.getTable().setFocus();
 	}
 
@@ -349,7 +349,7 @@ public class ModuleParametersView extends AbstractModuleView {
             showMessage("No module element selected.");
             return;
         }
-	    
+
 		//XXX factor out common part of the two "if" branches
 		//XXX why not unconditionally store analyzer and doc references???
 		if (analyzer==null) {
@@ -369,14 +369,14 @@ public class ModuleParametersView extends AbstractModuleView {
 			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
 			if (oldSelection != null)
 				tableViewer.setSelection(oldSelection, true);
-	
+
 			//XXX set label
 		}
 		else {
 			if (section==null)
 				section = GENERAL;
 			hideMessage();
-	
+
 			// update table contents
 			inifileAnalyzer = analyzer;
 			inifileDocument = analyzer.getDocument();
@@ -389,9 +389,9 @@ public class ModuleParametersView extends AbstractModuleView {
 				tableViewer.setSelection(oldSelection, true);
 
 			// update label
-			String text = "Section ["+section+"]"; 
+			String text = "Section ["+section+"]";
 			if (getPinnedToEditor() != null)
-				text += " in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)"; 
+				text += " in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
 			text += ", " + (unassignedOnly ? "unassigned parameters" : "all parameters");
 			setContentDescription(text);
 		}

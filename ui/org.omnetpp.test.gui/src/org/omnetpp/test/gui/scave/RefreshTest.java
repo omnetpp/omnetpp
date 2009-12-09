@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -50,12 +50,12 @@ public class RefreshTest extends ScaveFileTestCase {
 		assertDatasetViewScalarsTableContent(buildScalarsTableContent(1));
 		assertDatasetViewVectorsTableContent(buildVectorsTableContent(1));
     }
-    
+
     public void testAddFileToWorkspace() throws Exception {
     	createFile("test-3.sca", createScalarFileContent(3));
     	createFile("test-3.vec", createVectorFileContent(3));
     	WorkbenchUtils.refreshProjectFromProjectExplorerView(projectName);
-    
+
     	assertFileRunViewContent(buildFileRunViewContent(1, 2, 3));
     	assertRunFileViewContent(buildRunFileViewContent(1, 2, 3));
     	assertLogicalViewContent(buildLogicalViewContent(1, 2, 3));
@@ -64,12 +64,12 @@ public class RefreshTest extends ScaveFileTestCase {
 		assertDatasetViewScalarsTableContent(buildScalarsTableContent(1, 2, 3));
 		assertDatasetViewVectorsTableContent(buildVectorsTableContent(1, 2, 3));
     }
-    
+
     public void testRemoveFileFromInputs() {
     	InputsPageAccess inputsPage = editor.ensureInputsPageActive();
         inputsPage.removeInputFile("/project/test-2\\.vec");
         inputsPage.removeInputFile("/project/test-2\\.sca");
-        
+
     	assertFileRunViewContent(buildFileRunViewContent(1));
     	assertRunFileViewContent(buildRunFileViewContent(1));
     	assertLogicalViewContent(buildLogicalViewContent(1));
@@ -92,11 +92,11 @@ public class RefreshTest extends ScaveFileTestCase {
 		assertDatasetViewScalarsTableContent(buildScalarsTableContent(1, 2, 4));
 		assertDatasetViewVectorsTableContent(buildVectorsTableContent(1, 2, 4));
     }
-    
-    
+
+
 	@Override
 	protected String createAnalysisFileContent() {
-		return 
+		return
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 			"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">\n" +
 			"  <inputs>\n" +

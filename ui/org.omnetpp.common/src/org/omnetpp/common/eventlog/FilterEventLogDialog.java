@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -262,7 +262,7 @@ public class FilterEventLogDialog
         panelCheckboxTree.setChecked(treeNode, value);
         treeNode.checkStateChanged(value);
     }
-    
+
 	private void unparseInt(Text text, int value) {
 		if (value != -1)
 			text.setText(String.valueOf(value));
@@ -272,7 +272,7 @@ public class FilterEventLogDialog
         if (value != -1)
             text.setText(String.valueOf(value));
     }
-    
+
 	private void unparseBigDecimal(Text text, BigDecimal value) {
 		if (value != null)
 			text.setText(value.toString());
@@ -289,7 +289,7 @@ public class FilterEventLogDialog
 
 			for (int i = 0; i < values.length; i++)
 				stringValues[i] = String.valueOf(values[i]);
-	
+
 			editableList.setItems(stringValues);
 		}
 	}
@@ -311,7 +311,7 @@ public class FilterEventLogDialog
 
             for (int i = 0; i < values.length; i++)
                 stringValues[i] = String.valueOf(values[i]);
-            
+
             editableList.setItems(stringValues);
         }
     }
@@ -348,7 +348,7 @@ public class FilterEventLogDialog
 
 			for (int i = 0; i < values.length; i++) {
 			    ModuleTreeItem item = eventLogInput.getModuleTreeRoot().findDescendantModule(values[i]);
-			    
+
 			    if (item != null)
 			        moduleTreeItems.add(item);
 			}
@@ -365,7 +365,7 @@ public class FilterEventLogDialog
 	public void parseFilterParameters(EventLogFilterParameters filterParameters) {
 		try {
 			Class<EventLogFilterParameters> clazz = EventLogFilterParameters.class;
-	
+
 			for (Field parameterField : clazz.getDeclaredFields()) {
 				if ((parameterField.getModifiers() & Modifier.PUBLIC) != 0) {
 					Class<?> parameterFieldType = parameterField.getType();
@@ -373,7 +373,7 @@ public class FilterEventLogDialog
 
 					if (parameterFieldType == boolean.class) {
 					    Object guiFieldValue = guiField.get(this);
-					    
+
 					    if (guiFieldValue instanceof Button)
 					        parameterField.setBoolean(filterParameters, parseBoolean((Button)guiFieldValue));
 					    else if (guiFieldValue instanceof FilterDialogTreeNode)
@@ -435,7 +435,7 @@ public class FilterEventLogDialog
     private boolean parseBoolean(FilterDialogTreeNode treeNode) {
         return panelCheckboxTree.getChecked(treeNode);
     }
-    
+
 	private int parseInt(Text text) {
 		if (text.getText().length() != 0)
 			return Integer.parseInt(text.getText());
@@ -449,7 +449,7 @@ public class FilterEventLogDialog
         else
             return -1;
     }
-    
+
 	private BigDecimal parseBigDecimal(Text text) {
 		if (text.getText().length() != 0)
 			return new BigDecimal(text.getText());
@@ -490,14 +490,14 @@ public class FilterEventLogDialog
 
         return longValues;
     }
-    
+
     private long[] parseLongArray(CheckboxTableViewer checkBoxTableViewer) {
         Object[] elements = checkBoxTableViewer.getCheckedElements();
         long[] values = new long[elements.length];
-        
+
         for (int i = 0; i < elements.length; i++)
             values[i] = (Long)elements[i];
-        
+
         return values;
     }
 
@@ -579,14 +579,14 @@ public class FilterEventLogDialog
         panelCheckboxTree.setInput(treeRoot);
         panelCheckboxTree.expandAll();
         panelCheckboxTree.getTree().setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
-        
+
         panelCheckboxTree.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                 Object firstSelection = ((ITreeSelection)event.getSelection()).getFirstElement();
-                
+
                 if (firstSelection != null) {
                     FilterDialogTreeNode treeNode = (FilterDialogTreeNode)firstSelection;
-                    
+
                     if (treeNode.getPanel() != null)
                         stackLayout.topControl = treeNode.getPanel();
                     else
@@ -596,13 +596,13 @@ public class FilterEventLogDialog
                 }
             }
         });
-        
+
         panelCheckboxTree.addCheckStateListener(new ICheckStateListener() {
             public void checkStateChanged(CheckStateChangedEvent event) {
                 GenericTreeNode clickedTreeNode = (GenericTreeNode)event.getElement();
 
                 if (event.getChecked()) {
-                    GenericTreeNode treeNode = clickedTreeNode; 
+                    GenericTreeNode treeNode = clickedTreeNode;
 
                     // ignore non leave nodes
                     if (treeNode.getChildCount() != 0)
@@ -619,13 +619,13 @@ public class FilterEventLogDialog
                 }
                 else {
                     // uncheck subtree
-                    GenericTreeNode treeNode = clickedTreeNode; 
+                    GenericTreeNode treeNode = clickedTreeNode;
                     treeNodeUnchecked(new GenericTreeNode[] {treeNode});
 
                     // uncheck path to root if no other siblings are checked
                     while (treeNode != null) {
                         boolean found = false;
-                        for (GenericTreeNode childNode : treeNode.getChildren()) { 
+                        for (GenericTreeNode childNode : treeNode.getChildren()) {
                             if (panelCheckboxTree.getChecked(childNode)) {
                                 found = true;
                                 break;
@@ -645,10 +645,10 @@ public class FilterEventLogDialog
                     stackLayout.topControl = ((FilterDialogTreeNode)clickedTreeNode).getPanel();
                     panelContainer.layout();
                 }
-                
+
                 updateFilterDescription();
             }
-            
+
             private void treeNodeUnchecked(GenericTreeNode[] treeNodes) {
                 for (GenericTreeNode treeNode : treeNodes) {
                     ((FilterDialogTreeNode)treeNode).checkStateChanged(false);
@@ -726,7 +726,7 @@ public class FilterEventLogDialog
 
         Label label = createLabel(panel, "Maximum depth of message dependencies:", "Collecting message dependencies will not look deeper into the cause/consequence chain than this limit (separately for each event)", 1);
         maximumDepthOfMessageDependencies = createText(panel, label.getToolTipText(), 1);
-        
+
         label = createLabel(panel, "Maximum number of message dependencies:", "Collecting message dependencies will stop at this limit for each event", 1);
         maximumNumberOfMessageDependencies = createText(panel, label.getToolTipText(), 1);
 
@@ -781,7 +781,7 @@ public class FilterEventLogDialog
 	    // synchronize module tree state first
         eventLogInput.synchronizeModuleTree();
 
-        // module filter 
+        // module filter
         Composite panel1 = createPanel(parent, "Module Filter", "Choose subcategories to filter to events that occurred in any of the selected modules.", 1);
         enableModuleFilter = new FilterDialogTreeNode("Module filter", panel1);
 
@@ -842,7 +842,7 @@ public class FilterEventLogDialog
                 updateFilterDescription();
             }
         });
-        
+
         // module id filter
         panel = createPanel(parent, "Filter by Module IDs", "When enabled, modules with the selected IDs will be considered.", 2);
         enableModuleFilter.addChild(enableModuleIdFilter = new FilterDialogTreeNode("by ID", panel) {
@@ -857,7 +857,7 @@ public class FilterEventLogDialog
 		moduleIds.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
 				ModuleTreeItem moduleTreeItem = eventLogInput.getModuleTreeRoot().findDescendantModule((Integer)element);
-		
+
 				return "(id = " + moduleTreeItem.getModuleId() + ") " + moduleTreeItem.getModuleFullPath();
 			}
 		});
@@ -869,7 +869,7 @@ public class FilterEventLogDialog
 		ModuleCreatedEntryList moduleCreatedEntries = eventLog.getModuleCreatedEntries();
 		for (int i = 0; i < moduleCreatedEntries.size(); i++) {
 			ModuleCreatedEntry moduleCreatedEntry = moduleCreatedEntries.get(i);
-	
+
 			if (moduleCreatedEntry != null)
 				moduleIds.add(moduleCreatedEntry.getModuleId());
 		}
@@ -878,7 +878,7 @@ public class FilterEventLogDialog
 	}
 
 	private FilterDialogTreeNode createMessageFilterTreeNode(Composite parent) {
-        // message filter 
+        // message filter
         Composite panel0 = createPanel(parent, "Message Filter", "Choose subcategories to filter to events processing or sending any of the selected messages.",  1);
         enableMessageFilter = new FilterDialogTreeNode("Message filter", panel0);
 
@@ -927,11 +927,11 @@ public class FilterEventLogDialog
             @Override
             public void checkStateChanged(boolean checked) {
                 messageNames.getTable().setEnabled(checked);
-            }            
+            }
         });
 
         label = createLabel(panel, "Message names encountered so far:", null, 2);
-        
+
 		names = eventLog.getMessageNames().keys();
 		String[] messageNamesAsStrings = new String[(int)names.size()];
         for (int i = 0; i < names.size(); i++)
@@ -997,12 +997,12 @@ public class FilterEventLogDialog
             }
         };
         enableMessageFilter.addChild(treeNode);
-        
+
 		return new Object[] {treeNode, editableList};
 	}
 
 	private FilterDialogTreeNode createEventTraceFilterTreeNode(Composite parent) {
-        // trace filter 
+        // trace filter
         Composite panel = createPanel(parent, "Cause/Consequence Filter", "When enabled, only the selected event and its causes/consequences will be considered.", 2);
         enableTraceFilter = new FilterDialogTreeNode("Cause/consequence filter", panel) {
             @Override
@@ -1060,7 +1060,7 @@ public class FilterEventLogDialog
         Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         panel.setLayout(new GridLayout(numColumns, false));
-        
+
         Label titleLabel = new Label(panel, SWT.NONE);
         titleLabel.setFont(JFaceResources.getBannerFont());
         titleLabel.setText(title);
@@ -1135,7 +1135,7 @@ public class FilterEventLogDialog
         });
         return text;
     }
-    
+
     protected void updateFilterDescription() {
         if (filterDescription != null) {
             EventLogFilterParameters filterParameters = new EventLogFilterParameters(eventLogInput);
@@ -1151,11 +1151,11 @@ public class FilterEventLogDialog
             super(payload);
             this.panel = panel;
         }
-	    
+
 	    public Control getPanel() {
             return panel;
         }
-	    
+
 	    public void checkStateChanged(boolean checked) {
 	    }
 	}

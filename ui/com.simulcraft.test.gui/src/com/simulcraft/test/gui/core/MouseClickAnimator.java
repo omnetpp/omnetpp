@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,12 +17,12 @@ import org.eclipse.swt.widgets.Listener;
 /**
  * Visualizes mouse clicks by showing an inflating red circle.
  * Must be installed on Display as an event filter.
- *   
+ *
  * @author Andras
  */
 public class MouseClickAnimator implements Listener {
     public static boolean mouseClickAnimation = true;
-    
+
     public void handleEvent(Event e) {
         if (e.type == SWT.MouseDown && mouseClickAnimation) {
             Assert.isTrue(e.widget instanceof Control); // by experimental evidence ;)

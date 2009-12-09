@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,7 +22,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * Form page for editing all config entries. Currently unused.
- * 
+ *
  * @author Andras
  */
 public class RawConfigPage extends FormPage {

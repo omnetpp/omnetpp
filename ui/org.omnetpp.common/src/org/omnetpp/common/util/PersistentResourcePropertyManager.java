@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.eclipse.core.resources.IResource;
 
 /**
  * TODO document
- * 
+ *
  * @author Levy
  */
 public class PersistentResourcePropertyManager {
@@ -100,7 +100,7 @@ public class PersistentResourcePropertyManager {
 
 	/**
 	 * Returns null if the project does not exist (may happens e.g. when a project gets
-	 * deleted, a NED editor learns it and wants to close, and closing wants to save stuff). 
+	 * deleted, a NED editor learns it and wants to close, and closing wants to save stuff).
 	 */
 	private String getPropertyFileName(IResource resource, String key) {
 		IProject project = resource.getProject();

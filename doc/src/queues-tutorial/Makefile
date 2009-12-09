@@ -5,7 +5,7 @@ SOURCE = tutorial
 nothing:
 
 pdf: latex
-	pdflatex ./$(SOURCE).tex 
+	pdflatex ./$(SOURCE).tex
 
 ps: latex
 	dvips ./$(SOURCE).dvi -o ./$(SOURCE).ps
@@ -13,11 +13,11 @@ ps: latex
 html: latex
 	latex2html -split 1 $(SOURCE)
 
-latex: 
+latex:
 	latex ./$(SOURCE).tex
 	latex ./$(SOURCE).tex  # get labels right
 
-clean: 
+clean:
 	rm -f $(SOURCE).aux
 	rm -f $(SOURCE).dvi
 	rm -f $(SOURCE).log

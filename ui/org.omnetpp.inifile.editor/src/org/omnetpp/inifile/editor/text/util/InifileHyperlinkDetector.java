@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -54,7 +54,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 			String key = doc.getKeyForLine(lineNumber);
 			if (key==null)
 				return null;
-	
+
 			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 			if (InifileAnalyzer.getKeyType(key) == KeyType.CONFIG) {
 				if (key.equals(ConfigRegistry.CFGID_NETWORK.getName())) {
@@ -86,9 +86,9 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 		}
     	return null;
     }
-    
+
     protected IRegion getKeyRegion(IDocument textDoc, int lineNumber) throws BadLocationException {
-    	// get position of key within the line hovered 
+    	// get position of key within the line hovered
     	int lineOffset = textDoc.getLineOffset(lineNumber-1);
     	int nextLineOffset = textDoc.getLineOffset(lineNumber);
     	String lineContents = textDoc.get(lineOffset, nextLineOffset - lineOffset);
@@ -98,7 +98,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
     }
 
     protected IRegion getValueRegion(IDocument textDoc, int lineNumber) throws BadLocationException {
-    	// get position of key within the line hovered 
+    	// get position of key within the line hovered
     	int lineOffset = textDoc.getLineOffset(lineNumber-1);
     	int nextLineOffset = textDoc.getLineOffset(lineNumber);
     	String lineContents = textDoc.get(lineOffset, nextLineOffset - lineOffset);
@@ -107,7 +107,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
     	Region region = new Region(lineOffset + eqPos + 1, hashmarkPos == -1 ? nextLineOffset-lineOffset-eqPos - 1 - 1 : hashmarkPos - eqPos -1);
 		return trimRegion(textDoc, region);
     }
-    
+
     protected IRegion trimRegion(IDocument textDoc, IRegion r) throws BadLocationException{
     	int begin = r.getOffset();
     	int end = begin + r.getLength();
@@ -117,7 +117,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
     		end--;
     	return new Region(begin, end-begin);
     }
-    
+
     protected boolean contains(IRegion reg, int offset) {
     	return offset >= reg.getOffset() && offset < reg.getOffset() + reg.getLength();
     }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -10,7 +10,7 @@ package org.omnetpp.scave.engineext;
 /**
  * Exception that signals format errors in a vector or scalar file.
  * Gets instantiated and thrown from JNI code (SWIG wrapper).
- * 
+ *
  * @author tomi
  */
 public class ResultFileFormatException extends RuntimeException {

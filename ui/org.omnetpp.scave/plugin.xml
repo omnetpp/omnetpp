@@ -34,7 +34,7 @@
             launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
             name="New Analysis"/>
    </extension>
-   
+
    <extension
          id="org.omnetpp.scave.content-types"
          name="Scave content types"

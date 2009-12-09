@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -61,10 +61,10 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
 
         // set the other parameters
         pdesc.setCategory(prop.getGroup().name());
-        String enumDesc = prop.getEnumDesc(); 
+        String enumDesc = prop.getEnumDesc();
         String defaultValue = prop.getDefaultDesc();
-        String desc = prop.getTag()+"["+prop.getPos()+"] - "+prop.getName()+": "; 
-        desc += prop.getShortDesc() + (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : ""); 
+        String desc = prop.getTag()+"["+prop.getPos()+"] - "+prop.getName()+": ";
+        desc += prop.getShortDesc() + (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : "");
         desc += (StringUtils.isNotEmpty(defaultValue) ? ". Default: "+defaultValue : "");
         pdesc.setDescription(desc);
         // the one line display string descriptor should be always incompatible, so selecting

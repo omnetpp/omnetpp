@@ -58,7 +58,7 @@ public interface IDataControl {
     public void removeDataListener(IDataListener listener);
 
     public void addMouseListener(MouseListener mouseListener);
-    
+
     public void removeMouseListener(MouseListener mouseListener);
 
     public void addSelectionListener(SelectionListener listener);

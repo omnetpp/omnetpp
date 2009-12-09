@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -72,7 +72,7 @@ public class MergedPropertySource extends NedBasePropertySource {
 	    // provide descriptors) ie. property editor is available ONLY for elements IN the model
 	    if (getModel().getParent() == null)
 	        return new IPropertyDescriptor[0];
-	    
+
 		// walk through all property source and merge its descriptors into a single list
 		for (IPropertySource psrc : mergedList)
 			for (IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {

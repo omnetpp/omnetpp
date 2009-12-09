@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,7 +40,7 @@ import static org.omnetpp.common.util.Predicate.instanceOf;
  */
 public class RecognizerBase  {
     protected GUIRecorder recorder;
-    
+
     public RecognizerBase(GUIRecorder recorder) {
         this.recorder = recorder;
     }
@@ -57,23 +57,23 @@ public class RecognizerBase  {
         return new JavaExpr(javaCode, quality, resultUIObject, recorder.getVariableTypeFor(resultUIObject), suggestedVariableName);
     }
 
-    // expr is standalone expression 
+    // expr is standalone expression
     public JavaSequence makeStatement(JavaExpr expr) {
         return appendStatement(new JavaSequence(), expr);
     }
 
-    // expr is a method, called on uiObject 
+    // expr is a method, called on uiObject
     public JavaSequence makeMethodCall(Object uiObject, JavaExpr methodExpr) {
         return appendMethodCall(new JavaSequence(), uiObject, methodExpr);
     }
 
-    // expr is standalone expression 
+    // expr is standalone expression
     public JavaSequence appendStatement(JavaSequence base, JavaExpr expr) {
         base.add(expr);
         return base;
     }
 
-    // expr is a method, called on uiObject 
+    // expr is a method, called on uiObject
     public JavaSequence appendMethodCall(JavaSequence base, Object uiObject, JavaExpr methodExpr) {
         Assert.isTrue(!(uiObject instanceof Event) && !(uiObject instanceof JavaExpr) && !(uiObject instanceof JavaSequence));
 
@@ -122,7 +122,7 @@ public class RecognizerBase  {
     }
 
     public static String toJavaLiteral(String text) {
-        return "\"" + StringEscapeUtils.escapeJava(text) + "\""; 
+        return "\"" + StringEscapeUtils.escapeJava(text) + "\"";
     }
 
     public static Object findObject(List<Object> objects, IPredicate predicate) {
@@ -174,7 +174,7 @@ public class RecognizerBase  {
     public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
         return findDescendantFigure(figure, instanceOf(clazz));
     }
-    
+
     public static IFigure findDescendantFigure(IFigure figure, IPredicate predicate) {
         return (IFigure) theOnlyObject(collectDescendantFigures(figure, predicate));
     }
@@ -244,7 +244,7 @@ public class RecognizerBase  {
     protected static Control theOnlyControl(List<? extends Control> controls) {
         return (Control)theOnlyObject(controls);
     }
-    
+
     protected static Label getPrecedingUniqueLabel(Composite composite, Control control) {
         Control[] siblings = control.getParent().getChildren();
         Label label = null;
@@ -279,7 +279,7 @@ public class RecognizerBase  {
 
     protected static void dumpWidgetHierarchy(Control control, int level) {
        	System.out.println(StringUtils.repeat("  ", level) + control.toString() + (!control.isVisible() ? " (not visible)" : ""));
-        
+
         if (control.getMenu() != null)
             dumpMenu(control.getMenu(), level);
 
@@ -291,7 +291,7 @@ public class RecognizerBase  {
     public static void dumpMenu(Menu menu) {
         dumpMenu(menu, 0);
     }
-    
+
     protected static void dumpMenu(Menu menu, int level) {
         for (MenuItem menuItem : menu.getItems()) {
             System.out.println(StringUtils.repeat("  ", level) + menuItem.getText());
@@ -308,7 +308,7 @@ public class RecognizerBase  {
     @SuppressWarnings("unchecked")
     protected static void dumpFigureHierarchy(IFigure figure, int level) {
         System.out.println(StringUtils.repeat("  ", level) + toString(figure));
-        
+
         for (IFigure child : (List<IFigure>)figure.getChildren())
             dumpFigureHierarchy(child, level+1);
     }
@@ -322,9 +322,9 @@ public class RecognizerBase  {
         else {
             return figure.toString();
         }
-        
+
     }
 
-    
+
 
 }

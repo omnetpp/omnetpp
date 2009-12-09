@@ -52,7 +52,7 @@ public class SubmoduleFigureTest extends TestCase {
 			}
         });
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure();
 		figureCanvas.getRootFigure().add(cmodule);
@@ -100,7 +100,7 @@ public class SubmoduleFigureTest extends TestCase {
         addSubmodule(cmodule,"b="+str, "p="+ (x+=colDist) +","+y+";b="+str+",r");
         str = "error,50";
         addSubmodule(cmodule,"b="+str, "p="+ (x+=colDist) +","+y+";b="+str+",r");
-        
+
 		// oval
 		y+= rowDist;
 		x = 0;
@@ -149,7 +149,7 @@ public class SubmoduleFigureTest extends TestCase {
 			}
         });
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure();
 		figureCanvas.getRootFigure().add(cmodule);
@@ -161,7 +161,7 @@ public class SubmoduleFigureTest extends TestCase {
 		int y = 50; int rowDist = 90; int colDist = 90;
 		for (String s : "red,blue:,green:#7711CC,:@555555,black:bubu,".split(":"))
 			addSubmodule(cmodule,"color: "+s, "p="+ (x+=colDist) +","+y+";b=40,40,rect,"+s);
-		
+
 		// border width
 		y+= rowDist;
 		x = 0;
@@ -212,7 +212,7 @@ public class SubmoduleFigureTest extends TestCase {
 			}
         });
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure() {
         	@Override
@@ -224,7 +224,7 @@ public class SubmoduleFigureTest extends TestCase {
 		figureCanvas.getRootFigure().add(cmodule);
 		figureCanvas.getRootFigure().setConstraint(cmodule, new Rectangle(10,10,-1,-1));
 		cmodule.setDisplayString(new DisplayString("bg=600,600"));
-				
+
 		int x = 0;
 		int y = 50; int rowDist = 120; int colDist = 90;
 		// border width
@@ -275,7 +275,7 @@ public class SubmoduleFigureTest extends TestCase {
 			}
         });
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure() {
         	@Override
@@ -287,7 +287,7 @@ public class SubmoduleFigureTest extends TestCase {
 		figureCanvas.getRootFigure().add(cmodule);
 		figureCanvas.getRootFigure().setConstraint(cmodule, new Rectangle(10,10,-1,-1));
 		cmodule.setDisplayString(new DisplayString("bg=600,600"));
-				
+
 		Debug.debug = true;
 
 
@@ -330,7 +330,7 @@ public class SubmoduleFigureTest extends TestCase {
 					graphics.fillRectangle(getBounds());
 					graphics.popState();
 				}
-			
+
 				super.paint(graphics);
 			}
 		};

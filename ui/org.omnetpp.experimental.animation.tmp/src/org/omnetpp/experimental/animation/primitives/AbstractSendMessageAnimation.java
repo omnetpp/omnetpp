@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -72,7 +72,7 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 			alpha = (animationPosition.getAnimationTime() - getBeginAnimationTime()) / (getEndAnimationTime() - getBeginAnimationTime());
 		alpha = Math.max(0, Math.min(alpha, 1));
 
-		Point pAlpha; 
+		Point pAlpha;
 		Point pBeta;
 
 		if (transmissionTime == 0)

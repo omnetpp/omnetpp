@@ -46,7 +46,7 @@ public class DataTree extends Tree implements IDataControl {
     protected ResultFileManager manager;
 
     protected IDList idList;
-    
+
     protected IVirtualTreeContentProvider<Object> contentProvider;
 
     public DataTree(Composite parent, int style) {
@@ -56,7 +56,7 @@ public class DataTree extends Tree implements IDataControl {
         setMenu(contextMenuManager.createContextMenu(this));
         addColumn("Name", 400);
         addColumn("Value", 200);
-        
+
         addListener(SWT.SetData, new Listener() {
             public void handleEvent(final Event e) {
                 ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
@@ -100,7 +100,7 @@ public class DataTree extends Tree implements IDataControl {
 
     public ResultItem getSelectedItem() {
         ResultItem[] resultItems = getSelectedItems();
-        
+
         if (resultItems.length == 1)
             return resultItems[0];
         else
@@ -113,7 +113,7 @@ public class DataTree extends Tree implements IDataControl {
 
         for (int i = 0; i < idList.size(); i++)
             resultItems.add(manager.getItem(idList.get(i)));
-        
+
         return resultItems.toArray(new ResultItem[0]);
     }
 
@@ -122,14 +122,14 @@ public class DataTree extends Tree implements IDataControl {
             public IDList call() throws Exception {
                 IDList resultIdList = new IDList();
                 TreeItem[] treeItems = getSelection();
-        
+
                 for (int i = 0; i < idList.size(); i++) {
                     long id = idList.get(i);
                     for (TreeItem treeItem : treeItems)
                         if (((ResultFileManagerTreeContentProvider)contentProvider).matchesPath(getPath(treeItem), id))
                             resultIdList.add(id);
                 }
-        
+
                 return resultIdList;
             }
         });
@@ -141,7 +141,7 @@ public class DataTree extends Tree implements IDataControl {
         writer.addField("Value");
         writer.endRecord();
 
-        for (TreeItem treeItem : getSelection()) { 
+        for (TreeItem treeItem : getSelection()) {
             Object node = treeItem.getData();
             writer.addField(contentProvider.getColumnText(node, 0));
             writer.addField(contentProvider.getColumnText(node, 1));
@@ -219,7 +219,7 @@ public class DataTree extends Tree implements IDataControl {
 
     private List<Object> getPath(TreeItem treeItem) {
         List<Object> path = new ArrayList<Object>();
-        
+
         while (treeItem instanceof TreeItem) {
             path.add(treeItem.getData());
             treeItem = treeItem.getParentItem();
@@ -233,7 +233,7 @@ interface IVirtualTreeContentProvider<T> {
     public List<? extends T> getChildNodes(List<? extends T> path);
 
     public Image getImage(Object node);
-    
+
     public String getColumnText(Object node, int index);
 }
 
@@ -241,7 +241,7 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
     protected ResultFileManager manager;
 
     protected IDList idList;
-    
+
     public ResultFileManagerTreeContentProvider(ResultFileManager manager, IDList idList) {
         this.manager = manager;
         this.idList = idList;
@@ -333,7 +333,7 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
             }
         });
     }
-    
+
     public Image getImage(Object node) {
         if (node instanceof Long) {
             ResultItem resultItem = (ResultItem)manager.getItem((Long)node);
@@ -397,7 +397,7 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
         else
             throw new IllegalArgumentException();
     }
-    
+
     protected boolean matchesPath(List<? extends Object> path, long id) {
         int lastIndex = path == null ? -1 : path.size() - 1;
         ResultItem resultItem = manager.getItem(id);
@@ -407,15 +407,15 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
         ReplicationPayload replicationPayload = lastIndex < 2 ? null : (ReplicationPayload)path.get(lastIndex - 2);
         Object firstElement = path == null || path.size() == 0 ? null : path.get(0);
         String modulePrefix = lastIndex < 3 ? null : StringUtils.join(CollectionUtils.toReversed(path.subList(firstElement instanceof Long ? 1 : 0, lastIndex - 2)), ".");
-        
+
         return
             (experimentPayload == null || experimentPayload.name.equals(run.getAttribute(RunAttribute.EXPERIMENT))) &&
-            (measurementPayload == null || measurementPayload.name.equals(run.getAttribute(RunAttribute.MEASUREMENT))) && 
+            (measurementPayload == null || measurementPayload.name.equals(run.getAttribute(RunAttribute.MEASUREMENT))) &&
             (replicationPayload == null || replicationPayload.name.equals(run.getAttribute(RunAttribute.REPLICATION))) &&
             (modulePrefix == null || resultItem.getModuleName().startsWith(modulePrefix)) &&
-            (!(firstElement instanceof Long) || (Long)firstElement == id); 
+            (!(firstElement instanceof Long) || (Long)firstElement == id);
     }
-    
+
     protected static class NameValuePayload implements Comparable<NameValuePayload> {
         public String name;
         public String value;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,14 +27,14 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 // TODO: implement caching if performance turns out to be bad
 public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
     protected IMsgTypeElement typeNode;
-    
+
     public MsgTypeInfo(IMsgTypeElement node) {
         typeNode = node;
     }
 
     public IMsgTypeElement getFirstExtendsRef() {
         String name = typeNode.getFirstExtends();
-        
+
         if (name == null)
             return null;
         else
@@ -43,10 +43,10 @@ public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
 
     public Set<IMsgTypeElement> getLocalUsedTypes() {
         Set<IMsgTypeElement> usedTypes = new HashSet<IMsgTypeElement>();
-        
+
         for (FieldElement field = (FieldElement)typeNode.getFirstChildWithTag(NED_FIELD); field != null; field = field.getNextFieldSibling()) {
             IMsgTypeElement usedType = NEDResourcesPlugin.getMSGResources().lookupMsgType(field.getDataType());
-            
+
             if (usedType != null)
                 usedTypes.add(usedType);
         }
@@ -59,15 +59,15 @@ public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
 
         for (FieldElement field = (FieldElement)typeNode.getFirstChildWithTag(NED_FIELD); field != null; field = field.getNextFieldSibling())
             fields.put(field.getName(), field);
-        
+
         return fields;
     }
 
     public Map<String, FieldElement> getFields() {
         Map<String, FieldElement> fields = new HashMap<String, FieldElement>();
-        
+
         IMsgTypeElement typeElement = typeNode;
-        
+
         while (typeElement != null) {
             fields.putAll(typeElement.getMsgTypeInfo().getLocalFields());
             typeElement = (IMsgTypeElement)typeElement.getMsgTypeInfo().getFirstExtendsRef();
@@ -86,7 +86,7 @@ public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
 
         MsgFileElementEx fileElement = typeNode.getContainingMsgFileElement();
         String namespace = NEDResourcesPlugin.getMSGResources().getCppNamespaceForFile(fileElement);
-        
+
         if (namespace == null)
             return className;
         else

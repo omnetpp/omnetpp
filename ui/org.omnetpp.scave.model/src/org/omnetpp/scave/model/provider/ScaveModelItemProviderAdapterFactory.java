@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -658,7 +658,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
     }
 
 	/**
-     * This disposes all of the item providers created by this factory. 
+     * This disposes all of the item providers created by this factory.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @generated

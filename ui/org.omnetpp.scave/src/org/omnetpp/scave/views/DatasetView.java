@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -83,7 +83,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * View that shows the content of a dataset.
- * 
+ *
  * @author tomi
  */
 // work in progress ...
@@ -114,7 +114,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private ISelection selection;
 	private ListenerList selectionChangeListeners = new ListenerList();
 
-	private Runnable scheduledUpdate; 
+	private Runnable scheduledUpdate;
 
 	@Override
 	public void init(IViewSite site) throws PartInitException {
@@ -274,7 +274,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 					}
 				}
 			});
-	
+
 			IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
 			notifier.addListener(modelChangeListener = new INotifyChangedListener() {
 				public void notifyChanged(Notification notification) {
@@ -370,7 +370,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			unhookEditorListeners(activeScaveEditor);
 			activeScaveEditor = editor instanceof ScaveEditor ? (ScaveEditor)editor : null;
 			hookEditorListeners(activeScaveEditor);
-	
+
 			if (activeScaveEditor != null) {
 				ResultFileManager manager = activeScaveEditor.getResultFileManager();
 				tabFolder.setResultFileManager(manager);
@@ -397,7 +397,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 
     private void setActivePanel(DatasetItem item) {
         ResultType type = null;
-        
+
         if (item instanceof AddDiscardOp)
             type = ((AddDiscardOp)item).getType();
         else if (item instanceof BarChart || item instanceof ScatterChart)

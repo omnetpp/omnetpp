@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -47,7 +47,7 @@ public abstract class ExportWizardPage extends WizardPage {
 	private static final String FILENAME_KEY = "filename";
 	private static final String GROUPBY_KEY = "groupBy";
 	private static final String PRECISION_KEY = "precision";
-	private static final String DATA_KEY = "org.omnetpp.scave.wizard.ExportWizardPage"; 
+	private static final String DATA_KEY = "org.omnetpp.scave.wizard.ExportWizardPage";
 
 	protected ExportWizardPage(String pageName, String title,
 			ImageDescriptor titleImage) {
@@ -69,7 +69,7 @@ public abstract class ExportWizardPage extends WizardPage {
 		for (Button radio : groupByCheckboxes)
 			if (radio.getSelection())
 				fields.add((String)radio.getData(DATA_KEY));
-		
+
 		return new ResultItemFields(fields);
 	}
 
@@ -129,7 +129,7 @@ public abstract class ExportWizardPage extends WizardPage {
 	}
 
 	protected void createFileSelectionPanel(Composite parent) {
-		fileSelectionPanel = 
+		fileSelectionPanel =
 			new FileSelectionPanel(parent, SWT.NONE, "To file:", SWT.SAVE, "Save to file",
 					getFileDialogFilterExtensions());
 		fileSelectionPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

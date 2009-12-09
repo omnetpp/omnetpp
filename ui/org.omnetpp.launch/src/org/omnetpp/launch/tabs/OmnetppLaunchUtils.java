@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -53,10 +53,10 @@ import org.omnetpp.launch.LaunchPlugin;
  * Various utility methods for the launcher.
  */
 public class OmnetppLaunchUtils {
-    // copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins) 
+    // copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins)
     private static final String JAVA_NATURE_ID = "org.eclipse.jdt.core.javanature";
-    private static final String CDT_CC_NATURE_ID = "org.eclipse.cdt.core.ccnature"; 
-    
+    private static final String CDT_CC_NATURE_ID = "org.eclipse.cdt.core.ccnature";
+
 	/**
 	 * Reads the ini file and enumerates all config sections. resolves include directives recursively
 	 */
@@ -196,9 +196,9 @@ public class OmnetppLaunchUtils {
      * Converts inputPath to be relative to referenceDir. This is not possible
      * if the two paths are from different devices, so in this case the method
      * returns the original inputPath unchanged.
-     * 
+     *
      * Copied from MakefileTools.
-     * 
+     *
      * @author andras
      */
 	public static IPath makeRelativePathTo(IPath inputPath, IPath referenceDir) {
@@ -214,7 +214,7 @@ public class OmnetppLaunchUtils {
 	}
 
 	/**
-	 * Creates a new temporary configuration from a simulation config type that is compatible with CDT. 
+	 * Creates a new temporary configuration from a simulation config type that is compatible with CDT.
 	 * When an error happens during conversion, throws a CoreException.
 	 */
 	@SuppressWarnings("unchecked")
@@ -234,10 +234,10 @@ public class OmnetppLaunchUtils {
 		String projectName = null;
 		if (StringUtils.isEmpty(exeName)) {  // this means opp_run
 		    projectName = findRelatedCDTProject(wdirStr);
-		    exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run"; 
+		    exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run";
 		    if (mode.equals(ILaunchManager.DEBUG_MODE) && projectName == null)
 		        throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: no related open C++ project"));
-		} 
+		}
 		else {
             projectName = new Path(exeName).segment(0);
 			exeName = new Path(exeName).removeFirstSegments(1).toString(); // project-relative path
@@ -253,7 +253,7 @@ public class OmnetppLaunchUtils {
 			exeName += ".exe";
 		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeName);
 
-		String args = ""; 
+		String args = "";
 		String envirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim();
 		if (StringUtils.isNotEmpty(envirStr))
 			args += " -u "+envirStr;
@@ -311,18 +311,18 @@ public class OmnetppLaunchUtils {
 		}
 
 		// set the program arguments
-		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, 
+		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS,
 				config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "")+args);
 
-		// handle environment: add OMNETPP_BIN and (DY)LD_LIBRARY_PATH 
+		// handle environment: add OMNETPP_BIN and (DY)LD_LIBRARY_PATH
         Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
         String path = envir.get("PATH");
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(path)) {
         	String win32_ld_library_path = Platform.getOS().equals(Platform.OS_WIN32) ? StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep) : "";
             envir.put("PATH",win32_ld_library_path +
-        			         StringUtils.substituteVariables("${opp_bin_dir}" + pathSep) + 
-        			         StringUtils.substituteVariables("${opp_additional_path}" + pathSep) +  // msys/bin, mingw/bin, etc 
+        			         StringUtils.substituteVariables("${opp_bin_dir}" + pathSep) +
+        			         StringUtils.substituteVariables("${opp_additional_path}" + pathSep) +  // msys/bin, mingw/bin, etc
         			         StringUtils.substituteVariables("${env_var:PATH}"));
         }
 
@@ -335,14 +335,14 @@ public class OmnetppLaunchUtils {
         				StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}"+pathSep) +
         				StringUtils.substituteVariables("${env_var:"+ldLibPathVar+"}"));
         }
-        
+
         String imagePath = envir.get("OMNETPP_IMAGE_PATH");
         if (StringUtils.isBlank(imagePath)) {
             imagePath = CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH);
             if (StringUtils.isNotBlank(imagePath))
             	envir.put("OMNETPP_IMAGE_PATH", imagePath);
         }
-        
+
         // Java CLASSPATH
         //FIXME do not overwrite CLASSPATH if it's already set by the user!
         //FIXME use the inifile's project, not mappedResources!
@@ -378,7 +378,7 @@ public class OmnetppLaunchUtils {
         if (!project.hasNature(JAVA_NATURE_ID))
 	        return null;
 
-        // We want to add the output folder (.class files) to the CLASSPATH. 
+        // We want to add the output folder (.class files) to the CLASSPATH.
         // We can get it from the nature object, which is also an IJavaProject.
         // We use reflection because we don't want to add JDT to our plugin dependencies.
         // If JDT is not loaded, getNature() will throw a CoreException.
@@ -390,7 +390,7 @@ public class OmnetppLaunchUtils {
             LaunchPlugin.logError("Cannot determine CLASSPATH for project with Java nature: JDT not available. Install JDT or set CLASSPATH manually.", e);
             return null;
         }
-       
+
         // FIXME return also exported libraries (JAR files) from the project
         IPath javaOutputLocation = (IPath)ReflectionUtils.invokeMethod(javaNature, "getOutputLocation");
         String result = ResourcesPlugin.getWorkspace().getRoot().getFile(javaOutputLocation).getLocation().toOSString();
@@ -414,7 +414,7 @@ public class OmnetppLaunchUtils {
 	        path = basePath.append(path);
 	    IPath location = null;
 	    IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-        if (isFile) 
+        if (isFile)
 	        location = workspaceRoot.getFile(path).getLocation();
 	    else if (path.segmentCount()>=2)
 	        location = workspaceRoot.getFolder(path).getLocation();
@@ -458,7 +458,7 @@ public class OmnetppLaunchUtils {
 	}
 
 	/**
-	 * Expands the provided run numbers into a array for example 1..4,7,9 to 1,2,3,4,7,9. 
+	 * Expands the provided run numbers into a array for example 1..4,7,9 to 1,2,3,4,7,9.
 	 * The "*" means ALL run number: 0-(maxRunNo-1). Empty runPar means: 0.
 	 */
 	public static boolean containsMultipleRuns(String runPar) throws CoreException  {
@@ -466,7 +466,7 @@ public class OmnetppLaunchUtils {
 	}
 
 	/**
-	 * Expands the provided run numbers into a array for example 1..4,7,9 to 1,2,3,4,7,9. 
+	 * Expands the provided run numbers into a array for example 1..4,7,9 to 1,2,3,4,7,9.
 	 * The "*" means ALL run number: 0-(maxRunNo-1). Empty runPar means: 0.
 	 */
 	public static int[] parseRuns(String runPar, int maxRunNo) throws CoreException {
@@ -483,7 +483,7 @@ public class OmnetppLaunchUtils {
 			result.add(0);
 		}
 		else if ("*".equals(runPar)) {
-			if (maxRunNo == -1) 
+			if (maxRunNo == -1)
 				return new int[] {0, 1};
 			// create ALL run numbers scenario
 			for (int i=0; i<maxRunNo; i++)
@@ -497,18 +497,18 @@ public class OmnetppLaunchUtils {
 						String lowerUpper[] = StringUtils.splitByWholeSeparator(current, "..");
 						int low = 0;
 						int high = maxRunNo < 0 ? Integer.MAX_VALUE : maxRunNo-1;
-						if (lowerUpper.length > 0 && lowerUpper[0].length() > 0) 
+						if (lowerUpper.length > 0 && lowerUpper[0].length() > 0)
 							low = Integer.parseInt(lowerUpper[0]);
 
 						// if we have an upper bound too
-						if (lowerUpper.length > 1 && lowerUpper[1].length() > 0) 
+						if (lowerUpper.length > 1 && lowerUpper[1].length() > 0)
 							high = Integer.parseInt(lowerUpper[1]);
 
 						if (low < 0 || low > high)
-							throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Invalid run number or range: "+current)); 
+							throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Invalid run number or range: "+current));
 
 						if (maxRunNo != -1 && high >= maxRunNo)
-							throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Run number ("+current+") is greater than the number of runs ("+maxRunNo+") supported by the current configuration")); 
+							throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Run number ("+current+") is greater than the number of runs ("+maxRunNo+") supported by the current configuration"));
 
 
 						// add all integers in the interval to the list
@@ -516,7 +516,7 @@ public class OmnetppLaunchUtils {
 
 						for (int i = low; i<=limitedHigh; ++i)
 							result.add(i);
-					} 
+					}
 					else {
 						int number = Integer.parseInt(current);
 						if (maxRunNo != -1 && number >= maxRunNo)
@@ -524,7 +524,7 @@ public class OmnetppLaunchUtils {
 						result.add(number);
 					}
 				} catch (NumberFormatException e) {
-					throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Invalid run number or range: "+current+". The run number syntax: 0,2,7,9..11 or use * for all runs"));                
+					throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Invalid run number or range: "+current+". The run number syntax: 0,2,7,9..11 or use * for all runs"));
 				}
 			}
 		}
@@ -538,7 +538,7 @@ public class OmnetppLaunchUtils {
 		Arrays.sort(sortedRes);
 		for(int i = 0; i< sortedRes.length-1; i++)
 			if (sortedRes[i] == sortedRes[i+1])
-				throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Duplicate run number: "+sortedRes[i]));                
+				throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Duplicate run number: "+sortedRes[i]));
 
 		return resArray;
 	}
@@ -553,8 +553,8 @@ public class OmnetppLaunchUtils {
 	 * @return The created process object,
 	 * @throws CoreException if process is not started correctly
 	 */
-	// FIXME if requestInfo specified 
-	public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs, 
+	// FIXME if requestInfo specified
+	public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs,
 			         boolean requestInfo, StringBuilder infoBuffer) throws CoreException {
 		String[] cmdLine = createCommandLine(configuration, additionalArgs);
 
@@ -572,14 +572,14 @@ public class OmnetppLaunchUtils {
 			// replace the envir command line option to use Cmdenv (or add if not exist)
 			i = ArrayUtils.indexOf(cmdLine, "-u");
 			if (i >= 0 && cmdLine.length > i+1)
-				cmdLine[i+1] = "Cmdenv";   
+				cmdLine[i+1] = "Cmdenv";
 			else {
 				cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-u");
 				cmdLine = (String[]) ArrayUtils.add(cmdLine, 2, "Cmdenv");
 			}
 
 			cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-g");
-	
+
 		}
 
 		String wdAttr = getWorkingDirectoryPath(configuration).toString();
@@ -594,7 +594,7 @@ public class OmnetppLaunchUtils {
     		if (Platform.getOS().equals(Platform.OS_WIN32))
     			env = env.toUpperCase();
     		// print the env vars we are interested in
-    		if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") || env.startsWith("DYLD_LIBRARY_PATH=") 
+    		if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") || env.startsWith("DYLD_LIBRARY_PATH=")
     				 || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
     			infoBuffer.append("\n"+env);
     	}
@@ -650,7 +650,7 @@ public class OmnetppLaunchUtils {
 			proc.waitFor();
 
 			String simInfo = stringBuffer.toString().replace("\r", "");
-	
+
 			//FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc
 			// --Andras
 			if (proc.exitValue() == 0)
@@ -698,5 +698,5 @@ public class OmnetppLaunchUtils {
 		return text.contains("Enter parameter");
 	}
 
-    
+
 }

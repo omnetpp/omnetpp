@@ -40,7 +40,7 @@ public class FilteredDataTabFolder extends TabFolder {
     @Override
     protected void checkSubclass() {
     }
-    
+
     protected void initialize() {
         // create pages
         allPanel = new FilteredDataPanel(this, SWT.NONE, null);
@@ -63,7 +63,7 @@ public class FilteredDataTabFolder extends TabFolder {
 
         return tabItem;
     }
-    
+
     public TabItem getAllTab() {
         return allTab;
     }
@@ -79,7 +79,7 @@ public class FilteredDataTabFolder extends TabFolder {
     public TabItem getHistogramsTab() {
         return histogramsTab;
     }
-    
+
     public FilteredDataPanel getAllPanel() {
         return allPanel;
     }
@@ -187,7 +187,7 @@ public class FilteredDataTabFolder extends TabFolder {
         setPanelTitle(scalarsTab, "Scalars");
         setPanelTitle(histogramsTab, "Histograms");
     }
-    
+
     private void setPanelTitle(TabItem tab, String title) {
         FilteredDataPanel panel = (FilteredDataPanel)tab.getControl();
         IDList filter = panel.getDataControl().getIDList();

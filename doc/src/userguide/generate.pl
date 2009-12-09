@@ -52,7 +52,7 @@ sub processPropertyFile
     my $found = 0;
     foreach ( @cats ) {
       if( /$cat/ ) { $found = 1; last }
-    }    
+    }
     push @cats, $cat unless $found;
     push @{ $names{$cat} }, $name;
     push @{ $descs{$cat} }, $desc;
@@ -115,7 +115,7 @@ sub generateProcessingOps
     push @descs, $desc;
   }
 
-  
+
   print "<?xml version=\"1.0\"?>\n";
   print "<!DOCTYPE table PUBLIC \"-//OASIS//DTD DocBook XML V4.5//EN\"\n";
   print "    \"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\">\n";

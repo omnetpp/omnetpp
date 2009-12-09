@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,5 +17,5 @@ public interface INEDChangeListener {
      * Callback invoked when a change occurs in the model.
      */
     void modelChanged(NEDModelEvent event);
-    
+
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,7 +34,7 @@ public class ManualAxisOrder {
 
     // this is a total ordering among all modules seen so far
     private ArrayList<ModuleTreeItem> lastAxisModuleOrder;
-    
+
     public ManualAxisOrder() {
         setAxisOrder(new ArrayList<ModuleTreeItem>());
     }
@@ -42,11 +42,11 @@ public class ManualAxisOrder {
     public ManualAxisOrder(ArrayList<ModuleTreeItem> axisModuleOrder) {
         setAxisOrder(axisModuleOrder);
     }
-    
+
     public void setAxisOrder(ArrayList<ModuleTreeItem> axisModuleOrder) {
         this.lastAxisModuleOrder = axisModuleOrder;
     }
-    
+
     public ArrayList<ModuleTreeItem> getAxisOrder() {
         return lastAxisModuleOrder;
     }
@@ -72,7 +72,7 @@ public class ManualAxisOrder {
             ModuleTreeItem targetAxisModule = currentAxisModuleOrder.get(updatedCurrentAxisModuleOrder.indexOf(axisModule));
             updatedLastAxisModuleOrder.set(lastAxisModuleOrder.indexOf(targetAxisModule), axisModule);
         }
-        
+
         lastAxisModuleOrder = updatedLastAxisModuleOrder;
     }
 
@@ -83,10 +83,10 @@ public class ManualAxisOrder {
 
         for (int i = 0; i < selectedAxisModules.length; i++)
             axisPositions[i] = currentAxisModuleOrder.indexOf(selectedAxisModules[i]);
-        
+
         return axisPositions;
 	}
-    
+
     public int showManualOrderDialog(final ModuleTreeItem[] selectedAxisModules) {
         ArrayList<ModuleTreeItem> currentAxisModuleOrder = getCurrentAxisModuleOrder(selectedAxisModules);
         final ArrayList<ModuleTreeItem> updatedCurrentAxisModuleOrder = new ArrayList<ModuleTreeItem>(currentAxisModuleOrder);
@@ -140,31 +140,31 @@ public class ManualAxisOrder {
                                     swap((ModuleTreeItem)selectionAsList.get(i), (ModuleTreeItem)selectionAsList.get(selectionAsList.size() - i - 1));
                                 break;
         				}
-                        
+
                         getTableViewer().getTable().setFocus();
                     }
-                    
+
                     getTableViewer().refresh();
                 }
                 else
                     super.buttonPressed(buttonId);
 			}
-	
+
 			@Override
 			public boolean isHelpAvailable() {
 			    return false;
 			}
-	
+
 			@Override
 			protected int getShellStyle() {
 			    return super.getShellStyle() | SWT.RESIZE;
 			}
-	
+
 			@Override
 			protected int getTableStyle() {
 			    return SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
 			}
-	
+
 			private void move(List<?> selection, int delta) {
 			    ModuleTreeItem[] movedCurrentAxisModuleOrder = new ModuleTreeItem[updatedCurrentAxisModuleOrder.size()];
 
@@ -174,7 +174,7 @@ public class ManualAxisOrder {
 			        if (selection.contains(axisModule))
 			            movedCurrentAxisModuleOrder[i + delta] = axisModule;
 			    }
-			    
+
 			    for (ModuleTreeItem axisModule : updatedCurrentAxisModuleOrder) {
                     if (!selection.contains(axisModule)) {
                         for (int j = 0; j < movedCurrentAxisModuleOrder.length; j++) {
@@ -185,10 +185,10 @@ public class ManualAxisOrder {
                         }
                     }
 			    }
-			    
+
 			    updatedCurrentAxisModuleOrder.clear();
 			    updatedCurrentAxisModuleOrder.addAll(Arrays.asList(movedCurrentAxisModuleOrder));
-			    
+
 			    getTableViewer().refresh();
 
 			    if (delta < 0)
@@ -196,7 +196,7 @@ public class ManualAxisOrder {
 			    else if (delta > 0)
 			        getTableViewer().reveal(selection.get(selection.size() - 1));
 			}
-	
+
 			private void swap(ModuleTreeItem module1, ModuleTreeItem module2) {
 			    int index1 = updatedCurrentAxisModuleOrder.indexOf(module1);
                 int index2 = updatedCurrentAxisModuleOrder.indexOf(module2);

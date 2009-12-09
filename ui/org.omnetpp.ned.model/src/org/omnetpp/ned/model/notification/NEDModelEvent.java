@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,7 +26,7 @@ public class NEDModelEvent {
         this.source = source;
         serial = ++staticSerial;
     }
-    
+
     /**
      * Returns which element caused the change notification.
      * Null means the source is unknown and cannot be relied on.
@@ -42,7 +42,7 @@ public class NEDModelEvent {
     public long getSerial() {
         return serial;
     }
-    
+
     @Override
     public String toString() {
     	return getClass().getSimpleName() + " #" + serial + " from: " + source;

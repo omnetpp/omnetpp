@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 /**
- * 
+ *
  */
 package org.omnetpp.scave.model2;
 
@@ -85,7 +85,7 @@ public class IsoLineData implements Comparable<IsoLineData>
 				else {
 				    String[] filterFieldNames = filter.getFieldNames().toArray(new String[]{});
 				    Assert.isTrue(filterFieldNames.length == 1);
-				    return new IsoLineData(filterFieldNames[0]); 
+				    return new IsoLineData(filterFieldNames[0]);
 				}
 			}
 		}
@@ -139,7 +139,7 @@ public class IsoLineData implements Comparable<IsoLineData>
 			return -1;
 		if (this.moduleName == null && other.moduleName != null)
 			return 1;
-	
+
 		int result = StringUtils.dictionaryCompare(this.moduleName, other.moduleName);
 		if (result == 0)
 			result = StringUtils.dictionaryCompare(this.dataName, other.dataName);

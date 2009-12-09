@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -66,7 +66,7 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 
 	@Override
 	public void animateAt(AnimationPosition animationPosition) {
-		if (isDisplayed()) { 
+		if (isDisplayed()) {
 			Point p = getBeginPoint();
 			Point[] ps = getMessageSendPoints(animationPosition, 0);
 			//System.out.println("Source: " + p + " message:" + ps[0] + ":" + ps[1]);

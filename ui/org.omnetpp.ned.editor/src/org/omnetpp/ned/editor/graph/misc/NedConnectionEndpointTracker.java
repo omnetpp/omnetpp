@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -35,16 +35,16 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 	protected boolean handleButtonUp(int button) {
 		if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
 		    Command cmd = getCommand();
-		    if (cmd == null || !(cmd instanceof ReconnectCommand)) 
+		    if (cmd == null || !(cmd instanceof ReconnectCommand))
 		        return false;
 			ReconnectCommand connCommand = (ReconnectCommand)cmd;
 
 			ModuleConnectionEditPart connPart = (ModuleConnectionEditPart)getConnectionEditPart();
-	        CompoundModuleElementEx compoundMod = connPart.getCompoundModulePart().getCompoundModuleModel(); 
+	        CompoundModuleElementEx compoundMod = connPart.getCompoundModulePart().getCompoundModuleModel();
 	        // ask the user about which gates should be connected, ask for both source and destination gates
-	        // FIXME we should extract the direction (src/dest) locally and not from the command 
+	        // FIXME we should extract the direction (src/dest) locally and not from the command
 	        ConnectionElementEx selectedConn = new ConnectionChooser().open(compoundMod, connCommand.getTemplateConnection(), !connCommand.isDestReconnect(), connCommand.isDestReconnect());
-	
+
 			eraseSourceFeedback();
 			eraseTargetFeedback();
 

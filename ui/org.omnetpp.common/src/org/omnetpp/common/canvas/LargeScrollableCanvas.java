@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.ScrollBar;
  * A canvas that supports a scrollable area which can be very large,
  * as the area's width/height are stored as 64-bit numbers. This class
  * overcomes the scrollbar's 32-bit limit.
- * 
+ *
  * @author andras
  */
 public abstract class LargeScrollableCanvas extends Canvas {
@@ -33,7 +33,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	private long virtualWidth, virtualHeight; // 64-bit size of the "virtual canvas"
 	private long viewX, viewY; // 64-bit coordinates of top-left corner of the viewport
-	private int hShift, vShift; // used for scrollbar mapping 
+	private int hShift, vShift; // used for scrollbar mapping
 	private Rectangle viewportRect; // the scrolled area within the canvas
 
 	private ListenerList listeners = new ListenerList();
@@ -197,15 +197,15 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 * Utility function to clip x to (0, upperBound). If upperBound<0, 0 is returned.
 	 */
 	private static long clip(long x, long upperBound) {
-		if (x > upperBound) 
+		if (x > upperBound)
 			x = upperBound;  // if negative, we'll fix it below
-		if (x < 0) 
+		if (x < 0)
 			x = 0;
 		return x;
 	}
 
 	/**
-	 * Returns the viewport (clientArea minus insets) in canvas coordinates. 
+	 * Returns the viewport (clientArea minus insets) in canvas coordinates.
 	 */
 	public Rectangle getViewportRectangle() {
 		return new Rectangle(viewportRect.x, viewportRect.y, viewportRect.width, viewportRect.height);
@@ -291,17 +291,17 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		else {
 			// show scrollbar
 			scrollBar.setVisible(true);
-	
+
 			// count how many bits we need to shift to fit into 32 bits
 			int shift = 0;
-			while (virtualSize>>shift > Integer.MAX_VALUE) 
+			while (virtualSize>>shift > Integer.MAX_VALUE)
 				shift++;
 
 			int newMax = (int)(virtualSize>>shift);
 			int newThumb = (int)(widgetSize >> shift);
 			int newSel = (int)(virtualPos >> shift);
 			int newPageIncr = (int)((widgetSize>>shift > 0) ? widgetSize>>shift : 1);
-		
+
 			scrollBar.setMinimum(0);
 			scrollBar.setMaximum(newMax);
 			scrollBar.setThumb(newThumb);

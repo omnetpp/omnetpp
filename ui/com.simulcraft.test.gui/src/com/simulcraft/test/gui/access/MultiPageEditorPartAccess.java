@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,16 +30,16 @@ public class MultiPageEditorPartAccess
 	public MultiPageEditorPart getWorkbenchPart() {
 		return (MultiPageEditorPart)workbenchPart;
 	}
-    
+
     @UIStep
     public void assertActivePage(String label) {
     	Assert.assertTrue("Page is not active: " + label, isPageActive(label));
     }
-    
+
 	@UIStep
 	public CTabItemAccess getCTabItem(int pageIndex) {
-		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getItem", pageIndex); 
-		return (CTabItemAccess)createAccess(item); 
+		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getItem", pageIndex);
+		return (CTabItemAccess)createAccess(item);
 	}
 
 	@UIStep

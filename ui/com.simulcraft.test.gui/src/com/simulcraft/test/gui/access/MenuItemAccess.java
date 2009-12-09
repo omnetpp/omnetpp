@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -32,7 +32,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
     public void assertVisible() {
         Assert.assertTrue("menu item '"+getWidget().getText()+"' should be visible", getWidget().getParent().isVisible());
     }
-    
+
 	@UIStep
 	public void assertEnabled() {
     	Assert.assertTrue("menu item '"+getWidget().getText()+"' should be enabled", getWidget().isEnabled());
@@ -42,7 +42,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
     public void assertDisabled() {
         Assert.assertTrue("menu item '"+getWidget().getText()+"' should be disabled", !getWidget().isEnabled());
     }
-    
+
 	@UIStep
 	public MenuAccess activateWithMouseClick() {
 		assertEnabled();

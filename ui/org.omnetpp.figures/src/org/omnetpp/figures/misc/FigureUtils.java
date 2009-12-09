@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
  *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.omnetpp.figures.ITooltipTextProvider;
 
 /**
  * A collection of figure-related utility functions
- * 
+ *
  * @author Andras
  */
 public class FigureUtils {
@@ -50,7 +50,7 @@ public class FigureUtils {
 
 	/**
 	 * Adds a tooltip listener to the provided canvas. Figures that want to display a tooltip
-	 * have to implement ITooltipTextProvider.  
+	 * have to implement ITooltipTextProvider.
 	 */
 	static public void addTooltipSupport(final Canvas canvas, final IFigure rootFigure) {
 		// SWT-based tooltip for figures

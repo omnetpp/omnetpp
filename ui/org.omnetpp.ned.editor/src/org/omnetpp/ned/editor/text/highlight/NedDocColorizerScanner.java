@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -51,7 +51,7 @@ public class NedDocColorizerScanner extends RuleBasedScanner {
         for (int i = 0; i < SyntaxHighlightHelper.highlightDocKeywords.length; i++)
             keywordRule.addWord("@" + SyntaxHighlightHelper.highlightDocKeywords[i], SyntaxHighlightHelper.docKeywordToken);
         list.add(keywordRule);
-        
+
 		IRule[] result = new IRule[list.size()];
 		list.toArray(result);
 		setRules(result);

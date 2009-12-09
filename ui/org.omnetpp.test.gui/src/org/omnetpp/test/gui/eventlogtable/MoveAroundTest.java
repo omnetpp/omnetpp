@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,7 +17,7 @@ public class MoveAroundTest
     public MoveAroundTest() {
         super("stress.log");
     }
-    
+
     // TODO: scrolling with the wheel
     // TODO: scrolling with the scroll bar
     // TODO: extremely small and large files
@@ -73,7 +73,7 @@ public class MoveAroundTest
         eventLogTable.pressKey(SWT.PAGE_DOWN);
         eventLogTable.assertSelectedEventNumber(eventLogTable.getPageJumpCount());
     }
-    
+
     protected EventLogTableAccess prepareTest() {
         openFileFromProjectExplorerViewInEventLogTableEditor();
         selectFilterMode("Events");

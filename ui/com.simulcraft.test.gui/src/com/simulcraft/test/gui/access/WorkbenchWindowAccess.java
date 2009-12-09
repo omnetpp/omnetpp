@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -66,7 +66,7 @@ public class WorkbenchWindowAccess extends Access {
 		IWorkbenchPart activePart = workbenchWindow.getPages()[0].getActivePart();
 		if (activePart instanceof IEditorPart)
 			return new EditorPartAccess((IEditorPart)activePart);
-		else 
+		else
 			return (WorkbenchPartAccess)createAccess((IViewPart)activePart);
 	}
 

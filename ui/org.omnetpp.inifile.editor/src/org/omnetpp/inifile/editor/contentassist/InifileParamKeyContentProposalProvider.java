@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,9 +23,9 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 
 /**
  * Generate proposals for inifile parameters.
- * 
+ *
  * Used for the text editor and field editors.
- * 
+ *
  * @author Andras
  */
 //TODO add icons (different icon for modules, parameters, etc)
@@ -59,7 +59,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			ParamResolution[] resList = analyzer.getParamResolutions(section);
 
 			// collect unique full paths
-			Set<String> fullPaths = new HashSet<String>(); 
+			Set<String> fullPaths = new HashSet<String>();
 			for (ParamResolution res : resList)
 				if (res.type != ParamResolution.ParamResolutionType.NED)
 					fullPaths.add(res.moduleFullPath + "." +res.paramDeclNode.getName());
@@ -78,8 +78,8 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			//Debug.println("prefix: "+prefixPart1+" + "+prefixRest);
 
 			// after "*" or "**" we'll want to add an extra dot
-			String optDot = prefix.endsWith("*") ? "." : ""; 
-	
+			String optDot = prefix.endsWith("*") ? "." : "";
+
 			// check every fullPath:
 			PatternMatcher prefixPart1Matcher = new PatternMatcher(prefixPart1, true, true, true);
 			for (String fullPath : fullPaths) {
@@ -91,7 +91,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 					String fullPathRest = fullPath.substring(dotPos+1);
 					//Debug.println("fullPath: "+fullPathPart1+" + "+fullPathRest);
 
-					// prefix part1 should match fullPath part1, and fullPath rest must begin with prefix rest 
+					// prefix part1 should match fullPath part1, and fullPath rest must begin with prefix rest
 					if (prefixPart1Matcher.matches(fullPathPart1) && fullPathRest.startsWith(prefixRest)) {
 						//Debug.println("        suggesting: "+prefixPart1+fullPathRest+" =");
 						if (fullPathRest.contains(".")) {
@@ -110,7 +110,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 
 			// add ** and * as proposals, if it looks appropriate
 			if (!prefixPart1.endsWith("*") && !prefixPart1.endsWith("*.") && !moduleProposals.isEmpty()) {
-				String prefixPart1dot = (prefixPart1.length()==0 || prefixPart1.endsWith(".")) ? prefixPart1 : (prefixPart1+"."); 
+				String prefixPart1dot = (prefixPart1.length()==0 || prefixPart1.endsWith(".")) ? prefixPart1 : (prefixPart1+".");
 				otherProposals.add(prefixPart1dot+"*.");
 				otherProposals.add(prefixPart1dot+"**.");
 			}
@@ -119,8 +119,8 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			List<IContentProposal> proposals = new ArrayList<IContentProposal>();
 			addProposals(proposals, otherProposals, "");
 			addProposals(proposals, moduleProposals, "");
-			addProposals(proposals, paramProposals, ""); 
-			addProposals(proposals, applyDefaultProposals, ""); 
+			addProposals(proposals, paramProposals, "");
+			addProposals(proposals, applyDefaultProposals, "");
 
 			return proposals;
 		}
@@ -134,8 +134,8 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 		String[] array = texts.toArray(new String[]{});
 		Arrays.sort(array);
 		for (String text : array) {
-			if (!text.endsWith(".") && addEqualSign) 
-				text += " = "; 
+			if (!text.endsWith(".") && addEqualSign)
+				text += " = ";
 			proposals.add(new ContentProposal(text, text+label, null));
 		}
 	}

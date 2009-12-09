@@ -1,5 +1,5 @@
 %description:
-Test setPerformFinalGC(true). Dynamically allocated, cOwnedObject-based objects 
+Test setPerformFinalGC(true). Dynamically allocated, cOwnedObject-based objects
 should be properly disposed of at the end of the simulation.
 
 %global:

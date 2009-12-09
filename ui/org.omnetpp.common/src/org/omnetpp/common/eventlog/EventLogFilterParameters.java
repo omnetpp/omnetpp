@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,7 +25,7 @@ public class EventLogFilterParameters implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private transient EventLogInput eventLogInput;
-    
+
     public boolean enableCollectionLimits;
 
     public boolean enableRangeFilter;
@@ -111,7 +111,7 @@ public class EventLogFilterParameters implements Serializable {
     public EnabledInt[] messageEncapsulationTreeIds;
 
     public boolean collectMessageReuses = true;
-    
+
     public int maximumNumberOfMessageDependencies = 5;
 
 	public int maximumDepthOfMessageDependencies = 15;
@@ -120,7 +120,7 @@ public class EventLogFilterParameters implements Serializable {
 
     public static class EnabledInt implements Serializable {
         private static final long serialVersionUID = 1L;
-        
+
         public EnabledInt(boolean enabled, int value) {
             this.enabled = enabled;
             this.value = value;
@@ -337,7 +337,7 @@ public class EventLogFilterParameters implements Serializable {
                 else if (upperSimulationTimeLimit != null)
                     rangeFilters.add("simulation time of event <= " + upperSimulationTimeLimit);
             }
-            
+
             filters.add(combineDesriptions("OR", rangeFilters));
 	    }
 
@@ -353,7 +353,7 @@ public class EventLogFilterParameters implements Serializable {
 	        if (enableModuleNameFilter) {
 	            ModuleTreeItem root = eventLogInput.getModuleTreeRoot();
 	            String[] moduleNames = new String[moduleNameIds.length];
-	            
+
 	            for (int i = 0; i< moduleNames.length; i++) {
 	                ModuleTreeItem item = root.findDescendantModule(moduleNameIds[i]);
 
@@ -375,7 +375,7 @@ public class EventLogFilterParameters implements Serializable {
 
             if (enableMessageExpressionFilter)
                 messageFilters.add("message matches the expression " + messageFilterExpression);
-    
+
     	    if (enableMessageClassNameFilter)
                 addMemberDescription(messageFilters, "message C++ class name", messageClassNames);
 
@@ -384,13 +384,13 @@ public class EventLogFilterParameters implements Serializable {
 
     	    if (enableMessageIdFilter)
                 addMemberDescription(messageFilters, "message ID", messageIds);
-    
+
     	    if (enableMessageTreeIdFilter)
                 addMemberDescription(messageFilters, "message tree ID", messageTreeIds);
-    
+
     	    if (enableMessageEncapsulationIdFilter)
     	        addMemberDescription(messageFilters, "message encapsulation ID", messageEncapsulationIds);
-    
+
     	    if (enableMessageEncapsulationTreeIdFilter)
                 addMemberDescription(messageFilters, "message encapsulation tree ID", messageEncapsulationTreeIds);
 
@@ -418,7 +418,7 @@ public class EventLogFilterParameters implements Serializable {
 	        // causeSimulationTimeDelta;
 	        // consequenceSimulationTimeDelta;
         }
-	    
+
 	    return combineDesriptions("AND", filters, "Filter for all events", "Filter for events where ");
 	}
 
@@ -439,10 +439,10 @@ public class EventLogFilterParameters implements Serializable {
             else
                 result += "(" + StringUtils.join(descriptions, ") " + operator + " (") + ")";
         }
-        
+
         return result;
     }
-    
+
     private void addMemberDescription(ArrayList<String> descriptions, String prefix, int[] elements) {
         if (elements != null)
             addMemberDescription(descriptions, prefix, Arrays.asList(ArrayUtils.toObject(elements)));
@@ -451,11 +451,11 @@ public class EventLogFilterParameters implements Serializable {
     private void addMemberDescription(ArrayList<String> descriptions, String prefix, EnabledInt[] elements) {
         if (elements != null) {
             ArrayList<Integer> enabledElements = new ArrayList<Integer>();
-    
+
             for (EnabledInt element : elements)
                 if (element.enabled)
                     enabledElements.add(element.value);
-    
+
             addMemberDescription(descriptions, prefix, enabledElements);
         }
     }

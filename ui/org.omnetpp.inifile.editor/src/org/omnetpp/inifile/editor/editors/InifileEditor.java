@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -64,11 +64,11 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
  */
 //FIXME File|Revert is always disabled
 //FIXME crashes if file gets renamed or moved
-//FIXME if workbench startup with an open inifile editor blocks for a while, 
-// that's because forms are filled in an asyncExec() that refers to InifileAnalyzer, 
+//FIXME if workbench startup with an open inifile editor blocks for a while,
+// that's because forms are filled in an asyncExec() that refers to InifileAnalyzer,
 // and InifileAnalyzer is synchronized on NEDResources and has to wait until NED validation ends.
 // Solution: NED validation shouldn't lock NEDResources? (ie run validation on a *clone* of the trees)
-//TODO for units, tooltip should display "seconds" not only "s" 
+//TODO for units, tooltip should display "seconds" not only "s"
 public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
     public static final String ID = "org.omnetpp.inifile.editor";
 	/* editor pages */
@@ -89,7 +89,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		super();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceTracker);
 	}
- 
+
 	public InifileEditorData getEditorData() {
 		return editorData;
 	}
@@ -191,7 +191,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 				InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 				doc.parse();
 				analyzer.analyze();
-		
+
 				// open the "Module Parameters" view
 				try {
 					IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -205,7 +205,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 
 				// if the file is in the old format, offer upgrading it
 				convertOldInifile();
-		
+
 				// publish an initial selection (select first section)
 				String[] sectionNames = doc.getSectionNames();
 				if (sectionNames.length > 0)
@@ -242,7 +242,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	}
 
 	/**
-	 * The <code>MultiPageEditorPart</code> implementation of this 
+	 * The <code>MultiPageEditorPart</code> implementation of this
 	 * <code>IWorkbenchPart</code> method disposes all nested editors.
 	 * Subclasses may extend.
 	 */
@@ -325,7 +325,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		IDocument doc = textEditor.getDocumentProvider().getDocument(getEditorInput());
 		if (InifileConverter.needsConversion(doc.get())) {
 			String fileName = getEditorInput().getName();
-			if (MessageDialog.openQuestion(getSite().getShell(), "Old Ini File Format", 
+			if (MessageDialog.openQuestion(getSite().getShell(), "Old Ini File Format",
 					"File \""+fileName+"\" is in the old (3.x) format, and needs to be converted. " +
 					"This includes renaming some sections and configuration keys. " +
 					"Do you want to convert the editor contents now?")) {
@@ -368,7 +368,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
     					if (((FileEditorInput)thisEditor.getEditorInput()).getFile().getProject().equals(resource)) {
     						thisEditor.getSite().getPage().closeEditor(thisEditor, true);
     					}
-    				}            
+    				}
     			});
     		}
     		// visit all changed resources and check if we have changed/deleted
@@ -461,7 +461,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		// switch to the requested page. If mode==AUTO, stay where we are.
 		// Note: setActivePage() gives focus to the editor, so don't call it with AUTO mode.
 		if (mode==IGotoInifile.Mode.FORM)
-			setActivePage(FORMEDITOR_PAGEINDEX); 
+			setActivePage(FORMEDITOR_PAGEINDEX);
 		else if (mode==IGotoInifile.Mode.FORM)
 			setActivePage(TEXTEDITOR_PAGEINDEX);
 
@@ -477,7 +477,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		}
 		else {
 			// text editor
-			LineInfo line = section==null ? null : key==null ? 
+			LineInfo line = section==null ? null : key==null ?
 					editorData.getInifileDocument().getSectionLineDetails(section) :
 					editorData.getInifileDocument().getEntryLineDetails(section, key);
 			highlightLineInTextEditor(line); //XXX highlight the whole section
@@ -516,7 +516,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	public String[] getShowInTargetIds() {
 		// contents of the "Show In..." context menu
 		return new String[] {
-				IConstants.MODULEHIERARCHY_VIEW_ID, 
+				IConstants.MODULEHIERARCHY_VIEW_ID,
 				IConstants.MODULEPARAMETERS_VIEW_ID,
 				IPageLayout.ID_OUTLINE,
 				IPageLayout.ID_PROBLEM_VIEW,

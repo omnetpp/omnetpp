@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -57,7 +57,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  *
  * The properties of the chart are organized into groups
  * each group is displayed in a tab of the main tab folder.
- * 
+ *
  * @author tomi
  */
 // TODO use validator for font and number fields
@@ -169,12 +169,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		for (int i=0; i < tabfolder.getItemCount(); ++i)
 			populateTabItem(tabfolder.getItem(i));
 
-		// switch to the requested page 
+		// switch to the requested page
 		String defaultPage = formParameters==null ? null : (String) formParameters.get(PROP_DEFAULT_TAB);
 		if (defaultPage != null)
 			for (TabItem tabItem : tabfolder.getItems())
 				if (tabItem.getText().equals(defaultPage)) {
-					tabfolder.setSelection(tabItem); 
+					tabfolder.setSelection(tabItem);
 					break;
 				}
 	}
@@ -443,7 +443,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		imageLabel.setLayoutData(new GridData(16,16));
 		Text text = new Text(panel, SWT.BORDER);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        new ContentAssistCommandAdapter(text, new TextContentAdapter(), new ColorContentProposalProvider(), 
+        new ContentAssistCommandAdapter(text, new TextContentAdapter(), new ColorContentProposalProvider(),
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
 		Button button = new Button(panel, SWT.NONE);
 		button.setText("...");
@@ -480,7 +480,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			public void widgetSelected(SelectionEvent event) {
 				if (!text.isDisposed()) {
 					FontDialog dialog = new FontDialog(text.getShell());
-			
+
 					FontData font = Converter.stringToFontdata(text.getText());
 					if (font != null)
 						dialog.setFontList(new FontData[] {font});
@@ -528,7 +528,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 
 	/**
-	 * Sets the properties in <code>newProps</code> from the values of the controls. 
+	 * Sets the properties in <code>newProps</code> from the values of the controls.
 	 */
 	protected void collectProperties(ChartProperties newProps) {
 		// Main

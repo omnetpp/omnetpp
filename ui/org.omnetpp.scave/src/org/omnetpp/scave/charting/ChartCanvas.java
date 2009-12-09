@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -67,7 +67,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 
 /**
  * Base class for all chart widgets.
- * 
+ *
  * @author tomi, andras
  */
 public abstract class ChartCanvas extends ZoomableCachingCanvas {
@@ -84,10 +84,10 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
 	protected LegendTooltip legendTooltip;
 
-	private String statusText = "No data available."; // displayed when there's no dataset 
+	private String statusText = "No data available."; // displayed when there's no dataset
 
 	/* bounds specified by the user*/
-	protected RectangularArea userDefinedArea = 
+	protected RectangularArea userDefinedArea =
 		new RectangularArea(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,
 				Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 	/* bounds calculated from the dataset */
@@ -109,7 +109,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		super(parent, style);
 		setCaching(DEFAULT_CANVAS_CACHING);
 		setBackground(backgroundColor);
-		setToolTipText(null); // XXX prevent "Close" tooltip of the TabItem to come up (Linux only) 
+		setToolTipText(null); // XXX prevent "Close" tooltip of the TabItem to come up (Linux only)
 
 		legendTooltip = new LegendTooltip(this);
 
@@ -172,11 +172,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			// preserve zoomed-out state while resizing
 			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
 			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
-	
+
 			for (int pass = 1; pass <= 2; ++pass) {
 				Rectangle plotArea = doLayoutChart(gc, pass);
 				setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
-		
+
 				if (shouldZoomOutX)
 					zoomToFitX();
 				if (shouldZoomOutY)
@@ -221,7 +221,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 
 	/**
-	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
+	 * Calculate positions of chart elements such as title, legend, axis labels, plot area.
 	 * @param pass TODO
 	 */
 	abstract protected Rectangle doLayoutChart(GC gc, int pass);
@@ -270,12 +270,12 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	private void displayCoordinatesOverflowMessage(GC gc) {
 		resetDrawingStylesAndColors(gc);
 		gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
-				    "may not be accurate. Please decrease zoom level.", 
+				    "may not be accurate. Please decrease zoom level.",
 				    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	protected abstract RectangularArea calculatePlotArea();
@@ -304,7 +304,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 
 	/**
-	 * Switches between zoom and pan mode. 
+	 * Switches between zoom and pan mode.
 	 * @param mouseMode should be ZoomableCanvasMouseSupport.PAN_MODE or ZoomableCanvasMouseSupport.ZOOM_MODE
 	 */
 	public void setMouseMode(int mouseMode) {
@@ -394,7 +394,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		String newTitle = DEFAULT_TITLE;
 		if (dataset != null)
 			newTitle = StringUtils.defaultString(dataset.getTitle(titleText), DEFAULT_TITLE);
-	
+
 		if (!ObjectUtils.equals(newTitle, title.getText())) {
 			title.setText(newTitle);
 			chartChanged();
@@ -407,9 +407,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		title.setFont(value);
 		chartChanged();
 	}
-	
+
 	public abstract void setDisplayAxesDetails(Boolean value);
-	
+
 	public void setDisplayTitle(Boolean value) {
         title.setVisible(value);
         chartChanged();
@@ -421,7 +421,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		legend.setVisible(value);
 		chartChanged();
 	}
-	
+
 	public void setDisplayLegendTooltip(Boolean value) {
         legendTooltip.setVisible(value);
         chartChanged();

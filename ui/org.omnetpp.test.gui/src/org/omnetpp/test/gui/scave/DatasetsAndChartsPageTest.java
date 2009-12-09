@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -68,23 +68,23 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
         tree.findTreeItemByContent("scatter chart test-scatterchart").reveal().click();
         editor.releaseModifiers(SWT.SHIFT);
         tree.chooseFromContextMenu("Group");
-        
+
         GenericTreeNode content = buildDatasetsTreeContent();
         groupNodes(content.getChildren(3,6), n("group"));
         tree.assertContent(content);
-        
+
         editor.executeUndo();
         tree.assertContent(buildDatasetsTreeContent());
     }
-    
+
     public void testUngroup() {
         TreeAccess tree = datasetsPage.getDatasetsTree();
         tree.findTreeItemByContent("group").reveal().chooseFromContextMenu("Ungroup");
-        
+
         GenericTreeNode content = buildDatasetsTreeContent();
         ungroupNode(content.getChild(2));
         tree.assertContent(content);
-        
+
         editor.executeUndo();
         tree.assertContent(buildDatasetsTreeContent());
     }

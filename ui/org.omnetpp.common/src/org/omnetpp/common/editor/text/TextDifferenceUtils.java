@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,7 +34,7 @@ public class TextDifferenceUtils {
 					int numberOfLines = document.getNumberOfLines();
 					int startOffset = document.getLineOffset(start);
 					int endOffset = end == numberOfLines ? document.getLength() : document.getLineOffset(end);
-				
+
 					document.replace(startOffset, endOffset - startOffset, replacement);
 				}
 				catch (BadLocationException e) {

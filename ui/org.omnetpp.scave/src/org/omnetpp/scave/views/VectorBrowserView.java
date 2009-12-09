@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -250,7 +250,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
 					return null;
 				}
-		
+
 				ProcessingOp operation =  (ProcessingOp)vector.getComputation();
 				ResultItemRef origInput = (ResultItemRef)viewer.getInput();
 				VectorResult origVector = origInput != null ? (VectorResult)origInput.resolve() : null;
@@ -260,7 +260,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
 					return null;
 				}
-		
+
 				setViewerInput((IDListSelection)null);
 				showMessage("Computing vectors...");
 

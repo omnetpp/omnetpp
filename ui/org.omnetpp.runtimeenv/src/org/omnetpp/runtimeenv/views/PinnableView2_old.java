@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,8 +20,8 @@ import org.omnetpp.runtimeenv.Activator;
 
 /**
  * Abstract base class for views that normally show information that
- * belongs to the active workbenchpart's selection, but can be pinned to a 
- * given workbench part. Subclasses are expected to implement the doBuildContent() 
+ * belongs to the active workbenchpart's selection, but can be pinned to a
+ * given workbench part. Subclasses are expected to implement the doBuildContent()
  * method, which will be invoked whenever the selection changes.
  *
  * @author Andras
@@ -136,12 +136,12 @@ public abstract class PinnableView2_old extends ViewWithMessagePart {
 						unpin();
 				}
 			};
-		} 
+		}
 		return pinAction;
 	}
 
 	/**
-	 * Returns the associated editor or view (the selection of which we 
+	 * Returns the associated editor or view (the selection of which we
 	 * display), or null if there is none
 	 */
 	protected IWorkbenchPart getAssociatedPart() {
@@ -149,7 +149,7 @@ public abstract class PinnableView2_old extends ViewWithMessagePart {
 	}
 
 	/**
-	 * Returns the selection of the associated part (the selection of which 
+	 * Returns the selection of the associated part (the selection of which
 	 * we display), or null if there is none
 	 */
 	protected ISelection getAssociatedPartSelection() {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,28 +34,28 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
 /**
  * Base class for inifile form editor pages.
- * 
- * Note: no commit() method: all fields or controls on the page 
- *should auto-commit, latest when they lose the focus. 
+ *
+ * Note: no commit() method: all fields or controls on the page
+ *should auto-commit, latest when they lose the focus.
  *
  * @author Andras
  */
 public abstract class FormPage extends Composite {
 	private static final Image BANNER_IMAGE = InifileEditorPlugin.getCachedImage("icons/full/misc/formpage_banner2.png");
-    protected static final int RIGHT_MARGIN = 20; // >= scrollbar width  
+    protected static final int RIGHT_MARGIN = 20; // >= scrollbar width
 	private static Font titleFont = JFaceResources.getBannerFont();
 	private InifileEditor inifileEditor;
 	private HoverSupport hoverSupport = new HoverSupport();
 
 	// IMPLEMENTATION NOTE: HOW TO KEEP FORM PAGES UP-TO-DATE.
 	//
-	// Form pages should keep themselves up-to-date (e.g. by invoking their 
-	// reread() method) whenever they directly change the document. For changes 
+	// Form pages should keep themselves up-to-date (e.g. by invoking their
+	// reread() method) whenever they directly change the document. For changes
 	// caused by other events (e.g. toolbar actions like AddMissingKeys),
 	// there is an InifileListener which rereads the form after 1000ms
 	// if that wasn't done until that time automatically.
 	//
-	// See fields "delayedRereadListener" and "delayedRereadJob" which participate 
+	// See fields "delayedRereadListener" and "delayedRereadJob" which participate
 	// in this mechanism.
 	//
 	protected IInifileChangeListener delayedRereadListener = new IInifileChangeListener() {
@@ -71,7 +71,7 @@ public abstract class FormPage extends Composite {
 	protected DelayedJob delayedRereadJob = new DelayedJob(1000) {
 		public void run() {
 		    // reread if page is still displayed (and exists)
-		    if (inifileEditor.isFormPageDisplayed() && !FormPage.this.isDisposed() && 
+		    if (inifileEditor.isFormPageDisplayed() && !FormPage.this.isDisposed() &&
 		            inifileEditor.getFormEditor().getActiveCategoryPage()==FormPage.this) {
 		        Debug.println("delayedJob: rereading form page");
 		        reread();
@@ -109,7 +109,7 @@ public abstract class FormPage extends Composite {
 	}
 
 	/**
-	 * String that identifies the form page, and also gets displayed 
+	 * String that identifies the form page, and also gets displayed
 	 * in the form editor's tree.
 	 */
 	public abstract String getPageCategory();
@@ -117,23 +117,23 @@ public abstract class FormPage extends Composite {
 	/**
 	 * Reads data from the document into the current page.
 	 * FormPage's implementation does nothing except canceling the delayed-reread timer --
-	 * subclasses must override and actually implement the rereading! 
+	 * subclasses must override and actually implement the rereading!
 	 */
 	public void reread() {
 		delayedRereadJob.cancel();
 	}
 
 	/**
-	 * Set the focus to an appropriate control in the form page. 
+	 * Set the focus to an appropriate control in the form page.
 	 */
 	@Override
 	public abstract boolean setFocus();
 
 	/**
 	 * Returns the list of keys that this page can edit.
-	 *  
+	 *
 	 * This method is currently only used for code maintenance,
-	 * to check that every registered config key appears on 
+	 * to check that every registered config key appears on
 	 * some form page.
 	 */
 	public abstract List<ConfigOption> getSupportedKeys();
@@ -165,7 +165,7 @@ public abstract class FormPage extends Composite {
 
 	/**
 	 * Should be called whenever for content changes. layout(true,true) is not enough
-	 * because ScrolledFormPage has extra things to do here.  
+	 * because ScrolledFormPage has extra things to do here.
 	 */
 	public void layoutForm() {
 		layout(true);

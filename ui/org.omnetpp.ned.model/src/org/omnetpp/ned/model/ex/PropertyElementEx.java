@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,9 +27,9 @@ public class PropertyElementEx extends PropertyElement implements IHasName {
     public PropertyElementEx(INEDElement parent) {
         super(parent);
     }
-    
+
     /**
-     * Returns the first value from the default key (named "") if exists; 
+     * Returns the first value from the default key (named "") if exists;
      * otherwise returns null.
      */
     public String getSimpleValue() {

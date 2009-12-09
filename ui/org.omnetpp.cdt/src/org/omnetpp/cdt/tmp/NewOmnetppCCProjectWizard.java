@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -64,9 +64,9 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
             ICConfigurationDescription aconf = des.getActiveConfiguration();
             aconf.setName("Release");
             aconf.setDescription("An omnet++ release configuration");
-            
+
             CCorePlugin.getDefault().setProjectDescription(project, des);
-            
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -86,7 +86,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 //        CfgHolder cfgs[] = new CfgHolder()[] { new CfgHolder()};
 //        cfgs = CfgHolder.unique(fConfigPage.getCfgItems(defaults));
 //        cfgs = CfgHolder.reorder(cfgs);
-//            
+//
 //        for (int i=0; i<cfgs.length; i++) {
 //            String s = (cfgs[i].getToolChain() == null) ? "0" : ((ToolChain)(cfgs[i].getToolChain())).getId();  //$NON-NLS-1$
 //            Configuration cfg = new Configuration(mProj, (ToolChain)cfgs[i].getToolChain(), ManagedBuildManager.calculateChildId(s, null), cfgs[i].getName());
@@ -108,7 +108,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 //            des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
 //        }
 //        mngr.setProjectDescription(project, des);
-//        
+//
 //        doPostProcess(project);
 //    }
 
@@ -118,13 +118,13 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		String projectName = page.getProjectName();
         final IProject projectHandle =  workspace.getRoot().getProject(projectName);
-        
+
         // get a project descriptor
         IPath defaultPath = Platform.getLocation();
         IPath newPath = page.getLocationPath();
         if (defaultPath.equals(newPath))
 			newPath = null;
-        
+
         // create project description. Note: we'add the nature after project creation,
         // so that builders get properly configured (Project.create() doesn't do it).
         final IProjectDescription description = workspace.newProjectDescription(projectName);
@@ -174,12 +174,12 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 
             projectHandle.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 
-            // add the project nature after now, after project creation, so that builders 
+            // add the project nature after now, after project creation, so that builders
             // get properly configured (Project.create() doesn't do it).
             IProjectDescription description2 = projectHandle.getDescription();
             description2.setNatureIds(new String[] {IConstants.OMNETPP_NATURE_ID});
             projectHandle.setDescription(description2, monitor);
-        } 
+        }
         finally {
             monitor.done();
         }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -88,7 +88,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
             pressKey(SWT.KEYPAD_ADD);  // ARROW_RIGHT doesn't work on Linux
         }
     }
-    
+
     @UIStep
     public void clickColumn(int index) {
         Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getTextBounds(index)));
@@ -115,7 +115,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         System.out.println(oldFocusControl.getClass().getSimpleName());
         return (TextAccess)createAccess(focusControl);
     }
-    
+
     @InBackgroundThread
     public void clickAndTypeOver(String content) {
         TextAccess cellEditor = activateCellEditor();

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,8 +14,8 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
  * An item in structured selections (IStructuredSelection) published
  * by InifileEditor. With text-based editing, the selected section/key
  * is where the cursor is currently located; with form-based editing,
- * it may be the section/key edited by the currently focused form control. 
- * 
+ * it may be the section/key edited by the currently focused form control.
+ *
  * @author Andras
  */
 public class InifileSelectionItem {

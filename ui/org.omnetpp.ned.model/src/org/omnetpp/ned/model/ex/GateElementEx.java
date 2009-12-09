@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -46,7 +46,7 @@ public class GateElementEx extends GateElement implements IHasIndex, IHasName, I
         while (node != null) {
             if (node instanceof IHasName && node.getTagCode() == NED_PROPERTY)
                 ((Map)map).put(((IHasName)node).getName(), (PropertyElementEx)node);
-            
+
             node = node.getNextSibling();
         }
 

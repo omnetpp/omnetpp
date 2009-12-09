@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -83,14 +83,14 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	    Assert.isTrue(toInstanceName("_TCP").equals("_tcp"));
 	}
 
-	/** 
+	/**
 	 * Tweaks the given string so that it becomes a valid C++ or Java identifier.
 	 * Removes spaces, assures it begins with letter or underscore, etc.
 	 */
 	public static String makeValidIdentifier(String name) {
         name = name.replaceAll("[^A-Za-z0-9_]", "_");
         name = name.replaceAll("__+", "_");
-        if (!name.matches("[a-zA-Z_].*")) 
+        if (!name.matches("[a-zA-Z_].*"))
             name = "_" + name;
         return name;
 	}
@@ -464,9 +464,9 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static String ordinal(int k) {
         String suffix;
         switch (k%10) {
-            case 1: suffix = "st"; break; 
-            case 2: suffix = "nd"; break; 
-            case 3: suffix = "rd"; break; 
+            case 1: suffix = "st"; break;
+            case 2: suffix = "nd"; break;
+            case 3: suffix = "rd"; break;
             default: suffix = "th"; break;
         }
         return k + suffix;
@@ -542,7 +542,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 			return dictionaryCompare(first, second);
 		}
     }
-    
+
     /**
      * Tests whether two strings are equal after aggressive whitespace normalization.
      * @see normalizeWhiteSpace()
@@ -552,7 +552,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     }
 
     public static String normalizeWhiteSpace(String text) {
-        // zap indentation, end-line whitespaces and blank lines: any whitespace 
+        // zap indentation, end-line whitespaces and blank lines: any whitespace
         // sequence containing "\n" becomes a single "\n"
         text = text.replaceAll("(?s)\\s*\\n\\s*", "\n");
         // replace remaining whitespace sequences with a space each
@@ -566,7 +566,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static String indentLines(String text, String indent) {
         return indent + StringUtils.removeEnd(text.replace("\n", "\n" + indent), indent);
     }
-    
+
     /**
      * Surround the given string with "quotes", also escape with backslash
      * where needed.
@@ -574,7 +574,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static String quoteString(String text) {
     	return Common.quoteString(text);
     }
-    
+
     /**
      * Returns true if the string contains space, backslash, quote, or anything
      * else that would make quoting ({@link #quoteString(String)}) necessary before writing
@@ -583,16 +583,16 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static boolean needsQuotes(String text) {
     	return Common.needsQuotes(text);
     }
-    
+
     /**
      * Combines {{@link #needsQuotes(String)} and {{@link #quoteString(String)}.
      */
     public static String quoteStringIfNeeded(String text) {
     	return Common.quoteStringIfNeeded(text);
     }
-    
+
     /**
-     * Joins two string with a separator, s1 and s2 can be NULL. 
+     * Joins two string with a separator, s1 and s2 can be NULL.
      */
     public static String join(String s1, String separator, String s2) {
     	if (isEmpty(s1))
@@ -612,29 +612,29 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      *  - {@i1:list1,i2:list2,...} ... {i} ...{/@}  parallel iteration list1, list2 etc.
      *  *true/false is interpreted as: for a String, "" is false and everything else is true;
      *  instances of Boolean are also accepted.
-     *  
-     * Newlines inside {...} are not permitted; this allows detecting errors caused 
+     *
+     * Newlines inside {...} are not permitted; this allows detecting errors caused
      * by misplaced braces. Also, nesting is not supported.
-     *  
-     * Newlines in the template should be represented by "\n" and not "\r\n", so you 
+     *
+     * Newlines in the template should be represented by "\n" and not "\r\n", so you
      * may need to preprocess the template by calling: template = template.replace("\r\n", "\n").
-     * 
+     *
      * Lines starting with ### treated as comments and will be removed from the output
      */
     public static String substituteIntoTemplate(String template, Map<String, Object> map) {
         return substituteIntoTemplate(template, map, "{", "}");
     }
-    
+
     /**
-     * Like the other substituteIntoTemplate() method, but arbitrary start/end tag can be specified. 
+     * Like the other substituteIntoTemplate() method, but arbitrary start/end tag can be specified.
      */
     public static String substituteIntoTemplate(String template, Map<String, Object> map, String startTag, String endTag) {
         Assert.isTrue(!startTag.equals(endTag), "template: startTag and endTag must be different");
         StringBuilder buf = new StringBuilder();
-        
+
         template = template.replaceAll("\n[ \t]*###.*\n", "\n"); // remove whole-line comments
         template = template.replaceAll("[ \t]*###.*\n", "\n"); // remove end-line comments
-        
+
         int startTagLen = startTag.length();
         int endTagLen = endTag.length();
 
@@ -656,7 +656,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                     if (isLoop)
                         key = key.substring(1);
                     boolean isNegated = key.charAt(0)=='~';
-                    if (isNegated) 
+                    if (isNegated)
                         key = key.substring(1);  // drop "~"
                     boolean isOptLine = key.endsWith(":") && key.indexOf('?') == -1;
                     if (isOptLine)
@@ -672,7 +672,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                         // basic loop syntax: {@i:list1,j:list2,...} ... {i} ... {/@}
                         // this is parallel iteration, not nested loops!
                         // first, find loop close tag {/@}
-                        String loopEndTag = startTag + "/@" + endTag; 
+                        String loopEndTag = startTag + "/@" + endTag;
                         int balance = 1;
                         int pos = end-1; // because we'll start with +1
                         while (balance != 0) {
@@ -718,7 +718,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                         else {
                             // omit line
                             int endLine = template.indexOf('\n', end);
-                            if (endLine == -1) 
+                            if (endLine == -1)
                                 endLine = template.length();
                             replacement = "";
                             end = endLine + 1;
@@ -743,7 +743,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             }
         }
         buf.append(template.substring(current));  // rest of the template
-        String result = buf.toString();       
+        String result = buf.toString();
         result = result.replaceAll(" +\n", "\n");  // remove spaces at line end
         result = result.replaceAll("\n\n\n+", "\n\n");  // remove multiple empty lines
         return result;
@@ -759,7 +759,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             return index1;
         return index1 < index2 ? index1 : index2;
     }
-    
+
     // for substituteIntoTemplate()
     private static String getFromMapAsString(Map<String, Object> map, String key) {
         Object object = map.get(key);
@@ -796,7 +796,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         else
             throw new RuntimeException("template error: template parameter '" + key + "' was expected to be list, but it is " + object.getClass().toString());
     }
-    
+
     public static String formatList(Collection<? extends Object> list, String elementFormat, String separator) {
     	StringBuilder builder = new StringBuilder();
     	boolean firstIteration = true;
@@ -820,7 +820,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 			return string;
 		}
 	}
-    
+
     /**
 	 * Performs variable substitution on the string.
 	 * If any variable is un-resolvable, returns defaultVal.

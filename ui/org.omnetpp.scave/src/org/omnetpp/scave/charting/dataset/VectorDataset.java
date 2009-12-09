@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -93,7 +93,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 			series.xyarray = seriesData[i];
 		}
 	}
-	
+
 	public String getTitle(String format) {
 		if (StringUtils.isEmpty(format))
 			return title;
@@ -136,7 +136,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 
 	public String getXAsString(int series, int item) {
 		BigDecimal xp = getPreciseX(series, item);
-		return xp != null ? xp.toString() : String.format("%g", getX(series, item)); 
+		return xp != null ? xp.toString() : String.format("%g", getX(series, item));
 	}
 
 	public double getY(int series, int item) {

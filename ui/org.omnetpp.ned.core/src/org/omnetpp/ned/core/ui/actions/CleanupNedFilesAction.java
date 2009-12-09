@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,7 +40,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 /**
  * Fixes package declarations, organizes imports, and reformats
  * source code in the selected directories.
- *  
+ *
  * @author Andras
  */
 //FIXME tell user: "Please save all files and close all editors" etc.
@@ -63,13 +63,13 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
             RefactoringTools.organizeImports(nedFileElement);
         }
     };
-    
+
     public void init(IWorkbenchWindow window) {
     }
 
     public void dispose() {
     }
-    
+
     public void selectionChanged(IAction action, ISelection selection) {
     }
 
@@ -87,21 +87,21 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
                     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                         cleanupNedFilesIn(container, monitor);
                     }};
-                // first param of run() is "fork" it set to false to run the process in UI thread to allow dialogs to come up    
+                // first param of run() is "fork" it set to false to run the process in UI thread to allow dialogs to come up
                 new ProgressMonitorDialog(shell).run(false, true, op);
-            } 
+            }
             catch (InvocationTargetException e) {
                 NEDResourcesPlugin.logError(e);
                 ErrorDialog.openError(shell, "Error", "Error during cleaning up NED files", new Status(IMarker.SEVERITY_ERROR, NEDResourcesPlugin.PLUGIN_ID, e.getMessage(), e));
-            } catch (InterruptedException e) { 
-                // nothing to do 
+            } catch (InterruptedException e) {
+                // nothing to do
             }
         }
     }
 
     protected void cleanupNedFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
-        
+
         	NEDResourcesPlugin.getNEDResources().setRefactoringInProgress(true);
             NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
 
@@ -128,9 +128,9 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
             public boolean visit(IResource resource) throws CoreException {
                 if (NEDResourcesPlugin.getNEDResources().isNedFile(resource)) {
                     monitor.subTask(resource.getFullPath().toString());
-                    
+
                     processNedFile((IFile)resource, refactoring);
-                    
+
                     // we are running in the UI thread. process to events to make the UI responsive
                     Display.getCurrent().readAndDispatch();
                     monitor.worked(1);
@@ -148,7 +148,7 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
 
         if (!nedFileElement.hasSyntaxError()) {
             String originalSource = nedFileElement.getNEDSource();
-            
+
         	// do the actual work
             refactoring.process(nedFileElement);
 
