@@ -43,6 +43,7 @@ proc save_tkenvrc {fname savesettings saveinspectors {comment ""}} {
                 penguin_mode
                 showlayouting
                 usenewlayouter
+                arrangevectorconnections
                 bubbles
                 animation_speed
                 expressmode_autoupdate

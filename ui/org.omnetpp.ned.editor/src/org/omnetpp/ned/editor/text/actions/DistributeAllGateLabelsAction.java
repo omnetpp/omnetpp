@@ -34,6 +34,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.core.refactoring.RefactoringTools.AddGateLabels;
 import org.omnetpp.ned.editor.NedEditor;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -162,7 +163,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
                         addGateLabels.run();
                     }
                     catch (PartInitException e) {
-                        ExceptionUtils.printRootCauseStackTrace(e);
+                        NedEditorPlugin.logError(e);
                     }
                 }
 

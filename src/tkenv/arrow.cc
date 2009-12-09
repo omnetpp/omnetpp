@@ -10,7 +10,7 @@
 
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 2006-2009 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -166,6 +166,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
       int same_rect = 0;
       int src_within_dest = 0;
       int dest_within_src = 0;
+      int overlapping_rects = 0;
 
       if (src_x1==dest_x1 && src_x2==dest_x2 && src_y1==dest_y1 && src_y2==dest_y2)
          same_rect = 1;
@@ -173,6 +174,8 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
          dest_within_src = 1;
       else if (src_x1>=dest_x1 && src_x2<=dest_x2 && src_y1>=dest_y1 && src_y2<=dest_y2)
          src_within_dest = 1;
+      else if (std::max(src_x1,dest_x1)<std::min(src_x2,dest_x2) && std::max(src_y1,dest_y1)<std::min(src_y2,dest_y2))
+        overlapping_rects = 1;
 
       // some useful values...
       double src_width = src_x2-src_x1,
@@ -186,6 +189,20 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
       src_y = src_y1 + src_anch_dy*src_height/100;
       dest_x = dest_x1 + dest_anch_dx*dest_width/100;
       dest_y = dest_y1 + dest_anch_dy*dest_height/100;
+
+      double factor = 1;  // factor to set where the anchor point can run. 0: runs on the border, 1:runs on the middle line
+      
+      double src_delta = factor * std::min(src_width, src_height) / 2.0;
+      double dest_delta = factor * std::min(dest_width, dest_height) / 2.0;
+
+      double src_wire_x1 = src_x1 + src_delta;
+      double src_wire_y1 = src_y1 + src_delta;
+      double src_wire_x2 = src_x2 - src_delta;
+      double src_wire_y2 = src_y2 - src_delta;
+      double dest_wire_x1 = dest_x1 + dest_delta;
+      double dest_wire_y1 = dest_y1 + dest_delta;
+      double dest_wire_x2 = dest_x2 - dest_delta;
+      double dest_wire_y2 = dest_y2 - dest_delta;
 
       // do all rectangle relations one-by-one
       if (same_rect)
@@ -313,66 +330,35 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
 
          if (mode!='m')
          {
-             if (src_y1>=dest_y1 && src_y1<=dest_y2 && src_y2>=dest_y1 && src_y2<=dest_y2)
-             {
-                 src_y = dest_y = src_y1 + (src_i+1) * src_height / (src_n+1);
+             // horizontal coordinates
+             if (src_wire_x2 <= dest_wire_x1) 
+                 { src_x = src_wire_x2; dest_x = dest_wire_x1; }
+             if (dest_wire_x2 <= src_wire_x1)
+                 { src_x = src_wire_x1; dest_x = dest_wire_x2; }
+             double overlap_x1 = std::max(src_wire_x1, dest_wire_x1);
+             double overlap_x2 = std::min(src_wire_x2, dest_wire_x2);
+             if (overlap_x1 <= overlap_x2) 
+               src_x = dest_x = overlap_x1 + (src_i+1)*(overlap_x2 - overlap_x1)/(src_n+1);
 
-                 if (src_x2<=dest_x1) // src is left of dest
-                 {
-                     src_x = src_x2; dest_x = dest_x1;
-                 }
-                 else // src is right of dest
-                 {
-                     src_x = src_x1; dest_x = dest_x2;
-                 }
-             }
-             else if (dest_y1>=src_y1 && dest_y1<=src_y2 && dest_y2>=src_y1 && dest_y2<=src_y2)
-             {
-                 dest_y = src_y = dest_y1 + (dest_i+1) * dest_height / (dest_n+1);
-
-                 if (dest_x2<=src_x1) // dest is above of src
-                 {
-                     dest_x = dest_x2; src_x = src_x1;
-                 }
-                 else // dest is right of src
-                 {
-                     dest_x = dest_x1; src_x = src_x2;
-                 }
-             }
-             else if (src_x1>=dest_x1 && src_x1<=dest_x2 && src_x2>=dest_x1 && src_x2<=dest_x2)
-             {
-                 src_x = dest_x = src_x1 + (src_i+1) * src_width / (src_n+1);
-
-                 if (src_y2<=dest_y1) // src is above of dest
-                 {
-                     src_y = src_y2; dest_y = dest_y1;
-                 }
-                 else // src is right of dest
-                 {
-                     src_y = src_y1; dest_y = dest_y2;
-                 }
-             }
-             else if (dest_x1>=src_x1 && dest_x1<=src_x2 && dest_x2>=src_x1 && dest_x2<=src_x2)
-             {
-                 dest_x = src_x = dest_x1 + (dest_i+1) * dest_width / (dest_n+1);
-
-                 if (dest_y2<=src_y1) // dest is above of src
-                 {
-                     dest_y = dest_y2; src_y = src_y1;
-                 }
-                 else // dest is below of src
-                 {
-                     dest_y = dest_y1; src_y = src_y2;
-                 }
-             }
-             else
-                 mode = 'm';
+             // vertical coordinates
+             if (src_wire_y2 <= dest_wire_y1) 
+                 { src_y = src_wire_y2; dest_y = dest_wire_y1; }
+             if (dest_wire_y2 <= src_wire_y1)
+                 { src_y = src_wire_y1; dest_y = dest_wire_y2; }
+             double overlap_y1 = std::max(src_wire_y1, dest_wire_y1);
+             double overlap_y2 = std::min(src_wire_y2, dest_wire_y2);
+             if (overlap_y1 <= overlap_y2) 
+               src_y = dest_y = overlap_y1 + (src_i+1)*(overlap_y2 - overlap_y1)/(src_n+1);
+             
          }
 
-         if (mode=='m')
+         // clip the line to the bounding rectangles if they are not overlapping
+         if (!overlapping_rects) 
          {
+             double src_x_tmp = src_x;
+             double src_y_tmp = src_y;
              clip_line_to_rect(src_x,src_y,dest_x,dest_y, src_x1,src_y1,src_x2,src_y2);
-             clip_line_to_rect(dest_x,dest_y,src_x,src_y, dest_x1,dest_y1,dest_x2,dest_y2);
+             clip_line_to_rect(dest_x,dest_y,src_x_tmp,src_y_tmp, dest_x1,dest_y1,dest_x2,dest_y2);
          }
       }
 

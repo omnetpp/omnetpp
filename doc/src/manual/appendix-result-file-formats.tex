@@ -218,9 +218,9 @@ Defines an output vector.
 
 Syntax:
 
-\hspace{20mm} \textbf{vector} \textit{vectorId} \ \textit{moduleName} \textit{vectorName}
+\hspace{20mm} \textbf{vector} \textit{vectorId} \textit{moduleName} \textit{vectorName}
 
-\hspace{20mm} \textbf{vector }\textit{vectorId} \textit{moduleName vectorName columnSpec}
+\hspace{20mm} \textbf{vector} \textit{vectorId} \textit{moduleName} \textit{vectorName} \textit{columnSpec}
 
 Where \textit{columnSpec} is a string, encoding the meaning and ordering
 the columns of data lines. Characters of the string mean:
@@ -258,7 +258,7 @@ vector files.
 
 Syntax:
 
-\hspace{20mm} {\itshape vectorId column1 column2 ...}
+\hspace{20mm} \textit{vectorId} \textit{column1} \textit{column2} ...
 
 Simulation times and event numbers \textit{within an output vector} are
 required to be in increasing order.
@@ -287,9 +287,8 @@ Stores the location and statistics of blocks in the vector file.
 
 Syntax:
 
-\hspace{20mm} {\itshape vectorId offset length firstEventNo lastEventNo
-                        firstSimtime lastSimtime
-                        count min max sum sqrsum }
+\hspace{20mm} {\textit{vectorId offset length firstEventNo lastEventNo
+                       firstSimtime lastSimtime count min max sum sqrsum}}
 
 where
 
@@ -311,7 +310,7 @@ Represents a statistics object.
 
 Syntax:
 
-\hspace{20mm} \textbf{statistic} \textit{moduleName} \ \textit{statisticName}
+\hspace{20mm} \textbf{statistic} \textit{moduleName} \textit{statisticName}
 
 Example:
 
@@ -364,7 +363,7 @@ Represents a field in a statistics object.
 
 Syntax:
 
-\hspace{20mm} \textbf{field} \textit{fieldName} \ \textit{value}
+\hspace{20mm} \textbf{field} \textit{fieldName} \textit{value}
 
 Example:
 
