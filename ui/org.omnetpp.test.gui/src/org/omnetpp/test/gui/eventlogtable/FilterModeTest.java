@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -13,7 +13,7 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ShellAccess;
 
 public class FilterModeTest
-    extends EventLogFileTestCase 
+    extends EventLogFileTestCase
 {
     public void testAllFilterMode() throws Exception {
         testFilterMode("All");

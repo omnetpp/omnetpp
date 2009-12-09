@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,12 +15,12 @@ public class CompoundXYDataset extends XYDatasetSupport implements IAveragedXYDa
 
 	private IXYDataset[] seriesToDatasetMap;
 	private int[] seriesToOffsetMap;
-	
+
 	public CompoundXYDataset(IXYDataset... datasets) {
 		int seriesCount = 0;
 		for (int i = 0; i < datasets.length; ++i)
 			seriesCount += datasets[i].getSeriesCount();
-		
+
 		seriesToDatasetMap = new IXYDataset[seriesCount];
 		seriesToOffsetMap = new int[seriesCount];
 		int offset = 0;

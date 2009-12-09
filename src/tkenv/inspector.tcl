@@ -421,9 +421,9 @@ proc create_inspector_contextmenu {ptrs} {
             if {$baseclass == "cGate" } {
                 set nextgateptr [opp_getobjectfield $ptr "nextGate"]
                 set nextgatename [opp_getobjectfullname $nextgateptr]
-                set ownerptr [opp_getobjectowner $ptr] 
+                set ownerptr [opp_getobjectowner $ptr]
                 set ownername [opp_getobjectfullname $ownerptr]
-                set nextgateownerptr [opp_getobjectowner $nextgateptr] 
+                set nextgateownerptr [opp_getobjectowner $nextgateptr]
                 set nextgateownername [opp_getobjectfullname $nextgateownerptr]
 
                 set label "$ownername.$name --> $nextgateownername.$nextgatename"

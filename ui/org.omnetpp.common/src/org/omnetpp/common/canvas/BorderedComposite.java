@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * A composite with a border drawn around it.
- * 
+ *
  * @author Andras
  */
 public class BorderedComposite extends Composite {

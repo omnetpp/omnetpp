@@ -674,7 +674,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        # the other line will be hidden (lowered under anything else)
        if {[string compare $srcptr $destptr] >=0 && $two_way} {
            $c lower $gateptr "dx"
-       } 
+       }
 
        if {[info exists tags(t)]} {
            set txt [lindex $tags(t) 0]
@@ -1001,8 +1001,8 @@ proc graphmodwin_dblclick w {
 }
 
 # get the pointers of all objects under the mouse. If more than 1 ptr is returned
-# then bgrptr is removed from the list. x and y must be widget relative coordinate 
-# (of the canvas object). The background module pointer is removed automatically 
+# then bgrptr is removed from the list. x and y must be widget relative coordinate
+# (of the canvas object). The background module pointer is removed automatically
 # if more that 1 pointer is present. I.e. background is returned ONLY if the mouse
 # is directly over the background module.
 proc get_ptrs_under_mouse {c x y} {

@@ -657,7 +657,7 @@
   <sect1>
     <title>Filter Dialog</title>
     <para>
-      The content of an eventlog can be filtered within the &Omnetpp; IDE. This is 
+      The content of an eventlog can be filtered within the &Omnetpp; IDE. This is
       on-the-fly filtering as opposed to the file content filtering provided by the [[Eventlog]]
       tool. To use on the fly filtering, open the filter configuration dialog with the
       button <icon name="Filter.png"/> on the toolbar, enable some of the range, module,

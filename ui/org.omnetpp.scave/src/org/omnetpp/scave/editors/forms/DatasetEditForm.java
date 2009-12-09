@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -96,13 +96,13 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 	 */
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout(2, false));
-	
+
 		Label nameLabel = new Label(panel, SWT.NONE);
 		nameLabel.setText("Name:");
 		nameLabel.setLayoutData(new GridData());
 		nameText = new Text(panel, SWT.BORDER);
 		nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	
+
 		Label basedOnLabel = new Label(panel, SWT.NONE);
 		basedOnLabel.setText("Based on:");
 		basedOnLabel.setLayoutData(new GridData());

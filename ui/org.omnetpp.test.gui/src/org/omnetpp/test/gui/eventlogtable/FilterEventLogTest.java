@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,16 +19,16 @@ public class FilterEventLogTest
     public FilterEventLogTest() {
         super("stress.log");
     }
-    
+
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
     }
-    
+
     public void testNoFilter() throws Exception {
         openFileFromProjectExplorerViewInEventLogTableEditor();
         findToolItemWithToolTip("Event filter").activateDropDownMenu().activateMenuItemWithMouse("Filter...");
-        
+
         ShellAccess shell = Access.findShellWithTitle("Filter event log");
         ButtonAccess button = shell.findButtonWithLabel("Filter for events.*selected modules");
         button.selectWithMouseClick();

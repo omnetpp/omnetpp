@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,7 +36,7 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * Property source for charts.  
+ * Property source for charts.
  * @author tomi
  */
 public class ChartProperties extends PropertySource {
@@ -107,7 +107,7 @@ public class ChartProperties extends PropertySource {
 			return new HistogramChartProperties(chart, properties, manager);
 		else if (chart instanceof ScatterChart)
 			return new ScatterChartProperties(chart, properties, manager);
-		else 
+		else
 			ScavePlugin.logError(new IllegalArgumentException("chart type unrecognized"));
 		return new ChartProperties(chart, properties, manager);
 	}
@@ -265,7 +265,7 @@ public class ChartProperties extends PropertySource {
 
 	public String getStringProperty(String propertyName) {
 		Property property = getProperty(propertyName);
-		return property != null ? StringUtils.defaultString(property.getValue()) : 
+		return property != null ? StringUtils.defaultString(property.getValue()) :
 								  getDefaultStringProperty(propertyName);
 	}
 
@@ -453,12 +453,12 @@ public class ChartProperties extends PropertySource {
 		if (ids == null || names == null)
 			return new IPropertyDescriptor[0];
 		Assert.isTrue(ids.length == names.length);
-	
+
 		IPropertyDescriptor[] descriptors = new IPropertyDescriptor[ids.length+1];
 		descriptors[0] = new PropertyDescriptor(defaultId, "default");
 		for (int i= 0; i < ids.length; ++i)
 			descriptors[i+1] = new PropertyDescriptor(ids[i], names[i]);
-	
+
 		return descriptors;
 	}
 

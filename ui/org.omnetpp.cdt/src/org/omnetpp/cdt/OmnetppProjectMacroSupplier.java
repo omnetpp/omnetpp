@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -31,7 +31,7 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
         INCLUDE_DIRS_MACRO,
         MESSAGE_DIRS_MACRO,
     };
-    
+
     class SourcePathMacro implements IBuildMacro {
         private IManagedProject cdtProject;
         private String optionPrefix;
@@ -57,7 +57,7 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
 				for (IContainer cont : MakefileTools.collectDirs(projectDescription, pattern))
 					result += optionPrefix+cont.getLocation().toString()+" ";
 				return result;
-			} 
+			}
             catch (CoreException e) {
 				throw new BuildMacroException(e.getStatus());
 			}
@@ -70,17 +70,17 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
         public int getMacroValueType() {
             return getValueType();
         }
-        
+
         public int getValueType() {
             return VALUE_TEXT;
         }
     }
-    
+
     public IBuildMacro getMacro(String macroName, IManagedProject project, IBuildMacroProvider provider) {
         IBuildMacro macro = null;
         if(INCLUDE_DIRS_MACRO.equals(macroName))
             macro = new SourcePathMacro(macroName, project, "-I", null);
-        if(MESSAGE_DIRS_MACRO.equals(macroName)) 
+        if(MESSAGE_DIRS_MACRO.equals(macroName))
             macro = new SourcePathMacro(macroName, project, "", ".*\\.msg");
         return macro;
     }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,16 +17,16 @@ public class AxisOrderByModuleName {
         Integer[] axisModuleIndexes = new Integer[numberOfAxes];
 		for (int i = 0; i < axisModuleIndexes.length; i++)
 			axisModuleIndexes[i] = i;
-	
+
 		java.util.Arrays.sort(axisModuleIndexes, new java.util.Comparator<Integer>() {
 				public int compare(Integer o1, Integer o2) {
 					return StringUtils.dictionaryCompare(axisModules[o1].getModuleFullPath(), axisModules[o2].getModuleFullPath());
 				}
 			});
-	
+
 		for (int i = 0; i < axisModuleIndexes.length; i++)
 			axisPositions[axisModuleIndexes[i]] = i;
-	
+
 		return axisPositions;
 	}
 }

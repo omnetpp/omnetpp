@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,9 +17,9 @@ import org.eclipse.core.runtime.Platform;
  * We use the same toolchain for gcc on all platforms, so we need a combined
  * environment variable supplier that works on all platforms. As of CDT 5.0,
  * CDT contains a MingwEnvironmentVariableSupplier but no supplier for other platforms
- * (except Cygwin which we don't support). So here we invoke the MinGW one if platform 
+ * (except Cygwin which we don't support). So here we invoke the MinGW one if platform
  * is win32, and do nothing in other cases.
- * 
+ *
  * @author Andras
  */
 public class GCCEnvironmentVariableSupplier extends MingwEnvironmentVariableSupplier_COPY {

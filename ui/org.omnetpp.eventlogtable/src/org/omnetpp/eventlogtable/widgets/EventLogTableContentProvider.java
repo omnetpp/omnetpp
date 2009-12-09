@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -140,7 +140,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 	public EventLogEntryReference getClosestElement(EventLogEntryReference element) {
 		if (element == null)
 			throw new IllegalArgumentException();
-	
+
 		return toEventLogEntryReference(eventLogTableFacade.getClosestEntryInEvent(element.getEventLogEntry(eventLogInput)));
 	}
 
@@ -149,7 +149,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		eventLogInput = (EventLogInput)newInput;
-	
+
 		if (eventLogInput == null)
 			eventLogTableFacade = null;
 		else

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,7 +39,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * @author Andras
  */
 public class DatasetsAndChartsPage extends ScaveEditorPage {
-	private FormToolkit formToolkit = null;  
+	private FormToolkit formToolkit = null;
 	private TreeViewer datasetsTreeViewer;
 	private TreeViewer chartSheetsTreeViewer;
 	private SashForm sashform;
@@ -67,16 +67,16 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		sashform.setWeights(new int[] {2,1});
 
 		Composite palette = createPalette(getBody(), true);
-	
+
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
         scaveEditor.configureTreeViewer(getChartSheetsTreeViewer());
-        
+
 		// set contents
 		Analysis analysis = scaveEditor.getAnalysis();
 		getDatasetsTreeViewer().setInput(analysis.getDatasets());
         getChartSheetsTreeViewer().setInput(analysis.getChartSheets());
-        
+
         if (enableGuiTest) {
         	getDatasetsTreeViewer().getTree().setData(WIDGET_ID, DATASETS_TREE_ID);
         	getChartSheetsTreeViewer().getTree().setData(WIDGET_ID, CHARTSHEETS_TREE_ID);

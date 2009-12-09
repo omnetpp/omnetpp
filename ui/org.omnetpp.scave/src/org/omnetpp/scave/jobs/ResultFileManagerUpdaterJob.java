@@ -40,7 +40,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 	private static class Task {
 		Operation operation;
 		IFile file;
-	
+
 		public Task(Operation operation, IFile file) {
 			this.operation = operation;
 			this.file = file;
@@ -76,7 +76,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 					return Status.CANCEL_STATUS;
 //				if (isInterrupted())
 //					break;
-			
+
 				task = tasks.poll();
 				IFile file = task.file;
 				ISchedulingRule rule = getSchedulingRuleFor(file);
@@ -87,7 +87,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 					case Load: doLoad(file); break;
 					case Unload: doUnload(file); break;
 					}
-				
+
 				}
 				catch (Exception e) {
 					Activator.logError(e);
@@ -110,7 +110,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 	 */
 	private void doLoad(final IFile file) {
 		if (debug) Debug.format("  loadFile: %s ", file);
-	
+
 		if (file.getLocation().toFile().exists()) {
 			Exception exception = null;
 			try {
@@ -142,7 +142,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 		if (debug) Debug.format("  unloadFile: %s%n ", file);
 		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
 			public Object call() throws Exception {
-				String resourcePath = file.getFullPath().toString(); 
+				String resourcePath = file.getFullPath().toString();
 				ResultFile resultFile = manager.getFile(resourcePath);
 				if (resultFile != null) {
 					manager.unloadFile(resultFile);
@@ -188,7 +188,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 	private void updateMarkers(IFile file, Exception e) {
 		if (debug && e != null)
 			Debug.format("exception: %s ", e);
-	
+
 		if (e == null) {
 			deleteMarkers(file, MARKERTYPE_SCAVEPROBLEM);
 		}
@@ -207,7 +207,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 				int lineNo = fileFormatException.getLineNo();
 				setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
 			}
-		
+
 		}
 		else {
 			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);

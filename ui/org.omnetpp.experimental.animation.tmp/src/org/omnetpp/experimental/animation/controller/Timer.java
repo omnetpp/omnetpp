@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -115,13 +115,13 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
 
     	if (firstActualExecutionTime == -1)
     		firstActualExecutionTime = lastActualExecutionTime;
-    
+
     	run();
-    
+
     	numberOfActualExecutions++;
     	calculateNextExecution();
     }
-    
+
     public void calculateNextExecution() {
     	long currentTime = System.currentTimeMillis();
 
@@ -130,6 +130,6 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
     	else if (currentTime > firstExecutionTime && allowSkipping)
     		nextExecutionTime = -1;
     }
-    
+
     public abstract void run();
 }

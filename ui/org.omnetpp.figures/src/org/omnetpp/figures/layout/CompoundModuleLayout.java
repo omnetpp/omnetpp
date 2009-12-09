@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -67,7 +67,7 @@ public class CompoundModuleLayout extends AbstractLayout {
 
 		// iterate over the nodes and add them to the algorithm
 		// all child figures on this layer are considered as node
-		IFigure nodeParent = compoundFigure.getSubmoduleLayer(); 
+		IFigure nodeParent = compoundFigure.getSubmoduleLayer();
 		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 			ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
 
@@ -83,7 +83,7 @@ public class CompoundModuleLayout extends AbstractLayout {
 				if (baseLoc != null) {
 					Point offset = getArrangementOffset(constr, 80); // handle vector layouts; note: we use fixed spacing NOT shape size, because items in a vector may be of different sizes which would result in strange arrangements
 					autoLayouter.addFixedNode(node, baseLoc.x+offset.x, baseLoc.y+offset.y, shapeBounds.width, shapeBounds.height);
-				} 
+				}
 				else if (constr.getVectorIdentifier()==null || constr.getVectorArrangement()==VectorArrangement.none) {
 					autoLayouter.addMovableNode(node, shapeBounds.width, shapeBounds.height);
 				}
@@ -129,26 +129,26 @@ public class CompoundModuleLayout extends AbstractLayout {
 			break;
 		}
 		case exact: {
-			x = fallback(constr.getVectorArrangementPar1(), 0); 
-			y = fallback(constr.getVectorArrangementPar2(), 0); 
+			x = fallback(constr.getVectorArrangementPar1(), 0);
+			y = fallback(constr.getVectorArrangementPar2(), 0);
 			break;
 		}
-		case row: { 
-			int dx = fallback(constr.getVectorArrangementPar1(), spacing); 
+		case row: {
+			int dx = fallback(constr.getVectorArrangementPar1(), spacing);
 			x = constr.getVectorIndex() * dx;
 			y = 0;
 			break;
 		}
-		case column: { 
-			int dy = fallback(constr.getVectorArrangementPar1(), spacing); 
+		case column: {
+			int dy = fallback(constr.getVectorArrangementPar1(), spacing);
 			x = 0;
 			y = constr.getVectorIndex() * dy;
 			break;
 		}
-		case matrix: { 
+		case matrix: {
 			int numCols = fallback(constr.getVectorArrangementPar1(), 5);
-			int dx = fallback(constr.getVectorArrangementPar2(), spacing); 
-			int dy = fallback(constr.getVectorArrangementPar3(), spacing); 
+			int dx = fallback(constr.getVectorArrangementPar2(), spacing);
+			int dy = fallback(constr.getVectorArrangementPar3(), spacing);
 			int index = constr.getVectorIndex();
 			x = (index % numCols)*dx;
 			y = (index / numCols)*dy;
@@ -162,7 +162,7 @@ public class CompoundModuleLayout extends AbstractLayout {
 	        y = (int)(ry - ry*Math.cos(alpha));
 			break;
 		}
-		default: { 
+		default: {
 			throw new AssertionFailedException("unhandled vector arrangement " + constr.getVectorArrangement());
 		}
 		}
@@ -175,13 +175,13 @@ public class CompoundModuleLayout extends AbstractLayout {
 
 	/**
      * Implements the algorithm to layout the components of the given container figure.
-     * 
+     *
      * @see LayoutManager#layout(IFigure)
      */
     @SuppressWarnings("unchecked")
     public void layout(IFigure parent) {
 	    long startTime = System.currentTimeMillis();
-	    
+
 	    // create and run the layouter
 	    AbstractGraphLayoutAlgorithm alg = createAutoLayouter();
 	    alg.setSeed((int)algSeed);
@@ -196,7 +196,7 @@ public class CompoundModuleLayout extends AbstractLayout {
         	ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
         	Point locationFromAlg = alg.getNodePosition(f);
         	Assert.isNotNull(locationFromAlg);
-        
+
         	// we write back the calculated locations
         	constr.setCenterLocation(locationFromAlg);
         }
@@ -220,15 +220,15 @@ public class CompoundModuleLayout extends AbstractLayout {
 	}
 
 	/**
-	 * After calling this, the next layout process will call a full layout process. 
-	 * Pinned nodes will stay, unpinned nodes will move. 
-	 * Nodes with unspecified location will be layouted by generating a random 
-	 * starting position. 
+	 * After calling this, the next layout process will call a full layout process.
+	 * Pinned nodes will stay, unpinned nodes will move.
+	 * Nodes with unspecified location will be layouted by generating a random
+	 * starting position.
 	 */
 	@SuppressWarnings("unchecked")
 	public void requestFullLayout() {
-		// forget all cached coordinates 
-	    IFigure nodeParent = compoundFigure.getSubmoduleLayer(); 
+		// forget all cached coordinates
+	    IFigure nodeParent = compoundFigure.getSubmoduleLayer();
 		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 			ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
 			constr.setCenterLocation(null);
@@ -244,27 +244,27 @@ public class CompoundModuleLayout extends AbstractLayout {
 		// if we have a size hint, we always use that for the size
 		if (hHint >= 0 && wHint >= 0)
 			return new Dimension(hHint,wHint);
-	
+
 		layout(f);  //XXX maybe not always needed ??
 	    Rectangle rect = null;
 	    for (IFigure child : (List<IFigure>)f.getChildren()) {
 	        Rectangle r = child.getBounds();
-	        
+
 	        if (rect == null)
 	        	rect = r.getCopy();
 	        else
 	        	rect.union(r);
-	        
+
 	        if (child instanceof SubmoduleFigure) {
 	            // add the label bounds to it
 	            rect.union(((SubmoduleFigure)child).getNameBounds());
 	        }
 	    }
-	    
+
 	    // use the default size if no submodule children were present
 	    if (rect == null)
 	    	return new Dimension(DEFAULT_SIZE);
-	    
+
 	    // we use the same amount of space on the up/down and the left/right side
 	    Dimension result = new Dimension(rect.x + Math.max(rect.x,0) + rect.width + f.getInsets().getWidth(), rect.y + Math.max(rect.y,0) + rect.height + f.getInsets().getHeight()).
 	        union(getBorderPreferredSize(f));

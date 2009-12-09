@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -635,7 +635,7 @@ public class ParametersPage extends FormPage {
 			GenericTreeNode sectionNode = new GenericTreeNode(section);
 			rootNode.addChild(sectionNode);
 			for (String key : doc.getKeys(section)) {
-				if (key.contains(".")) { 
+				if (key.contains(".")) {
 				    String suffix = StringUtils.substringAfterLast(key, ".");
 				    if (!suffix.contains("-") || suffix.equals(CFGID_TYPE_NAME.getName()))
 				        sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));

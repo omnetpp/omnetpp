@@ -61,7 +61,7 @@ proc cpanel_createControls {} {
 #
 proc cpanel_addSlider {variable label value min max step tag} {
     global cpanel_toplevel param
- 
+
     frame $cpanel_toplevel.$variable
     label $cpanel_toplevel.$variable.l -anchor w -width 16 -text $label
     scale $cpanel_toplevel.$variable.e -orient horizontal -length 200

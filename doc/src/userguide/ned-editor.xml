@@ -5,12 +5,12 @@
   <sect1>
     <title>Overview</title>
     <para>
-      When you double-click a [[.ned]] file in the IDE, it will open in the NED editor. 
+      When you double-click a [[.ned]] file in the IDE, it will open in the NED editor.
       The new NED editor is a dual-mode editor: in the graphical mode you can edit the network using the
       mouse, and the textual mode allows you to work directly on the NED source.
     </para>
     <para>
-      The syntax of NED files has changed significantly from the 3.x version. 
+      The syntax of NED files has changed significantly from the 3.x version.
       The NED editor primarily supports the new syntax: it is still possible
       to read and display NED files with the old syntax, many of the advanced features, however (syntax
       highlighting, content assistance, etc.), will not work. There is automatic conversion from the old syntax
@@ -36,7 +36,7 @@
       Switching to graphical mode is possible only if the NED file is syntactically correct.
     </para>
     <note>
-      As a side effect, currently if there are two modules with the same name and package in related projects, 
+      As a side effect, currently if there are two modules with the same name and package in related projects,
       they will collide, and both will be marked with an error. Furthermore, the name will be treated as undefined,
       and any other modules depending on it will also generate an error. (Thus, a "no such module type" error
       may mean that actually there are more than one definitions which nullify each other.)
@@ -74,14 +74,14 @@
     <title>Using the NED editor</title>
     <para> If you want to open a NED file, just double-click its icon in the ``Project Explorer''. If the NED file
       can be parsed without an error, the graphical representation of the file will be opened, otherwise
-      (errors in the file) the text view will be opened, and the text will be annotated 
+      (errors in the file) the text view will be opened, and the text will be annotated
       with error markers.</para>
     <warning>
       Only files contained in NED Source Folders will be opened with the graphical editor. If a NED file is
       not in the NED Source Folders, it will be opened in a standard text editor.
     </warning>
     <para>
-      You can switch between graphical and source editing mode by clicking the tabs at 
+      You can switch between graphical and source editing mode by clicking the tabs at
       the bottom of the editor, or using the
       <keycap>Ctrl+PGUP/PGDN</keycap>
       key combinations. The editor will try to keep the selection during the switch: selecting an element in a
@@ -106,7 +106,7 @@
         be dragged or resized by the mouse and connected by using the Connection Tool in the palette.</para>
       <picture file="pictures/NED-GraphEditor.png">Graphical NED Editor</picture>
       <para> The palette is normally at the right of the editor area. The upper part of the palette contains
-        the basic tools: selector, connection selector, and the connection creator tool. To use a palette 
+        the basic tools: selector, connection selector, and the connection creator tool. To use a palette
         item, click it then click into the module where you want to place/activate it. The mouse pointer will give
         you feedback whether the requested operation is allowed. The middle part of the toolbox contains the
         basic elements that can be placed at the top level in a NED file (simple module, compound module,
@@ -130,7 +130,7 @@
       <sect3>
         <title>Creating modules</title>
         <para> To create a module or a submodule, click on the appropriate palette item, and then click where
-          you want to place the new element. Submodules can be placed only inside compound modules or networks, 
+          you want to place the new element. Submodules can be placed only inside compound modules or networks,
           while other types can be dropped directly in the editor window.</para>
       </sect3>
       <sect3>
@@ -388,8 +388,8 @@
       <sect3>
         <title>Cleaning up NED files</title>
         <para> This function does a general repair on all selected NED files. Throws out or adds import
-          statements as needed, checks (and fixes) whether the file's package declaration is correct and 
-          reformats the source code. It can be activated by clicking on the ``Clean Up NED Files'' 
+          statements as needed, checks (and fixes) whether the file's package declaration is correct and
+          reformats the source code. It can be activated by clicking on the ``Clean Up NED Files''
           menu item from the main menu.</para>
       </sect3>
       <sect3>

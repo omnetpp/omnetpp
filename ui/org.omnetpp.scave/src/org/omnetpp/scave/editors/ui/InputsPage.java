@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -81,7 +81,7 @@ public class InputsPage extends ScaveEditorPage {
 
 	private void initialize() {
 		// set up UI
-		setPageTitle("Inputs"); 
+		setPageTitle("Inputs");
 		setFormTitle("Inputs");
 		setExpandHorizontal(true);
 		setExpandVertical(true);
@@ -93,13 +93,13 @@ public class InputsPage extends ScaveEditorPage {
 
 		// configure viewers
         scaveEditor.configureTreeViewer(getInputFilesTreeViewer());
-        
+
         getFileRunTreeViewer().setContentProvider(new InputsFileRunViewContentProvider());
         getFileRunTreeViewer().setLabelProvider(new InputsViewLabelProvider());
 
         getRunFileTreeViewer().setContentProvider(new InputsRunFileViewContentProvider());
         getRunFileTreeViewer().setLabelProvider(new InputsViewLabelProvider());
-        
+
         getLogicalDataTreeViewer().setContentProvider(new InputsLogicalViewContentProvider());
         getLogicalDataTreeViewer().setLabelProvider(new InputsViewLabelProvider());
 
@@ -125,11 +125,11 @@ public class InputsPage extends ScaveEditorPage {
 				}
 			}
         });
-        
+
         getFileRunTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         getRunFileTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         getLogicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
-        
+
         // set up drag & drop of .sca and .vec files into the viewers
         setupResultFileDropTarget(getInputFilesTreeViewer().getControl());
         setupResultFileDropTarget(getFileRunTreeViewer().getControl());
@@ -144,7 +144,7 @@ public class InputsPage extends ScaveEditorPage {
         getFileRunTreeViewer().setInput(manager);
         getRunFileTreeViewer().setInput(manager);
         getLogicalDataTreeViewer().setInput(manager);
-        
+
         if (enableGuiTest) {
         	getInputFilesTreeViewer().getTree().setData(WIDGET_ID, INPUT_FILES_TREE);
         	getFileRunTreeViewer().getTree().setData(WIDGET_ID, FILE_RUN_VIEW_TREE_ID);
@@ -155,7 +155,7 @@ public class InputsPage extends ScaveEditorPage {
 
 	/**
 	 * This method initializes formToolkit
-	 * 
+	 *
 	 * @return org.eclipse.ui.forms.widgets.FormToolkit
 	 */
 	private FormToolkit getFormToolkit() {
@@ -188,11 +188,11 @@ public class InputsPage extends ScaveEditorPage {
 
 		// buttons
 		configureViewerButton(
-				inputFilesPanel.getAddFileButton(), 
+				inputFilesPanel.getAddFileButton(),
 				inputFilesPanel.getTreeViewer(),
 				new AddResultFileAction());
 		configureViewerButton(
-				inputFilesPanel.getAddWildcardButton(), 
+				inputFilesPanel.getAddWildcardButton(),
 				inputFilesPanel.getTreeViewer(),
 				new AddWildcardResultFileAction());
 		configureViewerButton(
@@ -200,7 +200,7 @@ public class InputsPage extends ScaveEditorPage {
 				inputFilesPanel.getTreeViewer(),
 				new EditAction());
 		configureViewerButton(
-				inputFilesPanel.getRemoveFileButton(), 
+				inputFilesPanel.getRemoveFileButton(),
 				inputFilesPanel.getTreeViewer(),
 				new RemoveAction());
 	}
@@ -209,7 +209,7 @@ public class InputsPage extends ScaveEditorPage {
 	 * This method initializes dataSection
 	 */
 	private void createDataSection() {
-		dataSection = getFormToolkit().createSection(sashform, 
+		dataSection = getFormToolkit().createSection(sashform,
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		dataSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		dataSection.setText("Data");
@@ -240,7 +240,7 @@ public class InputsPage extends ScaveEditorPage {
 		else if (object instanceof Inputs) {
 			return true;
 		}
-		
+
 		return false;
 	}
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,13 +39,13 @@ public class HistogramChartProperties extends ChartProperties
 		Count("count"),
 		Pdf("probability density"),
 		Cdf("cumulative density");
-	
+
 		private String displayName;
-	
+
 		private HistogramDataType(String displayName) {
 			this.displayName = displayName;
 		}
-	
+
 		@Override public String toString() {
 			return displayName;
 		}

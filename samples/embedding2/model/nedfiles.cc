@@ -9,7 +9,7 @@
 
 // Model NED sources for direct embedding into the executable
 
-const char *ALOHA_NED = 
+const char *ALOHA_NED =
 	"@namespace(aloha);\n"
 	"network Aloha\n"
 	"{\n"
@@ -25,7 +25,7 @@ const char *ALOHA_NED =
 	"        }\n"
 	"}\n";
 
-const char *SERVER_NED = 
+const char *SERVER_NED =
 	"@namespace(aloha);\n"
 	"simple Server\n"
 	"{\n"
@@ -33,7 +33,7 @@ const char *SERVER_NED =
 	"        input in @directIn;\n"
 	"}\n";
 
-const char *HOST_NED = 
+const char *HOST_NED =
 	"@namespace(aloha);\n"
 	"simple Host\n"
 	"{\n"

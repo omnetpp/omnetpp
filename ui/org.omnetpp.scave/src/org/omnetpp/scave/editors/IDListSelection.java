@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -37,7 +37,7 @@ public class IDListSelection implements IStructuredSelection {
 	public IDListSelection(IDList idlist, ResultFileManager manager) {
 		Assert.isNotNull(idlist);
 		Assert.isNotNull(manager);
-	
+
 		this.elements = idlist.toArray();
 		this.manager = manager;
 		if (idlist.areAllScalars())

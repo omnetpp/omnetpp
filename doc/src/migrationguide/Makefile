@@ -16,7 +16,7 @@ html:
 	cp images/* ../../migration/images
 
 .PHONY : eclipse
-eclipse:  
+eclipse:
 	perl trans.pl <migration.xml >tmp0.xml
 	xsltproc --xinclude --output tmp.xml trans.xsl tmp0.xml
 	rm -rf eclipse

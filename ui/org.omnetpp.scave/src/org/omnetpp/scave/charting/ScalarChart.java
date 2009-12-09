@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -79,7 +79,7 @@ public class ScalarChart extends ChartCanvas {
 		super(parent, style);
 		plot = new BarPlot(this);
 		new Tooltip(this);
-	
+
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				setSelection(new BarSelection());
@@ -107,7 +107,7 @@ public class ScalarChart extends ChartCanvas {
 	public void doSetDataset(IDataset dataset) {
 		if (dataset != null && !(dataset instanceof IScalarDataset))
 			throw new IllegalArgumentException("must be an IScalarDataset");
-	
+
 		this.dataset = (IScalarDataset)dataset;
 		updateLegends();
 		chartArea = calculatePlotArea();

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -31,13 +31,13 @@ public class CreateWithGraphicalEditorTest
         graphicalNedEditor.createModuleInterfaceWithPalette("TestModuleInterface");
         assertFileExistsWithContent(".*moduleinterface TestModuleInterface.*");
     }
-    
+
     public void testCreateChannel() throws Exception {
         prepareTest();
         graphicalNedEditor.createChannelWithPalette("TestChannel");
         assertFileExistsWithContent(".*channel TestChannel.*");
     }
-    
+
     public void testCreateChannelInterface() throws Exception {
         prepareTest();
         graphicalNedEditor.createChannelInterfaceWithPalette("TestChannelInterface");
@@ -49,20 +49,20 @@ public class CreateWithGraphicalEditorTest
         graphicalNedEditor.createCompoundModuleWithPalette("TestCompoundModule");
         assertFileExistsWithContent(".*module TestCompoundModule.*");
     }
-    
+
     public void testCreateSubmodule() throws Exception {
         prepareTest("simple TestSimpleModule {}\nmodule TestCompoundModule {}");
         CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.findCompoundModule("TestCompoundModule");
         compoundModuleEditPart.createSubModuleWithPalette("TestSimpleModule", "test", 100, 100);
         assertFileExistsWithContent(".*submodules.*test.*TestSimpleModule.*");
     }
-    
+
     public void testCreateSubmoduleSelfConnection() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g; }\nmodule TestCompoundModule { submodules: test: TestSimpleModule; }");
         testCreateConnection("test", "test");
         assertFileExistsWithContent(".*connections.*test.g.*test.g.*");
     }
-    
+
     public void testCreateSubmoduleToParentConnection() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g; }\nmodule TestCompoundModule { gates: inout g; submodules: test: TestSimpleModule; }");
         testCreateConnection("test", "TestCompoundModule");
@@ -90,7 +90,7 @@ public class CreateWithGraphicalEditorTest
         openFileFromProjectExplorerView();
         graphicalNedEditor = findNedEditor().ensureActiveGraphicalEditor();
     }
-    
+
     private void testCreateConnection(String moduleName1, String moduleName2) {
         testCreateConnection("Connection", moduleName1, moduleName2);
     }
@@ -99,7 +99,7 @@ public class CreateWithGraphicalEditorTest
         CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.findCompoundModule("TestCompoundModule");
         compoundModuleEditPart.createConnectionWithPalette(channel, moduleName1, moduleName2, ".*g.*");
     }
-    
+
     private void assertFileExistsWithContent(String regexpContent) throws Exception {
         Access.getWorkbenchWindow().findEditorPartByTitle(fileName).saveWithHotKey();
         WorkspaceUtils.assertFileExistsWithRegexpContent(filePath, regexpContent);

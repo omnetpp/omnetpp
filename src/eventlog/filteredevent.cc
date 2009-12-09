@@ -221,7 +221,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
                             return causes;
                     }
                     else if (level < filteredEventLog->getMaximumCauseDepth())
-                        todoList.push_back(BreadthSearchItem(causeEvent, 
+                        todoList.push_back(BreadthSearchItem(causeEvent,
                             level == 0 ? messageDependency : endMessageDependency,
                             effectiveIsReuse, level + 1));
                 }
@@ -293,7 +293,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
 int FilteredEvent::countFilteredMessageDependencies(IMessageDependencyList *messageDependencies)
 {
     int count = 0;
-    for (IMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++) 
+    for (IMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++)
         if (dynamic_cast<FilteredMessageDependency *>(*it))
             count++;
 

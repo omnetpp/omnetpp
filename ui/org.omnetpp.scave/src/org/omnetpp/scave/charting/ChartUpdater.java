@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,7 +27,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * This class listens on changes in the model, and refreshes the chart accordingly.
- * 
+ *
  * @author tomi
  */
 public class ChartUpdater {
@@ -61,7 +61,7 @@ public class ChartUpdater {
 	}
 
 	/**
-	 * Propagate changes on the "Chart" model object to the chart view. 
+	 * Propagate changes on the "Chart" model object to the chart view.
 	 */
 	@SuppressWarnings("unchecked")
 	public void updateChart(Notification notification) {
@@ -69,18 +69,18 @@ public class ChartUpdater {
 			return;
 
 		EObject notifier = (EObject)notification.getNotifier();
-	
+
 		// add/remove or change input file
 		if (notifier instanceof Inputs || notifier instanceof InputFile) {
 			// TODO should be checked that visible items are affected
 			scheduleDatasetUpdate();
 			return;
 		}
-	
+
 		if (notifier.eResource() != chart.eResource())
 			return;
-	
-		// add/remove chart property 
+
+		// add/remove chart property
 		if (notifier instanceof Chart && notifier == chart) {
 			switch (notification.getFeatureID(Chart.class)) {
 			case ScaveModelPackage.CHART__FILTERS:
@@ -157,7 +157,7 @@ public class ChartUpdater {
 			Dataset changedDataset = ScaveModelUtil.findEnclosingOrSelf(notifier, Dataset.class);
 			if (changedDataset == null)
 				return;
-		
+
 			Dataset chartDataset = ScaveModelUtil.findEnclosingDataset(chart);
 			while (chartDataset != null && chartDataset != changedDataset)
 				chartDataset = chartDataset.getBasedOn();

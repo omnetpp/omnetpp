@@ -4,7 +4,7 @@ class Target : public cSimpleModule
 {
   protected:
     virtual void handleMessage(cMessage *msg);
-  public:  
+  public:
     virtual void doWhatever(int x);
 };
 
@@ -25,7 +25,7 @@ class Mod : public cSimpleModule
 {
   protected:
     int ctr;
-  public: 
+  public:
     Mod() : cSimpleModule(16384) { }
     virtual void activity();
     void callPrintX(const char *modname);

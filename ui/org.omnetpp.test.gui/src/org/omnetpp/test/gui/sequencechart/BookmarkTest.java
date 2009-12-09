@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,7 +24,7 @@ public class BookmarkTest
         createFileWithTwoEvents();
         openFileFromProjectExplorerViewInSequenceChartEditor();
         addBookmark(1, "test");
-        
+
         WorkbenchUtils.ensureViewActivated("General", "Bookmarks").findTree().assertNotEmpty();
     }
 
@@ -52,7 +52,7 @@ public class BookmarkTest
         openFileFromProjectExplorerViewInSequenceChartEditor();
         addBookmark(1, "test");
         findEditorPart().closeWithHotKey();
-        
+
         ensureBookmarkView().gotoBookmark("test");
         findEditorPart();
     }

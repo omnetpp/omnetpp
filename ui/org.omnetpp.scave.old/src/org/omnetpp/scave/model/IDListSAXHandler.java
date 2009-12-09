@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -48,7 +48,7 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 	public void startElement(String uri, String localName, String qName, Attributes atts) {
 		if (skipedElement != null)
 			return;
-	
+
 		//System.out.println("<" + qName + ">");
 		if (qName.equals(EL_FILE)) {
 			String fileName = atts.getValue(ATT_FILENAME);

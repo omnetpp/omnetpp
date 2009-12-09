@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -55,18 +55,18 @@ public class CreateTempChartAction extends AbstractScaveAction {
 						manager);
 			}
 		});
-	
+
 		String chartName = "temp" + ++counter; //FIXME generate proper name
 		ResultType type = activePanel.getTable().getType();
 		Chart chart = ScaveModelUtil.createChart(chartName, type);
 		dataset.getItems().add(chart);
-	
+
 		Command command = AddCommand.create(
 							editor.getEditingDomain(),
 							editor.getTempAnalysis().getDatasets(),
 							ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
 							dataset);
-	
+
 		// Do not use the CommandStack of the editor, because it would make it dirty
 		// and the Add command undoable from the UI.
 		// It's safe to use a separate command stack, because the operations on the

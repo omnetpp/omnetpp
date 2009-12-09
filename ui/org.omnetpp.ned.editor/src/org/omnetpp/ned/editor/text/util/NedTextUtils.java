@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -147,7 +147,7 @@ public class NedTextUtils {
                 // so we need to parse a bit where the user was hovering exactly
                 IRegion connRegion = getElementRegion(doc, element);
                 String textBeforeWord = TextEditorUtil.get(textViewer, new Region(connRegion.getOffset(), wordRegion.getOffset() - connRegion.getOffset()));
-                
+
                 if (!textBeforeWord.contains("--") && word.equals(conn.getSrcGate()))
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getSrcModule(), conn.getSrcGate()));
                 if (textBeforeWord.contains("--") && word.equals(conn.getDestGate()))
@@ -162,7 +162,7 @@ public class NedTextUtils {
         }
     }
 
-    /** 
+    /**
      * Returns the region document region (offset+length) from the NED element, using its
      * source location info if present. If not, returns null.
      */
@@ -176,7 +176,7 @@ public class NedTextUtils {
         int endOffset = doc.getLineOffset(sourceRegion.getEndLine()-1) + sourceRegion.getEndColumn();
         return new Region(startOffset, endOffset - startOffset);
     }
-    
+
     private static Info createInfo(INEDElement element, IRegion wordRegion, INEDElement declElement) {
         return declElement == null ? null : new Info(element, wordRegion, declElement);
     }

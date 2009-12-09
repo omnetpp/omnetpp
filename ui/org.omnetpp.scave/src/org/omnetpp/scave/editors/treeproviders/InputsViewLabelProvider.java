@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -33,19 +33,19 @@ public class InputsViewLabelProvider extends LabelProvider {
 			}
 			else if (payload instanceof RunPayload) {
 				RunPayload run = (RunPayload)payload;
-				if (run.getRunNumber()==0 && run.getRunName().equals("")) 
+				if (run.getRunNumber()==0 && run.getRunName().equals(""))
 					return "(unnamed run)"; // old vector files
-				else if (run.getRunNumber()!=0 && run.getRunName().equals("")) 
+				else if (run.getRunNumber()!=0 && run.getRunName().equals(""))
 					return "run "+run.getRunNumber()+" - unnamed"; // old scalar files
-				else if (run.getRunNumber()==0) 
+				else if (run.getRunNumber()==0)
 					return "run \""+run.getRunName()+"\"";  // cannot normally happen
-				else 
+				else
 					return "run "+run.getRunNumber()+" - \""+run.getRunName()+"\"";
 			}
 			else if (payload != null && !payload.equals(""))
 				return payload.toString();
 		}
-	
+
 		return null;
 	}
 }

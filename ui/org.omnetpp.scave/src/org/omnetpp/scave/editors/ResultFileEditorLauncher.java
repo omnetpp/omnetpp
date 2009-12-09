@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,9 +36,9 @@ import org.omnetpp.scave.wizard.ScaveModelWizard;
  * It actually opens the analysis file associated with the result file.
  * If the analysis file not yet exists, it opens the "New Analysis" wizard
  * to create it.
- * 
+ *
  * This launcher currently also opens for vci files.
- * 
+ *
  * @author tomi
  */
 public class ResultFileEditorLauncher implements IEditorLauncher {
@@ -53,7 +53,7 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 		IWorkbenchPage page = workbenchWindow.getActivePage();
 		try {
 			if (resultFile.getFileExtension().equals("vci")) {
-				MessageDialog.openInformation(workbenchWindow.getShell(), "Vector Index File", 
+				MessageDialog.openInformation(workbenchWindow.getShell(), "Vector Index File",
 						"This file ("+resultFile.toString()+") is an index file for an output vector file (.vec), "+
 						"and cannot be opened by itself. Please open the corresponding .vec file.");
 				return;
@@ -72,13 +72,13 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 	 * Returns the analysis file belongs to <code>resultFile</code>.
 	 * If the analysis file does not exists, a "New Analysis" wizard
 	 * is opened. It returns <code>null</code>, when the user canceled
-	 * the dialog. 
+	 * the dialog.
 	 */
 	private IFile getAnalysisFileForResultFile(IPath path) throws CoreException {
 		// ignore files which are not "vec" or "sca"
 		if (!"vec".equals(path.getFileExtension()) && !"sca".equals(path.getFileExtension()))
-			return null; 
-	
+			return null;
+
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IFile[] resultFiles = root.findFilesForLocation(path);
 
@@ -87,16 +87,16 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 			IFile resultFile = resultFiles[0];
 			IPath baseName = resultFile.getFullPath().removeFileExtension();
 
-			IContainer container = resultFile.getParent() instanceof IProject ? resultFile.getParent() : resultFile.getParent().getParent(); 
-			IPath analysisFileName = new Path(suffixPattern.matcher(baseName.lastSegment()).replaceFirst("")).addFileExtension("anf"); 
+			IContainer container = resultFile.getParent() instanceof IProject ? resultFile.getParent() : resultFile.getParent().getParent();
+			IPath analysisFileName = new Path(suffixPattern.matcher(baseName.lastSegment()).replaceFirst("")).addFileExtension("anf");
 			IFile analysisFile = container.getFile(analysisFileName);
-		
+
 			if (analysisFile.getLocation().toFile().exists()) {
 				return analysisFile; // return existing
 			}
 			else {
 				String fileName = suffixPattern.matcher(baseName.toString()).replaceFirst("-*");  // convert numeric suffices to *
-				openNewAnalysisWizard(analysisFile, new String[] {fileName+".vec", fileName+".sca"}); 
+				openNewAnalysisWizard(analysisFile, new String[] {fileName+".vec", fileName+".sca"});
 				return null; // wizard opens the editor, too, so we don't need to
 			}
 		}
@@ -109,19 +109,19 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 	/**
 	 * Opens the "New Analysis" wizard. The new analysis file will
 	 * contain the specified <code>resultFile</code>.
-	 * 
+	 *
 	 * @param resultFile the initial content of the analysis file
 	 * @return true iff the file is created
 	 */
 	private boolean openNewAnalysisWizard(IFile analysisFile, String[] initialInputFiles) {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
-		IStructuredSelection selection = new StructuredSelection(analysisFile); 
+		IStructuredSelection selection = new StructuredSelection(analysisFile);
 		ScaveModelWizard wizard = new ScaveModelWizard();
 		wizard.init(workbench, selection);
 		wizard.setDefaultAnalysisFileName(analysisFile.getName());
 		wizard.setInitialInputFiles(initialInputFiles);
-	
+
 		WizardDialog dialog = new WizardDialog(workbenchWindow.getShell(), wizard);
 		return dialog.open() == Window.OK;
 	}

@@ -13,7 +13,7 @@ Define_Module(Node);
 void Node::activity()
 {
     cQueue q;
-    while (true) 
+    while (true)
     {
         ev << "sending messages on all gates...\n";
         for (GateIterator i(this); !i.end(); i++)

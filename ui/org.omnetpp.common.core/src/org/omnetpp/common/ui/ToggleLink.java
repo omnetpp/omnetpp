@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,10 +18,10 @@ import org.eclipse.swt.widgets.Link;
 
 
 /**
- * A link that shows/hides other controls. Link text alternates between 
- * "More >>" or "<< Less" (can be overridden). The controlled Controls 
+ * A link that shows/hides other controls. Link text alternates between
+ * "More >>" or "<< Less" (can be overridden). The controlled Controls
  * need to be under GridLayout.
- * 
+ *
  * @author Andras
  */
 public class ToggleLink extends Composite {
@@ -56,7 +56,7 @@ public class ToggleLink extends Composite {
     public boolean isExpanded() {
         return isOpen;
     }
-    
+
     public void toggle() {
         setExpanded(!isExpanded());
     }
@@ -96,13 +96,13 @@ public class ToggleLink extends Composite {
         link.setText(isOpen ? lessText : moreText);
         getParent().layout();
     }
-    
+
     public void addSelectionListener (SelectionListener listener) {
     	link.addSelectionListener(listener);
     }
-    
+
     public void removeSelectionListener (SelectionListener listener) {
     	link.removeSelectionListener(listener);
     }
-    
+
 }

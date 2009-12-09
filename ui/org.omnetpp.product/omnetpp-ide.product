@@ -12,7 +12,7 @@
 
    <launcherArgs>
       <programArgs>-configuration</programArgs>
-      <vmArgs>-Xms64m 
+      <vmArgs>-Xms64m
 -Xmx368m
 -XX:MaxPermSize=128m</vmArgs>
    </launcherArgs>

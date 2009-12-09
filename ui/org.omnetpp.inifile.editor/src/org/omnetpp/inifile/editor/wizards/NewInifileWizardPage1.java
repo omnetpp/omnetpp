@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -97,8 +97,8 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
                     NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
 
                     // collect networks: separately those in the local package, and others
-                    List<String> networkNames = new ArrayList<String>(); 
-                    List<String> networkQNames = new ArrayList<String>(); 
+                    List<String> networkNames = new ArrayList<String>();
+                    List<String> networkQNames = new ArrayList<String>();
                     String iniFilePackage = nedResources.getExpectedPackageFor(container.getFile(new Path("anything.ini")));
                     for (String networkQName : nedResources.getNetworkQNames(project)) {
                         INEDTypeInfo network = nedResources.getToplevelNedType(networkQName, project);
@@ -114,7 +114,7 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
                     Collections.sort(networkNames);
                     Collections.sort(networkQNames);
                     networkNames.addAll(networkQNames);
-                    
+
                     networkCombo.setItems(networkNames.toArray(new String[]{}));
                     networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
                 }

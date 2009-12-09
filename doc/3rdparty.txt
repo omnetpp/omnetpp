@@ -15,14 +15,14 @@ without them.
 Eclipse
 
 The OMNeT++/OMNEST IDE is based on the Eclipse Platform and additional
-platform features and plug-ins, distributed under the EPL (Eclipse Public 
+platform features and plug-ins, distributed under the EPL (Eclipse Public
 License). http://www.eclipse.org.
 
 Tcl/Tk
 
 The Tkenv simulation execution environment is based on Tcl/Tk, an open-source
-script language and GUI toolkit, written by James Ousterhout and many others. 
-Tcl/Tk is currently available from http://tcltk.sourceforge.net, under a 
+script language and GUI toolkit, written by James Ousterhout and many others.
+Tcl/Tk is currently available from http://tcltk.sourceforge.net, under a
 BSD-like license.
 
 BLT
@@ -30,14 +30,14 @@ BLT
 BLT is an extension to the Tk toolkit, adding new widgets and miscellaneous
 commands. It does not require any patching of the Tcl or Tk source files.
 OMNeT++/OMNEST uses BLT mainly for its table (multi-column
-listbox) and tabbed notebook widgets. BLT is available from 
+listbox) and tabbed notebook widgets. BLT is available from
 http://blt.sourceforge.net, and it is distributed under a BSD-like license.
 
 LibXML2
 
 LibXML2 is an open-source XML parser, written by Daniel Veillard for the GNOME
-project. The source is available from http://www.xmlsoft.org. OMNeT++/OMNEST 
-is bundled with Win32 binaries maintained by Igor Zlatkovic, and currently 
+project. The source is available from http://www.xmlsoft.org. OMNeT++/OMNEST
+is bundled with Win32 binaries maintained by Igor Zlatkovic, and currently
 available from http://www.zlatkovic.com. LibXML and ICONV (also a needed
 component) are distributed under the GNU Lesser General Public License (LGPL).
 
@@ -47,11 +47,11 @@ The following components have been bundled with OMNeT++:
 MinGW and MSYS
 
 A Windows port of gcc, and a minimal Unix-like environment in which typical
-makefiles can execute. License: GNU General Public License. 
+makefiles can execute. License: GNU General Public License.
 
 GIT
-A Windows port of the GIT version control system. 
-License: GNU General Public License. 
+A Windows port of the GIT version control system.
+License: GNU General Public License.
 
 WinPcap
-Windows Packet Capture Library. 
+Windows Packet Capture Library.

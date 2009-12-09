@@ -191,7 +191,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
       dest_y = dest_y1 + dest_anch_dy*dest_height/100;
 
       double factor = 1;  // factor to set where the anchor point can run. 0: runs on the border, 1:runs on the middle line
-      
+
       double src_delta = factor * std::min(src_width, src_height) / 2.0;
       double dest_delta = factor * std::min(dest_width, dest_height) / 2.0;
 
@@ -331,29 +331,29 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
          if (mode!='m')
          {
              // horizontal coordinates
-             if (src_wire_x2 <= dest_wire_x1) 
+             if (src_wire_x2 <= dest_wire_x1)
                  { src_x = src_wire_x2; dest_x = dest_wire_x1; }
              if (dest_wire_x2 <= src_wire_x1)
                  { src_x = src_wire_x1; dest_x = dest_wire_x2; }
              double overlap_x1 = std::max(src_wire_x1, dest_wire_x1);
              double overlap_x2 = std::min(src_wire_x2, dest_wire_x2);
-             if (overlap_x1 <= overlap_x2) 
+             if (overlap_x1 <= overlap_x2)
                src_x = dest_x = overlap_x1 + (src_i+1)*(overlap_x2 - overlap_x1)/(src_n+1);
 
              // vertical coordinates
-             if (src_wire_y2 <= dest_wire_y1) 
+             if (src_wire_y2 <= dest_wire_y1)
                  { src_y = src_wire_y2; dest_y = dest_wire_y1; }
              if (dest_wire_y2 <= src_wire_y1)
                  { src_y = src_wire_y1; dest_y = dest_wire_y2; }
              double overlap_y1 = std::max(src_wire_y1, dest_wire_y1);
              double overlap_y2 = std::min(src_wire_y2, dest_wire_y2);
-             if (overlap_y1 <= overlap_y2) 
+             if (overlap_y1 <= overlap_y2)
                src_y = dest_y = overlap_y1 + (src_i+1)*(overlap_y2 - overlap_y1)/(src_n+1);
-             
+
          }
 
          // clip the line to the bounding rectangles if they are not overlapping
-         if (!overlapping_rects) 
+         if (!overlapping_rects)
          {
              double src_x_tmp = src_x;
              double src_y_tmp = src_y;

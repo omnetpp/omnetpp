@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -81,7 +81,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	}
 
 	/**
-	 * This is the entry point for creating proposals. 
+	 * This is the entry point for creating proposals.
 	 */
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
@@ -104,10 +104,10 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 		linePrefix = linePrefix.replaceFirst("^\\s+", "");
 
 		// try to determine which section we are in
-		IInifileDocument doc = editorData.getInifileDocument(); 
+		IInifileDocument doc = editorData.getInifileDocument();
 		InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 		String section = doc.getSectionForLine(lineNumber);
-	
+
 		Set<String> proposals = new HashSet<String>();
 
 		ContextType type = lineEndContext(linePrefix);
@@ -119,7 +119,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 			proposals.add("\"");
 		}
 		else {
-			// normal context: not inside string literal or comment 
+			// normal context: not inside string literal or comment
 			// identify where we are: include, section name, key, value, or comment.
 			if ("include".startsWith(linePrefix)) {
 				proposals.add("include ");
@@ -128,7 +128,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 				// include directive: offer directories and ini files (relative to the edited file)
 				try {
 					IContainer currentDir = doc.getDocumentFile().getParent();
-					String arg = linePrefix.replaceFirst("include\\b\\s*(.*)", "$1"); 
+					String arg = linePrefix.replaceFirst("include\\b\\s*(.*)", "$1");
 					String argDir = arg.replaceFirst("(.*/)", "$1"); // stuff up to the last "/"
 					IResource dir = argDir.equals("") ? currentDir : currentDir.findMember(new Path(argDir));
 					if (dir != null && dir instanceof IFolder) {
@@ -176,7 +176,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 					String value = linePrefix.replaceFirst(".*?=", "").trim();
 					IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(section, key, doc, analyzer, true);
 					IContentProposal[] valueProposals = proposalProvider.getProposals(value, value.length());
-				
+
 					// re-wrap IContentProposals as ICompletionProposal
 					addProposals(result, valueProposals, documentOffset);
 				}
@@ -198,8 +198,8 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 				k++;
 				while (k < linePrefix.length() && linePrefix.charAt(k) != '"') {
 					if (linePrefix.charAt(k) == '\\')  // skip \", \\, etc.
-						k++; 
-					k++;  
+						k++;
+					k++;
 				}
 				if (k >= linePrefix.length())
 					return ContextType.STRINGLITERAL;

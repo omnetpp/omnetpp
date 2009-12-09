@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -430,7 +430,7 @@ public class InifileAnalyzer {
 				validateValues = false; // because references are not followed
 			}
 		}
-	
+
 		// validate the first 100 values that come from iterating the constants in the variable definitions
 		if (foundAny && validateValues) {
 			IterationVariablesIterator values = new IterationVariablesIterator(value);
@@ -442,7 +442,7 @@ public class InifileAnalyzer {
 				count++;
 			}
 		}
-	
+
 		return foundAny;
 	}
 
@@ -450,7 +450,7 @@ public class InifileAnalyzer {
 	    // is it a predefined variable like ${configname}?
 	    if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(varName))
 	        return true;
-	    
+
 	    // is it defined in this section or any fallback section?
         String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
         for (String sec : sectionChain) {
@@ -464,8 +464,8 @@ public class InifileAnalyzer {
 	/**
 	 * Iterates on the values, that comes from the substitutions of iteration variables
 	 * with the constants found in their definition.
-	 * 
-	 * Example: "x${i=1..5}y${2 .. 8 step 3}" gives ["x1y2", "x5y2", "x1y8", "x2y8", "x1y3", "x2y3"]. 
+	 *
+	 * Example: "x${i=1..5}y${2 .. 8 step 3}" gives ["x1y2", "x5y2", "x1y8", "x2y8", "x1y3", "x2y3"].
 	 *
 	 * Note: variable references are not followed, therefore the iterator will be empty
 	 *       if the parameter value contained referenced variables.
@@ -476,12 +476,12 @@ public class InifileAnalyzer {
 		List<Object> format;
 		ResettableIterator iterator;
 		StringBuilder sb;
-	
+
 		public IterationVariablesIterator(String value) {
 			this.value = value;
 			this.format = new ArrayList<Object>();
 			this.sb = new StringBuilder(100);
-		
+
 			List<String> tokens = StringUtils.splitPreservingSeparators(value, DOLLAR_BRACES_PATTERN);
 			List<ResettableIterator> valueIterators = new ArrayList<ResettableIterator>();
 			int i = 0;
@@ -530,7 +530,7 @@ public class InifileAnalyzer {
 
 	/**
 	 * Iterates on the constants in one iteration variable.
-	 * 
+	 *
 	 * Example: ${x=1,3..10 step 2} gives [1,3,10,2].
 	 *
 	 */
@@ -539,12 +539,12 @@ public class InifileAnalyzer {
 		StrTokenizer tokenizer;
 		Matcher matcher;
 		int groupIndex;
-	
+
 		public IterationVariableIterator(String iteration) {
 			Matcher m = DOLLAR_BRACES_PATTERN.matcher(iteration);
 			if (!m.matches())
 				throw new IllegalArgumentException("Illegal iteration");
-		
+
 			String content = m.group(1);
 			String values;
 			if ((m = VARIABLE_DEFINITION_PATTERN.matcher(content)).matches())
@@ -556,7 +556,7 @@ public class InifileAnalyzer {
 				values = content;
 			tokenizer = StrTokenizer.getCSVInstance(values);
 		}
-	
+
 		public void reset() {
 			tokenizer.reset();
 			matcher = null;
@@ -585,7 +585,7 @@ public class InifileAnalyzer {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-	
+
 		private boolean match(String token) {
 			if (matcher == null)
 				matcher = START_END_STEP_VALUE_PATTERN.matcher(token);
@@ -683,7 +683,7 @@ public class InifileAnalyzer {
                 addError(section, key, "Syntax error in expression");
                 return;
 		    }
-		    
+
 		    // check parameter data types are consistent with each other
 		    ParamResolution[] resList = getParamResolutionsForKey(section, key);
 		    int paramType = -1;
@@ -704,7 +704,7 @@ public class InifileAnalyzer {
 		        if (paramUnit == null)
 		            paramUnit = unit;
 		        else if (!paramUnit.equals(unit)) {
-		            addError(section, key, "Entry matches parameters with different units: " + 
+		            addError(section, key, "Entry matches parameters with different units: " +
 		                    (paramUnit.equals("") ? "none" : paramUnit) + ", " + (unit.equals("") ? "none" : unit));
 		            return;
 		        }
@@ -722,7 +722,7 @@ public class InifileAnalyzer {
 		        else if (value.startsWith("xmldoc"))
 		            valueType = NED_PARTYPE_XML;
 		        else {
-		            try { 
+		            try {
 		                valueUnit = UnitConversion.parseQuantityForUnit(value); // throws exception if not a quantity
 		                Assert.isNotNull(valueUnit);
 		            } catch (RuntimeException e) {}
@@ -742,19 +742,19 @@ public class InifileAnalyzer {
 		        if (valueUnit!=null) {
 		            try {
 		                UnitConversion.parseQuantity(value, paramUnit); // throws exception on incompatible units
-		            } 
+		            }
 		            catch (RuntimeException e) {
 		                addError(section, key, e.getMessage());
 		            }
 		        }
-		        
+
 		        // mark line if value is the same as the NED default
 		        Assert.isTrue(resList.length > 0);
 	            boolean allAreIniNedDefault = true;
 	            for (ParamResolution res : resList)
 	                if (res.type != ParamResolutionType.INI_NEDDEFAULT)
 	                    allAreIniNedDefault = false;
-	            if (allAreIniNedDefault) 
+	            if (allAreIniNedDefault)
 	                addInfo(section, key, "Value is same as the NED default");
 		    }
         }
@@ -944,7 +944,7 @@ public class InifileAnalyzer {
 	protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
 		return new IModuleTreeVisitor() {
 			Stack<SubmoduleElementEx> pathModules = new Stack<SubmoduleElementEx>();
-			Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc) 
+			Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc)
 
 			public boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
 				pathModules.push(submodule);
@@ -962,7 +962,7 @@ public class InifileAnalyzer {
 				        }
 				    }
 				}
-			
+
                 // resolve parameters
                 if (!isZeroSizedVector) {
                     String submoduleFullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
@@ -1014,7 +1014,7 @@ public class InifileAnalyzer {
 
 	protected static void resolveModuleParameters(List<ParamResolution> resultList, String moduleFullPath, SubmoduleElementEx[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
 		SubmoduleElementEx submodule = (SubmoduleElementEx) pathModules[pathModules.length-1];
-	
+
 		// loop through all parameters of the module
 		for (String paramName : moduleType.getParamDeclarations().keySet()) {
 		    // find declaration and value ParamElements
@@ -1024,7 +1024,7 @@ public class InifileAnalyzer {
 					submodule.getParamAssignments(moduleType).get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
 				paramValueNode = null;
-		
+
 			// then figure out how the parameter gets its value (find matching ini entries etc)
 			resolveParameter(resultList, moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc);
 		}
@@ -1040,8 +1040,8 @@ public class InifileAnalyzer {
      *     Network.node[0].address = value1
      *     Network.node[1].address = value2
      *     Network.node[*].address = valueX
-     * then this method will add three ParamResolutions. 
-     *  
+     * then this method will add three ParamResolutions.
+     *
 	 * XXX what if parameter is assigned in a submodule decl?
 	 * XXX what if it's assigned using a /pattern/? this info cannot be expressed in the arg list!
 	 */
@@ -1095,8 +1095,8 @@ public class InifileAnalyzer {
 	}
 
 	/**
-	 * Resolve parameters of a module type or submodule, based solely on NED information, 
-	 * without inifile. This is useful for views when a NED editor is active. 
+	 * Resolve parameters of a module type or submodule, based solely on NED information,
+	 * without inifile. This is useful for views when a NED editor is active.
 	 */
 	public static ParamResolution[] resolveModuleParameters(String moduleFullPath, SubmoduleElementEx submodule, INEDTypeInfo moduleType) {
 		ArrayList<ParamResolution> resultList = new ArrayList<ParamResolution>();

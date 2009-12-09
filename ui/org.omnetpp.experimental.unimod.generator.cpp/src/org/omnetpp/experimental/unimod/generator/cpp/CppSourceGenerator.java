@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,11 +39,11 @@ public class CppSourceGenerator implements IGenerator {
 	public IFile[] generate(IFile f, GModel m, StateMachine root,
 			IPath outputFolder, Map parameters, IProgressMonitor monitor)
 			throws CoreException {
-	
+
 		if (root == null) {
 			return null;
 		}
-	
+
 		m.setRootStateMachine(root);
 
 		try {
@@ -51,17 +51,17 @@ public class CppSourceGenerator implements IGenerator {
 		} catch (TransformException e) {
 			UniModPlugin.logWarning("Generate Symbian C++ code for model with errors:\n" + e.getMessage());
 		}
-	
+
 		IFile headerFile;
 		IFile implementationFile;
 		try {
 	        ModelTool modelTool = new ModelTool(m);
 			if (f.getParent() instanceof IFolder) {
-				headerFile = ((IFolder)f.getParent()).getFile(modelTool.getFileName()+".h"); 
-				implementationFile = ((IFolder)f.getParent()).getFile(modelTool.getFileName()+".cpp"); 
+				headerFile = ((IFolder)f.getParent()).getFile(modelTool.getFileName()+".h");
+				implementationFile = ((IFolder)f.getParent()).getFile(modelTool.getFileName()+".cpp");
 			} else if (f.getParent() instanceof IProject) {
-				headerFile = ((IProject)f.getParent()).getFile(modelTool.getFileName()+".h"); 
-				implementationFile = ((IProject)f.getParent()).getFile(modelTool.getFileName()+".cpp"); 
+				headerFile = ((IProject)f.getParent()).getFile(modelTool.getFileName()+".h");
+				implementationFile = ((IProject)f.getParent()).getFile(modelTool.getFileName()+".cpp");
 			} else {
 				return null;
 			}
@@ -70,22 +70,22 @@ public class CppSourceGenerator implements IGenerator {
 				return new IFile[] {headerFile, implementationFile};
 			}
 
-		
+
 			generate(headerFile, monitor, modelTool, Boolean.TRUE);
 			generate(implementationFile, monitor, modelTool, Boolean.FALSE);
 		} catch (TransformException e) {
 			throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, -1, e.getChainedMessage(), e));
 		}
-	
+
 		return new IFile[] {headerFile, implementationFile};
 	}
 
-	protected void generate(IFile file, IProgressMonitor monitor, 
-			ModelTool modelTool, Boolean renderHeader) 
+	protected void generate(IFile file, IProgressMonitor monitor,
+			ModelTool modelTool, Boolean renderHeader)
 			throws TransformException, CoreException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		OutputStreamWriter osw = new OutputStreamWriter(baos); 
-	
+		OutputStreamWriter osw = new OutputStreamWriter(baos);
+
 		ModelToSource ms = ModelToSource.create(LogFactory.getLog(CppSourceGenerator.class));
 		Map params = new HashMap();
 		params.put("modelTool", modelTool);

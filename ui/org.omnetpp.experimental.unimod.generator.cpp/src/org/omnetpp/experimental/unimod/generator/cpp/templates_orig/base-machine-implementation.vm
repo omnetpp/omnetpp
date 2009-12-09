@@ -13,7 +13,7 @@ void ${modelTool.BaseMachineClassName}::LogBeginL(const TDesC& aStateName, CAuto
 	message.Format(KFormat, &MachineName(), &aStateName, &iModel.EventName(aEvent));
 	DoLogL(message);
 	}
-	
+
 void ${modelTool.BaseMachineClassName}::LogTransiteL(const TDesC& aOldStateName, const TDesC& aNewStateName)
 	{
 	_LIT(KFormat, "  %S:[%S] => [%S]\n");
@@ -21,7 +21,7 @@ void ${modelTool.BaseMachineClassName}::LogTransiteL(const TDesC& aOldStateName,
 	message.Format(KFormat, &MachineName(), &aOldStateName, &aNewStateName);
 	DoLogL(message);
 	}
-	
+
 void ${modelTool.BaseMachineClassName}::LogEndL(const TDesC& aStateName, CAutoAnswererModelEngine::EEvent /*aEvent*/)
 	{
 	_LIT(KFormat, "%S:[%S]\n\n");
@@ -29,7 +29,7 @@ void ${modelTool.BaseMachineClassName}::LogEndL(const TDesC& aStateName, CAutoAn
 	message.Format(KFormat, &MachineName(), &aStateName);
 	DoLogL(message);
 	}
-	
+
 void ${modelTool.BaseMachineClassName}::LogActionBeginL(const TDesC& anIdentifier)
 	{
 	_LIT(KFormat, "  %S {\n");
@@ -37,7 +37,7 @@ void ${modelTool.BaseMachineClassName}::LogActionBeginL(const TDesC& anIdentifie
 	message.Format(KFormat, &anIdentifier);
 	DoLogL(message);
 	}
-	
+
 void ${modelTool.BaseMachineClassName}::LogActionEndL(const TDesC& anIdentifier)
 	{
 	_LIT(KFormat, "  %S }\n");
@@ -45,7 +45,7 @@ void ${modelTool.BaseMachineClassName}::LogActionEndL(const TDesC& anIdentifier)
 	message.Format(KFormat, &anIdentifier);
 	DoLogL(message);
 	}
-	
+
 void ${modelTool.BaseMachineClassName}::LogActionEndL(const TDesC& anIdentifier, TInt aValue)
 	{
 	_LIT(KFormat, "  %S = %d }\n");

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -53,7 +53,7 @@ public class TitlePreferencePage extends PreferencePage {
 		if (chart != null) {
 			TextTitle title = chart.getTitle();
 			Plot plot = chart.getPlot();
-		
+
 			if (title != null)
 				panel.setTitleText(title.getText());
 			if (plot != null && plot instanceof CategoryPlot) {
@@ -70,7 +70,7 @@ public class TitlePreferencePage extends PreferencePage {
 
 	protected void applyChanges() {
 		JFreeChart chart = swtChart.getChart();
-	
+
 		if (chart != null) {
 			TextTitle title = chart.getTitle();
 			Plot plot = chart.getPlot();

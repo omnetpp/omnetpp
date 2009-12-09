@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -85,27 +85,27 @@ public class ExecuteUndoRedoUndoTestSuite
         private double sleepTime;
 
         private String match;
-        
+
         private EditorDesignator firstUndoIn;
 
         private EditorDesignator redoIn;
-        
+
         private EditorDesignator secondUndoIn;
 
         public abstract void execute() throws Exception;
-        
+
         @Override
         protected void setUpInternal() throws Exception {
             super.setUpInternal();
             createEmptyFile();
             openFileFromProjectExplorerView();
         }
-        
+
         @Override
         public String getName() {
             return "ExecuteUndoRedoUndo, sleepTime: " + sleepTime + ", firstUndoIn: " + firstUndoIn + ", redoIn: " + redoIn + ", secondUndoIn: " + secondUndoIn + ", match: " + match;
         }
-        
+
         @Override
         public Object clone() throws CloneNotSupportedException {
             return super.clone();

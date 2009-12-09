@@ -675,17 +675,17 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
     // gate      o-------------------->o dest_gate
     // gate_pair o<--------------------o dest_gate_pair
     if (gate->getNameSuffix()[0]) {
-      const cGate *gate_pair = mod->gateHalf(gate->getBaseName(), 
-                                        gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT, 
+      const cGate *gate_pair = mod->gateHalf(gate->getBaseName(),
+                                        gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
                                         gate->isVector() ? gate->getIndex() : -1);
 
       if (dest_gate->getNameSuffix()[0]) {
-        const cGate *dest_gate_pair = dest_gate->getOwnerModule()->gateHalf(dest_gate->getBaseName(), 
-                                            dest_gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT, 
+        const cGate *dest_gate_pair = dest_gate->getOwnerModule()->gateHalf(dest_gate->getBaseName(),
+                                            dest_gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
                                             dest_gate->isVector() ? dest_gate->getIndex() : -1);
           twoWayConnection = dest_gate_pair == gate_pair->getPreviousGate();
       }
-    } 
+    }
 
 
     ptrToStr(gate, gateptr);

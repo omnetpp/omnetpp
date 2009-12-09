@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -50,7 +50,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 
 	/**
 	 * Returns true, if the index file of <code>file</code> exists
-	 * and up-to-date. 
+	 * and up-to-date.
 	 * @param file a vector or index file
 	 * @return true if the index file is up-to-date
 	 */
@@ -60,7 +60,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 
 	/**
 	 * Returns true, if the index file of <code>file</code> exists
-	 * and up-to-date. 
+	 * and up-to-date.
 	 * @param file a vector or index file
 	 * @return true if the index file is up-to-date
 	 */
@@ -70,7 +70,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 
 	/**
 	 * Returns the index file belongs to the specified vector file.
-	 * 
+	 *
 	 * @param vectorFile the vector file
 	 * @return the index file
 	 */
@@ -78,12 +78,12 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 		Assert.isLegal(isVectorFile(vectorFile));
 		IContainer container = vectorFile.getParent();
 		String path = getIndexFileName(vectorFile.getLocation().toOSString());
-		return getWorkspaceFileForOsPath(container, path); 
+		return getWorkspaceFileForOsPath(container, path);
 	}
 
 	/**
 	 * Returns the index file belongs to the specified vector file.
-	 * 
+	 *
 	 * @param vectorFile the vector file
 	 * @return the index file
 	 */
@@ -94,7 +94,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 
 	/**
 	 * Returns the vector file belongs to the specified index file.
-	 * 
+	 *
 	 * @param indexFile the index file
 	 * @return the vector file
 	 */
@@ -109,8 +109,8 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	 * Returns the workspace file for the specified absolute path.
 	 * The file need not exists, but the path must be under the
 	 * given parent container, otherwise null is returned.
-	 * 
-	 * @param container the the target container of the resource specified by the path 
+	 *
+	 * @param container the the target container of the resource specified by the path
 	 * @param osPath    the absolute OS path
 	 * @return the workspace file or null
 	 */
@@ -119,7 +119,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 		IPath parentLocation = parent.getLocation();
 		if (parentLocation.isPrefixOf(location)) {
 			IPath relativePath = location.removeFirstSegments(parentLocation.segmentCount());
-			return parent.getFile(relativePath); 
+			return parent.getFile(relativePath);
 		}
 		else
 			return null; // XXX assert?
@@ -127,7 +127,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 
 	/**
 	 * Perform indexing the given vector file, and add error/warning
-	 * markers to the file if there's any problem. 
+	 * markers to the file if there's any problem.
 	 */
 	public static void performIndexing(IFile vectorFile, IProgressMonitor monitor) {
 		try {

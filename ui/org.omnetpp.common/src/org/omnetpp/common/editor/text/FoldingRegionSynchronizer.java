@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,12 +39,12 @@ public class FoldingRegionSynchronizer {
 
 	/**
 	 * Adds/removes folding regions (ProjectionAnnotation) on the text editor, so
-	 * that it's in sync with the positions in the given map. Folding region identity 
-	 * is based on the string keys in the map (this is important so as not to lose 
+	 * that it's in sync with the positions in the given map. Folding region identity
+	 * is based on the string keys in the map (this is important so as not to lose
 	 * the expanded/collapsed state of the regions).
 	 *
-	 * Just plain deleting existing annotations and re-adding them would result 
-	 * in their getting expanded all the time. 
+	 * Just plain deleting existing annotations and re-adding them would result
+	 * in their getting expanded all the time.
 	 */
 	public void updateFoldingRegions(Map<String,Position> newAnnotationPositions) {
 

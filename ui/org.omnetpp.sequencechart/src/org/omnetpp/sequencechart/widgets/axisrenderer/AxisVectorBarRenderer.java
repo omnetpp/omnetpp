@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,7 +36,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	private SequenceChart sequenceChart;
 
     private String vectorFileName;
-    
+
     private String vectorRunName;
 
     private String vectorModuleFullPath;
@@ -104,7 +104,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.setBackgroundColor(NO_VALUE_COLOR);
 		graphics.fillRectangle(rect.x, 0, rect.right() - rect.x, getHeight());
-	
+
 		SequenceChartFacade sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
 		long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
 
@@ -117,7 +117,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 				if (eventNumber == -1 || nextEventNumber == -1)
 					continue;
-		
+
 				long eventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(eventNumber);
 				long nextEventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(nextEventNumber);
 
@@ -146,13 +146,13 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 					if (nextEventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, true))
 						x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(nextEventTimelineCoordinate);
 				}
-			
+
 				if (x1 == Integer.MAX_VALUE || x2 == Integer.MAX_VALUE)
 					continue;
 
 				int colorIndex = getValueIndex(i);
 				graphics.setBackgroundColor(ColorFactory.getGoodLightColor(colorIndex));
-			
+
 				if (phase == 0) {
 					graphics.fillRectangle(x1, 0, x2 - x1, getHeight());
 					graphics.setForegroundColor(AXIS_COLOR);
@@ -320,7 +320,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
             return valueNames[getValueIndex(index)];
 	    else {
 	        double value = getValue(index);
-	        
+
 	        if (value == Math.floor(value))
 	            return String.valueOf((long)value);
 	        else

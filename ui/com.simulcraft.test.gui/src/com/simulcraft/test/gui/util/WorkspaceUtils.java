@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -75,25 +75,25 @@ public class WorkspaceUtils
 		String actualContent = FileUtils.readTextFile(file.getContents());
 		Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, actualContent.equals(expectedContent));
 	}
-	
+
     @UIStep
     public static void assertFileExistsWithContentIgnoringWhiteSpace(String path, String expectedContent) throws Exception {
         IFile file = assertFileExists(path);
         String actualContent = FileUtils.readTextFile(file.getContents());
         Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, StringUtils.areEqualIgnoringWhiteSpace(actualContent, expectedContent));
     }
-	
+
     @UIStep
     public static void assertFileExistsWithRegexpContent(String path, String expectedRegexpContent) throws Exception {
         IFile file = assertFileExists(path);
         String actualContent = FileUtils.readTextFile(file.getContents());
         Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedRegexpContent, matchesRegexp(actualContent, expectedRegexpContent));
     }
-    
+
 	@InBackgroundThread
 	public static void createFileWithContent(String path, String content) throws Exception {
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
-		if (file.exists()) 
+		if (file.exists())
 		    file.delete(true, null);
 		file.create(new ByteArrayInputStream(content.getBytes()), true, null);
 		WorkspaceUtils.assertFileExistsWithContent(path, content); // wait until background job finishes
@@ -134,7 +134,7 @@ public class WorkspaceUtils
         if (project != null)
             project.delete(true, null);
     }
-    
+
     //XXX this function probably not needed, can be replaced by prepending the regex with "(?s)"
     public static boolean matchesRegexp(String text, String regexp) {
         Pattern pattern = Pattern.compile(regexp, Pattern.DOTALL);

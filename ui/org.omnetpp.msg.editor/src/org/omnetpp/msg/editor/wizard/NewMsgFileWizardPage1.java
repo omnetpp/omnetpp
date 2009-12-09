@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -43,7 +43,7 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         "//\n" +
         "// TODO generated message class\n" +
         "//\n\n",
-        
+
         "//\n" +
         "// TODO generated message class\n" +
         "//\n" +
@@ -54,35 +54,35 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         "    double arrayField2[10];\n" +
         "}\n",
 
-        "cplusplus {{\n" + 
-        "#include \"SomeMessage_m.h\"\n" + 
+        "cplusplus {{\n" +
+        "#include \"SomeMessage_m.h\"\n" +
         "}}\n" +
         "message SomeMessage;\n" +
-        "\n" + 
+        "\n" +
         "//\n" +
         "// TODO generated message class\n" +
         "//\n" +
         "message #NAME# extends SomeMessage {\n" +
         "    int someField;\n" +
         "}\n",
-        
-        "cplusplus {{\n" + 
-        "#include \"SomeType.h\"\n" + 
-        "}}\n" + 
-        "class noncobject SomeType;\n" + 
-        "\n" + 
-        "cplusplus {{\n" + 
-        "#include <map>\n" + 
-        "typedef OtherType std::map<int,int>;\n" + 
-        "}}\n" + 
-        "class noncobject OtherType;\n" + 
-        "\n" + 
-        "//\n" + 
-        "// TODO generated message class\n" + 
-        "//\n" + 
-        "message #NAME# {\n" + 
-        "    SomeType field1;\n" + 
-        "    OtherType field2;\n" + 
+
+        "cplusplus {{\n" +
+        "#include \"SomeType.h\"\n" +
+        "}}\n" +
+        "class noncobject SomeType;\n" +
+        "\n" +
+        "cplusplus {{\n" +
+        "#include <map>\n" +
+        "typedef OtherType std::map<int,int>;\n" +
+        "}}\n" +
+        "class noncobject OtherType;\n" +
+        "\n" +
+        "//\n" +
+        "// TODO generated message class\n" +
+        "//\n" +
+        "message #NAME# {\n" +
+        "    SomeType field1;\n" +
+        "    OtherType field2;\n" +
         "}\n",
 
         "//\n" +
@@ -93,9 +93,9 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         "    int someField;\n" +
         "    abstract int anotherField;\n" +
         "}\n",
-        
+
     };
-    
+
 	private IWorkbench workbench;
 	private static int exampleCount = 1;
 
@@ -108,7 +108,7 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
 		setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newmsgfile_wiz.png"));
 
 		setFileExtension("msg");
-		setFileName("untitled" + exampleCount + ".msg"); 
+		setFileName("untitled" + exampleCount + ".msg");
 		workbench = aWorkbench;
 	}
 
@@ -150,7 +150,7 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         String name = getFileName();
         if (name == null || "".equals(name))
             return null;
-        
+
         // make a valid identifier
         name = name.substring(0, name.lastIndexOf('.'));
         name = StringUtils.capitalize(StringUtils.makeValidIdentifier(name));
@@ -166,7 +166,7 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         contents = LicenseUtils.getBannerComment(license, "//") + contents;
 		return new ByteArrayInputStream(contents.getBytes());
 	}
-    
+
 	public boolean finish() {
         IFile newFile = createNewFile();
 		if (newFile == null)
@@ -179,7 +179,7 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
 			IWorkbenchPage page = dwindow.getActivePage();
 			if (page != null)
 				IDE.openEditor(page, newFile, true);
-		} 
+		}
 		catch (org.eclipse.ui.PartInitException e) {
 			MsgEditorPlugin.logError(e);
 			return false;

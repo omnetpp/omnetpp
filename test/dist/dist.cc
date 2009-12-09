@@ -28,7 +28,7 @@ void Dist::activity()
     long firstvals = par("firstvals");
     const char *excel = par("excel");
     const char *filename = par("file");
-    
+
     std::string excel_str = excel;
     std::replace(excel_str.begin(), excel_str.end(), ',', ';');
     excel = excel_str.c_str();

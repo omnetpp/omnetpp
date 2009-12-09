@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ public class GateAnchor extends ChopboxAnchor {
     public GateAnchor(IFigure owner) {
     	super(owner);
     }
-    
+
     @Override
     protected Rectangle getBox() {
     	return getOwner() instanceof IAnchorBounds ? ((IAnchorBounds)getOwner()).getAnchorBounds() : super.getBox();

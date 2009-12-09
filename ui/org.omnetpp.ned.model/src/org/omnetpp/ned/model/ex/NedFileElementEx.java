@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,16 +39,16 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
     protected NedFileElementEx(INEDElement parent) {
 		super(parent);
 	}
-    
+
     /**
      * Returns true if this NED file element has the readonly bit set.
-     * Any change within the tree of a read-only NED file element will 
+     * Any change within the tree of a read-only NED file element will
      * cause an assertion error.
      */
     public boolean isReadOnly() {
     	return readOnly;
 	}
-    
+
     /**
      * Sets the readonly bit on this NED file element.
      */
@@ -71,7 +71,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 
 	@Override
 	public void fireModelEvent(NEDModelEvent event) {
-	    // note: the following assert is technically correct; it is commented out because 
+	    // note: the following assert is technically correct; it is commented out because
 	    // hasSyntaxError() absolutely kills the performance while validating large models
 		//XXX Assert.isTrue((!readOnly && !hasSyntaxError()) || !(event instanceof NEDModelChangeEvent), "Attempted to modify the NED element tree while it is in read only mode");
 		super.fireModelEvent(event);
@@ -126,11 +126,11 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 		ImportElement importElement = (ImportElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_IMPORT);
 		importElement.setImportSpec(importSpec);
 
-		INEDElement lastImport = getLastImportChild(); 
-		INEDElement insertionPoint = lastImport!=null ? lastImport.getNextSibling() : 
+		INEDElement lastImport = getLastImportChild();
+		INEDElement insertionPoint = lastImport!=null ? lastImport.getNextSibling() :
 			getFirstPackageChild()!=null ? getFirstPackageChild().getNextSibling() :
 				getFirstChild();
-	
+
 		insertChildBefore(insertionPoint, importElement);
 		return importElement;
 	}
@@ -162,7 +162,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
         while (node != null) {
             if (node instanceof IHasName && node.getTagCode() == NED_PROPERTY)
                 ((Map)map).put(((IHasName)node).getName(), (PropertyElementEx)node);
-            
+
             node = node.getNextSibling();
         }
 

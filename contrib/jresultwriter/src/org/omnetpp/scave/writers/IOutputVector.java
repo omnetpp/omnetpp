@@ -4,8 +4,8 @@ package org.omnetpp.scave.writers;
 /**
  * An output vector. Output vectors should not be instantiated directly;
  * instances should be obtained from an IOutputVectorManager.
- * Methods throw ResultRecordingException on errors. 
- * 
+ * Methods throw ResultRecordingException on errors.
+ *
  * @author Andras
  */
 public interface IOutputVector {
@@ -35,7 +35,7 @@ public interface IOutputVector {
      * Record a value with the given time stamp into the output vector. The
      * return value is true if the data was actually recorded, and false
      * if it was not recorded (because of filtering, etc.)
-     * 
+     *
      * Values MUST be recorded increasing timestamp order.
      */
     boolean record(Number time, double value);

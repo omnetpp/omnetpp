@@ -10,7 +10,7 @@
     and analyzing the simulation results, while Eclipse provides C++ editing, CVS/SVN integration and
     optionally other features (UML modeling, bug-tracker integration, database access, etc) via various
     open-source and commercial plug-ins. The environment will be instantly recognizable to those at home with
-    the Eclipse platform. 
+    the Eclipse platform.
   </para>
   <sect1>
     <title>The Workbench</title>
@@ -22,18 +22,18 @@
       difficult to describe. First, we need to make sure that we are looking at the same thing.</para>
     <para>The &Omnetpp;
       IDE provides a "Simulation perspective" to work with simulation related NED, INI and MSG files. To
-      switch to the simulation perspective select ``Window | Open Perspective | Simulation''. 
+      switch to the simulation perspective select ``Window | Open Perspective | Simulation''.
     </para>
     <picture file="pictures/Intro-SelectPerspective.png">Selecting the Simulation perspective in Eclipse</picture>
-    <para>Most interface elements within Eclipse are freely movable or dockable so you can 
+    <para>Most interface elements within Eclipse are freely movable or dockable so you can
       construct your own workbench, to fit your needs:</para>
     <picture file="pictures/Intro-DefaultLayout.png">Default
       layout of the &Omnetpp;
-      IDE 
+      IDE
     </picture>
-    <para>The ``Project Explorer'' on the top left part of the screen shows the projects 
+    <para>The ``Project Explorer'' on the top left part of the screen shows the projects
     and their content in your workspace. In the example above, the ``queueinglib'' demo project is open.
-      You can see the various [[.ned]], [[.ini]] and other files inside. A number 
+      You can see the various [[.ned]], [[.ini]] and other files inside. A number
       of views are docked at the bottom of the window.</para>
     <para>The screenshot shows the README.txt file opened in the editor area. On double click Eclipse
       automatically launches the editor associated with a particular file type.
@@ -44,7 +44,7 @@
     <para>Several &Omnetpp;
       specific view exist that can be used during development. We will discuss how you can use them
       effectively in a later chapter. You can open any View by selecting ``Window | Show View''
-      from the menu. 
+      from the menu.
     </para>
   </sect1>
   <sect1>
@@ -58,7 +58,7 @@
       whenever you need. Please be aware that the &Omnetpp;
       IDE restarts on each workspace switch. This is normal behavior. Workspace content can be browsed
       in the ``Project Explorer'', ``Navigator'', ``C/C++ Projects'' and similar views. We recommend
-      using ``Project Explorer''. 
+      using ``Project Explorer''.
     </para>
   </sect1>
   <sect1>
@@ -68,12 +68,12 @@
       ``Simulation Perspective'' is nothing else just a set of views conveniently selected and arranged to make
       the creation of NED, INI and MSG files easier. If you are working with INI and NED files a lot we
       recommend to select this perspective. Other perspectives are optimized for different tasks like C++
-      development or debugging. 
+      development or debugging.
     </para>
   </sect1>
   <sect1>
     <title>Creating &Omnetpp;
-      Projects 
+      Projects
     </title>
     <para>
       In Eclipse, all files are within projects, so first you need a suitable project. The project needs to be
@@ -82,10 +82,10 @@
       Nature.) The easiest way to create such a project is to use a wizard: just choose ``File|New|&Omnetpp;
       Project...'' from the menu, specify a project name, and click the ``Finish'' button. If you do not plan
       to write simple modules, you may unselect the ``C++ Support'' checkbox which will disable all C++
-      related features on the project. 
+      related features on the project.
       <picture file="pictures/Intro-NewProjectWizard.png">
         Creating a new &Omnetpp;
-        Project 
+        Project
       </picture>
     </para>
   </sect1>

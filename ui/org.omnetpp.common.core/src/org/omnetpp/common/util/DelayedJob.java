@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -10,12 +10,12 @@ package org.omnetpp.common.util;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * Run the given job after x milliseconds, but every restart() call 
+ * Run the given job after x milliseconds, but every restart() call
  * will re-start the countdown, the net effect being that the job
- * gets run after the first "idle" period of x milliseconds (idle 
+ * gets run after the first "idle" period of x milliseconds (idle
  * meaning free of restart() calls). Can be used to implement
  * reconciler-style jobs, like lazy updating of views.
- * 
+ *
  * @author Andras
  */
 abstract public class DelayedJob implements Runnable {
@@ -38,7 +38,7 @@ abstract public class DelayedJob implements Runnable {
 	 * Starts or re-starts the timer.
 	 */
 	public void restartTimer() {
-		// Alas, timerExec() may only be invoked from the UI thread 
+		// Alas, timerExec() may only be invoked from the UI thread
 		if (Display.getCurrent() != null) {
 			Display.getDefault().timerExec(-1, this);
 			Display.getDefault().timerExec(delayMillis, this);
@@ -57,7 +57,7 @@ abstract public class DelayedJob implements Runnable {
 	 * Cancels the currently running timer.
 	 */
 	public void cancel() {
-		// Alas, timerExec() may only be invoked from the UI thread 
+		// Alas, timerExec() may only be invoked from the UI thread
 		if (Display.getCurrent() != null) {
 			Display.getDefault().timerExec(-1, this);
 			scheduled = false;
@@ -70,7 +70,7 @@ abstract public class DelayedJob implements Runnable {
 			});
 		}
 	}
-    
+
     /**
      * Runs the job immediately
      */

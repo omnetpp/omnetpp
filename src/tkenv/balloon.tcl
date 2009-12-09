@@ -78,7 +78,7 @@ proc create_balloon {text x y} {
     wm overrideredirect .balloon_help true
     wm positionfrom .balloon_help program
     wm geometry .balloon_help "+[expr $x-5]+[expr $y+16]"
-    if {[string equal [tk windowingsystem] aqua]}  {  
+    if {[string equal [tk windowingsystem] aqua]}  {
         # from http://wiki.tcl.tk/3060
         catch { ::tk::unsupported::MacWindowStyle style .balloon_help help none }
     }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -10,12 +10,12 @@ package org.omnetpp.common.ui;
 import org.eclipse.jface.viewers.Viewer;
 
 /**
- * A specific tree content provider: displays a GenericTreeNode tree 
+ * A specific tree content provider: displays a GenericTreeNode tree
  * generated from an input element by the buildTree() method which
  * has to be provided by the user. The resulting tree is cached, so
  * buildTree() is only called once. Refresh (discarding and rebuilding
  * the tree) can be triggered by calling setInput() on the viewer.
- * 
+ *
  * @author Andras
  */
 public abstract class CachedTreeContentProvider extends GenericTreeContentProvider {
@@ -26,11 +26,11 @@ public abstract class CachedTreeContentProvider extends GenericTreeContentProvid
 	 */
 	public abstract GenericTreeNode buildTree(Object element);
 
-	@Override 
+	@Override
 	public void dispose() {
 	}
 
-	@Override 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		root = null; // force rebuild
 	}

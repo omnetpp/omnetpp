@@ -3,7 +3,7 @@
  */
 TBool $smTool.ClassName::IsStable($smTool.ClassName::EState aState) const
 	{
-	return 
+	return
 #foreach($state in $smTool.StableStates)
         aState == $smTool.ClassName::EState::$smTool.getStateTool($state).Const ||
 #end

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,7 +23,7 @@ public class ParseException extends RuntimeException {
      */
     public ParseException(String s, int line, int column) {
         super(s);
-        this.line = line; 
+        this.line = line;
         this.column = column;
     }
 
@@ -33,7 +33,7 @@ public class ParseException extends RuntimeException {
     public ParseException(String s, int line) {
         this(s, line, -1);
     }
-    
+
     /**
      * Returns the line where the error was found.
      */

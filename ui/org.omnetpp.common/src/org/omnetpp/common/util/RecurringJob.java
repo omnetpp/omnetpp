@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,7 +34,7 @@ abstract public class RecurringJob implements Runnable {
 	 * Starts the timer.
 	 */
 	public void start() {
-		// Alas, timerExec() may only be invoked from the UI thread 
+		// Alas, timerExec() may only be invoked from the UI thread
 		if (Display.getCurrent() != null) {
 			Display.getDefault().timerExec(-1, internalRunnable);
 			Display.getDefault().timerExec(delayMillis, internalRunnable);
@@ -52,7 +52,7 @@ abstract public class RecurringJob implements Runnable {
 	 * Stops the currently running timer.
 	 */
 	public void stop() {
-		// Alas, timerExec() may only be invoked from the UI thread 
+		// Alas, timerExec() may only be invoked from the UI thread
 		if (Display.getCurrent() != null) {
 			Display.getDefault().timerExec(-1, internalRunnable);
 		}

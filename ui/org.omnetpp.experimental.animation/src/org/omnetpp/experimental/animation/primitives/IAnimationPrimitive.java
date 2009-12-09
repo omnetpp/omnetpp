@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -13,7 +13,7 @@ import org.omnetpp.experimental.animation.controller.AnimationPosition;
  * IAnimationPrimitive is an atomic animation element managed by the IAnimationController. An animation primitive
  * may or may not be active depending on the current animation position managed by its controller. Being active means
  * having effect on the state of the model or the state of the animation.
- * 
+ *
  * The controller is responsible for notifying the animation primitives when they become active or inactive based
  * on the animation position. The animation primitive life cycle is the following: (activate, animateAt*, deactivate)*
  */

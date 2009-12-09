@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -37,7 +37,7 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
  *   1. search only in NED files;
  *   2. search word under cursor if nothing is selected (i.e. no need to select word in advance);
  *   3. search for whole words only
- *    
+ *
  * @author andras
  */
 @SuppressWarnings("restriction")
@@ -63,11 +63,11 @@ public class FindTextInNedFilesActionDelegate extends RetrieverAction {
     @Override
     protected String getSearchForString(IWorkbenchPage page) {
         String searchText = super.getSearchForString(page);
-        
+
         // Issue: super.getSearchForString() doesn't work 100% with the NED editor:
-        // it doesn't do anything when the text selection is empty (it doesn't search for  
-        // word under cursor). This is because the multi-page editor (and BTW our text 
-        // editor too) exports StructuredSelection not a TextSelection. 
+        // it doesn't do anything when the text selection is empty (it doesn't search for
+        // word under cursor). This is because the multi-page editor (and BTW our text
+        // editor too) exports StructuredSelection not a TextSelection.
         // The following is a workaround.
         //
         if (searchText.equals("")) {
@@ -79,7 +79,7 @@ public class FindTextInNedFilesActionDelegate extends RetrieverAction {
                     ISourceViewer sourceViewer = textEditor.getSourceViewerPublic();
                     try {
                         searchText = TextEditorUtil.getWordRegion(sourceViewer, sourceViewer.getSelectedRange().x, new SyntaxHighlightHelper.NedWordDetector());
-                    } 
+                    }
                     catch (BadLocationException e) {
                     }
                 }
@@ -92,9 +92,9 @@ public class FindTextInNedFilesActionDelegate extends RetrieverAction {
 	protected ISearchQuery createQuery(TextSearchQueryProvider provider, final String searchText) throws CoreException {
         // we only want to search in NED files. Ignore the provider, and create the query ourselves.
         FileTextSearchScope scope = FileTextSearchScope.newSearchScope(
-                new IResource[] {ResourcesPlugin.getWorkspace().getRoot()}, 
-                new String[] { "*.ned" }, 
-                true); 
+                new IResource[] {ResourcesPlugin.getWorkspace().getRoot()},
+                new String[] { "*.ned" },
+                true);
 
         // turn it into "whole words only" search via regex
         return new FileSearchQuery("\\b" + escape(searchText) + "\\b", true, true, scope) {

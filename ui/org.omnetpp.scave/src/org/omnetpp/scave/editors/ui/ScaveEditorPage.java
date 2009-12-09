@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -52,8 +52,8 @@ import org.omnetpp.scave.editors.ScaveEditor;
  * @author andras
  */
 public class ScaveEditorPage extends ScrolledForm {
-	//private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252); 
-	//private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253); 
+	//private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252);
+	//private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253);
 	private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
 	private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
 
@@ -157,10 +157,10 @@ public class ScaveEditorPage extends ScrolledForm {
 	/**
 	 * Adds the given file to Inputs unless it's already in there.
 	 * The file name should be an OS path (D:\... or /home/you/...),
-	 * not a workspace path! 
-	 * 
-	 * XXX Limitation: currently the file must be available via the 
-	 * workspace as well. This may get improved in the future. 
+	 * not a workspace path!
+	 *
+	 * XXX Limitation: currently the file must be available via the
+	 * workspace as well. This may get improved in the future.
 	 */
 	private void addDroppedFileToInputs(String fileName) {
 		// convert OS path to workspace path
@@ -175,10 +175,10 @@ public class ScaveEditorPage extends ScrolledForm {
 	}
 
 	/**
-	 * Connects the button with an action, so that the action is executed 
-	 * when the button is pressed, and the button is enabled/disabled when 
+	 * Connects the button with an action, so that the action is executed
+	 * when the button is pressed, and the button is enabled/disabled when
 	 * the action becomes enabled/disabled.
-	 * 
+	 *
 	 * Note: ActionContributionItem is not good here because:
 	 *  (1) it wants to create the button itself, and thus not compatible with FormToolkit
 	 *  (2) the button it creates has wrong background color, and there's no way to access
@@ -189,7 +189,7 @@ public class ScaveEditorPage extends ScrolledForm {
 		button.setToolTipText(action.getToolTipText());
 		if (action.getImageDescriptor() != null)
 			button.setImage(action.getImageDescriptor().createImage());
-	
+
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				action.run();
@@ -211,13 +211,13 @@ public class ScaveEditorPage extends ScrolledForm {
 		});
 	}
 
-	/* 
-	 * Connects the button with an action, so that the action is executed 
-	 * when the button is pressed, and the button is enabled/disabled when 
-	 * the action becomes enabled/disabled. 
-	 * 
+	/*
+	 * Connects the button with an action, so that the action is executed
+	 * when the button is pressed, and the button is enabled/disabled when
+	 * the action becomes enabled/disabled.
+	 *
 	 * The action will be enabled/disabled based on a viewer's selection.
-	 * 
+	 *
 	 * See also: ActionContributionItem, ActionContributionItem2
 	 */
 	public static void configureViewerButton(final Button button, final Viewer viewer, final IScaveAction action) {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,9 +21,9 @@ import org.omnetpp.scave.engine.XYArray;
 
 
 /**
- * Makes it possible for SequenceChart to read data from output vector files, without 
+ * Makes it possible for SequenceChart to read data from output vector files, without
  * depending on the Scave plugin.
- * 
+ *
  * @author Andras
  */
 public class VectorFileUtil {
@@ -39,7 +39,7 @@ public class VectorFileUtil {
 	 * Returns data from an output vector given with its ID.
 	 */
 	public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id, boolean includeEventNumbers) {
-		// we'll build a data-flow network consisting of a source and a sink node, and run it. 
+		// we'll build a data-flow network consisting of a source and a sink node, and run it.
 		DataflowManager dataflowManager = new DataflowManager();
 
 		// create a reader node for the given vector id
@@ -49,7 +49,7 @@ public class VectorFileUtil {
 		VectorFileReaderNode readerNode = VectorFileReaderNode.cast(createNode(dataflowManager, "vectorfilereader", attrs));
 		Port port = readerNode.addVector(resultfileManager.getVector(id));
 
-		// and an array builder as sink 
+		// and an array builder as sink
 		StringMap stringMap = new StringMap();
 		if (includeEventNumbers)
 			stringMap.set("collecteventnumbers", "true");

@@ -1,6 +1,6 @@
 #
 #   Utility for embedding Tcl code into C/C++ as a large string literal.
-#   Output is somewhat scrambled so that the Tcl code is not directly 
+#   Output is somewhat scrambled so that the Tcl code is not directly
 #   readable inside the resulting binary.
 #
 
@@ -31,7 +31,7 @@ while (@ARGV)
 
 $result .= "0\n};\n\n";
 
-$result .= 
+$result .=
     "/* decoding part */\n" .
     "{\n" .
     "  int i;\n" .

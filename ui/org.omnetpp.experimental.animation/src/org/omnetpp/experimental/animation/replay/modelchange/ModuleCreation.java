@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,8 +18,8 @@ public class ModuleCreation implements IRuntimeModelChange {
 	private String moduleName;
 	private ReplayModule module;
 
-	public ModuleCreation(ReplaySimulation simulation, 
-			int id, String moduleTypeName, 
+	public ModuleCreation(ReplaySimulation simulation,
+			int id, String moduleTypeName,
 			String parentFullPath, String moduleName) {
 		this.simulation = simulation;
 		this.id = id;

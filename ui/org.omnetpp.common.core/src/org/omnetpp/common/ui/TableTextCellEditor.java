@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -53,12 +53,12 @@ import org.omnetpp.common.util.ReflectionUtils;
  *     (1) it does NOT apply the value on every keystroke<br/>
  *     (2) supports ContentAssistCommandAdapter instead of deprecated SubjectControlContentAssistant<br/>
  *     (3) works also for TreeViewer <br/>
- * <p>    
- * The "focus lost" problem: the original TextCellEditor commits on focus lost, 
+ * <p>
+ * The "focus lost" problem: the original TextCellEditor commits on focus lost,
  * which means a content proposal selected with mouse double click just gets IGNORED.
- * JDT code used fContentAssistant.hasProposalPopupFocus() to determine whether to commit 
+ * JDT code used fContentAssistant.hasProposalPopupFocus() to determine whether to commit
  * or not; we use the equivalent code for ContentAssistCommandAdapter.
- * 
+ *
  * <p>
  * See comment marked with [Andras] in the code.
  *
@@ -293,13 +293,13 @@ public class TableTextCellEditor extends CellEditor {
 			private void editTreeRow(int delta) {
 			    // determine index of current line within parent
 			    Tree tree = ((TreeViewer)fViewer).getTree();
-			    if (tree.getSelectionCount()==0) 
+			    if (tree.getSelectionCount()==0)
 			        return;
 			    TreeItem current = tree.getSelection()[0];
 			    TreeItem[] items = current.getParentItem().getItems();
 			    int index = ArrayUtils.indexOf(items, current);
 			    Assert.isTrue(index != -1, "item not found in its parent");
-			    
+
 			    // edit line index + delta within the same parent
 			    index += delta;
 			    if (index >= 0 && index < items.length) {

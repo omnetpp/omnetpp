@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,14 +30,14 @@ import org.eclipse.swt.widgets.Event;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
- * A button which looks like SWT's ToolItem (flat), but text is rendered to the right 
+ * A button which looks like SWT's ToolItem (flat), but text is rendered to the right
  * of the image. SWT's ToolItem puts text below the image and cannot be talked out of it,
  * while Button has the right layout but it is never rendered as flat. Oh well.
- * 
- * This is expected to be put on a light background; otherwise colors used for painting 
- * will have to be refined (probably it's best to dynamically calculate them, using 
+ *
+ * This is expected to be put on a light background; otherwise colors used for painting
+ * will have to be refined (probably it's best to dynamically calculate them, using
  * the RGB class's HSB conversion.)
- * 
+ *
  * @author Andras
  */
 public class ToolButton extends Canvas {
@@ -97,7 +97,7 @@ public class ToolButton extends Canvas {
 			public void mouseHover(MouseEvent e) {
 			}
 		});
-	
+
 		addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent e) {
 			}
@@ -201,9 +201,9 @@ public class ToolButton extends Canvas {
 		int border = getBorderWidth();
 		int width = wHint, height = hHint;
 		if (width == SWT.DEFAULT)
-			width = border * 2 + BORDER * 3 + (image==null ? 0 : image.getBounds().width) + textWidth; 
+			width = border * 2 + BORDER * 3 + (image==null ? 0 : image.getBounds().width) + textWidth;
 		if (height == SWT.DEFAULT)
-			height = border * 2 + BORDER * 2 + Math.max(image==null ? 0 : image.getBounds().height, textHeight); 
+			height = border * 2 + BORDER * 2 + Math.max(image==null ? 0 : image.getBounds().height, textHeight);
 		return new Point(width, height);
 	}
 

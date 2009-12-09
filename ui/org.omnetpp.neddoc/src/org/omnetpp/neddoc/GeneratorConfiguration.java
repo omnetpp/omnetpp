@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -31,7 +31,7 @@ public class GeneratorConfiguration {
     public boolean doxySourceBrowser = false;
 
     public String outputDirectoryPath;
-    
+
     public void store(IDialogSettings settings) {
         settings.put(GENERATE_NED_TYPE_FIGURES, generateNedTypeFigures);
         settings.put(GENERATE_USAGE_DIAGRAMS, generateUsageDiagrams);
@@ -40,7 +40,7 @@ public class GeneratorConfiguration {
 
         settings.put(GENERATE_DOXY, generateDoxy);
         settings.put(DOXY_SOURCE_BROWSER, doxySourceBrowser);
-        
+
         settings.put(OUTPUT_DIRECTORY_PATH, outputDirectoryPath);
     }
 

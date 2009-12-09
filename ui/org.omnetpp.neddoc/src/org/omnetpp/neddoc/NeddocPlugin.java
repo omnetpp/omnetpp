@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -95,7 +95,7 @@ public class NeddocPlugin extends AbstractUIPlugin {
     public static void logError(Throwable exception) {
         logError(exception.toString(), exception);
     }
-    
+
     public static void logError(String message, Throwable exception) {
         if (plugin != null) {
             plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));

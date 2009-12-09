@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,18 +15,18 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ShellAccess;
 
 public class GotoTest
-    extends EventLogFileTestCase 
+    extends EventLogFileTestCase
 {
     public GotoTest() {
         super("stress.log");
     }
-    
+
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
         openFileFromProjectExplorerViewInEventLogTableEditor();
     }
-    
+
     public void testGotoEventNumber() throws Exception {
         EventLogTableAccess eventLogTable = findEventLogTable();
         eventLogTable.gotoEventNumber(100);
@@ -40,7 +40,7 @@ public class GotoTest
         ShellAccess shell = Access.findShellWithTitle("Goto simulation time");
         shell.findTextAfterLabel("Please enter.*").typeIn(String.valueOf("10"));
         shell.findButtonWithLabel("OK").selectWithMouseClick();
-        
+
         eventLogTable.assertSelectedEventNumber(860);
     }
 
@@ -57,7 +57,7 @@ public class GotoTest
 
         for (int i = 0; i < 4; i++)
             eventLogTable.pressKey(SWT.ARROW_DOWN);
-        
+
         eventLogTable.activateContextMenuWithMouseClickAtSelectedElement().activateMenuItemWithMouse("Goto message arrival");
         eventLogTable.assertSelectedEventNumber(514);
     }
@@ -68,7 +68,7 @@ public class GotoTest
 
         for (int i = 0; i < 5; i++)
             eventLogTable.pressKey(SWT.ARROW_DOWN);
-    
+
         eventLogTable.activateContextMenuWithMouseClickAtSelectedElement().activateMenuItemWithMouse("Goto message origin");
         eventLogTable.assertSelectedEventNumber(590);
     }

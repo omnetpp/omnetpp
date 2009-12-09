@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,17 +26,17 @@ public class MessageElementEx extends MessageElement implements IMsgTypeElement 
     protected MessageElementEx(INEDElement parent) {
         super(parent);
     }
-    
+
     public IMsgTypeInfo getMsgTypeInfo() {
         if (typeInfo == null)
             typeInfo = getDefaultMsgTypeResolver().createTypeInfoFor(this);
-        
+
         return typeInfo;
     }
 
     public String getFirstExtends() {
         String name = getExtendsName();
-        
+
         if (name != null && !name.equals(""))
             return name;
         else

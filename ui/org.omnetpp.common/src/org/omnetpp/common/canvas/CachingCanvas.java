@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,9 +30,9 @@ import org.omnetpp.common.canvas.ITileCache.Tile;
 import org.omnetpp.common.image.ImageConverter;
 
 /**
- * A scrollable canvas that supports caching of (part of) the drawing 
+ * A scrollable canvas that supports caching of (part of) the drawing
  * in off-screen image buffers for performance improvement.
- * 
+ *
  * @author andras
  */
 public abstract class CachingCanvas extends LargeScrollableCanvas {
@@ -43,7 +43,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 
 	/**
-	 * Constructor. 
+	 * Constructor.
 	 */
 	public CachingCanvas(Composite parent, int style) {
 		super(parent, style);
@@ -82,7 +82,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		this.doCaching = doCaching;
 		clearCanvasCache();
 	}
-    
+
     /**
      * Copies the image of the chart to the clipboard.
      * Uses AWT functionality, because SWT does not support ImageTransfer yet.
@@ -94,14 +94,14 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
             public void lostOwnership(Clipboard clipboard, Transferable contents) {
             }
         };
-        
+
         class ImageTransferable implements Transferable {
             public java.awt.Image image;
 
             public ImageTransferable(java.awt.Image image) {
                 this.image = image;
             }
-            
+
             public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
                 if (flavor == DataFlavor.imageFlavor)
                     return image;
@@ -117,12 +117,12 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
                 return flavor == DataFlavor.imageFlavor;
             }
         };
-        
+
         int width = getClientArea().width, height = getClientArea().height;
         Image image = getImage(width, height);
         cp.setContents(new ImageTransferable(ImageConverter.convertToAWT(image)), owner);
     }
-    
+
     /**
      * Returns the image of the chart.
      */
@@ -151,7 +151,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			clip = clip.intersection(viewportRect);
 			gc.setClipping(clip);
 			LargeRect lclip = canvasToVirtualRect(clip);
-		
+
 			ArrayList<Tile> cachedTiles = new ArrayList<Tile>();
 			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
 
@@ -218,14 +218,14 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	/**
 	 * Paint everything in this method that can be cached. This may be called several
 	 * times during a repaint, with different clip rectangles.
-	 * 
+	 *
 	 * IMPORTANT: A transform (translate) is set on the gc, DO NOT OVERWRITE IT,
-	 * or caching will be messed up. 
+	 * or caching will be messed up.
 	 */
 	protected abstract void paintCachableLayer(GC gc);
 
 	/**
-	 * Paint in this method anything that you don't want to be cached 
+	 * Paint in this method anything that you don't want to be cached
 	 * (selection marks, etc). It will paint over the cachable layer.
 	 */
 	protected abstract void paintNoncachableLayer(GC gc);

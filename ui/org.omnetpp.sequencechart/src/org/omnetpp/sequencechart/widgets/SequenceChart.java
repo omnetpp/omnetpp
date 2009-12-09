@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -231,11 +231,11 @@ public class SequenceChart
 	private ArrayList<ModuleTreeItem> axisModules; // the modules (in no particular order) which will have an axis (they must be part of the module tree!) on the chart
 
 	private boolean invalidModuleIdToAxisModuleIndexMap = true; // requests recalculation
-    private Map<Integer, Integer> moduleIdToAxisModuleIndexMap; // some modules do not have axis but events occurred in them are still drawn on the chart 
+    private Map<Integer, Integer> moduleIdToAxisModuleIndexMap; // some modules do not have axis but events occurred in them are still drawn on the chart
 
     private boolean invalidAxisRenderers = true; // requests recalculation
 	private IAxisRenderer[] axisRenderers; // used to draw the axis (parallel to axisModules)
-    
+
 	private boolean invalidModuleIdToAxisRendererMap; // requests recalculation
     private Map<Integer, IAxisRenderer> moduleIdToAxisRendererMap = new HashMap<Integer, IAxisRenderer>(); // this map is not cleared when the eventlog is filtered or the filter is removed
 
@@ -285,7 +285,7 @@ public class SequenceChart
 	 * Timeline mode determines the horizontal coordinate system in the sequence chart.
 	 * Simulation time and event number based means proportional to distance measured in pixels.
 	 * Step means subsequent events follow each other with a constant distance.
-	 * Nonlinear mode means distance measured in pixels is proportional to a nonlinear function of the 
+	 * Nonlinear mode means distance measured in pixels is proportional to a nonlinear function of the
 	 * simulation time difference between subsequent events.
 	 */
 	public enum TimelineMode {
@@ -301,7 +301,7 @@ public class SequenceChart
 	public enum AxisOrderingMode {
 		MANUAL,
 		MODULE_ID,
-		MODULE_FULL_PATH, 
+		MODULE_FULL_PATH,
 		MINIMIZE_CROSSINGS
 	}
 
@@ -318,7 +318,7 @@ public class SequenceChart
 
 		setupHoverSupport();
         setupRubberbandSupport();
-    
+
         setupMouseListener();
         setupKeyListener();
 		setupListeners();
@@ -345,7 +345,7 @@ public class SequenceChart
 			}
 		};
     }
-    
+
     private void setupListeners() {
         addDisposeListener(new DisposeListener() {
             public void widgetDisposed(DisposeEvent e) {
@@ -384,7 +384,7 @@ public class SequenceChart
 				        moveSelection(-1);
 				    else if (e.stateMask == SWT.MOD1) {
 				        IEvent event = getSelectionEvent();
-				        
+
 				        if (event != null) {
 				            event = event.getCauseEvent();
 
@@ -394,13 +394,13 @@ public class SequenceChart
 				    }
                     else if (e.stateMask == SWT.SHIFT) {
                         IEvent event = getSelectionEvent();
-                        
+
                         if (event != null) {
                             int moduleId = event.getModuleId();
-    
+
                             while (event != null) {
                                 event = event.getPreviousEvent();
-                                
+
                                 if (event != null && moduleId == event.getModuleId()) {
                                     gotoClosestElement(event);
                                     break;
@@ -414,13 +414,13 @@ public class SequenceChart
                         moveSelection(1);
                     else if (e.stateMask == SWT.MOD1) {
                         IEvent event = getSelectionEvent();
-                        
+
                         if (event != null) {
                             IMessageDependencyList consequences = event.getConsequences();
 
                             if (consequences.size() > 0) {
                                 event = consequences.get(0).getConsequenceEvent();
-                                
+
                                 if (event != null)
                                     gotoClosestElement(event);
                             }
@@ -431,10 +431,10 @@ public class SequenceChart
 
                         if (event != null) {
                             int moduleId = event.getModuleId();
-    
+
                             while (event != null) {
                                 event = event.getNextEvent();
-                                
+
                                 if (event != null && moduleId == event.getModuleId()) {
                                     gotoClosestElement(event);
                                     break;
@@ -626,7 +626,7 @@ public class SequenceChart
         this.showAxesWithoutEvents = showAxesWithoutEvents;
         clearAxisModules();
     }
-    
+
     /**
      * Shows/hides transmission durations.
      */
@@ -641,7 +641,7 @@ public class SequenceChart
         this.showTransmissionDurations = showTransmissionDurations;
         clearCanvasCacheAndRedraw();
     }
-    
+
     /**
      * Shows/hides module method calls.
      */
@@ -671,12 +671,12 @@ public class SequenceChart
 	 */
 	public void setTimelineMode(TimelineMode timelineMode) {
 	    org.omnetpp.common.engine.BigDecimal[] leftRightSimulationTimes = null;
-	    
+
 	    if (!eventLog.isEmpty())
 	        leftRightSimulationTimes = getViewportSimulationTimeRange();
 
 	    sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
-	
+
 	    if (!eventLog.isEmpty())
 	        setViewportSimulationTimeRange(leftRightSimulationTimes);
 	}
@@ -701,7 +701,7 @@ public class SequenceChart
 	 */
     public int showManualOrderingDialog() {
         ModuleTreeItem[] sortedAxisModules = new ModuleTreeItem[getAxisModules().size()];
-        
+
         for (int i = 0; i < sortedAxisModules.length; i++)
             sortedAxisModules[getAxisModulePositions()[i]] = getAxisModules().get(i);
 
@@ -917,21 +917,21 @@ public class SequenceChart
             long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
             long startEventPtr = eventPtrRange[0];
             long endEventPtr = eventPtrRange[1];
-    
+
     		// look one event backward
     		long previousEventPtr = sequenceChartFacade.IEvent_getPreviousEvent(startEventPtr);
     		if (previousEventPtr != 0)
     			startEventPtr = previousEventPtr;
-    
+
     		// and forward so that one additional event scrolling can be done with less distraction
     		long nextEventPtr = sequenceChartFacade.IEvent_getNextEvent(endEventPtr);
     		if (nextEventPtr != 0)
     			endEventPtr = nextEventPtr;
-    
+
     		for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
     			if (eventPtr == event.getCPtr())
     				found = true;
-    
+
     			if (eventPtr == endEventPtr)
     				break;
     		}
@@ -1018,12 +1018,12 @@ public class SequenceChart
 	    if (eventLog instanceof FilteredEventLog) {
     	    FilteredEventLog filteredEventLog = (FilteredEventLog)eventLogInput.getEventLog();
             IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber(), false);
-    
+
             if (closestEvent != null)
                 gotoElement(closestEvent);
             else {
                 closestEvent = filteredEventLog.getMatchingEventInDirection(sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber(), true);
-                
+
                 if (closestEvent != null)
                     gotoElement(closestEvent);
             }
@@ -1220,7 +1220,7 @@ public class SequenceChart
      * NOTE: the state of the filter menu Show all/filtered is intentionally not saved
      * because a the log file can change between saved sessions. So there is no guarantee how
      * a filter will perform next time if the user opens the sequence chart. It can throw error
-     * or run too long to be acceptable. 
+     * or run too long to be acceptable.
      */
 	public boolean restoreState(IResource resource) {
 		PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID, getClass().getClassLoader());
@@ -1262,10 +1262,10 @@ public class SequenceChart
 					    axisOrderingMode = sequenceChartState.axisOrderingMode;
 					if (sequenceChartState.moduleFullPathesManualAxisOrder != null) {
                         ArrayList<ModuleTreeItem> axisOrder = new ArrayList<ModuleTreeItem>();
-                        
+
                         for (int i = 0; i < sequenceChartState.moduleFullPathesManualAxisOrder.length; i++)
                             axisOrder.add(eventLogInput.getModuleTreeRoot().findDescendantModule(sequenceChartState.moduleFullPathesManualAxisOrder[i]));
-                        
+
                         manualAxisOrder.setAxisOrder(axisOrder);
                     }
 
@@ -1354,7 +1354,7 @@ public class SequenceChart
 				String[] moduleFullPathesManualAxisOrder = new String[axisOrder.size()];
 				for (int i = 0; i < moduleFullPathesManualAxisOrder.length; i++) {
 				    ModuleTreeItem axisModule = axisOrder.get(i);
-				    
+
 				    if (axisModule != null)
 				        moduleFullPathesManualAxisOrder[i] = axisModule.getModuleFullPath();
 				}
@@ -1491,24 +1491,24 @@ public class SequenceChart
 	 */
     public void findText(boolean continueSearch) {
         String findText = null;
-        EventLogEntry foundEventLogEntry = null; 
+        EventLogEntry foundEventLogEntry = null;
 
         EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
 
         if (continueSearch || findTextDialog.open() == Window.OK) {
             findText = findTextDialog.getValue();
-            
+
             if (findText != null) {
                 try {
                     IEvent event = getSelectionEvent();
-    
+
                     if (event == null) {
                         long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, 0);
                         event = sequenceChartFacade.IEvent_getEvent(eventPtrRange[0]);
                         if (event == null)
                             return;
                     }
-                    
+
                     EventLogEntry startEventLogEntry = null;
                     if (findTextDialog.isBackward()) {
                         event = event.getPreviousEvent();
@@ -1522,7 +1522,7 @@ public class SequenceChart
                             return;
                         startEventLogEntry = event.getEventEntry();
                     }
-    
+
                     foundEventLogEntry = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
                 }
                 finally {
@@ -1586,7 +1586,7 @@ public class SequenceChart
     private boolean validateAxisModules() {
         int numberOfAxisModules = axisModules.size();
         calculateAxisModules();
-        
+
         return numberOfAxisModules == axisModules.size();
     }
 
@@ -1600,21 +1600,21 @@ public class SequenceChart
 
     /**
      * Collects the modules which need to have an axis in the currently visible region.
-     * It considers all events and all message dependencies within the viewport. 
+     * It considers all events and all message dependencies within the viewport.
      */
     private Set<Integer> collectModuleIdsForVisibleModules() {
         Set<Integer> axisModuleIds = new HashSet<Integer>();
-        
+
         // consider visible events
         int extraClipping = getExtraClippingForEvents() + 30; // add an extra for the caching canvas tile cache width (clipping may be negative in paint)
         long[] eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
         long startEventPtr = eventPtrRange[0];
         long endEventPtr = eventPtrRange[1];
-        
+
         if (startEventPtr != 0 && endEventPtr != 0) {
             if (debug)
                 Debug.println("Collecting axis modules for events using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-    
+
             for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
                 if (!isInitializationEvent(eventPtr))
                     axisModuleIds.add(sequenceChartFacade.IEvent_getModuleId(eventPtr));
@@ -1623,23 +1623,23 @@ public class SequenceChart
                     break;
             }
         }
-        
+
         // consider visible message dependencies
         eventPtrRange = getFirstLastEventPtrForMessageDependencies();
         startEventPtr = eventPtrRange[0];
         endEventPtr = eventPtrRange[1];
-   
+
         if (startEventPtr != 0 && endEventPtr != 0) {
             if (debug)
                 Debug.println("Collecting axis modules for message dependencies using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
 
             PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
-   
+
             for (int i = 0; i < messageDependencies.size(); i++) {
                 long messageDependencyPtr = messageDependencies.get(i);
                 long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
                 long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
-                
+
                 if (causeEventPtr != 0) {
 //                    if (debug)
 //                        Debug.println("Collecting axis module for message dependency cause event: #" + sequenceChartFacade.IEvent_getEventNumber(causeEventPtr));
@@ -1649,7 +1649,7 @@ public class SequenceChart
                     else
                         axisModuleIds.add(sequenceChartFacade.IEvent_getModuleId(causeEventPtr));
                 }
-   
+
                 if (consequenceEventPtr != 0) {
 //                    if (debug)
 //                        Debug.println("Collecting axis module for message dependency consequence event: #" + sequenceChartFacade.IEvent_getEventNumber(consequenceEventPtr));
@@ -1658,7 +1658,7 @@ public class SequenceChart
                 }
             }
         }
-        
+
         // consider visible module method calls
         extraClipping = getExtraClippingForEvents();
         eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
@@ -1679,15 +1679,15 @@ public class SequenceChart
                 axisModuleIds.add(toModuleId);
             }
         }
-        
+
         if (debug)
             Debug.println("Module ids that will have axes: " + axisModuleIds);
-        
+
         return axisModuleIds;
     }
 
     /**
-     * Makes sure all axes are present which will be needed to draw the chart 
+     * Makes sure all axes are present which will be needed to draw the chart
      * in the currently visible region.
      */
     private void calculateAxisModules() {
@@ -1767,13 +1767,13 @@ public class SequenceChart
             calculateAxisRenderers();
             invalidAxisRenderers = false;
         }
-        
+
         return axisRenderers;
     }
 
     private void calculateAxisRenderers() {
         axisRenderers = new IAxisRenderer[getAxisModules().size()];
-        
+
         for (int i = 0; i < axisRenderers.length; i++)
             axisRenderers[i] = getAxisRenderer(getAxisModules().get(i));
     }
@@ -1790,7 +1790,7 @@ public class SequenceChart
             calculateModuleIdToAxisRendererMap();
             invalidModuleIdToAxisRendererMap = false;
         }
-        
+
         return moduleIdToAxisRendererMap;
     }
 
@@ -1829,14 +1829,14 @@ public class SequenceChart
 
     /**
      * Returns the axis module positions as an array, lazily updates the array if necessary.
-     * The nth value specifies the position of the nth axis module. 
+     * The nth value specifies the position of the nth axis module.
      */
 	public int[] getAxisModulePositions() {
 	    if (invalidAxisModulePositions) {
 	        calculateAxisModulePositions();
 	        invalidAxisModulePositions = false;
 	    }
-	    
+
 	    return axisModulePositions;
 	}
 
@@ -1891,10 +1891,10 @@ public class SequenceChart
             calculateAxisYs();
             invalidAxisModuleYs = false;
         }
-        
+
         return axisModuleYs;
     }
-    
+
     /**
      * Calculates top y coordinates of axis bounding boxes based on height returned by each axis.
      */
@@ -1939,7 +1939,7 @@ public class SequenceChart
 
         // this algorithm allows to have two module axes on the chart
         // which are in ancestor-descendant relationship,
-        // and allows events still be drawn on the most specific axis 
+        // and allows events still be drawn on the most specific axis
         eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
             public void visit(ModuleTreeItem descendantAxisModule) {
                 ModuleTreeItem axisModule = descendantAxisModule;
@@ -1951,7 +1951,7 @@ public class SequenceChart
                         moduleIdToAxisModuleIndexMap.put(descendantAxisModule.getModuleId(), index);
                         return;
                     }
-                    
+
                     axisModule = axisModule.getParentModule();
                 }
             }
@@ -1961,7 +1961,7 @@ public class SequenceChart
     /*************************************************************************************
      * VIRTUAL SIZE
      */
-    
+
     @Override
     public long getVirtualWidth() {
         if (invalidVirtualSize) {
@@ -1971,7 +1971,7 @@ public class SequenceChart
 
         return super.getVirtualWidth();
     }
-    
+
     @Override
     public long getVirtualHeight() {
         if (invalidVirtualSize) {
@@ -2005,7 +2005,7 @@ public class SequenceChart
     /*************************************************************************************
      * AXIS SPACING
      */
-    
+
     /**
      * Returns the pixel distance between adjacent axes on the chart.
      */
@@ -2014,7 +2014,7 @@ public class SequenceChart
             calculateAxisSpacing();
             invalidAxisSpacing = false;
         }
-        
+
         return axisSpacing;
     }
 
@@ -2067,7 +2067,7 @@ public class SequenceChart
     /*************************************************************************************
      * PIXEL PER TIMELINE UNIT
      */
-    
+
     /**
      * Returns chart scale, that is, the number of pixels a "timeline unit" maps to.
      *
@@ -2097,7 +2097,7 @@ public class SequenceChart
 	private void setDefaultPixelPerTimelineUnit(int viewportWidth) {
 	    if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1) {
     	    IEvent referenceEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
-    	    IEvent neighbourEvent = referenceEvent; 
+    	    IEvent neighbourEvent = referenceEvent;
 
     	    // the idea is to find two events with different timeline coordinates at most 20 events from each other
     	    // and focus to the range of those events
@@ -2109,14 +2109,14 @@ public class SequenceChart
                     neighbourEvent = newNeighbourEvent;
                 else {
                     IEvent newReferenceEvent = referenceEvent.getPreviousEvent();
-                    
+
                     if (newReferenceEvent != null)
                         referenceEvent = newReferenceEvent;
                     else
                         break;
                 }
             }
-    	    
+
     		if (referenceEvent.getEventNumber() != neighbourEvent.getEventNumber()) {
                 double referenceEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(referenceEvent);
     			double neighbourEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(neighbourEvent);
@@ -2171,7 +2171,7 @@ public class SequenceChart
 	@Override
 	protected void paint(final GC gc) {
 	    paintHasBeenFinished = false;
-	    
+
         if (internalErrorHappenedDuringPaint)
             drawNotificationMessage(gc, "Internal error happend during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
         else if (eventLogInput.isCanceled())
@@ -2188,7 +2188,7 @@ public class SequenceChart
 
 				        SequenceChart.super.paint(gc);
     					paintHasBeenFinished = true;
-    
+
     					if (debug && eventLogInput != null)
     						Debug.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
 				    }
@@ -2246,13 +2246,13 @@ public class SequenceChart
 	}
 
 	/**
-	 * Used to paint the sequence chart offline without using the SWT widget framework. 
+	 * Used to paint the sequence chart offline without using the SWT widget framework.
 	 */
 	public void paintArea(Graphics graphics) {
         revalidateAxisModules();
 
 		graphics.translate(0, GUTTER_HEIGHT);
-	
+
 		drawSequenceChart(graphics);
 		drawAxisLabels(graphics);
 
@@ -2382,12 +2382,12 @@ public class SequenceChart
 
             if (showZeroSimulationTimeRegions)
 			    drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
-		
+
 			drawAxes(graphics, startEventPtr, endEventPtr);
 
 			if (showModuleMethodCalls)
 			    drawModuleMethodCalls(graphics);
-	        
+
 			drawMessageDependencies(graphics);
 	        drawEvents(graphics, startEventPtr, endEventPtr);
 
@@ -2520,15 +2520,15 @@ public class SequenceChart
             int fromY = getModuleYViewportCoordinateByModuleIndex(fromAxisIndex);
             int toY = getModuleYViewportCoordinateByModuleIndex(toAxisIndex);
             int x = (int)getEventXViewportCoordinate(eventPtr);
-    
+
             if (graphics != null) {
                 graphics.setForegroundColor(MODULE_METHOD_CALL_COLOR);
                 graphics.setLineDash(DOTTED_LINE_PATTERN);
                 graphics.drawLine(x, fromY, x, toY);
-                
+
                 if (showArrowHeads)
                     drawArrowHead(graphics, null, x, toY, 0, toY - fromY);
-    
+
                 if (showMessageNames) {
                     graphics.setFont(font);
                     int dy = Math.abs(fromY - toY);
@@ -2546,7 +2546,7 @@ public class SequenceChart
             else
                 return lineContainsPoint(x, fromY, x, toY, fitX, fitY, tolerance);
 	    }
-	    
+
 	    return false;
     }
 
@@ -2591,7 +2591,7 @@ public class SequenceChart
 	                int x = (int)getEventXViewportCoordinate(eventPtr);
 	                int y = (int)getEventYViewportCoordinate(eventPtr);
 	                Integer lastX = axisYtoLastX.get(y);
-    
+
     				// performance optimization: don't draw event if there's one already drawn exactly there
     				if (lastX == null || lastX.intValue() != x) {
     					axisYtoLastX.put(y, x);
@@ -2615,7 +2615,7 @@ public class SequenceChart
 	        for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
 	            long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
 	            long beginSendEntryPtr = sequenceChartFacade.IMessageDependency_getBeginSendEntry(consequencePtr);
-	            
+
                 if (beginSendEntryPtr != 0) {
                     int contextModuleId = sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr);
                     int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
@@ -2648,7 +2648,7 @@ public class SequenceChart
 		graphics.fillOval(x - 2, y - 3, 6, 8);
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawOval(x - 2, y - 3, 5, 7);
-	
+
 		if (showEventNumbers) {
 			graphics.setFont(font);
 			drawText(graphics, "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr), x + 3, y + 3 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
@@ -2700,7 +2700,7 @@ public class SequenceChart
 	 */
 	private void drawTickUnderMouse(Graphics graphics, int viewportHeigth) {
 		Point p = toControl(Display.getDefault().getCursorLocation());
-	
+
 		if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + GUTTER_HEIGHT * 2) {
 			BigDecimal tick = calculateTick(p.x, 1);
 			drawTick(graphics, viewportHeigth, MOUSE_TICK_LINE_COLOR, INFO_BACKGROUND_COLOR, tick, p.x, true);
@@ -2750,7 +2750,7 @@ public class SequenceChart
 	            long endEventPtr = eventPtrRange[1];
 
 	            int i = getAxisModuleIndexByModuleId(axisModule.getModuleId());
-			
+
 	            drawAxisLabel(graphics, i, axisModule);
 				drawAxis(graphics, startEventPtr, endEventPtr, i, axisModule);
 			}
@@ -2928,7 +2928,7 @@ public class SequenceChart
 
 		if (sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr) && !showOtherMessageReuses)
 			return false;
-	
+
 		if (sequenceChartFacade.IMessageDependency_isSelfMessageReuse(messageDependencyPtr) && !showSelfMessageReuses)
 		    return false;
 
@@ -2938,7 +2938,7 @@ public class SequenceChart
 
 		// cache message dependency state
 		long beginSendEntryPtr = sequenceChartFacade.IMessageDependency_getBeginSendEntry(messageDependencyPtr);
-        long endSendEntryPtr = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getEndSendEntry(beginSendEntryPtr); 
+        long endSendEntryPtr = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getEndSendEntry(beginSendEntryPtr);
 		int messageId = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getMessageId(beginSendEntryPtr);
 		long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
 		long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
@@ -2953,11 +2953,11 @@ public class SequenceChart
             if (transmissionDelay.equals(org.omnetpp.common.engine.BigDecimal.getZero()))
                 transmissionDelay = null;
         }
-        
+
         // calculate pixel coordinates for message arrow endings
         // TODO: what about integer overflow in (int) casts? now that we have converted to long
         int invalid = Integer.MAX_VALUE;
-        int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? 
+        int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ?
             y1 = getInitializationEventYViewportCoordinate(messageDependencyPtr) :
                 beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
                     getEventYViewportCoordinate(causeEventPtr);
@@ -2967,7 +2967,7 @@ public class SequenceChart
         // calculate horizontal coordinates based on timeline coordinate limit
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / getPixelPerTimelineUnit();
         if (consequenceEventNumber < startEventNumber || endEventNumber < consequenceEventNumber) {
-            // consequence event is out of drawn message dependency range 
+            // consequence event is out of drawn message dependency range
         	x1 = (int)getEventXViewportCoordinate(causeEventPtr);
         	double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr);
         	double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr, -Double.MAX_VALUE, causeTimelineCoordinate + timelineCoordinateLimit);
@@ -2978,7 +2978,7 @@ public class SequenceChart
   	        	x2 = (int)getEventXViewportCoordinate(consequenceEventPtr);
         }
         else if (causeEventNumber < startEventNumber || endEventNumber < causeEventNumber) {
-            // cause event is out of drawn message dependency range 
+            // cause event is out of drawn message dependency range
         	x2 = (int)getEventXViewportCoordinate(consequenceEventPtr);
         	double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr);
         	double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr, consequenceTimelineCoordinate - timelineCoordinateLimit, Double.MAX_VALUE);
@@ -2998,14 +2998,14 @@ public class SequenceChart
 
             if (consequenceTimelineCoordinate - causeTimelineCoordinate > timelineCoordinateLimit) {
                 int viewportCenter = getViewportWidth() / 2;
-                
+
                 if (Math.abs(viewportCenter - x1) < Math.abs(viewportCenter - x2))
                     x2 = invalid;
                 else
                     x1 = invalid;
             }
         }
-        
+
         // at least one of the events must be in range or we don't draw anything
         if (x1 == invalid && x2 == invalid)
             return false;
@@ -3158,7 +3158,7 @@ public class SequenceChart
                     else
                         x1 += LONG_MESSAGE_ARROW_WIDTH;
                 }
-			
+
 				if (graphics != null) {
 					int xm = x2 - LONG_MESSAGE_ARROW_WIDTH;
 
@@ -3255,11 +3255,11 @@ public class SequenceChart
         int consequenceModuleId = sequenceChartFacade.IEvent_getModuleId(consequenceEventPtr);
 
         org.omnetpp.common.engine.BigDecimal t3 = sequenceChartFacade.IEvent_getSimulationTime(causeEventPtr).add(transmissionDelay);
-        org.omnetpp.common.engine.BigDecimal t4 = isReceptionStart ? 
-            sequenceChartFacade.IEvent_getSimulationTime(consequenceEventPtr).add(transmissionDelay) : 
+        org.omnetpp.common.engine.BigDecimal t4 = isReceptionStart ?
+            sequenceChartFacade.IEvent_getSimulationTime(consequenceEventPtr).add(transmissionDelay) :
             sequenceChartFacade.IEvent_getSimulationTime(consequenceEventPtr).subtract(transmissionDelay);
 
-        // check simulation times for being out of range 
+        // check simulation times for being out of range
         org.omnetpp.common.engine.BigDecimal lastEventSimulationTime = eventLog.getLastEvent().getSimulationTime();
         if (t3.greater(lastEventSimulationTime) || t4.greater(lastEventSimulationTime) || t4.less(org.omnetpp.common.engine.BigDecimal.getZero()))
             return isReceptionStart;
@@ -3305,7 +3305,7 @@ public class SequenceChart
         points[5] = y2;
         points[6] = isReceptionStart ? x3 : x1;
         points[7] = y1;
-        
+
         // draw it
         graphics.pushState();
         graphics.setAlpha(50);
@@ -3317,7 +3317,7 @@ public class SequenceChart
             int shift = isReceptionStart ? LONG_MESSAGE_ARROW_WIDTH : endingSplit ? -LONG_MESSAGE_ARROW_WIDTH * 2 : 0;
             points[0] += shift;
             points[2] += shift;
-            
+
             int numberOfStrips = 4;
             int s = LONG_MESSAGE_ARROW_WIDTH / numberOfStrips;
 
@@ -3334,7 +3334,7 @@ public class SequenceChart
         }
         else
             graphics.fillPolygon(points);
-        
+
         graphics.popState();
 
         return isReceptionStart;
@@ -3364,7 +3364,7 @@ public class SequenceChart
 		drawText(graphics, arrowLabel, x + dx, y + dy);
 	}
 
-	// KLUDGE: This is a workaround for SWT bug https://bugs.eclipse.org/215243 
+	// KLUDGE: This is a workaround for SWT bug https://bugs.eclipse.org/215243
 	private void drawText(Graphics g, String s, int x, int y) {
 		g.drawText(s, x, y);
 		// KLUDGE: clear the cairo lib internal state (on Linux)
@@ -3373,7 +3373,7 @@ public class SequenceChart
 	}
 
 	/**
-	 * Draws a zig-zag sign at the middle point of the given line segment. 
+	 * Draws a zig-zag sign at the middle point of the given line segment.
 	 */
 	private void drawFilteredMessageDependencySign(Graphics graphics, int x1, int y1, int x2, int y2) {
 		int size = 5;
@@ -3458,15 +3458,15 @@ public class SequenceChart
 		else {
     		double leftTimelineCoordinate = getTimelineCoordinateForViewportCoordinate(x1);
     		double rightTimelineCoordinate = getTimelineCoordinateForViewportCoordinate(x2);
-    
+
     		IEvent startEvent = sequenceChartFacade.getLastEventNotAfterTimelineCoordinate(leftTimelineCoordinate);
     		if (startEvent == null)
     			startEvent = eventLog.getFirstEvent();
-    
+
     		IEvent endEvent = sequenceChartFacade.getFirstEventNotBeforeTimelineCoordinate(rightTimelineCoordinate);
     		if (endEvent == null)
     			endEvent = eventLog.getLastEvent();
-    
+
     		return new long[] {startEvent == null ? 0 : startEvent.getCPtr(), endEvent == null ? 0 : endEvent.getCPtr()};
 		}
 	}
@@ -3493,7 +3493,7 @@ public class SequenceChart
 	    // by the time we get here the moduleId must be always present in the map
         return getModuleIdToAxisModuleIndexMap().get(moduleId);
 	}
-    
+
     private int getModuleYViewportCoordinateByModuleIndex(int index) {
         return getAxisModuleYs()[index] + getAxisRenderers()[index].getHeight() / 2 - (int)getViewportTop();
     }
@@ -3501,7 +3501,7 @@ public class SequenceChart
     private int getEventAxisModuleIndex(long eventPtr) {
         return getAxisModuleIndexByModuleId(sequenceChartFacade.IEvent_getModuleId(eventPtr));
     }
-    
+
     private boolean isInitializationEvent(long eventPtr) {
         return sequenceChartFacade.IEvent_getEventNumber(eventPtr) == 0;
     }
@@ -3511,7 +3511,7 @@ public class SequenceChart
     }
 
     /**
-     * The initialization event is drawn on multiple module axes (one for each message sent). 
+     * The initialization event is drawn on multiple module axes (one for each message sent).
      * The vertical coordinate is determined by the message dependency between the initialize event and the event it caused.
      */
     private int getInitializationEventYViewportCoordinate(long messageDependencyPtr) {
@@ -3556,14 +3556,14 @@ public class SequenceChart
     			BigDecimal tickStart = leftSimulationTime.setScale(-tickScale, RoundingMode.FLOOR);
     			BigDecimal tickEnd = rightSimulationTime.setScale(-tickScale, RoundingMode.CEILING);
     			BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
-    
+
     			// use 2, 4, 6, 8, etc. if possible
     			if (tickIntvl.divide(BigDecimal.valueOf(5)).compareTo(tickSpacing) > 0)
     				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(5));
     			// use 5, 10, 15, 20, etc. if possible
     			else if (tickIntvl.divide(BigDecimal.valueOf(2)).compareTo(tickSpacing) > 0)
     				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(2));
-    
+
     			for (BigDecimal tick = tickStart; tick.compareTo(tickEnd)<0; tick = tick.add(tickIntvl))
     				if (tick.compareTo(BigDecimal.ZERO) >= 0)
     					ticks.add(tick);
@@ -3573,15 +3573,15 @@ public class SequenceChart
     			long modX = fixPointViewportCoordinate % TICK_SPACING;
     			long tleft = modX - TICK_SPACING;
     			long tright = modX + viewportWidth + TICK_SPACING;
-    
+
     			IEvent lastEvent = eventLog.getLastEvent();
-    
+
     			if (lastEvent != null) {
     				BigDecimal endSimulationTime = lastEvent.getSimulationTime().toBigDecimal();
-    
+
     				for (long t = tleft; t < tright; t += TICK_SPACING) {
     					BigDecimal tick = calculateTick(t, TICK_SPACING / 2);
-    
+
     					if (tick.compareTo(BigDecimal.ZERO) >= 0 && tick.compareTo(endSimulationTime) <= 0)
     						ticks.add(tick);
     				}
@@ -3615,7 +3615,7 @@ public class SequenceChart
         // NOTE: leave it as a comment: Assert.isTrue(tMax.compareTo(simulationTime) >= 0);
 		if (tMin.compareTo(simulationTime) > 0)
 		    tMin = simulationTime;
-	
+
 		if (tMax.compareTo(simulationTime) < 0)
 		    tMax = simulationTime;
 		Assert.isTrue(tMin.compareTo(tMax) <= 0);
@@ -3858,7 +3858,7 @@ public class SequenceChart
 					ArrayList<IEvent> events = new ArrayList<IEvent>();
 					ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
 					collectStuffUnderMouse(me.x, me.y, events, messageDependencies, null);
-				
+
 					if (messageDependencies.size() == 1)
 						zoomToMessageDependency(messageDependencies.get(0));
 
@@ -3890,7 +3890,7 @@ public class SequenceChart
 									events.add(eventLog.getEventForEventNumber(eventNumber));
 
 							collectStuffUnderMouse(me.x, me.y, events, null, null);
-						
+
 							updateSelectionEvents(events, false);
 						}
 					}
@@ -3954,7 +3954,7 @@ public class SequenceChart
 						EventLogMessageEntry eventLogMessageEntry = event.getEventLogMessage(i);
 
 						res += "<br/><span style=\"color:rgb(127, 0, 85)\"> - " + eventLogMessageEntry.getText() + "</span>";
-					
+
 						if (i == 100) {
 						    res += "<br/><br/>Content stripped after 100 lines. See Eventlog Table for more details.";
 						    break;
@@ -3978,7 +3978,7 @@ public class SequenceChart
 
 			return res;
 		}
-	
+
 		// 3) no message arrows: show module method call info
 		if (moduleMethodCalls.size() > 0) {
             String res = "";
@@ -4046,12 +4046,12 @@ public class SequenceChart
 			result += getMessageIdText(beginBeginSendEntry, formatted);
 			if (!sameMessage)
 			    result += " -> " + getMessageIdText(endBeginSendEntry, formatted);
-		
+
             if (formatted) {
                 if (beginBeginSendEntry.getDetail() != null) {
                     if (!sameMessage)
                         result += "<br/>First: ";
-    
+
                     result += getMessageDetailText(beginBeginSendEntry, outSizeConstraint);
                 }
 
@@ -4069,7 +4069,7 @@ public class SequenceChart
 
             if (formatted)
 	            result += getMessageDependencyEventNumbersText(messageDependency) + getSimulationTimeDeltaText(messageDependency);
-	            
+
 		    result += getMessageIdText(beginSendEntry, formatted);
 
 		    if (formatted && beginSendEntry.getDetail() != null)
@@ -4098,7 +4098,7 @@ public class SequenceChart
         String boldEnd = formatted ? "</b>" : "";
         return "(" + beginSendEntry.getMessageClassName() + ") " + boldStart + beginSendEntry.getMessageFullName() + boldEnd;
     }
-    
+
     private String getModuleMethodCallText(ModuleMethodBeginEntry moduleMethodCall, boolean formatted, SizeConstraint outSizeConstraint) {
         String itallicStart = formatted ? "<i>" : "";
         String itallicEnd = formatted ? "</i>" : "";
@@ -4121,7 +4121,7 @@ public class SequenceChart
             int messageTreeId = beginSendEntry.getMessageTreeId();
             if (messageTreeId != -1 && messageTreeId != messageId)
                 result += ", tree id = " + messageTreeId;
-            
+
             int messageEncapsulationId = beginSendEntry.getMessageEncapsulationId();
             if (messageEncapsulationId != -1 && messageEncapsulationId != messageId)
                 result += ", encapsulation id = " + messageEncapsulationId;
@@ -4152,7 +4152,7 @@ public class SequenceChart
 
         if (formatted)
             result += "module ";
-        
+
         result += getModuleText(moduleCreatedEntry, formatted) + " (id = " + event.getModuleId() + ")";
 
 		IMessageDependency messageDependency = event.getCause();
@@ -4183,7 +4183,7 @@ public class SequenceChart
 
         if (!formatted && typeName.contains("."))
             typeName = StringUtils.substringAfterLast(typeName, ".");
-        
+
         return "(" + typeName + ") " +  boldStart + moduleName + boldEnd;
 	}
 
@@ -4228,23 +4228,23 @@ public class SequenceChart
 	                        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
 	                        long startEventPtr = eventPtrRange[0];
 	                        long endEventPtr = eventPtrRange[1];
-	                        
+
 	                        if (startEventPtr != 0 && endEventPtr != 0) {
     			            	for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
     			            	    int x = (int)getEventXViewportCoordinate(eventPtr);
-    
+
     			            	    if (isInitializationEvent(eventPtr)) {
     			                        for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
     			                            long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
     			                            int y = getInitializationEventYViewportCoordinate(consequencePtr);
-    
+
     			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
     		                                    events.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
     			                        }
     			            	    }
     			            	    else if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
     			   						events.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
-    
+
     			   					if (eventPtr == endEventPtr)
     				   					break;
     			            	}
@@ -4262,7 +4262,7 @@ public class SequenceChart
 
 				        		for (int i = 0; i < messageDependencies.size(); i++) {
 				        			long messageDependencyPtr = messageDependencies.get(i);
-				        		
+
 				        			// TODO: cast ptr_t as (ptr_t)(unsigned int)
 				        			// TODO: PtrVector should return Java long
 
@@ -4283,7 +4283,7 @@ public class SequenceChart
 
                                 for (int i = 0; i < moduleMethodBeginEntries.size(); i++) {
                                     long moduleMethodBeginEntryPtr = moduleMethodBeginEntries.get(i);
-                                    
+
                                     if (drawModuleMethodCall(moduleMethodBeginEntryPtr, mouseX, mouseY - GUTTER_HEIGHT, MOUSE_TOLERANCE, null))
                                         calls.add((ModuleMethodBeginEntry)sequenceChartFacade.EventLogEntry_getEventLogEntry(moduleMethodBeginEntryPtr));
                                 }
@@ -4527,10 +4527,10 @@ public class SequenceChart
 
     public List<IEvent> getSelectionEvents() {
         ArrayList<IEvent> events = new ArrayList<IEvent>();
-        
+
         for (Long eventNumber : selectionEventNumbers)
             events.add(eventLog.getEventForEventNumber(eventNumber));
-        
+
         return events;
     }
 
@@ -4660,8 +4660,8 @@ class SequenceChartState implements Serializable {
  */
 class AxisState implements Serializable {
 	private static final long serialVersionUID = 1L;
-    
-    // identifies the axis module 
+
+    // identifies the axis module
     public String moduleFullPath;
 
 	// identifies the vector

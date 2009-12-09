@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,7 +26,7 @@ public class TableItemAccess extends ClickableWidgetAccess
 	public TableItemAccess(TableItem widget) {
 		super(widget);
 	}
-	
+
     @Override
 	public TableItem getWidget() {
 		return (TableItem)widget;
@@ -52,7 +52,7 @@ public class TableItemAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width", getWidget().getBounds().width > 0);
         return point;
 	}
-	
+
 	@Override
 	protected Point toAbsolute(Point point) {
         return getWidget().getParent().toDisplay(point);
@@ -69,13 +69,13 @@ public class TableItemAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width", bounds.width > 0);
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
     }
-    
+
 
 	@Override
 	protected Menu getContextMenu() {
 		return (Menu)getWidget().getParent().getMenu();
 	}
-	
+
     @UIStep
     public void ensureChecked(boolean state) {
         if (getWidget().getChecked() != state) {
@@ -84,7 +84,7 @@ public class TableItemAccess extends ClickableWidgetAccess
             pressKey(' ');
         }
     }
-	
+
     @UIStep
     public void clickColumn(int index) {
         Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getTextBounds(index)));
@@ -111,7 +111,7 @@ public class TableItemAccess extends ClickableWidgetAccess
         System.out.println(oldFocusControl.getClass().getSimpleName());
         return (TextAccess)createAccess(focusControl);
     }
-    
+
     @InBackgroundThread
     public void clickAndTypeOver(String content) {
         TextAccess cellEditor = activateCellEditor();

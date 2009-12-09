@@ -45,7 +45,7 @@ public class FileOutputScalarManager extends OutputFileManager implements IOutpu
         catch (FileNotFoundException e) {
             throw new ResultRecordingException("Cannot open output scalar file " + file.getPath() + e.getMessage(), e);
         }
-        
+
         out.println("version " + FILE_VERSION);
         out.println();
         writeRunHeader(out, runID, runAttributes);

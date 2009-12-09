@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,12 +25,12 @@ public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProce
 	@Override
 	@SuppressWarnings("unchecked")
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
-        List<ICompletionProposal> result = 
+        List<ICompletionProposal> result =
             createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(),
                     "", NedCompletionHelper.proposedPrivateDocTodo, " ", "");
 
         Collections.sort(result, CompletionProposalComparator.getInstance());
         return result.toArray(new ICompletionProposal[result.size()]);
-    } 
+    }
 
 }

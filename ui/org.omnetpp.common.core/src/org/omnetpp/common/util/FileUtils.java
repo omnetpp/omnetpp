@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,7 +34,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * Delete the contents of the directory recursively 
+	 * Delete the contents of the directory recursively
 	 */
 	public static void deleteDirContents(File dir) {
 		if (dir.exists()) {
@@ -81,11 +81,11 @@ public class FileUtils {
 
 	public static void copyFilesOf(File sourceDir, final FileFilter filter, File targetDir, final byte[] buffer) throws IOException {
 		File[] files = (filter != null) ? sourceDir.listFiles(filter) : sourceDir.listFiles();
-	
+
 		for (int i = 0; i < files.length; i++) {
 			if (targetDir.exists() == false)
 				targetDir.mkdir();
-		
+
 			File source = files[i];
 			File target = new File(targetDir, source.getName());
 
@@ -143,11 +143,11 @@ public class FileUtils {
     public static void writeBinaryFile(String fileName, byte[] content) throws IOException {
         writeBinaryFile(new File(fileName), content);
     }
-    
+
     public static void writeBinaryFile(File target, byte[] content) throws IOException {
         copy(new ByteArrayInputStream(content), target);
     }
-    
+
     public static void writeTextFile(String fileName, String content) throws IOException {
         writeTextFile(new File(fileName), content);
     }

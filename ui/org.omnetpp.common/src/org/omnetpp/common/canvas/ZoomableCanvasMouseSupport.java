@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,8 +23,8 @@ import org.omnetpp.common.ui.CustomCursors;
 
 /**
  * Adds mouse bindings to a ZoomableCachingCanvas for zooming and panning.
- * 
- * There are two operation modes that can be selected with setMouseMode(): 
+ *
+ * There are two operation modes that can be selected with setMouseMode():
  * panning (aka "hand") and zoom.
  *
  * Bindings in pan mode:
@@ -42,10 +42,10 @@ import org.omnetpp.common.ui.CustomCursors;
  *   - leftclick: zoom in
  *   - shift+leftclick: zoom out
  *   - ctrl+drag: panning
- *   
- * Note that the opposite mode's bindings are always available by 
+ *
+ * Note that the opposite mode's bindings are always available by
  * holding down the ctrl key.
- * 
+ *
  * @author Andras
  */
 public class ZoomableCanvasMouseSupport {
@@ -69,7 +69,7 @@ public class ZoomableCanvasMouseSupport {
 
 	// used tell apart click from drag; initialized to true to prevent initial
 	// stray button-up event (ie end of the double-click) to zoom the canvas
-	private boolean mousedMoved = true; 
+	private boolean mousedMoved = true;
 
 	// remembered because MouseMove doesn't send it
 	private int activeMouseButton;
@@ -87,7 +87,7 @@ public class ZoomableCanvasMouseSupport {
 		};
 		setMouseMode(PAN_MODE);
 	}
-    
+
 	public int getMouseMode() {
 		return mouseMode;
 	}
@@ -102,7 +102,7 @@ public class ZoomableCanvasMouseSupport {
 	/**
 	 * Calculates and sets the new mouse cursor.
 	 * To be called when the mouseMode changed, a mouse button pressed/released or
-	 * a modifier key pressed/released. 
+	 * a modifier key pressed/released.
 	 */
 	private void updateCursor(int mouseMode, int mouseButton, int modifierKeys) {
 		boolean ctrl = (modifierKeys & SWT.MOD1) != 0;
@@ -111,7 +111,7 @@ public class ZoomableCanvasMouseSupport {
 //				(mouseMode == PAN_MODE ? "pan" : "zoom"),
 //				(mouseButton == 0 ? "no button pressed" : "button pressed"),
 //				(shift && ctrl ? "ctrl+shift" :	ctrl ? "ctrl" :	shift ? "shift" : "none"));
-	
+
 		Cursor cursor;
 		boolean zoomCursor = (mouseMode == PAN_MODE) && ctrl || (mouseMode == ZOOM_MODE) && !ctrl;
 		if (zoomCursor) {
@@ -165,7 +165,7 @@ public class ZoomableCanvasMouseSupport {
 				}
 			}
 		});
-	
+
 		// mouse button down / up
 		canvas.addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent event) {}
@@ -205,10 +205,10 @@ public class ZoomableCanvasMouseSupport {
 						doPanning(event);
 					}
 					mousedMoved = true;
-				} 
-				else if (activeMouseButton==0) { // plain mouse move (no mouse button pressed) 
-					// restore cursor at end of drag. (It is not enough to do it in the 
-					// "mouse released" event, because we don't receive it if user 
+				}
+				else if (activeMouseButton==0) { // plain mouse move (no mouse button pressed)
+					// restore cursor at end of drag. (It is not enough to do it in the
+					// "mouse released" event, because we don't receive it if user
 					// releases mouse outside the canvas!)
 					updateCursor(mouseMode, activeMouseButton, modifier);
 				}

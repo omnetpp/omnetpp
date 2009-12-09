@@ -175,7 +175,7 @@
                 %label.attrib;"
 >
 
-<!-- Add common attributes to Table, TGroup, TBody, THead, TFoot, Row, 
+<!-- Add common attributes to Table, TGroup, TBody, THead, TFoot, Row,
      EntryTbl, and Entry (and InformalTable element). -->
 
 <!ENTITY % secur "
@@ -216,7 +216,7 @@
     tocentry    %yesorno.attvals;       #IMPLIED
     shortentry  %yesorno.attvals;       #IMPLIED
     orient      (port|land)     #IMPLIED
-    pgwide      %yesorno.attvals;       #IMPLIED 
+    pgwide      %yesorno.attvals;       #IMPLIED
     summary     CDATA          #IMPLIED
     width       CDATA        #IMPLIED
     border      CDATA        #IMPLIED

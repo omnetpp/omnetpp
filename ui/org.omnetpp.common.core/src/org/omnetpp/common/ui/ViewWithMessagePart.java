@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,9 +23,9 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  * Base class for Views that may occasionally need to display an informative message
- * (like "No data available") instead of the normal contents . 
+ * (like "No data available") instead of the normal contents .
  * Subclasses can call displayMessage()/hideMessage() for this functionality.
- * 
+ *
  * @author Andras
  */
 public abstract class ViewWithMessagePart extends ViewPart {
@@ -41,8 +41,8 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	}
 
 	/**
-	 * Create and return the control that displays the content of the view. 
-	 * This will typically be a table or a tree widget. 
+	 * Create and return the control that displays the content of the view.
+	 * This will typically be a table or a tree widget.
 	 */
 	abstract protected Control createViewControl(Composite parent);
 
@@ -67,7 +67,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 
 	/**
 	 * Returns when the message is showing instead of the view contents.
-	 * @see showMessage() 
+	 * @see showMessage()
 	 */
 	public boolean isShowingMessage() {
 		return !isVisible(viewControl);
@@ -134,7 +134,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	}
 
 	/**
-	 * Utility method: Return the selection of the active 
+	 * Utility method: Return the selection of the active
 	 * workbench part (editor OR view!), or null.
 	 */
 	protected ISelection getWorkbenchSelection() {

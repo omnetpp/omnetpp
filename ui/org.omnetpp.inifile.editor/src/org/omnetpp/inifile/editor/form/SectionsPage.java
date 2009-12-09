@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -70,7 +70,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Inifile editor page to manage the sections in the file.
- * 
+ *
  * @author Andras
  */
 public class SectionsPage extends FormPage {
@@ -188,7 +188,7 @@ public class SectionsPage extends FormPage {
 					treeViewer.getTree().selectAll(); //XXX this does not work, because text editor hotkey masks it
 			}
 		});
-	
+
 		// export the tree's selection as editor selection
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -218,7 +218,7 @@ public class SectionsPage extends FormPage {
 		menuManager.add(gotoParametersAction);
 		menuManager.add(addKeysAction);
 		treeViewer.getTree().setMenu(menuManager.createContextMenu(treeViewer.getTree()));
-	
+
 		return treeViewer;
 	}
 
@@ -237,8 +237,8 @@ public class SectionsPage extends FormPage {
 		viewer.addDropSupport(dndOperations, transfers, new DropTargetAdapter() {
 			public void drop(DropTargetEvent event) {
 				// note: in theory, the user can drag across different treeViewers
-				// (i.e. from a different inifile editor, or even from a Scave editor!), 
-				// so we have to be careful when looking at the dragged data 
+				// (i.e. from a different inifile editor, or even from a Scave editor!),
+				// so we have to be careful when looking at the dragged data
 				String[] draggedSections = getSectionNamesFromTreeSelection((IStructuredSelection) event.data);
 				String targetSectionName = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
 
@@ -318,14 +318,14 @@ public class SectionsPage extends FormPage {
 				InifileUtils.addSection(doc, sectionName);
 
 				String description = dialog.getDescription();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);		
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);
 
 				String extendsSection = dialog.getExtendsSection();
 				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);		
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);
 
 				String networkName = dialog.getNetworkName();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);		
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);
 
 				reread();
 			}
@@ -355,14 +355,14 @@ public class SectionsPage extends FormPage {
 					InifileUtils.renameSection(doc, oldSectionName, sectionName);
 
 				String description = dialog.getDescription();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);		
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);
 
 				String extendsSection = dialog.getExtendsSection();
 				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);		
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);
 
 				String networkName = dialog.getNetworkName();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);		
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);
 
 				reread();
 			}
@@ -480,7 +480,7 @@ public class SectionsPage extends FormPage {
 				IMarker[] markers = InifileUtils.getProblemMarkersForWholeSection(sectionName, doc);
 				int maxProblemSeverity = InifileUtils.getMaximumSeverity(markers);
 				node = new GenericTreeNode(new SectionData(sectionName, maxProblemSeverity, false));
-			} 
+			}
 			else {
 				node = new GenericTreeNode(new SectionData(sectionName, -1, true));
 			}
@@ -499,8 +499,8 @@ public class SectionsPage extends FormPage {
 			public boolean matches(Object object) {
 				return object instanceof SectionData && ((SectionData)object).sectionName.equals(section);
 			}
-		}); 
-	
+		});
+
 		if (sectionData!=null)
 			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(sectionData)), true);
 		else

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -70,7 +70,7 @@ public class ChartFactory {
 		setChartProperties(chart, scalarChart);
 
 		populateScalarChart(chart, manager, scalarChart);
-	
+
 		return scalarChart;
 	}
 
@@ -170,9 +170,9 @@ public class ChartFactory {
 
 	protected static void startDatasetEvaluationJob(final ChartCanvas chartCanvas, final IDatasetCalculation calc) {
 		//
-		// FIXME Handle concurrency issues! Model must be locked against modification while 
+		// FIXME Handle concurrency issues! Model must be locked against modification while
 		// the background job is working with the dataset. Build locking into CommandStack.execute()?
-		// Making the model temporarily readonly could also be a solution, but I didn't find such 
+		// Making the model temporarily readonly could also be a solution, but I didn't find such
 		// method. (Andras)
 		//
 		chartCanvas.setStatusText("Please wait...");
@@ -189,7 +189,7 @@ public class ChartFactory {
 						setChartStatusText(chartCanvas, "Chart update cancelled.");
 						return Status.CANCEL_STATUS;
 					}
-				
+
 					// we're a non-UI thread, so we need to use display.asyncExec() to set the results.
 					// Note that the chart page may have been close since, so we need to check isDisposed() too.
 					Display.getDefault().asyncExec(new Runnable() {
@@ -200,7 +200,7 @@ public class ChartFactory {
 							}
 						}});
 					return Status.OK_STATUS;
-				} 
+				}
 				catch (Throwable e) {
 					setChartStatusText(chartCanvas, "An error occurred during dataset processing.");
 					return new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, 0, "An error occurred during dataset processing.", e);
@@ -216,13 +216,13 @@ public class ChartFactory {
 					}});
 			}
 		};
-	
+
 		chartCanvas.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				job.cancel();
 			}
 		});
-	
+
 		job.setPriority(Job.INTERACTIVE); // high priority
 		job.schedule();
 	}

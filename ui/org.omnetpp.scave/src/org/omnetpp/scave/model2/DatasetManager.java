@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -79,7 +79,7 @@ import org.omnetpp.scave.model.SetOperation;
 /**
  * This class calculates the content of a dataset
  * applying the operations described by the dataset.
- * 
+ *
  * @author tomi
  */
 public class DatasetManager {
@@ -99,8 +99,8 @@ public class DatasetManager {
 	}
 
 	/**
-	 * Visitor-like thingy, where doSwitch() traverses the dataset (or whatever model item was 
-	 * passed into it), and calculates an IDList of the given type. It stops at the "target" item. 
+	 * Visitor-like thingy, where doSwitch() traverses the dataset (or whatever model item was
+	 * passed into it), and calculates an IDList of the given type. It stops at the "target" item.
 	 */
 	static class IDListCollector extends ProcessDatasetSwitch {
 
@@ -118,7 +118,7 @@ public class DatasetManager {
 		public IDList getIDList() {
 			return idlist != null ? idlist : new IDList();
 		}
-	
+
 		public Object caseAdd(Add add) {
 			if (type == null || add.getType() == type) {
 				idlist.merge(select(null, add));
@@ -141,7 +141,7 @@ public class DatasetManager {
 			caseProcessingOp(compute, false);
 			return this;
 		}
-	
+
 		private Object caseProcessingOp(ProcessingOp op, boolean removeInputs) {
 			if (op.getOperation() != null) {
 				IDList selectedVectors = select(idlist, op.getFilters(), ResultType.VECTOR_LITERAL);
@@ -227,7 +227,7 @@ public class DatasetManager {
 		checkReadLock(manager);
 		if (dataset == null)
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
-	
+
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(dataset, chart, computeData);
 		IDList idlist = builder.getDisplayedIDs();
@@ -244,12 +244,12 @@ public class DatasetManager {
 				dataflowManager = null;
 			}
 		}
-	
+
 		if (progressMonitor != null && progressMonitor.isCanceled())
 			return null;
-	
+
 		String title = defaultTitle(ScaveModelUtil.getResultItems(idlist, manager));
-	
+
 		return dataValues != null ?
 				new VectorDataset(title, idlist, dataValues, lineNameFormat, manager) :
 				new VectorDataset(title, idlist, lineNameFormat, manager);
@@ -258,7 +258,7 @@ public class DatasetManager {
 	public static Pair<IDList,XYArray[]> readAndComputeVectorData(Dataset dataset, DatasetItem target, ResultFileManager manager, IProgressMonitor monitor) {
 		Assert.isNotNull(dataset);
 		checkReadLock(manager);
-	
+
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(dataset, target, true);
 		IDList idlist = builder.getDisplayedIDs();
@@ -272,7 +272,7 @@ public class DatasetManager {
 		finally {
 			dataflowManager.delete();
 		}
-	
+
 		return new Pair<IDList, XYArray[]>(idlist, dataValues);
 	}
 
@@ -283,31 +283,31 @@ public class DatasetManager {
 
 	public static IXYDataset createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor monitor) {
 		checkReadLock(manager);
-	
+
 		//TODO update progressMonitor
 		if (dataset == null)
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
 			IDList scalars = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 			IDList vectors = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
-		
+
 			// process scalars
 			XYDatasetVector xyScalars = null;
 			List<IsoLineData[]> isoLineIds = null;
 			if (!scalars.isEmpty()) {
 				IsoLineData xData = IsoLineData.fromFilterPattern(chart.getXDataPattern());
 				Assert.isLegal(xData != null && xData.getModuleName() != null && xData.getDataName() != null, "X data is not selected.");
-			
+
 				String xModuleName = xData.getModuleName();
 				String xScalarName = xData.getDataName();
 				List<String> isoPatterns = chart.getIsoDataPattern();
 				boolean averageReplications = chart.isAverageReplications();
-			
+
 				StringVector isoModuleNames = new StringVector();
 				StringVector isoScalarNames = new StringVector();
 				StringVector isoAttrNames = new StringVector();
 				collectIsoParameters(isoPatterns, isoModuleNames, isoScalarNames, isoAttrNames);
-			
+
 				DataSorter sorter = new DataSorter(manager);
 				ResultItemFields rowFields = new ResultItemFields(MODULE, NAME);
 				ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT, MEASUREMENT) :
@@ -319,7 +319,7 @@ public class DatasetManager {
 				isoLineIds = collectIsoLineIds(scalars, isoModuleNames, isoScalarNames, isoAttrNames, xyScalars, manager);
 				// assertOrdered(xyScalars);
 			}
-		
+
 			// process vectors
 			XYArray[] xyVectors = null;
 			IDList yVectors = null;
@@ -344,7 +344,7 @@ public class DatasetManager {
 					}
 				}
 			}
-		
+
 			// compose results
 			if (xyScalars != null && xyVectors == null)
 				return createScatterPlotDataset(xyScalars, isoLineIds, manager);
@@ -354,13 +354,13 @@ public class DatasetManager {
 				return new CompoundXYDataset(
 						createScatterPlotDataset(xyScalars, isoLineIds, manager),
 						new VectorScatterPlotDataset(yVectors, xyVectors, manager));
-		
+
 		}
 		return null;
 	}
 
 	/**
-	 * Collect the module/scalar names or attribute names from the filter patterns. 
+	 * Collect the module/scalar names or attribute names from the filter patterns.
 	 */
 	private static void collectIsoParameters(List<String> isoPatterns,
 							StringVector isoModuleNames, StringVector isoScalarNames, StringVector isoAttrNames) {
@@ -411,9 +411,9 @@ public class DatasetManager {
 					isoLineId.add(data);
 				}
 			}
-			isoLineIds.add(isoLineId.toArray(new IsoLineData[isoLineId.size()])); 
+			isoLineIds.add(isoLineId.toArray(new IsoLineData[isoLineId.size()]));
 		}
-	
+
 		return isoLineIds;
 	}
 
@@ -435,7 +435,7 @@ public class DatasetManager {
 	public static IXYDataset createScatterPlotDataset(XYDatasetVector xydatasets, List<IsoLineData[]> isoLineIds, ResultFileManager manager) {
 		Assert.isTrue(isoLineIds == null || xydatasets.size() == isoLineIds.size());
 		checkReadLock(manager);
-	
+
 		IXYDataset[] datasets = new IXYDataset[(int)xydatasets.size()];
 		for (int i = 0; i < datasets.length; ++i)
 			datasets[i] = new ScalarScatterPlotDataset(xydatasets.get(i), isoLineIds == null ? null : isoLineIds.get(i));
@@ -444,7 +444,7 @@ public class DatasetManager {
 
 	public static IXYDataset createXYDataset(Chart chart, Dataset dataset, boolean computeData, ResultFileManager manager, IProgressMonitor monitor) {
 		checkReadLock(manager);
-	
+
 		if (chart instanceof LineChart) {
 			LineChart lineChart = (LineChart)chart;
 			return createVectorDataset(lineChart, dataset, lineChart.getLineNameFormat(), computeData, manager, monitor);
@@ -458,7 +458,7 @@ public class DatasetManager {
 	public static IHistogramDataset createHistogramDataset(HistogramChart chart, ResultFileManager manager, IProgressMonitor monitor) {
 		checkReadLock(manager);
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		IDList idlist = dataset != null ? getIDListFromDataset(manager, dataset, chart, ResultType.HISTOGRAM_LITERAL): new IDList(); 
+		IDList idlist = dataset != null ? getIDListFromDataset(manager, dataset, chart, ResultType.HISTOGRAM_LITERAL): new IDList();
 		return new HistogramDataset(idlist, manager);
 	}
 
@@ -496,14 +496,14 @@ public class DatasetManager {
 	 * Returns the default format string for names of the {@code items}.
 	 * It is "{file} {run} {run-number} {module} {name} {experiment} {measurement} {replication}",
 	 * but fields that are the same for each item are omitted.
-	 * If all the fields has the same value in {@code items}, then the "{index}" is used as 
-	 * the format string. 
+	 * If all the fields has the same value in {@code items}, then the "{index}" is used as
+	 * the format string.
 	 */
 	private static String defaultNameFormat(ResultItem[] items) {
 
 		if (items.length <= 1)
 			return "{module} {name}";
-	
+
 		List<ResultItemField> differentFields = complement(getCommonFields(items, FIELDS_OF_LINENAMES));
 		if (differentFields.isEmpty())
 			return "{module} {name} - {index}";
@@ -518,7 +518,7 @@ public class DatasetManager {
 	private static String defaultTitle(ResultItem[] items) {
 		if (items.length <= 1)
 			return null;
-	
+
 		List<ResultItemField> fields = getCommonFields(items, titleFields);
 		// remove computed file name
 		if (fields.contains(FLD_NAME) || fields.contains(FLD_MODULE)) {
@@ -539,7 +539,7 @@ public class DatasetManager {
 	private static List<ResultItemField> getCommonFields(ResultItem[] items, ResultItemField[] fields) {
 		List<ResultItemField> commonFields = new ArrayList<ResultItemField>();
 		int itemCount = items.length;
-	
+
 		if (itemCount > 0) {
 			for (ResultItemField field : fields) {
 				String firstValue = field.getFieldValue(items[0]);
@@ -553,12 +553,12 @@ public class DatasetManager {
 					commonFields.add(field);
 			}
 		}
-	
+
 		return commonFields;
 	}
 
 	/**
-	 * Generates a format string from the specified fields 
+	 * Generates a format string from the specified fields
 	 * for formatting result items.
 	 */
 	private static String nameFormatUsingFields(List<ResultItemField> fields) {
@@ -575,14 +575,14 @@ public class DatasetManager {
 
 	/**
 	 * Selects ids from a {@code source} IDList.
-	 * If no filters given or the first filter is a Deselect, then a "Select all" is implicitly 
+	 * If no filters given or the first filter is a Deselect, then a "Select all" is implicitly
 	 * executed first.
 	 */
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, ResultType type) {
 		Assert.isNotNull(source);
 		Assert.isNotNull(filters);
 		checkReadLock(manager);
-	
+
 		// Select all if no select at the beginning
 		IDList result = new IDList();
 		if (filters.isEmpty() || filters.get(0) instanceof Deselect) {
@@ -611,7 +611,7 @@ public class DatasetManager {
 			if (cachedIDs.size() > 0 && !manager.hasStaleID(cachedIDs))
 				return cachedIDs;
 		}
-	
+
 		// select IDs by the filter
 		Dataset sourceDataset = op.getSourceDataset();
 		ResultType type = op.getType();
@@ -631,7 +631,7 @@ public class DatasetManager {
 		if (excepts != null)
 			for (Except except : excepts)
 				idlist.substract(selectInternal(idlist, sourceDataset, type, except.getFilterPattern(), manager));
-	
+
 		// update cached IDs
 		if (op.getCachedIDs() != null)
 			op.setCachedIDs(idlist);
@@ -699,7 +699,7 @@ public class DatasetManager {
 			return outAttrs;
 		for (String key : inputAttrs.keys().toArray()) // TODO use clone()
 			outAttrs.set(key, inputAttrs.get(key));
-	
+
 		NodeType type = NodeTypeRegistry.getInstance().getNodeType(operation);
 		StringVector warningList = new StringVector();
 		type.mapVectorAttributes(outAttrs, warningList);
@@ -715,13 +715,13 @@ public class DatasetManager {
 		if (inputIDs != null)
 			for (int i = 0; i < inputIDs.size(); ++i)
 				hash = 31 * hash + inputIDs.get(i);
-	
+
 		String operation = processingOp.getOperation();
 		hash = 31 * hash + (operation == null ? 0 : operation.hashCode());
-	
+
 		List<String> groupByFields = processingOp.getGroupBy();
 		hash = 31 * hash + (groupByFields == null ? 0 : groupByFields.hashCode());
-	
+
 		List<Param> params = processingOp.getParams();
 		if (params != null)
 			for (Param param : params) {

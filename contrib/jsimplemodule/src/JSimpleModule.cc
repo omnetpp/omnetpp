@@ -15,7 +15,7 @@ Define_Module(JSimpleModule);
 
 JSimpleModule::JSimpleModule()
 {
-    // Note: we cannot call createJavaModuleObject() here, because the module 
+    // Note: we cannot call createJavaModuleObject() here, because the module
     // type object (cModuleType) is not yet set on the module
     javaPeer = 0;
 }
@@ -28,7 +28,7 @@ JSimpleModule::~JSimpleModule()
 
 int JSimpleModule::numInitStages() const
 {
-    if (javaPeer==0) 
+    if (javaPeer==0)
         const_cast<JSimpleModule *>(this)->createJavaModuleObject();
 
     int n = jenv->CallIntMethod(javaPeer, numInitStagesMethod);
@@ -38,7 +38,7 @@ int JSimpleModule::numInitStages() const
 
 void JSimpleModule::initialize(int stage)
 {
-    if (javaPeer==0) 
+    if (javaPeer==0)
         createJavaModuleObject();
     DEBUGPRINTF("Invoking initialize(%d) on new instance...\n", stage);
     jenv->CallVoidMethod(javaPeer, initializeStageMethod, stage);

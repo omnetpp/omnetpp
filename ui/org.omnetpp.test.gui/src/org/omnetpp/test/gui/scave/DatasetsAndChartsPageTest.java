@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -68,23 +68,23 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
         tree.findTreeItemByContent("scatter chart test-scatterchart").reveal().click();
         editor.releaseModifiers(SWT.SHIFT);
         tree.chooseFromContextMenu("Group");
-        
+
         GenericTreeNode content = buildDatasetsTreeContent();
         groupNodes(content.getChildren(3,6), n("group"));
         tree.assertContent(content);
-        
+
         editor.executeUndo();
         tree.assertContent(buildDatasetsTreeContent());
     }
-    
+
     public void testUngroup() {
         TreeAccess tree = datasetsPage.getDatasetsTree();
         tree.findTreeItemByContent("group").reveal().chooseFromContextMenu("Ungroup");
-        
+
         GenericTreeNode content = buildDatasetsTreeContent();
         ungroupNode(content.getChild(2));
         tree.assertContent(content);
-        
+
         editor.executeUndo();
         tree.assertContent(buildDatasetsTreeContent());
     }
@@ -136,21 +136,21 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 	protected static void groupNodes(GenericTreeNode[] children, GenericTreeNode wrapper) {
 		GenericTreeNode parent = children[0].getParent();
 		int index = children[0].indexInParent();
-	
+
 		for (GenericTreeNode child : children) {
 			child.unlink();
 			wrapper.addChild(child);
 		}
-	
+
 		parent.addChild(index, wrapper);
 	}
 
 	protected static void ungroupNode(GenericTreeNode node) {
 		Assert.assertTrue(node.getParent() != null);
-	
+
 		GenericTreeNode parent = node.getParent();
 		int index = node.indexInParent();
-	
+
 		node.unlink();
 		int count = node.getChildCount();
 		for (int i = 0; i < count; ++i) {

@@ -102,22 +102,22 @@
 		</java>
 	</target>
 
-	<!-- Extract / rearange the output for a single configuration 
-		config: platform.windowingsystem.architecture (triplet as specified in "configs" property), 
+	<!-- Extract / rearange the output for a single configuration
+		config: platform.windowingsystem.architecture (triplet as specified in "configs" property),
 		platdir: the directory name for the specific platform launcher and p2 profile dir -->
 	<target name="package-config">
-          <unzip src="${buildDirectory}/${buildLabel}/${archivePrefix}-${config}.zip" 
+          <unzip src="${buildDirectory}/${buildLabel}/${archivePrefix}-${config}.zip"
                  dest="${buildDirectory}/${buildLabel}">
             <patternset excludes="${archivePrefix}/plugins/** ${archivePrefix}/features/**"/>
             <globmapper from="${archivePrefix}/*" to="${archivePrefix}/${platdir}/*"/>
           </unzip>
-          <unzip src="${buildDirectory}/${buildLabel}/${archivePrefix}-${config}.zip" 
+          <unzip src="${buildDirectory}/${buildLabel}/${archivePrefix}-${config}.zip"
                  dest="${buildDirectory}/${buildLabel}">
             <patternset includes="${archivePrefix}/plugins/** ${archivePrefix}/features/**"/>
           </unzip>
 	</target>
 
-	<!-- create the final IDE layout by extracting the launcher and p2 profile into 
+	<!-- create the final IDE layout by extracting the launcher and p2 profile into
              separate platform specifc directory for ALL configurations -->
 	<target name="package">
           <ant target="package-config">

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,7 +14,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 /**
  * Data held by InifileEditor. Introduced because we don't want to pass around
  * a reference to the whole editor.
- * 
+ *
  * @author Andras
  */
 public class InifileEditorData {
@@ -40,7 +40,7 @@ public class InifileEditorData {
 	}
 
 	/**
-	 * Access to the editor's inifile analyzer. 
+	 * Access to the editor's inifile analyzer.
 	 */
 	public InifileAnalyzer getInifileAnalyzer() {
 		return analyzer;

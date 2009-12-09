@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,11 +19,11 @@ import org.omnetpp.eventlog.engine.IntVector;
  * This class implements a sort method that tries to minimize the total number of axes that arrows are crossing.
  * It takes a statistical sample from the eventlog and spends a limited amount of time to reorder axes.
  * Reordering uses bubble sort and two axes are swapped only when the result is better in terms of the number of crossings.
- * This will result in a local optimum. 
+ * This will result in a local optimum.
  */
 public class FlatAxisOrderByMinimizingCost {
     private EventLogInput eventLogInput;
-    
+
     private static int TIME_LIMIT = 1000; // in milliseconds
 
     public FlatAxisOrderByMinimizingCost(EventLogInput eventLogInput) {
@@ -34,7 +34,7 @@ public class FlatAxisOrderByMinimizingCost {
         IntIntMap cppModuleIdToAxisModuleIndexMap = getCppModuleIdToAxisModuleIndexMap(moduleIdToAxisModuleIndexMap);
         IntVector cppAxisMessageDependecyWeightMatrix = eventLogInput.getSequenceChartFacade().getApproximateMessageDependencyCountAdjacencyMatrix(cppModuleIdToAxisModuleIndexMap, 100, 1, 0);
         int[][] axisMessageDependecyWeightMatrix = getAxisMessageDependecyWeightMatrix(cppAxisMessageDependecyWeightMatrix, axisModules.length);
-        
+
         ModuleTreeItem[] orderedAxisModules = (ModuleTreeItem[])ArrayUtils.clone(axisModules);
         bubbleSort(orderedAxisModules, axisMessageDependecyWeightMatrix);
 
@@ -47,7 +47,7 @@ public class FlatAxisOrderByMinimizingCost {
 
         for (int i = 0; i < numberOfAxes; i++)
             axisModulePositions[i] = ArrayUtils.indexOf(orderedAxisModules, axisModules[i]);
-        
+
         return axisModulePositions;
     }
 
@@ -64,7 +64,7 @@ public class FlatAxisOrderByMinimizingCost {
             for (int i = 0; i < numberOfAxes; i++)
                 for (int j = i + 1; j < numberOfAxes; j++)
                     swapped |= swapWhenCostIsLess(axisModules, axisMessageDependecyWeightMatrix, i, j);
-            
+
             if (!swapped)
                 return;
         }
@@ -74,7 +74,7 @@ public class FlatAxisOrderByMinimizingCost {
         int costBefore = calculateCost(axisMessageDependecyWeightMatrix, i) + calculateCost(axisMessageDependecyWeightMatrix, j);
         swapAxes(axisModules, axisMessageDependecyWeightMatrix, i, j);
         int costAfter = calculateCost(axisMessageDependecyWeightMatrix, i) + calculateCost(axisMessageDependecyWeightMatrix, j);
-        
+
         if (costAfter < costBefore)
             return true;
         else {
@@ -119,7 +119,7 @@ public class FlatAxisOrderByMinimizingCost {
         for (int i = 0; i < numberOfAxes; i++)
             for (int j = 0; j < numberOfAxes; j++)
                 axisMessageDependecyWeightMatrix[i][j] = cppAxisMessageDependecyWeightMatrix.get(numberOfAxes * i + j);
-        
+
         return axisMessageDependecyWeightMatrix;
     }
 

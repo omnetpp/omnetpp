@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,7 +24,7 @@ public class DisplayUtils {
 		else
 			runnable.run();
 	}
- 
+
 	/**
 	 * Adds an event filter in front of existing filters. This is needed if you want
 	 * to receive all keypresses including hotkeys, because then you want to be in
@@ -35,9 +35,9 @@ public class DisplayUtils {
         // first, make room in the table (this adds the listener at the end of the table)
         Display display = Display.getDefault();
         display.addFilter(eventType, listener);
-        
-        // shift everything up, then add our listener to slot 0. Sorry about the reflection, 
-        // there seem to be no other way 
+
+        // shift everything up, then add our listener to slot 0. Sorry about the reflection,
+        // there seem to be no other way
         Object filterTable = ReflectionUtils.getFieldValue(display, "filterTable");
         int[] types = (int[]) ReflectionUtils.getFieldValue(filterTable, "types");
         Listener[] listeners = (Listener[]) ReflectionUtils.getFieldValue(filterTable, "listeners");

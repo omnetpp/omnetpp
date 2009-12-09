@@ -15,7 +15,7 @@ import org.omnetpp.scave.engine.ResultItemField;
 import static org.omnetpp.scave.engine.ResultItemField.*;
 
 /**
- * 
+ *
  *
  * @author tomi
  */

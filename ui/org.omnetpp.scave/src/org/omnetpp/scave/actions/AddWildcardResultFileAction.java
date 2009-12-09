@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -47,12 +47,12 @@ public class AddWildcardResultFileAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		InputValidator inputValidator = new InputValidator();
-		InputDialog dialog = new InputDialog(editor.getSite().getShell(), "Add files with wildcard", 
-				"Enter the file name. You can use ? and * wildcards to specify multiple files.", 
+		InputDialog dialog = new InputDialog(editor.getSite().getShell(), "Add files with wildcard",
+				"Enter the file name. You can use ? and * wildcards to specify multiple files.",
 				"*.vec, *.sca", inputValidator);
 		if (dialog.open() == Window.OK) {
 			String text = dialog.getValue();
-		
+
 			// split up text to multiple patterns, and add each one
 			for (String fileNamePattern : StringUtils.split(text, ",")) {
 				fileNamePattern = fileNamePattern.trim();

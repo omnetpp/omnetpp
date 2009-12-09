@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -43,11 +43,11 @@ public class FigureRecognizer extends ObjectRecognizer {
                         k++;
                 return makeMethodCall(parent, expr("getChildFigure("+figure.getClass().getSimpleName()+", " + k + ")", 0.5, figure));
             }
-            
-            //FIXME improve! 
+
+            //FIXME improve!
             // e.g. may identify a Label figure with its label;
             // or may identify as container as getFigureContainingLabelFigure(clazz, labelText, depth)
-            
+
         }
         return null;
     }

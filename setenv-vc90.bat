@@ -1,4 +1,4 @@
-@echo off              
+@echo off
 : &*$@ Windows sets errorlevel if variable doesn't exist
 if defined INCLUDE set INCLUDE=
 if defined LIB set LIB=

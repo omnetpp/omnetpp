@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,18 +15,18 @@ import org.eclipse.ui.PlatformUI;
 
 /**
  * Records part activations into the log.
- *   
+ *
  * @author Andras
  */
 public class PartActivationTracker implements IWorkbenchListener, IPartListener {
     protected boolean detailed = false;
 
     // for eliminating "Part Activated" message just after "Part Opened"
-    protected IWorkbenchPart partJustOpened; 
-    
+    protected IWorkbenchPart partJustOpened;
+
     public PartActivationTracker() {
     }
-    
+
     public void hookListeners() {
         PlatformUI.getWorkbench().addWorkbenchListener(this);
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().addPartListener(this);
@@ -68,7 +68,7 @@ public class PartActivationTracker implements IWorkbenchListener, IPartListener 
     protected String toString(IWorkbenchPart part) {
         return part.getTitle() + " [" + part.getClass().getSimpleName() + "]";
     }
-    
+
     public void postShutdown(IWorkbench workbench) {
         Activator.logMessage("Workbench shutdown completed");
     }

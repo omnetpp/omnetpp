@@ -1,17 +1,17 @@
 package org.omnetpp.scave.writers;
 
 /**
- * Extends IStatisticalSummary with weighted statistics. 
- * 
- * @author Andras 
+ * Extends IStatisticalSummary with weighted statistics.
+ *
+ * @author Andras
  */
 public interface IStatisticalSummary2 extends IStatisticalSummary {
-    
+
     /**
      * Returns whether this is weighted statistics.
      */
     boolean isWeighted();
-    
+
     /**
      * Returns the sum of weights.
      * @return The value or Double.NaN if no values have been added

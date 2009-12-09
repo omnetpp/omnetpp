@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,9 +26,9 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Generate completion proposals for inifile config keys.
- * 
+ *
  * Used for the text editor and field editors.
- * 
+ *
  * @author Andras
  */
 public class InifileConfigKeyContentProposalProvider extends ContentProposalProvider {
@@ -87,7 +87,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 				if (doc.containsKey(sec, key))
 					text += "<!> Set in ["+sec+"] to "+doc.getValue(sec, key)+"; set here to override it.\n\n";
 		}
-	
+
 		// generate "standard" documentation for it
 		text += key + " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
 		if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))

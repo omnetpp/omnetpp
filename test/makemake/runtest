@@ -19,8 +19,8 @@ cd work || exit 1
 echo > .project
 
 echo Creating makefiles...
-for i in * ""; do 
-  if [ "$i" != "" -a -d $i ]; then 
+for i in * ""; do
+  if [ "$i" != "" -a -d $i ]; then
     echo $i
     (cd $i && $MAKE "OPP_MAKEMAKE=opp_makemake -f --out ../out" -f buildspec || echo MAKEFILE CREATION FAILED: $i) || exit 1
   fi

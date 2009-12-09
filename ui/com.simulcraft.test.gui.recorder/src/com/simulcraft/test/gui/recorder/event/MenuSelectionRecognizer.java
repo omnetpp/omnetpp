@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -65,7 +65,7 @@ public class MenuSelectionRecognizer extends EventRecognizer implements ICodeRew
             if (shell.getMenuBar() == menu)
                 return shell;
             Control owner = doFindMenuOwner(shell, menu);
-            if (owner != null) 
+            if (owner != null)
                 return owner;
         }
         return null;
@@ -78,7 +78,7 @@ public class MenuSelectionRecognizer extends EventRecognizer implements ICodeRew
         if (control instanceof Composite) {
             for (Control child : ((Composite)control).getChildren()) {
                 Control owner = doFindMenuOwner(child, menu);
-                if (owner != null) 
+                if (owner != null)
                     return owner;
             }
         }

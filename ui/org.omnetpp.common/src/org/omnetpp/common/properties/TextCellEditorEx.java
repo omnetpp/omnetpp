@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -35,7 +35,7 @@ public abstract class TextCellEditorEx extends TextCellEditor {
     protected Button button;
     private boolean enableApplyOnFocusLost = true;
     protected Text text;
-    
+
     protected FocusListener textFocusListener = new FocusListener() {
         public void focusGained(FocusEvent e) {
         }
@@ -62,16 +62,16 @@ public abstract class TextCellEditorEx extends TextCellEditor {
         final Composite cell = new Composite(parent, getStyle());
         cell.setFont(parent.getFont());
         cell.setBackground(parent.getBackground());
-        
+
         GridLayout gridLayout = new GridLayout(2,false);
         gridLayout.marginHeight = gridLayout.marginWidth = 0;
         gridLayout.horizontalSpacing = 0;
-        
+
         cell.setLayout(gridLayout);
 
         text = (Text)super.createControl(cell);
         text.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-        
+
         button = new Button(cell, SWT.DOWN);
         button.setLayoutData(new GridData(SWT.BEGINNING,SWT.FILL,false,true));
         button.setText("...");
@@ -84,7 +84,7 @@ public abstract class TextCellEditorEx extends TextCellEditor {
                 }
             }
         });
-        
+
         // disable applyOnFocusLoss in case the mouse is over the button
         // if we clicked on the button we should not apply the current value
         button.addMouseTrackListener(new MouseTrackAdapter() {
@@ -92,13 +92,13 @@ public abstract class TextCellEditorEx extends TextCellEditor {
             public void mouseEnter(MouseEvent e) {
                 enableApplyOnFocusLost = false;
             }
-            
+
             @Override
             public void mouseExit(MouseEvent e) {
                 enableApplyOnFocusLost = true;
             }
         });
-        
+
         button.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
                 // Remove the text's focus listener since it's guaranteed
@@ -132,20 +132,20 @@ public abstract class TextCellEditorEx extends TextCellEditor {
         // disable the original focusLost listener inherited from TextCellEditor
         // the new one is called applyValuesOnFocusLost
     }
-    
+
     protected void applyValuesOnFocusLost() {
         if (isActivated() && enableApplyOnFocusLost) {
             fireApplyEditorValue();
             deactivate();
         }
     }
-    
+
     @Override
     protected void doSetValue(Object value) {
         if (value == null )
             value = "";
         super.doSetValue(value);
     }
-    
+
     protected abstract Object openDialogBox(Control cellEditorWindow);
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -204,7 +204,7 @@ public class GraphicalNedEditor
         paletteManager = new PaletteManager(this);
 
         DefaultEditDomain editDomain = new DefaultEditDomain(this);
-        
+
         editDomain.setCommandStack(new LocalCommandStack());
         setEditDomain(editDomain);
     }
@@ -212,10 +212,10 @@ public class GraphicalNedEditor
     @Override @SuppressWarnings("unchecked")
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
-        
+
         // we listen on changes too
         NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
-        
+
 		IContextService contextService = (IContextService)site.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.nedGraphEditor");
         // restore palette filter from a persistent property
@@ -265,7 +265,7 @@ public class GraphicalNedEditor
     public PaletteManager getPaletteManager() {
         return paletteManager;
     }
-    
+
     @Override
     protected PaletteViewerProvider createPaletteViewerProvider() {
         // overridden to add an extra item to the palette's context menu (Andras)
@@ -287,7 +287,7 @@ public class GraphicalNedEditor
                                 }
                             };
                     }
-                    
+
                     @Override
                     protected EditPart createGroupEditPart(EditPart parentEditPart, Object model) {
                         // NOTE: makes the Tools palette group stick to list layout to save space for the Submodules palette drawer
@@ -306,10 +306,10 @@ public class GraphicalNedEditor
                         menu.appendToGroup(GEFActionConstants.MB_ADDITIONS, new PaletteFilterAction(GraphicalNedEditor.this));
                     }
                 });
-            }   
+            }
         };
     }
-    
+
     @Override
     public void commandStackChanged(EventObject event) {
     	firePropertyChange(IEditorPart.PROP_DIRTY);
@@ -330,7 +330,7 @@ public class GraphicalNedEditor
         // Kludge: override getSelection() to remove invalid EditParts from the returned
         // selection. This is needed because during refreshChildren(), editPart.removeNotify()
         // gets called and fires a selection change. Receivers of the selection change
-        // would find invalid editParts in the selection (editParts whose NEDElement is no 
+        // would find invalid editParts in the selection (editParts whose NEDElement is no
         // longer in the model), because refreshChildren() has not completed yet.
         // Ideally, GEF should arrange that selection change only gets fired when the graphical
         // editor is already in a consistent state; here the workaround is to manually remove
@@ -351,7 +351,7 @@ public class GraphicalNedEditor
                 return new StructuredSelection(newSel);
             }
         });
-        
+
         ScalableRootEditPart root = new ScalableRootEditPart();
 
         List<String> zoomLevels = new ArrayList<String>(3);
@@ -380,7 +380,7 @@ public class GraphicalNedEditor
 
 		// generic system tooltip support for error markers
 		FigureUtils.addTooltipSupport(getFigureCanvas(), root.getFigure());
-	
+
         // add hover tooltip support for help and documentation tooltips
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(600, 200);
@@ -389,7 +389,7 @@ public class GraphicalNedEditor
                 GraphicalEditPart epUnderMouse = (GraphicalEditPart)getGraphicalViewer().findObjectAt(new Point(x,y));
                 // check if the figure has its own tooltip in this case we do not provide our own information provider
                 IFigure figureUnderMouse = epUnderMouse.getFigure().findFigureAt(x, y);
-                // we do not show hover if a tooltip already set on the figure 
+                // we do not show hover if a tooltip already set on the figure
                 if (figureUnderMouse != null && figureUnderMouse.getToolTip() != null)
                     return null;
                 // or we are inside a compound module figure (we display the hover only over the border a title for
@@ -452,7 +452,7 @@ public class GraphicalNedEditor
     public Object getAdapter(Class type) {
         if (type == IPropertySheetPage.class) {
             if (propertySheetPage == null )
-                propertySheetPage = new NedPropertySheetPage(this); 
+                propertySheetPage = new NedPropertySheetPage(this);
             return propertySheetPage;
         }
 
@@ -504,7 +504,7 @@ public class GraphicalNedEditor
         	registry.registerAction(action);
         	getSelectionActions().add(action.getId());
         }
-        
+
         action = new ChooseIconAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
@@ -642,11 +642,11 @@ public class GraphicalNedEditor
         // multi page editor will close us -> no need to do anything
         if (event instanceof NEDFileRemovedEvent && ((NEDFileRemovedEvent)event).getFile().equals(getFile()))
             return;
-        
+
         // ignore event when closing the editor and the file has already been removed from the NEDResources
         if (!NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
         	return;
-        
+
     	// we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
     	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
@@ -660,9 +660,9 @@ public class GraphicalNedEditor
 				Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
 
 				// record notification event as an external change iff it refers to our model and we are not the originator
-				if (event instanceof NEDModelChangeEvent && event.getSource() != null && 
-					event.getSource().getContainingNedFileElement() == getModel() && 
-					!((LocalCommandStack)getCommandStack()).isInsideBeginEnd()) 
+				if (event instanceof NEDModelChangeEvent && event.getSource() != null &&
+					event.getSource().getContainingNedFileElement() == getModel() &&
+					!((LocalCommandStack)getCommandStack()).isInsideBeginEnd())
 				{
 					if (pendingExternalChangeCommand == null)
 						pendingExternalChangeCommand = new ExternalChangeCommand();
@@ -708,7 +708,7 @@ public class GraphicalNedEditor
         long startTime = System.currentTimeMillis();
         getGraphicalViewer().getContents().refresh();
         Debug.println("Graphical Editor refresh: " + (System.currentTimeMillis()-startTime) + "ms");
-        
+
         paletteRefreshJob.restartTimer();
     }
 
@@ -727,11 +727,11 @@ public class GraphicalNedEditor
              getGraphicalViewer().select(editPart);
          }
     }
-    
+
     /**
-     * Tries to get the EditPart associated with the given model element. If not found 
+     * Tries to get the EditPart associated with the given model element. If not found
      * returns the first one among ancestors that has a corresponding editpart.
-     * Can return NULL no editpart has been found 
+     * Can return NULL no editpart has been found
      */
     public static EditPart getNearestEditPartForModel(EditPartViewer viewer, INEDElement model) {
             INEDElement originalModel = model;
@@ -842,7 +842,7 @@ public class GraphicalNedEditor
 
     /**
      * This class provides the submodule type filtering mechanism within the palette.
-     * 
+     *
      * @author levy
      */
     private final class LocalDrawerEditPart extends DrawerEditPart {
@@ -851,7 +851,7 @@ public class GraphicalNedEditor
             private final int ICON_SPACING = 2;
             private String oldText;
             private Text text;
-            // NOTE: this figure is not in the figure hierarchy due to difficulties with the superclass and its layout managers 
+            // NOTE: this figure is not in the figure hierarchy due to difficulties with the superclass and its layout managers
             private IFigure filterFigure;
 
             private LocalDrawerFigure(Composite control) {
@@ -954,7 +954,7 @@ public class GraphicalNedEditor
         @Override
         public IFigure createFigure() {
             DrawerFigure figure = new LocalDrawerFigure((Composite)getViewer().getControl());
-            
+
             // the following is copied over from the superclass'es constructor
             figure.setExpanded(getDrawer().isInitiallyOpen());
             figure.setPinned(getDrawer().isInitiallyPinned());
@@ -964,21 +964,21 @@ public class GraphicalNedEditor
                     getViewer().select(LocalDrawerEditPart.this);
                 }
             });
-            
+
             figure.getScrollpane().getContents().addLayoutListener((PaletteAnimator)getViewer().getEditPartRegistry().get(PaletteAnimator.class));
-            
+
             return figure;
         }
     }
 
     private class LocalCommandStack extends CommandStack {
         boolean insideBeginEnd = false;
-        
+
         public boolean isInsideBeginEnd() {
             return insideBeginEnd;
         }
-        
-        // override notifyListeners() methods, so we can surround command execution 
+
+        // override notifyListeners() methods, so we can surround command execution
         // with begin/end. "begin" must be fired after all PRE listeners,
         // and "end" must be fired before all normal commandStackListeners and
         // POST listeners. See super.execute() for why the code look like this.
@@ -998,7 +998,7 @@ public class GraphicalNedEditor
                 insideBeginEnd = true;
             }
         }
-        
+
         @SuppressWarnings("deprecation")
         protected void notifyListeners() {
             if (!insideBeginEnd)
@@ -1010,8 +1010,8 @@ public class GraphicalNedEditor
             return !model.isReadOnly() && !model.hasSyntaxError();
         }
 
-        // override execute(), canUndo() and canRedo() methods to make readonly models uneditable. 
-        
+        // override execute(), canUndo() and canRedo() methods to make readonly models uneditable.
+
         @Override
         public void execute(Command command) {
             if (isModelEditable())

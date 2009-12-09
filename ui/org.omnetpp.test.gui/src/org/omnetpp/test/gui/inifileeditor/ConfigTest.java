@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,7 +27,7 @@ public class ConfigTest extends InifileEditorTestCase {
         WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
         workbenchWindow.findEditorPartByTitle(fileName); //TODO .assertClass(InifileEditor.class)
     }
-    
+
     public void testSyntaxError() throws Throwable {
         //XXX refine
         WorkbenchWindowAccess workbenchWindowAccess = Access.getWorkbenchWindow();
@@ -49,7 +49,7 @@ public class ConfigTest extends InifileEditorTestCase {
         TextEditorAccess textualEditor = (TextEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName).ensureActiveEditor("Text");
 
         textualEditor.findStyledText().typeIn("[General] \nnetwork = Undefined");
-        
+
         WorkbenchUtils.assertErrorMessageInProblemsView(".*No such NED network.*");
     }
 

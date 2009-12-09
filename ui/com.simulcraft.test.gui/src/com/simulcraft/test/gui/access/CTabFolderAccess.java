@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,11 +23,11 @@ public class CTabFolderAccess extends CompositeAccess {
 	public CTabFolder getControl() {
 		return (CTabFolder)super.getControl();
 	}
-    
+
     public CTabItemAccess[] getItems() {
     	return wrapItems(getControl().getItems());
     }
-    
+
     public CTabItemAccess findItemByText(final String label) {
     	return wrapItem(
     			(CTabItem)findObject(
@@ -38,17 +38,17 @@ public class CTabFolderAccess extends CompositeAccess {
     							}
     						}));
     }
-    
+
     public CTabItemAccess getItem(int index) {
 		Assert.assertTrue(0 <= index && index < getControl().getItemCount());
 		return wrapItem(getControl().getItem(index));
     }
-    
+
     public CTabItemAccess getSelection() {
     	CTabItem selection = getControl().getSelection();
     	return selection == null ? null : wrapItem(selection);
     }
-    
+
 	public void selectItemWithMouseClick(String label) {
 		findItemByText(label).reveal().click();
 	}

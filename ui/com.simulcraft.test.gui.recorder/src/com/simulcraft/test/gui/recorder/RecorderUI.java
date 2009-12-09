@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -38,7 +38,7 @@ import org.omnetpp.common.util.FileUtils;
 
 /**
  * Control panel for GUIRecorder.
- *   
+ *
  * @author Andras
  */
 public class RecorderUI implements Listener {
@@ -163,7 +163,7 @@ public class RecorderUI implements Listener {
             result.clear();
         }
 
-        // asyncExec seems only to run after workbench window retains focus 
+        // asyncExec seems only to run after workbench window retains focus
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().forceActive();
     }
 
@@ -179,13 +179,13 @@ public class RecorderUI implements Listener {
 
     public String generateJavaCode() {
         String statements = recorder.getResult().generateCode();
-        String source = 
+        String source =
             "import com.simulcraft.test.gui.access.*;\n" +
             "\n" +
-            "public class UnnamedTestCase extends GUITestCase {\n" + 
+            "public class UnnamedTestCase extends GUITestCase {\n" +
             "    public void testNew" + (++testSeqNumber) + "() {\n" +
-            "        " + statements.replace("\n", "\n        ").trim() + "\n" + 
-            "    }\n" + 
+            "        " + statements.replace("\n", "\n        ").trim() + "\n" +
+            "    }\n" +
             "}\n";
         return source;
     }

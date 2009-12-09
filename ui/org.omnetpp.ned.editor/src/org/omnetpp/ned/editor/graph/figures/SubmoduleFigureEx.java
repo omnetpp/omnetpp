@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -28,12 +28,12 @@ public class SubmoduleFigureEx extends SubmoduleFigure implements HandleBounds,
     protected String tmpName;
 
     // support locator for finding the name of the figure allowing the direct edit
-    // cell editor above the name figure 
+    // cell editor above the name figure
     class SubmoduleFigureNameCellEditorLocator implements CellEditorLocator {
 
     	public void relocate(CellEditor celleditor) {
 	        Text text = (Text)celleditor.getControl();
-	        
+
 	        // adjust the font to the scaling
 	        FontData data = getFont().getFontData()[0];
 	        Dimension fontSize = new Dimension(0, data.getHeight());
@@ -48,9 +48,9 @@ public class SubmoduleFigureEx extends SubmoduleFigure implements HandleBounds,
 	        translateToAbsolute(labelBounds);
 	        text.setBounds(labelBounds.x + (labelBounds.width - editorSize.x)/2 , labelBounds.y-1, editorSize.x, editorSize.y + 1);
 		}
-    
+
     }
-    
+
     // Direct edit support
     public CellEditorLocator getDirectEditCellEditorLocator() {
         return new SubmoduleFigureNameCellEditorLocator();

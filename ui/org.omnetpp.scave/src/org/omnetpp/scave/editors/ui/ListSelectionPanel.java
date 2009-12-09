@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,10 +20,10 @@ import org.eclipse.swt.widgets.List;
 
 /**
  * Panel for choosing multiple elements from a list.
- * 
+ *
  * When created the left list is filled with the selectable elements.
  * The selected elements are shown in the right list.
- * 
+ *
  * Elements can be moved between the two list with the "Add", "Add all",
  * "Remove", "Remove all" buttons.
  *
@@ -74,7 +74,7 @@ public class ListSelectionPanel extends Composite {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
 		this.setLayout(gridLayout);
-	
+
 		leftList = new List(this, SWT.MULTI | SWT.BORDER);
 		GridData gridData1 = new GridData();
 		gridData1.grabExcessHorizontalSpace = true;
@@ -90,7 +90,7 @@ public class ListSelectionPanel extends Composite {
 		gridData2.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		buttonPanel.setLayoutData(gridData2);
 		buttonPanel.setLayout(new GridLayout());
-	
+
 		Button addAllButton = new Button(buttonPanel, SWT.NONE);
 		addAllButton.setText(">>");
 		GridData gridData3 = new GridData();
@@ -101,7 +101,7 @@ public class ListSelectionPanel extends Composite {
 				move(leftList, rightList, true);
 			}
 		});
-	
+
 		Button addButton = new Button(buttonPanel, SWT.NONE);
 		addButton.setText(">");
 		GridData gridData4 = new GridData();
@@ -112,7 +112,7 @@ public class ListSelectionPanel extends Composite {
 				move(leftList, rightList, false);
 			}
 		});
-	
+
 		Button removeButton = new Button(buttonPanel, SWT.NONE);
 		removeButton.setText("<");
 		GridData gridData5 = new GridData();
@@ -123,8 +123,8 @@ public class ListSelectionPanel extends Composite {
 				move(rightList, leftList, false);
 			}
 		});
-	
-	
+
+
 		Button removeAllButton = new Button(buttonPanel, SWT.NONE);
 		removeAllButton.setText("<<");
 		GridData gridData6 = new GridData();
@@ -156,7 +156,7 @@ public class ListSelectionPanel extends Composite {
 			fromList.removeAll();
 		else
 			fromList.remove(fromList.getSelectionIndices());
-	
+
 		// move items to toList and select them
 		toList.setRedraw(false);
 		try {
@@ -167,6 +167,6 @@ public class ListSelectionPanel extends Composite {
 			}
 		} finally {
 			toList.setRedraw(true);
-		}	
+		}
 	}
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
     /**
      * The Windows SDK installation directory (the highest version possible).
      * First looks for MSSdk environment variable then looks in system registry.
-     * (OS specific format)  
+     * (OS specific format)
      * Returns NULL if not installed.
      */
     public static String detectSDKDir() {
@@ -57,11 +57,11 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
         String sdkDir = System.getenv("MSSdk");
         if (sdkDir != null)
             return sdkDir;
-    
+
         WindowsRegistry reg = WindowsRegistry.getRegistry();
         if (reg == null)
             return null;
-    
+
         for (int i = 0; i < SDK_VERSIONS.length; ++i) {
             sdkDir = reg.getLocalMachineValue(SDK_VERSIONS[i], "InstallationFolder");
             if (sdkDir != null)
@@ -73,7 +73,7 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
     /**
      * The Visual C installation directory (the highest version possible)
      * First looks for VCINSTALLDIR environment variable then in the registry for
-     * Visual Studio then for SDK installations and tries to find VC. (OS specific format) 
+     * Visual Studio then for SDK installations and tries to find VC. (OS specific format)
      * Returns NULL if VC is not found.
      */
     public static String detectVCDir() {
@@ -81,25 +81,25 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
         String vcDir = System.getenv("VCINSTALLDIR");
         if (vcDir != null)
             return vcDir;
-        
+
     	WindowsRegistry reg = WindowsRegistry.getRegistry();
     	if (reg == null)
     		return null;
-    
+
     	// try to detect visual c
         for (int i = 0; i < VC_VERSIONS.length; ++i) {
             vcDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VC7", VC_VERSIONS[i]);
-            if (vcDir != null) 
+            if (vcDir != null)
                 return vcDir;
         }
-        
+
         // Try a full SDK with compiler if no standalone visual c detected
         for (int i = 0; i < SDK_VC_VERSIONS.length; ++i) {
             String sdkVCDir = reg.getLocalMachineValue(SDK_VC_VERSIONS[i], "InstallationFolder");
-            if (sdkVCDir != null) 
+            if (sdkVCDir != null)
                 return new Path(sdkVCDir).append("VC").toOSString();
         }
-    
+
     	return null;
     }
 
@@ -114,17 +114,17 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
         String vsDir = System.getenv("VSINSTALLDIR");
         if (vsDir != null)
             return vsDir;
-    
+
         WindowsRegistry reg = WindowsRegistry.getRegistry();
     	if (reg == null)
     		return null;
-    
+
         for (int i = 0; i < VC_VERSIONS.length; ++i) {
             vsDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VS7", VC_VERSIONS[i]);
-            if (vsDir != null) 
+            if (vsDir != null)
                 return vsDir;
         }
-    
+
         return null;
     }
 }

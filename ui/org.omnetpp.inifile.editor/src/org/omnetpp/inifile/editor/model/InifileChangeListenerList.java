@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -41,7 +41,7 @@ public class InifileChangeListenerList {
 
 	/**
 	 * Returns a copy of the listener list, so adding/removing listeners during
-     * notification is allowed. 
+     * notification is allowed.
 	 */
 	public IInifileChangeListener[] getListeners() {
 		// make a copy, just in case there are adds/removes during iteration
@@ -71,7 +71,7 @@ public class InifileChangeListenerList {
 
     /**
      * Fires a model change event to all listeners if event sending is enebaled
-     * @param event 
+     * @param event
      */
     public void fireModelChanged() {
         if (enabled)

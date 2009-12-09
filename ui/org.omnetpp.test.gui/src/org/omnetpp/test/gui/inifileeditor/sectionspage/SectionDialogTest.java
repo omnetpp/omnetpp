@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,7 +42,7 @@ public class SectionDialogTest extends InifileEditorTestCase {
         assertTextEditorContentMatches("[Config Foo]\n");
         //FIXME fails: cannot close editor at the end. Why on earth...?
     }
-    
+
     public void testCreateSection2() throws Exception {
         prepareTest("[Config Bar]\n");
         getFormEditor().createSectionByDialog("Foo", "some foo", "Bar", "FooNetwork");
@@ -54,7 +54,7 @@ public class SectionDialogTest extends InifileEditorTestCase {
         getFormEditor().createSectionByDialog("General", null, null, null);
         assertTextEditorContentMatches(makeSectionContent("General", null, null, null));
     }
-    
+
     public void testCreateGeneralSection2() throws Exception {
         prepareTest("");
         getFormEditor().createSectionByDialog("General", "something general", null, "GeneralNetwork");
@@ -120,7 +120,7 @@ public class SectionDialogTest extends InifileEditorTestCase {
                 "[Config Baz]\nextends = Foo\n");
         //FIXME fails: extends= doesn't get added to sections
     }
-    
+
     //TODO test that sections causing cycles are not offered
     //TODO test that duplicate names are not allowed (OK button gets disabled)
     //TODO test that content assist works in network editfield

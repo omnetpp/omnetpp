@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,7 +17,7 @@ public interface IHistogramDataset extends IDataset {
 	/**
 	 * Name of the histogram at {@series} index used to
 	 * identify the histogram on the UI.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @return name of the histogram
 	 */
@@ -25,7 +25,7 @@ public interface IHistogramDataset extends IDataset {
 
 	/**
 	 * Returns true if integers are collected by the histogram.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @return true if integers are collected
 	 */
@@ -33,7 +33,7 @@ public interface IHistogramDataset extends IDataset {
 
 	/**
 	 * Returns the number of collected values.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @return number of data values collected
 	 */
@@ -41,7 +41,7 @@ public interface IHistogramDataset extends IDataset {
 
 	/**
 	 * Returns the least collected value.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @return least collected value
 	 */
@@ -49,7 +49,7 @@ public interface IHistogramDataset extends IDataset {
 
 	/**
 	 * Returns the greatest collected value.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @return greatest collected value
 	 */
@@ -57,7 +57,7 @@ public interface IHistogramDataset extends IDataset {
 
 	/**
 	 * Returns the number of cells.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @return number of cells including underflow/overflow cells
 	 */
@@ -66,7 +66,7 @@ public interface IHistogramDataset extends IDataset {
 	/**
 	 * Returns the lower bound of the cell, Double.NEGATIVE_INFINITY
 	 * for the underflow cell.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @param index index of the cell
 	 * @return lower bound of the cell
@@ -76,7 +76,7 @@ public interface IHistogramDataset extends IDataset {
 	/**
 	 * Returns the upper bound of the cell, Double.POSITIVE_INFINITY
 	 * for the overflow cell.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @param index index of the cell
 	 * @return upper bound of the cell
@@ -85,7 +85,7 @@ public interface IHistogramDataset extends IDataset {
 
 	/**
 	 * Returns the value of the cell.
-	 * 
+	 *
 	 * @param series index of the histogram
 	 * @param index index of the cell
 	 * @return value of the cell
@@ -107,11 +107,11 @@ public interface IHistogramDataset extends IDataset {
 		public String getSeriesKey(int series) {
 			throw new IndexOutOfBoundsException();
 		}
-	
+
 		public boolean isDiscrete(int series) {
 			throw new IndexOutOfBoundsException();
 		}
-	
+
 		public int getValueCount(int series) {
 			throw new IndexOutOfBoundsException();
 		}

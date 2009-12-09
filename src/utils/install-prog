@@ -1,5 +1,5 @@
 #!/bin/sh
-if test ! -n "$2"; then 
+if test ! -n "$2"; then
     echo "usage: $0 prog-name dest-dir"
     exit 1
 fi

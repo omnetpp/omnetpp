@@ -47,7 +47,7 @@
 	* opp_test.pl: To make it easier to create new test cases from
         existing ones, removed %name from test file syntax; now test name
         is derived from the file name. Cleaned up error handling.
-        Changed some command-line switches. Introduced {} as synonim for 
+        Changed some command-line switches. Introduced {} as synonim for
         @TESTNAME@. Improved reporting.
 
         * runtest: accepts command-line args

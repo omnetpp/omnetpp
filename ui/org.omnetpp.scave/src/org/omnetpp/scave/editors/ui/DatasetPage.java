@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -54,7 +54,7 @@ public class DatasetPage extends ScaveEditorPage {
 		//setDelayedReflow(false);
 		setBackground(ColorFactory.WHITE);
 		getBody().setLayout(new GridLayout(2, false));
-	
+
 		Label label = new Label(getBody(), SWT.WRAP);
 		label.setBackground(getBackground());
 		label.setText("Here you can edit the dataset. " +
@@ -62,13 +62,13 @@ public class DatasetPage extends ScaveEditorPage {
 	      "Datasets may include processing steps, and one dataset can serve as input for another.");
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		((GridData)label.getLayoutData()).horizontalSpan = 2;
-	
+
 		// create dataset treeviewer with buttons
 		datasetTreeViewer = new TreeViewer(getBody(), SWT.BORDER | SWT.MULTI);
 		datasetTreeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		createPalette(getBody(), false);
-	
+
 		// configure dataset treeviewer
 		TreeViewer treeViewer = getDatasetTreeViewer();
 		scaveEditor.configureTreeViewer(treeViewer);

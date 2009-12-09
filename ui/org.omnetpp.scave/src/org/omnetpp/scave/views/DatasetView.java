@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -74,7 +74,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * View that shows the content of a dataset.
- * 
+ *
  * @author tomi
  */
 // work in progress ...
@@ -112,7 +112,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private ISelection selection;
 	private ListenerList selectionChangeListeners = new ListenerList();
 
-	private Runnable scheduledUpdate; 
+	private Runnable scheduledUpdate;
 
 	@Override
 	public void init(IViewSite site) throws PartInitException {
@@ -146,19 +146,19 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		vectorsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.VECTOR_LITERAL));
 		scalarsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.SCALAR_LITERAL));
 		histogramsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.HISTOGRAM_LITERAL));
-	
+
 		setVisibleDataPanel(vectorsPanel);
 		showFilter(false);
 
 		viewControlCreated = true;
-	
+
 		if (enableGuiTest) {
 			panel.setData(WIDGET_ID, DATASET_VIEW_MAIN_PANEL_ID);
 			scalarsPanel.setData(WIDGET_ID, DATASET_VIEW_SCALARS_PANEL_ID);
 			vectorsPanel.setData(WIDGET_ID, DATASET_VIEW_VECTORS_PANEL_ID);
 			histogramsPanel.setData(WIDGET_ID, DATASET_VIEW_HISTOGRAMS_PANEL_ID);
 		}
-	
+
 		return panel;
 	}
 
@@ -196,7 +196,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		manager.add(showScalarsAction);
 		manager.add(showVectorsAction);
 		manager.add(showHistogramsAction);
-	
+
 		showVectorsAction.setChecked(true);
 	}
 
@@ -250,7 +250,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			public void partOpened(IWorkbenchPart part) {}
 		};
 		getSite().getPage().addPartListener(partListener);
-	
+
 		activeEditorChanged(getActiveEditor());
 	}
 
@@ -271,7 +271,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 					}
 				}
 			});
-		
+
 			IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
 			notifier.addListener(modelChangeListener = new INotifyChangedListener() {
 				public void notifyChanged(Notification notification) {
@@ -324,7 +324,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 
 	private FilteredDataPanel getFilteredDataPanel(long id) {
 		int type = ResultFileManager.getTypeOf(id);
-	
+
 		if (type == ResultFileManager.SCALAR)
 			return scalarsPanel;
 		else if (type == ResultFileManager.VECTOR)
@@ -365,10 +365,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		Dataset dataset = null;
 		DatasetItem item = null;
 		ResultItemRef resultItem = null;
-	
+
 		if (selection == this.selection)
 			return;
-	
+
 		if (selection instanceof IStructuredSelection &&
 				((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
 			EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
@@ -385,7 +385,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				resultItem = selectedLine.getResultItemRef();
 			}
 		}
-	
+
 		if (dataset != null) {
 			setInput(dataset, item);
 			if (resultItem != null && resultItem.getID() != -1L) {
@@ -413,7 +413,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			unhookEditorListeners(activeScaveEditor);
 			activeScaveEditor = editor instanceof ScaveEditor ? (ScaveEditor)editor : null;
 			hookEditorListeners(activeScaveEditor);
-		
+
 			if (activeScaveEditor != null) {
 				ResultFileManager manager = activeScaveEditor.getResultFileManager();
 				scalarsPanel.setResultFileManager(manager);
@@ -448,7 +448,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			if (action != null)
 				setSelectedAction(action);
 		}
-	
+
 	}
 
 	private void setInput(Dataset dataset, DatasetItem item) {
@@ -506,7 +506,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			histogramsPanel.setIDList(IDList.EMPTY);
 			return;
 		}
-	
+
 		final ResultFileManager manager = activeScaveEditor.getResultFileManager();
 		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
 			public Object call() {
@@ -543,7 +543,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	class ShowTableAction extends Action
 	{
 		FilteredDataPanel table;
-	
+
 		public ShowTableAction(ResultType type) {
 			super(null, IAction.AS_RADIO_BUTTON);
 
@@ -568,7 +568,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				break;
 			}
 		}
-	
+
 		public void run() {
 			setVisibleDataPanel(table);
 		}

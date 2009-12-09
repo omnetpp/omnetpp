@@ -26,7 +26,7 @@ void Sink::initialize()
     keepJobs = par("keepJobs");
 }
 
-void Sink::handleMessage(cMessage *msg) 
+void Sink::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
 

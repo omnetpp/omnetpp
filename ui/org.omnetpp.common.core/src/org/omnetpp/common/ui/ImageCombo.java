@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -73,7 +73,7 @@ import org.eclipse.swt.widgets.Widget;
  * <dl>
  * <dt>Incorrect Border</dt>
  * <dd>(Most) GTK themes draw the Text border, rather than a border around the whole
- * combo, thus CCombo stands out as distinctly non-native - especially GNOME's new 
+ * combo, thus CCombo stands out as distinctly non-native - especially GNOME's new
  * standard "ClearLooks" which shows the gray background between Text and Arrow and
  * border</dd>
  * <dt>Arrow gets the focus:</dt>
@@ -108,14 +108,14 @@ public final class ImageCombo extends Composite {
     Listener listener, filter;
     Color foreground, background;
     Font font;
-    
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -139,7 +139,7 @@ public final class ImageCombo extends Composite {
  */
 public ImageCombo (Composite parent, int style) {
     super (parent, style = checkStyle (style));
-    
+
     int textStyle = SWT.SINGLE;
 	if(gtk) textStyle |= SWT.BORDER;
     if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
@@ -190,16 +190,16 @@ public ImageCombo (Composite parent, int style) {
             }
         }
     };
-    
+
     int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
     for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
-    
+
     int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn};
     for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
-    
+
     int [] arrowEvents = {SWT.Selection, SWT.FocusIn};
     for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
-    
+
     createPopup( -1);
     initAccessible();
 }
@@ -345,7 +345,7 @@ void arrowEvent (Event event) {
  * text field is editable, this has the effect of placing the
  * i-beam at the start of the text.
  * <p>
- * Note: To clear the selected items in the receiver's list, 
+ * Note: To clear the selected items in the receiver's list,
  * use <code>deselectAll()</code>.
  * </p>
  *
@@ -372,9 +372,9 @@ void comboEvent (Event event) {
             shell.removeListener (SWT.Deactivate, listener);
             Display display = getDisplay ();
             display.removeFilter (SWT.FocusIn, filter);
-            popup = null;  
-            text = null;  
-            table = null;  
+            popup = null;
+            text = null;
+            table = null;
             arrow = null;
             break;
         case SWT.Move:
@@ -401,12 +401,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
     Point arrowSize = arrow.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
     Point listSize = table.computeSize (wHint, SWT.DEFAULT, changed);
     int borderWidth = getBorderWidth ();
-    
+
     height = Math.max (hHint, Math.max (textSize.y, arrowSize.y) + 2*borderWidth);
     width = Math.max (wHint, Math.max (textWidth + 2*spacer + arrowSize.x + 2*borderWidth, listSize.x));
     return new Point (width, height);
 }
-void createPopup(int selectionIndex) {      
+void createPopup(int selectionIndex) {
         // create shell and list
         popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
         int style = getStyle ();
@@ -418,7 +418,7 @@ void createPopup(int selectionIndex) {
         table = new Table (popup, listStyle);
 
         //BC Andras
-        // Issue: selection bar is not full length. 
+        // Issue: selection bar is not full length.
         // Workaround: create table with FULL_SELECTION, and add a table column
         new TableColumn(table, SWT.LEFT);
         // Issue: list selection doesn't follow mouse like native Windows combo
@@ -437,7 +437,7 @@ void createPopup(int selectionIndex) {
         if (font != null) table.setFont (font);
         if (foreground != null) table.setForeground (foreground);
         if (background != null) table.setBackground (background);
-        
+
         int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
         for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
         int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.Dispose};
@@ -446,7 +446,7 @@ void createPopup(int selectionIndex) {
         if (selectionIndex != -1) table.setSelection (selectionIndex);
 }
 /**
- * Deselects the item at the given zero-relative index in the receiver's 
+ * Deselects the item at the given zero-relative index in the receiver's
  * list.  If the item at the index was already deselected, it remains
  * deselected. Indices that are out of range are ignored.
  *
@@ -497,14 +497,14 @@ void dropDown (boolean drop) {
         table = null;
         createPopup (selectionIndex);
     }
-    
+
     Point size = getSize ();
     int itemCount = table.getItemCount ();
     itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
     int itemHeight = table.getItemHeight () * itemCount;
     Point listSize = table.computeSize (SWT.DEFAULT, itemHeight, false);
     table.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
-    
+
     int index = table.getSelectionIndex ();
     if (index != -1) table.setTopIndex (index);
     Display display = getDisplay ();
@@ -513,7 +513,7 @@ void dropDown (boolean drop) {
     Point comboSize = getSize ();
     Rectangle displayRect = getMonitor ().getClientArea ();
     //BC Andras
-    // Make list width equal to the combo with; this change is only good for our purposes! 
+    // Make list width equal to the combo with; this change is only good for our purposes!
     //int width = Math.max (comboSize.x, listRect.width + 2);
     int width = comboSize.x;
     //EC Andras
@@ -529,9 +529,9 @@ void dropDown (boolean drop) {
     //EC Andras
     table.setFocus ();
 }
-/* 
- * Return the Label immediately preceding the receiver in the z-order, 
- * or null if none. 
+/*
+ * Return the Label immediately preceding the receiver in the z-order,
+ * or null if none.
  */
 Label getAssociatedLabel () {
     Control[] siblings = getParent ().getChildren ();
@@ -552,12 +552,12 @@ public Control [] getChildren () {
  * Gets the editable state.
  *
  * @return whether or not the receiver is editable
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public boolean getEditable () {
@@ -615,11 +615,11 @@ public int getItemHeight () {
 }
 /**
  * Returns an array of <code>String</code>s which are the items
- * in the receiver's list. 
+ * in the receiver's list.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver's list
@@ -689,7 +689,7 @@ public int getSelectionIndex () {
 public int getStyle () {
     int style = super.getStyle ();
     style &= ~SWT.READ_ONLY;
-    if (!text.getEditable()) style |= SWT.READ_ONLY; 
+    if (!text.getEditable()) style |= SWT.READ_ONLY;
     return style;
 }
 /**
@@ -726,9 +726,9 @@ public int getTextHeight () {
  * text field is capable of holding. If this has not been changed
  * by <code>setTextLimit()</code>, it will be the constant
  * <code>Combo.LIMIT</code>.
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -748,7 +748,7 @@ public int getTextLimit () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public int getVisibleItemCount () {
@@ -789,7 +789,7 @@ void handleFocus (int type) {
 }
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -842,7 +842,7 @@ void initAccessible() {
     getAccessible ().addAccessibleListener (accessibleAdapter);
     text.getAccessible ().addAccessibleListener (accessibleAdapter);
     table.getAccessible ().addAccessibleListener (accessibleAdapter);
-    
+
     arrow.getAccessible ().addAccessibleListener (new AccessibleAdapter() {
         public void getName (AccessibleEvent e) {
             e.result = isDropped () ? SWT.getMessage ("SWT_Close") : SWT.getMessage ("SWT_Open"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -860,7 +860,7 @@ void initAccessible() {
             e.offset = text.getCaretPosition ();
         }
     });
-    
+
     getAccessible().addAccessibleControlListener (new AccessibleControlAdapter() {
         public void getChildAtPoint (AccessibleControlEvent e) {
             Point testPoint = toControl (e.x, e.y);
@@ -868,7 +868,7 @@ void initAccessible() {
                 e.childID = ACC.CHILDID_SELF;
             }
         }
-        
+
         public void getLocation (AccessibleControlEvent e) {
             Rectangle location = getBounds ();
             Point pt = toDisplay (location.x, location.y);
@@ -877,15 +877,15 @@ void initAccessible() {
             e.width = location.width;
             e.height = location.height;
         }
-        
+
         public void getChildCount (AccessibleControlEvent e) {
             e.detail = 0;
         }
-        
+
         public void getRole (AccessibleControlEvent e) {
             e.detail = ACC.ROLE_COMBOBOX;
         }
-        
+
         public void getState (AccessibleControlEvent e) {
             e.detail = ACC.STATE_NORMAL;
         }
@@ -914,7 +914,7 @@ public boolean isFocusControl () {
     checkWidget();
     if (text.isFocusControl () || arrow.isFocusControl () || table.isFocusControl () || popup.isFocusControl ()) {
         return true;
-    } 
+    }
     return super.isFocusControl ();
 }
 void internalLayout (boolean changed) {
@@ -979,7 +979,7 @@ void listEvent (Event event) {
             event.detail = e.detail;
             break;
         }
-        case SWT.KeyUp: {       
+        case SWT.KeyUp: {
             Event e = new Event ();
             e.time = event.time;
             e.character = event.character;
@@ -989,7 +989,7 @@ void listEvent (Event event) {
             break;
         }
         case SWT.KeyDown: {
-            if (event.character == SWT.ESC) { 
+            if (event.character == SWT.ESC) {
                 // Escape key cancels popup list
                 dropDown (false);
             }
@@ -1014,7 +1014,7 @@ void listEvent (Event event) {
             e.stateMask = event.stateMask;
             notifyListeners(SWT.KeyDown, e);
             break;
-            
+
         }
     }
 }
@@ -1079,7 +1079,7 @@ public void remove (int index) {
 }
 /**
  * Removes the items from the receiver's list which are
- * between the given zero-relative start and end 
+ * between the given zero-relative start and end
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -1099,7 +1099,7 @@ public void remove (int start, int end) {
 }
 /**
  * Searches the receiver's list starting at the first item
- * until an item is found that is equal to the argument, 
+ * until an item is found that is equal to the argument,
  * and removes that item from the list.
  *
  * @param string the item to remove
@@ -1159,7 +1159,7 @@ public void removeAll () {
 public void removeModifyListener (ModifyListener listener) {
     checkWidget();
     if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-    removeListener(SWT.Modify, listener);   
+    removeListener(SWT.Modify, listener);
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1182,10 +1182,10 @@ public void removeSelectionListener (SelectionListener listener) {
     checkWidget();
     if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
     removeListener(SWT.Selection, listener);
-    removeListener(SWT.DefaultSelection,listener);  
+    removeListener(SWT.DefaultSelection,listener);
 }
 /**
- * Selects the item at the given zero-relative index in the receiver's 
+ * Selects the item at the given zero-relative index in the receiver's
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -1228,7 +1228,7 @@ public void setBackground (Color color) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setEditable (boolean editable) {
@@ -1328,7 +1328,7 @@ public void setLayout (Layout layout) {
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the
  * start of the selection and whose y coordinate is the end
- * of the selection. 
+ * of the selection.
  *
  * @param selection a point representing the new selection start and end
  *
@@ -1353,7 +1353,7 @@ public void setSelection (Point selection) {
  * Note: The text field in a <code>Combo</code> is typically
  * only capable of displaying a single line of text. Thus,
  * setting the text to a string containing line breaks or
- * other special characters will probably cause it to 
+ * other special characters will probably cause it to
  * display incorrectly.
  * </p>
  *
@@ -1410,7 +1410,7 @@ public void setToolTipText (String string) {
     checkWidget();
     super.setToolTipText(string);
     arrow.setToolTipText (string);
-    text.setToolTipText (string);       
+    text.setToolTipText (string);
 }
 
 public void setVisible (boolean visible) {
@@ -1427,7 +1427,7 @@ public void setVisible (boolean visible) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setVisibleItemCount (int count) {
@@ -1465,7 +1465,7 @@ void textEvent (Event event) {
             //At this point the widget may have been disposed.
             // If so, do not continue.
             if (isDisposed ()) break;
-            
+
             if (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN) {
                 event.doit = false;
                 if ((event.stateMask & SWT.ALT) != 0) {
@@ -1493,10 +1493,10 @@ void textEvent (Event event) {
                 // If so, do not continue.
                 if (isDisposed ()) break;
             }
-            
-            // Further work : Need to add support for incremental search in 
+
+            // Further work : Need to add support for incremental search in
             // pop up list as characters typed in text widget
-                        
+
             Event e = new Event ();
             e.time = event.time;
             e.character = event.character;
@@ -1536,7 +1536,7 @@ void textEvent (Event event) {
             text.selectAll ();
             break;
         }
-        case SWT.Traverse: {        
+        case SWT.Traverse: {
             switch (event.detail) {
                 case SWT.TRAVERSE_RETURN:
                 case SWT.TRAVERSE_ARROW_PREVIOUS:
@@ -1547,7 +1547,7 @@ void textEvent (Event event) {
                     event.doit = false;
                     break;
             }
-            
+
             Event e = new Event ();
             e.time = event.time;
             e.detail = event.detail;

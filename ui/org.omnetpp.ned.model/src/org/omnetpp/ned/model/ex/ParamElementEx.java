@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -33,12 +33,12 @@ public class ParamElementEx extends ParamElement implements IHasName {
     protected ParamElementEx(INEDElement parent) {
         super(parent);
     }
-    
+
     /**
      * Returns local properties of this element. The map is indexed with the
-     * property name, or with name + ":" + index for properties that have 
+     * property name, or with name + ":" + index for properties that have
      * a non-empty index.
-     * 
+     *
      * Note about efficiency: the result is currently NOT cached, this method
      * will create a new map on each call.
      */
@@ -58,9 +58,9 @@ public class ParamElementEx extends ParamElement implements IHasName {
 
     /**
      * Returns all inherited properties of this element. The map is indexed with the
-     * property name, or with name + ":" + index for properties that have 
+     * property name, or with name + ":" + index for properties that have
      * a non-empty index.
-     * 
+     *
      * Note about efficiency: the result is currently NOT cached, this method
      * will create a new map on each call.
      */
@@ -68,36 +68,36 @@ public class ParamElementEx extends ParamElement implements IHasName {
         String name = getName();
         Map<String, PropertyElementEx> result = new HashMap<String, PropertyElementEx>();
         INedTypeElement typeElement = getEnclosingTypeElement();
-        
+
         if (typeElement != null) {
             INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
-    
+
             if (typeInfo != null) {
                 for (INEDTypeInfo superTypeElement : typeInfo.getExtendsChain()) {
                     ParamElementEx paramElement = superTypeElement.getParamDeclarations().get(name);
-                    
+
                     if (paramElement != null)
                         result.putAll(paramElement.getLocalProperties());
                 }
             }
         }
-        
+
         return result;
     }
 
     public String getUnit() {
         PropertyElementEx propertyElement = getProperties().get("unit");
-        
+
         if (propertyElement == null)
             return null;
         else {
             PropertyKeyElement propertyKey = propertyElement.getFirstPropertyKeyChild();
-            
+
             if (propertyKey == null)
                 return null;
             else {
                 LiteralElement literal = propertyKey.getFirstLiteralChild();
-                
+
                 if (literal == null)
                     return null;
                 else

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,7 +29,7 @@ public class WorkbenchPartRecognizer extends ObjectRecognizer {
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof IWorkbenchPart) {
             final IWorkbenchPart workbenchPart = (IWorkbenchPart)uiObject;
-            
+
             // if editor is in a multipage editor, identify it like that
             if (workbenchPart instanceof IEditorPart) {
                 MultiPageEditorPart parentMultiPageEditor = findParentMultiPageEditorFor((IEditorPart)workbenchPart);
@@ -38,7 +38,7 @@ public class WorkbenchPartRecognizer extends ObjectRecognizer {
                     return makeMethodCall(parentMultiPageEditor, expr("getPageEditor("+quoteLabel(label)+")", 0.9, workbenchPart));
                 }
             }
-            
+
             // identify by title
             IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
             if (workbenchPart instanceof IEditorPart)

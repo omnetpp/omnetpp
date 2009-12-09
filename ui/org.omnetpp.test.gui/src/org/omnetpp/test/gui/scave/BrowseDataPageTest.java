@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -91,7 +91,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		filterText.click();
 		filterText.typeOver(String.format("%s(%s)", fieldName, fieldPattern));
 		filterText.pressEnter();
-	
+
 		TableAccess table = browseDataPage.getSelectedTable();
 		table.assertColumnContentMatches(columnName, columnPattern);
 	}
@@ -140,7 +140,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		MenuAccess menu = table.activateContextMenuWithMouseClick();
 		menu.activateMenuItemWithMouse("Add [fF]ilter.*");
 		fillSelectDatasetDialog();
-	
+
 		editor.assertActivePage("Datasets");
 		TreeAccess datasetsTree = editor.ensureDatasetsPageActive().getDatasetsTree();
 		datasetsTree.assertContent(
@@ -167,7 +167,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		MenuAccess menu = item.activateContextMenuWithMouseClick();
 		menu.activateMenuItemWithMouse("Add [sS]elected.*");
 		fillSelectDatasetDialog();
-	
+
 		editor.assertActivePage("Datasets");
 		TreeAccess datasetsTree = editor.ensureDatasetsPageActive().getDatasetsTree();
 		datasetsTree.assertContent(
@@ -176,7 +176,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 	}
 
 	private void fillSelectDatasetDialog() {
-		ShellAccess dialogShell = Access.findShellWithTitle("Select.*[dD]ataset.*"); 
+		ShellAccess dialogShell = Access.findShellWithTitle("Select.*[dD]ataset.*");
 		dialogShell.findButtonWithLabel("New.*").selectWithMouseClick();
 		ShellAccess dialogShell2 = Access.findShellWithTitle("New [dD]ataset.*");
 		TextAccess text = dialogShell2.findTextAfterLabel("Enter.*name.*");
@@ -190,7 +190,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		TableAccess table = browseDataPage.getSelectedTable();
 		MenuAccess menu = table.activateContextMenuWithMouseClick();
 		menu.activateMenuItemWithMouse("Show.*[vV]ector.*[vV]iew.*");
-	
+
 		Access.getWorkbenchWindow().findViewPartByTitle(".*[vV]ector.*").assertActivated();
 	}
 
@@ -212,7 +212,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		Access.findContentAssistPopup().chooseWithKeyboard("module\\(.*");
 		filterText.pressKey(' ', SWT.CTRL);
 		Access.findContentAssistPopup().chooseWithKeyboard("module-2");
-	
+
 		filterText.assertTextContent("file\\(/project/test-1\\.vec\\) AND NOT module\\(module-2\\) ");
 	}
 

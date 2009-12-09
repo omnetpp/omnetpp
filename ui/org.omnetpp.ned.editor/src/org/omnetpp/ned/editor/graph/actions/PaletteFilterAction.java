@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -45,7 +45,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 /**
  * Dialog for filtering the palette contents by packages
- * 
+ *
  * @author Andras
  */
 public class PaletteFilterAction extends WorkbenchPartAction {
@@ -61,12 +61,12 @@ public class PaletteFilterAction extends WorkbenchPartAction {
     protected boolean calculateEnabled() {
         return true;
     }
-    
+
     @Override
     public void run() {
         GraphicalNedEditor editor = (GraphicalNedEditor)getWorkbenchPart();
 
-        // collect the list of (non-empty) packages, and how many NED types they contain 
+        // collect the list of (non-empty) packages, and how many NED types they contain
         IProject project = ((FileEditorInput)editor.getEditorInput()).getFile().getProject();
         NEDResources res = NEDResourcesPlugin.getNEDResources();
         final Map<String,Integer> packages = new LinkedHashMap<String,Integer>();  // (package,count)
@@ -77,13 +77,13 @@ public class PaletteFilterAction extends WorkbenchPartAction {
             String packageName = StringUtils.fallback(nedType.getPackageName(), "(default)");
             if (!packages.containsKey(packageName))
                 packages.put(packageName, 1);
-            else 
+            else
                 packages.put(packageName, packages.get(packageName) + 1);
         }
-        
+
         // build a tree (note: tree nodes will be package name prefixes like
         // "inet", "inet.transport", "inet.transport.tcp" -- although we'll
-        // only display their last segment in the tree). 
+        // only display their last segment in the tree).
         PaletteManager paletteManager = editor.getPaletteManager();
         Set<String> excludedPackages = paletteManager.getExcludedPackages();
 
@@ -104,7 +104,7 @@ public class PaletteFilterAction extends WorkbenchPartAction {
                     initialSelectedNodes.add(node);
             }
         }
-        
+
         // display tree dialog
         CheckedTreeSelectionDialog dlg = new CheckedTreeSelectionDialog(
                 null,
@@ -117,7 +117,7 @@ public class PaletteFilterAction extends WorkbenchPartAction {
                         return displayName + " (" + count + ")";
                     }
                 }),
-                new GenericTreeContentProvider()) 
+                new GenericTreeContentProvider())
         {
             @Override
             protected Control createDialogArea(Composite parent) {
@@ -138,7 +138,7 @@ public class PaletteFilterAction extends WorkbenchPartAction {
                     }
                 });
                 return composite;
-            }  
+            }
             @Override
             protected Composite createSelectionButtons(Composite composite) {
                 Composite buttonComposite = super.createSelectionButtons(composite);

@@ -1,19 +1,19 @@
-function findChildNode(node, name) 
+function findChildNode(node, name)
 {
   var temp;
-  if (node == null) 
+  if (node == null)
   {
     return null;
-  } 
+  }
   node = node.firstChild;
-  while (node != null) 
+  while (node != null)
   {
-    if (node.nodeName == name) 
+    if (node.nodeName == name)
     {
       return node;
     }
     temp = findChildNode(node, name);
-    if (temp != null) 
+    if (temp != null)
     {
       return temp;
     }
@@ -22,28 +22,28 @@ function findChildNode(node, name)
   return null;
 }
 
-function toggleFolder(id, imageNode) 
+function toggleFolder(id, imageNode)
 {
   var folder = document.getElementById(id);
   var l = 0;
   var vl = "ftv2vertline.png";
-  if (imageNode != null && imageNode.nodeName != "IMG") 
+  if (imageNode != null && imageNode.nodeName != "IMG")
   {
     imageNode = findChildNode(imageNode, "IMG");
     if (imageNode!=null) l = imageNode.src.length;
   }
-  if (folder == null) 
+  if (folder == null)
   {
-  } 
-  else if (folder.style.display == "block") 
+  }
+  else if (folder.style.display == "block")
   {
-    while (imageNode != null && 
+    while (imageNode != null &&
            imageNode.src.substring(l-vl.length,l) == vl)
     {
       imageNode = imageNode.nextSibling;
       l = imageNode.src.length;
     }
-    if (imageNode != null) 
+    if (imageNode != null)
     {
       l = imageNode.src.length;
       imageNode.nextSibling.src = "ftv2folderclosed.png";
@@ -57,16 +57,16 @@ function toggleFolder(id, imageNode)
       }
     }
     folder.style.display = "none";
-  } 
-  else 
+  }
+  else
   {
-    while (imageNode != null && 
+    while (imageNode != null &&
            imageNode.src.substring(l-vl.length,l) == vl)
     {
       imageNode = imageNode.nextSibling;
       l = imageNode.src.length;
     }
-    if (imageNode != null) 
+    if (imageNode != null)
     {
       l = imageNode.src.length;
       imageNode.nextSibling.src = "ftv2folderopen.png";

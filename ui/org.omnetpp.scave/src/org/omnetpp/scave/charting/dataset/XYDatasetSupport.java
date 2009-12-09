@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -9,7 +9,7 @@ package org.omnetpp.scave.charting.dataset;
 
 
 abstract class XYDatasetSupport implements IXYDataset {
-	
+
 	protected boolean initialized;
 	protected double minX, maxX;
 	protected double minY, maxY;
@@ -33,7 +33,7 @@ abstract class XYDatasetSupport implements IXYDataset {
 			calculateBounds();
 		return maxX;
 	}
-	
+
 	public double getMinY() {
 		if (!initialized)
 			calculateBounds();
@@ -45,7 +45,7 @@ abstract class XYDatasetSupport implements IXYDataset {
 			calculateBounds();
 		return maxY;
 	}
-	
+
 	protected void calculateBounds() {
 		minX = Double.POSITIVE_INFINITY;
 		minY = Double.POSITIVE_INFINITY;

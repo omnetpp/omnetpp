@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,9 +17,9 @@ import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.common.CommonCorePlugin;
 
 /**
- * Unfortunately, ActionContributionItem only displays the icon on the button 
+ * Unfortunately, ActionContributionItem only displays the icon on the button
  * and not the text (MODE_FORCE_TEXT has no effect for Buttons). Eclipse 3.3M7.
- * 
+ *
  * TODO remove this class when https://bugs.eclipse.org/bugs/show_bug.cgi?id=187956 gets fixed.
  *
  * @author Andras
@@ -55,7 +55,7 @@ public class ActionContributionItem2 extends ActionContributionItem {
 	}
 
 	/**
-	 * Base class doesn't have getWidget(), and the field is private, so we need to 
+	 * Base class doesn't have getWidget(), and the field is private, so we need to
 	 * get it with reflection here.
 	 */
 	public Widget getWidget() {
@@ -63,7 +63,7 @@ public class ActionContributionItem2 extends ActionContributionItem {
 			Field declaredField = ActionContributionItem.class.getDeclaredField("widget");
 			declaredField.setAccessible(true);
 			return (Widget)declaredField.get(this);
-		} 
+		}
 		catch (Exception e) {
 			CommonCorePlugin.logError(e);
 			return null;

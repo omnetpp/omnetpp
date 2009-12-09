@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -32,39 +32,39 @@ public class NedEditPartPropertySourceProvider implements IPropertySourceProvide
         IPropertySource propSource = null;
         if (object instanceof IPropertySource)
             propSource = (IPropertySource)object;
-        
+
         if ((object instanceof INedModelProvider))
         {
             // try to get the adapter from the model (if it was previously created)
             INEDElement nedModel = ((INedModelProvider)object).getNedModel();
-            
+
             // if no property source exists for this model object, create one
-            if (nedModel instanceof SubmoduleElementEx) 
+            if (nedModel instanceof SubmoduleElementEx)
                 propSource = new SubmodulePropertySource((SubmoduleElementEx)nedModel);
-            
-            if (nedModel instanceof CompoundModuleElementEx) 
+
+            if (nedModel instanceof CompoundModuleElementEx)
                 propSource = new CompoundModulePropertySource((CompoundModuleElementEx)nedModel);
-    
-            if (nedModel instanceof SimpleModuleElementEx) 
+
+            if (nedModel instanceof SimpleModuleElementEx)
                 propSource = new SimpleModulePropertySource((SimpleModuleElementEx)nedModel);
-    
-            if (nedModel instanceof ConnectionElementEx) 
+
+            if (nedModel instanceof ConnectionElementEx)
                 propSource = new ConnectionPropertySource((ConnectionElementEx)nedModel);
-    
-            if (nedModel instanceof ChannelElementEx) 
+
+            if (nedModel instanceof ChannelElementEx)
                 propSource = new ChannelPropertySource((ChannelElementEx)nedModel);
-    
-            if (nedModel instanceof ModuleInterfaceElementEx) 
+
+            if (nedModel instanceof ModuleInterfaceElementEx)
                 propSource = new ModuleInterfacePropertySource((ModuleInterfaceElementEx)nedModel);
-    
-            if (nedModel instanceof ChannelInterfaceElementEx) 
+
+            if (nedModel instanceof ChannelInterfaceElementEx)
                 propSource = new ChannelInterfacePropertySource((ChannelInterfaceElementEx)nedModel);
-    
+
             // set the read only flag on the property source
             if ((object instanceof IReadOnlySupport) && (propSource instanceof MergedPropertySource))
                 ((MergedPropertySource)propSource).setReadOnly(
                         !((IReadOnlySupport)object).isEditable());
-            
+
         }
         return propSource;
     }

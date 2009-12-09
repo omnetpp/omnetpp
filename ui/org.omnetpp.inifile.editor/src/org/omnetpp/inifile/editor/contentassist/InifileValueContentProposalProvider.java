@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -85,7 +85,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 			// we call this for each edit field during form editor creation, so it should be reasonably fast
 			ConfigOption entry = ConfigRegistry.getOption(key);
 			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_USER_INTERFACE ||
-			        entry==CFGID_CMDENV_CONFIG_NAME || entry==CFGID_TKENV_DEFAULT_CONFIG || 
+			        entry==CFGID_CMDENV_CONFIG_NAME || entry==CFGID_TKENV_DEFAULT_CONFIG ||
 			        entry==CFGID_CONSTRAINT)
 				return true;
 			if (entry != null && entry.getDataType()==ConfigOption.DataType.CFG_BOOL)
@@ -258,7 +258,7 @@ s	 * before getting presented to the user.
 			addConfigVariableProposals(p);
 
         p.addAll(toProposals(new String[] {"default", "ask"}));
-	
+
 		switch (dataType) {
 		case NEDElementConstants.NED_PARTYPE_BOOL:
 			p.addAll(toProposals(new String[] {"true", "false"}));
