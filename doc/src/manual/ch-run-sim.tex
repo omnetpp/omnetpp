@@ -804,10 +804,10 @@ so in \ffilename{omnetpp.ini}:
 
 \begin{inifile}
 [General]
-total-stack-kb = 2048 # 2MB
+total-stack = 2MB
 \end{inifile}
 
-There is no penalty if you set \fpar{total-stack-kb} too high. I
+There is no penalty if you set \fpar{total-stack} too high. I
 recommend to set it to a few K less than the maximum process stack
 size allowed by the operating system (\fprog[ulimit]{ulimit -s}; see
 next section).

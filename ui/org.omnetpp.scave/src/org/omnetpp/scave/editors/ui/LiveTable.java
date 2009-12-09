@@ -24,7 +24,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -97,12 +96,6 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	 * Adds the necessary mouse listeners for dragging and selecting children.
 	 */
 	public void configureChild(Control control) {
-		control.addMouseTrackListener(new MouseTrackAdapter() {
-			@Override public void mouseEnter(MouseEvent e) {
-				if (e.widget instanceof Control)
-					((Control)e.widget).setFocus();
-			}
-		});
 		control.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				if ((e.stateMask & SWT.BUTTON_MASK) != 0) { // dragging

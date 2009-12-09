@@ -25,6 +25,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogFacade;
@@ -81,7 +82,8 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 			logFileName = pathFileInput.getPath().toFile().getAbsolutePath();
 		}
 		else
-			throw new PartInitException("Unsupported input type");
+            throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + input.getName(),
+                "Please make sure the project is open before trying to open a file in it.");
 
 		IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
 		eventLogInput = new EventLogInput(file, eventLog);

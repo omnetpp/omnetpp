@@ -177,7 +177,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       virtual void readOptions();
       virtual void readPerRunOptions();
-      virtual void askParameter(cPar *par);
+      virtual void askParameter(cPar *par, bool unassigned);
       virtual void printLastLogLine();
 
   public:

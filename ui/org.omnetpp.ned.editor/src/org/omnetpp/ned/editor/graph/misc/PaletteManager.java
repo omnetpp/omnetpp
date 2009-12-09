@@ -39,6 +39,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
@@ -189,14 +190,14 @@ public class PaletteManager {
         if (submodulesFilter == null)
             return true;
         else {
-            String regexp = ".*?" + submodulesFilter + ".*?";
             String fullyQualifiedName = element.getNEDTypeInfo().getFullyQualifiedName();
+            PatternMatcher matcher = new PatternMatcher(submodulesFilter, false, false , false);
 
             for (String label : NEDElementUtilEx.getLabels(element))
-                if (label.matches(regexp))
+                if (matcher.matches(label))
                     return true;
 
-            return fullyQualifiedName.matches(regexp);
+            return matcher.matches(fullyQualifiedName);
         }
     }
 

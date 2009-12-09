@@ -1075,7 +1075,7 @@ void Tkenv::readPerRunOptions()
     EnvirBase::readPerRunOptions();
 }
 
-void Tkenv::askParameter(cPar *par)
+void Tkenv::askParameter(cPar *par, bool unassigned)
 {
     // use a value entered by the user earlier ("[x] use this value for similar parameters")
     std::string key = std::string(((cComponent*)par->getOwner())->getNedTypeName()) + ":" + par->getName();
@@ -1098,7 +1098,8 @@ void Tkenv::askParameter(cPar *par)
             prompt = std::string("Enter parameter `") + par->getFullPath() + "':";
 
         std::string reply;
-        bool ok = inputDialog("Unassigned Parameter", prompt.c_str(),
+        std::string title = unassigned ? "Unassigned Parameter" : "Requested to Ask Parameter";
+        bool ok = inputDialog(title.c_str(), prompt.c_str(),
                               "Use this value for all similar parameters",
                               par->str().c_str(), reply, useForAll);
         if (!ok)

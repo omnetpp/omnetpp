@@ -73,7 +73,7 @@ public class CompoundModuleFigure extends NedFigure
     protected float scale = 1.0f;
     protected String unit = "px";
 	private long seed = 0;
-	private String oldDisplayString = null;
+	private int oldCumulativeHashCode;
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends Layer {
@@ -304,11 +304,11 @@ public class CompoundModuleFigure extends NedFigure
 	@Override
     public void setDisplayString(IDisplayString dps) {
 		// OPTIMIZATION: do not change anything if the display string has not changed
-		String newDisplayString = dps.toString();
-		if (newDisplayString.equals(oldDisplayString) )
+		int newCumulativeHashCode = dps.cumulativeHashCode();
+		if (oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
 			return;
 
-		this.oldDisplayString = newDisplayString;
+		this.oldCumulativeHashCode = newCumulativeHashCode;
 
 		// background color / image
         Image imgback = ImageFactory.getImage(
@@ -356,6 +356,7 @@ public class CompoundModuleFigure extends NedFigure
             layouter.layout(submoduleLayer);
         }
 
+		  layouter.invalidate();
         repaint();
 	}
 

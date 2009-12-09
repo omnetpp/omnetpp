@@ -510,6 +510,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return allParamValues;
     }
 
+    // TODO: properly implement property: name, index pair
     public Map<String, PropertyElementEx> getProperties() {
     	refreshInheritedMembersIfNeeded();
         return allProperties;

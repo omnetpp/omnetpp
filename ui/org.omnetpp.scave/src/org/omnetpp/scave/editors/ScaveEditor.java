@@ -57,6 +57,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
@@ -75,6 +76,8 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.views.DatasetView;
+import org.omnetpp.scave.views.VectorBrowserView;
 
 /**
  * OMNeT++ Analysis tool.
@@ -158,7 +161,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		throws PartInitException {
 
 		if (!(editorInput instanceof IFileEditorInput))
-			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
+            throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + editorInput.getName(),
+                "Please make sure the project is open before trying to open a file in it.");
 		IFile fileInput = ((IFileEditorInput)editorInput).getFile();
 		if (!editorInput.exists())
 			throw new PartInitException("Missing Input: Resource '" + fileInput.getFullPath().toString() + "' does not exists");
@@ -747,6 +751,24 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		if (page instanceof ScaveEditorPage) {
 			((ScaveEditorPage)page).pageActivated();
 		}
+
+		// open to default view
+		String viewID = null;
+		if (page == datasetsPage || page instanceof DatasetPage)
+            viewID = DatasetView.ID;
+		else if (page == browseDataPage)
+		    viewID = VectorBrowserView.ID;
+		if (viewID != null) {
+            try {
+                IWorkbenchPage workbenchPage = getSite().getPage();
+                if (workbenchPage.getPerspective() != null)
+                    workbenchPage.showView(viewID);
+            }
+            catch (PartInitException e) {
+                // unimportant
+            }
+		}
+
 		fakeSelectionChange();
 	}
 

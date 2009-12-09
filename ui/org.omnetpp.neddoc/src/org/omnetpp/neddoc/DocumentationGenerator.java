@@ -39,6 +39,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -46,7 +47,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
@@ -67,6 +67,7 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -176,6 +177,12 @@ public class DocumentationGenerator {
             "Qvp8AAAAAElFTkSuQmCC");
     private static final boolean APPLY_CC = !IConstants.IS_COMMERCIAL;
 
+    // matches @externalpage with name and URL
+    protected Pattern externalPagesPattern = Pattern.compile("(?m)^//[ \t]*@externalpage +([^,\n]+),? *(.*?)$");
+
+    // matches name and URL after a @page
+    protected Pattern pagePattern = Pattern.compile(" *([^,\n]+),? *(.*?)\n(?s)(.*)");
+
     protected String dotExecutablePath;
     protected String doxyExecutablePath;
     protected IPath documentationRootPath;
@@ -184,6 +191,7 @@ public class DocumentationGenerator {
     protected IPath absoluteDoxyConfigFilePath; //FIXME should be IFile! because error message about missing doxyfile should show workspace path not filesystem path!
     protected IPath rootRelativeNeddocPath;
     protected IPath neddocRelativeRootPath;
+    protected IPath customCssPath;
     protected IProject project;
     protected NEDResources nedResources;
     protected MsgResources msgResources;
@@ -236,14 +244,18 @@ public class DocumentationGenerator {
         neddocRelativeRootPath = getReversePath(rootRelativeNeddocPath);
     }
 
+    public void setCustomCssPath(IPath customCssPath) {
+        this.customCssPath = customCssPath;
+    }
+
     public void setConfiguration(GeneratorConfiguration configuration) {
         this.configuration = configuration;
     }
 
     public void generate() throws Exception {
-        Job job = new Job("Generating NED Documentation...") {
+        WorkspaceJob job = new WorkspaceJob("Generating NED Documentation...") {
             @Override
-            protected IStatus run(IProgressMonitor monitor) {
+            public IStatus runInWorkspace(IProgressMonitor monitor) {
                 try {
                     DocumentationGenerator.this.monitor = monitor;
 
@@ -738,7 +750,10 @@ public class DocumentationGenerator {
     }
 
     protected void generateCSS() throws Exception {
-        generateFileFromResource("style.css");
+        if (customCssPath == null)
+            generateFileFromResource("style.css");
+        else
+            FileUtils.copy(new FileInputStream(customCssPath.toPortableString()), getOutputFile("style.css"));
     }
 
     protected void generateTreeJavaScript() throws Exception {
@@ -831,19 +846,27 @@ public class DocumentationGenerator {
 
             generateNavigationTreeIcons();
 
-            withGeneratingHTMLFile("navigation.html", "<script type=\"text/javascript\" src=\"tree.js\"></script>", false, new Runnable() {
+            withGeneratingHTMLFile("navigation.html", "<script type=\"text/javascript\" src=\"tree.js\"></script>", "setupTree('navigation', [])", false, new Runnable() {
                 public void run() throws Exception {
-                    out("<div class=\"navigation\" style=\"display: block;\">");
+                    out("<div id=\"navigation\" class=\"navigation\" style=\"display: block;\">");
                     out("<h3>" + project.getName() + "</h3>");
 
+                    generateOverview();
                     generateSelectedTopics();
+                    generateDiagrams();
                     generateProjectIndex();
                     generatePackageIndex();
 
                     generateTypeIndex("simple modules", SimpleModuleElementEx.class);
-                    generateTypeIndex("compound modules", CompoundModuleElementEx.class);
+                    generateTypeIndex("compound modules", new IPredicate() {
+                        public boolean matches(Object object) {
+                            return object instanceof CompoundModuleElementEx && !((CompoundModuleElementEx)object).isNetwork();
+                    }});
+                    generateTypeIndex("networks", new IPredicate() {
+                        public boolean matches(Object object) {
+                            return object instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)object).isNetwork();
+                    }});
                     generateTypeIndex("all modules", IModuleTypeElement.class);
-                    generateNetworkIndex();
                     generateTypeIndex("channels", ChannelElementEx.class);
                     generateTypeIndex("channel interfaces", ChannelInterfaceElementEx.class);
                     generateTypeIndex("module interfaces", ModuleInterfaceElementEx.class);
@@ -885,8 +908,9 @@ public class DocumentationGenerator {
         String folderId = "folder" + treeFolderIndex++;
 
         // NOTE: don't put whitespace between img elements
+        // the image for the tree node will be initialized from javascript because we can't easily tell if this is the last node or not
         out("<p>" +
-            "<img src=\"ftv2pnode.png\" alt=\"\" width=\"16\" height=\"22\" onclick=\"toggleFolder('" + folderId +"', this)\"/>" +
+            "<img src=\"\" alt=\"\" width=\"16\" height=\"22\" onclick=\"toggleFolder('" + folderId +"', this)\"/>" +
             "<img src=\"ftv2folderclosed.png\" alt=\"\" width=\"20\" height=\"20\" onclick=\"toggleFolder('" + folderId +"', this)\"/>\r\n" +
             "<span class=\"indextitle\">" + WordUtils.capitalize(title) + "</span>\r\n" +
             "</p>\r\n" +
@@ -902,10 +926,19 @@ public class DocumentationGenerator {
     }
 
     protected void generateNavigationMenuItem(String title, String url, String target) throws IOException {
+        generateNavigationMenuItem(title, url, target, 1);
+    }
+
+    protected void generateNavigationMenuItem(String title, String url, String target, int level) throws IOException {
+        Assert.isTrue(0 <= level && level <= 1);
         // NOTE: don't put whitespace between img elements
-        out("<p>" +
-            "<img src=\"ftv2vertline.png\" alt=\"\" width=\"16\" height=\"22\"/>" +
-            "<img src=\"ftv2node.png\" alt=\"\" width=\"16\" height=\"22\"/>" +
+        out("<p>");
+
+        if (level == 1)
+            out("<img src=\"ftv2vertline.png\" alt=\"\" width=\"16\" height=\"22\"/>");
+
+        // the image for the tree node will be initialized from javascript because we can't easily tell if this is the last node or not
+        out("<img src=\"\" alt=\"\" width=\"16\" height=\"22\"/>" +
             "<img src=\"ftv2doc.png\" alt=\"\" width=\"20\" height=\"20\"/>\r\n" +
             "<a href=\"" + url + "\" target=\"" + target + "\">" + title + "</a>\r\n" +
             "</p>\r\n");
@@ -917,7 +950,7 @@ public class DocumentationGenerator {
     }
 
     private void generateCppIndex() throws Exception {
-        if (isCppProject(project))
+        if (isCppProject(project) && configuration.generateDoxy)
             withGeneratingNavigationMenuContainer("C++", new Runnable() {
                 public void run() throws Exception {
                     generateCppMenuItem("Main Page", "main.html");
@@ -932,101 +965,137 @@ public class DocumentationGenerator {
             });
     }
 
+    protected void generateOverview() throws Exception {
+        generateNavigationMenuItem("Overview", "overview.html", "mainframe", 0);
+        // NOTE: always generate default overview, will be overwritten if @titlepage is found later on
+        withGeneratingHTMLFile("overview.html",
+            "<center><h1>OMNeT++ Model Documentation</h1></center>\r\n" +
+            "<center><i>Generated from NED and MSG files</i></center>\r\n" +
+            "<p>This documentation has been generated from NED and MSG files.</p>\r\n" +
+            "<p>Use the links in the left frame to navigate around.</p>\r\n" +
+            "<p>Hint for model developers: if you don\'t like this page, try creating\r\n" +
+            "a <tt>package.ned</tt> file with the <tt>@titlepage</tt> directive\r\n" +
+            "embedded in a comment.</p>\r\n" +
+            "<hr/>\r\n" +
+            "<p>Generated by neddoc.</p>\r\n");
+    }
+
     protected void generateSelectedTopics() throws Exception {
-        withGeneratingNavigationMenuContainer("selected topics", new Runnable() {
-            // matches @externalpage with name and URL
-            protected Pattern externalPagesPattern = Pattern.compile("(?m)^//[ \t]*@externalpage +([^,\n]+),? *(.*?)$");
-
-            // matches name and URL after a @page
-            protected Pattern pagePattern = Pattern.compile(" +([^,\n]+),? *(.*?)\n(?s)(.*)");
-
-            public void run() throws Exception {
-                generateNavigationMenuItem("Overview", "overview.html");
-
-                for (ITypeElement typeElement : typeElements) {
-                    if (typeElement instanceof INedTypeElement) {
-                        if (configuration.generateUsageDiagrams)
-                            generateNavigationMenuItem("Full NED Usage Diagram", "full-ned-usage-diagram.html");
-
-                        if (configuration.generateInheritanceDiagrams)
-                            generateNavigationMenuItem("Full NED Inheritance Diagram", "full-ned-inheritance-diagram.html");
-
-                        break;
-                    }
+        final boolean[] found = new boolean[1];
+        mapPageMatchers(new IPageMatcherVisitor() {
+            public boolean visit(Matcher matcher, String page) throws Exception {
+                if (matcher.matches()) {
+                    found[0] = true;
+                    return false;
                 }
-
-                for (ITypeElement typeElement : typeElements) {
-                    if (typeElement instanceof IMsgTypeElement) {
-                        if (configuration.generateUsageDiagrams)
-                            generateNavigationMenuItem("Full MSG Usage Diagram", "full-msg-usage-diagram.html");
-
-                        if (configuration.generateInheritanceDiagrams)
-                            generateNavigationMenuItem("Full MSG Inheritance Diagram", "full-msg-inheritance-diagram.html");
-
-                        break;
-                    }
-                }
-
-                boolean overviewGenerated = false;
-
-                for (IFile file : files) {
-                    String comment = null;
-
-                    if (nedResources.isNedFile(file))
-                        comment = nedResources.getNedFileElement(file).getComment();
-                    else if (msgResources.isMsgFile(file))
-                        comment = msgResources.getMsgFileElement(file).getComment();
-
-                    if (comment != null) {
-                        Matcher matcher = externalPagesPattern.matcher(comment);
-                        StringBuffer buffer = new StringBuffer();
-
-                        while (matcher.find()) {
-                            generatePageReference(matcher.group(1), matcher.group(2));
-                            matcher.appendReplacement(buffer, "");
-                        }
-
-                        matcher.appendTail(buffer);
-                        comment = buffer.toString();
-
-                        if (comment.contains("@page") || comment.contains("@titlepage")) {
-                            // split comment between @page and @titlepage directives (swallong whitspaces around)
-                            String[] pages = comment.split("(?m)^//[ \t]*(@page|@titlepage)[ \t]*");
-
-                            for (String page : pages) {
-                                // match for page title and URL
-                                matcher = pagePattern.matcher(page);
-
-                                // generic @page
-                                if (matcher.matches()) {
-                                    generatePageReference(matcher.group(1), matcher.group(2));
-                                    withGeneratingHTMLFile(matcher.group(1),
-                                        "<h2>" + matcher.group(2) + "</h2>" + processHTMLContent("comment", matcher.group(3)));
-                                }
-                                // @titlepage
-                                else if (page.length() > 0 && page.charAt(0) == '\n') {
-                                    withGeneratingHTMLFile("overview.html",
-                                        processHTMLContent("comment", page + "<hr/>\r\n" + "<p>Generated by neddoc.</p>\r\n"));
-                                    overviewGenerated = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!overviewGenerated)
-                    withGeneratingHTMLFile("overview.html",
-                        "<center><h1>OMNeT++ Model Documentation</h1></center>\r\n" +
-                		"<center><i>Generated from NED and MSG files</i></center>\r\n" +
-                		"<p>This documentation has been generated from NED and MSG files.</p>\r\n" +
-                		"<p>Use the links in the left frame to navigate around.</p>\r\n" +
-                		"<p>Hint for model developers: if you don\'t like this page, try creating\r\n" +
-                		"a <tt>package.ned</tt> file with the <tt>@titlepage</tt> directive\r\n" +
-                		"embedded in a comment.</p>\r\n" +
-                		"<hr/>\r\n" +
-                        "<p>Generated by neddoc.</p>\r\n");
+                else
+                    return true;
             }
         });
+
+        if (found[0]) {
+            withGeneratingNavigationMenuContainer("selected topics", new Runnable() {
+                public void run() throws Exception {
+                    mapPageMatchers(new IPageMatcherVisitor() {
+                        public boolean visit(Matcher matcher, String page) throws Exception {
+                            // generic @page
+                            if (matcher.matches()) {
+                                generatePageReference(matcher.group(1), matcher.group(2));
+                                withGeneratingHTMLFile(matcher.group(1),
+                                    "<h2>" + matcher.group(2) + "</h2>" + processHTMLContent("comment", matcher.group(3)));
+                            }
+                            // @titlepage
+                            else if (page.length() > 0 && page.charAt(0) == '\n') {
+                                withGeneratingHTMLFile("overview.html",
+                                    processHTMLContent("comment", page + "<hr/>\r\n" + "<p>Generated by neddoc.</p>\r\n"));
+                            }
+
+                            return true;
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    protected static interface IPageMatcherVisitor {
+        public boolean visit(Matcher matcher, String page) throws Exception;
+    }
+
+    protected void mapPageMatchers(IPageMatcherVisitor visitor) throws Exception {
+        for (IFile file : files) {
+            String comment = null;
+
+            if (nedResources.isNedFile(file))
+                comment = nedResources.getNedFileElement(file).getComment();
+            else if (msgResources.isMsgFile(file))
+                comment = msgResources.getMsgFileElement(file).getComment();
+
+            if (comment != null) {
+                Matcher matcher = externalPagesPattern.matcher(comment);
+                StringBuffer buffer = new StringBuffer();
+
+                while (matcher.find()) {
+                    generatePageReference(matcher.group(1), matcher.group(2));
+                    matcher.appendReplacement(buffer, "");
+                }
+
+                matcher.appendTail(buffer);
+                comment = buffer.toString();
+
+                if (comment.contains("@page") || comment.contains("@titlepage")) {
+                    // split comment between @page and @titlepage directives (swallow whitspaces around)
+                    String[] pages = comment.split("(?m)^//[ \t]*(@page|@titlepage)[ \t]*");
+
+                    for (int i = 1; i < pages.length; i++) {
+                        String page = pages[i];
+                        // match for page title and URL
+                        if (!visitor.visit(pagePattern.matcher(page), page))
+                            return;
+                    }
+                }
+            }
+        }
+    }
+
+    protected void generateDiagrams() throws Exception {
+        boolean found = false;
+        for (ITypeElement typeElement : typeElements) {
+            if (typeElement instanceof INedTypeElement || typeElement instanceof IMsgTypeElement) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found && (configuration.generateUsageDiagrams || configuration.generateInheritanceDiagrams)) {
+            withGeneratingNavigationMenuContainer("diagrams", new Runnable() {
+                public void run() throws Exception {
+                    for (ITypeElement typeElement : typeElements) {
+                        if (typeElement instanceof INedTypeElement) {
+                            if (configuration.generateUsageDiagrams)
+                                generateNavigationMenuItem("Full NED Usage Diagram", "full-ned-usage-diagram.html");
+
+                            if (configuration.generateInheritanceDiagrams)
+                                generateNavigationMenuItem("Full NED Inheritance Diagram", "full-ned-inheritance-diagram.html");
+
+                            break;
+                        }
+                    }
+
+                    for (ITypeElement typeElement : typeElements) {
+                        if (typeElement instanceof IMsgTypeElement) {
+                            if (configuration.generateUsageDiagrams)
+                                generateNavigationMenuItem("Full MSG Usage Diagram", "full-msg-usage-diagram.html");
+
+                            if (configuration.generateInheritanceDiagrams)
+                                generateNavigationMenuItem("Full MSG Inheritance Diagram", "full-msg-inheritance-diagram.html");
+
+                            break;
+                        }
+                    }
+                }
+            });
+        }
     }
 
     protected void generatePageReference(String fileName, String title) throws IOException {
@@ -1040,11 +1109,19 @@ public class DocumentationGenerator {
         generateNavigationMenuItem(typeElement.getName(), getOutputFileName(typeElement));
     }
 
-    protected void generateTypeIndex(String title, Class<?> clazz) throws Exception {
+    protected void generateTypeIndex(String title, final Class<?> clazz) throws Exception {
+        generateTypeIndex(title, new IPredicate() {
+            public boolean matches(Object object) {
+                return clazz.isInstance(object);
+            }
+        });
+    }
+
+    protected void generateTypeIndex(String title, IPredicate predicate) throws Exception {
         final ArrayList<ITypeElement> selectedElements = new ArrayList<ITypeElement>();
 
         for (ITypeElement typeElement : typeElements)
-            if (clazz.isInstance(typeElement))
+            if (predicate.matches(typeElement))
                 selectedElements.add(typeElement);
 
         if (selectedElements.size() != 0) {
@@ -1055,22 +1132,6 @@ public class DocumentationGenerator {
                 }
             });
         }
-    }
-
-    protected void generateNetworkIndex() throws Exception {
-        final ArrayList<ITypeElement> selectedElements = new ArrayList<ITypeElement>();
-
-        for (ITypeElement typeElement : typeElements)
-            if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
-                selectedElements.add(typeElement);
-
-        if (selectedElements.size() != 0)
-            withGeneratingNavigationMenuContainer("networks", new Runnable() {
-                public void run() throws Exception {
-                    for (ITypeElement typeElement : selectedElements)
-                        generateTypeIndexEntry(typeElement);
-                }
-            });
     }
 
     protected void generatePackagePages() throws Exception {
@@ -1499,8 +1560,9 @@ public class DocumentationGenerator {
         else
             throw new RuntimeException("Unknown type element: " + typeElement);
 
-        if (doxyMap.containsKey(className))
-            out("<p><b>C++ definition: <a href=\"" + doxyRelativeRootPath.append(rootRelativeDoxyPath).append(doxyMap.get(className)) + "\" target=\"mainframe\">click here</a></b></p>\r\n");
+        if (doxyMap.containsKey(className)) {
+            out("<p><b>C++ definition: <a href=\"" + getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(className)) + "\" target=\"mainframe\">click here</a></b></p>\r\n");
+        }
     }
 
     protected void generateFileReference(IFile file) throws IOException {
@@ -1589,6 +1651,8 @@ public class DocumentationGenerator {
                             if (APPLY_CC)
                                 watermark(destinationImagePath.toString());
                         }
+                        else
+                            throw new RuntimeException("Cannot generate image for " + typeElement.getNEDTypeInfo().getFullyQualifiedName());
                     }
 
                     monitor.worked(1);
@@ -2009,10 +2073,10 @@ public class DocumentationGenerator {
     }
 
     protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
-        withGeneratingHTMLFile(fileName, null, true, content);
+        withGeneratingHTMLFile(fileName, null, null, true, content);
     }
 
-    protected void withGeneratingHTMLFile(String fileName, String header, boolean copyrightFooter, Runnable content) throws Exception {
+    protected void withGeneratingHTMLFile(String fileName, String header, String onload, boolean copyrightFooter, Runnable content) throws Exception {
         FileOutputStream oldCurrentOutputStream = currentOutputStream;
 
         File file = getOutputFile(fileName);
@@ -2026,7 +2090,7 @@ public class DocumentationGenerator {
             out(header);
 
         out("   </head>\r\n" +
-            "   <body>\r\n");
+            "   <body onload=\"" + (onload == null ? "" : onload) + "\">\r\n");
 
         content.run();
 
@@ -2154,6 +2218,15 @@ public class DocumentationGenerator {
 
     protected IPath getReversePath(IPath path) {
         return new Path(StringUtils.repeat("../", path.segmentCount()));
+    }
+
+    protected IPath getRelativePath(IPath sourcePath, IPath targetPath) {
+        if (sourcePath.equals(targetPath))
+            return new Path(".");
+        else {
+            int commonPrefixLength = targetPath.matchingFirstSegments(sourcePath);
+            return new Path(StringUtils.removeEnd(StringUtils.repeat("../", commonPrefixLength), "/")).append(targetPath.removeFirstSegments(commonPrefixLength));
+        }
     }
 
     protected IPath getFullNeddocPath() {

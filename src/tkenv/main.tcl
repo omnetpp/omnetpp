@@ -520,7 +520,7 @@ proc do_load_bitmaps {dir prefix} {
    # load bitmaps from this directory
    set n 0
    foreach f $files {
-      set name [string tolower [file tail [file rootname $f]]]
+      set name [file tail [file rootname $f]]
       set img "i[incr bitmap_ctr]$name"
       if [catch {
          image create photo $img -file $f
@@ -598,7 +598,7 @@ proc load_plugins {path} {
                  puts ""
                  puts "*** error sourcing $file: $errmsg"
              } else {
-                 set name [string tolower [file tail $file]]
+                 set name [file tail $file]
                  puts -nonewline "$name "
              }
           }
@@ -615,7 +615,7 @@ proc load_plugins {path} {
                  puts ""
                  puts "*** error loading shared library $file: $errmsg"
              } else {
-                 set name [string tolower [file tail $file]]
+                 set name [file tail $file]
                  puts -nonewline "$name "
              }
           }

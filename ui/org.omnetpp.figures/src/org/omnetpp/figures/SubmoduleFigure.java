@@ -61,6 +61,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int vectorIndex;
 	protected VectorArrangement vectorArrangement;
 	protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
+	protected int alpha;
 
 	// result of layouting
 	protected Point centerLoc;
@@ -86,7 +87,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected Color textColor;
 	protected String queueText;
 	protected RangeFigure rangeFigure = null;
-	private String oldDisplayString = null;
+	private int oldCumulativeHashCode;
 
 	public SubmoduleFigure() {
 	}
@@ -96,14 +97,15 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	 */
 	public void setDisplayString(float scale, IDisplayString displayString) {
 		// optimization: do not change anything if the display string has not changed
-		String newDisplayString = displayString.toString();
-		if (this.scale == scale && newDisplayString.equals(oldDisplayString))
+		int newCumulativeHashCode = displayString.cumulativeHashCode();
+		if (this.scale == scale && oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
 			return;
 
-		Assert.isNotNull(getFont()); // font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
+		// font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
+		setFont(getFont());
 
 		this.scale = scale;
-		this.oldDisplayString = newDisplayString;
+		this.oldCumulativeHashCode = newCumulativeHashCode;
 
 		Rectangle oldShapeBounds = getShapeBounds();  // to compare at the end
 
@@ -183,6 +185,10 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 			updateBounds();  // note: re-layouting does not guarantee that updateBounds() gets called!
 		repaint();
 	}
+
+    public void setAlpha(int alpha) {
+        this.alpha = alpha;
+    }
 
 	protected void setTooltipText(String tooltipText) {
 		this.tooltipText = tooltipText;
@@ -625,6 +631,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 
 	@Override
 	public void paint(Graphics graphics) {
+	    graphics.setAlpha(alpha);
 		super.paint(graphics);
 //		System.out.println(this+": paint(): centerLoc==" + centerLoc);
 		Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");

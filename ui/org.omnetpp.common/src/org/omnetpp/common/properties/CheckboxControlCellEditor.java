@@ -14,6 +14,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -32,6 +33,14 @@ public class CheckboxControlCellEditor extends CellEditor {
 
     @Override
     protected Control createControl(Composite parent) {
+        // KLUDGE: workaround bug in Windows 7, checkbox background is not filled and remains transparent
+        Composite hack = null;
+        boolean isWindows = SWT.getPlatform().equals("win32");
+        if (isWindows) {
+            hack = new Composite(parent, SWT.NONE);
+            hack.setLayout(new FillLayout());
+            parent = hack;
+        }
         chkBtn = new Button(parent, SWT.CHECK);
 
         // see also ComboBoxCellEditor, TextCellEditor etc for explanation
@@ -50,7 +59,7 @@ public class CheckboxControlCellEditor extends CellEditor {
                 }
             }
         });
-        return chkBtn;
+        return isWindows ? hack : chkBtn;
     }
 
     @Override
@@ -68,5 +77,4 @@ public class CheckboxControlCellEditor extends CellEditor {
         Assert.isTrue(value != null && (value instanceof Boolean));
         chkBtn.setSelection(((Boolean)value));
     }
-
 }

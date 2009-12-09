@@ -340,6 +340,15 @@ public class DisplayString implements IDisplayString {
         return cachedDisplayString;
     }
 
+    public int cumulativeHashCode() {
+        int hash = 0;
+
+        for (DisplayString ds = this; ds != null; ds = ds.getFallbackDisplayString())
+            hash += ds.toString().hashCode();
+
+        return hash;
+    }
+
     /**
      * The property value. NULL if tag does not exist, TagInstance.EMPTY_TAG_VALUE if the value
      * is empty.

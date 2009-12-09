@@ -1,4 +1,4 @@
-function findChildNode(node, name)
+function findDescendantNode(node, name, index)
 {
   var temp;
   if (node == null)
@@ -10,9 +10,12 @@ function findChildNode(node, name)
   {
     if (node.nodeName == name)
     {
-      return node;
+      if (index == 0)
+        return node;
+      else
+        index--;
     }
-    temp = findChildNode(node, name);
+    temp = findDescendantNode(node, name, index);
     if (temp != null)
     {
       return temp;
@@ -22,6 +25,68 @@ function findChildNode(node, name)
   return null;
 }
 
+function setupTree(id, lastNodes)
+{
+  var last = true;
+  var node = document.getElementById(id);
+  if (node != null)
+  {
+    node = node.lastChild;
+    while (node != null)
+    {
+      if (node.nodeName == "P")
+      {
+        imageNode = findDescendantNode(node, "IMG", lastNodes.length);
+        if (imageNode != null)
+        {
+          // find out whether this is a container or a simple node
+          var p = "p";
+          var contentNode = imageNode;
+          while (contentNode != null)
+          {
+            if (contentNode.nodeName == "A")
+            {
+              p = "";
+              break;
+            }
+            contentNode = contentNode.nextSibling;
+          }
+          // set the image
+          if (last)
+          {
+            imageNode.src = "ftv2"+p+"lastnode.png";
+            last = false;
+          }
+          else
+          {
+            imageNode.src = "ftv2"+p+"node.png";
+          }
+          var i = lastNodes.length;
+          imageNode = imageNode.previousSibling;
+          while (imageNode != null)
+          {
+            if (imageNode.nodeName == "IMG")
+            {
+              if (lastNodes[--i])
+              {
+                imageNode.src = "ftv2blank.png";
+              }
+            }
+            imageNode = imageNode.previousSibling;
+          }
+        }
+      }
+      else if (node.nodeName == "DIV")
+      {
+        var newLastNodes = lastNodes.slice(0);
+        newLastNodes.push(last);
+        setupTree(node.id, newLastNodes);
+      }
+      node = node.previousSibling;
+    }
+  }
+}
+
 function toggleFolder(id, imageNode)
 {
   var folder = document.getElementById(id);
@@ -29,7 +94,7 @@ function toggleFolder(id, imageNode)
   var vl = "ftv2vertline.png";
   if (imageNode != null && imageNode.nodeName != "IMG")
   {
-    imageNode = findChildNode(imageNode, "IMG");
+    imageNode = findDescendantNode(imageNode, "IMG", 0);
     if (imageNode!=null) l = imageNode.src.length;
   }
   if (folder == null)

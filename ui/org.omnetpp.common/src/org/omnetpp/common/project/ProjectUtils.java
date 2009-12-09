@@ -43,7 +43,7 @@ public class ProjectUtils {
 	public static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
 	/**
-	 * Checks whether the the provided project is open, has the OMNeT++ nature,
+	 * Checks whether the provided project is open, has the OMNeT++ nature,
 	 * and it is enabled.
 	 *
 	 * Potential CoreExceptions are re-thrown as RuntimeException.
@@ -69,6 +69,18 @@ public class ProjectUtils {
         return omnetppProjects.toArray(new IProject[]{});
 	}
 
+    /**
+     * Returns all open projects.
+     */
+    public static IProject[] getOpenProjects() {
+        List<IProject> openProjects = new ArrayList<IProject>();
+
+        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects())
+            if (project.isAccessible())
+                openProjects.add(project);
+
+        return openProjects.toArray(new IProject[]{});
+    }
 
 	/**
 	 * Returns the transitive closure of OMNeT++ projects referenced from the given project,

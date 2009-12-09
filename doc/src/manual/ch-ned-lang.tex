@@ -645,12 +645,13 @@ going to be read by other parts of the simulation model.
 
 \begin{itemize}
     \item \ttt{datarate} is a \ttt{double} parameter that represents the
-          bandwidth of the channel, and it is used for calculating the
-          transmission duration of packets. Values need to be specified
-          with bits per second or its multiples as unit (\ttt{bps},
+          data rate of the channel. Values need to be specified
+          in bits per second or its multiples as unit (\ttt{bps},
           \ttt{Kbps}, \ttt{Mbps}, \ttt{Gbps}, etc.) Zero is treated
           specially and results in zero transmission duration, i.e.
           it stands for infinite bandwidth. Zero is also the default.
+          Data rate is used for calculating the transmission duration of
+          packets.
     \item \ttt{ber} and \ttt{per} stand for Bit Error Rate and Packet Error Rate,
           and allow basic error modelling. They expect a \ttt{double}
           in the $[0,1]$ range. When the channel decides (based on random

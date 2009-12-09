@@ -1,3 +1,7 @@
+2009-11-09
+	* Fixed handling eventlog-recording-intervals, recording stopped at the first non recorded
+	event and did not start afterwards.
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-02-27  ------ omnetpp-4.0rc2 released ------

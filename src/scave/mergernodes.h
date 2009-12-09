@@ -71,7 +71,7 @@ class SCAVE_API AggregatorNode : public Node
 	private:
 		enum Function
 		{
-			Average, Count, Minimum, Maximum
+			Sum, Average, Count, Minimum, Maximum
 		};
 
 		Function fn;
