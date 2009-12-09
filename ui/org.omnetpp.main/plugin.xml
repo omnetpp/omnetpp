@@ -32,11 +32,11 @@
           name="introDescription-migrate"
           value=" "/>
     <property
-          name="aboutText"
-          value="%aboutText"/>
-    <property
           name="aboutImage"
           value="icons/about-image.png"/>
+    <property
+          name="aboutText"
+          value="%aboutText"/>
     <property
           name="windowImages"
           value="icons/logo16.png,icons/logo32.png,icons/logo48.png,icons/logo64.png,icons/logo128.png"/>
