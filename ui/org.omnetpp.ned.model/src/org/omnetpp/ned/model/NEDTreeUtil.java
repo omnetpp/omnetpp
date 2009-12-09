@@ -51,7 +51,7 @@ public class NEDTreeUtil {
 	 * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in old syntax as well
 	 */
     public static String generateNedSource(INEDElement treeRoot, boolean keepSyntax) {
-        //Debug.println(generateXmlFromPojoElementTree(treeRoot,""));
+        // Debug.println(generateXmlFromPojoElementTree(treeRoot,""));
 
         NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(false); // turn it on for debugging
