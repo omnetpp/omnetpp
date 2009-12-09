@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -32,14 +32,14 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 	public void customizeDocumentCommand(IDocument doc, DocumentCommand command) {
 		if (command.length == 0 && command.text != null && endsWithDelimiter(doc, command.text))
 			smartIndentAfterNewLine(doc, command);
-		else if ("}".equals(command.text)) { 
+		else if ("}".equals(command.text)) {
 			smartInsertAfterBracket(doc, command);
-		} 
+		}
 	}
 
 	/**
 	 * Returns whether or not the given text ends with one of the documents legal line delimiters.
-	 * 
+	 *
 	 * @param d the document
 	 * @param txt the text
 	 * @return <code>true</code> if <code>txt</code> ends with one of the document's line delimiters, <code>false</code> otherwise
@@ -53,7 +53,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 
 	/**
 	 * Returns the line number of the next bracket after end.
-	 * 
+	 *
 	 * @param document - the document being parsed
 	 * @param line - the line to start searching back from
 	 * @param end - the end position to search back from
@@ -66,7 +66,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		int start= document.getLineOffset(line);
 		int brackcount= getBracketCount(document, start, end, false) - closingBracketIncrease;
 
-		// sum up the brackets counts of each line (closing brackets count negative, 
+		// sum up the brackets counts of each line (closing brackets count negative,
 		// opening positive) until we find a line the brings the count to zero
 		while (brackcount < 0) {
 			line--;
@@ -81,9 +81,9 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 	}
 
 	/**
-	 * Returns the bracket value of a section of text. Closing brackets have a value of -1 and 
+	 * Returns the bracket value of a section of text. Closing brackets have a value of -1 and
 	 * open brackets have a value of 1.
-	 * 
+	 *
 	 * @param document - the document being parsed
 	 * @param start - the start position for the search
 	 * @param end - the end position for the search
@@ -107,7 +107,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 //							begin= getCommentEnd(document, begin + 1, end);
 //						} else if (next == '/') {
 						if (next == '/') {
-							// '//'-comment: nothing to do anymore on this line 
+							// '//'-comment: nothing to do anymore on this line
 							begin= end;
 						}
 					}
@@ -143,7 +143,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 
 	/**
 	 * Returns the content of the given line without the leading whitespace.
-	 * 
+	 *
 	 * @param document - the document being parsed
 	 * @param line - the line being searched
 	 * @return the content of the given line without the leading whitespace
@@ -156,13 +156,13 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			int whiteend= findEndOfWhiteSpace(document, start, end);
 			return document.get(start, whiteend - start);
 		}
-		return ""; 
+		return "";
 	}
 
 	/**
 	 * Returns true if there is a section keyword ("fields", "properties")
 	 * on the given line.
-	 * 
+	 *
 	 * @param document - the document being parsed
 	 * @param line - the line being searched
 	 * @return true if we found a section keyword
@@ -182,13 +182,13 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			 if (linestr.charAt(i)=='/' && linestr.charAt(i+1)=='/')
 				 break;
 			 if (linestr.charAt(i)=='\"')
-				 break; 
-			 
+				 break;
+
 			 for (String keyword : Keywords.MSG_SECTION_KEYWORDS) {
 				 int klen = keyword.length();
 				 if (linestr.regionMatches(i, keyword, 0, klen) &&
 					 (i==0 || !Character.isJavaIdentifierPart(linestr.charAt(i-1))) &&
-					 (i+klen>=len || !Character.isJavaIdentifierPart(linestr.charAt(i+klen)))) 
+					 (i+klen>=len || !Character.isJavaIdentifierPart(linestr.charAt(i+klen))))
 				 {
 					 return true;
 				 }
@@ -196,10 +196,10 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		 }
 		 return false;
 	 }
-	 
+
 	/**
 	 * Returns the position of the <code>character</code> in the <code>document</code> after <code>position</code>.
-	 * 
+	 *
 	 * @param document - the document being parsed
 	 * @param position - the position to start searching from
 	 * @param end - the end of the document

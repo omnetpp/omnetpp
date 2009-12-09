@@ -148,14 +148,14 @@ int main(int argc, char **argv)
                     usage("Not enough arguments specified");
                     return -1;
                 }
-                
+
                 int *vectorIds, count;
                 parseIntList(argv[3], vectorIds, count);
                 if (count == 0) {
                 	usage("No vectors specified");
                 	return -1;
                 }
-                
+
                	testReader(argv[1], argv[2], vectorIds, count);
             }
 

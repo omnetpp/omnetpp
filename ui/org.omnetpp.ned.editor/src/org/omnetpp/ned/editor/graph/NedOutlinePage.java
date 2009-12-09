@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -93,7 +93,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
     	// KLUDGE END
 
     	super.createControl(parent);
-    
+
         getViewer().setEditDomain(graphicalNedEditor.getEditDomain());
         getViewer().setEditPartFactory(new NedTreeEditPartFactory());
         ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry());
@@ -144,10 +144,10 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
 		// but we handle the SelSync with the TextEditor differently. We receive text selections from there
 		// and if any selection change event received we get the selection from the active editor
 		// turn it to editparts (as text editor selection contains model objects not edit parts)
-		// and pass it to the outline view. We disable the general sync to avoid syncing back the 
+		// and pass it to the outline view. We disable the general sync to avoid syncing back the
 		// selection to the text editor
 		// Debug.println("*** NedOutline selecion changed from: "+part);
-		if (selection instanceof ITextSelection) { 
+		if (selection instanceof ITextSelection) {
 			ISelection activeEditorSelection = getActiveEditorSelection();
 			if (activeEditorSelection instanceof IStructuredSelection) {
 				List<Object> partSelList = new ArrayList<Object>();

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,7 +22,7 @@ public class VectorScatterPlotDataset extends XYDatasetSupport implements IXYDat
 		this.vectors = vectorsData;
 		this.keys = DatasetManager.getResultItemNames(vectors, null /*nameFormat*/, manager); // XXX nameFormat
 	}
-	
+
 	public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;

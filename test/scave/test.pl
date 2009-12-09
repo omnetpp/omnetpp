@@ -89,7 +89,7 @@ sub generateVectorFile
 
   HEADER:
   for ($id = 1; $id <= $numOfVectors; $id++) {
-    print OUT "vector $id\t\"module\"\t\"vector $id\"\t\"TV\"\n";    
+    print OUT "vector $id\t\"module\"\t\"vector $id\"\t\"TV\"\n";
   }
 
   DATA:

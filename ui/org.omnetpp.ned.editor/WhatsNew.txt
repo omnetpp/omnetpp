@@ -15,11 +15,11 @@
     (only 5 size is rendered from the images: verysmall, small, normal, large, verylarge)
   + select all (CTRL-A) now selects all submodules if the selection is in a compound module
     instead off all top level component
-  + no automatic layouting. the layout button should be explicitly pressed to 
-    re-layout the compound module    
+  + no automatic layouting. the layout button should be explicitly pressed to
+    re-layout the compound module
   + Reworked Pin/Unpin functionality. It allows both pinning and unpinning of the
     selected submodules.
-  + Added image export to compound module contex menu and also some 
+  + Added image export to compound module contex menu and also some
     wizards in OMNEST category. It is possible to generate images for
     all/selected nedfiles in the workspace.
   + revised propery cell editors, added content assist to color/icon editors
@@ -40,17 +40,17 @@
   + display is refreshed correctly on model notifications. namechanges and
     changes in extends attributes are handled correctly
 - 061109
-  + all selectable elements displays the parameter, gate, submodule, 
+  + all selectable elements displays the parameter, gate, submodule,
     extends, like, likeparam properties correctly
   + the '<> like' syntax is correctly handled for submodules and connections
-  + double clicking on a submodule opens the definition and selects it (in 
+  + double clicking on a submodule opens the definition and selects it (in
     a different file)
-  + old style NED is serialized back in old format (display string is 
+  + old style NED is serialized back in old format (display string is
     not written back correctly, content assist is not tourned off for
-    old style 
-  o optimized resource (re)parsing during file open, close (unnecessary reparsing 
+    old style
+  o optimized resource (re)parsing during file open, close (unnecessary reparsing
     has been removed)
-  o the file location (path) is always stored correctly in the 
+  o the file location (path) is always stored correctly in the
     model (no more 'buffer' strings)
 - 061101
   + new toplevel elements are named unique automatically

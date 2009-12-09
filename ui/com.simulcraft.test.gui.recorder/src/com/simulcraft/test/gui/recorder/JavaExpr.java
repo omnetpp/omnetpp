@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ public class JavaExpr {
     private String variableType;
 
     public JavaExpr(String javaCode, double quality, Object resultUIObject, String variableType) {
-        this(javaCode, quality, resultUIObject, variableType, resultUIObject == null ? null : 
+        this(javaCode, quality, resultUIObject, variableType, resultUIObject == null ? null :
             StringUtils.toInstanceName(resultUIObject.getClass().getSimpleName()));
     }
 
@@ -52,7 +52,7 @@ public class JavaExpr {
     public Object getResultUIObject() {
         return resultUIObject;
     }
-    
+
     public void forgetUIObject() {
         resultUIObject = null;
     }

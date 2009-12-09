@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -48,7 +48,7 @@ import static org.omnetpp.common.util.Pair.pair;
  * @author tomi
  */
 //TODO: when creating a "filename(...)" filter in the "Add" node, use relative path if
-// possible (if this file and the result file are in the same project) 
+// possible (if this file and the result file are in the same project)
 public class CreateChartTemplateAction extends AbstractScaveAction {
 
 	public CreateChartTemplateAction() {

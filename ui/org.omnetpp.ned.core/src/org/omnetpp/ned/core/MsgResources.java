@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -52,7 +52,7 @@ import org.omnetpp.ned.model.pojo.NamespaceElement;
  */
 public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
     private static final String MSG_EXTENSION = "msg";
-    
+
     // singleton instance
     private static MsgResources instance = null;
 
@@ -62,25 +62,25 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
 
     // associate types declared in Msg files to their names
     private final Map<String, IMsgTypeElement> msgTypes = new HashMap<String, IMsgTypeElement>();
-    
+
     protected MsgResources() {
         NEDElement.setDefaultMsgTypeResolver(this);
         rebuild();
         // register as a workspace listener
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
-    
+
     public void dispose() {
         // remove ourselves from the listener list
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     }
 
     public static MsgResources getInstance() {
-        if (instance == null) 
+        if (instance == null)
             instance = new MsgResources();
         return instance;
     }
-    
+
     private void rebuild() {
         // forget those files which are no longer in our projects or NED folders
         // Note: use "trash" list to avoid ConcurrentModificationException in msgFiles
@@ -157,7 +157,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
 
         if (!msgFiles.containsKey(file))
             readMsgFile(file);
-        
+
         return msgFiles.get(file);
     }
 
@@ -178,7 +178,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
     public IMsgTypeInfo createTypeInfoFor(IMsgTypeElement node) {
         return new MsgTypeInfo(node);
     }
-    
+
     public synchronized void forgetMsgFile(IFile file) {
         if (msgFiles.containsKey(file)) {
             MsgFileElementEx element = msgFiles.get(file);
@@ -196,7 +196,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
         MsgFileElementEx element = NEDTreeUtil.parseMsgSource(source, new SysoutNedErrorStore(), file.toString());
         msgFiles.put(file, element);
         msgElementFiles.put(element, file);
-        
+
         for (IMsgTypeElement typeElement : element.getTopLevelTypeNodes())
             msgTypes.put(typeElement.getName(), typeElement);
     }

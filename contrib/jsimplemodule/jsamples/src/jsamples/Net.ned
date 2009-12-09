@@ -34,7 +34,7 @@ network Net3
         src.out --> fifo.in;
         fifo.out --> sink.in;
 }
-      
+
 network Net4
 {
     parameters:

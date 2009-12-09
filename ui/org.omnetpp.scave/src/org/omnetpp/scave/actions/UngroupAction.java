@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -61,7 +61,7 @@ public class UngroupAction extends AbstractScaveAction {
 	}
 
 	private static Group getSelectedGroup(IStructuredSelection selection) {
-		if (selection != null && selection.size() == 1 && 
+		if (selection != null && selection.size() == 1 &&
 			selection.getFirstElement() instanceof Group)
 			return (Group)selection.getFirstElement();
 		else

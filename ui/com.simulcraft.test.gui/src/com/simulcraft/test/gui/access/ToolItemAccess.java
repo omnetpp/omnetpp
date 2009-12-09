@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,13 +15,13 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.simulcraft.test.gui.core.InBackgroundThread;
 import com.simulcraft.test.gui.core.UIStep;
 
-public class ToolItemAccess 
+public class ToolItemAccess
     extends ClickableWidgetAccess
 {
     public ToolItemAccess(ToolItem toolItem) {
         super(toolItem);
     }
-    
+
     @Override
     public ToolItem getWidget() {
         return (ToolItem)widget;
@@ -41,7 +41,7 @@ public class ToolItemAccess
     protected Menu getContextMenu() {
         return null;
     }
-    
+
     @InBackgroundThread
     public MenuAccess activateDropDownMenu() {
         clickDropDownArrow();

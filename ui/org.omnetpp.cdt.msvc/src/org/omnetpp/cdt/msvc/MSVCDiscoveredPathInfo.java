@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -38,8 +38,8 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 		// Include paths
 		String sdkDir = MSVCEnvironmentVariableSupplier.getSDKDir();
 		String vcDir = MSVCEnvironmentVariableSupplier.getVCDir();
-	
-		List<IPath> paths = new ArrayList<IPath>(); 
+
+		List<IPath> paths = new ArrayList<IPath>();
 		if (vcDir != null ) {
 		    paths.add(new Path(vcDir).append("INCLUDE"));
 		    paths.add(new Path(vcDir).append("INCLUDE\\SYS"));  //FIXME needed?
@@ -47,8 +47,8 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 		        paths.add(new Path(sdkDir).append("Include"));
 		        paths.add(new Path(sdkDir).append("Include\\gl"));  //FIXME others? atl,mfc,...
 		    }
-		} 
-			
+		}
+
 	    // add include dirs needed for OMNeT++
         try {
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
@@ -58,9 +58,9 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
         catch (CoreException e) {
             Activator.logError(e);
         }
-        
+
         this.paths = paths.toArray(new IPath[]{});
-	
+
 		// add Visual C++ predefined symbols
 		symbols.put("_M_IX86", "600");
 		symbols.put("_WIN32", "1");

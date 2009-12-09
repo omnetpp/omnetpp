@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,9 +40,9 @@ public class StateMachineTool extends BaseTool {
 
 	public String getClassName() {
 		if (className == null) {
-			className = getClassName("", stateMachine.getName(), ""); 
+			className = getClassName("", stateMachine.getName(), "");
 		}
-		return className; 
+		return className;
 	}
 
 	public String getSetterName(Association association) {
@@ -58,14 +58,14 @@ public class StateMachineTool extends BaseTool {
 					association.getSupplierRole().toLowerCase().startsWith("a") ?
 					"an" : "a", association.getSupplierRole(), "", true, false));
 		}
-		return (String) paramNames.get(association);	
+		return (String) paramNames.get(association);
 	}
 
 	public String getInstanceName(Association association) {
 		if (! instanceNames.containsKey(association)) {
 			instanceNames.put(association, createIdentifier("i", association.getSupplierRole(), "", true, false));
 		}
-		return (String) instanceNames.get(association);	
+		return (String) instanceNames.get(association);
 	}
 
 	public Collection getCOAssocs() {
@@ -94,8 +94,8 @@ public class StateMachineTool extends BaseTool {
 	public Collection getStates() {
 		if (states == null) {
 			states = CollectionsTool.filter(
-					stateMachine.getAllStates(), 
-					CollectionsTool.notInitialStatePredicate(), 
+					stateMachine.getAllStates(),
+					CollectionsTool.notInitialStatePredicate(),
 					CollectionsTool.stateComparator());
 		}
 		return states;
@@ -104,8 +104,8 @@ public class StateMachineTool extends BaseTool {
 	public Collection getStableStates() {
 		if (stableStates == null) {
 			stableStates = CollectionsTool.filter(
-					stateMachine.getAllStates(), 
-					CollectionsTool.stableStatePredicate(), 
+					stateMachine.getAllStates(),
+					CollectionsTool.stableStatePredicate(),
 					CollectionsTool.stateComparator());
 		}
 		return stableStates;
@@ -114,8 +114,8 @@ public class StateMachineTool extends BaseTool {
 	public Collection getCompositeStates() {
 		if (compositeStates == null) {
 			compositeStates = CollectionsTool.filter(
-					stateMachine.getAllStates(), 
-					CollectionsTool.compositeStatePredicate(), 
+					stateMachine.getAllStates(),
+					CollectionsTool.compositeStatePredicate(),
 					CollectionsTool.stateComparator());
 		}
 		return compositeStates;

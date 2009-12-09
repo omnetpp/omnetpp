@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -16,12 +16,12 @@ import org.omnetpp.common.Debug;
 
 /**
  * A tile cache that works with tiles that cover the full vertical range
- * of the "virtual canvas area". 
+ * of the "virtual canvas area".
  *
  * Currently not used. We use XYTileCache instead, because ColumnTileCache
- * fails if canvas virtual height becomes too big (e.g as a result of 
+ * fails if canvas virtual height becomes too big (e.g as a result of
  * zooming), as it runs out of memory to store a full column.
- *  
+ *
  * @author andras
  */
 public class ColumnTileCache implements ITileCache {

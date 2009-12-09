@@ -2,9 +2,9 @@
 Test if exception handling works.
 
 %global:
-class Noisy 
+class Noisy
 {
-  public: 
+  public:
     Noisy() {ev << "ctor!\n";}
     virtual ~Noisy() {ev << "dtor!\n";}
 };

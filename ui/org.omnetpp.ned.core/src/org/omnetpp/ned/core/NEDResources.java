@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -129,10 +129,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // For debugging: We increment this counter whenever a rehash occurs. Checks can be made
     // to assert that the function is not called unnecessarily
     private int debugRehashCounter = 0;
-    
-    // every NED change increments this counter. Checking against this counter allows one to 
+
+    // every NED change increments this counter. Checking against this counter allows one to
     // invalidate cached NED data whenever they potentially become stale.
-    private long lastChangeSerial = 1;   
+    private long lastChangeSerial = 1;
 
     // file element to contain built-in declarations (does not correspond to any physical file)
     private NedFileElementEx builtInDeclarationsFile;
@@ -141,7 +141,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	private boolean refactoringInProgress = false;
 
     // cache for the method lookupNedType(String name, INedTypeLookupContext lookupContext)
-    private Map<INedTypeLookupContext, Map<String, INEDTypeInfo>> nedTypeLookupCache = new HashMap<INedTypeLookupContext, Map<String,INEDTypeInfo>>();  
+    private Map<INedTypeLookupContext, Map<String, INEDTypeInfo>> nedTypeLookupCache = new HashMap<INedTypeLookupContext, Map<String,INEDTypeInfo>>();
 
     // utilities for predicate-based filtering of NED types using getAllNedTypes()
     public static class InstanceofPredicate implements IPredicate {
@@ -233,11 +233,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public void setRefactoringInProgress(boolean refactoringInProgress) {
         this.refactoringInProgress = refactoringInProgress;
     }
-    
+
     public long getLastChangeSerial() {
         return lastChangeSerial;
     }
-    
+
 	public INEDTypeInfo createTypeInfoFor(INedTypeElement node) {
 		return new NEDTypeInfo(node);
 	}
@@ -321,7 +321,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				int elementId = marker.getAttribute(NEDMarkerErrorStore.NEDELEMENT_ID, -1);
 				if (elementId != -1 && node.findElementWithId(elementId) != null)
 					result.add(marker);
-			
+
 				// skip the remaining after reaching limit
 				if (result.size() >= limit)
 					break;
@@ -484,7 +484,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	    PropertyElementEx property = nedFileElement.getProperties().get(propertyName);
 	    if (property != null)
 	        return property;
-	    return getPropertyFor(getNedFile(nedFileElement).getParent(), propertyName); 
+	    return getPropertyFor(getNedFile(nedFileElement).getParent(), propertyName);
 	}
 
 	public synchronized PropertyElementEx getPropertyFor(IContainer folder, String propertyName) {
@@ -517,14 +517,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             map.put(name, typeInfo = doLookupNedType(name, lookupContext));
         return typeInfo;
     }
-    
+
     // Internal method of lookupNedType -- not to be called directly
     protected INEDTypeInfo doLookupNedType(String name, INedTypeLookupContext lookupContext) {
         rehashIfNeeded();
 		Assert.isTrue(lookupContext!=null, "lookupNedType() cannot be called with context==null");
-	
+
 		// if (debug) Debug.println("looking up: " + name + " in " + lookupContext.debugString());
-	
+
 	    // note: this method is to be kept consistent with NEDResourceCache::resolveNedType() in the C++ code
 	    // note2: partially qualified names are not supported: name must be either simple name or fully qualified
 		IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
@@ -661,7 +661,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public IContainer getNedSourceFolderFor(IFile file) {
         return getNedSourceFolderFor(file.getParent());
     }
-    
+
     public IContainer getNedSourceFolderFor(IContainer folder) {
     	IProject project = folder.getProject();
 		ProjectData projectData = projects.get(project);
@@ -1006,7 +1006,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	public synchronized void invalidate() {
 	    lastChangeSerial++;
 		needsRehash = true;
-	    nedTypeLookupCache.clear();  
+	    nedTypeLookupCache.clear();
 
 	    // invalidate all inherited members on all typeInfo objects
         for (NedFileElementEx file : nedElementFiles.keySet())

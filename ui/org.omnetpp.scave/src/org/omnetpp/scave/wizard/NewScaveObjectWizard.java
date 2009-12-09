@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -102,7 +102,7 @@ public class NewScaveObjectWizard extends Wizard {
 				newChildDescriptor = childDescriptors[0];
 			}
 		}
-	
+
 		editFieldsPage = new EditFieldsWizardPage("Set Attributes");
 		addPage(editFieldsPage);
 	}
@@ -188,7 +188,7 @@ public class NewScaveObjectWizard extends Wizard {
 				setNewChildDescriptor(childrenDescriptors[index]);
 			setPageComplete(radio.getSelection());
 		}
-	
+
 	}
 
 	/**

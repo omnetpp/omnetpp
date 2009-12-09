@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -48,7 +48,7 @@ public class DatasetViewTest extends ScaveFileTestCase {
 		datasetView.ensureVectorsPanelActivated();
 		datasetView.sortByTableColumn(FILE_NAME, SWT.UP);
 		datasetView.getVectorsTable().assertEmpty();
-	
+
 		datasetsPage.getDatasetsTree().findTreeItemByContent("dataset.*vector-dataset.*").click();
 		datasetView.assertVectorsPanelActivated();
 		datasetView.getVectorsTable().assertContent(buildVectorsTableContent());

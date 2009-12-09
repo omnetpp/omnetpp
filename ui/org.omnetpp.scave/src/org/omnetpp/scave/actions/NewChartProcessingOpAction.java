@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -32,12 +32,12 @@ import org.omnetpp.scave.wizard.NewScaveObjectWizard;
  * Adds an "Apply" or "Compute" node to the chart.
  */
 public class NewChartProcessingOpAction extends AbstractScaveAction {
-	private ProcessingOp elementPrototype; 
+	private ProcessingOp elementPrototype;
 
 	/**
-	 * Creates the action. 
+	 * Creates the action.
 	 * @param text the action text
-	 * @param elementPrototype  Prototype of object to add. If the "operation" attribute is null, 
+	 * @param elementPrototype  Prototype of object to add. If the "operation" attribute is null,
 	 *                          a dialog will be shown.
 	 */
 	public NewChartProcessingOpAction(String text, ProcessingOp elementPrototype) {
@@ -60,7 +60,7 @@ public class NewChartProcessingOpAction extends AbstractScaveAction {
 			int index = ECollections.indexOf(parent.eContents(), chart, 0);
 			NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent, index, element);
 			WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
-			if (dialog.open() != Window.OK) 
+			if (dialog.open() != Window.OK)
 				doit = false;
 		}
 		if (doit) {
@@ -74,7 +74,7 @@ public class NewChartProcessingOpAction extends AbstractScaveAction {
 		int index = ECollections.indexOf(parent.eContents(), chart, 0);
 		EditingDomain editingDomain = editor.getEditingDomain();
 
-		// if chart is already grouped (it is the last item in a group), just add operation before the chart 
+		// if chart is already grouped (it is the last item in a group), just add operation before the chart
 		if (parent instanceof Group && index == parent.eContents().size()-1) {
 			Command command = AddCommand.create(editingDomain, parent, null, element, index);
 			editor.executeCommand(command);
@@ -82,9 +82,9 @@ public class NewChartProcessingOpAction extends AbstractScaveAction {
 		else {
 			// otherwise, create a group for it
 			//
-			// trick: RemoveCommand(chart) closes the ChartPage as a side effect, so we 
-			// have to wrap moving the chart into the Group into a non-notifying CompoundCommand; 
-			// at the same time Group's insertion has to be notifying, otherwise viewers won't 
+			// trick: RemoveCommand(chart) closes the ChartPage as a side effect, so we
+			// have to wrap moving the chart into the Group into a non-notifying CompoundCommand;
+			// at the same time Group's insertion has to be notifying, otherwise viewers won't
 			// update properly.
 			Group group = ScaveModelFactory.eINSTANCE.createGroup();
 			group.setName(chart.getName());

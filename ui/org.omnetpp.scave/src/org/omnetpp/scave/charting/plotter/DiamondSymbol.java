@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.GC;
 
 /**
  * Draws a diamond symbol.
- * 
+ *
  * @author andras
  */
 public class DiamondSymbol extends ChartSymbol {
@@ -34,7 +34,7 @@ public class DiamondSymbol extends ChartSymbol {
 		int d = (sizeHint*71+50)/100;
 		poly = new int[] {-d+1,0,0,-d,d,0,0,d}; // with anti-alias OFF, +1 magic is needed to make it look symmetric
 		 										//FIXME with ON, it looks asymmetric... HELP!!!
-		//poly = new int[] {-d,0,0,-d,d,0,0,d}; XXX this will be asymmetric too, but WHY? 
+		//poly = new int[] {-d,0,0,-d,d,0,0,d}; XXX this will be asymmetric too, but WHY?
 	}
 
 	public void drawSymbol(GC gc, int x, int y) {

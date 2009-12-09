@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -62,7 +62,7 @@ public class ProductIterator implements ResettableIterator {
 	public Object next() {
 		if (!hasNext)
 			return null;
-	
+
 		System.arraycopy(next, 0, current, 0, next.length);
 		for (int i = 0; i < iterators.length; ++i) {
 			ResettableIterator iterator = iterators[i];

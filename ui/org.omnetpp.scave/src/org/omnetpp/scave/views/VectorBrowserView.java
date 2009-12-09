@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -150,7 +150,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
-	
+
 		partListener = new IPartListener() {
 
 			public void partActivated(IWorkbenchPart part) {
@@ -206,7 +206,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 	public void setViewerInput(ISelection selection) {
 		ResultItemRef selectedVector = null;
 		int dataPointIndex = -1;
-	
+
 		if (selection instanceof IDListSelection) {
 			IDListSelection sel = (IDListSelection)selection;
 			if (!sel.isEmpty()) {
@@ -227,18 +227,18 @@ public class VectorBrowserView extends ViewWithMessagePart {
 				}
 			}
 		}
-	
+
 		if (ObjectUtils.equals(selectedVector, viewer.getInput())) {
 			if (dataPointIndex >= 0)
 				selectLine(dataPointIndex);
 			return;
 		}
-	
+
 		if (selectedVector == null) {
 			setViewerInput((ResultItemRef)null);
 			return;
 		}
-	
+
 		// recompute computed files if needed
 		final ResultFileManager manager = selectedVector.getResultFileManager();
 		final ResultItemRef finalSelectedVector = selectedVector;
@@ -250,7 +250,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
 					return null;
 				}
-			
+
 				ProcessingOp operation =  (ProcessingOp)vector.getComputation();
 				ResultItemRef origInput = (ResultItemRef)viewer.getInput();
 				VectorResult origVector = origInput != null ? (VectorResult)origInput.resolve() : null;
@@ -260,7 +260,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
 					return null;
 				}
-			
+
 				setViewerInput((IDListSelection)null);
 				showMessage("Computing vectors...");
 
@@ -383,7 +383,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		VectorBrowserView view;
 		GotoTarget target;
 		String prompt;
-	
+
 		public GotoAction(VectorBrowserView view, GotoTarget target) {
 			this.view = view;
 			this.target = target;
@@ -393,7 +393,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			case Time: setText("Go to time..."); prompt = "Time:"; break;
 			}
 		}
-	
+
 		public void run() {
 			IInputValidator validator = new IInputValidator() {
 				public String isValid(String text) {
@@ -417,7 +417,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 				}
 			}
 		}
-	
+
 		public Object parseTarget(String str) {
 			try
 			{

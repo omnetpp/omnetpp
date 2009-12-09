@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -32,7 +32,7 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 		if (validator == null)
 			validator = new ICellEditorValidator() {
 				public String isValid(Object value) {
-				
+
 					if (value instanceof FontData)
 						return null;
 					else
@@ -59,19 +59,19 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 
 		protected Object openDialogBox(Control cellEditorWindow) {
 			FontDialog fontDialog = new FontDialog( cellEditorWindow.getShell());
-		
+
 			FontData value = (FontData)getValue();
-		
+
 			if (value != null)
 				fontDialog.setFontList(new FontData[] {value});
 			FontData fd = fontDialog.open();
-			
+
 			if (fd != null) {
 				value = fd;
 			}
 			return value;
 		}
-	
+
 	    @Override
 		protected void updateContents(Object value) {
 	    	Label label = getDefaultLabel();

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,7 +29,7 @@ public class JavaSequence {
         for (JavaExpr expr : other.list)
             add(expr);
     }
-    
+
     public void add(JavaExpr expr) {
         list.add(expr);
         modificationCount++;
@@ -38,7 +38,7 @@ public class JavaSequence {
     public boolean isEmpty() {
         return list.isEmpty();
     }
-    
+
     public void clear() {
         list.clear();
     }
@@ -46,7 +46,7 @@ public class JavaSequence {
     public int length() {
         return list.size();
     }
-    
+
     /**
      * Returns the given element. Returns null if out of bounds.
      */
@@ -95,7 +95,7 @@ public class JavaSequence {
             list.addAll(pos, seq.list);
         modificationCount++;
     }
-    
+
     /**
      * Returns a counter that gets incremented at every modification.
      * Can be used to detect if the sequence was modified since a
@@ -104,7 +104,7 @@ public class JavaSequence {
     public int getModificationCount() {
         return modificationCount;
     }
-    
+
     /**
      * Returns the expression which produces the given UI object,
      * or returns null.
@@ -115,7 +115,7 @@ public class JavaSequence {
                 return expr;
         return null;
     }
-    
+
     /**
      * Release stale (disposed) UI objects, held by member JavaExpr objects.
      */
@@ -134,16 +134,16 @@ public class JavaSequence {
             q *= expr.getQuality();
         return q;
     }
-    
+
     /**
-     * Generate Java code from the JavaExpr objects contained. 
+     * Generate Java code from the JavaExpr objects contained.
      */
     public String generateCode() {
-        return generateCode(0, length());   
+        return generateCode(0, length());
     }
-    
+
     /**
-     * Generate Java code from the JavaExpr objects contained. 
+     * Generate Java code from the JavaExpr objects contained.
      */
     public String generateCode(int startIndex, int endIndex) {
         makeVariablesUnique();
@@ -170,7 +170,7 @@ public class JavaSequence {
         text = addSemicolonIfNeeded(text).trim() + "\n";
         return text;
     }
-    
+
     protected boolean needsVariable(JavaExpr expr) {
         // needs variable if called from other place than immediately following expression
         JavaExpr prev = null;
@@ -183,7 +183,7 @@ public class JavaSequence {
         }
         return false;
     }
-    
+
     protected int findEndOfChain(int startIndex) {
         for (int i = startIndex; i < list.size(); i++) {
             if (i+1 < list.size() && list.get(i+1).getCalledOn() != list.get(i))
@@ -199,7 +199,7 @@ public class JavaSequence {
         String lastLineWithoutComments = lastLine.replaceFirst("//[^\"]*$", "").trim(); // for this to work, comments should not contain quotes
         if (!StringUtils.isEmpty(lastLineWithoutComments) && !lastLineWithoutComments.endsWith(";"))
             return text + ";";
-        else 
+        else
             return text;
     }
 

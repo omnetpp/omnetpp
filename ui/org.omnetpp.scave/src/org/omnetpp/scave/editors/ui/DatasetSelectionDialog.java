@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -74,11 +74,11 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 
 	static class DatasetLabelProvider extends LabelProvider {
 		private ILabelProvider imageProvider;
-	
+
 		public DatasetLabelProvider(ScaveEditor editor) {
 			imageProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
 		}
-	
+
 		public Image getImage(Object element) {
 			if (element instanceof Dataset) {
 				return imageProvider.getImage(element);

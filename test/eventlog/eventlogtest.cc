@@ -103,7 +103,7 @@ void testRandomEventLogAccess(const char *fileName, int numberOfRandomReads, int
 
         while (numberOfRandomReads--) {
             Event *event;
-            
+
             if (random.next01() < 0.5) {
                 long eventNumber = random.next01() * lastEvent->getEventNumber();
                 printf("Seeking for event number: %ld\n", eventNumber);

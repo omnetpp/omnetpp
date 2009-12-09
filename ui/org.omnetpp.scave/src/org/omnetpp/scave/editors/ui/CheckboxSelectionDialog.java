@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,11 +49,11 @@ public class CheckboxSelectionDialog extends Dialog {
 		RowLayout layout = new RowLayout(SWT.VERTICAL);
 		layout.marginHeight = layout.marginWidth = 15;
 		composite.setLayout(layout);
-	
+
 		Label label = new Label(composite, SWT.WRAP);
 		label.setText(message);
 		new Label(composite, SWT.NONE); // spacer
-	
+
 		// create and configure checkboxes
 		for (int i = 0; i < labels.length; ++i) {
 			final int index = i;

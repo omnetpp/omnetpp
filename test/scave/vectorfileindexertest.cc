@@ -26,8 +26,8 @@ void testIndexer(const char *inputFile)
 		throw exception("Already up to date");
 
     VectorFileIndexer indexer;
-    
-    { 
+
+    {
     	MeasureTime m;
     	indexer.generateIndex(inputFile);
     }

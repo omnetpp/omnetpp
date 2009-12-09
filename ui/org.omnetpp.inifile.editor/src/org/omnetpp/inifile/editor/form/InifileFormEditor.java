@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -45,12 +45,12 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 
 /**
  * Represents the form page of the inifile multi-page editor.
- * 
+ *
  * IMPORTANT: to check whether all config keys are covered by
- * the form editor, set DUMP_FORGOTTEN_CONFIG_KEYS to true, 
+ * the form editor, set DUMP_FORGOTTEN_CONFIG_KEYS to true,
  * launch the IDE, and open an ini file in the editor.
  * Then check the console window.
- * 
+ *
  * @author andras
  */
 public class InifileFormEditor extends Composite {
@@ -112,7 +112,7 @@ public class InifileFormEditor extends Composite {
 
 		root.addChild(new GenericTreeNode(PARAMETERS_PAGE));
 
-		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_PAGE); 
+		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_PAGE);
 		root.addChild(configNode);
 		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
@@ -124,7 +124,7 @@ public class InifileFormEditor extends Composite {
 		// at this point InifileDocument is not yet set up, so we have to defer showing the form page
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
-			    if (isDisposed()) 
+			    if (isDisposed())
 			        return;
 				if (DUMP_FORGOTTEN_CONFIG_KEYS)
 					dumpForgottenConfigKeys(); // maintenance code
@@ -160,7 +160,7 @@ public class InifileFormEditor extends Composite {
 	 * after committing changes on the current page.
 	 */
 	public FormPage showCategoryPage(String category) {
-		// root tree node is a shortcut to "General" 
+		// root tree node is a shortcut to "General"
 		if (category.equals(CONFIGURATION_PAGE))
 			category = GenericConfigPage.getCategoryNames()[0];
 
@@ -172,7 +172,7 @@ public class InifileFormEditor extends Composite {
 
 		// nothing to do if already showing
 		if (formPage != null && formPage.getPageCategory().equals(category))
-			return formPage; 
+			return formPage;
 
 		// dispose old page
 		if (formPage != null)
@@ -201,12 +201,12 @@ public class InifileFormEditor extends Composite {
 	 * to form view).
 	 */
 	public void pageSelected() {
-		if (formPage != null) 
+		if (formPage != null)
 			formPage.reread();
 	}
 
 	/**
-	 * Notification: User switched away from this page of the multipage editor 
+	 * Notification: User switched away from this page of the multipage editor
 	 * (i.e. from form to text view).
 	 */
 	public void pageDeselected() {
@@ -224,7 +224,7 @@ public class InifileFormEditor extends Composite {
 			showCategoryPage(PARAMETERS_PAGE);
 		else if (keyType==KeyType.PER_OBJECT_CONFIG)
 			showCategoryPage(PARAMETERS_PAGE); //XXX for lack of anything better for now
-		else 
+		else
 			showCategoryPage(CONFIGURATION_PAGE); //XXX could make more effort to position the right field editor...
 		formPage.gotoEntry(section, key);
 	}
@@ -238,7 +238,7 @@ public class InifileFormEditor extends Composite {
 
 		// collect keys supported by the editor forms
 		Set<ConfigOption> supportedKeys = new HashSet<ConfigOption>();
-	
+
 		List<String> categories = new ArrayList<String>();
 		categories.add(PARAMETERS_PAGE);
 		categories.add(SECTIONS_PAGE);
@@ -249,7 +249,7 @@ public class InifileFormEditor extends Composite {
 			for (ConfigOption key : page.getSupportedKeys())
 				supportedKeys.add(key);
 		}
-	
+
 		// see which keys are not supported anywhere
 		for (ConfigOption key : ConfigRegistry.getEntries())
 			if (!supportedKeys.contains(key))

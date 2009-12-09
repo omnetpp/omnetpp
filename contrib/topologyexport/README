@@ -1,17 +1,17 @@
 Topology Export
 ===============
 
-This module allows one to export the topology of a model into an XML file 
+This module allows one to export the topology of a model into an XML file
 at runtime.
 
 Usage
 -----
 
-The exporter is implemented as a simple module. To activate it, compile its 
+The exporter is implemented as a simple module. To activate it, compile its
 code into the simulation, then add it to your network NED file as a submodule,
-and run the simulation. The exporter module will write a "snapshot" of the 
-simulation topology at the specified simulation time (default 1s). The file 
-name and the simulation time to do the export at can be configured as module 
+and run the simulation. The exporter module will write a "snapshot" of the
+simulation topology at the specified simulation time (default 1s). The file
+name and the simulation time to do the export at can be configured as module
 parameters.
 
 The output XML document
@@ -19,7 +19,7 @@ The output XML document
 
 The structure of the XML document is described in the provided DTD.
 
-The XML document's structure is somewhat similar to the XML representation 
+The XML document's structure is somewhat similar to the XML representation
 of NED files (which can be produced with nedtool's -x option). The differences
 are accountable to the fact that NED describes *how* to set up a network,
 while the topology XML describes the *result* of the network setup process.

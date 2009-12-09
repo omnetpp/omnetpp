@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,12 +14,12 @@ import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 
 /**
- * Delete a NED file which is open in a NED editor. 
+ * Delete a NED file which is open in a NED editor.
  * (This used to crash the Outline View / Property View.)
- * 
+ *
  * @author Andras
  */
-public class DeleteOpenFileTest 
+public class DeleteOpenFileTest
 	extends NedFileTestCase
 {
 	public void testOpenFile() throws Throwable {
@@ -31,7 +31,7 @@ public class DeleteOpenFileTest
 
 		WorkspaceUtils.assertFileExists("/" + projectName + "/" + fileName);
 		WorkspaceUtils.ensureFileNotExists(projectName, fileName);
-	
+
 		WorkbenchUtils.ensureViewActivated("General", "Outline");  // give views a chance to crash
 	}
 }

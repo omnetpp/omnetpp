@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,8 +29,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * An inifile field editor, which displays either a TextFieldEditor or a TableFieldEditor,
- * and lets the user toggle between them. 
- * 
+ * and lets the user toggle between them.
+ *
  * @author Andras
  */
 //XXX when focus is in the table, form cannot be scrolled. why??
@@ -58,7 +58,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 
 		isExpanded = (!entry.isGlobal() && !canBeCollapsed());
 		createControl();
-	
+
 		// need to update the toggle button's state on inifile changes
 		inifile.addInifileChangeListener(inifileChangeListener);
 		addDisposeListener(new DisposeListener() {
@@ -78,7 +78,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 	protected void createControl() {
 		fieldEditor = createFieldEditor(isExpanded);
 		fieldEditor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-			
+
 		toggleButton = createFlatImageButton(this);
 		toggleButton.setImage(isExpanded ? IMAGE_COLLAPSE : IMAGE_EXPAND);
 		toggleButton.setToolTipText(isExpanded ? "Specify value globally, in the [General] section": "Specify values individually for different sections");
@@ -103,7 +103,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 			public void widgetDisposed(DisposeEvent e) {
 				cursor.dispose();
 			}
-		});	
+		});
         ToolItem item = new ToolItem(toolBar, SWT.NONE);
         return item;
 	}
@@ -113,7 +113,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 	        for (String section : inifile.getSectionNames())
 	            if (inifile.containsKey(section, entry.getName()) && !section.equals(GENERAL))
 	                return false;
-	    } 
+	    }
 	    else {
 	        // if it contains any occurrence of this key except **.<key> in [General], it cannot be collapsed
             for (String section : inifile.getSectionNames())

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,7 +22,7 @@ import org.omnetpp.scave.model.util.ScaveModelSwitch;
 
 /**
  * Visitor-like thingy, where doSwitch() traverses the dataset.
- * It stops at the "target" item. 
+ * It stops at the "target" item.
  */
 abstract class ProcessDatasetSwitch extends ScaveModelSwitch<Object> {
 
@@ -65,7 +65,7 @@ abstract class ProcessDatasetSwitch extends ScaveModelSwitch<Object> {
 		if (baseDataset != null) {
 			processBaseDataset(baseDataset);
 		}
-	
+
 		for (Object item : dataset.getItems())
 			doSwitch((EObject)item);
 

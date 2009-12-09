@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -46,7 +46,7 @@ public class CsvWriter {
 	public String escape(String str) {
 		if (str.indexOf(separator) < 0 && str.indexOf(delimiter) < 0 && str.indexOf('"') < 0)
 			return str;
-	
+
 		StringBuffer buffer = new StringBuffer(str);
 		for (int i = 0; i < buffer.length(); ++i)
 			if (buffer.charAt(i) == '"')

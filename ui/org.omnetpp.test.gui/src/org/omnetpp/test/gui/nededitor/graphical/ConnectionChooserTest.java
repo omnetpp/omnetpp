@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,9 +21,9 @@ import com.simulcraft.test.gui.core.UIStep;
 
 
 /**
- * Tests the ConnectionChooser popup menu. Tests whether all possible gate combinations are offered. 
- * Used gates should be displayed with a disabled menu item. If no gate is defined notification should 
- * be shown. 
+ * Tests the ConnectionChooser popup menu. Tests whether all possible gate combinations are offered.
+ * Used gates should be displayed with a disabled menu item. If no gate is defined notification should
+ * be shown.
  * @author rhornig
  */
 public class ConnectionChooserTest
@@ -36,12 +36,12 @@ public class ConnectionChooserTest
         openFileFromProjectExplorerView();
         graphicalNedEditor = findNedEditor().ensureActiveGraphicalEditor();
     }
-    
+
     // used gates cannot be part of a new connection (they should be disabled in the menu)
     public void testSubmodulesConnectionEnablement() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g1; inout g2; }\nmodule TestCompoundModule { submodules: test1: TestSimpleModule; test2: TestSimpleModule; }");
-        createConnection("test1", "test2", q("test1.g1 <--> test2.g1"));        
-        assertConnectionChooserItemsEnabledState("test1", "test2", 
+        createConnection("test1", "test2", q("test1.g1 <--> test2.g1"));
+        assertConnectionChooserItemsEnabledState("test1", "test2",
                 new String[] {q("test1.g2 <--> test2.g2")},
                 new String[] {q("test1.g1 <--> test2.g2"), q("test1.g2 <--> test2.g1"), q("test1.g1 <--> test2.g1")},
                 true);
@@ -50,16 +50,16 @@ public class ConnectionChooserTest
     public void testSubmoduleCompoundConnectionEnablement() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g1; inout g2; }\n" +
                     "module TestCompoundModule { gates: inout g1; inout g2; submodules: test: TestSimpleModule; }");
-        createConnection("TestCompoundModule", "test", q("g1 <--> test.g1"));        
-        assertConnectionChooserItemsEnabledState("TestCompoundModule", "test", 
+        createConnection("TestCompoundModule", "test", q("g1 <--> test.g1"));
+        assertConnectionChooserItemsEnabledState("TestCompoundModule", "test",
                 new String[] {q("g2 <--> test.g2")},
                 new String[] {q("g2 <--> test.g1"), q("g1 <--> test.g2"), q("g1 <--> test.g1")}, true);
     }
 
     public void testSubmoduleWithUnknownGateArraySizeConnectionEnablement() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g1[]; inout g2; }\nmodule TestCompoundModule { submodules: test1: TestSimpleModule; test2: TestSimpleModule; }");
-        createConnection("test1", "test2", q("test1.g1++ <--> test2.g2"));        
-        assertConnectionChooserItemsEnabledState("test1", "test2", 
+        createConnection("test1", "test2", q("test1.g1++ <--> test2.g2"));
+        assertConnectionChooserItemsEnabledState("test1", "test2",
                 new String[] {q("test1.g1++ <--> test2.g1++"), q("test1.g2 <--> test2.g1++")},
                 new String[] {q("test1.g1++ <--> test2.g2"), q("test1.g2 <--> test2.g2")},
                 true);
@@ -67,8 +67,8 @@ public class ConnectionChooserTest
 
     public void testSubmoduleWithKnownGateArraySizeConnectionEnablement() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g1[2]; inout g2; }\nmodule TestCompoundModule { submodules: test1: TestSimpleModule; test2: TestSimpleModule; }");
-        createConnection("test1", "test2", q("test1.g1[0] <--> test2.g2"));        
-        assertConnectionChooserItemsEnabledState("test1", "test2", 
+        createConnection("test1", "test2", q("test1.g1[0] <--> test2.g2"));
+        assertConnectionChooserItemsEnabledState("test1", "test2",
                 new String[] {q("test1.g1[0] <--> test2.g1[0]"), q("test1.g2 <--> test2.g1[0]")},
                 new String[] {q("test1.g1[0] <--> test2.g2"), q("test1.g2 <--> test2.g2")},
                 true);
@@ -76,22 +76,22 @@ public class ConnectionChooserTest
 
     public void testSubmoduleWithUnknownArraySizeConnectionEnablement() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g1; inout g2; }\nmodule TestCompoundModule { submodules: test1[3]: TestSimpleModule; test2: TestSimpleModule; }");
-        createConnection(q("test1[3]"), "test2", q("test1[0].g1 <--> test2.g2"));        
-        assertConnectionChooserItemsEnabledState(q("test1[3]"), "test2", 
+        createConnection(q("test1[3]"), "test2", q("test1[0].g1 <--> test2.g2"));
+        assertConnectionChooserItemsEnabledState(q("test1[3]"), "test2",
                 new String[] {q("test1[0].g1 <--> test2.g1"), q("test1[0].g2 <--> test2.g1")},
                 new String[] {q("test1[0].g1 <--> test2.g2"), q("test1[0].g2 <--> test2.g2")},
                 true);
     }
-    
+
     public void testNoGatesMessageInConnectionChooser() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g1; }\nsimple TestSimpleModuleNoGates {}\nmodule TestCompoundModule { submodules: test: TestSimpleModule; testNoGate1: TestSimpleModuleNoGates; testNoGate2: TestSimpleModuleNoGates;}");
-        assertConnectionChooserItemsEnabledState("test", "testNoGate1", 
+        assertConnectionChooserItemsEnabledState("test", "testNoGate1",
                 new String[] {},
                 new String[] {q("testNoGate1 has no gates")}, true);
-        assertConnectionChooserItemsEnabledState("testNoGate1", "test", 
+        assertConnectionChooserItemsEnabledState("testNoGate1", "test",
                 new String[] {},
                 new String[] {q("testNoGate1 has no gates")}, true);
-        assertConnectionChooserItemsEnabledState("testNoGate1", "testNoGate2", 
+        assertConnectionChooserItemsEnabledState("testNoGate1", "testNoGate2",
                 new String[] {},
                 new String[] {q("testNoGate1 and testNoGate2 have no gates")}, true);
     }
@@ -105,7 +105,7 @@ public class ConnectionChooserTest
         CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.findCompoundModule("TestCompoundModule");
         compoundModuleEditPart.createConnectionWithPalette(channel, moduleName1, moduleName2, menuItem);
     }
-    
+
     @InBackgroundThread
     private void assertConnectionChooserItemsEnabledState(String moduleName1, String moduleName2, String[] enabledItems, String[] disabledItems, boolean doNotAllowExtraItems) {
         CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.findCompoundModule("TestCompoundModule");
@@ -124,7 +124,7 @@ public class ConnectionChooserTest
         menuAccess.assertMenuItemsDisabled(disabledLabels);
         if (doNotAllowExtraItems)
             assertTrue("Menu contains extra items", menuAccess.getWidget().getItemCount() == enabledLabels.length + disabledLabels.length);
-        
+
         return menuAccess;
     }
 

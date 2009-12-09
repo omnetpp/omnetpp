@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -220,8 +220,8 @@ public class HoverSupport {
 
 	protected void removeHover() {
 		if (hoverControl != null) {
-		    // note: hoverControl may have been disposed already, but there's 
-		    // no getter method to find that out. So try dispose() anyway, and 
+		    // note: hoverControl may have been disposed already, but there's
+		    // no getter method to find that out. So try dispose() anyway, and
 		    // catch potential NPE from BrowserInformationControl.dispose().
 		    try { hoverControl.dispose(); } catch (RuntimeException e) { }
 			hoverControl = null;
@@ -239,7 +239,7 @@ public class HoverSupport {
     }
 
     /**
-     * Creates a sticky hover for the given widget. 
+     * Creates a sticky hover for the given widget.
      */
     public void makeHoverSticky(Control control) {
         removeHover();
@@ -251,17 +251,17 @@ public class HoverSupport {
             String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y, preferredSize);
             if (hoverText != null) {
                 // create the control
-                informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
-                configureControl(informationControl, hoverText, p, preferredSize);
-                informationControl.setFocus();
+                final IInformationControl newInformationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
+                configureControl(newInformationControl, hoverText, p, preferredSize);
+                newInformationControl.setFocus();
 
                 // it should close on losing the focus
-                informationControl.addDisposeListener(new DisposeListener() {
+                newInformationControl.addDisposeListener(new DisposeListener() {
                     public void widgetDisposed(DisposeEvent e) {
                         informationControl = null;
                     }
                 });
-                informationControl.addFocusListener(new FocusListener() {
+                newInformationControl.addFocusListener(new FocusListener() {
                     public void focusGained(FocusEvent e) {
                     }
                     public void focusLost(FocusEvent e) {
@@ -269,13 +269,13 @@ public class HoverSupport {
                     	// and transferred to the browser (this would close the infoControl on browser creation)
             			Display.getCurrent().asyncExec(new Runnable() {
             				public void run() {
-            					if (informationControl != null && !informationControl.isFocusControl()) {
-            						informationControl.dispose();
-            					}
+            					if (newInformationControl != null && !newInformationControl.isFocusControl())
+            						newInformationControl.dispose();
             				}
             			});
                     }
                 });
+                informationControl = newInformationControl;
             }
 		}
 	}
@@ -285,7 +285,7 @@ public class HoverSupport {
 		informationControl.setInformation(hoverText);
 		Point size = informationControl.computeSizeHint(); //issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
 		size.x = calculateSize(hoverSizeConstraints.x, size.x, preferredSize.minimumWidth, preferredSize.preferredWidth);
-		size.y = calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight); 
+		size.y = calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight);
 		informationControl.setSize(size.x, size.y);
 		informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
 		informationControl.setVisible(true);
@@ -307,7 +307,7 @@ public class HoverSupport {
 		Monitor monitor = findMonitorByPosition(mouse);
 		if (monitor == null)
 			monitor = Display.getCurrent().getPrimaryMonitor();
-	
+
 		Rectangle screen = monitor.getBounds();
 		Point p = new Point(mouse.x + 5, mouse.y + 20);
 		p.x = Math.min(p.x, screen.x + screen.width - size.x - 5);
@@ -390,7 +390,7 @@ public class HoverSupport {
 				            return HoverSupport.getInformationPresenterControlCreator();
 				        }
 				    });
-				else 
+				else
 					return new DefaultInformationControl(parent, AFFORDANCE, new HTMLTextPresenter(false));
 			}
 		};
@@ -409,9 +409,9 @@ public class HoverSupport {
 				        @Override
 				        public void setSize(int width, int height) {
 				            super.setSize(width + 20, height);
-				        }	    
+				        }
 					};
-				
+
 					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
 					    final Shell shell = (Shell)ReflectionUtils.getFieldValue(browserInformationControl,"fShell");
 					    ((GridLayout)shell.getLayout()).marginHeight = 5;
@@ -419,7 +419,7 @@ public class HoverSupport {
 					    shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 					    makeShellResizeable(shell);
 					}
-				
+
 					return browserInformationControl;
 				} else {
 					DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent, new HTMLTextPresenter(false));
@@ -439,7 +439,7 @@ public class HoverSupport {
 	// WORKAROUND Solution for the bug 23980. It can be removed once it is integrated in the platform
 	/**
 	 * Adds a mouse listener to the shell which implements resize behavior. Any of the edges
-	 * can be dragged to resize the shell, but the shell must expose a border which 
+	 * can be dragged to resize the shell, but the shell must expose a border which
 	 * can be dragged. (i.e. must not be fully covered by the contained Composite)
 	 */
 	public static void makeShellResizeable(final Shell shell) {
@@ -447,7 +447,7 @@ public class HoverSupport {
 			private boolean mouse1Down;
 			private Point prevPos;
 			private int resizeEdge = 0;
-			private final static int BORDERSIZE = 15; 
+			private final static int BORDERSIZE = 15;
 
 			public void mouseDown(MouseEvent e) {
                 mouse1Down = true;
@@ -455,20 +455,20 @@ public class HoverSupport {
                 resizeEdge = 0;
                 Point shellPos = shell.getLocation();
                 Point shellSize = shell.getSize();
-                if (Math.abs(prevPos.y - shellSize.y - shellPos.y) < BORDERSIZE) 
+                if (Math.abs(prevPos.y - shellSize.y - shellPos.y) < BORDERSIZE)
                 	resizeEdge |= SWT.BOTTOM;
-                else if (Math.abs(prevPos.y - shellPos.y) < BORDERSIZE) 
+                else if (Math.abs(prevPos.y - shellPos.y) < BORDERSIZE)
                 	resizeEdge |= SWT.TOP;
-                if (Math.abs(prevPos.x - shellSize.x - shellPos.x) < BORDERSIZE) 
+                if (Math.abs(prevPos.x - shellSize.x - shellPos.x) < BORDERSIZE)
                 	resizeEdge |= SWT.RIGHT;
-                else if (Math.abs(prevPos.x - shellPos.x) < BORDERSIZE) 
+                else if (Math.abs(prevPos.x - shellPos.x) < BORDERSIZE)
                 	resizeEdge |= SWT.LEFT;
             }
-            
+
 			public void mouseUp(MouseEvent e) {
                 mouse1Down = false;
             }
-		
+
 			private void setMouseCursor() {
                 Point cpos = Display.getCurrent().getCursorLocation();
                 Point shellPos = shell.getLocation();
@@ -477,7 +477,7 @@ public class HoverSupport {
                 boolean bottom = Math.abs(cpos.y - shellSize.y - shellPos.y) < BORDERSIZE;
                 boolean left = Math.abs(cpos.x - shellPos.x) < BORDERSIZE;
                 boolean right = Math.abs(cpos.x - shellSize.x - shellPos.x) < BORDERSIZE;
-            
+
                 int cursorid = SWT.NONE;
                 if (top) {
                 	if (left)
@@ -486,7 +486,7 @@ public class HoverSupport {
                 		cursorid = SWT.CURSOR_SIZENE;
                 	else
                 		cursorid = SWT.CURSOR_SIZEN;
-                } 
+                }
                 else if (bottom) {
                 	if (left)
                 		cursorid = SWT.CURSOR_SIZESW;
@@ -503,13 +503,13 @@ public class HoverSupport {
                 	else
                 		cursorid = SWT.NONE;
                 }
-                
+
                 shell.setCursor(cursorid == SWT.NONE ? null : Display.getCurrent().getSystemCursor(cursorid));
 			}
-		
+
             public void mouseMove(MouseEvent e) {
             	setMouseCursor();
-            
+
                 if (mouse1Down) {
                     Point p = Display.getCurrent().getCursorLocation();
                     Point size = shell.getSize();
@@ -528,15 +528,15 @@ public class HoverSupport {
                     	size.x -= dx;
                     	loc.x += dx;
                     }
-                    
+
                     shell.setLocation(loc);
                     shell.setSize(size);
-                    
+
                     prevPos = p;
                 }
             }
 		}
-	
+
 		MouseListener ls = new MouseListener();
         shell.addMouseListener(ls);
         shell.addMouseMoveListener(ls);

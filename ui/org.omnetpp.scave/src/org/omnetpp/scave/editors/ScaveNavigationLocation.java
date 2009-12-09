@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ import org.omnetpp.scave.editors.ui.ScaveEditorPage;
  * <p>
  * Instances store the identifier of the active page and
  * page specific state in IMemento form.
- *  
+ *
  * @author tomi
  */
 public class ScaveNavigationLocation extends NavigationLocation {
@@ -43,7 +43,7 @@ public class ScaveNavigationLocation extends NavigationLocation {
 
 	public ScaveNavigationLocation(ScaveEditor editor, boolean empty) {
 		super(editor);
-	
+
 		if (!empty) {
 			ScaveEditorPage page = editor.getActiveEditorPage();
 			timestamp = System.currentTimeMillis();

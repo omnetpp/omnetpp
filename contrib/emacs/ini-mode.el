@@ -24,7 +24,7 @@
 ;;
 ;; This is a simple hack to allow syntax highlighting when editing
 ;; OMNeT++ .ini files with Emacs. It has been tested with Emacs 20.3.
-;; 
+;;
 ;; To make Emacs recognize .ini files put this in your .emacs:
 ;;
 ;; (autoload 'ini-mode "ini-mode" "Major Mode for editing ini files" t)

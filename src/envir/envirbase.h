@@ -244,7 +244,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
      * Called internally from readParameter(), to interactively prompt the
      * user for a parameter value.
      */
-    virtual void askParameter(cPar *par) = 0;
+    virtual void askParameter(cPar *par, bool unassigned) = 0;
 
   public:
     // Utility function: optionally appends host name to fname

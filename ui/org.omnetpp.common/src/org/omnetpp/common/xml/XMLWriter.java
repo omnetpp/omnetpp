@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -76,12 +76,12 @@ public class XMLWriter {
 	public void writeEndElement(String qname) throws IOException {
 		if (elementStack.empty())
 			throw new IOException("no matching XML start tag");
-	
+
 		String expected = elementStack.pop();
 		if (!qname.equals(expected))
 			throw new IOException("start/end tag mismatch " +
 				"(given: "+ qname + " expected: " + expected +")");
-	
+
 		deindent();
 		if (emptyElement) {
 			write("/>");
@@ -156,7 +156,7 @@ public class XMLWriter {
 		if (indenting && atLineStart) {
 			int major = indentLevel / 16;
 			int minor = indentLevel % 16;
-		
+
 			for (int i = 0; i < major; ++i)
 				writer.write(sixteenSpaces, 0, 16);
 			if (minor > 0)

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,7 +36,7 @@ public class EditAction extends AbstractScaveAction {
 		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_PROPERTIES));
 	}
 
-	public EditAction(String text, Map<String,Object> formParameters) { 
+	public EditAction(String text, Map<String,Object> formParameters) {
         setText(text);
         setToolTipText("Edit the properties of the selected item");
 		this.formParameters = formParameters;

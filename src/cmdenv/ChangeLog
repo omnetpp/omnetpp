@@ -1,3 +1,8 @@
+2009-09-10  Andras Varga
+
+	* fix: cmdenv.cc: opt_autoflush was used before getting initialized
+	[from Thomas Dreibholz]
+
 2009-07-07  Andras Varga
 
 	* fix: there was no error message if a nonexistent configuration name
@@ -19,10 +24,10 @@
 	* express mode status updates are now always flushed (no need to set
 	cmdenv-autoflush)
 
-	* cmdenv-status-frequency is now interpreted in seconds (default 
+	* cmdenv-status-frequency is now interpreted in seconds (default
 	is every 2 seconds)
 
-	* express mode: when simulation stops (on Ctrl+C, exception, normally, 
+	* express mode: when simulation stops (on Ctrl+C, exception, normally,
 	etc), Cmdenv prints a final status update
 
 2008-11-26  Andras Varga

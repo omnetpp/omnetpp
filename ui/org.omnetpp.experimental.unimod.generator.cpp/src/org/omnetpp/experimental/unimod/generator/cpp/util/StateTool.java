@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,7 +27,7 @@ public class StateTool extends BaseTool {
 
 	public String getConst() {
 		if (sConst == null) {
-			sConst = createIdentifier("", state.getName(), "", true, true); 
+			sConst = createIdentifier("", state.getName(), "", true, true);
 		}
 		return sConst;
 	}
@@ -52,7 +52,7 @@ public class StateTool extends BaseTool {
 
 	public Collection getTrueTansitions(Event event) {
 		return CollectionsTool.filter(
-				state.getFilteredOutgoingTransitions(event, false), 
+				state.getFilteredOutgoingTransitions(event, false),
 				CollectionsTool.trueTransitionPredicate());
 	}
 

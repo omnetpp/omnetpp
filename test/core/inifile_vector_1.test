@@ -1,0 +1,27 @@
+%description:
+test eventlog recording intervals
+
+%activity:
+
+cOutVector test("test");
+
+for (int i = 0; i < 10; i++) {
+  test.record(i);
+  wait(1);
+}
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+**.vector-recording-interval = ..1, 3..5, 7..
+
+%contains: results/General-0.vec
+vector 0  Test  test  ETV
+0	1	0	0
+0	2	1	1
+0	4	3	3
+0	5	4	4
+0	6	5	5
+0	8	7	7
+0	9	8	8
+0	10	9	9

@@ -4,7 +4,7 @@ export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
 all: pdf html eclipse
 
-html:  
+html:
 	xsltproc --xinclude --output tmp1.xml trans.xsl userguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	xsltproc --output userguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
@@ -20,7 +20,7 @@ html:
 	cp pictures/*.png ../../userguide/pictures
 
 .PHONY : eclipse
-eclipse: 
+eclipse:
 	xsltproc --xinclude --output tmp1.xml trans.xsl userguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	rm -rf eclipse
@@ -35,7 +35,7 @@ eclipse:
 	rm tmp.xml
 
 pdf:  chart-properties.xml processing-operations.xml
-	xsltproc --xinclude --stringparam output pdf --output tmp1.xml trans.xsl userguide.xml 
+	xsltproc --xinclude --stringparam output pdf --output tmp1.xml trans.xsl userguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
@@ -48,9 +48,9 @@ clean:
 	rm -rf eclipse
 	rm -rf ../../userguide
 
-# the following target should be called manually because it depends on binary file (scavetool) which is 
+# the following target should be called manually because it depends on binary file (scavetool) which is
 # created only later durnig the run of the automatic build script.
-# Re-run this target if any of the chart properties change in the CHART_POP_DIR, and check in the results 
+# Re-run this target if any of the chart properties change in the CHART_POP_DIR, and check in the results
 # into the repository
 
 generate-tables: chart-properties processing-operations

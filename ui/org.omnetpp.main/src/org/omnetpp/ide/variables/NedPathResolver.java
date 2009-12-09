@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,13 +42,13 @@ public class NedPathResolver implements IDynamicVariableResolver {
 		// resolve the ned path files
 		try {
 			result = "";
-			String pathSep = System.getProperty("path.separator"); 
+			String pathSep = System.getProperty("path.separator");
 			// read the actual projects nedfolders file
 			for (IContainer folder : ProjectUtils.readNedFoldersFile(project))
 				result += pathSep + (wantLocation ? folder.getLocation().toOSString() : folder.getFullPath().toString());
 
 			// do the same for the referenced projects
-			for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project)) 
+			for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project))
 				for(IContainer folder : ProjectUtils.readNedFoldersFile(p))
 					result += pathSep + (wantLocation ? folder.getLocation().toOSString() : folder.getFullPath().toString());
 		}

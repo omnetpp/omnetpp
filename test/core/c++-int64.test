@@ -1,5 +1,5 @@
 %description:
-Test the int64 data type and its printf format. The trend is long long 
+Test the int64 data type and its printf format. The trend is long long
 and %lld (on 32-bit archs), but not all compilers support it yet.
 
                 64-bit integer type    printf format

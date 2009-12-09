@@ -15,13 +15,13 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = 
+INCLUDE_PATH =
 
 # Additional object and library files to link with
-EXTRA_OBJS = 
+EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = 
+LIBS =
 
 # Output directory
 O = out/$(CONFIGNAME)/
@@ -30,11 +30,11 @@ O = out/$(CONFIGNAME)/
 OBJS = $O/dist.obj
 
 # Message files
-MSGFILES = 
+MSGFILES =
 
 # C++ files generated from msg files
-MSG_CC_FILES = 
-MSG_H_FILES = 
+MSG_CC_FILES =
+MSG_H_FILES =
 
 # Other makefile variables (-K)
 
@@ -47,7 +47,7 @@ CONFIGFILE = $(OMNETPP_CONFIGFILE)
 !elseif "$(OMNETPP_ROOT)"!=""
 CONFIGFILE = $(OMNETPP_ROOT)/configuser.vc
 !else
-CONFIGFILE = C:\Work\trunk\omnetpp\\configuser.vc 
+CONFIGFILE = C:\Work\trunk\omnetpp\\configuser.vc
 !endif
 
 !if !exist($(CONFIGFILE))
@@ -76,7 +76,7 @@ all: $O/$(TARGET)
 
 $O/$(TARGET): generateheaders $(OBJS)  $(EXTRA_OBJS) Makefile.vc
 	-@md $(O:/=\) 2>nul
-	$(LINK) $(LDFLAGS) /out:$O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) 
+	$(LINK) $(LDFLAGS) /out:$O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
 	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
 
 

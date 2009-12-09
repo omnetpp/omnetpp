@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -59,7 +59,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
             // set up property descriptors
             networkProp = new CheckboxPropertyDescriptor(Prop.Network, "network");
             networkProp.setCategory(BASE_CATEGORY);
-            networkProp.setDescription("Is this compound module used as a network instance?");
+            networkProp.setDescription("Whether this compound module used as a network instance");
 
             descriptors = new IPropertyDescriptor[] { networkProp  };
         }

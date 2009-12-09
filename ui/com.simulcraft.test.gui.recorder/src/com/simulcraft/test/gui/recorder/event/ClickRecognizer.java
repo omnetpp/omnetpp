@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -31,9 +31,9 @@ public class ClickRecognizer extends EventRecognizer implements ICodeRewriter {
 
     public void rewrite(JavaSequence list) {
         // replace "click, click, doubleClick" with "doubleClick"
-        if (list.endEquals(-1, "doubleClick()") && 
+        if (list.endEquals(-1, "doubleClick()") &&
                 list.endEquals(-2, "click()") && list.endEquals(-3, "click()") &&
-                list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn() && 
+                list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn() &&
                 list.getEnd(-2).getCalledOn() == list.getEnd(-3).getCalledOn()
                 )
             list.replaceEnd(-3, 2, null);

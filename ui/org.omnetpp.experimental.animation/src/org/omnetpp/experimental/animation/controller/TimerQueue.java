@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -44,7 +44,7 @@ public class TimerQueue implements Runnable {
 			System.out.println("Adding timer: " + timer);
 
 		timers.add(timer);
-	
+
 		if (running)
 			scheduleTimer();
 	}
@@ -69,7 +69,7 @@ public class TimerQueue implements Runnable {
 			System.out.println("Resetting timer: " + timer);
 
 		timer.reset();
-	
+
 		if (running)
 			scheduleTimer();
 	}
@@ -106,13 +106,13 @@ public class TimerQueue implements Runnable {
 
 	private void runFirstTimer() {
 		Timer firstTimer = getFirstTimer();
-	
+
 		if (firstTimer != null) {
 			if (debug)
 				System.out.println("Running timer: " + firstTimer);
 
 			firstTimer.execute();
-		
+
 			if (!firstTimer.isRecurring())
 				timers.remove(firstTimer);
 		}
@@ -125,14 +125,14 @@ public class TimerQueue implements Runnable {
 			long currentTime = System.currentTimeMillis();
 			long nextExecutionTime = firstTimer.getNextExecutionTime();
 			long nextExecutionSleepTime = nextExecutionTime - currentTime;
-		
+
 			if (firstTimer != lastScheduledTimer ||
 				firstTimer.getNextExecutionTime() != lastScheduledNextExecutionTime ||
 				nextExecutionSleepTime < 0)
 			{
 				if (debug)
 					System.out.println("Scheduling timer: " + firstTimer + " at: " + currentTime + " to: " + firstTimer.getNextExecutionTime());
-			
+
 				if (nextExecutionSleepTime < 0) {
 					if (firstTimer.isAllowSkipping())
 						firstTimer.calculateNextExecution();

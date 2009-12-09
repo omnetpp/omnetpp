@@ -78,7 +78,7 @@ proc create_balloon {text x y} {
     wm overrideredirect .balloon_help true
     wm positionfrom .balloon_help program
     wm geometry .balloon_help "+[expr $x-5]+[expr $y+16]"
-    if {[string equal [tk windowingsystem] aqua]}  {  
+    if {[string equal [tk windowingsystem] aqua]}  {
         # from http://wiki.tcl.tk/3060
         catch { ::tk::unsupported::MacWindowStyle style .balloon_help help none }
     }
@@ -101,7 +101,7 @@ proc init_balloons {args} {
     enable_balloon Label
     enable_balloon Entry
     enable_balloon Menu "%W index active"
-    enable_balloon Canvas "%W find withtag current"
+    enable_balloon Canvas "get_ptrs_under_mouse %W %x %y"
 }
 
 #package provide balloon 1.0

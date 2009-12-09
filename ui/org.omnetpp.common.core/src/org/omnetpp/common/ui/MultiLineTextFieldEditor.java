@@ -17,11 +17,11 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * MultiLineTextFieldEditor.
- * Field editor that is same as string field editor but 
+ * Field editor that is same as string field editor but
  * will have multi-line text field for user input.
  *
  * Note: copied from CDT (org.eclipse.cdt.ui.newui.MultiLineTextFieldEditor).
- * Except that the "width" constructor arg didn't work, removed; also changed 
+ * Except that the "width" constructor arg didn't work, removed; also changed
  * hardcoded width to 300. Still bogus, i.e. does not resize with the dialog.
  * --Andras
  */
@@ -37,7 +37,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 
 	/**
 	 * Validation strategy constant (value <code>1</code>) indicating that
-	 * the editor should perform validation only when the text widget 
+	 * the editor should perform validation only when the text widget
 	 * loses focus.
 	 *
 	 * @see #setValidateStrategy
@@ -84,19 +84,19 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	private boolean emptyStringAllowed = true;
 
 	/**
-	 * The validation strategy; 
+	 * The validation strategy;
 	 * <code>VALIDATE_ON_KEY_STROKE</code> by default.
 	 */
 	private int validateStrategy = VALIDATE_ON_KEY_STROKE;
 	/**
-	 * Creates a new string field editor 
+	 * Creates a new string field editor
 	 */
 	protected MultiLineTextFieldEditor() {
 	}
 	/**
 	 * Creates a string field editor.
 	 * Use the method <code>setTextLimit</code> to limit the text.
-	 * 
+	 *
 	 * @param name the name of the preference this field editor works on
 	 * @param labelText the label text of the field editor
 	 * @param strategy either <code>VALIDATE_ON_KEY_STROKE</code> to perform
@@ -116,17 +116,17 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	/**
 	 * Creates a string field editor of unlimited width.
 	 * Use the method <code>setTextLimit</code> to limit the text.
-	 * 
+	 *
 	 * @param name the name of the preference this field editor works on
 	 * @param labelText the label text of the field editor
 	 * @param parent the parent of the field editor's control
 	 */
-	public MultiLineTextFieldEditor(String name, String labelText, Composite parent) {	
+	public MultiLineTextFieldEditor(String name, String labelText, Composite parent) {
 		this(name, labelText, VALIDATE_ON_KEY_STROKE, parent);
 	}
 
 	/**
-	 * Adjusts the horizontal span of this field editor's basic controls 
+	 * Adjusts the horizontal span of this field editor's basic controls
 	 * <p>
 	 * Subclasses must implement this method to adjust the horizontal span
 	 * of controls so they appear correct in the given number of columns.
@@ -134,7 +134,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	 * <p>
 	 * The number of columns will always be equal to or greater than the
 	 * value returned by this editor's <code>getNumberOfControls</code> method.
-	 * 
+	 *
 	 * @param numColumns the number of columns
 	 */
 	@Override
@@ -183,7 +183,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	 * Hook for subclasses to do specific state checks.
 	 * <p>
 	 * The default implementation of this framework method does
-	 * nothing and returns <code>true</code>.  Subclasses should 
+	 * nothing and returns <code>true</code>.  Subclasses should
 	 * override this method to specific state checks.
 	 * </p>
 	 *
@@ -262,7 +262,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	}
 
 	/**
-	 * Returns the error message that will be displayed when and if 
+	 * Returns the error message that will be displayed when and if
 	 * an error occurs.
 	 *
 	 * @return the error message, or <code>null</code> if none
@@ -389,7 +389,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	 * validation should override both this method and
 	 * <code>refreshValidState</code>.
 	 * </p>
-	 * 
+	 *
 	 * @return <code>true</code> if the field value is valid,
 	 * and <code>false</code> if invalid
 	 * @see #refreshValidState
@@ -425,7 +425,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	}
 
 	/**
-	 * Sets the error message that will be displayed when and if 
+	 * Sets the error message that will be displayed when and if
 	 * an error occurs.
 	 *
 	 * @param message the error message
@@ -482,7 +482,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	 * <p>
 	 * Calling this method has no effect after <code>createPartControl</code>
 	 * is called. Thus this method is really only useful for subclasses to call
-	 * in their constructor. However, it has public visibility for backward 
+	 * in their constructor. However, it has public visibility for backward
 	 * compatibility.
 	 * </p>
 	 *
@@ -507,7 +507,7 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	 * to the value (<code>VALUE</code> property) provided that the old and
 	 * new values are different.
 	 * <p>
-	 * This hook is <em>not</em> called when the text is initialized 
+	 * This hook is <em>not</em> called when the text is initialized
 	 * (or reset to the default value) from the preference store.
 	 * </p>
 	 */

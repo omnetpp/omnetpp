@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,7 +26,7 @@ public class MsgPrivateDocColorizerScanner extends RuleBasedScanner {
 
     /**
 	 * Create a new doc scanner for the given color provider.
-	 * 
+	 *
 	 * @param provider the color provider
 	 */
 	 public MsgPrivateDocColorizerScanner() {
@@ -35,7 +35,7 @@ public class MsgPrivateDocColorizerScanner extends RuleBasedScanner {
         setDefaultReturnToken(SyntaxHighlightHelper.docPrivateDefaultToken);
 
 		List<IRule> list= new ArrayList<IRule>();
-        
+
         // Add word rule for private comment hints
         WordRule hintRule= new WordRule(new SyntaxHighlightHelper.NedWordDetector(), Token.UNDEFINED);
         for (int i= 0; i < SyntaxHighlightHelper.highlightPrivateDocTodo.length; i++)

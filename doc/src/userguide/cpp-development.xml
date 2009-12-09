@@ -115,7 +115,7 @@
     <picture file="pictures/CPP-NewProjectWizard2.png">Selecting a toolchain</picture>
     <para> Finally choose from the preset configurations. By default a debug and a release configuration can
       be created. A configuration is a set of options that are associated with the build process. It is
-      used mainly to create debug and release builds. Pressing the ``Finish'' button 
+      used mainly to create debug and release builds. Pressing the ``Finish'' button
       will create the project.</para>
     <picture file="pictures/CPP-NewProjectWizard3.png"> Selecting configurations</picture>
   </sect1>
@@ -160,8 +160,8 @@
       button. This action will create a file with the name [[makemakefiles]]. After exporting, execute [[make
       -f makemakefiles]] from the command line.
     </note>
-    <para> Press the ``Makemake'' button to turn on the automatic makefile generation in the selected folder. 
-        Manually written makefiles can be used by selecting ``Custom Make''. This expects a 
+    <para> Press the ``Makemake'' button to turn on the automatic makefile generation in the selected folder.
+        Manually written makefiles can be used by selecting ``Custom Make''. This expects a
         makefile to be already present in the selected directory. (It must be called [[Makefile]]
         <commercial>or Makefile.vc</commercial>)
     </para>

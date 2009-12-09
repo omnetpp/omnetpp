@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -9,7 +9,7 @@ package org.omnetpp.common.editor.text;
 
 /**
  * NED/MSG keywords, for syntax highlighting and completion
- * 
+ *
  * @author Andras
  */
 public class Keywords {
@@ -22,7 +22,7 @@ public class Keywords {
 			"table", "td", "th", "tr", "tt", "kbd", "ul", "var" };
 
 	public final static String[] DOC_KEYWORDS = { "author", "bug", "date", "see", "since", "todo",
-			"version", "warning" };
+			"version", "warning" , "page", "titlepage"};
 
 	public final static String[] NED_GATE_TYPES = { "inout", "input", "output" };
 

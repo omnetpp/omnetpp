@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,7 +24,7 @@ public class ViewPartAccess extends WorkbenchPartAccess {
 	public IViewPart getWorkbenchPart() {
 		return (IViewPart)workbenchPart;
 	}
-    
+
     public ToolBarAccess getViewToolbar() {
 		IWorkbenchPartSite site = workbenchPart.getSite();
 		Assert.assertTrue("Site is not a ViewSite", site instanceof ViewSite);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.Image;
 
 /**
  * Same as org.eclipse.jface.viewers.LabelProvider, but for tables.
- * 
+ *
  * @author Tomi
  */
 public class TableLabelProvider extends EventManager implements ITableLabelProvider {
@@ -35,7 +35,7 @@ public class TableLabelProvider extends EventManager implements ITableLabelProvi
     }
 
     /**
-     * The <code>TableLabelProvider</code> implementation of this 
+     * The <code>TableLabelProvider</code> implementation of this
      * <code>IBaseLabelProvider</code> method does nothing. Subclasses may extend.
      */
     public void dispose() {
@@ -62,8 +62,8 @@ public class TableLabelProvider extends EventManager implements ITableLabelProvi
     }
 
     /**
-     * The <code>TableLabelProvider</code> implementation of this 
-     * <code>ITableLabelProvider</code> method returns <code>null</code>. Subclasses may 
+     * The <code>TableLabelProvider</code> implementation of this
+     * <code>ITableLabelProvider</code> method returns <code>null</code>. Subclasses may
      * override.
      */
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -72,7 +72,7 @@ public class TableLabelProvider extends EventManager implements ITableLabelProvi
 	}
 
     /**
-     * The <code>TableLabelProvider</code> implementation of this 
+     * The <code>TableLabelProvider</code> implementation of this
      * <code>ITableLabelProvider</code> method returns the element's <code>toString</code>
      * string. Subclasses may override.
      */
@@ -81,8 +81,8 @@ public class TableLabelProvider extends EventManager implements ITableLabelProvi
 	}
 
     /**
-     * The <code>TableLabelProvider</code> implementation of this 
-     * <code>IBaseLabelProvider</code> method returns <code>true</code>. Subclasses may 
+     * The <code>TableLabelProvider</code> implementation of this
+     * <code>IBaseLabelProvider</code> method returns <code>true</code>. Subclasses may
      * override.
      */
     public boolean isLabelProperty(Object element, String property) {

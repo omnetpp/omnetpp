@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -104,7 +104,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 			setAnimationPosition(lastStopLiveAnimationPosition);
 	}
 
-	public boolean isAtLivePosition() {	
+	public boolean isAtLivePosition() {
 		return currentAnimationPosition.equals(lastStopLiveAnimationPosition);
 	}
 
@@ -182,7 +182,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public void runSimulationExpress() {
 		setRunningLive(true);
-		// TODO: show a modal dialog with a big stop button	
+		// TODO: show a modal dialog with a big stop button
 	}
 
 	public void stopSimulation() {
@@ -197,7 +197,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 			setLastStopLivePositionAtCurrentPosition();
 			setEndPositionAtLastStopLivePosition();
 			jenv.finishSimulation();
-		
+
 			controllerStateChanged();
 		}
 	}
@@ -213,7 +213,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public void setRunningLive(boolean isRunningLive) {
 		this.isRunningLive = isRunningLive;
-	
+
 		controllerStateChanged();
 	}
 
@@ -222,7 +222,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		if (isRunningLive) {
 			setRunningLive(false);
 			setLastStopLivePositionAtCurrentPosition();
-			setEndPositionAtLastStopLivePosition();		
+			setEndPositionAtLastStopLivePosition();
 		}
 
 		super.animateStop();
@@ -241,7 +241,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				addNextHandleMessageAnimation();
 				//jenv.runSimulation(mode, until_time, until_event);
 			}
-	
+
 		return beginOrderedAnimationPrimitives.size() - count;
 	}
 
@@ -278,7 +278,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		replayModule.setName(module.getName());
 		replayModule.setIndex(module.getIndex());
 		replayModule.setSize(!module.isVector() ? -1 : module.getVectorSize());
-	
+
 		return replayModule;
 	}
 
@@ -322,7 +322,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public void messageDelivered(cMessage msg) {
 		HandleMessageAnimation handleMessageAnimation = handleMessageAnimationPrimitives.get(handleMessageAnimationPrimitives.size() - 1);
-	
+
 		if (handleMessageAnimation.getEventNumber() != getLiveEventNumber() ||
 			handleMessageAnimation.getBeginSimulationTime() != getLiveSimulationTime() ||
 			handleMessageAnimation.getAnimationNumber() != getLiveAnimationNumber())
@@ -368,18 +368,18 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		if (msg.getSendingTime() != getLiveSimulationTime())
 			throw new RuntimeException("Future sendings are not handled");
 
-		addAnimationPrimitive(new SendBroadcastAnimation(this, 
+		addAnimationPrimitive(new SendBroadcastAnimation(this,
 				getLiveSimulationPosition(),
 				propagationDelay,
 				transmissionDelay,
-				msg.getSenderModuleId(), 
+				msg.getSenderModuleId(),
 				toGate.getOwnerModule().getId(),
 				toReplayMessage(msg)));
-		addAnimationPrimitive(new SendDirectAnimation(this, 
+		addAnimationPrimitive(new SendDirectAnimation(this,
 				getLiveSimulationPosition(),
 				propagationDelay,
 				transmissionDelay,
-				msg.getSenderModuleId(), 
+				msg.getSenderModuleId(),
 				toGate.getOwnerModule().getId(),
 				toReplayMessage(msg)));
 	}

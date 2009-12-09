@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -215,7 +215,7 @@ public class ScaveModelUtil {
 	}
 
 	/**
-	 * Returns the names of an EMF enum members. 
+	 * Returns the names of an EMF enum members.
 	 */
 	public static String[] getEnumNames(List<? extends Enumerator> enumValues) {
 		String[] names = new String[enumValues.size()];
@@ -431,7 +431,7 @@ public class ScaveModelUtil {
 			idlist.merge(manager.getAllHistograms());
 			return idlist;
 		}
-	
+
 		switch (type.getValue()) {
 		case ResultType.SCALAR: return manager.getAllScalars();
 		case ResultType.VECTOR:	return manager.getAllVectors();
@@ -456,7 +456,7 @@ public class ScaveModelUtil {
 
 	/**
 	 * Returns an ordered array of distinct values of the {@code field} attribute
-	 * of the result items found in {@code idlist}. 
+	 * of the result items found in {@code idlist}.
 	 */
 	public static String[] getFieldValues(IDList idlist, ResultItemField field, ResultFileManager manager) {
 		Set<String> values = new HashSet<String>();
@@ -491,7 +491,7 @@ public class ScaveModelUtil {
 			for (int i = 0; i < runAttributes.size(); ++i)
 				values.add(new IsoLineData(runAttributes.get(i)));
 		}
-	
+
 		IsoLineData[] result = values.toArray(new IsoLineData[values.size()]);
 		Arrays.sort(result);
 		return result;
@@ -558,7 +558,7 @@ public class ScaveModelUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public static int asInternalResultType(ResultType type) {
 		switch (type.getValue()) {

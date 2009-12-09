@@ -2,8 +2,8 @@
 #
 # Detects the platform and architecture, and starts the IDE with the right launcher
 #
-IDEDIR=`dirname $0`/../ide                                                                                        
-cd $IDEDIR                                                                                                        
+IDEDIR=`dirname $0`/../ide
+cd $IDEDIR
 PLATFORM=`uname -sm`
 LAUNCHER=omnetpp
 
@@ -22,21 +22,21 @@ export LANG=en_US.UTF-8
 # fix button clicking issue with newer GTK versions
 export GDK_NATIVE_WINDOWS=1
 
-case $PLATFORM in 
+case $PLATFORM in
 *MINGW*)
-	./win32/${LAUNCHER}.exe & 
-        ;; 
-*Linux*x86_64*) 
-	./linux64/${LAUNCHER} & 
-        ;; 
-*Linux*) 
-	./linux/$LAUNCHER & 
-        ;; 
+	./win32/${LAUNCHER}.exe &
+        ;;
+*Linux*x86_64*)
+	./linux64/${LAUNCHER} &
+        ;;
+*Linux*)
+	./linux/$LAUNCHER &
+        ;;
 *Darwin*)
 	open ./macosx/${LAUNCHER}.app
-        ;; 
-*) 
+        ;;
+*)
 	echo OMNeT++ IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel
 	exit 1
-        ;; 
+        ;;
 esac

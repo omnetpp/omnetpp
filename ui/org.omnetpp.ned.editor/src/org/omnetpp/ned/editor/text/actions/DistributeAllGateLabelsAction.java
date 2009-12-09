@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,6 +34,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.core.refactoring.RefactoringTools.AddGateLabels;
 import org.omnetpp.ned.editor.NedEditor;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -112,7 +113,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
                     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
                         // void
                     }
-	            
+
 	        });
 	        dialog.setSize(100, 40);
             dialog.setTitle("Select Gates");
@@ -131,10 +132,10 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
                     };
                 }
             });
-    
+
             if (dialog.open() == Window.OK) {
                 Object[] obejcts = dialog.getResult();
-                // keeps track of NED editors that are switched to graphical editor to be able to switch them back 
+                // keeps track of NED editors that are switched to graphical editor to be able to switch them back
                 ArrayList<NedEditor> switchedEditors = new ArrayList<NedEditor>();
 
                 for (Object object : obejcts) {
@@ -162,7 +163,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
                         addGateLabels.run();
                     }
                     catch (PartInitException e) {
-                        ExceptionUtils.printRootCauseStackTrace(e);
+                        NedEditorPlugin.logError(e);
                     }
                 }
 

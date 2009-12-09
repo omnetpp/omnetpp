@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,9 +49,9 @@ public class LineProperties extends PropertySource {
 
 	public enum LineType {
 		Linear("Linear", "linear"),
-		Pins("Pins", "pins"), 
+		Pins("Pins", "pins"),
 		Dots("Dots", "dots"),
-		Points("Points", "points"), 
+		Points("Points", "points"),
 		SampleHold("Sample-Hold", "samplehold"),
 		BackwardSampleHold("Backward Sample-Hold", "bksamplehold");
 

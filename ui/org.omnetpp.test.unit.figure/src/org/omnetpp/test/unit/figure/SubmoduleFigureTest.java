@@ -52,7 +52,7 @@ public class SubmoduleFigureTest extends TestCase {
 			}
         });
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure();
 		figureCanvas.getRootFigure().add(cmodule);
@@ -63,7 +63,7 @@ public class SubmoduleFigureTest extends TestCase {
 		int y = 50; int rowDist = 90; int colDist = 90;
 		for (String s : "vs,s,,l,vl".split(","))
 			addSubmodule(cmodule,"icon "+s, "p="+ (x+=colDist) +","+y+";i=block/cogwheel;is="+s);
-	
+
 		// PIN, error marker, icon2, queue indicator, icon coloring
 		y+= rowDist;
 		x = 0;
@@ -100,7 +100,7 @@ public class SubmoduleFigureTest extends TestCase {
         addSubmodule(cmodule,"b="+str, "p="+ (x+=colDist) +","+y+";b="+str+",r");
         str = "error,50";
         addSubmodule(cmodule,"b="+str, "p="+ (x+=colDist) +","+y+";b="+str+",r");
-        
+
 		// oval
 		y+= rowDist;
 		x = 0;
@@ -114,14 +114,14 @@ public class SubmoduleFigureTest extends TestCase {
 		x = 0;
 		for (String s : "o,ov,oval,r,rec,rect,,bubu".split(","))
 			addSubmodule(cmodule,"shape: "+s, "p="+ (x+=colDist) +","+y+";b=40,40,"+s);
-	
+
 		// icon and shape
 		y+= rowDist;
 		x = 0;
 		for (String s : "50,50:20,50:50,20:20,20".split(":"))
 			addSubmodule(cmodule,"i+s: "+s, "p="+(x+=colDist)+","+y+";i=block/cogwheel;b="+s);
-	
-	
+
+
 		cmodule.getLayoutManager().layout(cmodule);
 //		Debug.debug = true;
 //		FigureUtils.debugPrintFigureHierarchy(figureCanvas.getRootFigure(), "  ");
@@ -149,19 +149,19 @@ public class SubmoduleFigureTest extends TestCase {
 			}
         });
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure();
 		figureCanvas.getRootFigure().add(cmodule);
 		figureCanvas.getRootFigure().setConstraint(cmodule, new Rectangle(10,10,-1,-1));
 		cmodule.setDisplayString(new DisplayString("bg=800,400"));
-	
+
 		// border/fill color
 		int x = 0;
 		int y = 50; int rowDist = 90; int colDist = 90;
 		for (String s : "red,blue:,green:#7711CC,:@555555,black:bubu,".split(":"))
 			addSubmodule(cmodule,"color: "+s, "p="+ (x+=colDist) +","+y+";b=40,40,rect,"+s);
-			
+
 		// border width
 		y+= rowDist;
 		x = 0;
@@ -179,12 +179,12 @@ public class SubmoduleFigureTest extends TestCase {
 		x = 0;
 		for (String s : "l,r,t".split(","))
 			addSubmodule(cmodule,"text: "+s, "p="+(x+=100)+","+y+";i=block/cogwheel;t=Hello\nbel,"+s);
-	
+
 		// text color
 		for (String s : "yellow,green,,bubu".split(","))
 			addSubmodule(cmodule,"color: "+s, "p="+(x+=100)+","+y+";i=block/cogwheel;t=Hello,,"+s);
 
-	
+
 		cmodule.getLayoutManager().layout(cmodule);
 //		Debug.debug = true;
 //		FigureUtils.debugPrintFigureHierarchy(figureCanvas.getRootFigure(), "  ");
@@ -212,7 +212,7 @@ public class SubmoduleFigureTest extends TestCase {
 			}
         });
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure() {
         	@Override
@@ -224,13 +224,13 @@ public class SubmoduleFigureTest extends TestCase {
 		figureCanvas.getRootFigure().add(cmodule);
 		figureCanvas.getRootFigure().setConstraint(cmodule, new Rectangle(10,10,-1,-1));
 		cmodule.setDisplayString(new DisplayString("bg=600,600"));
-					
+
 		int x = 0;
 		int y = 50; int rowDist = 120; int colDist = 90;
 		// border width
 		for (String s : "0,5,24,60,100".split(","))
 			addSubmodule(cmodule,"r: "+s, "p="+(x+=colDist)+","+y+";r="+s);
-	
+
 		y+= rowDist;
 		x = 0;
 		// range background color
@@ -275,7 +275,7 @@ public class SubmoduleFigureTest extends TestCase {
 			}
         });
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure() {
         	@Override
@@ -287,10 +287,10 @@ public class SubmoduleFigureTest extends TestCase {
 		figureCanvas.getRootFigure().add(cmodule);
 		figureCanvas.getRootFigure().setConstraint(cmodule, new Rectangle(10,10,-1,-1));
 		cmodule.setDisplayString(new DisplayString("bg=600,600"));
-					
+
 		Debug.debug = true;
 
-	
+
 		SubmoduleFigure sm1 = addSubmodule(cmodule,"name1", "i=block/cogwheel;r=60");
 		SubmoduleFigure sm2 = addSubmodule(cmodule,"name2", "i=block/cogwheel");
 		sleep(3);
@@ -302,7 +302,7 @@ public class SubmoduleFigureTest extends TestCase {
 		sm2.setDisplayString(1.0f, new DisplayString("i=block/cogwheel,red;is=vl"));
 		sleep(3);
 		sm1.setDisplayString(1.0f, new DisplayString("i=block/cogwheel;r=100"));
-	
+
 //		Debug.debug = true;
 //		FigureUtils.debugPrintFigureHierarchy(figureCanvas.getRootFigure(), "  ");
 		while (!exitFlag[0])
@@ -330,11 +330,11 @@ public class SubmoduleFigureTest extends TestCase {
 					graphics.fillRectangle(getBounds());
 					graphics.popState();
 				}
-				
+
 				super.paint(graphics);
 			}
 		};
-	
+
 		cmodule.getSubmoduleLayer().add(sm);
 		DisplayString dps = new DisplayString(displayStr);
 		sm.setDisplayString(1.0f, dps);

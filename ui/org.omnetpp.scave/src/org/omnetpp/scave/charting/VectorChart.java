@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -95,7 +95,7 @@ public class VectorChart extends ChartCanvas {
 		Integer symbolSize;
 		LineType lineType;
 		RGB lineColor;
-	
+
 		/**
 		 * Constructor for the defaults.
 		 */
@@ -106,37 +106,37 @@ public class VectorChart extends ChartCanvas {
 			this.series = -1;
 			this.lineId = null;
 		}
-	
+
 		public LineProperties(String lineId, int series) {
 			Assert.isLegal(lineId != null);
 			this.lineId = lineId;
 			this.series = series;
 			fallback = defaultProperties;
 		}
-	
+
 		public String getLineId() {
 			return lineId;
 		}
-	
+
 		public boolean getDisplayLine() {
 			if (displayLine == null && fallback != null)
 				return fallback.getDisplayLine();
 			Assert.isTrue(displayLine != null);
 			return displayLine;
 		}
-	
+
 		public void setDisplayLine(Boolean displayLine) {
 			if (displayLine == null && this == defaultProperties)
 				displayLine = DEFAULT_DISPLAY_LINE;
 			this.displayLine = displayLine;
 		}
-	
+
 		public SymbolType getSymbolType() {
 			SymbolType symbolType = this.symbolType;
-		
+
 			if (symbolType == null && fallback != null)
 				symbolType = fallback.getSymbolType();
-		
+
 			if (symbolType == null) {
 				switch (series % 6) {
 				case 0: symbolType = SymbolType.Square; break;
@@ -151,61 +151,61 @@ public class VectorChart extends ChartCanvas {
 			//Assert.isTrue(symbolType != null);
 			return symbolType;
 		}
-	
+
 		public void setSymbolType(SymbolType symbolType) {
 			this.symbolType = symbolType;
 		}
-	
+
 		public int getSymbolSize() {
 			if (symbolSize == null && fallback != null)
 				return fallback.getSymbolSize();
 			Assert.isTrue(symbolSize != null);
 			return symbolSize;
 		}
-	
+
 		public void setSymbolSize(Integer symbolSize) {
 			if (symbolSize == null && this == defaultProperties)
 				symbolSize = DEFAULT_SYMBOL_SIZE;
 			this.symbolSize = symbolSize;
 		}
-	
+
 		public LineType getLineType() {
 			if (lineType == null && fallback != null && fallback.lineType != null)
 				return fallback.lineType;
 			//Assert.isTrue(lineType != null);
 			return lineType == null ? lineTypeFromInterpolationMode() : lineType;
 		}
-	
+
 		public void setLineType(LineType lineType) {
 			if (lineType == null && this == defaultProperties)
 				lineType = DEFAULT_LINE_STYLE;
 			this.lineType = lineType;
 		}
-	
+
 		public RGB getLineColor() {
 			if (lineColor == null && fallback != null)
 				return fallback.getLineColor();
 			return lineColor;
 		}
-	
+
 		public void setLineColor(RGB lineColor) {
 			this.lineColor = lineColor;
 		}
-	
+
 		public IVectorPlotter getPlotter() {
 			Assert.isTrue(this != defaultProperties);
 			LineType type = getLineType();
 			IVectorPlotter plotter = VectorPlotterFactory.createVectorPlotter(type);
-			return plotter; 
+			return plotter;
 		}
-	
+
 		public IChartSymbol getSymbol() {
 			Assert.isTrue(this != defaultProperties);
 			SymbolType type = getSymbolType();
 			int size = getSymbolSize();
 			return ChartSymbolFactory.createChartSymbol(type, size);
 		}
-	
+
 		public Color getColor() {
 			Assert.isTrue(this != defaultProperties);
 			RGB color = getLineColor();
@@ -214,7 +214,7 @@ public class VectorChart extends ChartCanvas {
 			else
 				return ColorFactory.getGoodDarkColor(series);
 		}
-	
+
 		private LineType lineTypeFromInterpolationMode() {
 			if (series < 0)
 				return LineType.Linear;
@@ -308,10 +308,10 @@ public class VectorChart extends ChartCanvas {
 
 	public void updateLineProperties() {
 		if (debug) Debug.println("updateLineProperties()");
-	
+
 		int seriesCount = dataset != null ? dataset.getSeriesCount() : 0;
 		List<LineProperties> newProps = new ArrayList<LineProperties>(seriesCount);
-	
+
 		// create an index for the current line properties
 		Map<String,LineProperties> map = new HashMap<String,LineProperties>();
 		for (LineProperties props : lineProperties) {
@@ -337,7 +337,7 @@ public class VectorChart extends ChartCanvas {
 			props.series = -1;
 			newProps.add(props);
 		}
-	
+
 		lineProperties = newProps;
 	}
 
@@ -370,7 +370,7 @@ public class VectorChart extends ChartCanvas {
 			for (int i = 0; i < keys.length; ++i)
 				keys[i] = dataset.getSeriesKey(i);
 			Arrays.sort(keys, StringUtils.dictionaryComparator);
-		
+
 			for (String key : keys) {
 				LineProperties props = getLineProperties(key);
 				if (props.getDisplayLine()) {

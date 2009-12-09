@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -16,7 +16,7 @@ import org.omnetpp.common.color.ColorFactory;
  * Pause, and control the speed of the playback.
  * - Pause key: pause/resume playback
  * - Shift+Pause: toggle fast/normal execution (implies resume from paused state)
- *   
+ *
  * @author Andras
  */
 public class ModeSwitcher implements Listener {
@@ -29,7 +29,7 @@ public class ModeSwitcher implements Listener {
 
     public void handleEvent(Event e) {
         if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CONTROL || e.keyCode == SWT.ALT) {
-            // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event) 
+            // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event)
             if (e.type==SWT.KeyDown) modifierState |= e.keyCode;
             if (e.type==SWT.KeyUp) modifierState &= ~e.keyCode;
         }
@@ -50,7 +50,7 @@ public class ModeSwitcher implements Listener {
             }
 
             // mark event as processed. note: doit=false alone is not enough if Pause
-            // gets pressed while a BrowserInformationControl is active (e.g. during 
+            // gets pressed while a BrowserInformationControl is active (e.g. during
             // AnimationEffects.showMessage())
             e.doit = false;
             e.keyCode = 0;

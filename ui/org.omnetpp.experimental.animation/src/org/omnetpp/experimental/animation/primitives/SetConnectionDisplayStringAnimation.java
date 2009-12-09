@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -37,7 +37,7 @@ public class SetConnectionDisplayStringAnimation extends AbstractInfiniteAnimati
 		IRuntimeModule module = getSourceModule();
 		if (module != null && module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
-		
+
 			// FIXME:
 			if (connectionFigure != null) {
 				oldDisplayString = connectionFigure.getLastDisplayString();

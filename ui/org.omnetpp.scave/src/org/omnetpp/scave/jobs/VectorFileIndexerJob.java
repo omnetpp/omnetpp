@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,7 +36,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 
 	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
 		super(name);
-	
+
 		ArrayList<ISchedulingRule> rule = new ArrayList<ISchedulingRule>();
 		this.filesToBeIndexed = new ArrayList<IFile>();
 		for (IFile file : filesToBeIndexed)
@@ -45,7 +45,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 				rule.add(file);
 				rule.add(IndexFile.getIndexFileFor(file));
 			}
-	
+
 		setRule(MultiRule.combine(rule.toArray(new ISchedulingRule[rule.size()])));
 		setPriority(Job.LONG);
 	}

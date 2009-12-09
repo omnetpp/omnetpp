@@ -15,13 +15,13 @@ USERIF_LIBS = $(TKENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = 
+INCLUDE_PATH =
 
 # Additional object and library files to link with
-EXTRA_OBJS = 
+EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = 
+LIBS =
 
 # Output directory
 O = out/$(CONFIGNAME)/
@@ -56,7 +56,7 @@ CONFIGFILE = $(OMNETPP_CONFIGFILE)
 !elseif "$(OMNETPP_ROOT)"!=""
 CONFIGFILE = $(OMNETPP_ROOT)/configuser.vc
 !else
-CONFIGFILE = C:\Workspace\Repository\trunk\omnetpp\\configuser.vc 
+CONFIGFILE = C:\Workspace\Repository\trunk\omnetpp\\configuser.vc
 !endif
 
 !if !exist($(CONFIGFILE))

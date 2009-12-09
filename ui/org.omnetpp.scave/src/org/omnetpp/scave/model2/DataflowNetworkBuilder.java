@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -73,22 +73,22 @@ public class DataflowNetworkBuilder {
 		List<PortWrapper> inPorts = new ArrayList<PortWrapper>();
 		List<PortWrapper> outPorts = new ArrayList<PortWrapper>();
 		boolean created;
-	
+
 		public void addInputPort(PortWrapper port) {
 			port.owner = this;
 			inPorts.add(port);
 		}
-	
+
 		public void addOutputPort(PortWrapper port) {
 			port.owner = this;
 			outPorts.add(port);
 		}
-	
+
 		public void removeInputPort(int index) {
 			Assert.isLegal(0 <= index && index < inPorts.size());
 			removeInputPort(inPorts.get(index));
 		}
-	
+
 		public void removeOutputPort(int index) {
 			Assert.isLegal(0 <= index && index < outPorts.size());
 			removeInputPort(outPorts.get(index));
@@ -107,21 +107,21 @@ public class DataflowNetworkBuilder {
 			Assert.isTrue(removed);
 			port.owner = null;
 		}
-	
+
 		/**
 		 * Notifies the node that one of its input port got connected.
 		 */
 		public void connected(PortWrapper in) {
 		}
-	
+
 		public void disconnected(PortWrapper out) {
 		}
-	
+
 		/**
-		 * Creates the nodes in the dataflowManager. 
+		 * Creates the nodes in the dataflowManager.
 		 */
 		public abstract void createNodes(DataflowManager dataflowManager);
-	
+
 		/**
 		 * Creates the port in the dataflowManager.
 		 * <p>
@@ -130,14 +130,14 @@ public class DataflowNetworkBuilder {
 		 *       becomes invalid!
 		 */
 		public abstract Port createPort(PortWrapper port);
-	
+
 		protected boolean allInputPortsConnected() {
 			for (PortWrapper inPort : inPorts)
 				if (inPort.id == -1)
 					return false;
 			return true;
 		}
-	
+
 		protected IDList getInputIDs() {
 			IDList idlist = new IDList();
 			for (PortWrapper inPort : inPorts) {
@@ -153,20 +153,20 @@ public class DataflowNetworkBuilder {
 		Node node;
 		String type;
 		StringMap attrs;
-	
+
 		public SimpleNode(String type, StringMap attrs) {
 			Assert.isNotNull(type);
 			this.type = type;
 			this.attrs = attrs;
 		}
-	
+
 		public void createNodes(DataflowManager manager) {
 			Assert.isLegal(NodeTypeRegistry.getInstance().exists(type),
 					"Unknown node type: " + type);
 			NodeType nodeType = NodeTypeRegistry.getInstance().getNodeType(type);
 			node = nodeType.create(manager, attrs);
 		}
-	
+
 		public Port createPort(PortWrapper port) {
 			return node.getNodeType().getPort(node, port.name);
 		}
@@ -179,7 +179,7 @@ public class DataflowNetworkBuilder {
 	class ReaderNode extends SimpleNode
 	{
 		ResultFile resultFile;
-	
+
 		public ReaderNode(ResultFile resultFile) {
 			super("indexedvectorfilereader", null);
 			this.resultFile = resultFile;
@@ -187,7 +187,7 @@ public class DataflowNetworkBuilder {
 			this.attrs.set("filename", resultFile.getFileSystemFilePath());
 			fileToReaderNodeMap.put(resultFile, this);
 		}
-	
+
 		public PortWrapper addPort(long id) {
 			int vectorId = resultfileManager.getVector(id).getVectorId();
 			PortWrapper port = new PortWrapper(""+vectorId);
@@ -196,26 +196,26 @@ public class DataflowNetworkBuilder {
 			idToOutputPortMap.put(id, port);
 			return port;
 		}
-	
+
 		public PortWrapper getOutputPort(long id) {
 			for (PortWrapper port : outPorts)
 				if (port.id == id)
 					return port;
 			return null;
 		}
-	
+
 		public void disconnected(PortWrapper out) {
 			removeOutputPort(out);
 			if (outPorts.isEmpty())
 				fileToReaderNodeMap.remove(resultFile);
 		}
-	
+
 		@Override
 		public Port createPort(PortWrapper port) {
 			IndexedVectorFileReaderNode reader = IndexedVectorFileReaderNode.cast(node);
 			return reader.addVector(resultfileManager.getVector(port.id));
 		}
-	
+
 		public String toString() {
 			return String.format("Reader[%s]", resultFile.getFileName());
 		}
@@ -225,7 +225,7 @@ public class DataflowNetworkBuilder {
 	{
 		ProcessingOp operation;
 		int outVectorId;
-	
+
 		public ApplyNode(ProcessingOp operation, int outVectorId) {
 			super(operation.getOperation(), EMPTY_ATTRS);
 			attrs = new StringMap();
@@ -234,9 +234,9 @@ public class DataflowNetworkBuilder {
 			this.operation = operation;
 			this.outVectorId = outVectorId;
 			addOutputPort(new PortWrapper("out"));
-		
+
 		}
-	
+
 		public PortWrapper nextInPort() {
 			PortWrapper inPort;
 			if (ScaveModelUtil.isFilterOperation(operation)) {
@@ -249,11 +249,11 @@ public class DataflowNetworkBuilder {
 			addInputPort(inPort);
 			return inPort;
 		}
-	
+
 		public PortWrapper getOutputPort() {
 			return outPorts.get(0);
 		}
-	
+
 		@Override
 		public void connected(PortWrapper in) {
 			Assert.isTrue(inPorts.contains(in));
@@ -277,7 +277,7 @@ public class DataflowNetworkBuilder {
 				}
 			}
 		}
-	
+
 		public String toString() {
 			return String.format("Apply[%s,%x]", operation.getOperation(), hashCode());
 		}
@@ -289,14 +289,14 @@ public class DataflowNetworkBuilder {
 		int computedVectorId;
 		Node computeNode;
 		List<Node> teeNodes = new ArrayList<Node>();
-	
+
 		public ComputeNode(Compute operation, int computedVectorId) {
 			Assert.isLegal(operation != null && operation.getOperation() != null);
 			this.operation = operation;
 			this.computedVectorId = computedVectorId;
 			addOutputPort(new PortWrapper("out1"));
 		}
-	
+
 		public PortWrapper nextInPort() {
 			PortWrapper inPort;
 			if (ScaveModelUtil.isFilterOperation(operation)) {
@@ -310,11 +310,11 @@ public class DataflowNetworkBuilder {
 			addOutputPort(new PortWrapper("out"+(outPorts.size()+1)));
 			return inPort;
 		}
-	
+
 		public PortWrapper getComputedOutputPort() {
 			return outPorts.get(0);
 		}
-	
+
 		public PortWrapper getOutPortFor(PortWrapper inPort) {
 			int index = inPorts.indexOf(inPort);
 			Assert.isTrue(0 <= index && index + 1 < outPorts.size());
@@ -366,13 +366,13 @@ public class DataflowNetworkBuilder {
 		public void createNodes(DataflowManager manager) {
 			Assert.isLegal(NodeTypeRegistry.getInstance().exists(operation.getOperation()),
 					"Unknown node type: " + operation.getOperation());
-		
+
 			NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
 			StringMap attrs = new StringMap();
 			for (Param param : operation.getParams())
 				attrs.set(param.getName(), param.getValue());
 			computeNode = registry.getNodeType(operation.getOperation()).create(manager, attrs);
-		
+
 			for (int i = 0; i < inPorts.size(); ++i) {
 				PortWrapper inPort = inPorts.get(i);
 				PortWrapper outPort = getOutPortFor(inPort);
@@ -409,7 +409,7 @@ public class DataflowNetworkBuilder {
 				Assert.isLegal(false);
 			return null;
 		}
-	
+
 		public String toString() {
 			return String.format("Compute[%s,%x]", operation.getOperation(), hashCode());
 		}
@@ -419,12 +419,12 @@ public class DataflowNetworkBuilder {
 	class XYPlotNode extends SimpleNode
 	{
 		PortWrapper xPort;
-	
+
 		public XYPlotNode() {
 			super("xyplot", EMPTY_ATTRS);
 			addInputPort(xPort = new PortWrapper("x"));
 		}
-	
+
 		public PortWrapper addPort() {
 			int index = outPorts.size();
 			PortWrapper yPort = new PortWrapper("y"+index);
@@ -433,7 +433,7 @@ public class DataflowNetworkBuilder {
 			addOutputPort(outPort);
 			return yPort;
 		}
-	
+
 		private void removePorts(int index) {
 			removeOutputPort(index);
 			removeInputPort(index + 1);
@@ -456,14 +456,14 @@ public class DataflowNetworkBuilder {
 				idToOutputPortMap.put(in.id, outPort);
 			}
 		}
-	
+
 		@Override
 		public void disconnected(PortWrapper out) {
 			int index = outPorts.indexOf(out);
 			Assert.isLegal(index >= 0);
 			PortWrapper inPort = inPorts.get(index + 1);
 			removePorts(index);
-		
+
 			if (inPort.channel != null) {
 				idToOutputPortMap.put(inPort.id, inPort.channel.out);
 				disconnect(inPort.channel);
@@ -490,19 +490,19 @@ public class DataflowNetworkBuilder {
 	class ArrayBuilderNode extends SinkNode
 	{
 		PortWrapper inPort;
-	
+
 		public ArrayBuilderNode() {
 			super("arraybuilder", EMPTY_ATTRS);
 			addInputPort(inPort = new PortWrapper("in"));
 			arrayBuilderNodes.add(this);
 		}
-	
+
 		@Override
 		public void connected(PortWrapper in) {
 			Assert.isTrue(in == inPort);
 			idToOutputPortMap.remove(in.id);
 		}
-	
+
 		public String toString() {
 			return String.format("ArrayBuilder[%s]", inPort.id);
 		}
@@ -517,18 +517,18 @@ public class DataflowNetworkBuilder {
 			attrs.set("blocksize", "32768");
 			attrs.set("fileheader", "# computed vector file");
 		}
-	
+
 		public PortWrapper addInputPort(int vectorId, String module, String vector, String columns) {
 			String name = String.format("%d %s %s %s",
 					vectorId,
 					StringUtils.quoteStringIfNeeded(module),
 					StringUtils.quoteStringIfNeeded(vector),
 					columns);
-			PortWrapper inPort = new PortWrapper(name); 
+			PortWrapper inPort = new PortWrapper(name);
 			addInputPort(inPort);
 			return inPort;
 		}
-	
+
 		public String toString() {
 			return String.format("Writer[%s]", attrs.get("filename"));
 		}
@@ -539,12 +539,12 @@ public class DataflowNetworkBuilder {
 		String name;
 		NodeWrapper owner;
 		ChannelWrapper channel;
-	
+
 		public PortWrapper(String name) {
 			this.id = -1;
 			this.name = name;
 		}
-	
+
 		public String toString() {
 			return String.format("%s:%s(%s)", owner, name, id);
 		}
@@ -554,13 +554,13 @@ public class DataflowNetworkBuilder {
 		PortWrapper out;
 		PortWrapper in;
 		boolean created;
-	
+
 		public ChannelWrapper(PortWrapper out, PortWrapper in) {
 			this.out = out;
 			this.in = in;
 			out.channel = this;
 			in.channel = this;
-		
+
 			in.id = out.id;
 		}
 	}
@@ -590,7 +590,7 @@ public class DataflowNetworkBuilder {
 	}
 
 	/**
-	 * Builds a dataflow network for reading the data of {@code dataset} at 
+	 * Builds a dataflow network for reading the data of {@code dataset} at
 	 * the given dataset item.
 	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, boolean createDataflowManager) {
@@ -661,7 +661,7 @@ public class DataflowNetworkBuilder {
 	}
 
 	private class NetworkBuilder extends ProcessDatasetSwitch {
-	
+
 		public NetworkBuilder(EObject target) {
 			super(target, false, resultfileManager);
 		}
@@ -720,7 +720,7 @@ public class DataflowNetworkBuilder {
 			}
 			return this;
 		}
-	
+
 		/**
 		 * Filters the output according to the chart's filters when the chart is
 		 * the target of the dataflow network.
@@ -738,7 +738,7 @@ public class DataflowNetworkBuilder {
 				// select x data
 				String xDataPattern = chart.getXDataPattern();
 				if (!StringUtils.isEmpty(xDataPattern)) {
-				
+
 					IDList xData = manager.filterIDList(displayedIds, xDataPattern);
 					for (int i = 0; i < xData.size(); ++i) {
 						long id = xData.get(i);
@@ -747,7 +747,7 @@ public class DataflowNetworkBuilder {
 						fileruns.add(item.getFileRun());
 						IDList yData = manager.filterIDList(displayedIds, fileruns, "", "");
 						yData.substract(id);
-					
+
 						addXYPlotNode(id, yData);
 					}
 				}
@@ -758,7 +758,7 @@ public class DataflowNetworkBuilder {
 		public Object defaultCase(EObject object) {
 			return this; // do nothing
 		}
-	
+
 	}
 
 	private IDList getIDs() {
@@ -771,27 +771,27 @@ public class DataflowNetworkBuilder {
 	 */
 	private DataflowManager buildNetwork() {
 		DataflowManager dataflowManager = new DataflowManager();
-	
+
 		try {
 
 			for (SinkNode sinkNode : sinkNodes) {
-			
+
 				// create the arraybuilder node
 				if (debug) Debug.format("Creating: %s%n", sinkNode);
 				sinkNode.createNodes(dataflowManager);
-			
+
 				// follow the channels backwards
 				// until a reader node or a previously created node reached
 				Queue<ChannelWrapper> pendingChannels = new LinkedList<ChannelWrapper>();
 				for (PortWrapper inPort : sinkNode.inPorts)
 					pendingChannels.offer(inPort.channel);
-			
+
 				while (!pendingChannels.isEmpty()) {
 					ChannelWrapper channel = pendingChannels.poll();
-				
+
 					NodeWrapper fromNode = channel.out.owner;
 					NodeWrapper toNode = channel.in.owner;
-				
+
 					// create fromNode if needed
 					if (!fromNode.created) {
 						if (debug) Debug.format("Creating: %s%n", fromNode);
@@ -812,7 +812,7 @@ public class DataflowNetworkBuilder {
 				}
 			}
 			return dataflowManager;
-		} 
+		}
 		catch (RuntimeException e) {
 		    // clean up before re-throwing exception
 			if (dataflowManager != null)
@@ -871,7 +871,7 @@ public class DataflowNetworkBuilder {
 	private ReaderNode addReaderNode(long id) {
 		ResultItem vector = resultfileManager.getVector(id);
 		Assert.isTrue(!vector.isComputed(), "Tried to read a computed vector from file.");
-	
+
 		if (getOutputPort(id) != null) {
 			removeOutputPort(id);
 		}

@@ -9,7 +9,7 @@
 # type: string
 # elements: 1
 # length: 52
-offered load; Net.subnet[0]; testfiles/vectors.vec; 
+offered load; Net.subnet[0]; testfiles/vectors.vec;
 # name: X
 # type: cell
 # rows: 1
@@ -77,7 +77,7 @@ offered load; Net.subnet[0]; testfiles/vectors.vec;
 # type: string
 # elements: 1
 # length: 54
-throughput (%); Net.subnet[0]; testfiles/vectors.vec; 
+throughput (%); Net.subnet[0]; testfiles/vectors.vec;
 # name: X
 # type: cell
 # rows: 1
@@ -145,7 +145,7 @@ throughput (%); Net.subnet[0]; testfiles/vectors.vec;
 # type: string
 # elements: 1
 # length: 58
-frames dropped (%); Net.subnet[0]; testfiles/vectors.vec; 
+frames dropped (%); Net.subnet[0]; testfiles/vectors.vec;
 # name: X
 # type: cell
 # rows: 1

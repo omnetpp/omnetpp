@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,14 +27,14 @@ public class HistogramChartItemProvider extends
 	public HistogramChartItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
 	}
-	
+
 	/**
 	 * Set the default type of new Select/Deselect children to 'histogram'.
 	 */
 	@Override
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
-		
+
 		if (object instanceof HistogramChart) {
 			for (Object descriptor : newChildDescriptors) {
 				CommandParameter param = (CommandParameter)descriptor;

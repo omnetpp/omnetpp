@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -324,9 +324,9 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public INEDElement deepDup();
 
 	/**
-	 * Returns the first parent which is an INedTypeElement, or null. For example, 
-	 * for a submodule node or a submodule display string it finds the 
-	 * compound module; for an inner type it returns the parent type; and for a 
+	 * Returns the first parent which is an INedTypeElement, or null. For example,
+	 * for a submodule node or a submodule display string it finds the
+	 * compound module; for an inner type it returns the parent type; and for a
 	 * toplevel type it returns null.
 	 */
 	public INedTypeElement getEnclosingTypeElement();
@@ -355,7 +355,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	/**
 	 * Adds a new NED change listener to the element. The
 	 * listener will receive notifications from the whole
-	 * NEDElement subtree (i.e. this element and all elements 
+	 * NEDElement subtree (i.e. this element and all elements
 	 * under it.
 	 */
 	public void addNEDChangeListener(INEDChangeListener listener);
@@ -404,7 +404,7 @@ public interface INEDElement extends Iterable<INEDElement> {
      * contains a consistency error. Based on getConsistencyProblemMaxCumulatedSeverity().
      */
     public boolean hasConsistencyError();
-    
+
     /**
      * Convenience method: returns the maximum severity of NED or NED consistency
      * problems on this element or any element below.

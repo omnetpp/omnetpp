@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -16,8 +16,8 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-
 import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.figures.ConnectionKindFigure;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEndpointEditPolicy;
@@ -25,6 +25,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
+import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 
 
 /**
@@ -156,9 +157,16 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
      */
     @Override
     protected void refreshVisuals() {
+        ConnectionElementEx connectionModel = getConnectionModel();
+
         ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();
-        cfig.setDisplayString(getConnectionModel().getDisplayString());
-        cfig.setArrowHeadEnabled(getConnectionModel().getArrowDirection() != NEDElementConstants.NED_ARROWDIR_BIDIR);
+        cfig.setDisplayString(connectionModel.getDisplayString());
+        cfig.setArrowHeadEnabled(connectionModel.getArrowDirection() != NEDElementConstants.NED_ARROWDIR_BIDIR);
+
+        boolean isGroup = connectionModel.getParent() instanceof ConnectionGroupElement;
+        ConnectionKindFigure figure = new ConnectionKindFigure(isGroup, connectionModel.getFirstConditionChild() != null);
+
+        cfig.setMidpointDecoration(figure);
     }
 
     public void setEditable(boolean editable) {

@@ -631,6 +631,8 @@ sub testcase_run()
             $pattern = $bodies{$key};
             $pattern =~ s/^\s*(.*?)\s*$/$1/s; # trim pattern
 
+            writefile($workdir."/".$testname."/test-$key.txt", $pattern);
+
             # check contains or not-contains
             if ($key =~ /^contains-regex\(/) {
                 if (!($txt =~ /$pattern/s)) {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -54,10 +54,10 @@ public class ToggleCommentAction extends MsgTextEditorAction {
 					for (int i = startLine; i <= endLine; i++)
 						replacement += getLine(doc,i).replaceFirst("//", "");
 				}
-			
+
 				// put back into the document
 				TextEditorUtil.replaceRangeAndSelect(getTextEditor(), doc.getLineOffset(startLine), doc.getLineOffset(endLine+1), replacement, true);
-			
+
 			}
 			catch (BadLocationException e) {
 			}

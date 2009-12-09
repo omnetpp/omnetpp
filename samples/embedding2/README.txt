@@ -10,7 +10,7 @@ The example defines an environment (MinimalEnv) which provides the input paramet
 for the simulation and also stores the result (scalar statistics) in an in-memory map.
 
 The aloha model is contained in the model directory. NED files are embedded in
-the executable by usinng the text2c utility program. 
+the executable by usinng the text2c utility program.
 
 The simulateAloha(simtime_t limit, int numHosts, double iaMean) method sets up
 an environment for the simulation run and executes it. The method contains the

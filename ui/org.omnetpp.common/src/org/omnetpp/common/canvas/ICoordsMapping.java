@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -9,7 +9,7 @@ package org.omnetpp.common.canvas;
 
 /**
  * Abstracts out coordinate mapping for charts.
- * 
+ *
  * @author Andras
  */
 public interface ICoordsMapping {
@@ -24,7 +24,7 @@ public interface ICoordsMapping {
 	/**
 	 * We use this to return NaN as a pixel coordinate.
 	 */
-	public static final int NAN_PIX = Integer.MAX_VALUE;  
+	public static final int NAN_PIX = Integer.MAX_VALUE;
 
 	public double fromCanvasX(int x);
 

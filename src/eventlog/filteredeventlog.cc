@@ -593,7 +593,7 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
 bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
 {
     eventLog->progress();
-    
+
     if (!traceSelfMessages && consequence->isSelfMessageProcessingEvent())
         return false;
 

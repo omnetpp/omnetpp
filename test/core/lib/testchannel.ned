@@ -3,7 +3,7 @@ package testlib;
 //
 // A custom channel type.
 //
-channel TestChannel 
+channel TestChannel
 {
     @class(TestChannel);
 }

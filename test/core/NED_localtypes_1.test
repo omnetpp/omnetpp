@@ -5,8 +5,8 @@ Test that the local Node type takes precedence over the global one.
 
 import testlib.Dump;
 
-module Node {  // the global type 
-} 
+module Node {  // the global type
+}
 
 network Test {
   types:
@@ -14,7 +14,7 @@ network Test {
     }
   submodules:
     dump: Dump;
-    n: Node;  
+    n: Node;
 }
 
 %exitcode: 0

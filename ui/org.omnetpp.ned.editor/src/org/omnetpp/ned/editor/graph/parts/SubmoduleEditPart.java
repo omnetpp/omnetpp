@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -50,7 +50,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     protected IFigure createFigure() {
         SubmoduleFigure fig = new SubmoduleFigureEx();
         // set the pin decoration image for the image (The compound module requests an auto-layout
-        // if we add an figure without pin. ie. submodule created in the text editor without 
+        // if we add an figure without pin. ie. submodule created in the text editor without
         // a display string
         fig.setPinVisible(getSubmoduleModel().getDisplayString().getLocation(1.0f) != null);
 
@@ -125,7 +125,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
     	// add [size] if it's a module vector
     	if (StringUtils.isNotEmpty(submNode.getVectorSize()))
     		nameToDisplay += "["+submNode.getVectorSize()+"]";
-    	getSubmoduleFigure().setName(nameToDisplay);
+    	SubmoduleFigure submoduleFigure = getSubmoduleFigure();
+        submoduleFigure.setName(nameToDisplay);
+        submoduleFigure.setAlpha(submNode.isDynamic() ? 64 : 255);
 
     	// parse a display string, so it's easier to get values from it.
     	// for other visual properties
@@ -136,12 +138,12 @@ public class SubmoduleEditPart extends ModuleEditPart {
         float scale = getScale();
 
         // set the rest of the display properties
-        getSubmoduleFigure().setDisplayString(scale, dps);
-        
-        getSubmoduleFigure().setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
+        submoduleFigure.setDisplayString(scale, dps);
+
+        submoduleFigure.setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
 
         // show/hide the pin marker
-        getSubmoduleFigure().setPinVisible(dps.getLocation(scale) != null);
+        submoduleFigure.setPinVisible(dps.getLocation(scale) != null);
     }
 
     @Override

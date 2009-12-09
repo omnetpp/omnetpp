@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,6 +14,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -25,18 +26,26 @@ import org.eclipse.swt.widgets.Control;
 public class CheckboxControlCellEditor extends CellEditor {
 
     Button chkBtn;
-    
+
     public CheckboxControlCellEditor(Composite parent) {
         super(parent);
     }
 
     @Override
     protected Control createControl(Composite parent) {
+        // KLUDGE: workaround bug in Windows 7, checkbox background is not filled and remains transparent
+        Composite hack = null;
+        boolean isWindows = SWT.getPlatform().equals("win32");
+        if (isWindows) {
+            hack = new Composite(parent, SWT.NONE);
+            hack.setLayout(new FillLayout());
+            parent = hack;
+        }
         chkBtn = new Button(parent, SWT.CHECK);
-        
+
         // see also ComboBoxCellEditor, TextCellEditor etc for explanation
         chkBtn.addKeyListener(new KeyAdapter() {
-            // hook key pressed - see PR 14201  
+            // hook key pressed - see PR 14201
             public void keyPressed(KeyEvent e) {
                 keyReleaseOccured(e);
                 // note: as a result of processing the above call, clients may have
@@ -50,7 +59,7 @@ public class CheckboxControlCellEditor extends CellEditor {
                 }
             }
         });
-        return chkBtn;
+        return isWindows ? hack : chkBtn;
     }
 
     @Override
@@ -68,5 +77,4 @@ public class CheckboxControlCellEditor extends CellEditor {
         Assert.isTrue(value != null && (value instanceof Boolean));
         chkBtn.setSelection(((Boolean)value));
     }
-
 }

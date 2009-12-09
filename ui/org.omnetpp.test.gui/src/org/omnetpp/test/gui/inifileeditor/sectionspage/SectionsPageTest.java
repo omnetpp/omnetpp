@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -50,45 +50,45 @@ public class SectionsPageTest extends InifileEditorTestCase {
     }
 
     public void testEmptyInifile() throws Exception {
-        checkSectionsTreeViewContent("", 
+        checkSectionsTreeViewContent("",
                 toArray(
                         n("General")));  // still displays "General" with a hollow icon
     }
 
     public void testGeneralSectionOnly() throws Exception {
         checkSectionsTreeViewContent(
-                "[General]\n", 
+                "[General]\n",
                 toArray(
                         n("General")));
     }
 
     public void testGeneralSectionOnly2() throws Exception {
-        // test that the network is displayed in the label 
+        // test that the network is displayed in the label
         checkSectionsTreeViewContent(
                 "[General]\n" +
-                "network = TestNetwork\n", 
+                "network = TestNetwork\n",
                 toArray(
                         n("General.*TestNetwork.*")));
     }
 
     public void testManySectionsWithGeneral() throws Exception {
         checkSectionsTreeViewContent(
-                "[Config Apple]\n" + 
+                "[Config Apple]\n" +
                 "[Config GreenApple]\n" +
                 "extends = Apple\n" +
                 "[Config RedApple]\n" +
                 "extends = Apple\n" +
                 "[Config Orange]\n" +
-                "[Config SmallOrange]\n" + 
+                "[Config SmallOrange]\n" +
                 "extends = Orange\n" +
-                "[Config SmallGreenOrange]\n" + 
+                "[Config SmallGreenOrange]\n" +
                 "extends = SmallOrange\n" +
                 "[Config BigOrange]\n" +
                 "extends = Orange\n" +
                 "[Config Banana]\n",
                 toArray(
-                        nw("General", 
-                                nw("Apple", 
+                        nw("General",
+                                nw("Apple",
                                         nw("GreenApple"),
                                         nw("RedApple")),
                                 nw("Orange",
@@ -101,12 +101,12 @@ public class SectionsPageTest extends InifileEditorTestCase {
     public void testSectionCycle() throws Exception {
         // test that a cycle in the section inheritance chain (forbidden) doesn't crash the editor
         checkSectionsTreeViewContent(
-                "[Config Foo]\n" + 
+                "[Config Foo]\n" +
                 "extends = Bar\n" +
                 "[Config Bar]\n" +
                 "extends = Foo\n",
                 toArray(
-                        nw("General"), 
+                        nw("General"),
                         nw("Foo"),
                         nw("Bar")));
     }
@@ -114,22 +114,22 @@ public class SectionsPageTest extends InifileEditorTestCase {
     public void testMissingBaseSection() throws Exception {
         // test that a missing base section doesn't confuse the editor
         checkSectionsTreeViewContent(
-                "[Config Foo]\n" + 
+                "[Config Foo]\n" +
                 "extends = Missing\n",
                 toArray(
-                        nw("General", 
+                        nw("General",
                                 nw("Foo"))));
     }
 
     public void testDuplicateSection() throws Exception {
         // test that a duplicate section doesn't confuse the editor
         checkSectionsTreeViewContent(
-                "[Config Duplicate]\n" + 
-                "[Config Foo]\n" + 
-                "[Config Duplicate]\n" + 
+                "[Config Duplicate]\n" +
+                "[Config Foo]\n" +
+                "[Config Duplicate]\n" +
                 "extends = Foo\n",
                 toArray(
-                        nw("General", 
+                        nw("General",
                                 nw("Foo",
                                         nw("Duplicate")))));
     }

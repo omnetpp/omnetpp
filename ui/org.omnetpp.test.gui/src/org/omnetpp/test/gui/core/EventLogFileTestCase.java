@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,31 +22,31 @@ public class EventLogFileTestCase
     public EventLogFileTestCase() {
         this("test.log");
     }
-    
+
     public EventLogFileTestCase(String fileName) {
         super(fileName);
     }
-    
+
     protected void createFileWithOneEvent() throws Exception {
         createFileWithContent(
-                "MC id 1 c cModule n module t Test\r\n" + 
-        		"BS id 1 tid 1 c cMessage n start\r\n" + 
-        		"ES t 0\r\n" + 
-        		"\r\n" + 
+                "MC id 1 c cModule n module t Test\r\n" +
+        		"BS id 1 tid 1 c cMessage n start\r\n" +
+        		"ES t 0\r\n" +
+        		"\r\n" +
         		"E # 0 t 0 m 1 msg 1\r\n");
     }
 
     protected void createFileWithTwoEvents() throws Exception {
         createFileWithContent(
-                "MC id 1 c cModule n module t Test\r\n" + 
-        		"BS id 1 tid 1 c cMessage n start\r\n" + 
-        		"ES t 0\r\n" + 
-        		"\r\n" + 
-        		"E # 0 t 0 m 1 msg 1\r\n" + 
-        		"BS id 2 tid 2 eid 2 etid 2 c cMessage n continue k 1 l 0\r\n" + 
-        		"SH sm 1 sg 0\r\n" + 
-        		"ES t 1\r\n" + 
-        		"\r\n" + 
+                "MC id 1 c cModule n module t Test\r\n" +
+        		"BS id 1 tid 1 c cMessage n start\r\n" +
+        		"ES t 0\r\n" +
+        		"\r\n" +
+        		"E # 0 t 0 m 1 msg 1\r\n" +
+        		"BS id 2 tid 2 eid 2 etid 2 c cMessage n continue k 1 l 0\r\n" +
+        		"SH sm 1 sg 0\r\n" +
+        		"ES t 1\r\n" +
+        		"\r\n" +
         		"E # 1 t 1 m 1 msg 2\r\n");
     }
 

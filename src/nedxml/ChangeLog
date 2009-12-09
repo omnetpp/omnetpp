@@ -8,7 +8,7 @@
 
 2009-07-15  Andras Varga
 
-	* opp_msgc: fixed namespace support. It is now possible to use types 
+	* opp_msgc: fixed namespace support. It is now possible to use types
 	from other namespaces as base class, field type, or field enum.
 
 	To place generated types into a namespace, add a namespace declaration
@@ -30,12 +30,12 @@
 	  class SomeData;           // msg file's namespace
 	  message SomePacket {
 	      proj::pkt::Bundle bundle;
-	      cQueue queue;   // recognized as ::cQueue    
+	      cQueue queue;   // recognized as ::cQueue
 	      SomeData data;
 	  }
 
-	If the message file declares a namespace, then unqualified names in 
-	type announcements are understood as from the same namespace; names 
+	If the message file declares a namespace, then unqualified names in
+	type announcements are understood as from the same namespace; names
 	from the global namespace need to be explicitly prefixed with "::"
 	to remove ambiguity. Thus, you need write "class ::cQueue;" and not
 	"class cQueue;".
@@ -45,12 +45,12 @@
 	  class cQueue;     // WRONG -- would be understood as foo::cQueue
 	  class ::cQueue;   // correct
 
-	* opp_msgc: improved cplusplus blocks: their contents can be placed 
+	* opp_msgc: improved cplusplus blocks: their contents can be placed
 	into or outside the namespace {...} block in the generated header file,
-	depending on whether the block occurs before or after the namespace 
+	depending on whether the block occurs before or after the namespace
 	declaration in the msg file.
 
-	* opp_msgc: removed support for enum inheritance (which was an 
+	* opp_msgc: removed support for enum inheritance (which was an
 	undocumented and generally unused feature, with several issues)
 
 2009-07-10  Andras Varga
@@ -58,8 +58,8 @@
 	* opp_msgc: implemented @codegen and @descriptor properties (msg-file
 	equivalent of -Xnc, -Xnd, -Xns command line options):
 
-	- @existingClass(true) in a message/class/struct instructs opp_msgc 
-	  not to generate code for the class (this is useful if the class 
+	- @existingClass(true) in a message/class/struct instructs opp_msgc
+	  not to generate code for the class (this is useful if the class
 	  already exists, and one only wants to generate reflection info for it)
 
 	- @descriptor(false) instructs opp_msgc not to generate reflection
@@ -73,8 +73,8 @@
   	* opp_msgc: generates more efficient code for getFieldTypeString(),
         getFieldName(), and getFieldTypeFlags()
 
-        * opp_msgc: bugfix: namespace was missing from the name string of the 
-        generated descriptor class, so appropriate descriptor could never 
+        * opp_msgc: bugfix: namespace was missing from the name string of the
+        generated descriptor class, so appropriate descriptor could never
         be found by name
 
 2009-06-25  Andras Varga

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -108,7 +108,7 @@ public class EventLogTable
 		tableColumn = createColumn();
 		tableColumn.setWidth(2000);
 		tableColumn.setText("Details");
-	
+
 		addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				if (eventLogInput != null) {
@@ -134,7 +134,7 @@ public class EventLogTable
 	protected void paint(final GC gc)
 	{
 	    paintHasBeenFinished = false;
-	    
+
         if (internalErrorHappenedDuringPaint)
             drawNotificationMessage(gc, "Internal error happend during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
         else if (eventLogInput == null) {
@@ -233,7 +233,7 @@ public class EventLogTable
 		eventLogInput = (EventLogInput)input;
 		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
 		eventLogTableFacade = eventLogInput == null ? null : eventLogInput.getEventLogTableFacade();
-	
+
 		// clear state
 		followEnd = false;
 
@@ -277,7 +277,7 @@ public class EventLogTable
 	 */
 
 	public EventLogInput getEventLogInput() {
-		return eventLogInput;	
+		return eventLogInput;
 	}
 
 	public IEventLog getEventLog() {
@@ -319,7 +319,7 @@ public class EventLogTable
         this.typeMode = typeMode;
         redraw();
     }
-    
+
     public NameMode getNameMode() {
         return nameMode;
     }
@@ -330,7 +330,7 @@ public class EventLogTable
         this.nameMode = nameMode;
         redraw();
     }
-    
+
     public DisplayMode getDisplayMode() {
         return displayMode;
     }
@@ -386,7 +386,7 @@ public class EventLogTable
 		else if (fixPointElement != null) {
 			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLog;
 			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), false);
-		
+
 			if (closestEvent != null)
 				relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
 			else {
@@ -404,7 +404,7 @@ public class EventLogTable
         for (EventLogEntryReference eventLogEntryReference : new ArrayList<EventLogEntryReference>(selectionElements))
             if (eventLog.getEventForEventNumber(eventLogEntryReference.getEventNumber()) == null)
                 selectionElements.remove(eventLogEntryReference);
-	
+
         eventLogTableContributor.update();
 		redraw();
 	}
@@ -478,7 +478,7 @@ public class EventLogTable
                 eventLogTableState.typeMode = getTypeMode();
                 eventLogTableState.nameMode = getNameMode();
 				eventLogTableState.displayMode = getDisplayMode();
-			
+
 				manager.setProperty(resource, STATE_PROPERTY, eventLogTableState);
 			}
 		}
@@ -492,12 +492,12 @@ public class EventLogTable
 
 	    if (continueSearch || findTextDialog.open() == Window.OK) {
             String findText = findTextDialog.getValue();
-            
+
             if (findText != null) {
                 EventLogEntryReference eventLogEntryReference = getSelectionElement();
                 EventLogEntry startEventLogEntry = (eventLogEntryReference == null ? getTopVisibleElement() : eventLogEntryReference).getEventLogEntry(eventLogInput);
                 EventLogEntry foundEventLogEntry = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
-    
+
                 if (foundEventLogEntry != null)
                     gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
                 else

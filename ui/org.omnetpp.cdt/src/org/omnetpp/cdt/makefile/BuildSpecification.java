@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -61,11 +61,11 @@ public class BuildSpecification implements Cloneable {
 
     private IProject project;
     private Map<IContainer,FolderSpec> folderSpecs = new HashMap<IContainer,FolderSpec>();
-    
+
     protected BuildSpecification(IProject project) {
         this.project = project;
     }
-    
+
     @Override
     public BuildSpecification clone() {
         BuildSpecification result = new BuildSpecification(project);
@@ -109,13 +109,13 @@ public class BuildSpecification implements Cloneable {
         }
     }
 
-    /** 
+    /**
      * Returns the set of folders where a makefile should be generated.
      */
     public List<IContainer> getMakemakeFolders() {
         List<IContainer> result = new ArrayList<IContainer>();
         for (IContainer folder : folderSpecs.keySet())
-            if (folderSpecs.get(folder).makefileType == MAKEMAKE) 
+            if (folderSpecs.get(folder).makefileType == MAKEMAKE)
                 result.add(folder);
         return result;
     }
@@ -132,7 +132,7 @@ public class BuildSpecification implements Cloneable {
     }
 
     /**
-     * Overwrites the makemake options for the given folder. The folder must already 
+     * Overwrites the makemake options for the given folder. The folder must already
      * be of type MAKEMAKE, else IllegalArgumentException is thrown.
      */
     public void setMakemakeOptions(IContainer folder, MakemakeOptions options) {
@@ -155,10 +155,10 @@ public class BuildSpecification implements Cloneable {
     }
 
     /**
-     * Reads the build spec file from the given OMNeT++ project. Returns null 
+     * Reads the build spec file from the given OMNeT++ project. Returns null
      * if there is no build spec file in the project.
-     * 
-     * @throws CoreException on I/O errors and build spec file errors (syntax, invalid option etc) 
+     *
+     * @throws CoreException on I/O errors and build spec file errors (syntax, invalid option etc)
      */
     public static BuildSpecification readBuildSpecFile(IProject project) throws CoreException {
         IFile buildSpecFile = project.getFile(BUILDSPEC_FILENAME);
@@ -215,7 +215,7 @@ public class BuildSpecification implements Cloneable {
                 if (matcher.matches()) {
                     String folderPath = matcher.group(1).trim();
                     String args = matcher.group(2).trim();
-                    
+
                     IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
                     if (!StringUtils.isEmpty(args)) {
                         MakemakeOptions makemakeOptions = new MakemakeOptions(args);
@@ -235,7 +235,7 @@ public class BuildSpecification implements Cloneable {
         }
         return buildSpec;
     }
-    
+
     /**
      * Saves the build spec to file.
      */
@@ -266,7 +266,7 @@ public class BuildSpecification implements Cloneable {
             StringWriter writer = new StringWriter();
             transformer.transform(new DOMSource(doc), new StreamResult(writer));
             String content = writer.toString();
-            
+
             // save it
             IFile buildSpecFile = project.getFile(BUILDSPEC_FILENAME);
             if (!buildSpecFile.exists())

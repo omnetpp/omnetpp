@@ -2,7 +2,7 @@ package org.omnetpp.scave.writers;
 
 /**
  * Interface for presenting histogram data.
- * 
+ *
  * @author Andras
  */
 public interface IHistogramSummary extends IStatisticalSummary {
@@ -13,9 +13,9 @@ public interface IHistogramSummary extends IStatisticalSummary {
 
     /**
      * Returns the kth cell boundary. Legal values for k are 0 through getNumCells(),
-     * i.e. there are <code>getNumCells()+1</code> cell boundaries. 
+     * i.e. there are <code>getNumCells()+1</code> cell boundaries.
      * <code>getCellBounds(0)</code> returns the lower bound of the first cell,
-     * and <code>getCellBounds(getNumCells())</code> returns the upper bound of the 
+     * and <code>getCellBounds(getNumCells())</code> returns the upper bound of the
      * last cell.
      */
     double getCellBoundary(int k);

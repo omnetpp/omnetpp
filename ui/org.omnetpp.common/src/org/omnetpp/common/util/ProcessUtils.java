@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Helpful utility class to spawn a child process and provide a string as its standard input and 
+ * Helpful utility class to spawn a child process and provide a string as its standard input and
  * retrieve the standard output and errors written by the child process.
- * 
+ *
  * @author levy
  */
 public class ProcessUtils {
@@ -31,9 +31,9 @@ public class ProcessUtils {
             this.exitValue = exitValue;
         }
     }
-    
+
     public static class TimeoutException
-        extends RuntimeException 
+        extends RuntimeException
     {
         public TimeoutException(String string) {
             super(string);
@@ -41,17 +41,17 @@ public class ProcessUtils {
 
         private static final long serialVersionUID = 1L;
     }
-    
+
     public static class ExecException
-        extends RuntimeException 
+        extends RuntimeException
     {
         public ProcessResult result;
-        
+
         public ExecException(ProcessResult result, String string) {
             super(string);
             this.result = result;
         }
-    
+
         private static final long serialVersionUID = 1L;
     }
 
@@ -73,7 +73,7 @@ public class ProcessUtils {
 
     /**
      * Executes the given command with the arguments as a separate process.
-     * The standard input is fed into the spawn process and the output is read until the process finishes or timeout occurs. 
+     * The standard input is fed into the spawn process and the output is read until the process finishes or timeout occurs.
      * The timeout value 0 means wait infinitely long to finish the process.
      */
     public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout) throws IOException, TimeoutException, ExecException {
@@ -81,7 +81,7 @@ public class ProcessUtils {
         cmd[0] = command;
         if (arguments != null)
             System.arraycopy(arguments, 0, cmd, 1, arguments.length);
-        
+
         Process process = Runtime.getRuntime().exec(cmd, null, new File(workingDirectory));
 
         if (standardInput != null) {
@@ -89,7 +89,7 @@ public class ProcessUtils {
             outputStream.write(standardInput.getBytes());
             outputStream.close();
         }
-        
+
         DataInputStream inputStream = new DataInputStream(process.getInputStream());
         DataInputStream errorStream = new DataInputStream(process.getErrorStream());
         ByteArrayOutputStream standardOutput = new ByteArrayOutputStream();
@@ -114,9 +114,9 @@ public class ProcessUtils {
             data = new byte[errorStream.available()];
             errorStream.readFully(data);
             standardError.write(data);
-            
+
             int exitValue;
-            
+
             try {
                 exitValue = process.exitValue();
             }
@@ -132,9 +132,9 @@ public class ProcessUtils {
             else
                 throw new ExecException(result, "Process exec error for " + command + " (exit code " + exitValue + ") : " + standardError.toString());
         }
-        
+
         process.destroy();
-        
+
         throw new TimeoutException("Process exec timeout elapsed for: " + command);
     }
 
@@ -157,7 +157,7 @@ public class ProcessUtils {
                 }
             }
         }
-        
+
         return name;
     }
 }

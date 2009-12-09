@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -48,7 +48,7 @@ public class ComputedState<T> {
 			ComputedState c = (ComputedState)o;
 			if (!c.isValid())
 				return false;
-		
+
 			if (c.pulse >= pulse)
 				return false;
 		}
@@ -58,7 +58,7 @@ public class ComputedState<T> {
 
 	public T recomputeIfInvalidAs(IComputation computation) {
 		this.computation = computation;
-	
+
 		return recomputeIfInvalid();
 	}
 
@@ -92,17 +92,17 @@ public class ComputedState<T> {
 			throw new RuntimeException("setValue may be called on constants only");
 
 		this.value = value;
-		this.pulse = ++currentPulse; 
+		this.pulse = ++currentPulse;
 		Debug.println("P: " + currentPulse);
 	}
 
 	private T getValue0() {
 		assert(isValid());
 		// TODO: add circularity check, go up on stack and check for owner == this
-	   
+
 		if (!ComputedContext.isComputedContextStackEmpty())
 			ComputedContext.peekComputedContextStack().addComputedState(this);
-	   
+
 		return value;
 	}
 }

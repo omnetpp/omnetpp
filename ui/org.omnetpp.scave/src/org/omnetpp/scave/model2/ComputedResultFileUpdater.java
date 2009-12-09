@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,7 +36,7 @@ public class ComputedResultFileUpdater {
 	{
 		ProcessingOp operation;
 		IStatus status;
-	
+
 		public CompletionEvent(IStatus status, ProcessingOp operation) {
 			this.status = status;
 			this.operation = operation;
@@ -95,7 +95,7 @@ public class ComputedResultFileUpdater {
 			}
 			return;
 		}
-	
+
 		GenerateComputedFileJob job = new GenerateComputedFileJob(operation, manager, callback);
 		if (scheduledJob == null) {
 			job.schedule();
@@ -111,14 +111,14 @@ public class ComputedResultFileUpdater {
 	private synchronized void handleJobDone(IJobChangeEvent jobEvent) {
 		Assert.isTrue(jobEvent.getJob() == scheduledJob);
 		Assert.isNotNull(jobEvent.getResult());
-	
+
 		if (scheduledJob.getCallback() != null) {
 			CompletionEvent event = new CompletionEvent(
 											jobEvent.getResult(),
 											scheduledJob.getOperation());
 			scheduledJob.getCallback().completed(event);
 		}
-	
+
 		scheduledJob = null;
 		if (waitingJob != null) {
 			scheduledJob = waitingJob;

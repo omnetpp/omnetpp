@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * Utility methods for managing editors
- * 
+ *
  * @author rhornig
  */
 public class EditorUtil {
@@ -26,15 +26,15 @@ public class EditorUtil {
      * Convenience function for opening editors in the workbench.
      * If there is no editor registered for this file type, displays
      * an error dialog and returns null.
-     * 
+     *
      * See also IWorkbenchPage.
-     * 
+     *
      * @return the editor, or null
      */
     public static IEditorPart openEditor(IFile file, boolean activate) throws PartInitException {
         IEditorDescriptor editorDescription = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
         if (editorDescription == null) {
-        	MessageDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Error", 
+        	MessageDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Error",
         			"Cannot open "+file.toString()+": no editor registered for this file type.");
         	return null;
         }
@@ -42,7 +42,7 @@ public class EditorUtil {
     	IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		FileEditorInput editorInput = new FileEditorInput(file);
 		// Note: findEditor() is needed because openEditor() returns null for the NED editor, because it is started via a launcher
-        activePage.openEditor(editorInput, editorDescription.getId(), activate); 
+        activePage.openEditor(editorInput, editorDescription.getId(), activate);
 		IEditorPart editor = activePage.findEditor(editorInput);
         return editor;
     }

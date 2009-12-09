@@ -65,7 +65,7 @@
             name="Compound Module"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
-            Create a new compound module 
+            Create a new compound module
          </description>
       </wizard>
       <wizard
@@ -138,7 +138,7 @@
               <enablement></enablement>
            </commonWizard>
    </extension>
-   
+
 
 <!-- =========================================================================== -->
 <!-- Text based NED editor                                                       -->

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,6 +29,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.omnetpp.ned.editor.text.assist.NedCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
+import org.omnetpp.ned.editor.text.assist.NedDisplayStringCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedDocCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedPrivateDocCompletionProcessor;
 import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
@@ -61,9 +62,9 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 
     @Override
 	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
-        return new String[] { "    ", "" }; 
+        return new String[] { "    ", "" };
     }
-	
+
 	@Override
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		IAutoEditStrategy strategy= (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new NedAutoIndentStrategy() : new DefaultIndentLineAutoEditStrategy());
@@ -76,9 +77,10 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		ContentAssistant assistant= new ContentAssistant();
 		assistant.setDocumentPartitioning(NedContentAssistPartitionScanner.PARTITIONING_ID);
 		assistant.setContentAssistProcessor(new NedCompletionProcessor(editor), IDocument.DEFAULT_CONTENT_TYPE);
+        assistant.setContentAssistProcessor(new NedDisplayStringCompletionProcessor(editor), NedContentAssistPartitionScanner.NED_STRING); // for display strings
         assistant.setContentAssistProcessor(new NedDocCompletionProcessor(), NedContentAssistPartitionScanner.NED_DOC);
         assistant.setContentAssistProcessor(new NedPrivateDocCompletionProcessor(), NedContentAssistPartitionScanner.NED_PRIVATE_DOC);
-        
+
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(500);
 		assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
@@ -109,11 +111,11 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
-        // colorizer for normal ned doc 
+        // colorizer for normal ned doc
 		dr = new DefaultDamagerRepairer(new NedDocColorizerScanner());
 		reconciler.setDamager(dr, NedSyntaxHighlightPartitionScanner.NED_DOC);
 		reconciler.setRepairer(dr, NedSyntaxHighlightPartitionScanner.NED_DOC);
-        
+
         // colorizer for private ned doc
         dr = new DefaultDamagerRepairer(new NedPrivateDocColorizerScanner());
 		reconciler.setDamager(dr, NedSyntaxHighlightPartitionScanner.NED_PRIVATE_DOC);
@@ -140,7 +142,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setDelay(500);
 		return reconciler;
 	}
-    
+
     @Override
     public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
         if (sourceViewer == null)

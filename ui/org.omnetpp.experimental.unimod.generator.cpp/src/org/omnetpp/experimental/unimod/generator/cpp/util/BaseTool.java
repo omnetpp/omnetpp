@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ public abstract class BaseTool {
 	/**
 	 * Turns given name to valid C++ identifier.
 	 * <br>
-	 * States: 
+	 * States:
 	 * 0 - first word letter
 	 * 1 - first element letter
 	 * 2 - common letter
@@ -39,16 +39,16 @@ public abstract class BaseTool {
 						// skip
 					} else if (Character.isUpperCase(c)) {
 						identifier.append(isFirstUpper || allUpper ? c : Character.toLowerCase(c));
-						state = 2; 
+						state = 2;
 					} else if (Character.isLowerCase(c)) {
 						identifier.append(isFirstUpper || allUpper ? Character.toUpperCase(c) : c);
-						state = 2; 
+						state = 2;
 					} else if (isDigit(c)) {
 						if (StringUtils.isEmpty(suffix)) {
 							identifier.append(isFirstUpper || allUpper ? 'A' : 'a');
 						}
 						identifier.append(c);
-						state = 1; 
+						state = 1;
 					}
 					break;
 				case 1: // first element letter
@@ -56,10 +56,10 @@ public abstract class BaseTool {
 						// skip
 					} else if (Character.isUpperCase(c)) {
 						identifier.append(c);
-						state = 2; 
+						state = 2;
 					} else if (Character.isLowerCase(c)) {
 						identifier.append(Character.toUpperCase(c));
-						state = 2; 
+						state = 2;
 					} else if (isDigit(c)) {
 						identifier.append(c);
 					}

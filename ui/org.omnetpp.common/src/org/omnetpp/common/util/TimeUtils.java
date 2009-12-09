@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 
 /**
- * 
+ *
  * @author levy
  */
 public class TimeUtils {
@@ -21,13 +21,13 @@ public class TimeUtils {
 			timeString.append(value);
 			timeString.append(name);
 		}
-	
+
 		return time.subtract(new BigDecimal(value)).movePointRight(3);
 	}
 
 	public static String secondsToTimeString(BigDecimal time) {
 		StringBuffer timeString = new StringBuffer();
-	
+
 		if (time.compareTo(BigDecimal.ZERO) < 0) {
 			timeString.append("-");
 			time = time.negate();
@@ -43,7 +43,7 @@ public class TimeUtils {
 
 		if (timeString.length() == 0)
 			timeString.append("0s");
-	
+
 		return timeString.toString().trim();
 	}
 
@@ -51,7 +51,7 @@ public class TimeUtils {
 		String s1 = time1.toPlainString();
 		String s2 = time2.toPlainString();
 		StringBuffer common = new StringBuffer();
-	
+
 		// make sure decimal points are there
 		if (s1.indexOf('.') == -1)
 		    s1 = s1 + ".";

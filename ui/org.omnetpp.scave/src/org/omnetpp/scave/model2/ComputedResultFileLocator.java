@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -34,7 +34,7 @@ public class ComputedResultFileLocator {
 
 	private static final ComputedResultFileLocator instance = new ComputedResultFileLocator();
 
-	protected ComputedResultFileLocator() {	} 
+	protected ComputedResultFileLocator() {	}
 
 	public static ComputedResultFileLocator instance() {
 		return instance;
@@ -43,7 +43,7 @@ public class ComputedResultFileLocator {
 	public String getComputedFile(ProcessingOp operation) {
 		if (operation.getComputedFile() != null)
 			return operation.getComputedFile();
-	
+
 		URI uri = getResourceURI(operation);
 		if (uri != null) {
 			IPath dirPath = getComputedFileDirectory(uri);
@@ -67,7 +67,7 @@ public class ComputedResultFileLocator {
 	private URI getResourceURI(ProcessingOp operation) {
 		URI uri = operation.eResource().getURI();
 		if (uri != null) {
-			ResourceSet resourceSet = operation.eResource().getResourceSet(); 
+			ResourceSet resourceSet = operation.eResource().getResourceSet();
 			if (resourceSet != null)
 				uri = resourceSet.getURIConverter().normalize(uri);
 		}
@@ -84,7 +84,7 @@ public class ComputedResultFileLocator {
 			}
 			catch (URISyntaxException e) {
 			}
-		
+
 			// Hmm, file not found in the workspace
 			// save the computed file in the same directory as the analysis file.
 			IPath filePath = new Path(uri.toFileString());
@@ -114,7 +114,7 @@ public class ComputedResultFileLocator {
 				throw new RuntimeException("Could not create directory for computed files: "+e.getMessage(), e);
 			}
 		}
-	
+
 		IPath dirPath = null;
 		if (checkFolder(folder))
 			dirPath = folder.getLocation();

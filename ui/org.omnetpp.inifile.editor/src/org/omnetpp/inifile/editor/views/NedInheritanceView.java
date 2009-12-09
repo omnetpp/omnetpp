@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -58,14 +58,14 @@ import org.omnetpp.ned.model.pojo.InterfaceNameElement;
  *
  * @author Andras
  */
-//XXX currently doesn't show inner types 
+//XXX currently doesn't show inner types
 //XXX add tooltip (see fixme below)
 public class NedInheritanceView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
-	// hashmap to save/restore view's state when switching across editors 
+	// hashmap to save/restore view's state when switching across editors
 	private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
 
 	public NedInheritanceView() {
@@ -98,7 +98,7 @@ public class NedInheritanceView extends AbstractModuleView {
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
-	
+
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IEditorPart editor = getAssociatedEditor();
@@ -112,7 +112,7 @@ public class NedInheritanceView extends AbstractModuleView {
 		// create context menu
  		getViewSite().registerContextMenu(contextMenuManager, treeViewer);
  		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
- 	
+
  		// add tooltip support to the tree
  		new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
@@ -124,12 +124,12 @@ public class NedInheritanceView extends AbstractModuleView {
 				return null;
 			}
  		});
- 	
+
 	}
 
 	private void createActions() {
 		IAction pinAction = getOrCreatePinAction();
-	
+
 		class GotoNedFileAction extends ActionExt {
 			GotoNedFileAction() {
 			    setText("Open NED Declaration");
@@ -152,7 +152,7 @@ public class NedInheritanceView extends AbstractModuleView {
 			}
 		};
 
-		final ActionExt gotoNedAction = new GotoNedFileAction(); 
+		final ActionExt gotoNedAction = new GotoNedFileAction();
 		treeViewer.addSelectionChangedListener(gotoNedAction);
 
 		// add double-click support to the tree
@@ -183,7 +183,7 @@ public class NedInheritanceView extends AbstractModuleView {
 	public void setFocus() {
 		if (isShowingMessage())
 			super.setFocus();
-		else 
+		else
 			treeViewer.getTree().setFocus();
 	}
 
@@ -192,9 +192,9 @@ public class NedInheritanceView extends AbstractModuleView {
 
 	    // find first usable parent
         while (inputNedType == null && selectedElement != null) {
-            if (selectedElement instanceof INedTypeElement) 
+            if (selectedElement instanceof INedTypeElement)
                 inputNedType = ((INedTypeElement)selectedElement).getNEDTypeInfo();
-            else if (selectedElement instanceof IHasType) 
+            else if (selectedElement instanceof IHasType)
                 inputNedType = ((IHasType)selectedElement).getNEDTypeInfo();
             selectedElement = selectedElement.getParent();
         }
@@ -206,17 +206,17 @@ public class NedInheritanceView extends AbstractModuleView {
 
         // build tree
         final GenericTreeNode root = new GenericTreeNode("root");
-        
+
         List<INEDTypeInfo> extendsChain = inputNedType.getExtendsChain();
         INEDTypeInfo rootType = extendsChain.get(extendsChain.size()-1);
         buildInheritanceTreeOf(rootType, root, new HashSet<INEDTypeInfo>());
-        
+
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
 			treeViewer.setInput(root);
-		
+
 			// open root node (useful in case preserving the selection fails)
-			treeViewer.expandToLevel(2);  
+			treeViewer.expandToLevel(2);
 
 			// try to preserve selection
 			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
@@ -226,9 +226,9 @@ public class NedInheritanceView extends AbstractModuleView {
 
 		// refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
 		treeViewer.refresh();
-	
+
 		// update label
-		String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNEDElement().getReadableTagName()); 
+		String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNEDElement().getReadableTagName());
 		if (getPinnedToEditor() != null)
 		    text += ", in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
 		setContentDescription(text);
@@ -241,7 +241,7 @@ public class NedInheritanceView extends AbstractModuleView {
         if (!visited.contains(typeInfo)) {  // cycle detection
             visited.add(typeInfo);
             for (INEDTypeInfo type : getSubtypesOf(typeInfo))
-                buildInheritanceTreeOf(type, node, visited);  
+                buildInheritanceTreeOf(type, node, visited);
         }
     }
 

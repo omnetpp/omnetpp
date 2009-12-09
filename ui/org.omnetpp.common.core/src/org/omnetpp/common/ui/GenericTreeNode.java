@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,9 +15,9 @@ import org.eclipse.core.runtime.Assert;
 
 /**
  * Node for a generic tree where every node contains a payload object.
- * We use this with GenericTreeContentProvider to display an arbitrary 
+ * We use this with GenericTreeContentProvider to display an arbitrary
  * object tree in a TreeViewer.
- * 
+ *
  * @author andras
  */
 //XXX use org.eclipse.jface.viewers.TreeNode instead? (just discovered such thing exists)
@@ -32,11 +32,11 @@ public class GenericTreeNode {
 	@SuppressWarnings("unchecked")
 	private static class PayloadComparator implements Comparator<GenericTreeNode> {
 		private Comparator comparator;
-	
+
 		public PayloadComparator(Comparator<? extends Object> comparator) {
 			this.comparator = comparator;
 		}
-	
+
 		public int compare(GenericTreeNode left, GenericTreeNode right) {
 			return comparator.compare(left.payload, right.payload);
 		}
@@ -64,7 +64,7 @@ public class GenericTreeNode {
 	public void addChild(GenericTreeNode child) {
 		if (child.parent!=null)
 			throw new RuntimeException("child node already has a parent");
-	
+
 		GenericTreeNode[] childrenNew = new GenericTreeNode[children.length + 1];
 		if (childOrder == null) {
 			System.arraycopy(children, 0, childrenNew, 0, children.length);  //XXX potential bottleneck -- use ArrayList? (Andras)
@@ -80,7 +80,7 @@ public class GenericTreeNode {
 			childrenNew[insertionPoint] = child;
 			if (insertionPoint < children.length)
 				System.arraycopy(children, insertionPoint, childrenNew, insertionPoint + 1, children.length - insertionPoint);
-		
+
 		}
 
 		child.parent = this;
@@ -113,7 +113,7 @@ public class GenericTreeNode {
 	}
 
 	/**
-	 * Returns the children. The result is never null. 
+	 * Returns the children. The result is never null.
 	 */
 	public GenericTreeNode[] getChildren() {
 		return children;
@@ -121,7 +121,7 @@ public class GenericTreeNode {
 
 	/**
 	 * Returns the children of the node in the specified range.
-	 * 
+	 *
 	 * @param start index of the first child, inclusive
 	 * @param end index of the last child, exclusive
 	 * @return an array of the children
@@ -147,8 +147,8 @@ public class GenericTreeNode {
 	}
 
 	/**
-	 * Returns the index of this node within its parent. 
-	 * Returns -1 if this is the root node. 
+	 * Returns the index of this node within its parent.
+	 * Returns -1 if this is the root node.
 	 */
 	public int indexInParent() {
 		if (parent == null)
@@ -178,10 +178,10 @@ public class GenericTreeNode {
 					return child;
 			}
 		}
-	
+
 		GenericTreeNode child = new GenericTreeNode(payload, childOrder);
 		addChild(child);
-	
+
 		return child;
 	}
 
@@ -210,7 +210,7 @@ public class GenericTreeNode {
 	}
 
 	/**
-	 * Compares payloads only (of two GenericTreeNodes) 
+	 * Compares payloads only (of two GenericTreeNodes)
 	 */
 	@Override
 	public boolean equals(Object obj) {

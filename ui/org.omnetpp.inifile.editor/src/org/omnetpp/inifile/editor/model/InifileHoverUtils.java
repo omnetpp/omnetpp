@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,7 +29,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Produces hover information for various Inifile parts.
- * 
+ *
  * @author Andras
  */
 public class InifileHoverUtils {
@@ -42,7 +42,7 @@ public class InifileHoverUtils {
 			return null;
 
 		// problem markers: display the section header's and extends's errors as text,
-		// then display how many more there are within the section  
+		// then display how many more there are within the section
 		IMarker[] markers1 = InifileUtils.getProblemMarkersFor(section, null, doc);
 		IMarker[] markers2 = InifileUtils.getProblemMarkersFor(section, EXTENDS, doc);
 		IMarker[] allMarkers = InifileUtils.getProblemMarkersForWholeSection(section, doc);
@@ -63,9 +63,9 @@ public class InifileHoverUtils {
 		String numErrorsText = "";
 		if (numErrors+numWarnings > 0) {
 			if (numErrors>0 && numWarnings>0)
-				numErrorsText += numErrors + " error(s) and " + numWarnings + " warning(s)"; 
+				numErrorsText += numErrors + " error(s) and " + numWarnings + " warning(s)";
 			else if (numErrors>0)
-				numErrorsText += numErrors + " error(s)"; 
+				numErrorsText += numErrors + " error(s)";
 			else if (numWarnings>0)
 				numErrorsText += numWarnings + " warning(s)";
 			if (markersDisplayed.size() > 0)
@@ -76,7 +76,7 @@ public class InifileHoverUtils {
 		}
 
 		String text = getProblemsHoverText(markersDisplayed.toArray(new IMarker[]{}), false) + numErrorsText;
-	
+
 		// name and description
 		text += "<b>"+section+"</b>";
 		String description = doc.getValue(section, "description");
@@ -158,7 +158,7 @@ public class InifileHoverUtils {
 	    IInifileDocument doc = analyzer.getDocument();
         IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
         String text = getProblemsHoverText(markers, false);
-       
+
         ConfigOption entry = ConfigRegistry.getPerObjectEntry(key.replaceFirst("^.*\\.", ""));
         if (entry != null)
             text += getConfigOptionHoverText(entry);
@@ -212,8 +212,8 @@ public class InifileHoverUtils {
         //   {Ieee80211Mac.address} => {[Config Bar]}
         Map<Set<ParamElementEx>, Set<String>> sectionsGroupedByParamDeclSet = organizeParamResolutions(resList);
 
-        boolean isVerySimpleCase = sectionsGroupedByParamDeclSet.size()==1 && sectionsGroupedByParamDeclSet.keySet().toArray(new Set[]{})[0].size()==1; 
-           
+        boolean isVerySimpleCase = sectionsGroupedByParamDeclSet.size()==1 && sectionsGroupedByParamDeclSet.keySet().toArray(new Set[]{})[0].size()==1;
+
         String[] allSectionNames = analyzer.getDocument().getSectionNames();
         if (isVerySimpleCase) {
             text += "<br><b>Applies to:</b><br>\n";
@@ -231,7 +231,7 @@ public class InifileHoverUtils {
     private static String formatParamResolutions(Map<Set<ParamElementEx>,Set<String>> sectionsGroupedByParamDeclSet,
             ParamResolution[] resList, String[] allSectionNames, boolean printComment, boolean printDetails) {
         String text = "";
-        
+
         // Now we turn this into HTML
         for (Set<ParamElementEx> paramDecls : sectionsGroupedByParamDeclSet.keySet()) {
             Set<String> sectionNames = sectionsGroupedByParamDeclSet.get(paramDecls);
@@ -241,13 +241,13 @@ public class InifileHoverUtils {
                 text += "&nbsp;[" + StringUtils.join(sectionNames, "], [") + "]\n";
             else if (allSectionNames.length > 1)
                 text += "&nbsp;All sections";
-            
+
             // and the param declarations
             text += "<ul>";
             for (ParamElementEx paramDeclNode : paramDecls) {
                 // print the parameter declaration itself
                 text += formatParamDecl(paramDeclNode, printComment);
-                
+
                 if (printDetails) {
                     // here we want to print the moduleFullPaths where this parameter matches;
                     // and for each moduleFullPath, the list of sections. So we collect it first:
@@ -286,7 +286,7 @@ public class InifileHoverUtils {
         // - key: section name
         // - value: the parameter declarations that this config key matches in the given section
         //
-        // Example: we're processing the param resolutions of **.mac.address; 
+        // Example: we're processing the param resolutions of **.mac.address;
         // the resulting map will contain:
         //   [General] => {EtherMac.address, Ieee80211Mac.address}
         //   [Config Foo] => {EtherMac.address, Ieee80211Mac.address}
@@ -300,7 +300,7 @@ public class InifileHoverUtils {
             sectionParamDecls.get(sectionName).add(res.paramDeclNode);
         }
 
-        // Now: it is typical that the config key matches the same parameter declarations 
+        // Now: it is typical that the config key matches the same parameter declarations
         // in all sections, so we want to group them. This is what we want to see:
         //   {EtherMac.address, Ieee80211Mac.address} => {[General], [Config Foo]}
         //   {Ieee80211Mac.address} => {[Config Bar]}
@@ -308,7 +308,7 @@ public class InifileHoverUtils {
         Map<Set<ParamElementEx>, Set<String>> grouping = new LinkedHashMap<Set<ParamElementEx>, Set<String>>();
         for (String sectionName : sectionParamDecls.keySet()) {
             Set<ParamElementEx> declSet = sectionParamDecls.get(sectionName);
-            if (!grouping.containsKey(declSet)) 
+            if (!grouping.containsKey(declSet))
                 grouping.put(declSet, new LinkedHashSet<String>());
             grouping.get(declSet).add(sectionName);
         }
@@ -330,14 +330,14 @@ public class InifileHoverUtils {
         String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 250);
         String optComment = comment==null ? "" : ("<br>&nbsp;&nbsp;&nbsp;<i>\"" + comment + "\"</i>");
 
-        // print parameter declaration 
+        // print parameter declaration
         return "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optUnit + optParamValue + (printComment ? optComment : "") + "\n";
     }
 
     public static String getProblemsHoverText(IMarker[] markers, boolean lineNumbers) {
-		if (markers.length==0) 
+		if (markers.length==0)
 			return "";
-	
+
 		String text = "";
 		for (IMarker marker : markers) {
 			String severity = "";
@@ -346,7 +346,7 @@ public class InifileHoverUtils {
 				case IMarker.SEVERITY_WARNING: severity = "Warning"; break;
 				case IMarker.SEVERITY_INFO: severity = "Info"; break;
 			}
-			String lineNumber = lineNumbers ? "Line "+marker.getAttribute(IMarker.LINE_NUMBER, -1)+": " : "";  
+			String lineNumber = lineNumbers ? "Line "+marker.getAttribute(IMarker.LINE_NUMBER, -1)+": " : "";
 			text += "<i>"+lineNumber+severity+": " + marker.getAttribute(IMarker.MESSAGE, "") + "</i><br/>\n";
 		}
 		return text+"<br/>";
@@ -357,7 +357,7 @@ public class InifileHoverUtils {
 	 */
 	public static String getParamHoverText(SubmoduleElement[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode) {
 		String paramName = paramDeclNode.getName();
-	
+
 		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeElement().getName();
 		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);

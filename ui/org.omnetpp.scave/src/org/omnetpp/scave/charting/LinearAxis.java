@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,9 +29,9 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 
 /**
- * Draws a (horizontal or vertical) chart axis, with the corresponding axis 
+ * Draws a (horizontal or vertical) chart axis, with the corresponding axis
  * title, ticks and tick labels, and (vertical or horizontal) grid lines.
- * 
+ *
  * @author andras
  */
 public class LinearAxis {
@@ -42,7 +42,7 @@ public class LinearAxis {
 	private ShowGrid showGrid = DEFAULT_SHOW_GRID;
 	private boolean drawTickLabels = true;
 	private boolean drawTitle = true;
-	private String title; 
+	private String title;
 	private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
 	private Font tickFont = DEFAULT_LABELS_FONT;
 
@@ -71,7 +71,7 @@ public class LinearAxis {
 
 	/**
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
-	 * Also returns insets for convenience. 
+	 * Also returns insets for convenience.
 	 */
 	public Insets layout(GC gc, Rectangle bounds, Insets insets, ICoordsMapping mapping, int pass) {
 		if (pass == 1) {
@@ -128,7 +128,7 @@ public class LinearAxis {
 			for (BigDecimal tick : ticks) {
 				if (ticks.isMajorTick(tick)) {
 					labelWidth = Math.max(labelWidth, gc.textExtent(tick.toPlainString()).x);
-				}					
+				}
 			}
 		}
 		return labelWidth;
@@ -138,8 +138,8 @@ public class LinearAxis {
 		if (showGrid == ShowGrid.None)
 			return;
 
-		// Note: when canvas caching is on, gc is the cached image, so the grid must be drawn 
-		// to the whole clipping region (cached image area) not just the plot area    
+		// Note: when canvas caching is on, gc is the cached image, so the grid must be drawn
+		// to the whole clipping region (cached image area) not just the plot area
 		Rectangle rect = new Rectangle(gc.getClipping());
 		ITicks ticks = createTicks(rect, mapping);
 		if (ticks != null) {
@@ -148,13 +148,13 @@ public class LinearAxis {
 			for (BigDecimal tick : ticks) {
 				if (showGrid == ShowGrid.All || ticks.isMajorTick(tick)) {
 					if (vertical) {
-						int y = mapping.toCanvasY(transform(tick.doubleValue())); 
+						int y = mapping.toCanvasY(transform(tick.doubleValue()));
 						if (y >= rect.y && y <= rect.bottom()) {
 							gc.drawLine(rect.x, y, rect.right(), y);
 						}
 					}
 					else {
-						int x = mapping.toCanvasX(transform(tick.doubleValue())); 
+						int x = mapping.toCanvasX(transform(tick.doubleValue()));
 						if (x >= rect.x && x <= rect.right()) {
 							gc.drawLine(x, rect.y, x, rect.bottom());
 						}
@@ -166,12 +166,12 @@ public class LinearAxis {
 
 	public void drawAxis(GC gc, ICoordsMapping mapping) {
 		Rectangle plotArea = bounds.getCopy().crop(insets);
-	
+
 		// draw axis line and title
 		gc.setLineWidth(1);
 		gc.setLineStyle(SWT.LINE_SOLID);
 		gc.setForeground(DEFAULT_AXIS_COLOR);
-		gc.setFont(titleFont); 
+		gc.setFont(titleFont);
 
 		Point titleSize = gc.textExtent(title);
 		if (vertical) {
@@ -206,9 +206,9 @@ public class LinearAxis {
 			for (BigDecimal tick : ticks) {
 				String label = tick.toPlainString();
 				Point size = gc.textExtent(label);
-				int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength; 
+				int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength;
 				if (vertical) {
-					int y = mapping.toCanvasY(transform(tick.doubleValue())); 
+					int y = mapping.toCanvasY(transform(tick.doubleValue()));
 					if (y >= plotArea.y && y <= plotArea.bottom()) {
 						gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
 						gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
@@ -219,7 +219,7 @@ public class LinearAxis {
 					}
 				}
 				else {
-					int x = mapping.toCanvasX(transform(tick.doubleValue())); 
+					int x = mapping.toCanvasX(transform(tick.doubleValue()));
 					if (x >= plotArea.x && x <= plotArea.right()) {
 						gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
 						gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);

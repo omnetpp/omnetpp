@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -47,10 +47,10 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  *  - doxygen configuration file
  *  - generated doxygen documentation
  *  - generated neddoc documentation
- * 
+ *
  * @author levy
  */
-public class DocumentationGeneratorPropertyPage 
+public class DocumentationGeneratorPropertyPage
     extends PropertyPage
 {
     private static final String DEFAULT_DOXY_PATH = "doc/doxy";
@@ -60,10 +60,12 @@ public class DocumentationGeneratorPropertyPage
     public static QualifiedName DOXY_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyPath");
     public static QualifiedName DOXY_CONFIG_FILE_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyConfigFilePath");
     public static QualifiedName NEDDOC_PATH_QNAME = new QualifiedName("DocumentationGenerator", "NeddocPath");
+    public static QualifiedName CUSTOM_CSS_QNAME = new QualifiedName("DocumentationGenerator", "CustomCss");
 
 	private Text doxyPath;
 	private Text doxyConfigFilePath;
 	private Text neddocPath;
+	private Text customCssPath;
 
     public DocumentationGeneratorPropertyPage() {
 		super();
@@ -72,11 +74,11 @@ public class DocumentationGeneratorPropertyPage
     @Override
 	protected Control createContents(Composite parent) {
         final IProject project = getProject();
-        
+
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(1, false));
-        
+
         Group group = new Group(composite, SWT.NONE);
         group.setText("Project relative paths");
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -84,7 +86,7 @@ public class DocumentationGeneratorPropertyPage
 
         doxyPath = addTextAndBrowse(group, "Generated Doxygen documentation:", true);
         neddocPath = addTextAndBrowse(group, "Generated NED documentation:", true);
-        
+
         try {
             setText(doxyPath, getDoxyPath(project));
             setText(neddocPath, getNeddocPath(project));
@@ -92,14 +94,14 @@ public class DocumentationGeneratorPropertyPage
         catch (CoreException e) {
             throw new RuntimeException(e);
         }
-        
+
         group = new Group(composite, SWT.NONE);
         group.setText("Doxygen");
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         group.setLayout(new GridLayout(3, false));
 
         doxyConfigFilePath = addTextAndBrowse(group, "Configuration file path:", false);
-        
+
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         final String doxyExecutablePath = store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE);
 
@@ -116,7 +118,7 @@ public class DocumentationGeneratorPropertyPage
                     doxyConfigFilePath.setText(relativePath);
                 }
                 String fileName = project.getFile(relativePath).getLocation().toOSString();
-                
+
                 if (new File(fileName).exists())
                     if (!MessageDialog.openConfirm(getShell(), "Confirm overwrite", "Do you wan to overwrite the Doxygen configuration file: " + fileName + "?"))
                        return;
@@ -127,6 +129,24 @@ public class DocumentationGeneratorPropertyPage
 
         try {
             setText(doxyConfigFilePath, getDoxyConfigFilePath(project));
+        }
+        catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        Label label = new Label(group, SWT.WRAP);
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
+        label.setText("Note: for referencing external doxygen documentation see the TAGFILES option\n");
+
+        group = new Group(composite, SWT.NONE);
+        group.setText("HTML");
+        group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        group.setLayout(new GridLayout(3, false));
+
+        customCssPath = addTextAndBrowse(group, "Custom CSS path:", false);
+
+        try {
+            setText(customCssPath, getCustomCssPath(project));
         }
         catch (CoreException e) {
             throw new RuntimeException(e);
@@ -144,10 +164,10 @@ public class DocumentationGeneratorPropertyPage
         Label label = new Label(composite, SWT.NONE);
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
         label.setText(labelText);
-        
+
         final Text text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
+
         Button button = new Button(composite, SWT.PUSH);
         button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
         button.setText("Browse...");
@@ -161,7 +181,7 @@ public class DocumentationGeneratorPropertyPage
                         @Override
                         public Object[] getChildren(Object element) {
                             Object[] children = super.getChildren(element);
-                            
+
                             if (folder) {
                                 ArrayList<Object> filteredChildren = new ArrayList<Object>();
                                 for (Object child : children)
@@ -184,7 +204,7 @@ public class DocumentationGeneratorPropertyPage
                 }
             }
         });
-        
+
         return text;
     }
 
@@ -203,6 +223,7 @@ public class DocumentationGeneratorPropertyPage
             project.setPersistentProperty(DOXY_PATH_QNAME, doxyPath.getText());
             project.setPersistentProperty(DOXY_CONFIG_FILE_PATH_QNAME, doxyConfigFilePath.getText());
             project.setPersistentProperty(NEDDOC_PATH_QNAME, neddocPath.getText());
+            project.setPersistentProperty(CUSTOM_CSS_QNAME, customCssPath.getText());
 
             return true;
         }
@@ -214,10 +235,10 @@ public class DocumentationGeneratorPropertyPage
     private IProject getProject() {
         return (IProject)getElement().getAdapter(IProject.class);
     }
-    
+
     public static String getDoxyPath(IProject project) throws CoreException {
         String value = project.getPersistentProperty(DOXY_PATH_QNAME);
-        
+
         if (value == null)
             return DEFAULT_DOXY_PATH;
         else
@@ -226,7 +247,7 @@ public class DocumentationGeneratorPropertyPage
 
     public static String getDoxyConfigFilePath(IProject project) throws CoreException {
         String value = project.getPersistentProperty(DOXY_CONFIG_FILE_PATH_QNAME);
-        
+
         if (value == null)
             return DEFAULT_DOXY_CONFIG_FILE_PATH;
         else
@@ -235,11 +256,15 @@ public class DocumentationGeneratorPropertyPage
 
     public static String getNeddocPath(IProject project) throws CoreException {
         String value = project.getPersistentProperty(NEDDOC_PATH_QNAME);
-        
+
         if (value == null)
             return DEFAULT_NEDDOC_PATH;
         else
             return value;
+    }
+
+    public static String getCustomCssPath(IProject project) throws CoreException {
+        return project.getPersistentProperty(CUSTOM_CSS_QNAME);
     }
 
     public static String replaceDoxygenConfigurationEntry(String content, String key, String value) {
@@ -272,10 +297,11 @@ public class DocumentationGeneratorPropertyPage
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
             content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
-            FileUtils.writeTextFile(fileName, content);                    
+            content = replaceDoxygenConfigurationEntry(content, "TAGFILES", OmnetppMainPlugin.getOmnetppRootDir() + "/doc/api/opptags.xml=" + OmnetppMainPlugin.getOmnetppRootDir() + "/doc/api");
+            FileUtils.writeTextFile(fileName, content);
         }
         catch (Exception x) {
-            MessageDialog.openError(null, "Documentation Generation", 
+            MessageDialog.openError(null, "Documentation Generation",
                     "Error generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath);
         }
     }

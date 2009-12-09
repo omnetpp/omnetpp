@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,11 +26,11 @@ public class ParamResolution {
 		IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
 	}
 
-	// moduleFullPath and param name (from paramDeclNode or paramValueNode) identify the NED parameter. 
+	// moduleFullPath and param name (from paramDeclNode or paramValueNode) identify the NED parameter.
 	// For vector submodules, moduleFullPath contains "[*]".
 	// pathModules[] relates moduleFullPath to NEDElements. The network is pathModules[1]'s
-	// parent CompoundModuleElement, or paramDeclNode's parent Compound/SimpleModuleElement if 
-	// pathModules[] is empty. After that, the type of pathModules[i] is the parent 
+	// parent CompoundModuleElement, or paramDeclNode's parent Compound/SimpleModuleElement if
+	// pathModules[] is empty. After that, the type of pathModules[i] is the parent
 	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclNode).
 	// pathModules[0] may be null.
 	public String moduleFullPath;
@@ -42,17 +42,17 @@ public class ParamResolution {
 	public ParamResolutionType type;
 
 	// during analysis of which section
-	public String activeSection; 
+	public String activeSection;
 
-	// section+key identify the value assignment in the inifile; 
+	// section+key identify the value assignment in the inifile;
 	// they are null if parameter is assigned from NED
-	//XXX add IFile ?   
+	//XXX add IFile ?
 	public String section;
 	public String key;
 
 	// for convenience
-	public ParamResolution(String moduleFullPath, SubmoduleElement[] pathModules, 
-			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type, 
+	public ParamResolution(String moduleFullPath, SubmoduleElement[] pathModules,
+			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type,
 			               String activeSection, String section, String key) {
 		this.moduleFullPath = moduleFullPath;
 		this.pathModules = pathModules;

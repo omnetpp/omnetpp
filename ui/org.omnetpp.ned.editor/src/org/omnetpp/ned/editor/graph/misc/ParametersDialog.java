@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -145,10 +145,10 @@ public class ParametersDialog extends TitleAreaDialog {
             ParamLine paramLine = (ParamLine)element;
 
             switch (columnIndex) {
-                case 0: return paramLine.type; 
-                case 1: return paramLine.name; 
-                case 2: return paramLine.unit; 
-                case 3: 
+                case 0: return paramLine.type;
+                case 1: return paramLine.name;
+                case 2: return paramLine.unit;
+                case 3:
                     if (parameterProvider instanceof IInterfaceTypeElement)
                         return paramLine.comment;
                     else
@@ -182,7 +182,7 @@ public class ParametersDialog extends TitleAreaDialog {
         public Color getForeground(Object element, int columnIndex) {
             ParamLine paramLine = (ParamLine)element;
 
-            if ((columnIndex == 0 || columnIndex == 1 || columnIndex == 2) && !paramLine.isOriginallyLocalDeclaration()) 
+            if ((columnIndex == 0 || columnIndex == 1 || columnIndex == 2) && !paramLine.isOriginallyLocalDeclaration())
                 return ColorFactory.GREY50;
             else
                 return null;
@@ -221,7 +221,7 @@ public class ParametersDialog extends TitleAreaDialog {
     private class ParamLine {
         // original elements in the model, corresponding functions return values without considering the current state
         private ParamElementEx originalParamDeclaration; // the end of the extends chain where the parameter is declared
-        private List<ParamElementEx> originalParamInheritanceChain; // the whole inheritance chain 
+        private List<ParamElementEx> originalParamInheritanceChain; // the whole inheritance chain
         private ParamElementEx originalParamLocal; // the beginning of the extends chain directly under parameterProvider or null
 
         // current state
@@ -255,7 +255,7 @@ public class ParametersDialog extends TitleAreaDialog {
             else {
                 this.originalParamDeclaration = originalParamInheritanceChain.get(size - 1);
                 ParamElementEx paramElement = originalParamInheritanceChain.get(0);
-                
+
                 if (paramElement.getParent().getParent() == parameterProvider)
                     this.originalParamLocal = paramElement;
                 else
@@ -270,7 +270,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
             createCurrentParamLocal();
         }
-        
+
         public String getOriginalType() {
             return originalParamDeclaration == null ? "" : getType(originalParamDeclaration);
         }
@@ -298,7 +298,7 @@ public class ParametersDialog extends TitleAreaDialog {
         public boolean isOriginallyOverridden() {
             return originalParamLocal != null && originalParamLocal != originalParamDeclaration;
         }
-        
+
         public String getCurrentUnit() {
             return getUnit(originalParamInheritanceChain, currentParamLocal);
         }
@@ -314,7 +314,7 @@ public class ParametersDialog extends TitleAreaDialog {
         public boolean isCurrentlyOverridden() {
             return !isOriginallyLocalDeclaration() && isDifferentFromInherited();
         }
-        
+
         public boolean isDifferentFromOriginal() {
             return !ObjectUtils.equals(type, getOriginalType()) || !ObjectUtils.equals(name, getOriginalName()) || !ObjectUtils.equals(unit, getOriginalUnit()) ||
                    !ObjectUtils.equals(value, getOriginalValue()) || !ObjectUtils.equals(comment, getOriginalComment());
@@ -359,7 +359,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
                 if (getParamLine(name) != null)
                     continue;
-                
+
                 return name;
             }
         }
@@ -369,21 +369,21 @@ public class ParametersDialog extends TitleAreaDialog {
                 currentParamLocal = (ParamElementEx)originalParamLocal.deepDup();
             else {
                 currentParamLocal = (ParamElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_PARAM);
-    
+
                 setType(currentParamLocal, type);
                 setName(currentParamLocal, name);
-                
+
                 if (isOriginallyLocalDeclaration()) {
                     setValue(currentParamLocal, value);
                     setComment(currentParamLocal, comment);
                 }
             }
         }
-        
+
         protected String getType(ParamElementEx paramElement) {
             return (paramElement.getIsVolatile() ? VOLATILE_PARAMETER_PREFIX + " " : "") + paramElement.getAttribute(ParamElementEx.ATT_TYPE);
         }
-        
+
         protected void setType(ParamElementEx paramElement, String type) {
             if (isOriginallyLocalDeclaration()) {
                 String baseType = StringUtils.strip(StringUtils.removeStart(StringUtils.strip(type), VOLATILE_PARAMETER_PREFIX));
@@ -395,18 +395,18 @@ public class ParametersDialog extends TitleAreaDialog {
                 paramElement.setIsVolatile(false);
             }
         }
-        
+
         protected String getName(ParamElementEx paramElement) {
             return paramElement.getName();
         }
-        
+
         protected void setName(ParamElementEx paramElement, String name) {
             paramElement.setName(name);
         }
-        
+
         protected String getUnit(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
             String unit = null;
-            
+
             if (firstParamElement != null)
                 unit = getUnit(firstParamElement);
 
@@ -418,21 +418,21 @@ public class ParametersDialog extends TitleAreaDialog {
                     continue;
                 else
                     unit = getUnit(paramElement);
-                    
+
                 if (!StringUtils.isEmpty(unit))
                     return unit;
             }
 
             return "";
         }
-        
+
         protected String getUnit(ParamElementEx paramElement) {
             return paramElement.getUnit();
         }
-        
+
         protected void setUnit(ParamElementEx paramElement, String unit) {
             PropertyElementEx propertyElement = paramElement.getLocalProperties().get("unit");
-            
+
             if (StringUtils.isEmpty(unit)) {
                 if (propertyElement != null)
                     propertyElement.removeFromParent();
@@ -440,10 +440,10 @@ public class ParametersDialog extends TitleAreaDialog {
             else {
                 if (propertyElement == null)
                     propertyElement = (PropertyElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PROPERTY, paramElement);
-    
+
                 while (propertyElement.getFirstChild() != null)
                     propertyElement.getFirstChild().removeFromParent();
-    
+
                 propertyElement.setName("unit");
                 PropertyKeyElement propertyKeyElement = (PropertyKeyElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PROPERTY_KEY, propertyElement);
                 LiteralElement literalElement = (LiteralElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_LITERAL, propertyKeyElement);
@@ -451,10 +451,10 @@ public class ParametersDialog extends TitleAreaDialog {
                 literalElement.setValue(unit);
             }
         }
-        
+
         protected String getValue(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
             String value = null;
-            
+
             if (firstParamElement != null)
                 value = getValue(firstParamElement);
 
@@ -466,7 +466,7 @@ public class ParametersDialog extends TitleAreaDialog {
                     continue;
                 else
                     value = getValue(paramElement);
-                    
+
                 if (!StringUtils.isEmpty(value))
                     return value;
             }
@@ -480,10 +480,10 @@ public class ParametersDialog extends TitleAreaDialog {
             else
                 return paramElement.getValue();
         }
-        
+
         protected void setValue(ParamElementEx paramElement, String value) {
             String strippedValue = StringUtils.strip(value);
-            
+
             if (StringUtils.isEmpty(strippedValue)) {
                 paramElement.setIsDefault(false);
                 paramElement.setValue(null);
@@ -493,10 +493,10 @@ public class ParametersDialog extends TitleAreaDialog {
 
                 paramElement.setValue(canoncialValue);
 				paramElement.setIsDefault(!canoncialValue.equals(strippedValue));
-				
+
             }
         }
-        
+
         protected String removeDefaultAroundValue(String value) {
             if (value.startsWith(DEFAULT_VALUE_PREFIX) && value.endsWith(DEFAULT_VALUE_SUFFIX))
                 return StringUtils.removeEnd(StringUtils.removeStart(value, DEFAULT_VALUE_PREFIX), DEFAULT_VALUE_SUFFIX);
@@ -506,7 +506,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
         protected String getComment(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
             String comment = null;
-            
+
             if (firstParamElement != null)
                 comment = getComment(firstParamElement);
 
@@ -518,7 +518,7 @@ public class ParametersDialog extends TitleAreaDialog {
                     continue;
                 else
                     comment = getComment(paramElement);
-                
+
                 if (!StringUtils.isEmpty(comment))
                     return comment;
             }
@@ -532,7 +532,7 @@ public class ParametersDialog extends TitleAreaDialog {
         protected String getComment(ParamElementEx paramElement) {
             CommentElement commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
 
-            if (commentElement == null) 
+            if (commentElement == null)
                 return "";
             else {
                 String comment = StringUtils.strip(commentElement.getContent());
@@ -548,7 +548,7 @@ public class ParametersDialog extends TitleAreaDialog {
         protected void setComment(ParamElementEx paramElement, String comment) {
             String commentPadding = " // ";
             CommentElement commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
-            
+
             if (commentElement == null) {
                 commentElement = (CommentElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_COMMENT, paramElement);
                 commentElement.setLocid("right");
@@ -573,12 +573,12 @@ public class ParametersDialog extends TitleAreaDialog {
             }
         }
     }
-    
+
     public ParamLine getParamLine(String name) {
         for (ParamLine paramLine : paramLines)
             if (name.equals(paramLine.name))
                 return paramLine;
-        
+
         return null;
     }
 
@@ -597,7 +597,7 @@ public class ParametersDialog extends TitleAreaDialog {
         this.parameterProvider = parameterProvider;
         paramLines = collectParamLines();
     }
-    
+
     @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogSettings(NedEditorPlugin.getDefault(), getClass().getName());
@@ -605,8 +605,8 @@ public class ParametersDialog extends TitleAreaDialog {
 
     protected List<ParamLine> collectParamLines() {
         List<ParamLine> params = new ArrayList<ParamLine>();
-        Map<String, ParamElementEx> paramDeclarations = parameterProvider.getParamDeclarations(); 
-        Map<String, ParamElementEx> paramAssignments = parameterProvider.getParamAssignments(); 
+        Map<String, ParamElementEx> paramDeclarations = parameterProvider.getParamDeclarations();
+        Map<String, ParamElementEx> paramAssignments = parameterProvider.getParamAssignments();
 
         // build ParamLine list (value objects) for dialog editing
         for (ParamElementEx paramDeclaration : paramDeclarations.values()) {
@@ -659,29 +659,29 @@ public class ParametersDialog extends TitleAreaDialog {
         listViewer.getTable().setLayoutData(data);
 
         addEditButtons(group);
-        
+
         hoverSupport = new HoverSupport(new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
                 Table table = (Table)control;
                 TableItem tableItem = table.getItem(new Point(x, y));
-                
+
                 if (tableItem == null)
                     return null;
                 else {
                     ParamLine paramLine = (ParamLine)tableItem.getData();
                     StringBuffer result = new StringBuffer();
-    
+
                     for (ParamElementEx paramElement : CollectionUtils.toReversed(paramLine.originalParamInheritanceChain))
                         if (paramElement != paramLine.originalParamLocal)
                             appendParamText(result, paramElement);
-    
+
                     if (paramLine.isOriginallyLocalDeclaration() || paramLine.isCurrentlyOverridden())
                         appendParamText(result, paramLine.currentParamLocal);
-    
+
                     return HoverSupport.addHTMLStyleSheet(StringUtils.removeEnd(result.toString(), "<br/><br/>"));
                 }
             }
-            
+
             private void appendParamText(StringBuffer buffer, ParamElementEx paramElement) {
                 INEDElement parentElement = paramElement.getParent();
                 INEDElement paramOwner = parentElement == null ? parameterProvider : parentElement.getParent();
@@ -751,10 +751,10 @@ public class ParametersDialog extends TitleAreaDialog {
 
                 for (Object element : structuredSelection.toList()) {
                     ParamLine paramLine = (ParamLine)element;
-                    
+
                     if (index == -1)
                         index = paramLines.indexOf(paramLine);
-                    
+
                     if (paramLine.isOriginallyLocalDeclaration())
                         paramLines.remove(paramLine);
                     else {
@@ -799,7 +799,7 @@ public class ParametersDialog extends TitleAreaDialog {
     private TableColumn addTableColumn(final Table table, String label, int width) {
         final TableColumn column = new TableColumn(table, SWT.NONE);
         column.setText(label);
-        
+
         if (width != -1)
             column.setWidth(width);
         else {
@@ -813,7 +813,7 @@ public class ParametersDialog extends TitleAreaDialog {
                     for (TableColumn otherColumn : table.getColumns())
                         if (!column.equals(otherColumn))
                             totalWidth += otherColumn.getWidth();
-                    
+
                     column.setWidth(table.getSize().x - totalWidth - 2 * table.getBorderWidth() - 20); // image size
                 }
             });
@@ -838,7 +838,7 @@ public class ParametersDialog extends TitleAreaDialog {
         final TableViewer tableViewer = new TableViewer(table);
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new ParametersTableLabelProvider());
-        
+
         // edit support
         final CellEditor[] editors;
         String[] units = getUnitNames();
@@ -866,7 +866,7 @@ public class ParametersDialog extends TitleAreaDialog {
         tableViewer.setCellModifier(new ICellModifier() {
             public boolean canModify(Object element, String property) {
                 ParamLine paramLine = (ParamLine)element;
-                
+
                 if (COLUMN_TYPE.equals(property))
                     return paramLine.isOriginallyLocalDeclaration();
                 else if (COLUMN_NAME.equals(property))
@@ -964,7 +964,7 @@ public class ParametersDialog extends TitleAreaDialog {
     public Command getResultCommand() {
         return resultCommand;
     }
-    
+
     private String[] getUnitNames() {
         Set<String> unitNames = new HashSet<String>();
         PStringVector units =  UnitConversion.getAllUnits();
@@ -984,14 +984,14 @@ public class ParametersDialog extends TitleAreaDialog {
         });
         return result;
     }
-    
+
     private void validateDialogContent() {
         StringBuffer errorMessages = new StringBuffer();
 
         for (ParamLine paramLine : paramLines) {
             if (ArrayUtils.indexOf(org.omnetpp.common.editor.text.Keywords.NED_RESERVED_WORDS, paramLine.name) != -1)
                 errorMessages.append("The provided parameter name \"" + paramLine.name + "\" is a reserved NED keyword\n");
-            
+
             String value = paramLine.removeDefaultAroundValue(paramLine.value);
             if (!StringUtils.isEmpty(value) && !NEDTreeUtil.isExpressionValid(value))
                 errorMessages.append("The provided parameter value \"" + value + "\" is not a valid expression\n");
@@ -1020,12 +1020,12 @@ public class ParametersDialog extends TitleAreaDialog {
 
         return units;
     }
-    
+
     private class LocalTableTextCellEditor extends TableTextCellEditor {
         public LocalTableTextCellEditor(ColumnViewer tableViewer, int column) {
             super(tableViewer, column);
         }
-        
+
         @Override
         protected void editOccured(ModifyEvent e) {
             cellEdited = true;
@@ -1033,7 +1033,7 @@ public class ParametersDialog extends TitleAreaDialog {
             validateDialogContent();
         }
     }
-    
+
     private class LocalEnumCellEditor extends EnumCellEditor {
         public LocalEnumCellEditor(Composite parent, String[] names, Object[] values) {
             super(parent, names, values);
@@ -1046,7 +1046,7 @@ public class ParametersDialog extends TitleAreaDialog {
             validateDialogContent();
         }
     }
-    
+
     private class LocalEditableComboBoxCellEditor extends ComboBoxCellEditor {
         private Object[] values;
 
@@ -1078,7 +1078,7 @@ public class ParametersDialog extends TitleAreaDialog {
                     return;
                 }
             }
-            
+
             String newValue = (value == null) ? "" : value.toString();
             if (getControl() != null)
                 ((CCombo)getControl()).setText(newValue);

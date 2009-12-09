@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,9 +42,9 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.UIUtils;
 
 /**
- * Dialog for selecting an icon. To ensure responsiveness, dialog get filled 
+ * Dialog for selecting an icon. To ensure responsiveness, dialog get filled
  * asynchronously if it would take too long.
- * 
+ *
  * @author Andras
  */
 //FIXME selection==null/"" is totally confused. OK button should be disabled until user makes a choice!!!! this used to work. --Andras
@@ -59,8 +59,8 @@ public class ImageSelectionDialog extends Dialog {
 	private Combo filterCombo;
 	private Label filterStatusLabel;
 	private Label selectionStatusLabel;
-	private ScrolledComposite scrolledComposite; 
-	private Composite imageCanvas; 
+	private ScrolledComposite scrolledComposite;
+	private Composite imageCanvas;
 	private Button okButton;
 
 	// state
@@ -198,7 +198,7 @@ public class ImageSelectionDialog extends Dialog {
 		Pattern pattern = null;
 		try {
 			pattern = Pattern.compile(filter);
-		} 
+		}
 		catch (PatternSyntaxException e) {
 			filterStatusLabel.setText("Invalid filter string");
 			CommonPlugin.logError(e);
@@ -214,15 +214,15 @@ public class ImageSelectionDialog extends Dialog {
 		int count = 0;
 		String oneImage = null;
 		long startTime = System.currentTimeMillis();
-		currentPopulationNumber++; 
+		currentPopulationNumber++;
 		final int schedulePopulationNumber = currentPopulationNumber;
 		for (final String imageName : imageNames) {
 			if (pattern.matcher(imageName).matches() || imageName.equals("")) {
   			    if (!imageName.equals("")) {
   			    	count++;
-  			    	oneImage = imageName; 
+  			    	oneImage = imageName;
   			    }
-  			    
+
   			    // add image to canvas: either directly, or if we're taking too much time already,
   			    // defer it using Display.asyncExec(). NOTE: we use "population number" to ensure
   			    // that a populate() call cancels stale asyncExec()'s still pending from the
@@ -265,12 +265,12 @@ public class ImageSelectionDialog extends Dialog {
 
 	protected void addImageToCanvas(final String imageName) {
 		Button button = new Button(imageCanvas, SWT.PUSH);
-	
+
 		if (imageName.equals("")) {
 		    button.setText("NONE");
 		    button.setLayoutData(new RowData(50,50));
 		    button.setToolTipText("Clear existing image");
-		} 
+		}
 		else {
 		    // produce image and tooltip
 		    Image image = ImageFactory.getImage(imageName);
@@ -284,7 +284,7 @@ public class ImageSelectionDialog extends Dialog {
 		    button.setImage(image);
 		    button.setToolTipText(tooltip);
 		}
-	
+
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				selectImage(imageName);

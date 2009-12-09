@@ -3,7 +3,7 @@ void ${modelTool.ClassName}::ConstructL(
 	{
 #foreach($sm in $modelTool.StateMachines)
 	${modelTool.getInstanceName($sm)} = new (ELeave) ${modelTool.getSMTool($sm).ClassName}(*this);
-#end	
+#end
 #foreach($sm in $modelTool.StateMachines)
 
 #foreach($assoc in $modelTool.getSMTool($sm).COAssocs)
@@ -12,5 +12,5 @@ void ${modelTool.ClassName}::ConstructL(
 #foreach($assoc in $modelTool.getSMTool($sm).SMAssocs)
 	${modelTool.getInstanceName($sm)}->${modelTool.getSMTool($sm).getSetterName($assoc)}(${modelTool.getInstanceName($assoc.Target)});
 #end
-#end	
+#end
 	}

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,10 +23,10 @@ public class ElementListSelectOrCreateDialog extends ElementListSelectionDialog 
 
 	protected Button newButton;
 	protected ICallback callback;
-	protected Object[] elements; //Note: duplicate of super.fElements and fFilteredList.fElements, as they are not accessible 
+	protected Object[] elements; //Note: duplicate of super.fElements and fFilteredList.fElements, as they are not accessible
 
 	public interface ICallback {
-		public Object createNewObject(); 
+		public Object createNewObject();
 	}
 
 	public ElementListSelectOrCreateDialog(Shell parent, ILabelProvider renderer) {
@@ -56,7 +56,7 @@ public class ElementListSelectOrCreateDialog extends ElementListSelectionDialog 
 
 	@Override
 	public void setElements(Object[] elements) {
-		// Note: this method is only overridden because elements[] is not accessible later 
+		// Note: this method is only overridden because elements[] is not accessible later
 		// (inaccessible field and missing getter in both ElementListSelectionDialog and FilteredList)
 		this.elements = elements;
 		super.setElements(elements);
@@ -65,7 +65,7 @@ public class ElementListSelectOrCreateDialog extends ElementListSelectionDialog 
 	protected void addToDialog(Object element) {
 		Object[] tmp = new Object[elements.length + 1];
 		System.arraycopy(elements, 0, tmp, 0, elements.length);
-		tmp[elements.length] = element; 
+		tmp[elements.length] = element;
 		setElements(tmp);
 		setListElements(elements);
 		setSelection(new Object[] {element});
@@ -74,7 +74,7 @@ public class ElementListSelectOrCreateDialog extends ElementListSelectionDialog 
 	public Button getNewButton() {
     	return newButton;
     }
-    
+
     public void setCallback(ICallback callback) {
 		this.callback = callback;
 	}

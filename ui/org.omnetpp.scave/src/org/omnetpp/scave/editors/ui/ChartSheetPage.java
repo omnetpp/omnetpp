@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -124,7 +124,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		addChartUpdater(chart, view);
 		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
 		view.setMenu(menuManager.createContextMenu(view));
-	
+
 		// hide legend
 		view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
 		//
@@ -133,7 +133,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 			public void mouseDoubleClick(MouseEvent e) {
 				scaveEditor.openChart(chart);
 			}
-	
+
 			// mouse click on the view selects the chart object in the model
 			public void mouseUp(MouseEvent e) {
 				scaveEditor.setSelection(new StructuredSelection(chart));
@@ -155,24 +155,24 @@ public class ChartSheetPage extends ScaveEditorPage {
 		for (Object child : chartsArea.getChildren())
 			if (child instanceof ChartCanvas)
 				currentViews.add((ChartCanvas)child);
-	
+
 		List<Chart> charts = new ArrayList<Chart>(chartsheet.getCharts());
 		List<ChartCanvas> views = new ArrayList<ChartCanvas>(charts.size());
-	
+
 		for (Chart chart : charts) {
 			ChartCanvas view = findChartView(chart);
 			if (view == null)
 				view = addChartView(chart);
 			views.add(view);
 		}
-	
+
 		for (ChartCanvas view : currentViews) {
 			if (!views.contains(view)) {
 				Chart chart = findChart(view);
 				removeChartView(chart);
 			}
 		}
-	
+
 		chartsArea.setChildOrder(views);
 		chartsArea.layout();
 		chartsArea.redraw();
@@ -187,7 +187,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		//setExpandVertical(true);
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
-	
+
 		chartsArea = new LiveTable(getBody(), SWT.DOUBLE_BUFFERED);
 		chartsArea.setLayoutData(new GridData(SWT.FILL,SWT.FILL, true, true));
 		chartsArea.setBackground(ColorFactory.WHITE);
@@ -196,24 +196,24 @@ public class ChartSheetPage extends ScaveEditorPage {
 		gridLayout.horizontalSpacing = 7;
 		gridLayout.verticalSpacing = 7;
 		chartsArea.setLayout(gridLayout);
-	
+
 		chartsArea.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				scaveEditor.setSelection(event.getSelection());
 			}
 		});
-	
+
 		chartsArea.addChildOrderChangedListener(new LiveTable.IChildOrderChangedListener() {
 			public void childOrderChanged(LiveTable table) {
 				if (table == chartsArea && !chartsArea.isDisposed())
 					handleChildOrderChanged();
 			}
 		});
-	
+
 		// set up contents
 		for (final Chart chart : chartsheet.getCharts())
 			addChartView(chart);
-	
+
 		getContent().setSize(getContent().computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 
@@ -266,7 +266,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 					charts.add(chart);
 			}
 		}
-	
+
 		EditingDomain domain = scaveEditor.getEditingDomain();
 		CompoundCommand command = new CompoundCommand("Move");
 		EStructuralFeature feature = ScaveModelPackage.eINSTANCE.getChartSheet_Charts();

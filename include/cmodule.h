@@ -555,7 +555,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns the "$i" or "$o" part of an inout gate, depending on the type
      * parameter. That is, gateHalf("port", cGate::OUTPUT, 3) would return
-     * gate "port[3]$o". Throws an error if the gate does not exist.
+     * gate "port$o[3]". Throws an error if the gate does not exist.
      * The presence of the index parameter decides whether a vector or a scalar
      * gate will be looked for.
      */
@@ -564,7 +564,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns the "$i" or "$o" part of an inout gate, depending on the type
      * parameter. That is, gateHalf("port", cGate::OUTPUT, 3) would return
-     * gate "port[3]$o". Throws an error if the gate does not exist.
+     * gate "port$o[3]". Throws an error if the gate does not exist.
      * The presence of the index parameter decides whether a vector or a scalar
      * gate will be looked for.
      */

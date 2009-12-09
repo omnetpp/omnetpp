@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -107,7 +107,7 @@ public class ChartPage implements IDatasetEditorPage, IAdaptable {
 		editor.setupDropTarget(chartWrapper);
 		chartWrapper.setChart(chart);
 		strategy.updateDataset(chart, getDataset().get());
-	
+
 		chart.addChangeListener(new ChartChangeListener() {
 			public void chartChanged(ChartChangeEvent event) {
 				editor.markDirty();
@@ -177,7 +177,7 @@ public class ChartPage implements IDatasetEditorPage, IAdaptable {
 
 	public Map<String, ContentHandler> getLoader(IProgressMonitor progressMonitor) {
 		Map<String,ContentHandler> handlers = new HashMap<String,ContentHandler>(2);
-	
+
 		PropertySourceIO.SAXHandler chartHandler =
 			new PropertySourceIO.SAXHandler(new ChartProperties(chart));
 		handlers.put("chart", chartHandler);

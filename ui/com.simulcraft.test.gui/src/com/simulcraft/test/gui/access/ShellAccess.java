@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,7 +27,7 @@ public class ShellAccess extends CompositeAccess
 	public Shell getControl() {
 		return (Shell)widget;
 	}
-    
+
     @Override
     protected Point getAbsolutePointToClick() {
         return getCenter(getControl().getBounds());
@@ -38,7 +38,7 @@ public class ShellAccess extends CompositeAccess
     public Rectangle getAbsoluteBounds() {
         return getControl().getBounds();
     }
-    
+
 	@UIStep
 	public MenuAccess getMenuBar() {
 		return new MenuAccess(getControl().getMenuBar());

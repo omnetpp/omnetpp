@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -37,7 +37,7 @@ public class WorkbenchPartCTabRecognizer extends ObjectRecognizer {
         return null;
     }
 
-    
+
     @SuppressWarnings("restriction")
     public static boolean isViewTabItem(CTabItem item) {
         return getPresentablePartPane(item) instanceof ViewPane;
@@ -50,7 +50,7 @@ public class WorkbenchPartCTabRecognizer extends ObjectRecognizer {
 
     @SuppressWarnings("restriction")
     private static PartPane getPresentablePartPane(CTabItem item) {
-        // dirty hack, exploiting workbench internals. to be replaced if something better comes up 
+        // dirty hack, exploiting workbench internals. to be replaced if something better comes up
         Object itemData = item.getData();
         if (itemData instanceof AbstractTabItem) {
             Object itemDataData = ((AbstractTabItem)itemData).getData();

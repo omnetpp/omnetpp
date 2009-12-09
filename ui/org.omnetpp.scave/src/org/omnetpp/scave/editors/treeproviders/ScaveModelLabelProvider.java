@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,9 +42,9 @@ import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SetOperation;
 
 /**
- * Label provider for model objects. We use this instead 
+ * Label provider for model objects. We use this instead
  * of the EMF-generated default label provider.
- *  
+ *
  * @author andras
  */
 public class ScaveModelLabelProvider extends LabelProvider {
@@ -67,35 +67,35 @@ public class ScaveModelLabelProvider extends LabelProvider {
 	public String getText(Object element) {
 		if (element instanceof Analysis) {
 			return "Analysis";
-		} 
+		}
 		else if (element instanceof Inputs) {
 			return "Inputs";
-		} 
+		}
 		else if (element instanceof InputFile) {
 			InputFile o = (InputFile) element;
 			return "file "+defaultIfEmpty(o.getName(), "<nothing>");
-		} 
+		}
 		else if (element instanceof ChartSheets) {
 			return "Chart Sheets";
-		} 
+		}
 		else if (element instanceof ChartSheet) {
 			ChartSheet o = (ChartSheet) element;
 			return "chart sheet "+defaultIfEmpty(o.getName(), "<unnamed>")+" ("+o.getCharts().size()+" charts)";
-		} 
+		}
 		else if (element instanceof Datasets) {
 			return "Datasets";
-		} 
+		}
 		else if (element instanceof Dataset) {
 			Dataset o = (Dataset) element;
 			String res = "dataset "+defaultIfEmpty(o.getName(), "<unnamed>");
 			if (o.getBasedOn()!=null)
 				res += " based on dataset "+defaultIfEmpty(o.getBasedOn().getName(), "<unnamed>");
 			return res;
-		} 
+		}
 		else if (element instanceof SetOperation) {
 			// Add, Discard, Select, Deselect
 			SetOperation o = (SetOperation) element;
-		
+
 			// "select..."
 			String res = "";
 			if (element instanceof Add)
@@ -108,7 +108,7 @@ public class ScaveModelLabelProvider extends LabelProvider {
 				res = "deselect";
 			else if (element instanceof Except)
 				res = "except";
-			else 
+			else
 				res = "???";
 
 			res += " " + (o.getType()==null ? "???" : o.getType().getName())+"s: ";
@@ -126,16 +126,16 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		else if (element instanceof ProcessingOp) {
 			ProcessingOp o = (ProcessingOp) element;
 			StringBuilder sb = new StringBuilder();
-		
+
 			if (element instanceof Apply)
 				sb.append("apply");
 			else if (element instanceof Compute)
 				sb.append("compute");
 			else
 				sb.append("<unknown operation>");
-		
+
 			sb.append(' ').append(defaultIfEmpty(o.getOperation(), "<undefined>"));
-		
+
 			List<Param> params = o.getParams();
 			if (!params.isEmpty()) sb.append('(');
 			boolean firstIteration = true;
@@ -147,8 +147,8 @@ public class ScaveModelLabelProvider extends LabelProvider {
 				sb.append(defaultIfEmpty(param.getName(), "<undefined>")).append('=').append(defaultIfEmpty(param.getValue(), ""));
 			}
 			if (!params.isEmpty()) sb.append(')');
-		
-		
+
+
 			return sb.toString();
 		}
 		else if (element instanceof Group) {

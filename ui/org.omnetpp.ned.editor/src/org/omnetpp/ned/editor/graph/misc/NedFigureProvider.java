@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,7 +40,7 @@ public class NedFigureProvider extends AbstractFigureProvider {
         viewer.setEditPartFactory(new NedEditPartFactory());
         viewer.setContents(model);
         NedFileEditPart nedFilePart = (NedFileEditPart)viewer.getEditPartRegistry().get(model);
-        if (nedFilePart == null) 
+        if (nedFilePart == null)
             throw new IllegalArgumentException("Invalid NED file.");
         // root figure is not added to the viewer because of off screen rendering
         // we have to pretend the addition otherwise add notification will not be sent to children
@@ -50,7 +50,7 @@ public class NedFigureProvider extends AbstractFigureProvider {
         rootFigure.setBorder(null);
         rootFigure.setFont(Display.getDefault().getSystemFont());
         rootFigure.validate();
-        
+
         return viewer;
     }
 
@@ -63,23 +63,23 @@ public class NedFigureProvider extends AbstractFigureProvider {
                 Map<IFigure, String> result = new HashMap<IFigure, String>();
                 NedFileElementEx modelRoot = NEDResourcesPlugin.getNEDResources().getNedFileElement(diagramFile);
                 ScrollingGraphicalViewer viewer = createNEDViewer(modelRoot);
-                
+
                 // count the number of type. if only a single type
                 // present and its name is the same as the filename, we will use only that name
                 // otherwise filename_modulename is the syntax
                 List<INedTypeElement> typeElements = modelRoot.getTopLevelTypeNodes();
-        
+
                 for (INedTypeElement typeElement : typeElements) {
                     NedEditPart editPart = (NedEditPart)viewer.getEditPartRegistry().get(typeElement);
                     String filebasename = StringUtils.chomp(diagramFile.getName(), "."+diagramFile.getFileExtension());
-                    String imageName = getFigureName(typeElements, typeElement, filebasename); 
+                    String imageName = getFigureName(typeElements, typeElement, filebasename);
                     result.put(editPart.getFigure(),  imageName);
                 }
-                
+
                 results[0] = result;
             }
         });
-        
+
         return results[0];
     }
 

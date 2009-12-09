@@ -1,6 +1,6 @@
 2009-07-15  Andras Varga
 
-	* ned2.dtd: 
+	* ned2.dtd:
 	- added field properties for msg files
 	- field enum-name eliminated (it is represented as property)
 	- class/struct/message "extends-name" properties changed to CDATA,

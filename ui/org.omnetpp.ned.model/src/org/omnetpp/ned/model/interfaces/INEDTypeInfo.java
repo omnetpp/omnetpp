@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,7 +42,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	 */
 	public String getFullyQualifiedName();
 
-	/** 
+	/**
 	 * Returns the name prefix, i.e. the fully qualified name minus the simple name.
 	 */
 	public String getNamePrefix();
@@ -74,7 +74,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public void invalidate();
 
 	/**
-	 * Causes information about inherited members to be discarded, and later 
+	 * Causes information about inherited members to be discarded, and later
 	 * re-built on demand.
 	 */
     public void invalidateInherited();
@@ -153,12 +153,13 @@ public interface INEDTypeInfo extends INEDChangeListener {
      * (Given the special inheritance rules for properties, this may not be what you want;
      * see getPropertyInheritanceChain().
      */
+    // TODO: properly implement property: name, index pair
     public Map<String, PropertyElementEx> getProperties();
 
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
     public Map<String, GateElementEx> getGateDeclarations();
 
-    /** 
+    /**
      * Gate nodes where the "vector size" attribute is filled in, including inherited ones;
      * the most recent one for each gate
      */

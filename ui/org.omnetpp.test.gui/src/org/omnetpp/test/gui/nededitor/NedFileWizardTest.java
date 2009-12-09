@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -12,7 +12,7 @@ import com.simulcraft.test.gui.util.WorkspaceUtils;
 import org.omnetpp.common.util.StringUtils;
 
 
-public class NedFileWizardTest 
+public class NedFileWizardTest
 	extends NedFileTestCase
 {
 	public void testNewEmptyFile() throws Throwable {
@@ -25,17 +25,17 @@ public class NedFileWizardTest
         String moduleName = StringUtils.substringBefore(fileName, ".");
         WorkspaceUtils.assertFileExistsWithContentIgnoringWhiteSpace(filePath, "//\n// TODO Place comment here\n//\n\nsimple "+moduleName+" {\n  parameters:\n  gates:\n}\n");
     }
-    
+
     public void testNewCompoundModuleFile() throws Throwable {
         NedEditorUtils.createNewNedFileByWizard(projectName, fileName, ".*new Compound.*");
         String moduleName = StringUtils.substringBefore(fileName, ".");
         WorkspaceUtils.assertFileExistsWithContentIgnoringWhiteSpace(filePath, "//\n// TODO Place comment here\n//\n\nmodule "+moduleName+" {\n  parameters:\n  gates:\n  submodules:\n  connections:\n}\n");
     }
-    
+
     public void testNewNetworkFile() throws Throwable {
         NedEditorUtils.createNewNedFileByWizard(projectName, fileName, ".*new Network.*");
         String moduleName = StringUtils.substringBefore(fileName, ".");
         WorkspaceUtils.assertFileExistsWithContentIgnoringWhiteSpace(filePath, "//\n// TODO Place comment here\n//\n\nnetwork "+moduleName+" {\n  parameters:\n  submodules:\n  connections:\n}\n");
     }
-    
+
 }

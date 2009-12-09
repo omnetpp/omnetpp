@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -11,9 +11,9 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 public class DatasetUtils {
 	/**
-	 * Returns the index of the X value in the dataset series which is: 
-	 * either the first of the values that equal "value", or (if there 
-	 * are no such values) the last one which is less than "value". 
+	 * Returns the index of the X value in the dataset series which is:
+	 * either the first of the values that equal "value", or (if there
+	 * are no such values) the last one which is less than "value".
 	 */
 	public static int findXLowerLimit(IXYDataset dataset, int series, double value){
 		int high = dataset.getItemCount(series);
@@ -31,9 +31,9 @@ public class DatasetUtils {
 	}
 
 	/**
-	 * Returns the index of the X value in the dataset series which is: 
-	 * either the last of the values that equal "value", or (if there 
-	 * are no such values) the first one which is greater than "value". 
+	 * Returns the index of the X value in the dataset series which is:
+	 * either the last of the values that equal "value", or (if there
+	 * are no such values) the first one which is greater than "value".
 	 */
 	//XXX to be tested!!!
 	public static int findXUpperLimit(IXYDataset dataset, int series, double value){

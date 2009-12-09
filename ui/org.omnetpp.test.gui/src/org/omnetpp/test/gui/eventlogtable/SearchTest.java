@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,13 +20,13 @@ public class SearchTest
     public SearchTest() {
         super("stress.log");
     }
-    
+
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
         openFileFromProjectExplorerViewInEventLogTableEditor();
     }
-    
+
     public void testSearchNotFound() throws Exception {
         EventLogTableAccess eventLogTable = findEventLogTable();
         searchFor(eventLogTable, "Csenge");
@@ -39,7 +39,7 @@ public class SearchTest
         searchFor(eventLogTable, "Immediately");
         eventLogTable.assertTopVisibleEventNumber(23);
     }
-    
+
     protected void searchFor(EventLogTableAccess eventLogTable, String text) {
         eventLogTable.pressKey(SWT.HOME);
         eventLogTable.activateContextMenuWithMouseClick(0).findMenuItemByLabel("Search.*").activateWithMouseClick();

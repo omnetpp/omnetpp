@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -28,7 +28,7 @@ import org.omnetpp.scave.model.provider.ScaveEditPlugin;
  * property.
  * ItemProviders does not give a chance to override the cell editor for a specific
  * feature, so this property source is created for SetOperations. The class
- * delegates all methods to the item provider, but replaces the descriptor of 
+ * delegates all methods to the item provider, but replaces the descriptor of
  * the "Filter Pattern" property with ours.
  *
  * @author tomi
@@ -56,7 +56,7 @@ public class SetOperationPropertySource extends PropertySource {
 			if (descriptor.getId().equals(filterPatternPropertyId))
 				descriptors[i] = new FilterPatternPropertyDescriptor(descriptor);
 		}
-			
+
 		return descriptors;
 	}
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -46,7 +46,7 @@ public class TestFrameworkTest extends GUITestCase
 		workbenchWindow.chooseFromMainMenu("File|Open File.*"); // bring up "File Open" dialog
 		workbenchWindow.getShell().assertIsActive(); // now this should fail because dialog is open
 	}
-	
+
 	public void testCloseShellsOnTestFail_1() {
         Access.getWorkbenchWindow().chooseFromMainMenu("Help|About.*");
         throwExceptionFromBackgroundThread();
@@ -61,7 +61,7 @@ public class TestFrameworkTest extends GUITestCase
         WorkbenchUtils.ensureViewActivated("General", "Navigator").findTree().activateContextMenuWithMouseClick();
         throwExceptionFromBackgroundThread();
     }
-    
+
     public void testCloseMenusOnTestFail_2() {
         WorkbenchUtils.ensureViewActivated("General", "Navigator").findTree().activateContextMenuWithMouseClick();
         throwExceptionFromUIThread();

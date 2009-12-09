@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -8,10 +8,10 @@
 package org.omnetpp.ned.model;
 
 /**
- * Immutable value object, stores a line:col..line:col region in a source file. 
+ * Immutable value object, stores a line:col..line:col region in a source file.
  * Used for relating NEDElements back to the source code.
- * 
- * NOTE: Needs to be immutable because the tree-diff algorithm copies 
+ *
+ * NOTE: Needs to be immutable because the tree-diff algorithm copies
  * NEDSourceRegion *references* from one tree to another, WITHOUT copying\
  * the objects themselves.
  *
@@ -41,28 +41,28 @@ public class NEDSourceRegion {
 	}
 
 	/**
-	 * Returns true if given line:column position falls inside the stored 
+	 * Returns true if given line:column position falls inside the stored
 	 * [start,end) range.
 	 */
 	public boolean contains(int line, int column) {
 		if (getStartLine()>line || getEndLine()<line)  // obvious non-match
-			return false;  
+			return false;
 		return (line!=getStartLine() || column>=getStartColumn()) &&
-		       (line!=getEndLine() || column<getEndColumn()); 
+		       (line!=getEndLine() || column<getEndColumn());
 	}
 
 	@Override
 	public String toString() {
 		return ""+getStartLine()+":"+getStartColumn()+"-"+getEndLine()+":"+getEndColumn();
 	}
-    
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof NEDSourceRegion))
             return false;
 
         NEDSourceRegion o = (NEDSourceRegion)obj;
-        return getStartLine()==o.getStartLine() && getEndLine()==o.getEndLine() && getStartColumn()==o.getStartColumn() && getEndColumn()==o.getEndColumn();  
+        return getStartLine()==o.getStartLine() && getEndLine()==o.getEndLine() && getStartColumn()==o.getStartColumn() && getEndColumn()==o.getEndColumn();
     }
 
 	public int getStartLine() {

@@ -20,6 +20,7 @@ autom4te.cache/
 /bin/*
 out/
 /lib/
+Thumbs.db
 backups
 Thumbs.db
 /Makefile.inc

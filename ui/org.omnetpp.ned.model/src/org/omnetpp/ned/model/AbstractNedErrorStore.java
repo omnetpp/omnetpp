@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -13,7 +13,7 @@ import org.eclipse.core.resources.IMarker;
 /**
  * Base class for implementing INEDErrorStore's. All "add...()" methods
  * delegate to a single "add()" method.
- * 
+ *
  * @author Andras
  */
 public abstract class AbstractNedErrorStore implements INEDErrorStore {

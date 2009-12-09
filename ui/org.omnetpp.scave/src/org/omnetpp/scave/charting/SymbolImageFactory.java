@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,7 +21,7 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 /**
  * Helper class for generating images of symbols displayed
- * in the legend and tooltips of charts. 
+ * in the legend and tooltips of charts.
  *
  * @author tomi
  */

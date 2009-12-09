@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -48,7 +48,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	/**
 	 * Delegate work to doRun() if the editor is ScaveEditor and selection is
 	 * an IStructuredSelection; otherwise ignore the request.
-	 * Redefine isApplicable() to refine the above condition. 
+	 * Redefine isApplicable() to refine the above condition.
 	 */
 	@Override
 	public void run() {
@@ -64,15 +64,15 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 
 	/**
 	 * Gets invoked from run() if the editor is ScaveEditor and selection is
-	 * an IStructuredSelection -- redefine it to do the real work. 
+	 * an IStructuredSelection -- redefine it to do the real work.
 	 */
 	protected abstract void doRun(ScaveEditor scaveEditor, IStructuredSelection selection);
 
 	/**
 	 * To be called from a JFace {@link ISelectionChangedListener} or the selection service's
-	 * {@link ISelectionListener} to enable/disable the action. To get enabled, the editor 
-	 * must be a ScaveEditor, selection an IStructuredSelection, and <code>isApplicable()</code> 
-	 * should return true. Override <code>isApplicable()</code> accordingly.  
+	 * {@link ISelectionListener} to enable/disable the action. To get enabled, the editor
+	 * must be a ScaveEditor, selection an IStructuredSelection, and <code>isApplicable()</code>
+	 * should return true. Override <code>isApplicable()</code> accordingly.
 	 */
 	public void selectionChanged(ISelection selection) {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();

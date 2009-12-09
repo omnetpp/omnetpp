@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -261,7 +261,7 @@ public class ChartSWTWrapper extends Canvas {
 		}
 		else {
 			 // adjust background
-		
+
 			 // if sizes differ, we should redraw it sometime
 			 Rectangle b = getBounds();
 			 Rectangle ib = image.getBounds();
@@ -305,7 +305,7 @@ public class ChartSWTWrapper extends Canvas {
 		long time = System.currentTimeMillis();
 		BufferedImage bufferedImage = chart.createBufferedImage(width, height, renderingInfo);
 		System.out.println("Chart rendering took " + (System.currentTimeMillis() - time) + " ms.");
-	
+
 		// Get the data buffer of the image
 		DataBuffer buffer = bufferedImage.getRaster().getDataBuffer();
 		DataBufferInt intBuffer = (DataBufferInt) buffer;

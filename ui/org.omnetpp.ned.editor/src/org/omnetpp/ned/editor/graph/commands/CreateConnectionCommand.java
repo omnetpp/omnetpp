@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.omnetpp.ned.model.pojo.ImportElement;
 /**
  * A command that adds a connection to the given compound module. Optionally adds an import statement
  * and turns the type name into a simple name if the connection has a fully qualified name.
- *   
+ *
  * @author rhornig
  */
 public class CreateConnectionCommand extends Command {
@@ -37,18 +37,18 @@ public class CreateConnectionCommand extends Command {
         parentModule = compoundModuleElement;
         this.fullyQualifiedTypeName = conn.getEffectiveType();  // redo() destructively modifies child's type
     }
-    
+
     @Override
     public void execute() {
         redo();
     }
-    
+
     @Override
     public void redo() {
         parentModule.addConnection(connection);
         importElement = NEDElementUtilEx.addImportFor(connection); // note: overwrites "type" (or "like-type") attribute
     }
-    
+
     @Override
     public void undo() {
         connection.removeFromParent();

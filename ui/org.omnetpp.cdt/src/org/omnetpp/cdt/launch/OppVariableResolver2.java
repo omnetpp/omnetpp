@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Resolves opp_additional_path
- * 
+ *
  * @author andras
  */
 public class OppVariableResolver2 implements IDynamicVariableResolver {
@@ -27,7 +27,7 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
 
     public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
 	    String varName = variable.getName();
-	    
+
 	    if (!varName.equals(OPP_ADDITIONAL_PATH))
 	        abort("Variable ${"+ varName +"} unsupported by resolver class", null);
 	    if (argument != null)
@@ -35,9 +35,9 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
 
 	    IPath msysBinDir = MingwEnvironmentVariableSupplier_COPY.getMsysBinDir();
         IPath mingwBinDir = MingwEnvironmentVariableSupplier_COPY.getBinDir();
-        
+
         String pathSep = System.getProperty("path.separator");
-        
+
         String result = "";
         if (msysBinDir != null)
             result += msysBinDir.toOSString();

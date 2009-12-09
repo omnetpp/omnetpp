@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -105,14 +105,14 @@ public class ModelTool extends BaseTool {
 					classElement.getName().toLowerCase().startsWith("a") ?
 					"an" : "a", classElement.getName(), "", true, false));
 		}
-		return (String) paramNames.get(classElement);	
+		return (String) paramNames.get(classElement);
 	}
 
 	public String getInstanceName(ClassElement classElement) {
 		if (! instanceNames.containsKey(classElement)) {
 			instanceNames.put(classElement, createIdentifier("i", classElement.getName(), "", true, false));
 		}
-		return (String) instanceNames.get(classElement);	
+		return (String) instanceNames.get(classElement);
 	}
 
 	public String getCOHeaderFileName(ControlledObjectHandler coHandler) {
@@ -128,7 +128,7 @@ public class ModelTool extends BaseTool {
 			StringBuffer invocation = new StringBuffer();
 			invocation.append(
 					createIdentifier("i",
-							StateMachineCompiler.getObjectName(action.getIdentifier()), 
+							StateMachineCompiler.getObjectName(action.getIdentifier()),
 							"", true, false));
 			invocation.append("->");
 			if (action.getObject() instanceof StateMachine) {
@@ -142,7 +142,7 @@ public class ModelTool extends BaseTool {
 						event = e;
 						break;
 					}
-				}			
+				}
 				invocation.append(event != null ? getEventConst(event) : "ANY_OTHER");
 				invocation.append(", aContext)");
 			} else {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.omnetpp.msg.editor.actions.ToggleCommentAction;
 
 /**
  * Editor for message definition files.
- * 
+ *
  * @author rhornig
  */
 //FIXME update syntax highlighting to the new syntax
@@ -73,7 +73,7 @@ public class MsgEditor extends TextEditor {
         IDocument doc = getDocumentProvider().getDocument(getEditorInput());
         if (MsgTreeUtil.needsConversion(doc.get())) {
             String fileName = getEditorInput().getName();
-            if (MessageDialog.openQuestion(getSite().getShell(), "Old Msg File Syntax", 
+            if (MessageDialog.openQuestion(getSite().getShell(), "Old Msg File Syntax",
                     "The file \""+fileName+"\" is in the old (3.x) format, and needs to be converted. " +
                     "This includes converting properties to the \"@\" syntax, and removing " +
                     "the \"fields:\" and \"properties:\" keywords. " +

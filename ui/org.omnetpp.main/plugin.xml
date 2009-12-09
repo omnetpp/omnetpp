@@ -139,7 +139,7 @@
         		<test property="org.eclipse.core.resources.name" value="*_m.cc"/>
         		<test property="org.eclipse.core.resources.name" value="*_m.h"/>
         	  </or>
-        	</adapt>	            
+        	</adapt>
          </filterExpression>
       </commonFilter>
       <commonFilter
@@ -166,7 +166,7 @@
 	        	 <test property="org.eclipse.core.resources.name" value="*_m.h"/>
 	         	 <test property="org.eclipse.core.resources.name" value="*_m.cc"/>
         	 </or>
-        	</adapt>	            
+        	</adapt>
          </filterExpression>
       </commonFilter>
    </extension>
@@ -178,7 +178,7 @@
         </includes>
      </viewerContentBinding>
   </extension>
- 
+
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution

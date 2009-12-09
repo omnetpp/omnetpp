@@ -34,7 +34,7 @@ import org.omnetpp.figures.misc.ISelectionHandleBounds;
  */
 //FIXME support multiple texts: t/t1/t2/t3/t4
 //FIXME alignment of multi-line text
-public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAnchorBounds, 
+public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAnchorBounds,
 ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	// supported shape types
 	protected static final int SHAPE_NONE = 0;
@@ -61,6 +61,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int vectorIndex;
 	protected VectorArrangement vectorArrangement;
 	protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
+	protected int alpha;
 
 	// result of layouting
 	protected Point centerLoc;
@@ -73,7 +74,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int shape;
 	protected int shapeWidth;
 	protected int shapeHeight;
-	protected Color shapeFillColor; 
+	protected Color shapeFillColor;
 	protected Color shapeBorderColor;
 	protected int shapeBorderWidth;
 	protected Image image;
@@ -86,7 +87,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected Color textColor;
 	protected String queueText;
 	protected RangeFigure rangeFigure = null;
-	private String oldDisplayString = null;
+	private int oldCumulativeHashCode;
 
 	public SubmoduleFigure() {
 	}
@@ -96,14 +97,15 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	 */
 	public void setDisplayString(float scale, IDisplayString displayString) {
 		// optimization: do not change anything if the display string has not changed
-		String newDisplayString = displayString.toString();
-		if (this.scale == scale && newDisplayString.equals(oldDisplayString))
+		int newCumulativeHashCode = displayString.cumulativeHashCode();
+		if (this.scale == scale && oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
 			return;
 
-		Assert.isNotNull(getFont()); // font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
+		// font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
+		setFont(getFont());
 
 		this.scale = scale;
-		this.oldDisplayString = newDisplayString;
+		this.oldCumulativeHashCode = newCumulativeHashCode;
 
 		Rectangle oldShapeBounds = getShapeBounds();  // to compare at the end
 
@@ -176,7 +178,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		);
 
 		// if the shapeBounds has changed, we should trigger the layouting
-		if (!getShapeBounds().equals(oldShapeBounds)) 
+		if (!getShapeBounds().equals(oldShapeBounds))
 			revalidate();
 		// update the bounds, so that repaint works correctly (nothing gets clipped off)
 		if (centerLoc != null)
@@ -184,12 +186,16 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		repaint();
 	}
 
+    public void setAlpha(int alpha) {
+        this.alpha = alpha;
+    }
+
 	protected void setTooltipText(String tooltipText) {
 		this.tooltipText = tooltipText;
 	}
 
 	/**
-	 * Store range figure parameters. fillColor and/or borderColor can be null, 
+	 * Store range figure parameters. fillColor and/or borderColor can be null,
 	 * meaning that no background or outline should be drawn.
 	 */
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
@@ -212,10 +218,10 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 
 			if (centerLoc != null)
 				rangeFigure.setBounds(new Rectangle(centerLoc.x, centerLoc.y, 0, 0).expand(radius,radius));
-			else 
+			else
 				rangeFigure.setBounds(new Rectangle(0, 0, 0, 0).expand(radius,radius));
 
-			rangeFigure.repaint(); 
+			rangeFigure.repaint();
 		}
 	}
 
@@ -237,7 +243,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	}
 
 	protected void setInfoText(String text, String pos, Color color) {
-		// only called as part of setDisplayString() -- no invalidate() or repaint() needed here 
+		// only called as part of setDisplayString() -- no invalidate() or repaint() needed here
 		Assert.isNotNull(color);
 		this.text = text;
 		if (!StringUtils.isEmpty(pos))
@@ -248,7 +254,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 
 	protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
 			Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
-		// only called as part of setDisplayString() -- no invalidate() or repaint() needed here 
+		// only called as part of setDisplayString() -- no invalidate() or repaint() needed here
 		Assert.isNotNull(shapeFillColor);
 		Assert.isNotNull(shapeBorderColor);
 
@@ -257,7 +263,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		else {
 			shapeName = IDisplayString.Prop.SHAPE.getEnumSpec().getNameFor(shapeName);
 
-			if (StringUtils.isEmpty(shapeName))  
+			if (StringUtils.isEmpty(shapeName))
 				shape = SHAPE_RECT; // unknown -> rectangle
 			else if (shapeName.equalsIgnoreCase("oval"))
 				shape = SHAPE_OVAL;
@@ -298,14 +304,14 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 			this.vectorSize = vectorSize;
 			this.vectorIndex = vectorIndex;
 			centerLoc = null;
-			revalidate();  // invalidate() not enough here. Layout must be triggered 
+			revalidate();  // invalidate() not enough here. Layout must be triggered
 		}
 	}
 
-	protected void setBaseLocation(Point loc, VectorArrangement vectorArrangement, 
+	protected void setBaseLocation(Point loc, VectorArrangement vectorArrangement,
 			int vectorArrangementPar1, int vectorArrangementPar2, int vectorArrangementPar3) {
 		// clear centerLoc iff something's changed
-		if ((baseLoc==null ? loc!=null : !baseLoc.equals(loc)) || 
+		if ((baseLoc==null ? loc!=null : !baseLoc.equals(loc)) ||
 				this.vectorArrangement != vectorArrangement ||
 				this.vectorArrangementPar1 != vectorArrangementPar1 ||
 				this.vectorArrangementPar2 != vectorArrangementPar2 ||
@@ -316,7 +322,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 			this.vectorArrangementPar2 = vectorArrangementPar2;
 			this.vectorArrangementPar3 = vectorArrangementPar3;
 			centerLoc = null; // force re-layout of this module
-			revalidate();  // invalidate() not enough here 
+			revalidate();  // invalidate() not enough here
 		}
 	}
 
@@ -360,7 +366,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 
 	protected Rectangle getNameBounds(Rectangle shapeBounds) {
 		// calculate name bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
-		if (StringUtils.isEmpty(nameText)) 
+		if (StringUtils.isEmpty(nameText))
 			return null;
 		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
 		return new Rectangle(shapeBounds.x + shapeBounds.width/2 - textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
@@ -368,33 +374,33 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 
 	protected Rectangle getTextBounds(Rectangle shapeBounds) {
 		// calculate text bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
-		if (StringUtils.isEmpty(text)) 
+		if (StringUtils.isEmpty(text))
 			return null;
 		int x, y;
 		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(text, getFont());
 		if (textPos == TEXTPOS_LEFT) {
-			x = shapeBounds.x - textSize.width; 
-			y = shapeBounds.y; 
+			x = shapeBounds.x - textSize.width;
+			y = shapeBounds.y;
 		}
 		else if (textPos == TEXTPOS_RIGHT) {
-			x = shapeBounds.right(); 
-			y = shapeBounds.y; 
+			x = shapeBounds.right();
+			y = shapeBounds.y;
 		}
 		else {  // TEXTPOS_TOP
-			x = shapeBounds.x + shapeBounds.width/2 - textSize.width/2; 
-			y = shapeBounds.y - textSize.height; 
+			x = shapeBounds.x + shapeBounds.width/2 - textSize.width/2;
+			y = shapeBounds.y - textSize.height;
 		}
 		return new Rectangle(x, y, textSize.width, textSize.height);
 	}
 
 	protected Rectangle getQueueTextBounds(Rectangle shapeBounds) {
 		// calculate queue text bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
-		if (StringUtils.isEmpty(queueText)) 
+		if (StringUtils.isEmpty(queueText))
 			return null;
 		int x, y;
 		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(queueText, getFont());
-		x = shapeBounds.right(); 
-		y = shapeBounds.bottom()-textSize.height; 
+		x = shapeBounds.right();
+		y = shapeBounds.bottom()-textSize.height;
 		return new Rectangle(x, y, textSize.width, textSize.height);
 	}
 
@@ -534,13 +540,13 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	}
 
 	/**
-	 * Hides/shows the name of the module. NOTE that the name bounds is still 
+	 * Hides/shows the name of the module. NOTE that the name bounds is still
 	 * calculated correctly and the name label counts in the figure bounds,
-	 * only the paint method does not paint it. This methods is used by the 
+	 * only the paint method does not paint it. This methods is used by the
 	 * direct edit support in the graphical editor.
-	 * 
+	 *
 	 * Note: an alternative is setName(null), which will exclude the name label
-	 * from the bounds. 
+	 * from the bounds.
 	 */
 	public void setNameVisible(boolean visible) {
 		if (nameVisible != visible) {
@@ -573,16 +579,16 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	}
 
 	public void setCenterLocation(Point loc) {
-		// set the center of the image, and update bounds if changed. 
-		// note: this method may ONLY be called from the layouter! 
+		// set the center of the image, and update bounds if changed.
+		// note: this method may ONLY be called from the layouter!
 		if (loc == null) {
 			centerLoc = null;
 		}
 		else if (!loc.equals(centerLoc)) {
 			this.centerLoc = loc;
 			updateBounds();
-			if (rangeFigure != null) 
-				rangeFigure.setBounds(rangeFigure.getBounds().setLocation(centerLoc.x-rangeFigure.getSize().width/2, 
+			if (rangeFigure != null)
+				rangeFigure.setBounds(rangeFigure.getBounds().setLocation(centerLoc.x-rangeFigure.getSize().width/2,
 						centerLoc.y - rangeFigure.getSize().height/2));
 		}
 	}
@@ -625,6 +631,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 
 	@Override
 	public void paint(Graphics graphics) {
+	    graphics.setAlpha(alpha);
 		super.paint(graphics);
 //		System.out.println(this+": paint(): centerLoc==" + centerLoc);
 		Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
@@ -639,32 +646,32 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 			int top = centerLoc.y - shapeHeight/2;
 			if (shape == SHAPE_OVAL) {
 				if (2*shapeBorderWidth > shapeWidth || 2*shapeBorderWidth > shapeHeight) {
-					// special case: border is wider than the shape itself 
+					// special case: border is wider than the shape itself
 					graphics.setBackgroundColor(shapeBorderColor);
 					graphics.fillOval(left, top, shapeWidth, shapeHeight);
 				}
 				else {
 					graphics.fillOval(left, top, shapeWidth, shapeHeight);
 					if (shapeBorderWidth > 0) {
-						graphics.drawOval(left+shapeBorderWidth/2, 
-								top+shapeBorderWidth/2, 
-								shapeWidth-Math.max(1, shapeBorderWidth), 
+						graphics.drawOval(left+shapeBorderWidth/2,
+								top+shapeBorderWidth/2,
+								shapeWidth-Math.max(1, shapeBorderWidth),
 								shapeHeight-Math.max(1, shapeBorderWidth));
 					}
 				}
 			}
 			else if (shape == SHAPE_RECT) {
 				if (2*shapeBorderWidth > shapeWidth || 2*shapeBorderWidth > shapeHeight) {
-					// special case: border is wider than the shape itself 
+					// special case: border is wider than the shape itself
 					graphics.setBackgroundColor(shapeBorderColor);
 					graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
 				}
 				else {
 					graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
 					if (shapeBorderWidth > 0) {
-						graphics.drawRectangle(left+shapeBorderWidth/2, 
-								top+shapeBorderWidth/2, 
-								shapeWidth-Math.max(1, shapeBorderWidth), 
+						graphics.drawRectangle(left+shapeBorderWidth/2,
+								top+shapeBorderWidth/2,
+								shapeWidth-Math.max(1, shapeBorderWidth),
 								shapeHeight-Math.max(1, shapeBorderWidth));
 					}
 				}
@@ -683,7 +690,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 			else {
 				int scaledWidth = imageSizePercentage * imageBounds.width / 100;
 				int scaledHeight = imageSizePercentage * imageBounds.height / 100;
-				graphics.drawImage(image, 0, 0, imageBounds.width, imageBounds.height, 
+				graphics.drawImage(image, 0, 0, imageBounds.width, imageBounds.height,
 						centerLoc.x - scaledWidth/2, centerLoc.y - scaledHeight/2, scaledWidth, scaledHeight);
 			}
 		}
@@ -698,7 +705,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 				graphics.drawImage(decoratorImage, r.x, r.y);
 			else {
 				org.eclipse.swt.graphics.Rectangle imageBounds = decoratorImage.getBounds();
-				graphics.drawImage(decoratorImage, 0, 0, imageBounds.width, imageBounds.height, 
+				graphics.drawImage(decoratorImage, 0, 0, imageBounds.width, imageBounds.height,
 						r.x, r.y, r.width, r.height);
 			}
 		}

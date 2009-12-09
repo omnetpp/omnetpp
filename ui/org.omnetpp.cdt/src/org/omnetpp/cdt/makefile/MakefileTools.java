@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -37,36 +37,36 @@ import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Utility functions for Makefile generation.
- *  
+ *
  * @author Andras
  */
 public class MakefileTools {
     // standard C headers, see e.g. http://www-ccs.ucsd.edu/c/lib_over.html
-    public static final String C_HEADERS = 
+    public static final String C_HEADERS =
         "assert.h ctype.h errno.h float.h iso646.h limits.h locale.h " +
         "math.h setjmp.h signal.h stdarg.h stddef.h stdio.h stdlib.h " +
         "string.h time.h wchar.h wctype.h";
 
     // C headers added by C99, see http://en.wikipedia.org/wiki/C_standard_library
-    public static final String C99_HEADERS = 
+    public static final String C99_HEADERS =
         "complex.h fenv.h inttypes.h stdbool.h stdint.h tgmath.h";
 
     // standard C++ headers, see http://en.wikipedia.org/wiki/C++_standard_library#Standard_headers
-    public static final String CPLUSPLUS_HEADERS = 
-        "bitset deque list map queue set stack vector algorithm functional iterator " + 
-        "locale memory stdexcept utility string fstream ios iostream iosfwd iomanip " + 
-        "istream ostream sstream streambuf complex numeric valarray exception limits " + 
-        "new typeinfo cassert cctype cerrno cfloat climits cmath csetjmp csignal " + 
+    public static final String CPLUSPLUS_HEADERS =
+        "bitset deque list map queue set stack vector algorithm functional iterator " +
+        "locale memory stdexcept utility string fstream ios iostream iosfwd iomanip " +
+        "istream ostream sstream streambuf complex numeric valarray exception limits " +
+        "new typeinfo cassert cctype cerrno cfloat climits cmath csetjmp csignal " +
         "cstdlib cstddef cstdarg ctime cstdio cstring cwchar cwctype";
 
     // POSIX headers, see http://en.wikipedia.org/wiki/C_POSIX_library
-    public static final String POSIX_HEADERS = 
-        "cpio.h dirent.h fcntl.h grp.h pwd.h sys/ipc.h sys/msg.h sys/sem.h " + 
-        "sys/stat.h sys/time.h sys/types.h sys/utsname.h sys/wait.h tar.h termios.h " + 
+    public static final String POSIX_HEADERS =
+        "cpio.h dirent.h fcntl.h grp.h pwd.h sys/ipc.h sys/msg.h sys/sem.h " +
+        "sys/stat.h sys/time.h sys/types.h sys/utsname.h sys/wait.h tar.h termios.h " +
         "unistd.h utime.h";
 
     // all standard C/C++ headers -- we'll ignore these #includes when looking for cross-folder dependencies
-    public static final String ALL_STANDARD_HEADERS = 
+    public static final String ALL_STANDARD_HEADERS =
         C_HEADERS + " " + C99_HEADERS + " " + CPLUSPLUS_HEADERS + " " + POSIX_HEADERS;
 
     // directories we'll not search for source files
@@ -74,14 +74,14 @@ public class MakefileTools {
 
     private MakefileTools() {
     }
-    
+
     /**
      * Returns true if the given resource is a file with "cc", "cpp" or "h" extension,
      * but not _m.cc/cpp/h or _n.cc/cpp/h.
      */
     public static boolean isNonGeneratedCppFile(IResource resource) {
         // not an _m.cc or _n.cc file
-        return isCppFile(resource) && !resource.getName().matches("_[mn]\\.[^.]+$"); 
+        return isCppFile(resource) && !resource.getName().matches("_[mn]\\.[^.]+$");
     }
 
     /**
@@ -104,17 +104,17 @@ public class MakefileTools {
     }
 
     /**
-     * Returns true if the resource is a potential source folder 
+     * Returns true if the resource is a potential source folder
      * (not team private or backups folder). Does NOT check whether
-     * folder is marked as excluded in CDT. 
+     * folder is marked as excluded in CDT.
      */
     public static boolean isGoodFolder(IResource resource) {
-        // note: we explicitly check for "CVS", "_darcs" etc, because they are only recognized by 
+        // note: we explicitly check for "CVS", "_darcs" etc, because they are only recognized by
         // isTeamPrivateMember() if the corresponding plugin is installed
-        return (resource instanceof IContainer && 
+        return (resource instanceof IContainer &&
                 !resource.getName().startsWith(".") &&
                 !ArrayUtils.contains(MakefileTools.IGNORABLE_DIRS, resource.getName()) &&
-                !((IContainer)resource).isTeamPrivateMember()); 
+                !((IContainer)resource).isTeamPrivateMember());
     }
 
     /**
@@ -149,11 +149,11 @@ public class MakefileTools {
 
     /**
      * Utility function to determine whether a given container is covered by
-     * a given makefile. CDT source dirs and exclusions (CSourceEntry) are ignored, 
+     * a given makefile. CDT source dirs and exclusions (CSourceEntry) are ignored,
      * instead there is excludedFolders (list of folder-relative paths to be excluded;
      * it excludes subtrees not single folders), and makeFolders (i.e. the given folder
      * may falls into the tree of another makefile).
-     * 
+     *
      * Both excludedFolders and makeFolders may be null.
      */
     public static boolean makefileCovers(IContainer makefileFolder, IContainer folder, boolean deep, List<String> excludedFolders, List<IContainer> makeFolders) {
@@ -165,7 +165,7 @@ public class MakefileTools {
                 return false; // not under that folder
             if (excludedFolders != null) {
                 IPath folderRelativePath = folder.getFullPath().removeFirstSegments(makefileFolder.getFullPath().segmentCount());
-                for (String exludedFolder : excludedFolders) 
+                for (String exludedFolder : excludedFolders)
                     if (new Path(exludedFolder).isPrefixOf(folderRelativePath))
                         return false; // excluded
             }
@@ -180,17 +180,17 @@ public class MakefileTools {
     }
 
     /**
-     * Collects source directories from the project and all dependent projects 
-     * containing files matching the provided pattern (regexp). Nonexistent, 
+     * Collects source directories from the project and all dependent projects
+     * containing files matching the provided pattern (regexp). Nonexistent,
      * closed and non-CDT dependent projects will be ignored.
      */
     public static List<IContainer> collectDirs(ICProjectDescription projectDescription, String pattern) throws CoreException {
         Assert.isNotNull(projectDescription);
 		List<IContainer> result = new ArrayList<IContainer>();
-		
+
 		// collect dirs from this project
 		collectDirs(projectDescription, result, pattern);
-		
+
 		// collect directories from referenced projects too
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(projectDescription.getProject());
         for (IProject refProj : referencedProjects) {
@@ -199,7 +199,7 @@ public class MakefileTools {
         		collectDirs(refProjDesc, result, pattern);
         }
 
-		return result; 
+		return result;
 	}
 
     private static void collectDirs(ICProjectDescription projectDescription, final List<IContainer> result, final String pattern) throws CoreException {
@@ -207,7 +207,7 @@ public class MakefileTools {
         final ICSourceEntry[] srcEntries = CDataUtil.makeRelative(project, projectDescription.getActiveConfiguration().getSourceEntries());
 
     	for (ICSourceEntry srcEntry : srcEntries) {
-    		IResource sourceFolder = project.findMember(srcEntry.getFullPath()); 
+    		IResource sourceFolder = project.findMember(srcEntry.getFullPath());
     		if (sourceFolder != null) {
 		    	sourceFolder.accept(new IResourceVisitor() {
 		    		public boolean visit(IResource resource) throws CoreException {
@@ -215,7 +215,7 @@ public class MakefileTools {
 		    				if (!CDTUtils.isExcluded(resource, srcEntries)
 		    						&& (pattern == null || containsFileMatchingPattern((IContainer)resource, pattern)))
 		    					result.add((IContainer)resource);
-	
+
 		    				return true;
 		    			}
 		    			return false;
@@ -234,10 +234,10 @@ public class MakefileTools {
     			return true;
     	return false;
     }
-    
+
     /**
      * Returns *location* paths for the include directories: the OMNeT++ include directory,
-     * plus source directories from the project and all dependent projects. 
+     * plus source directories from the project and all dependent projects.
      */
     public static List<IPath> getOmnetppIncludeLocationsForProject(ICProjectDescription projectDescription) throws CoreException {
         List<IPath> result = new ArrayList<IPath>();
@@ -246,15 +246,15 @@ public class MakefileTools {
         result.add(new Path(OmnetppMainPlugin.getOmnetppInclDir()));
 
         // add project source directories as include dirs for the indexer
-        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h" 
+        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
         // (i.e. "subdir" might need to be added to the include path too, even if it doesn't contain any header)
-        for (IContainer incDir : MakefileTools.collectDirs(projectDescription, null)) 
+        for (IContainer incDir : MakefileTools.collectDirs(projectDescription, null))
             result.add(incDir.getLocation());
         return result;
     }
 
-//XXX experimental 
-//    
+//XXX experimental
+//
 //    public static void updateProjectIncludePaths(ICProjectDescription projectDescription) throws CoreException {
 //        List<IContainer> desiredIncDirs = MakefileTools.collectDirs(projectDescription, null);
 //        for (ICConfigurationDescription config : projectDescription.getConfigurations()) {
@@ -288,7 +288,7 @@ public class MakefileTools {
 //        }
 //
 //        // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=206372
-//            
+//
 //        // testing CoreModel.setRawPathEntries() -- yields editable entries like ICLangageSettingEntry...
 //        IProject project = projectDescription.getProject();
 //        ICProject cproject = CoreModel.getDefault().getCModel().getCProject(project.getName());

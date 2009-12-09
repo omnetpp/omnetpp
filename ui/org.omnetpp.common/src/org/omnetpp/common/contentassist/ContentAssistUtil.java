@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,13 +27,13 @@ public class ContentAssistUtil {
 	 * @param valueProposalProvider
 	 * @param replace  whether proposal replaces editor content or gets inserted
 	 */
-	public static ContentAssistCommandAdapter configureTableColumnContentAssist(final ColumnViewer tableViewer, 
+	public static ContentAssistCommandAdapter configureTableColumnContentAssist(final ColumnViewer tableViewer,
 			int columnIndex, IContentProposalProvider valueProposalProvider, char[] activationChars, boolean replace) {
 
 		// officially, it should be just this:
 		final TableTextCellEditor cellEditor = (TableTextCellEditor) tableViewer.getCellEditors()[columnIndex];
-		ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(cellEditor.getText(), 
-				new TextContentAdapter(), valueProposalProvider, 
+		ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(cellEditor.getText(),
+				new TextContentAdapter(), valueProposalProvider,
 				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, activationChars, true);
 		commandAdapter.setProposalAcceptanceStyle(replace ? ContentProposalAdapter.PROPOSAL_REPLACE : ContentProposalAdapter.PROPOSAL_INSERT);
 		cellEditor.setContentAssistAdapter(commandAdapter);
@@ -42,7 +42,7 @@ public class ContentAssistUtil {
 		// on focusLost event, if the focus goes to the content assist popup. This works fairly well.
 		//
 		// WORKAROUND: after selecting a proposal with the mouse, the cell editor loses focus and closes,
-		// before the proposal could be inserted -- which is bad. Luckily, the cell editor itself still 
+		// before the proposal could be inserted -- which is bad. Luckily, the cell editor itself still
 		// contains the updated value. So, we read the correct value from the cell editor, commit it,
 		// and re-activate the cell editor with the earlier contents and caret position.
 		//		commandAdapter.addContentProposalListener(new IContentProposalListener() {

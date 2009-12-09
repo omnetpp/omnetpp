@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -63,19 +63,19 @@ class LinePlot implements ILinePlot {
 
 		RectangularArea area = new RectangularArea(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
 													Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-	
+
 		IXYDataset dataset = getDataset();
 
 		if (dataset!=null && dataset.getSeriesCount() > 0) {
-		
+
 			area.minX = dataset.getMinX();
 			area.minY = dataset.getMinY();
 			area.maxX = dataset.getMaxX();
 			area.maxY = dataset.getMaxY();
-		
+
 			// try to find the area by transforming the dataset range
 			area = chart.transformArea(area);
-		
+
 			if (!area.isFinite()) {
 				// some bounds are outside of the transformation domain,
 				// so calculate the bounding box by transforming the points and
@@ -111,7 +111,7 @@ class LinePlot implements ILinePlot {
 				}
 			}
 		}
-	
+
 		if (area.minX > area.maxX) {
 			area.minX = 0.0;
 			area.maxX = 1.0;
@@ -120,12 +120,12 @@ class LinePlot implements ILinePlot {
 			area.minY = 0.0;
 			area.maxY = 1.0;
 		}
-	
+
         area.minX = (area.minX>=0 ? 0 : area.minX-area.width()/80);
         area.maxX = (area.maxX<=0 ? 0 : area.maxX+area.width()/80);
         area.minY = (area.minY>=0 ? 0 : area.minY-area.height()/3);
         area.maxY = (area.maxY<=0 ? 0 : area.maxY+area.height()/3);
-	
+
 		return area;
 	}
 
@@ -164,7 +164,7 @@ class LinePlot implements ILinePlot {
 					if (System.currentTimeMillis() - startTime > 1000) {
 						Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
 						chart.getShell().setCursor(cursor);
-						chart.setCursor(null); // crosshair cursor would override shell's busy cursor 
+						chart.setCursor(null); // crosshair cursor would override shell's busy cursor
 					}
 				}
 			}

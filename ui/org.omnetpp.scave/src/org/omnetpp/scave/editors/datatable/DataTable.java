@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -256,7 +256,7 @@ public class DataTable extends Table {
 		visibleColumns.clear();
 		for (TableColumn column : getColumns())
 			column.dispose();
-	
+
 		for (Column column : getAllColumns()) {
 			boolean visible = visibleColumnTexts.indexOf(column.text) >= 0;
 			if (visible)
@@ -273,14 +273,14 @@ public class DataTable extends Table {
 
 		for (int i = 0; i < selectionIndices.length; ++i)
 			items.add(idlist.get(selectionIndices[i]));
-	
+
 		return items;
 	}
 
 	public ResultItem[] getSelectedItems() {
 		if (manager == null)
 			return NULL_SELECTION;
-	
+
 		int[] selectionIndices = getSelectionIndices();
 		ResultItem[] items = new ResultItem[selectionIndices.length];
 
@@ -345,7 +345,7 @@ public class DataTable extends Table {
 	private void sortBy(Column column, int direction) {
 		if (manager == null)
 			return;
-	
+
 		boolean ascending = direction == SWT.UP;
 		if (COL_DIRECTORY.equals(column))
 			idlist.sortByDirectory(manager, ascending);
@@ -408,7 +408,7 @@ public class DataTable extends Table {
 	protected void fillTableLine(TableItem item, int lineNumber) {
 		if (manager == null)
 			return;
-	
+
 		long id = idlist.get(lineNumber);
 		item.setData(ITEM_KEY, (Long)id);
 
@@ -422,7 +422,7 @@ public class DataTable extends Table {
 	protected void toCSV(CsvWriter writer, int lineNumber) {
 		if (manager == null)
 			return;
-	
+
 		for (int i = 0; i < visibleColumns.size(); ++i) {
 			Column column = visibleColumns.get(i);
 			writer.addField(getCellValue(lineNumber, column));
@@ -434,7 +434,7 @@ public class DataTable extends Table {
 	protected String getCellValue(int row, Column column) {
 		if (manager == null)
 			return "";
-	
+
 		try {
 
 			long id = idlist.get(row);
@@ -539,7 +539,7 @@ public class DataTable extends Table {
 			// stale ID?
 			return "";
 		}
-	
+
 		return "";
 	}
 
@@ -614,7 +614,7 @@ public class DataTable extends Table {
 	}
 
 	/*
-	 * Select cells. 
+	 * Select cells.
 	 */
 	void handleMouseDown(MouseEvent event) {
 		if (isDisposed() || !isVisible()) return;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -86,7 +86,7 @@ import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * This property page is shown for an OMNeT++ CDT Project, and lets the user 
+ * This property page is shown for an OMNeT++ CDT Project, and lets the user
  * manage the C++ configuration.
  *
  * @author Andras
@@ -97,12 +97,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
     private static final String SOURCE_SUBFOLDER_IMG = "icons/full/obj16/folder_srcsubfolder.gif";
     private static final String NONSRC_FOLDER_IMG = "icons/full/obj16/folder_nonsrc.gif";
-    
+
     protected static final String OVR_MAKEMAKE_IMG = "icons/full/ovr16/ovr_makemake.png";
     protected static final String OVR_CUSTOMMAKE_IMG = "icons/full/ovr16/ovr_custommake.png";
     protected static final String OVR_WARNING_IMG = "icons/full/ovr16/warning.gif";
     protected static final String OVR_BUILDROOT_IMG = "icons/full/ovr16/buildroot.png";
-    
+
     // state
     protected BuildSpecification buildSpec;
 
@@ -126,7 +126,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         String tooltipBody;
     }
     protected Map<IContainer, FolderInfo> folderInfoCache = new HashMap<IContainer, FolderInfo>();
-    
+
     /**
      * Constructor.
      */
@@ -140,12 +140,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected Control createContents(Composite parent) {
         final Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
+
         composite.setLayout(new GridLayout(2,false));
         ((GridLayout)composite.getLayout()).marginWidth = 0;
         ((GridLayout)composite.getLayout()).marginHeight = 0;
 
-        String text = 
+        String text =
             "On this page you can configure source folders and makefile generation; " +
             "these two are independent of each other. All changes apply to all configurations.";
         // Note: do NOT add reference/link to the "Path and Symbols" page! It confuses users.
@@ -246,7 +246,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         // register this page in the CDT property manager (note: if we skip this,
         // "Mark as source folder" won't work on the page until we visit a CDT property page)
         CDTPropertyManager.getProjectDescription(this, getProject());
-        
+
         // configure the tree
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
             @Override
@@ -260,7 +260,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 return result.toArray();
             }
         });
-        
+
         treeViewer.setLabelProvider(new LabelProvider() {
             public Image getImage(Object element) {
                 if (element instanceof IContainer)
@@ -313,30 +313,30 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 composite.layout(true);
             }
         });
-        
+
         loadBuildSpecFile();
 
         treeViewer.setInput(getProject().getParent());
-        
+
         treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                 updatePageState();
             }
         });
-        
+
         // open interesting tree nodes
         for (IContainer f : buildSpec.getMakeFolders()) {
             treeViewer.expandToLevel(f, 0);
-        } 
+        }
         ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
         ICConfigurationDescription configuration = projectDescription==null ? null : projectDescription.getActiveConfiguration();
         if (configuration != null) {
             ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
             for (IContainer f : CDTUtils.getSourceLocations(getProject(), sourceEntries)) {
                 treeViewer.expandToLevel(f, 0);
-            } 
+            }
         }
-        
+
         updatePageState();
         return composite;
     }
@@ -388,7 +388,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             errorDialog(e.getMessage(), e);
         }
         updatePageState();
-     
+
         maybeOfferToExcludeProjectRoot(folder);
     }
 
@@ -409,14 +409,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             ICSourceEntry[] sourceEntries = CDTPropertyManager.getProjectDescription(project).getActiveConfiguration().getSourceEntries();
             boolean isRootExcluded = CDTUtils.isExcluded(project, sourceEntries);
             if (!isRootExcluded) {
-                MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(this.getShell(), 
-                        "Exclude Root", 
-                        "Do you want to exclude the project root folder from build? (recommended for projects that have all source files in subdirectories)", 
+                MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(this.getShell(),
+                        "Exclude Root",
+                        "Do you want to exclude the project root folder from build? (recommended for projects that have all source files in subdirectories)",
                         "Do not ask this question again in this session", false, null, null);
                 if (dialog.getReturnCode() == IDialogConstants.YES_ID) {
                     try {
                         if (sourceEntries.length==1)
-                            addToSourceEntries(selectedFolder);  // otherwise we won't be able to exclude the root  
+                            addToSourceEntries(selectedFolder);  // otherwise we won't be able to exclude the root
                         // exclude project root
                         setExcluded(getProject(), true);
                         // put back current folder if it became excluded
@@ -429,7 +429,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                     }
                     updatePageState();
                 }
-                if (dialog.getToggleState()==true) 
+                if (dialog.getToggleState()==true)
                     suppressExcludeProjectRootQuestion = true;
             }
         }
@@ -482,9 +482,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void exportMakemakefiles() {
         try {
             final String MAKEMAKEFILE_NAME = "makemakefiles";
-            
+
             // prelude
-            String text = 
+            String text =
                 "#\n" +
                 "# Usage:\n" +
                 "#    make -f " + MAKEMAKEFILE_NAME + "\n" +
@@ -521,7 +521,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                     text += "$(MAKEMAKE) " + vars + translatedOptions.toString() + "\n";
                 }
             }
-            
+
             // save
             IFile makemakefile = project.getFile(MAKEMAKEFILE_NAME);
             boolean existed = makemakefile.exists();
@@ -538,7 +538,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             errorDialog(e.getMessage(), e);
         }
     }
-    
+
     // currently unused (we don't want to encourage the user to mess with CDT settings directly)
     protected void gotoPathsAndSymbolsPage() {
         IPreferencePageContainer container = getContainer();
@@ -589,7 +589,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         // display warnings about CDT misconfiguration, etc
         String message = getDiagnosticMessage(getProject(), buildSpec);
         setDiagnosticMessage(message);
-        
+
         folderInfoCache.clear();
         treeViewer.refresh();
 
@@ -632,14 +632,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
     private void setDiagnosticMessage(String message) {
         errorMessageLabel.setText(message==null ? "" : message);
-        ((GridData)errorMessageLabel.getLayoutData()).exclude = (message==null); 
+        ((GridData)errorMessageLabel.getLayoutData()).exclude = (message==null);
         errorMessageLabel.setVisible(message!=null);
         errorMessageLabel.getParent().layout(true);
     }
 
     protected IContainer getTreeSelection() {
         Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-        return element instanceof IContainer ? (IContainer)element : null; 
+        return element instanceof IContainer ? (IContainer)element : null;
     }
 
     protected boolean isDirty() {
@@ -654,7 +654,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         }
         return info;
     }
-    
+
     protected FolderInfo calculateFolderInfo(IContainer folder) {
         FolderInfo info = new FolderInfo();
 
@@ -664,12 +664,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         ICConfigurationDescription configuration = projectDescription==null ? null : projectDescription.getActiveConfiguration();
         if (configuration == null) {
             // not a CDT project, or there's no active configuration...
-            info.label = folder.getFullPath().toString();   
+            info.label = folder.getFullPath().toString();
             info.image = Activator.getCachedImage(NONSRC_FOLDER_IMG);
             info.tooltipBody = null;
             return info;
         }
-        
+
         ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
         boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
         boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder, sourceEntries)!=null;
@@ -677,7 +677,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         //boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
         String buildLocation = configuration.getBuildSetting().getBuilderCWD().toString();
         IContainer buildFolder = resolveFolderLocation(buildLocation, project, configuration);
-        boolean isBuildRoot = folder.equals(buildFolder); 
+        boolean isBuildRoot = folder.equals(buildFolder);
         int makeType = buildSpec.getFolderMakeType(folder);
 
         // find which makefile covers this folder (ignoring makefile type and scope for now)
@@ -712,7 +712,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         String label = folder.getName();
         if (makeType==BuildSpecification.MAKEMAKE) {
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            
+
             String target = options.target == null ? project.getName() : options.target;
             switch (options.type) {
                 case NOLINK: target = null; break;
@@ -721,9 +721,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 case STATICLIB: target += " (static lib)"; break;
             }
 
-            label += 
-                ": makemake (" + 
-                (isExcluded ? "no src" : options.isDeep ? "deep" : "shallow") + ", "+ 
+            label +=
+                ": makemake (" +
+                (isExcluded ? "no src" : options.isDeep ? "deep" : "shallow") + ", "+
                 (options.metaRecurse ? "recurse" : "no-recurse") + ")" +
                 (target==null ? "" : " --> " + target);
         }
@@ -749,10 +749,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
         if (isBuildRoot)
             what += "; build root folder";
-        
+
         if (makeType==BuildSpecification.MAKEMAKE) {
             what += "; makefile generation enabled";
-            
+
             List<String> submakeDirs = null;
             List<String> sourceDirs = null;
             try {
@@ -775,30 +775,30 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(submakeDirs, ", "), "-");
                 if (submakeDirs.size() > 2)
                     comments += "<p>HINT: To control invocation order, add dependency rules between subdir targets to the Makefrag file (on the Custom page of the Makemake Options dialog)";
-                comments += "<p>Compiles files in the following folders: " + StringUtils.defaultIfEmpty(StringUtils.join(sourceDirs, ", "), "-"); 
+                comments += "<p>Compiles files in the following folders: " + StringUtils.defaultIfEmpty(StringUtils.join(sourceDirs, ", "), "-");
             }
-            if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)  
-                comments = 
+            if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)
+                comments =
                     "<p>HINT: You may want to exclude this (project root) folder from compilation, " +
                     "and leave compilation to subdirectory makefiles.";
         }
         else if (makeType==BuildSpecification.CUSTOM) {
             what += "; custom makefile";
-            
+
             //TODO "Should invoke make in:" / "Should compile the following folders"
             IFile makefile = folder.getFile(new Path("Makefile")); //XXX Makefile.vc?
             if (!makefile.exists()) {
-                comments = "<p>WARNING: Custom makefile \"Makefile\" missing"; 
+                comments = "<p>WARNING: Custom makefile \"Makefile\" missing";
                 hasWarning = true;
             }
             if (!isReachable) {
-                comments = "<p>WARNING: This makefile never gets invoked"; 
+                comments = "<p>WARNING: This makefile never gets invoked";
                 hasWarning = true;
             }
             if (parentMakefileFolder != null)
                 comments += "<p>Parent makefile: " + parentMakefileFolder.getFullPath().toString();
             if (isExcluded)
-                comments = 
+                comments =
                     "<p>Note: The makefile is not supposed to compile any (potentially existing) source files " +
                     "from this folder, because the folder is excluded from build. However, it may " +
                     "invoke other makefiles, may create executables or libraries by invoking the linker, " +
@@ -811,20 +811,20 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments = "<p>WARNING: This is a source folder, but it is not covered by any makefile. Is this intentional?";
                 hasWarning = true;
             }
-            else if (parentMakeFolderType==BuildSpecification.CUSTOM) 
+            else if (parentMakeFolderType==BuildSpecification.CUSTOM)
                 comments = "<p>This source folder is supposed to be covered by the custom makefile in " + parentMakefileFolder.getFullPath();
-            else if (parentMakeFolderType==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(parentMakefileFolder).isDeep) { 
+            else if (parentMakeFolderType==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(parentMakefileFolder).isDeep) {
                 comments = "<p>WARNING: This is a source folder but it is not covered by any makefile, because the generated makefile in " + parentMakefileFolder.getFullPath() + " is not deep. Is this intentional?";
                 hasWarning = true;
             }
-            else if (parentMakeFolderType==BuildSpecification.MAKEMAKE) 
-                comments = "<p>This source folder is covered by the generated makefile in " + parentMakefileFolder.getFullPath(); 
-            else 
+            else if (parentMakeFolderType==BuildSpecification.MAKEMAKE)
+                comments = "<p>This source folder is covered by the generated makefile in " + parentMakefileFolder.getFullPath();
+            else
                 Activator.logError(new AssertionFailedException("Tooltip logic error"));
         }
 
 //        if (!isExcluded) {
-//            //TODO "Includes files from: directly: ...   Indirectly: ..."  
+//            //TODO "Includes files from: directly: ...   Indirectly: ..."
 //            Set<IContainer> set = Activator.getDependencyCache().getFolderDependencies(project).get(folder);
 //            if (set != null) {
 //                List<String> folderNames = new ArrayList<String>();
@@ -838,22 +838,22 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         if (!StringUtils.isEmpty(comments))
             result += comments;
         info.tooltipBody = result;
-        
+
         //
         // CALCULATE IMAGE
         //
         String imagePath = isSrcFolder ? SOURCE_FOLDER_IMG : !isExcluded ? SOURCE_SUBFOLDER_IMG : NONSRC_FOLDER_IMG;
-        String overlayImagePath = null; 
+        String overlayImagePath = null;
         switch (makeType) {
             case BuildSpecification.MAKEMAKE: overlayImagePath = OVR_MAKEMAKE_IMG; break;
             case BuildSpecification.CUSTOM: overlayImagePath = OVR_CUSTOMMAKE_IMG; break;
             case BuildSpecification.NONE: overlayImagePath = null; break;
         }
-        info.image = Activator.getCachedDecoratedImage(imagePath, 
-                new String[] {overlayImagePath, hasWarning ? OVR_WARNING_IMG : null, isBuildRoot ? OVR_BUILDROOT_IMG : null}, 
-                new int[]{SWT.END, SWT.BEGINNING, SWT.BEGINNING}, 
+        info.image = Activator.getCachedDecoratedImage(imagePath,
+                new String[] {overlayImagePath, hasWarning ? OVR_WARNING_IMG : null, isBuildRoot ? OVR_BUILDROOT_IMG : null},
+                new int[]{SWT.END, SWT.BEGINNING, SWT.BEGINNING},
                 new int[]{SWT.END, SWT.END, SWT.BEGINNING});
-        
+
         return info;
     }
 
@@ -897,21 +897,21 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             Activator.logError(e);
             return "Cannot query list of referenced projects: " + e.getMessage();
         }
-            
+
         // warn if there're differences in source entries across configurations.
         // first, collect which entries occur in which configurations
         Map<String,List<String>> sourceEntryMap = new HashMap<String, List<String>>(); // srcEntry -> config*
         for (ICConfigurationDescription cfg : projectDescription.getConfigurations()) {
             for (ICSourceEntry e : cfg.getSourceEntries()) {
                 String entryText = StringUtils.defaultIfEmpty(CDataUtil.makeAbsolute(project, e).getFullPath().toString(), ".");
-                if (e.getExclusionPatterns().length > 0) 
+                if (e.getExclusionPatterns().length > 0)
                     entryText += " (excl: " + StringUtils.join(e.getExclusionPatterns(), ", ") + ")";
                 if (!sourceEntryMap.containsKey(entryText))
                     sourceEntryMap.put(entryText, new ArrayList<String>());
                 sourceEntryMap.get(entryText).add(cfg.getName());
             }
         }
-        List<String> wrongSourceLocations = new ArrayList<String>(); 
+        List<String> wrongSourceLocations = new ArrayList<String>();
         int numConfigs = projectDescription.getConfigurations().length;
         for (String e : sourceEntryMap.keySet())
             if (sourceEntryMap.get(e).size() != numConfigs)
@@ -919,7 +919,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         Collections.sort(wrongSourceLocations);
         if (!wrongSourceLocations.isEmpty())
             return "Note: Source locations are set up differently across configurations: " + StringUtils.join(wrongSourceLocations, "; ");
-            
+
         // warn if there's no makefile generated at all
         if (buildSpec.getMakeFolders().isEmpty())
             return "No makefile has been specified for this project.";
@@ -949,7 +949,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 folder = f;
         return folder;
     }
-    
+
     /**
      * The resource for which the Properties dialog was brought up.
      */
@@ -970,7 +970,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         IProject project = getProject();
         try {
             buildSpec = BuildSpecification.readBuildSpecFile(project);
-        } 
+        }
         catch (CoreException e) {
             errorDialog("Cannot read build specification, reverting page content to the default settings.", e);
         }
@@ -982,11 +982,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void saveBuildSpecFile() {
         try {
             buildSpec.save();
-        } 
+        }
         catch (CoreException e) {
             errorDialog("Cannot store build specification", e);
         }
-    } 
+    }
 
     protected void errorDialog(String message, Throwable e) {
         Activator.logError(message, e);

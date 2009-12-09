@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,7 +15,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
  * Pins vector plotter
- * 
+ *
  * @author Andras
  */
 public class PinsVectorPlotter extends VectorPlotter {
@@ -31,7 +31,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 	}
 
 	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
-		// dataset index range to iterate over 
+		// dataset index range to iterate over
 		int[] range = indexRange(plot, series, gc, mapping);
 		int first = range[0], last = range[1];
 
@@ -39,7 +39,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 		double[] valueRange = valueRange(gc, mapping, symbol);
 		double lo = valueRange[0], hi = valueRange[1];
 
-		// chart y range in canvas coordinates 
+		// chart y range in canvas coordinates
 		//int[] yrange = canvasYRange(gc, symbol);
 		//int top = yrange[0], bottom = yrange[1];  // top < bottom
 
@@ -56,21 +56,21 @@ public class PinsVectorPlotter extends VectorPlotter {
 		int refY = Double.isInfinite(transformedReferenceLevel) || Double.isNaN(transformedReferenceLevel) ?
 					plot.getPlotRectangle().bottom() :
 					mapping.toCanvasY(referenceLevel);
-	
+
 		int prevX = -1;
 		int maxY = refY;
 		int minY = refY;
-	
+
 		// We are drawing solid vertical lines, so antialiasing does not improve
 		// the plot much, but it slows down the plotting by a factor of 2.
 		int origAntialias = gc.getAntialias();
 		gc.setAntialias(SWT.OFF);
-	
+
 		// draw pins
 		IXYDataset dataset = plot.getDataset();
 		for (int i = first; i <= last; i++) {
 			double value = plot.transformY(dataset.getY(series, i));
-			if ((transformedReferenceLevel < lo && value < lo) || (transformedReferenceLevel > hi && value > hi) || Double.isNaN(value) ) 
+			if ((transformedReferenceLevel < lo && value < lo) || (transformedReferenceLevel > hi && value > hi) || Double.isNaN(value) )
 				continue; // pin is off-screen
 
 			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
@@ -91,7 +91,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 				maxY = y;
 			}
 		}
-	
+
 		// restore original antialias mode
 		gc.setAntialias(origAntialias);
 

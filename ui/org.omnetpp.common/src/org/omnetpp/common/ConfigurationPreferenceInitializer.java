@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,7 +42,7 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
 	        if (containsConfigFiles(omnetppRootEnvPath))
 	            return omnetppRootEnvPath;
 	    }
-	        
+
         Path platformPath = new Path(Platform.getInstallLocation().getURL().getFile());
         if (containsConfigFiles(platformPath.removeLastSegments(1)))
             return platformPath.removeLastSegments(1);
@@ -52,7 +52,7 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
 	}
 
 	private boolean containsConfigFiles(IPath path) {
-	    return new File(path.append("configuser.vc").toString()).exists() || new File(path.append("Makefile.inc").toString()).exists();  
+	    return new File(path.append("configuser.vc").toString()).exists() || new File(path.append("Makefile.inc").toString()).exists();
 	}
 
 	private String getGraphvizDotExecutableDefault() {

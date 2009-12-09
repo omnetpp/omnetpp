@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -138,7 +138,7 @@ public class ImageFactory {
     public static final int SIZE_L = -150;
     public static final int SIZE_VL = -250;
 
-    
+
     /**
      * The current image directories as a string array (file system path)
      */
@@ -513,12 +513,12 @@ public class ImageFactory {
     	loader.save(tempFile.getCanonicalPath(), format);
     	return tempFile.getCanonicalPath();
     }
-    
+
     /**
-     * Decorates the given image with the overlay image, and return the result 
-     * as a new image. The client has the responsibility of disposing the image 
+     * Decorates the given image with the overlay image, and return the result
+     * as a new image. The client has the responsibility of disposing the image
      * when no longer needed. For positioning, use SWT.BEGIN, SWT.CENTER, SWT.END.
-     * 
+     *
      * @author Andras
      */
     //FIXME transparency gets lost
@@ -536,5 +536,5 @@ public class ImageFactory {
         gc.dispose();
         return result;
     }
-    
+
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -41,9 +41,9 @@ public CppFormulaGenerator() {
 	public final void formula(AST _t,
 		StringBuffer formulaString
 	) throws RecognitionException {
-	
+
 		AST formula_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-	
+
 		try {      // for error handling
 			if (_t==null) _t=ASTNULL;
 			switch ( _t.getType()) {
@@ -86,12 +86,12 @@ public CppFormulaGenerator() {
 	public final void dis(AST _t,
 		StringBuffer formulaString
 	) throws RecognitionException {
-	
+
 		AST dis_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-	
+
 			int currentTerm = 0;
-	
-	
+
+
 		try {      // for error handling
 			AST __t29 = _t;
 			AST tmp1_AST_in = (AST)_t;
@@ -110,7 +110,7 @@ public CppFormulaGenerator() {
 				else {
 					if ( _cnt31>=1 ) { break _loop31; } else {throw new NoViableAltException(_t);}
 				}
-			
+
 				_cnt31++;
 			} while (true);
 			}
@@ -127,9 +127,9 @@ public CppFormulaGenerator() {
 	public final void term(AST _t,
 		StringBuffer formulaString
 	) throws RecognitionException {
-	
+
 		AST term_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-	
+
 		try {      // for error handling
 			if (_t==null) _t=ASTNULL;
 			switch ( _t.getType()) {
@@ -171,12 +171,12 @@ public CppFormulaGenerator() {
 	public final void con(AST _t,
 		StringBuffer formulaString
 	) throws RecognitionException {
-	
+
 		AST con_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-	
+
 			int currentLiteral = 0;
-	
-	
+
+
 		try {      // for error handling
 			AST __t33 = _t;
 			AST tmp2_AST_in = (AST)_t;
@@ -227,7 +227,7 @@ public CppFormulaGenerator() {
 				else {
 					if ( _cnt36>=1 ) { break _loop36; } else {throw new NoViableAltException(_t);}
 				}
-			
+
 				_cnt36++;
 			} while (true);
 			}
@@ -244,9 +244,9 @@ public CppFormulaGenerator() {
 	public final void lit(AST _t,
 		StringBuffer formulaString
 	) throws RecognitionException {
-	
+
 		AST lit_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-	
+
 		try {      // for error handling
 			if (_t==null) _t=ASTNULL;
 			switch ( _t.getType()) {
@@ -292,9 +292,9 @@ public CppFormulaGenerator() {
 	public final void neg(AST _t,
 		StringBuffer formulaString
 	) throws RecognitionException {
-	
+
 		AST neg_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-	
+
 		try {      // for error handling
 			AST __t38 = _t;
 			AST tmp3_AST_in = (AST)_t;
@@ -357,9 +357,9 @@ public CppFormulaGenerator() {
 	public final void cmp(AST _t,
 		StringBuffer formulaString
 	) throws RecognitionException {
-	
+
 		AST cmp_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-	
+
 		try {      // for error handling
 			if (_t==null) _t=ASTNULL;
 			switch ( _t.getType()) {
@@ -469,11 +469,11 @@ public CppFormulaGenerator() {
 	public final void val(AST _t,
 		StringBuffer formulaString
 	) throws RecognitionException {
-	
+
 		AST val_AST_in = (_t == ASTNULL) ? null : (AST)_t;
 		AST i = null;
 		AST c = null;
-	
+
 		try {      // for error handling
 			if (_t==null) _t=ASTNULL;
 			switch ( _t.getType()) {
@@ -482,11 +482,11 @@ public CppFormulaGenerator() {
 				i = (AST)_t;
 				match(_t,IDENT);
 				_t = _t.getNextSibling();
-			
+
 					Action action = ((IdentNode) i).getAction();
 					formulaString.append("i").append(action.getObject().getName())
-				.append(".").append(action.getActionName()).append("L()");  
-				
+				.append(".").append(action.getActionName()).append("L()");
+
 				break;
 			}
 			case CONST_NUM:

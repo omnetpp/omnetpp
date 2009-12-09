@@ -2,7 +2,7 @@
 Check network name lookup in inifiles. Simple names are checked
 first in the inifile's package, then in the default package.
 
-Test "network not found" error when inifile is in a default package; 
+Test "network not found" error when inifile is in a default package;
 test that package does matter.
 
 %file: foo/test.ned

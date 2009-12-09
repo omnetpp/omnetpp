@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class TreeCellEditorTest extends InifileEditorTestCase {
-    final String nedText = 
+    final String nedText =
         "network TestNetwork {\n" +
         "  parameters:\n" +
         "    int par1;\n" +
@@ -28,7 +28,7 @@ public class TreeCellEditorTest extends InifileEditorTestCase {
         "    int par4;\n" +
         "    int par5;\n" +
         "}\n";
-    final String content = 
+    final String content =
         "[General]\n" +
         "network = TestNetwork\n" +
         "**.par1 = 100\n" +
@@ -115,7 +115,7 @@ public class TreeCellEditorTest extends InifileEditorTestCase {
     }
 
     public void testFocusLost2() throws Exception {
-        // another cell clicked for editing: cell editor should commit, 
+        // another cell clicked for editing: cell editor should commit,
         // and other editor should become activated
         TreeAccess tree = prepareTest();
         tree.findTreeItemByContent(".*par5").activateCellEditor(1);
@@ -145,7 +145,7 @@ public class TreeCellEditorTest extends InifileEditorTestCase {
         tree.pressEnter(); // commit cell editor
         assertTextEditorContentMatches(content.replace("200", "exponential(mean)+10"));
     }
-    
+
     public void testContentAssistWithMouseSelection() throws Exception {
         TreeAccess tree = prepareTest();
         tree.findTreeItemByContent(".*par2").activateCellEditor(1);
@@ -156,13 +156,13 @@ public class TreeCellEditorTest extends InifileEditorTestCase {
         tree.pressEnter(); // commit cell editor
         assertTextEditorContentMatches(content.replace("200", "exponential(mean)+10"));
     }
-    
+
     //
-    // Content Assist "focus lost" tests: click anywhere while a content assist 
-    // is up AND focused: cell editor should either commit, or retain focus and 
+    // Content Assist "focus lost" tests: click anywhere while a content assist
+    // is up AND focused: cell editor should either commit, or retain focus and
     // continue editing.
     //
-    // Current behavior: when clicking anywhere within the WHOLE EDITORPART, 
+    // Current behavior: when clicking anywhere within the WHOLE EDITORPART,
     // focus returns to content assist's original cell editor (and other than that
     // the click gets ignored); when clicking outside the EDITORPART, the cell editor
     // commits.
@@ -178,7 +178,7 @@ public class TreeCellEditorTest extends InifileEditorTestCase {
         contentAssistPopup.assertHasFocus();
         return cellEditor;
     }
-   
+
     public void testContentAssistFocusLost1() throws Exception {
         // variant 1: click on the left edge of the same cell editor
         TreeAccess tree = prepareTest();

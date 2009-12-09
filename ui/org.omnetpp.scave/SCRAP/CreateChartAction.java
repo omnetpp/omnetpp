@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,8 +19,8 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Creates a dataset from the filter setting on the BrowseDataPage and 
- * creates a chart displaying the dataset. 
+ * Creates a dataset from the filter setting on the BrowseDataPage and
+ * creates a chart displaying the dataset.
  */
 public class CreateChartAction extends AbstractScaveAction {
 	public CreateChartAction() {
@@ -55,7 +55,7 @@ public class CreateChartAction extends AbstractScaveAction {
 			String chartName = dialog.getDatasetName()=="" ? "chart" : dialog.getDatasetName()+"-chart"; //FIXME generate proper name
 			Chart chart = ScaveModelUtil.createChart(chartName);
 			dataset.getItems().add(chart);
-	
+
 			editor.executeCommand(AddCommand.create(
 					editor.getEditingDomain(),
 					editor.getAnalysis().getDatasets(),

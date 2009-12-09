@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -67,12 +67,12 @@ public class ConnectionChooser {
     public ConnectionElementEx openConnectionGatesMenu(CompoundModuleElementEx compound, ConnectionElementEx connectionTemplate, boolean chooseSrc, boolean chooseDest, boolean useMoreSubmenu, Point location) {
         Assert.isNotNull(compound);
         Assert.isNotNull(connectionTemplate);
-        
-        IConnectableElement srcMod = StringUtils.isNotEmpty(connectionTemplate.getSrcModule()) ? 
+
+        IConnectableElement srcMod = StringUtils.isNotEmpty(connectionTemplate.getSrcModule()) ?
                 compound.getSubmoduleByName(connectionTemplate.getSrcModule()) : compound;
-        IConnectableElement destMod = StringUtils.isNotEmpty(connectionTemplate.getDestModule()) ? 
+        IConnectableElement destMod = StringUtils.isNotEmpty(connectionTemplate.getDestModule()) ?
                 compound.getSubmoduleByName(connectionTemplate.getDestModule()) : compound;
-        
+
         Assert.isNotNull(srcMod);
         Assert.isNotNull(destMod);
 
@@ -86,7 +86,13 @@ public class ConnectionChooser {
         List<ConnectionElement> usedList = new ArrayList<ConnectionElement>();
         Comparator<ConnectionElement> connectionRankComparator = new Comparator<ConnectionElement>() {
             public int compare(ConnectionElement c1, ConnectionElement c2) {
-                return connectionLabelsMap.get(c2).size() - connectionLabelsMap.get(c1).size();
+                int s1 = connectionLabelsMap.get(c1).size();
+                int s2 = connectionLabelsMap.get(c2).size();
+
+                if (s1 == s2)
+                    return getConnectionMenuItemText(c1).compareToIgnoreCase(getConnectionMenuItemText(c2));
+                else
+                    return s2 - s1;
             }
         };
 
@@ -108,9 +114,9 @@ public class ConnectionChooser {
 
         // no gates
         List<String> noGates = new ArrayList<String>();
-        if (srcMod.getGateDeclarations().size() == 0)   
+        if (srcMod.getGateDeclarations().size() == 0)
             noGates.add(srcMod.getName());
-        if (destMod.getGateDeclarations().size() == 0 && !srcMod.getNEDTypeInfo().equals(destMod.getNEDTypeInfo()))   
+        if (destMod.getGateDeclarations().size() == 0 && !srcMod.getNEDTypeInfo().equals(destMod.getNEDTypeInfo()))
             noGates.add(destMod.getName());
         if (noGates.size() > 0) {
             MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
@@ -138,7 +144,7 @@ public class ConnectionChooser {
                 }
             if (!menuItemAdded)
                 createDisabledMenuItem(menu, "No gates with matching labels");
-          
+
             // add menu items for connections without matching gate labels
             createSeparatorMenuItem(menu);
             menuItemAdded = false;
@@ -163,12 +169,12 @@ public class ConnectionChooser {
                 menuItem.setText("More...");
             }
         }
-        
+
         // Note: the following code was an attempt to move the mouse over the menu right away,
         // but it does not work: it causes the first menu item to get accepted automatically
         //Point loc = Display.getCurrent().getCursorLocation();
         //Display.getCurrent().setCursorLocation(loc.x+5, loc.y+5);
-        
+
         MenuItem selection = menu.open();
         if (selection == null)
             return null;
@@ -178,7 +184,7 @@ public class ConnectionChooser {
         else
             return (ConnectionElementEx)selection.getData();
     }
-    
+
     /**
      * This method asks the user which channel should be used to connect the source and
      * destination module during connection creation. Returns a filled in connection element where
@@ -198,10 +204,10 @@ public class ConnectionChooser {
         boolean matchingLabelsFound = false;
         final Map<ChannelElementEx, Collection<String>> channelTypeLabelsMap = new HashMap<ChannelElementEx, Collection<String>>();
         for (ChannelElementEx channel : channels) {
-            ArrayList<String> channelLabels = NEDElementUtilEx.getLabels(channel);
+            ArrayList<String> channelLabels = getLabels(channel);
             Collection labels = CollectionUtils.intersection(channelLabels, commonGateLabels);
             channelTypeLabelsMap.put(channel, labels);
-            if (!labels.isEmpty())
+            if (!labels.isEmpty() && (labels.size() != 1 || !StringUtils.isEmpty((String)labels.iterator().next())))
                 matchingLabelsFound = true;
         }
         if (!matchingLabelsFound)
@@ -210,7 +216,13 @@ public class ConnectionChooser {
         // sort channels
         Comparator<ChannelElementEx> connectionRankComparator = new Comparator<ChannelElementEx>() {
             public int compare(ChannelElementEx c1, ChannelElementEx c2) {
-                return channelTypeLabelsMap.get(c2).size() - channelTypeLabelsMap.get(c1).size();
+                int s1 = channelTypeLabelsMap.get(c1).size();
+                int s2 = channelTypeLabelsMap.get(c2).size();
+
+                if (s1 == s2)
+                    return c1.getName().compareToIgnoreCase(c2.getName());
+                else
+                    return s2 - s1;
             }
         };
         channels = org.omnetpp.common.util.CollectionUtils.toSorted(channels, connectionRankComparator);
@@ -241,7 +253,7 @@ public class ConnectionChooser {
         }
         if (!menuItemAdded)
             createDisabledMenuItem(menu, "No channels without matching labels");
-        
+
         MenuItem selection = menu.open();
         if (selection == null)
             return null;
@@ -251,44 +263,53 @@ public class ConnectionChooser {
 
     @SuppressWarnings("unchecked")
     private List<String> collectCommonLabels(IHasProperties object1, IHasProperties object2) {
-        return (List<String>)CollectionUtils.intersection(NEDElementUtilEx.getLabels(object1), NEDElementUtilEx.getLabels(object2));
+        return (List<String>)CollectionUtils.intersection(getLabels(object1), getLabels(object2));
     }
 
+    /**
+     * Creates a new menu item from the provided channel, and adds it to the provided menu.
+     * For convenience it returns the created item
+     */
     private MenuItem createChannelChooserMenuItem(BlockingMenu menu, ConnectionElementEx connectionWithGatesTemplate, ChannelElementEx channel, Collection<String> labels) {
-        MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
         ConnectionElementEx connectionWithChannelTemplate = (ConnectionElementEx)connectionWithGatesTemplate.deepDup();
         connectionWithChannelTemplate.setType(channel.getNEDTypeInfo().getFullyQualifiedName());
-        menuItem.setData(connectionWithChannelTemplate);
-        String text = channel.getName();
-        if (!labels.isEmpty())
-            text += " (" + StringUtils.join(labels, ", ") + ")";
-        menuItem.setText(text);
-        return menuItem;
+        return createMenuItem(menu, channel.getName(), connectionWithChannelTemplate, labels);
     }
-    
+
     /**
      * Creates a new menu item from the provided connection template, and adds it to the provided menu.
      * For convenience it returns the created item
      */
-    private MenuItem createGatesChooserMenuItem(BlockingMenu menu, ConnectionElement connection, List<String> labels) {
+    private MenuItem createGatesChooserMenuItem(BlockingMenu menu, ConnectionElement connection, Collection<String> labels) {
+        return createMenuItem(menu, getConnectionMenuItemText(connection), connection, labels);
+    }
+
+    private String getConnectionMenuItemText(ConnectionElement connection) {
+        return StringUtils.removeEnd(NEDTreeUtil.generateNedSource(connection, false).trim(), ";");
+    }
+
+    private MenuItem createMenuItem(BlockingMenu menu, String text, Object data, Collection<String> labels) {
         MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
-        menuItem.setData(connection);
-        String text = StringUtils.removeEnd(NEDTreeUtil.generateNedSource(connection, false).trim(), ";");
-        if (!labels.isEmpty())
-            text += " (" + StringUtils.join(labels, ", ") + ")";
+        menuItem.setData(data);
+        if (!labels.isEmpty()) {
+            String labelList = StringUtils.join(labels, ", ");
+
+            if (!StringUtils.isEmpty(labelList))
+                text += " (" + labelList + ")";
+        }
         menuItem.setText(text);
         return menuItem;
     }
-    
+
     private MenuItem createSeparatorMenuItem(BlockingMenu menu) {
         return menu.addMenuItem(SWT.SEPARATOR);
     }
-    
+
     private MenuItem createDisabledMenuItem(BlockingMenu menu, String text) {
         MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
         menuItem.setText(text);
         menuItem.setEnabled(false);
-        
+
         return menuItem;
     }
 
@@ -298,16 +319,16 @@ public class ConnectionChooser {
      * @param compound The compound module in which the current connection is/will be present
      * @param srcModule The source module used to create the connections
      * @param srcGate The source gate used to create the connections
-     * @param chooseSrc Whether we want to choose from source gates (if not, the source part will be copied from "connection") 
+     * @param chooseSrc Whether we want to choose from source gates (if not, the source part will be copied from "connection")
      * @param destModule The destination module used to create the connections
      * @param destGate The destination gate used to create the connections
-     * @param chooseDest Whether we want to choose from dest gates (if not, the dest part will be copied from "connection")  
+     * @param chooseDest Whether we want to choose from dest gates (if not, the dest part will be copied from "connection")
      * @param connection the connection which is being modified (if one side should be unchanged ie one of srcGate or destGate is NULL)
      * @param unusedList Connections that can be chosen
      * @param usedList Connections that are already connected
      */
     private void accumulateConnection(CompoundModuleElementEx compound, ConnectionElementEx connection,
-                                      IConnectableElement srcModule, GateElementEx srcGate, boolean chooseSrc, 
+                                      IConnectableElement srcModule, GateElementEx srcGate, boolean chooseSrc,
                                       IConnectableElement destModule, GateElementEx destGate, boolean chooseDest,
                                       List<ConnectionElement> unusedList, List<ConnectionElement> usedList) {
         // add the gate names to the menu item as additional widget data
@@ -321,6 +342,7 @@ public class ConnectionChooser {
             templateConn.setSrcGatePlusplus(connection.getSrcGatePlusplus());
             templateConn.setSrcGateSubg(connection.getSrcGateSubg());
         }
+
         if (!chooseDest) {
             templateConn.setDestModule(connection.getDestModule());
             templateConn.setDestModuleIndex(connection.getDestModuleIndex());
@@ -329,13 +351,13 @@ public class ConnectionChooser {
             templateConn.setDestGatePlusplus(connection.getDestGatePlusplus());
             templateConn.setDestGateSubg(connection.getDestGateSubg());
         }
-        
+
         if (templateConn != null) {
             if (isConnectionUnused(compound, templateConn, srcModule, srcGate, chooseSrc, destModule, destGate, chooseDest))
                 unusedList.add(templateConn);
             else
                 usedList.add(templateConn);
-            
+
             connectionLabelsMap.put(templateConn, collectCommonLabels(srcGate, destGate));
         }
     }
@@ -429,17 +451,26 @@ public class ConnectionChooser {
                 StringUtils.isNotEmpty(((SubmoduleElementEx)destMod).getVectorSize()));
 
         boolean isSrcFree = true;
-        if (chooseSrc) 
-            isSrcFree = isSrcSideAVector || 
+        if (chooseSrc)
+            isSrcFree = isSrcSideAVector ||
             (compound.getConnections(conn.getSrcModule(), conn.getSrcGate(), null, null).isEmpty() &&
              compound.getConnections(null, null, conn.getSrcModule(), conn.getSrcGate()).isEmpty());
-        
+
         boolean isDestFree = true;
-        if (chooseDest) 
-            isDestFree = isDestSideAVector || 
+        if (chooseDest)
+            isDestFree = isDestSideAVector ||
             (compound.getConnections(conn.getDestModule(), conn.getDestGate(), null, null).isEmpty() &&
              compound.getConnections(null, null, conn.getDestModule(), conn.getDestGate()).isEmpty());
-        
+
         return isSrcFree && isDestFree;
+    }
+
+    public static ArrayList<String> getLabels(IHasProperties element) {
+        ArrayList<String> labels = NEDElementUtilEx.getLabels(element);
+
+        if (labels.size() == 0)
+            labels.add(null);
+
+        return labels;
     }
 }

@@ -7,9 +7,9 @@ simulations. Integration is not seamless though, there are limitations as
 to what OMNeT++ features are available, as well special coding rules to
 obey in the Java code.
 
-Operation is based on the JSimpleModule class. This is an ordinary C++ simple 
-module. You can create a new Java module by subclassing JSimpleModule in NED; 
-JSimpleModule will derive the name of the Java class from the NED type name. 
+Operation is based on the JSimpleModule class. This is an ordinary C++ simple
+module. You can create a new Java module by subclassing JSimpleModule in NED;
+JSimpleModule will derive the name of the Java class from the NED type name.
 During initialize, it loads the Java Virtual Machine (if not already loaded),
 instantiates the given Java class, then simply delegates initialize(),
 handleMessage() and finish() calls to it. The Java class should be subclassed
@@ -25,7 +25,7 @@ has a few consequences about the programming model, as will be covered later.
 The wrapper classes have been generated using SWIG (www.swig.org).
 
 SO, SHOULD I DEVELOP ALL MY SIMULATIONS IN JAVA AFTERWARDS? Probably not. This
-extension has limitations, and cannot be recommended as a primary means of 
+extension has limitations, and cannot be recommended as a primary means of
 writing simulation models. However, it can be useful for smaller models with
 no particular performance requirements, or if you want to reuse an existing
 body of Java code as part of an OMNeT++ simulation.
@@ -75,7 +75,7 @@ make
 2. Creating the simulation
 --------------------------
 
-Your Java-based simple modules will be run by JSimpleModule instances, which 
+Your Java-based simple modules will be run by JSimpleModule instances, which
 will get the Java class names from the NED type names. That is, you would write
 something like this in the NED file:
 

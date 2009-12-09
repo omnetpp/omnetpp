@@ -346,36 +346,33 @@ proc extendContextMenu {rules} {
     }
 }
 
-proc create_inspector_contextmenu {ptr} {
+proc fill_inspector_contextmenu {menu ptr} {
     global contextmenurules
 
-    # create popup menu
-    catch {destroy .popup}
-    menu .popup -tearoff 0
-
     # ptr should never be null, but check it anyway
-    if [opp_isnull $ptr] {return .popup}
+    if [opp_isnull $ptr] {return $menu}
 
     # add inspector types supported by the object
     set insptypes [opp_supported_insp_types $ptr]
     foreach type $insptypes {
-       .popup add command -label "Inspect $type..." -command "opp_inspect $ptr \{$type\}"
+       $menu add command -label "Inspect $type..." -command "opp_inspect $ptr \{$type\}"
     }
 
     # add "run until" menu items
     set baseclass [opp_getobjectbaseclass $ptr]
+    set name [opp_getobjectfullname $ptr]
     if {$baseclass=="cSimpleModule" || $baseclass=="cCompoundModule"} {
         set w ".$ptr-0"  ;#hack
-        .popup add separator
-        .popup add command -label "Run until next event in this module" -command "runsimulation_local $w normal"
-        .popup add command -label "Fast run until next event in this module" -command "runsimulation_local $w fast"
+        $menu add separator
+        $menu add command -label "Run until next event in module '$name'" -command "runsimulation_local $w normal"
+        $menu add command -label "Fast run until next event in module '$name'" -command "runsimulation_local $w fast"
     }
 
     if {$baseclass=="cMessage"} {
-        .popup add separator
-        .popup add command -label "Run until this message" -command "run_until_msg $ptr normal"
-        .popup add command -label "Fast run until this message" -command "run_until_msg $ptr fast"
-        .popup add command -label "Express run until this message" -command "run_until_msg $ptr express"
+        $menu add separator
+        $menu add command -label "Run until message '$name'" -command "run_until_msg $ptr normal"
+        $menu add command -label "Fast run until message '$name'" -command "run_until_msg $ptr fast"
+        $menu add command -label "Express run until message '$name'" -command "run_until_msg $ptr express"
     }
 
     # add further menu items
@@ -394,11 +391,53 @@ proc create_inspector_contextmenu {ptr} {
        if {$objlist!={}} {
            if {$first} {
                set first 0
-               .popup add separator
+               $menu add separator
            }
-           .popup add command -label "$contextmenurules($key,label)..." -command "inspect_contextmenurules $ptr $key"
+           $menu add command -label "$contextmenurules($key,label)..." -command "inspect_contextmenurules $ptr $key"
        }
     }
+}
+
+proc create_inspector_contextmenu {ptrs} {
+
+    # create popup menu
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+
+    if {[llength $ptrs] == 1} {
+        fill_inspector_contextmenu .popup $ptrs
+    } else {
+        foreach ptr $ptrs {
+            set submenu .popup.$ptr
+            catch {destroy $submenu}
+            menu $submenu -tearoff 0
+            set name [opp_getobjectfullname $ptr]
+            set shorttypename [opp_getobjectshorttypename $ptr]
+            set infostr "$shorttypename, [opp_getobjectinfostring $ptr]"
+            if {[string length $infostr] > 30} {
+                set infostr [string range $infostr 0 29]...
+            }
+            set baseclass [opp_getobjectbaseclass $ptr]
+            if {$baseclass == "cGate" } {
+                set nextgateptr [opp_getobjectfield $ptr "nextGate"]
+                set nextgatename [opp_getobjectfullname $nextgateptr]
+                set ownerptr [opp_getobjectowner $ptr]
+                set ownername [opp_getobjectfullname $ownerptr]
+                set nextgateownerptr [opp_getobjectowner $nextgateptr]
+                set nextgateownername [opp_getobjectfullname $nextgateownerptr]
+
+                set label "$ownername.$name --> $nextgateownername.$nextgatename"
+            } elseif {$baseclass == "cMessage" } {
+                set shortinfo [opp_getmessageshortinfostring $ptr]
+                set label "$name ($shorttypename, $shortinfo)"
+            } else {
+                set label "$name ($infostr)"
+            }
+            fill_inspector_contextmenu $submenu $ptr
+            .popup add cascade -label $label -menu $submenu
+        }
+    }
+
     return .popup
 }
 
@@ -512,18 +551,20 @@ proc inspect_componenttype {win {type "(default)"}} {
 }
 
 #
-# Called from balloon.tcl, supposed to return tooltip for a widget (or item
+# Called from balloon.tcl, supposed to return tooltip for a widget (or items
 # in a widget). Installed via: set help_tips(helptip_proc) get_help_tip
 #
 # Here we produce help text for canvas items that represent simulation
 # objects.
 #
-proc get_help_tip {w x y item} {
+proc get_help_tip {w x y items} {
    if {![winfo exists $w]} {
        return ""
    }
-   if {[winfo class $w]=="Canvas" && $item!=""} {
-
+   set tip ""
+   if {[winfo class $w]=="Canvas" && $items!=""} {
+     set tip ""
+     foreach item $items {
        # if this is a simulation object, get its pointer
        set ptr ""
        set tags [$w gettags $item]
@@ -548,7 +589,7 @@ proc get_help_tip {w x y item} {
        set ptr [lindex $ptr 0]
 
        if [opp_isnotnull $ptr] {
-          set tip "([opp_getobjectshorttypename $ptr]) [opp_getobjectfullname $ptr]"
+          append tip "([opp_getobjectshorttypename $ptr]) [opp_getobjectfullname $ptr]"
           set info [opp_getobjectinfostring $ptr]
           if {$info!=""} {append tip ", $info"}
           regsub {  +} $tip {  } tip
@@ -563,12 +604,13 @@ proc get_help_tip {w x y item} {
              set tt_tag [opp_displaystring $dispstr getTagArg "bgtt" 0]
           }
           if {$tt_tag!=""} {
-             append tip "\n$tt_tag"
+             append tip "\n  $tt_tag"
           }
-          return $tip
        }
+       append tip "\n"
+     }
    }
-   return ""
+   return [string trim $tip \n]
 }
 
 

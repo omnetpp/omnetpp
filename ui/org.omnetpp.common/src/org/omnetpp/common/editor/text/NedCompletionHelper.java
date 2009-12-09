@@ -1,14 +1,17 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 package org.omnetpp.common.editor.text;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.templates.Template;
+import org.omnetpp.common.displaymodel.IDisplayString;
 
 /**
  * This class contains data for context assist functions for NED files.
@@ -41,7 +44,95 @@ public final class NedCompletionHelper {
         makeShortTemplate("@display(\"i=${icon}\");", "property"),
         makeShortTemplate("@class(${className});", "property"),
         makeShortTemplate("@contains(${label1});", "property"),
+        makeShortTemplate("@labels(${label1})", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
+
+    public final static Template[] proposedNedComponentDisplayStringTempl;
+
+    public final static Template[] proposedNedSubmoduleDisplayStringTempl;
+
+    public final static Template[] proposedNedConnectionDisplayStringTempl;
+
+    static {
+        ArrayList<Template> componentTemplates = new ArrayList<Template>();
+        ArrayList<Template> submoduleTemplates = new ArrayList<Template>();
+        ArrayList<Template> connectionTemplates = new ArrayList<Template>();
+
+        for (IDisplayString.Tag tag : IDisplayString.Tag.values()) {
+            String fullPattern = tag.name() + "=";
+
+            boolean first = true;
+            for (IDisplayString.Prop prop : IDisplayString.Prop.values()) {
+                if (tag.equals(prop.getTag())) {
+                    if (!first)
+                        fullPattern += ",";
+                    else
+                        first = false;
+
+                    fullPattern += "${" + prop.getName().replaceAll("[^a-zA-Z0-9]", "") + "}";
+                }
+            }
+
+            int shortParameterCount = -1;
+            switch (tag) {
+                case bgp: break;
+                case bgb: shortParameterCount = 2; break;
+                case bgi: break;
+                case bgtt: break;
+                case bgg: shortParameterCount = 1; break;
+                case bgl: break;
+                case bgs: break;
+                case p: shortParameterCount = 2; break;
+                case b: shortParameterCount = 2; break;
+                case i: shortParameterCount = 1; break;
+                case is: break;
+                case i2: shortParameterCount = 1; break;
+                case r: shortParameterCount = 1; break;
+                case q: break;
+                case t: shortParameterCount = 1; break;
+                case tt: break;
+                case ls: shortParameterCount = 1; break;
+            }
+
+            String description = tag.getDescription();
+            String shortPattern = shortParameterCount == -1 ? null : fullPattern;
+            int index = -1;
+            for (int i = 0; i < shortParameterCount + 1; i++)
+                index = shortPattern.indexOf('$', index + 1);
+            if (index != -1)
+                shortPattern = shortPattern.substring(0, index - 1);
+
+            if ((tag.getType() & IDisplayString.COMPOUNDMODULE) != 0) {
+                componentTemplates.add(makeShortTemplate(fullPattern, description));
+
+                if (shortPattern != null)
+                    componentTemplates.add(makeShortTemplate(shortPattern, description));
+            }
+
+            if ((tag.getType() & IDisplayString.SUBMODULE) != 0) {
+                submoduleTemplates.add(makeShortTemplate(fullPattern, description));
+
+                if (shortPattern != null)
+                    submoduleTemplates.add(makeShortTemplate(shortPattern, description));
+            }
+
+            if ((tag.getType() & IDisplayString.CONNECTION) != 0) {
+                connectionTemplates.add(makeShortTemplate(fullPattern, description));
+
+                if (shortPattern != null)
+                    connectionTemplates.add(makeShortTemplate(shortPattern, description));
+            }
+        }
+
+        proposedNedComponentDisplayStringTempl = componentTemplates.toArray(new Template[0]);
+        proposedNedSubmoduleDisplayStringTempl = submoduleTemplates.toArray(new Template[0]);
+        proposedNedConnectionDisplayStringTempl = connectionTemplates.toArray(new Template[0]);
+    }
+
+    public final static Template[] proposedNedSubmodulePropertyTempl = {
+        makeShortTemplate("@display(\"i=${icon}\");", "property"),
+        makeShortTemplate("@dynamic()", "property"),
+    }; //XXX check this list before release
 
     public final static Template[] proposedNedParamPropertyTempl = {
         makeShortTemplate("@prompt(\"${message}\")", "property"),
@@ -87,13 +178,13 @@ public final class NedCompletionHelper {
     	makeShortTemplate("hypot(${x},${y})", "function"),
     	makeShortTemplate("log(${x})", "function"),
     	makeShortTemplate("log10(${x})", "function"),
-    	
+
     	// unit
     	makeShortTemplate("dropUnit(${quantity})", "function"),
     	makeShortTemplate("replaceUnit(${quantity}, ${string})", "function"),
     	makeShortTemplate("convertUnit(${quantity}, ${string})", "function"),
     	makeShortTemplate("unitOf(${quantity})", "function"),
-    	
+
     	// string
     	makeShortTemplate("length(${string})", "function"),
     	makeShortTemplate("contains(${string}, ${string})", "function"),
@@ -115,12 +206,12 @@ public final class NedCompletionHelper {
     	makeShortTemplate("choose(${int}, ${string})", "function"),
     	makeShortTemplate("toUpper(${string})", "function"),
     	makeShortTemplate("toLower(${string})", "function"),
-    	
+
     	// conversion
     	makeShortTemplate("int(${x})", "function"),
     	makeShortTemplate("double(${x})", "function"),
     	makeShortTemplate("string(${x})", "function"),
-    	
+
     	// reflection
     	makeShortTemplate("fullPath()", "function"),
     	makeShortTemplate("fullName()", "function"),
@@ -282,31 +373,31 @@ public final class NedCompletionHelper {
                 "        }\n"+
                 "}"),
         makeTemplate("moduletrimesh", "module with triangle mesh topology",
-                "//\n// Triangle mesh node\n//\n" + 
-                "simple ${TriMeshNode}\n" + 
-                "{\n" + 
-                "    gates:\n" + 
-                "        inout ${w};\n" + 
-                "        inout ${nw};\n" + 
-                "        inout ${sw};\n" + 
-                "        inout ${e};\n" + 
-                "        inout ${se};\n" + 
-                "        inout ${ne};\n" + 
-                "}\n\n" + 
-                "//\n// TODO documentation\n//\n" + 
-                "// @author ${user}\n//\n" + 
-                "module ${TriMesh}\n{\n" + 
-                "    parameters:\n" + 
-                "        int rows = default(3);\n" + 
-                "        int cols = default(7);\n" + 
-                "    submodules:\n" + 
-                "        ${node}[rows*cols]: ${TriMeshNode};\n" + 
-                "    connections allowunconnected:\n" + 
-                "        for x=0..cols-1, for y=0..rows-1 {\n" + 
-                "            ${node}[y*cols+x].${e} <--> ${node}[y*cols+x+1].${w} if x<cols-1;\n" + 
-                "            ${node}[y*cols+x].${se} <--> ${node}[(y+1)*cols+x].${nw} if y<rows-1;\n" + 
-                "            ${node}[y*cols+x].${sw} <--> ${node}[(y+1)*cols+x-1].${ne} if x>0 && y<rows-1;\n" + 
-                "        }\n" + 
+                "//\n// Triangle mesh node\n//\n" +
+                "simple ${TriMeshNode}\n" +
+                "{\n" +
+                "    gates:\n" +
+                "        inout ${w};\n" +
+                "        inout ${nw};\n" +
+                "        inout ${sw};\n" +
+                "        inout ${e};\n" +
+                "        inout ${se};\n" +
+                "        inout ${ne};\n" +
+                "}\n\n" +
+                "//\n// TODO documentation\n//\n" +
+                "// @author ${user}\n//\n" +
+                "module ${TriMesh}\n{\n" +
+                "    parameters:\n" +
+                "        int rows = default(3);\n" +
+                "        int cols = default(7);\n" +
+                "    submodules:\n" +
+                "        ${node}[rows*cols]: ${TriMeshNode};\n" +
+                "    connections allowunconnected:\n" +
+                "        for x=0..cols-1, for y=0..rows-1 {\n" +
+                "            ${node}[y*cols+x].${e} <--> ${node}[y*cols+x+1].${w} if x<cols-1;\n" +
+                "            ${node}[y*cols+x].${se} <--> ${node}[(y+1)*cols+x].${nw} if y<rows-1;\n" +
+                "            ${node}[y*cols+x].${sw} <--> ${node}[(y+1)*cols+x-1].${ne} if x>0 && y<rows-1;\n" +
+                "        }\n" +
                 "}"),
         makeTemplate("modulehexmesh", "module with hexagonal mesh topology",
                 "//\n// Hexagonal mesh node\n//\n"+

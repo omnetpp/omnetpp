@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,7 +22,7 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 	InterpolationMode[] interpolationModes;
 	double[][] xCoords;
 	double[][] yCoords;
-	
+
 	public RandomXYDataset(long seed, String[] seriesKeys, InterpolationMode[] interpolationModes,int numOfItems) {
 		this.seriesKeys = seriesKeys;
 		this.interpolationModes = interpolationModes;
@@ -38,7 +38,7 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 			}
 		}
 	}
-	
+
 	public String getTitle(String format) {
 		return null;
 	}
@@ -50,7 +50,7 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 	public String getSeriesKey(int series) {
 		return seriesKeys[series];
 	}
-	
+
 	@Override
 	public InterpolationMode getSeriesInterpolationMode(int series) {
 		return interpolationModes != null && series < interpolationModes.length ?
@@ -68,11 +68,11 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 	public BigDecimal getPreciseX(int series, int item) {
 		return null;
 	}
-	
+
 	public double getY(int series, int item) {
 		return yCoords[series][item];
 	}
-	
+
 	public BigDecimal getPreciseY(int series, int item) {
 		return null;
 	}

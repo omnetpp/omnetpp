@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,7 +30,7 @@ public class WorkbenchPartAccess
 	public IWorkbenchPart getWorkbenchPart() {
 		return workbenchPart;
 	}
-	
+
 	protected PartSite getPartSite() {
 		IWorkbenchPartSite site = workbenchPart.getSite();
 
@@ -42,14 +42,14 @@ public class WorkbenchPartAccess
 		Assert.fail("Unknown site " + site);
 		return null;
 	}
-	
+
 	/**
 	 * Returns the name of the part. This is the name visible on tabs.
 	 */
 	public String getPartName() {
 		return getPartSite().getPartReference().getPartName();
 	}
-	
+
 	public CompositeAccess getComposite() {
 		return (CompositeAccess)createAccess(getCompositeInternal());
 	}
@@ -77,7 +77,7 @@ public class WorkbenchPartAccess
     public CTabItemAccess getCTabItem() {
         return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), getPartName()));
     }
-    
+
     @UIStep
     public boolean isActivated() {
         CTabItem cTabItem = getCTabItem().getWidget();
@@ -85,12 +85,12 @@ public class WorkbenchPartAccess
         return cTabItem.getParent().getSelection() == cTabItem &&
         		workbenchPart.getSite().getPage().getActivePart() == workbenchPart;
     }
-    
+
     @UIStep
     public void assertActivated() {
     	Assert.assertTrue("The workbench part '" + getWorkbenchPart().getSite().getRegisteredName() + "' is not activated", isActivated());
     }
-    
+
     @UIStep
     public void ensureActivated() {
         if (!isActivated())

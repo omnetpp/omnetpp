@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -13,7 +13,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 /**
  * Wraps IDList with change notification capability.
  */
-//FIXME move this into the engine plugin, then make SWIG classes unavailable from other packages! --Andras 
+//FIXME move this into the engine plugin, then make SWIG classes unavailable from other packages! --Andras
 public class IDListModel {
 
 	private IDList idList = new IDList();

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -32,14 +32,14 @@ import com.simulcraft.test.gui.Activator;
 import com.simulcraft.test.gui.access.Access;
 
 /**
- * Experimentally detects keyboard layout. Not needed, at least on Windows, because 
+ * Experimentally detects keyboard layout. Not needed, at least on Windows, because
  * Win32 has a VkKeyScan API call.
  * @author Andras
  */
 public class KeyboardLayout {
     private Map<Character,KeyStroke> mapping = null;
     private char receivedChar; // used during testing the keyboard
-    
+
     public KeyboardLayout() {
     }
 
@@ -52,14 +52,14 @@ public class KeyboardLayout {
     public Map<Character,KeyStroke> getMapping() {
         return mapping;
     }
-    
+
     public boolean isEmpty() {
         return mapping == null || mapping.isEmpty();
     }
 
     public void testKeyboard() {
         Assert.isTrue(Display.getCurrent() != null, "must be in the UI thread");
-        
+
         final Shell shell = new Shell(SWT.TOOL | SWT.ON_TOP | SWT.APPLICATION_MODAL);
         shell.setSize(200, 20);
         Control text = new Text(shell, SWT.SINGLE | SWT.BORDER);
@@ -67,7 +67,7 @@ public class KeyboardLayout {
         shell.layout();
         shell.open();
         text.setFocus();
-        
+
         text.addListener(SWT.KeyDown, new Listener() {
             public void handleEvent(Event e) {
                 if (receivedChar != 0)
@@ -75,12 +75,12 @@ public class KeyboardLayout {
                 receivedChar = e.character;
             }
         });
-        
+
         long startTime = System.currentTimeMillis();
         mapping = new HashMap<Character, KeyStroke>();
         for (char naturalKey = 32; naturalKey < 127; naturalKey++) {
-            if (naturalKey>='A' && naturalKey<='Z') 
-                continue;  // we test letter keys on the keyboard in lowercase only 
+            if (naturalKey>='A' && naturalKey<='Z')
+                continue;  // we test letter keys on the keyboard in lowercase only
             testKey(naturalKey, 0);
             testKey(naturalKey, SWT.SHIFT);
         }
@@ -109,7 +109,7 @@ public class KeyboardLayout {
                     mapping.put(ch, keyStroke);
         }
     }
-    
+
     public void saveMapping(String filename) {
         try {
             String contents = "";
@@ -149,8 +149,8 @@ public class KeyboardLayout {
         for (Character character : characters)
             System.out.println(" for "+character+" press "+mapping.get(character));
     }
-    
-    
+
+
     public void loadOrTestKeyboardLayout() {
         String filename = Activator.getDefault().getStateLocation().append("keyboard-layout").toOSString();
         try {
@@ -173,6 +173,6 @@ public class KeyboardLayout {
             }
         }
     }
-    
+
 
 }

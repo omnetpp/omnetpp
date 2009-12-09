@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -51,7 +51,7 @@ public class ChooseTableColumnsAction extends Action {
 		// execute dialog and store result
 		if (dialog.open() == Dialog.OK) {
 			List<Object> selectedObjects = Arrays.asList(dialog.getResult());
-			String [] selectedColumnNames = selectedObjects.toArray(new String[selectedObjects.size()]); 
+			String [] selectedColumnNames = selectedObjects.toArray(new String[selectedObjects.size()]);
 			table.setVisibleColumns(selectedColumnNames);
 		}
 	}

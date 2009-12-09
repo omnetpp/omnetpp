@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,14 +17,14 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * A basic content proposal provider. Performs filtering by prefix the proposal candidates 
+ * A basic content proposal provider. Performs filtering by prefix the proposal candidates
  * returned by the abstract getProposalCandidates() method. Sorting the proposals should
- * be done within getProposalCandidates() too. 
- * 
+ * be done within getProposalCandidates() too.
+ *
  * Note: although IContentProposalProvider is for field editors, we use this class
- * in the text editor content assist too; we just re-wrap IContentProposals to 
- * ICompletionProposal. 
- * 
+ * in the text editor content assist too; we just re-wrap IContentProposals to
+ * ICompletionProposal.
+ *
  * @author Andras
  */
 public abstract class ContentProposalProvider implements IContentProposalProvider {
@@ -37,11 +37,11 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 
 	/**
 	 * Constructor.
-	 * @param useWholePrefix whether the whole substring before the cursor needs to be 
+	 * @param useWholePrefix whether the whole substring before the cursor needs to be
 	 *                       be matched by completions (false: only the last "word").
 	 * @param dropPrefix     whether the prefix should be omitted from the proposal content
 	 *                       (i.e. when "Ne" is already typed, return only "twork"
-	 *                       and not "Network" as the string to be inserted 
+	 *                       and not "Network" as the string to be inserted
 	 */
 	public ContentProposalProvider(boolean useWholePrefix, boolean dropPrefix) {
 		this.useWholePrefix = useWholePrefix;
@@ -63,8 +63,8 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 
 		List<IContentProposal> candidates = getProposalCandidates(prefix);
 
-		// check if any of the proposals has description. If they do, we set "(no description)" 
-		// on the others as well. Reason: if left at null, previous tooltip will be shown, 
+		// check if any of the proposals has description. If they do, we set "(no description)"
+		// on the others as well. Reason: if left at null, previous tooltip will be shown,
 		// which is very confusing.
 		boolean descriptionSeen = false;
 		for (IContentProposal p : candidates)
@@ -76,7 +76,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 			String content = candidate.getContent();
 			if (content.startsWith(prefixToMatch) && content.length()!= prefixToMatch.length()) {
 				// from the content, drop the prefix that has already been typed by the user
-				String modifiedContent = dropPrefix ? content.substring(prefixToMatch.length(), content.length()) : content; 
+				String modifiedContent = dropPrefix ? content.substring(prefixToMatch.length(), content.length()) : content;
 				int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
 				String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
 				result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition));
@@ -92,9 +92,9 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 	}
 
 	/**
-	 * Return the suffix of the text (the last, incomplete "word" the user is typing) 
+	 * Return the suffix of the text (the last, incomplete "word" the user is typing)
 	 * for which completions will be provided.
-	 * 
+	 *
 	 *  Default version detects words (A-Z, a-z, 0-9, underscore); this can be overridden
 	 *  in subclasses.
 	 */

@@ -1,6 +1,10 @@
+2009-09-04  Tamas Borbely
+
+        * added 'sum' function to 'aggregator' node.
+
 2009-05-15  Tamas Borbely
 
-        * added 'aggregator' node for computing average/minimum/maximum of 
+        * added 'aggregator' node for computing average/minimum/maximum of
         several vectors. It simply aggregates the values at the same simulation
         time (i.e. ignores interpolation-mode of the vectors).
 

@@ -4,7 +4,7 @@
 //#define DEBUGPRINTF printf
 #define DEBUGPRINTF (void)
 
-#ifdef _WIN32 
+#ifdef _WIN32
 #define PATH_SEP ";"
 #else
 #define PATH_SEP ":"

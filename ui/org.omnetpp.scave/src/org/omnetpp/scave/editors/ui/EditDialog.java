@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,11 +29,11 @@ import org.omnetpp.scave.engine.ResultFileManager;
 
 /**
  * This is the edit dialog for scave model objects.
- * 
+ *
  * It receives an object and optionally a set of features to be edited
  * (defaults to all editable features).
  * It replies with the changed values.
- * 
+ *
  * @author tomi
  */
 public class EditDialog extends TitleAreaDialog {
@@ -47,12 +47,12 @@ public class EditDialog extends TitleAreaDialog {
 
 	/**
 	 * Creates the dialog. The form in the dialog will be chosen based on the object type.
-	 * The form can be customized via the formParameters, like which page of the 
+	 * The form can be customized via the formParameters, like which page of the
 	 * chart dialog should be displayed by default.
-	 *    
+	 *
 	 * @param parentShell    the parent shell
 	 * @param object         object to be edited
-	 * @param editor         the editor 
+	 * @param editor         the editor
 	 * @param formParameters key-value pairs understood by the form; may be null
 	 */
 	public EditDialog(Shell parentShell, EObject object, ScaveEditor editor, Map<String,Object> formParameters) {
@@ -115,10 +115,10 @@ public class EditDialog extends TitleAreaDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite)super.createDialogArea(parent);
-	
+
 		Composite panel = new Composite(composite, SWT.NONE);
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	
+
 		setTitle(form.getTitle());
 		setMessage(form.getDescription());
 		form.populatePanel(panel);
@@ -143,12 +143,12 @@ public class EditDialog extends TitleAreaDialog {
 	private void applyChanges() {
 		if (features == null)
 			return;
-	
+
 		values = new Object[features.length];
 		for (int i = 0; i < values.length; ++i) {
 			values[i] = form.getValue(features[i]);
 		}
-	
+
 		CompoundCommand command = new CompoundCommand("Edit");
 		for (int i = 0; i < features.length; ++i) {
 			Object oldValue = object.eGet(features[i]);
@@ -167,7 +167,7 @@ public class EditDialog extends TitleAreaDialog {
 	}
 
 	private static IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features, ResultFileManager manager, Map<String,Object> formParameters) {
-		//XXX remove features[] parameter! 
+		//XXX remove features[] parameter!
 		return ScaveObjectEditFormFactory.instance().createForm(object, formParameters, manager);
 	}
 }

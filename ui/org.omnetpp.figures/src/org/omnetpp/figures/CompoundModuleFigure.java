@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -73,7 +73,7 @@ public class CompoundModuleFigure extends NedFigure
     protected float scale = 1.0f;
     protected String unit = "px";
 	private long seed = 0;
-	private String oldDisplayString = null;
+	private int oldCumulativeHashCode;
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends Layer {
@@ -144,15 +144,15 @@ public class CompoundModuleFigure extends NedFigure
 
     // main layer used to display submodules
     class SubmoduleLayer extends Layer {
-        
+
         @Override
         public void add(IFigure child, Object constraint, int index) {
-            // request an auto-layout whenever an unpinned submodule is added (added from the text editor) 
+            // request an auto-layout whenever an unpinned submodule is added (added from the text editor)
 //XXX            if (child instanceof SubmoduleFigure && !((SubmoduleFigure)child).isPinVisible())
 //                layouter.requestFullLayout();
             super.add(child, constraint, index);
         }
-        
+
         public CompoundModuleFigure getCompoundModuleFigure() {
         	return CompoundModuleFigure.this;
         }
@@ -161,7 +161,7 @@ public class CompoundModuleFigure extends NedFigure
         public Dimension getPreferredSize(int wHint, int hHint) {
 			return layouter.getPreferredSize(this, backgroundSize.width, backgroundSize.height);
 		}
-        
+
         @Override
         public Dimension getMinimumSize(int wHint, int hHint) {
         	return new Dimension(100,50);
@@ -177,7 +177,7 @@ public class CompoundModuleFigure extends NedFigure
         tb.setSpacing(2);
         tb.setStretchMinorAxis(false);
         setLayoutManager(tb);
-        
+
         // contains all layers used inside a compound modules submodule area
         mainContainer = new LayeredPane() {
         	@Override
@@ -194,7 +194,7 @@ public class CompoundModuleFigure extends NedFigure
         mainContainer.addLayerAfter(backgroundLayer = new BackgroundLayer(), null, null);
 
         // set up the layouter. Preferred sizes should be set to 0 so the mainContainer
-        // can follow the size of the submoduleLayer which uses the layouter to calculate the 
+        // can follow the size of the submoduleLayer which uses the layouter to calculate the
         // preferred size
         submoduleLayer.setLayoutManager(layouter = new CompoundModuleLayout(this));
         messageLayer.setPreferredSize(0, 0);
@@ -202,7 +202,7 @@ public class CompoundModuleFigure extends NedFigure
         frontDecorationLayer.setPreferredSize(0, 0);
         backDecorationLayer.setPreferredSize(0, 0);
         backgroundLayer.setPreferredSize(0, 0);
-        
+
         add(mainContainer);
 
         // this effectively creates the following hierarchy:
@@ -304,11 +304,11 @@ public class CompoundModuleFigure extends NedFigure
 	@Override
     public void setDisplayString(IDisplayString dps) {
 		// OPTIMIZATION: do not change anything if the display string has not changed
-		String newDisplayString = dps.toString();
-		if (newDisplayString.equals(oldDisplayString) )
+		int newCumulativeHashCode = dps.cumulativeHashCode();
+		if (oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
 			return;
 
-		this.oldDisplayString = newDisplayString;
+		this.oldCumulativeHashCode = newCumulativeHashCode;
 
 		// background color / image
         Image imgback = ImageFactory.getImage(
@@ -353,9 +353,10 @@ public class CompoundModuleFigure extends NedFigure
             // a full new layout must be executed before any repainting occurs otherwise
             // figures without centerLocation cannot be rendered
             invalidate();
-            layouter.layout(submoduleLayer);  
+            layouter.layout(submoduleLayer);
         }
 
+		  layouter.invalidate();
         repaint();
 	}
 
@@ -366,7 +367,7 @@ public class CompoundModuleFigure extends NedFigure
     public Layer getBackgroundLayer() {
     	return backgroundLayer;
     }
-    
+
 	public Layer getBackgroundDecorationLayer() {
 		return backDecorationLayer;
 	}

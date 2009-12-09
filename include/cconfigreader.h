@@ -51,9 +51,9 @@ class cConfigurationReader
     virtual ~cConfigurationReader() {}
 
     /**
-     * Initializes the object from a "boot-time" configuration (omnetpp.ini). 
-     * For example, if a particular cConfigurationReader class uses a database 
-     * as data source, it may take the connection parameters from the 
+     * Initializes the object from a "boot-time" configuration (omnetpp.ini).
+     * For example, if a particular cConfigurationReader class uses a database
+     * as data source, it may take the connection parameters from the
      * "boot-time" configuration.
      */
     virtual void initializeFrom(cConfiguration *bootConfig) = 0;

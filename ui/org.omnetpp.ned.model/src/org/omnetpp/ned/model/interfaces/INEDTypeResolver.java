@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,8 +40,8 @@ public interface INEDTypeResolver {
 	}
 
 	/**
-	 * Returns the current value of a counter that gets incremented by every 
-	 * NED change. Checking against this counter allows one to invalidate 
+	 * Returns the current value of a counter that gets incremented by every
+	 * NED change. Checking against this counter allows one to invalidate
 	 * cached NED data whenever they potentially become stale.
 	 */
     public long getLastChangeSerial();
@@ -90,7 +90,7 @@ public interface INEDTypeResolver {
 	 * file is outside the project's NED source folders, or the project itself
 	 * does not have the OMNeT++ nature, or that nature is disabled (see
 	 * IProject.isNatureEnabled() on why a nature might be disabled.)
-	 * 
+	 *
 	 * Equivalent to getNedSourceFolderFor(file.getParent()).
 	 */
     public IContainer getNedSourceFolderFor(IFile file);
@@ -165,7 +165,7 @@ public interface INEDTypeResolver {
 
     /**
      * Returns all toplevel (non-inner) types in the NED files that implement
-     * the given interface, excluding duplicate names, from the given project 
+     * the given interface, excluding duplicate names, from the given project
      * and its dependent projects.
      */
     public Collection<INEDTypeInfo> getNedTypesThatImplement(INEDTypeInfo interfaceType, IProject context);
@@ -199,7 +199,7 @@ public interface INEDTypeResolver {
      * are simple names (i.e. package name has been removed).
      */
     public Set<String> getReservedNames(IProject context, String packageName);
-    
+
     /**
      * Return a NED type from its fully qualified name, from the given project
      * and its dependent projects. Inner types are NOT recognized.
@@ -225,8 +225,8 @@ public interface INEDTypeResolver {
 
     /**
      * Determines the actual type for a "like" submodule or channel. If name is
-     * a simple name (i.e. unqualified), there must be exactly one NED type 
-     * with that name that implements the given interface. 
+     * a simple name (i.e. unqualified), there must be exactly one NED type
+     * with that name that implements the given interface.
      */
 	public INEDTypeInfo lookupLikeType(String name, INEDTypeInfo interfaceType, IProject context);
 
@@ -282,28 +282,28 @@ public interface INEDTypeResolver {
 	/**
 	 * Convenience method. Calls getPropertyFor(nedFileElement,propertyName),
 	 * and if a property was found, returns its simple value (getSimpleValue());
-	 * otherwise returns null. 
+	 * otherwise returns null.
 	 */
     public String getSimplePropertyFor(NedFileElementEx nedFileElement, String propertyName);
 
     /**
      * Convenience method. Calls getPropertyFor(folder,propertyName),
      * and if a property was found, returns its simple value (getSimpleValue());
-     * otherwise returns null. 
+     * otherwise returns null.
      */
     public String getSimplePropertyFor(IContainer folder, String propertyName);
 
-    /** 
+    /**
      * Searches for a file property with the given name in the given NED file, then
-     * in the package.ned file in the same folder, and in package.ned files 
-     * of parent folders up to the root (i.e. the containing NED source folder). 
+     * in the package.ned file in the same folder, and in package.ned files
+     * of parent folders up to the root (i.e. the containing NED source folder).
      * Returns null if not found.
      */
     public PropertyElementEx getPropertyFor(NedFileElementEx nedFileElement, String propertyName);
 
-    /** 
+    /**
      * Searches for a file property with the given name in the package.ned file
-     * in the given folder, and in package.ned files of parent folders up to the root 
+     * in the given folder, and in package.ned files of parent folders up to the root
      * (i.e. the containing NED source folder). Returns null if not found.
      */
     public PropertyElementEx getPropertyFor(IContainer folder, String propertyName);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -35,13 +35,13 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	public TreeAccess getTree() {
 	    return (TreeAccess) createAccess(getWidget().getParent());
 	}
-	
+
 	@UIStep
 	public TreeItemAccess reveal() {
    		getWidget().getParent().showItem(getWidget());
 		return this;
 	}
-	
+
 	@Override @UIStep
 	protected Point getAbsolutePointToClick() {
 	    Point point = toAbsolute(getCenter(getWidget().getBounds()));
@@ -66,7 +66,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width", bounds.width > 0);
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
 	}
-	
+
 	@Override
 	protected Menu getContextMenu() {
 		return (Menu)getWidget().getParent().getMenu();
@@ -88,7 +88,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
             pressKey(SWT.KEYPAD_ADD);  // ARROW_RIGHT doesn't work on Linux
         }
     }
-    
+
     @UIStep
     public void clickColumn(int index) {
         Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getTextBounds(index)));
@@ -115,7 +115,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         System.out.println(oldFocusControl.getClass().getSimpleName());
         return (TextAccess)createAccess(focusControl);
     }
-    
+
     @InBackgroundThread
     public void clickAndTypeOver(String content) {
         TextAccess cellEditor = activateCellEditor();

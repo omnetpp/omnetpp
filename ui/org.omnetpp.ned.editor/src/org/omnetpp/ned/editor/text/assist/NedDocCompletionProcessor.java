@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,21 +27,21 @@ public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
     @Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
-        
+
         result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedAtWordDetector(),
         		"@", NedCompletionHelper.proposedDocKeywords, " ", ""));
-        result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedDocTagDetector(), 
+        result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedDocTagDetector(),
                 "<", NedCompletionHelper.proposedDocTags, "> ", ""));
-        result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedDocTagDetector(), 
+        result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedDocTagDetector(),
                 "</", NedCompletionHelper.proposedDocTags, "> ", ""));
-        
+
 //        Collections.sort(result, CompletionProposalComparator.getInstance());
         return result.toArray(new ICompletionProposal[result.size()]);
-    } 
+    }
 
     @Override
 	public char[] getCompletionProposalAutoActivationCharacters() {
         return new char[] { '@', '<' };
     }
-    
+
 }

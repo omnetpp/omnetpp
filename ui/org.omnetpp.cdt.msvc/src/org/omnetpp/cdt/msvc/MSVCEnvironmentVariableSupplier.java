@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,8 +30,8 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * Looks for environment variables VCINSTALLDIR, VSINSTALLDIR, MSSdk. If you have several versions
  * of SDK / Visual C on your machine, and need a specific one (not the latest) define these variables
  * to point to the needed installation.
- * 
- * @author DSchaefer 
+ *
+ * @author DSchaefer
  * @author rhornig
  */
 @SuppressWarnings("deprecation")
@@ -39,25 +39,25 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 	    IManagedIsToolChainSupported {
 
 	private static class MSVCBuildEnvironmentVariable implements IBuildEnvironmentVariable {
-	
+
 		private final String name;
 		private final String value;
 		private final int operation;
-	
+
 		public MSVCBuildEnvironmentVariable(String name, String value, int operation) {
 			this.name = name;
 			this.value = value;
 			this.operation = operation;
 		}
-	
+
 		public String getDelimiter() {
 			return ";";
 		}
-	
+
 		public String getName() {
 			return name;
 		}
-	
+
 		public String getValue() {
 			return value;
 		}
@@ -86,7 +86,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         String vsDir = Activator.getDefault().getPreferenceStore().getString(MSVCPreferencePage.PREFKEY_VSDIR);
         return StringUtils.isEmpty(vsDir) ? null : vsDir;
     }
-    
+
     /**
      * Returns the VC dir from the preferences; null if unset.
      */
@@ -110,7 +110,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
     private void addvar(Map<String, IBuildEnvironmentVariable> variables, IBuildEnvironmentVariable var) {
         variables.put(var.getName(), var);
     }
-    
+
 	private Map<String, IBuildEnvironmentVariable> createVars() {
 	    Map<String, IBuildEnvironmentVariable> vars = new HashMap<String, IBuildEnvironmentVariable>();
 
@@ -120,16 +120,16 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         String vcDir = getVCDir();
 		if (vcDir == null)
 			return vars;
-	
+
 		// The SDK Location
 		String sdkDir = getSDKDir();
-	
+
 		// INCLUDE
 		StringBuffer buff = new StringBuffer();
 
 		buff.append(new Path(vcDir).append("INCLUDE").toOSString()+";");
 		buff.append(new Path(vcDir).append("INCLUDE\\SYS").toOSString()+";");  //FIXME needed????
-	
+
 		if (sdkDir != null) {
 		    buff.append(new Path(sdkDir).append("Include").toOSString()+";");
 		    buff.append(new Path(sdkDir).append("Include\\gl").toOSString()+";");
@@ -142,19 +142,19 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 		if (sdkDir != null)
 		    buff.append(new Path(sdkDir).append("Lib").toOSString()+";");
 		addvar(vars, new MSVCBuildEnvironmentVariable("LIB", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
-	
+
 		// PATH
 		buff = new StringBuffer();
-	
+
 		String vsDir = getVSDir();
 		if (vsDir != null)
 			buff.append(new Path(vsDir).append("Common7\\IDE").toOSString()+";");
-	
+
 		buff.append(new Path(vcDir).append("Bin").toOSString()+";");
         if (sdkDir != null)
             buff.append(new Path(sdkDir).append("Bin").toOSString()+";");
 		addvar(vars, new MSVCBuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
-	
+
 		return vars;
 	}
 }

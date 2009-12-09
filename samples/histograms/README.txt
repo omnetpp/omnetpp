@@ -48,9 +48,9 @@ keeping track of quantiles. The resulting (calculated) histogram will
 thus contain roughly equi-probable cells.
 
 * cKSplit
-An adaptive histogram structure which splits those cells that receive 
-"too many" observations (this is defined by a split criterion), thus 
-"refining the resolution" at (or "zooming in" on) the interesting parts 
+An adaptive histogram structure which splits those cells that receive
+"too many" observations (this is defined by a split criterion), thus
+"refining the resolution" at (or "zooming in" on) the interesting parts
 of the distribution.
 
 

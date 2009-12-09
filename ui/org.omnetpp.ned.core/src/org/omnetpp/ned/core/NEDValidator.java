@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -241,7 +241,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
             errors.addError(node, "no such interface: '" + name+"'");
             return;
         }
-        
+
         boolean isModule = componentNode instanceof IModuleTypeElement || componentNode instanceof ModuleInterfaceElement;
         if (isModule && !(e.getNEDElement() instanceof ModuleInterfaceElement)) {
             errors.addError(node, "'"+name+"' is not a module interface");
@@ -262,10 +262,10 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 //        }
 
         //TODO check compliance to interface (somewhere, not necessarily in the function)
-        
+
         // then process children
         validateChildren(node);
-	
+
 	}
 
 	@Override

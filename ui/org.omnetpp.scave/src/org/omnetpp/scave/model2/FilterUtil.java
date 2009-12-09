@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -58,7 +58,7 @@ public class FilterUtil {
 
 	public FilterUtil(String filterPattern, boolean lossyAllowed) {
 		if (!isANDPattern(filterPattern)) {
-			if (!lossyAllowed) 
+			if (!lossyAllowed)
 				throw new IllegalArgumentException("Not an AND pattern: "+filterPattern);
 			lossy = true;
 		}
@@ -186,7 +186,7 @@ public class FilterUtil {
 	}
 
 	private void parseFields(String pattern) {
-		// Note: here we allow non-AND patterns which cannot be represented, but 
+		// Note: here we allow non-AND patterns which cannot be represented, but
 		// at least the fields can be extracted.
 		Node node = MatchExpressionSyntax.parseFilter(pattern);
 		FilterNodeVisitor visitor = new FilterNodeVisitor();
@@ -211,7 +211,7 @@ public class FilterUtil {
 
 		public boolean visit(Node node) {
 			switch (node.type) {
-			case Node.UNARY_OPERATOR_EXPR: 
+			case Node.UNARY_OPERATOR_EXPR:
 				isANDPattern = false;
 				break;
 			case Node.BINARY_OPERATOR_EXPR:
@@ -229,7 +229,7 @@ public class FilterUtil {
 			case Node.PARENTHESISED_EXPR:
 			case Node.ROOT:
 				break;
-			default: Assert.isTrue(false);  
+			default: Assert.isTrue(false);
 			}
 			return true;
 		}

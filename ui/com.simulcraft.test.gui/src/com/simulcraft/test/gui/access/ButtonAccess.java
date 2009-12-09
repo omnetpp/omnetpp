@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ public class ButtonAccess extends ControlAccess
 	public ButtonAccess(Button control) {
 		super(control);
 	}
-	
+
 	@Override
 	public Button getControl() {
 		return (Button)widget;
@@ -30,12 +30,12 @@ public class ButtonAccess extends ControlAccess
 		assertEnabled();
 		click();
 	}
-	
+
 	@UIStep
 	public void assertIsCheckbox() {
 		Assert.assertTrue("Checkbox expected", (getControl().getStyle() & SWT.CHECK) != 0);
 	}
-	
+
     @UIStep
 	public void ensureSelection(boolean selected) {
 		assertIsCheckbox();

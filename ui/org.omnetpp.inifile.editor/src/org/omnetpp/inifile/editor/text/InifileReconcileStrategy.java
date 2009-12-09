@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,8 +29,8 @@ import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 
 /**
- * This class has one instance per editor. It performs 
- * background parsing of the inifile, and keeps editor data 
+ * This class has one instance per editor. It performs
+ * background parsing of the inifile, and keeps editor data
  * (InifileContents) up to date.
  */
 public class InifileReconcileStrategy implements IReconcilingStrategy {
@@ -51,7 +51,7 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 	public void reconcile(IRegion partition) {
 		Debug.println("reconcile(IRegion) called");
 
-		// force parsing and analyzing the file now (they are both lazy and 
+		// force parsing and analyzing the file now (they are both lazy and
 		// wouldn't do that otherwise until a view, a tooltip or something
 		// needs data from them)
 		((InifileDocument)editorData.getInifileDocument()).parse();
@@ -80,7 +80,7 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 	}
 
 	// like the above, but this version parses the document, because InifileDocument doesn't store
-	// if there're multiple occurrences of a section name within the document. Question is if we 
+	// if there're multiple occurrences of a section name within the document. Question is if we
 	// really want to allow that?!?!
 	//XXX needed..?
 	private void updateFoldingRegions2() {
@@ -120,10 +120,10 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 			Callback callback = new Callback();
 			new InifileParser().parse(streamReader, callback);
 			callback.done();
-		} 
+		}
 		catch (IOException e) {
 			// cannot happen with string input
-		} 
+		}
 		catch (ParseException e) {
 		}
 
@@ -139,6 +139,6 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 				posList.put(key, new Position(startOffset, endOffset - startOffset));
 			}
 		} catch (BadLocationException e) {
-		} 
+		}
 	}
 }

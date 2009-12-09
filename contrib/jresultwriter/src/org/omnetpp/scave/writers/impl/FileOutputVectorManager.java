@@ -19,7 +19,7 @@ import org.omnetpp.scave.writers.ResultRecordingException;
  * An output vector manager that writes OMNeT++ vector (".vec") files.
  * Recording event numbers ("ETV" vectors) is not supported, because it is
  * practically only useful for sequence charts.
- * 
+ *
  * This class does not support filtering (of vectors or recorded data)
  * at all -- this functionality may be added via subclasses.
  *
@@ -50,7 +50,7 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
     class OutputVector implements IOutputVector {
         int id;
         byte[] header;
-        
+
         int n = 0;
         Number[] times = new Number[10];
         double[] values = new double[10];
@@ -98,7 +98,7 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
         public boolean record(double value) {
             if (simtimeProvider == null)
                 throw new IllegalStateException("Simtime provider not yet specified");
-            
+
             return record(simtimeProvider.getSimulationTime(), value);
         }
 
@@ -176,7 +176,7 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
                 sqrSum = 0;
                 times = new Number[10];
                 values = new double[10];
-            } 
+            }
             catch (IOException e) {
                 throw new ResultRecordingException("Error recording vector results:" + e.getMessage(), e);
             }
@@ -226,13 +226,13 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
     protected void open() {
         try {
             stream = new FileOutputStream(file);
-        } 
+        }
         catch (FileNotFoundException e) {
             throw new ResultRecordingException("Cannot open output vector file " + file.getPath(), e);
         }
         try {
             indexStream = new FileOutputStream(indexFile);
-        } 
+        }
         catch (FileNotFoundException e) {
             throw new ResultRecordingException("Cannot open output vector index file " + indexFile.getPath(), e);
         }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,7 +17,7 @@ import org.omnetpp.common.util.StringUtils;
  * The proposal specify a replacement of a range of text in the field
  * with the new content. The content can be decorated to add quotes,
  * parenthesis.
- * 
+ *
  * @author Andras
  */
 @SuppressWarnings("unchecked")
@@ -35,13 +35,13 @@ public class ContentProposal implements IContentProposal, Comparable {
 	private String label;
 
 	private String description;
-    
+
 	private int cursorPosition; // position of the cursor relative to content after the proposal accepted
-    
+
 	private int decorators; // additional characters added to the content
-    
+
 	private int startIndex; // start of the replaced range
-    
+
 	private int endIndex; // end of the replaced range
 
 	public ContentProposal(String content) {
