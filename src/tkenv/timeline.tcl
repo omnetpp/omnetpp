@@ -160,18 +160,10 @@ proc timeline_dblclick c {
    }
 }
 
-proc timeline_rightclick {c X Y} {
-   set item [$c find withtag current]
-   set tags [$c gettags $item]
-
-   set ptr ""
-   if {[lsearch $tags "ptr*"] != -1} {
-      regexp "ptr.*" $tags ptr
-   }
-   set ptr [lindex $ptr 0]
-
-   if [opp_isnotnull $ptr] {
-      set popup [create_inspector_contextmenu $ptr]
+proc timeline_rightclick {c X Y x y} {
+   set ptrs [get_ptrs_under_mouse $c $x $y] 
+   if {$ptrs != {}} {
+      set popup [create_inspector_contextmenu $ptrs]
       tk_popup $popup $X $Y
    }
 }

@@ -601,10 +601,10 @@ proc resizeimage {img sx sy} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n} {
+proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n two_way} {
     global inspectordata
 
-    # puts "DEBUG: draw_connection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n"
+    # puts "DEBUG: draw_connection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
 
     if [catch {
        set src_rect [get_submod_coords $c $srcptr]
@@ -661,13 +661,20 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
            set pattern ""
        }
 
-       if {$inspectordata($c:showarrowheads)} {
+       set state "normal"
+       if {$inspectordata($c:showarrowheads) && !$two_way} {
            set arrow last
        } else {
            set arrow none
        }
 
        $c create line $arrow_coords -arrow $arrow -fill $fill -dash $pattern -width $width -tags "dx tooltip conn $gateptr"
+
+       # if we have a two way connection we should draw only in one direction
+       # the other line will be hidden (lowered under anything else)
+       if {[string compare $srcptr $destptr] >=0 && $two_way} {
+           $c lower $gateptr "dx"
+       } 
 
        if {[info exists tags(t)]} {
            set txt [lindex $tags(t) 0]
@@ -893,13 +900,13 @@ proc create_graphicalmodwindow {name geom} {
     $c bind msgname <Double-1> "graphmodwin_dblclick $w"
     $c bind qlen <Double-1> "graphmodwin_qlen_dblclick $w"
 
-    $c bind submod <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind conn <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind msg <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind msgname <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind mod <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind modname <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind qlen <$B3> "graphmodwin_qlen_rightclick $w %X %Y"
+    $c bind submod <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind conn <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind msg <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind msgname <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind mod <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind modname <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind qlen <$B3> "graphmodwin_qlen_rightclick $w %X %Y %x %y"
 
     # keyboard shortcuts
     bind $w <Control-i> "graphmodwin_zoomiconsby $w 1.25"
@@ -993,20 +1000,57 @@ proc graphmodwin_dblclick w {
    }
 }
 
-proc graphmodwin_rightclick {w X Y} {
+# get the pointers of all objects under the mouse. If more than 1 ptr is returned
+# then bgrptr is removed from the list. x and y must be widget relative coordinate 
+# (of the canvas object). The background module pointer is removed automatically 
+# if more that 1 pointer is present. I.e. background is returned ONLY if the mouse
+# is directly over the background module.
+proc get_ptrs_under_mouse {c x y} {
+   set ptrs {}
+   # convert widget coordinates to canvas coordinates
+   set x [$c canvasx $x]
+   set y [$c canvasy $y]
+   set items [$c find overlapping [expr $x-2] [expr $y-2] [expr $x+2] [expr $y+2]]
+   foreach item $items {
+       set tags [$c gettags $item]
+       foreach tag $tags {
+           if [string match "ptr*" $tag] {
+               lappend ptrs $tag
+           }
+       }
+   }
+
+   set ptrs2 {}
+   if {$ptrs != {}} {
+      # remove duplicte pointers and reverse the order
+      # so the topmost element will be the first in the list
+      foreach ptr $ptrs {
+          if {[lsearch -exact $ptrs2 $ptr] == -1 } {
+              set ptrs2 [lreplace $ptrs2 0 -1 $ptr]
+          }
+      }
+
+      set bgptr ""
+      regexp {\.(ptr.*)-([0-9]+)} $c match bgptr dummy
+      # if more than one ptr present delete the background module's pointer
+      if { [llength $ptrs2] > 1 && $bgptr != "" } {
+          set bgindex [lsearch $ptrs2 $bgptr]
+          if { $bgindex >= 0 } {
+              set ptrs2 [lreplace $ptrs2 $bgindex $bgindex]
+          }
+      }
+   }
+   return $ptrs2
+}
+
+proc graphmodwin_rightclick {w X Y x y} {
    global inspectordata tmp
    set c $w.c
-   set item [$c find withtag current]
-   set tags [$c gettags $item]
+   set ptrs [get_ptrs_under_mouse $c $x $y]
 
-   set ptr ""
-   if {[lsearch $tags "ptr*"] != -1} {
-      regexp "ptr.*" $tags ptr
-   }
-   set ptr [lindex $ptr 0]
+   if {$ptrs != {}} {
 
-   if [opp_isnotnull $ptr] {
-      set popup [create_inspector_contextmenu $ptr]
+      set popup [create_inspector_contextmenu $ptrs]
 
       set tmp($c:showlabels) $inspectordata($c:showlabels)
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)

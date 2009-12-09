@@ -101,7 +101,7 @@ proc init_balloons {args} {
     enable_balloon Label
     enable_balloon Entry
     enable_balloon Menu "%W index active"
-    enable_balloon Canvas "%W find withtag current"
+    enable_balloon Canvas "get_ptrs_under_mouse %W %x %y"
 }
 
 #package provide balloon 1.0
