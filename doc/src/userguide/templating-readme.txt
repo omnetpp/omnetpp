@@ -847,6 +847,35 @@ such filtering. A template is regarded as one that requires C++ support
 if the template.properties file contains any of the following:
 `sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true`.
 
+* How to make calculations?
+
+  The value of 10*cos(0.2) is ${10*Math.cos(0.2)}.
+
+* Can I use conditional operators like `cond ? x : y` in C++ ?
+
+  Conditional output: ${iif(condition,"yes","no")}
+
+* How can I create a file ?
+Use the FileUtils class and the @do macro to call the methods on it. 
+ 
+  <@do FileUtils.createFile("empty.txt", "")!/>
+  
+* How can I create lists and how can I iterate over it?
+  
+  The words of the sentence '${sentence}':
+  <#list StringUtils.split(sentence) as word>
+     ${word}
+  </#list>
+
+* How can I use hash tables? 
+
+  Properties in the file ${filename}:
+  <#assign props = FileUtils.readPropertyFile(filename)>
+  <#list props?keys as key>
+     ${key} ==> ${props.get(key)}
+  </#list>
+
+
 === Using the IDE
 
 ==== Editing XSWT Files
@@ -931,36 +960,37 @@ which wizard types they are supported as shown on in the previous table
 * N: nedfile, simplemodule, compoundmodule, network 
 * W: wizard
 
-If the variable is marked as `R/O` (read-only), you should not modify its value
-in your wizard pages. Modification of read-only values may result in inconsystent 
-output files.
+If a variable is marked as `R/O` (read-only), you should not modify its value
+in your wizard pages. The value of these variables are already used by the wizard
+when the template expansion occures. Modification of read-only values may result 
+in inconsistent output files.
 
 
-date (A)::  current date in yyyy-mm-dd format
-year (A)::  year in yyyy format
-author (A)::  user name ("user.name" Java system property)
-licenseCode (A)::  license identifier for the @license NED property
-licenseText (A)::  copyright notice for the given license
+date (A) (R/O)::  current date in yyyy-mm-dd format
+year (A) (R/O)::  year in yyyy format
+author (A) (R/O)::  user name ("user.name" Java system property)
+licenseCode (A) (R/O)::  license identifier for the @license NED property
+licenseText (A) (R/O)::  copyright notice for the given license
 bannerComment (A)::  banner comment for source files; includes license text
 
 ==== Template information
 
-wizardType (A):: the type of the wizard. Any of the following:
-                 project, simulation, nedfile, inifile, messagefile,
-                 simplemodule, compoundmodule, network, wizard
-templateName (A):: name of the template
-templateDescription (A):: template description
-templateCategory (A):: template category
-templateURL (A):: the URL, the template was loaded from (only for built-in and 
+wizardType (A) (R/O):: the type of the wizard. Any of the following:
+                 `project, simulation, nedfile, inifile, msgfile,
+                 simplemodule, compoundmodule, network, wizard, export, import`
+templateName (A) (R/O):: name of the template
+templateDescription (A) (R/O):: template description
+templateCategory (A) (R/O):: template category, used to visually group the 
+                       templates in the wizards
+templateURL (A) (R/O):: the URL, the template was loaded from (only for built-in and 
                   other URL-based wizards)
-
 
 The following variables are only defined if the template was loaded from the workspace
 (i.e. a project's `templates/` subdirectory):
 
-templateFolderName (A)::  name of the folder (without path) in which the template files are
-templateFolderPath (A)::  full workspace path of the folder in which the template files are
-templateProject (A)::  name of the project that defines the template
+templateFolderName (A) (R/O)::  name of the folder (without path) in which the template files are
+templateFolderPath (A) (R/O)::  full workspace path of the folder in which the template files are
+templateProject (A) (R/O)::  name of the project that defines the template
 
 ==== File name related variables
 
@@ -968,11 +998,12 @@ targetFolder (A) (R/O):: the project or folder path in which the project will ge
    For project wizards, this holds the name of the project being created; for
    file wizards, it holds the name of the folder in which the file will be created;
    for simulation wizard, it holds the name of the folder where files will be created.
-targetFileName (N,I,M) (R/O):: the name of the new file to be created 
+targetFileName (N,I,M) (R/O):: the name of the new file to be created. The file can be specified on the
+                               first wizard page. 
 targetTypeName (P,S,N,I,M):: a typename that can be used as the main 'type' for the resulting code.
-                         (for P = `${projectName}`, for S = `${simulationName}`, for N,I,M = `${targetFileName}`)
+                         (for projects it's the `${projectName}`, for simulations it's the specified `${simulationName}`, for the rest of wizards it is calculated from the `${targetFileName}`)
 targetMainFile (P,S,N,I,M):: a file name that can be used as the 'main' output file for the template 
-                         (for P,S = `${targetTypeName}.ned`, for N,I,M = `${targetFileName}`)
+                         (for projects and simulations it's `${targetTypeName}.ned`, for ned,msg and ini files it is `${targetFileName}`)
 
 ==== Project name related variables
 
@@ -986,28 +1017,46 @@ Sanitization means making the name suitable as a NED or C/C++ identifier
 
 ==== C++ project control
 
-addProjectReference (P):: if true, make project as dependent on this one
-sourceFolders (P):: source folders to be created and configured
-makemakeOptions (P):: makemake options, as "folder1:options1,folder2:options2,..."
-withCplusplusSupport (P):: whether the project supports C++ code compilation 
-requiresCPlusPlus (P):: if true, the wizard requires the "support C++ option" during the project creation
-namespaceName (S,N,M):: the namespace where C++ classes should be placed 
+addProjectReference (P):: If true, the wizard will make the result project as 
+                          dependent on the project containing the wizard itself.
+withCplusplusSupport (P) (R/O):: Whether the project supports C++ code compilation. 
+                                 This is the state of the "C++ support" checkbox on the first 
+                                 page of the project wizard. Setting this variable does 
+                                 not have any effect on the created project. 
+sourceFolders (P):: Source folders to be created and configured automatically  
+makemakeOptions (P):: makemake options, as "folder1:options1,folder2:options2,...".
+                      The wizard will automatically configure the C++ project with the
+                      given options. 
+requiresCPlusPlus (P):: If true, the wizard requires the "support C++ option" during the project creation.
+                        If any of the `sourceFolders, makemakeOptions` are present or `withCplusplusSupport=true`,
+                        the template will be displayed only if the "support C++ option" option was set on the 
+                        first page of the project wizard.
+namespaceName (S,N,M):: The namespace where C++ classes should be placed.
+                        This is determined automatically by looking up the value of the 
+                        `@namespace` property in NED files in the NED source folder. 
 
 ==== NED files and message files
  
-nedSourceFolders (P):: NED source folders to be created and configured
-nedPackageName (P,S,N,I):: (P: $\{projectname}, S,N,I:autocalculated)
-msgTypeName (M):: the name of the message class
+nedSourceFolders (P):: NED source folders to be created and configured automatically.
+nedPackageName (P,S,N,I):: The NED package name. For projects it is `${projectname}`, 
+                           for simulations, NED and INI files, it is automatically
+                           calculated from the folder hierarchy where the file
+                           is generated.
+msgTypeName (M):: The name of the message class based on the capitalized and sanitized file name.
+                  (e.g. for `test.msg` it is `Test`) 
 
 ==== Variables specific to New Simulation wizards
 
 simulationFolderName (S) (R/O):: the folder where the simulation will be created
-simulationName (S) (R/O):: the name of the simulation
+simulationName (S) (R/O):: The name of the simulation. It is the capitalized and
+                           sanitized name derived from the `simulationFolderName` .
 
 ==== Variables for New Wizard generation
 
-newWizardName (W) (R/O):: the name of the new wizard to be created
-newWizardProject (W):: the project where the new wizard will be created
+newWizardName (W) (R/O):: The name of the new wizard to be created. It is the name 
+                          of the folder under the `templates` directory where
+                          all the template files will be stored.
+newWizardProject (W):: The project where the new wizard will be created.
 
 ==== Miscellaneus
 
@@ -1017,24 +1066,31 @@ the whole context used during template processing.
 
 creationContext (A):: The template evaluation context. Provided for low level access.
 classes (A)::         Access to class static models. It is possible to access 
-                      class static methods via this variable. 
-nedResources (A):: all currently known NED types
-msgResources (A):: all currently known message types
+                      class static methods via this variable. See http://freemarker.org/docs/pgui_misc_beanwrapper.html#autoid_54
+                      for further details.
+nedResources (A):: Provides direct access to the in memory model of the parsed NED files. It is possible to query,
+                   check and iterate over the available NED types. 
+msgResources (A):: Provides access to the in memory model of the parsed NED files.
 
 NOTE: In addition to the above variables, all keys found in the template.properties file
 are added automatically to the context as a template variable.
 
 
-
 === Append. B: Functions, Classes and Macros available from Templates
 
+In addition to the standard FreeMarker template constructs, there are 
+several java utility classes, template macros and functions 
+that can be used in your wizard templates to ease the development of
+custom wizards. The following sections briefly describe these calsses and
+methods. 
 
+==== Custom Macros and Functions 
 	
 	iif(condition, valueIfTrue, valueIfFalse)
 	
 Inline if. The FreeMarker language does not have a conditional operator
 (like ?: of C/C++ ), but the iif() function can save you from the verbosity
-of having to spell out <#if>..<#else>..</#if> everywhere such thing is needed.
+of having to spell out <#if>..<#else>..</#if>, where such thing is needed.
 Note that unlike in C/C++ the evaluation is not lazy, i.e. both the "then" and
 the "else" expressions are always evaluated.
 
@@ -1056,26 +1112,6 @@ The following Java classes are available during template processing:
   FileUtils::       see below for documentation       	
   IDEUtils::        see below for documentation
   LangUtils::       see below for documentation
-
-Example template code:
-
-  The value of 10*cos(0.2) is ${10*Math.cos(0.2)}.
-
-  Conditional output: ${iif(condition,"yes","no")}
-
-  Create an empty file:
-  <@do FileUtils.createFile("empty.txt", "")!/>
-  
-  The words of the sentence '${sentence}':
-  <#list StringUtils.split(sentence) as word>
-     ${word}
-  </#list>
-
-  Properties in the file ${filename}:
-  <#assign props = FileUtils.readPropertyFile(filename)>
-  <#list props?keys as key>
-     ${key} ==> ${props.get(key)}
-  </#list>
 
 ==== Math
 
