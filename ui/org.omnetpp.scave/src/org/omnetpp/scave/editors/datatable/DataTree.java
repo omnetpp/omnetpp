@@ -118,7 +118,7 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public IDList getSelectedIDs() {
-        return (IDList)ResultFileManager.callWithReadLock(manager, new Callable<IDList>() {
+        return ResultFileManager.callWithReadLock(manager, new Callable<IDList>() {
             public IDList call() throws Exception {
                 IDList resultIdList = new IDList();
                 TreeItem[] treeItems = getSelection();
@@ -251,12 +251,12 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
         final Object firstNode = path == null || path.size() == 0 ? null : path.get(0);
         final int lastIndex = path == null ? -1 : path.size() - 1;
 
-        return (List<? extends Object>)ResultFileManager.callWithReadLock(manager, new Callable<List<? extends Object>>() {
+        return ResultFileManager.callWithReadLock(manager, new Callable<List<? extends Object>>() {
             public List<? extends Object> call() throws Exception {
                 Set<Object> set = new HashSet<Object>();
 
                 if (firstNode instanceof Long) {
-                    ResultItem resultItem = (ResultItem)manager.getItem((Long)firstNode);
+                    ResultItem resultItem = manager.getItem((Long)firstNode);
                     set.add(new NameValuePayload("Module name", String.valueOf(resultItem.getModuleName())));
                     set.add(new NameValuePayload("Type", resultItem.getType().toString().replaceAll("TYPE_", "").toLowerCase()));
 
@@ -302,7 +302,7 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
                             else if (firstNode instanceof ReplicationPayload) {
                                 String moduleName = resultItem.getModuleName();
                                 int index = moduleName.indexOf('.');
-                                set.add(index == -1 ? moduleName : moduleName.substring(0, index));
+                                set.add(index == -1 || ".".equals(moduleName) ? moduleName : moduleName.substring(0, index));
                             }
                             else if (firstNode instanceof String) {
                                 String moduleName = resultItem.getModuleName();
@@ -336,7 +336,7 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
 
     public Image getImage(Object node) {
         if (node instanceof Long) {
-            ResultItem resultItem = (ResultItem)manager.getItem((Long)node);
+            ResultItem resultItem = manager.getItem((Long)node);
             if (resultItem instanceof ScalarResult)
                 return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
             else if (resultItem instanceof VectorResult)
@@ -372,7 +372,7 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
             return index == 0 ? payload : "";
         }
         else if (node instanceof Long) {
-            ResultItem resultItem = (ResultItem)manager.getItem((Long)node);
+            ResultItem resultItem = manager.getItem((Long)node);
             String value = "";
 
             if (resultItem instanceof ScalarResult) {
