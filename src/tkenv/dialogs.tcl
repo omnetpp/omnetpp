@@ -326,6 +326,7 @@ proc options_dialog {{defaultpage "g"}} {
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
     checkbutton $nb.g.f2.layouting -text {Show layouting process} -variable opp(layouting)
     checkbutton $nb.g.f2.newlayouter -text {Use new layouting algorithms} -variable opp(newlayouter)
+    checkbutton $nb.g.f2.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
     checkbutton $nb.g.f2.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     $nb.g.f2.numlines.l config -width 0
     pack $nb.g.f2.usemainwin -anchor w
@@ -335,6 +336,7 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.g.f2.c1 -anchor w
     pack $nb.g.f2.layouting -anchor w
     pack $nb.g.f2.newlayouter -anchor w
+    pack $nb.g.f2.arrangevectorconnections -anchor w
     pack $nb.g.f2.confirmexit -anchor w
 
     frame $nb.g.f3 -relief groove -borderwidth 2
@@ -416,6 +418,7 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(penguin)    [opp_getsimoption penguin_mode]
     set opp(layouting)  [opp_getsimoption showlayouting]
     set opp(newlayouter) [opp_getsimoption usenewlayouter]
+    set opp(arrangevectorconnections) [opp_getsimoption arrangevectorconnections]
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(confirmexit) $config(confirm-exit)
@@ -453,6 +456,7 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption penguin_mode        $opp(penguin)
         opp_setsimoption showlayouting       $opp(layouting)
         opp_setsimoption usenewlayouter      $opp(newlayouter)
+        opp_setsimoption arrangevectorconnections      $opp(arrangevectorconnections)
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
         set config(confirm-exit)             $opp(confirmexit)

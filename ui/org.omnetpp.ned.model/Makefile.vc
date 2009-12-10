@@ -18,6 +18,7 @@ JMODELDIR = src\$(JMODELPKG:.=\)
 all: genjava
 
 genjava:
+	-mkdir $(JMODELDIR) 2>nul
 	$(PERL) etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd $(BASEPKG) $(JMODELPKG) $(JMODELDIR)
 
 depend:

@@ -47,7 +47,7 @@ endif
 #
 #=====================================================================
 
-BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv guienv utils
+BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
 SAMPLES=aloha cqn dyna embedding embedding2 fifo hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
@@ -62,11 +62,11 @@ samples: $(SAMPLES)
 
 # dependencies (because of ver.h, opp_msgc, etc)
 clean depend: makefiles
-common layout eventlog scave nedxml sim envir cmdenv tkenv guienv makefiles: utils
-layout eventlog scave nedxml sim envir cmdenv tkenv guienv : common
+common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: utils
+layout eventlog scave nedxml sim envir cmdenv tkenv : common
 envir : sim
-cmdenv tkenv guienv : envir
-tkenv guienv : layout
+cmdenv tkenv : envir
+tkenv : layout
 sim : nedxml common
 $(SAMPLES) : makefiles base
 $(BASE) : check-env
@@ -74,7 +74,7 @@ queueinglibext : queueinglib
 
 .PHONY: check-env cleanall depend makefiles clean apis docu tests all allmodes \
         components base ui samples common layout eventlog scave nedxml sim \
-        envir cmdenv tkenv guienv utils
+        envir cmdenv tkenv utils
 
 #
 # Core libraries and programs

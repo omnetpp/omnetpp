@@ -308,8 +308,8 @@ proc create_omnetpp_window {} {
     bind .timeline <Configure> "redraw_timeline"
     .timeline bind msg <Double-1> "timeline_dblclick .timeline"
     .timeline bind msgname <Double-1> "timeline_dblclick .timeline"
-    .timeline bind msg <$B3> "timeline_rightclick .timeline %X %Y"
-    .timeline bind msgname <$B3> "timeline_rightclick .timeline %X %Y"
+    .timeline bind msg <$B3> "timeline_rightclick .timeline %X %Y %x %y"
+    .timeline bind msgname <$B3> "timeline_rightclick .timeline %X %Y %x %y"
     bind .timeline <Button-$B3> {timeline_popup %x %y %X %Y}
 
     set widgets(timeline) .timeline
