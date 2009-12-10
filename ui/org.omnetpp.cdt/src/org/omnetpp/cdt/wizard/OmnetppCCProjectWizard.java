@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -72,7 +72,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     private CCProjectWizard nestedWizard;
     private TemplateSelectionPage templatePage;
-    
+
     public class NewOmnetppCppProjectCreationPage extends NewOmnetppProjectCreationPage {
         private Button supportCppButton;
 
@@ -104,14 +104,14 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
         @Override
         public IWizardPage getNextPage() {
-            // Note: when template page needs to be skipped, use this instead: 
+            // Note: when template page needs to be skipped, use this instead:
             // return supportCpp() ? nestedWizard.getStartingPage() : null;
             templatePage.updateTemplateList();  // obey supportsCpp() option
             return templatePage;
         }
     }
 
-    
+
     public class TemplateSelectionPage extends WizardPage {
         private TreeViewer treeViewer;
 
@@ -166,11 +166,11 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
         public void updateTemplateList() {
             // categorize and add templates into the tree
-            // NOTE: gets called from first page's getNextPage() method             
+            // NOTE: gets called from first page's getNextPage() method
             ProjectTemplateStore templateStore = Activator.getProjectTemplateStore();
             List<IProjectTemplate> templates = supportCpp() ? templateStore.getCppTemplates() : templateStore.getNoncppTemplates();
             GenericTreeNode root = new GenericTreeNode("root");
-            Set<String> categories = new LinkedHashSet<String>(); 
+            Set<String> categories = new LinkedHashSet<String>();
             for (IProjectTemplate template : templates)
                 categories.add(template.getCategory());
             for (String category : categories) {
@@ -179,7 +179,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                 for (IProjectTemplate template : templates)
                     if (category.equals(template.getCategory()))
                         categoryNode.addChild(new GenericTreeNode(template));
-            }                
+            }
             treeViewer.setInput(root);
             treeViewer.expandAll();
         }
@@ -188,14 +188,14 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         public IWizardPage getNextPage() {
             return supportCpp() ? nestedWizard.getStartingPage() : null;
         }
-        
+
         public IProjectTemplate getSelectedTemplate() {
             Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
             element = element == null ? null : ((GenericTreeNode)element).getPayload();
             return (element instanceof IProjectTemplate) ? (IProjectTemplate)element : null;
         }
     }
-    
+
     /**
      * Customizations:
      *   (1) hide project name / location because we have a separate page for that
@@ -219,7 +219,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "browseButton"));
             hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "useDefaultsButton"));
 
-            // select "Show supported configurations only" checkbox (this comes from a preference in CDT, but we don't care) 
+            // select "Show supported configurations only" checkbox (this comes from a preference in CDT, but we don't care)
             ((Button)ReflectionUtils.getFieldValue(this, "show_sup")).setSelection(true);
         }
 
@@ -243,7 +243,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             if (!useDefaultLocation)
                 ((Text)ReflectionUtils.getFieldValue(getLocationArea(), "locationPathField")).setText(location.toString());
         }
-        
+
 		public ProjectContentsLocationArea getLocationArea() {
         	return (ProjectContentsLocationArea)ReflectionUtils.getFieldValue(this, "locationArea");
         }
@@ -251,7 +251,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         public Text getProjectNameField() {
         	return (Text)ReflectionUtils.getFieldValue(this, "projectNameField");
         }
-        
+
         @SuppressWarnings("unchecked")
 		@Override
         public List<EntryDescriptor> filterItems(List items) {
@@ -265,7 +265,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         }
     }
 
-    
+
     public class CCProjectWizard extends CDTCommonProjectWizard {
         public CCProjectWizard() {
             super(UIMessages.getString("NewModelProjectWizard.2"), UIMessages.getString("NewModelProjectWizard.3")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -291,7 +291,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             return prj;
         }
     }
-    
+
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         nestedWizard = new CCProjectWizard();
@@ -309,7 +309,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     @Override
     public boolean performFinish() {
-        // if we are on the first page, the CDT wizard is not yet created and its perform finish 
+        // if we are on the first page, the CDT wizard is not yet created and its perform finish
         // will not be called, so we have to do it manually
         final boolean withCPlusPlus = supportCpp();
         if (getContainer().getCurrentPage() == projectPage || getContainer().getCurrentPage() == templatePage) {
@@ -323,7 +323,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                 super.performFinish();
             }
         }
-        
+
         // define the operation for configuring the new project
         final IProject project = projectPage.getProjectHandle();
         final IProjectTemplate template = templatePage.getSelectedTemplate();
@@ -345,7 +345,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         // run the operation
         try {
             getContainer().run(true, true, op);
-        } 
+        }
         catch (InterruptedException e) {
             return false;
         }
@@ -361,7 +361,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     public boolean supportCpp() {
         return ((NewOmnetppCppProjectCreationPage)projectPage).supportCpp();
     }
-   
+
 }
 
 

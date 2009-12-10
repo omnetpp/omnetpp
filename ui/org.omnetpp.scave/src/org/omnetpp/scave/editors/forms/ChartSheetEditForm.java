@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -97,7 +97,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 	 */
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout());
-	
+
 		// panel containing the label/text of the name
 		Composite namePanel = new Composite(panel, SWT.NONE);
 		namePanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

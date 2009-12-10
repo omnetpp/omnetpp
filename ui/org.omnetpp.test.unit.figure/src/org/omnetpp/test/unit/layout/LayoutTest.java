@@ -46,7 +46,7 @@ public class LayoutTest extends TestCase {
         parent.setVisible(true);
         parent.setFocus();
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure();
 		figureCanvas.getRootFigure().add(cmodule);
@@ -61,12 +61,12 @@ public class LayoutTest extends TestCase {
 		sleep();
 
 		// add 3 movable nodes
-		for (int i=0; i<3; ++i) 
+		for (int i=0; i<3; ++i)
 			addSubmodule(cmodule, "movable A", "");
 		sleep();
-	
+
 		// adding additional movables (the previous 6 nodes should not change their location)
-		for (int i=0; i<3; ++i) 
+		for (int i=0; i<3; ++i)
 			addSubmodule(cmodule, "movable B", "");
 		sleep();
 
@@ -94,7 +94,7 @@ public class LayoutTest extends TestCase {
         parent.setVisible(true);
         parent.setFocus();
 
-        
+
         figureCanvas.setBackground(new Color(null, 255, 255, 255));
         CompoundModuleFigure cmodule = new CompoundModuleFigure();
 		figureCanvas.getRootFigure().add(cmodule);
@@ -181,7 +181,7 @@ public class LayoutTest extends TestCase {
 	}
 
 	private void addSubmoduleVector(CompoundModuleFigure cmodule, String name, String displayStr, int size) {
-	
+
 		for (int i=0; i<size; i++) {
 			SubmoduleFigure sm = addSubmodule(cmodule, name+"["+i+"]", displayStr);
 			sm.setSubmoduleVectorIndex(name, size, i);

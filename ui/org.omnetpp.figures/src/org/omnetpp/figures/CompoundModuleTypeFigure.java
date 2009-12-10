@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -31,7 +31,7 @@ import org.omnetpp.common.image.ImageFactory;
  * @author rhornig
  */
 // TODO border handling must be moved to the  CompoundModuleFigure class
-// TODO CompoundModuleTypeFigure should be a composit? instead of inheriting from CompoundModuleFigure 
+// TODO CompoundModuleTypeFigure should be a composit? instead of inheriting from CompoundModuleFigure
 public class CompoundModuleTypeFigure extends CompoundModuleFigure {
     protected IFigure innerTypeContainer;
 
@@ -85,7 +85,7 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
     public CompoundModuleLineBorder getCompoundModuleBorder() {
     	return (CompoundModuleLineBorder)mainContainer.getBorder();
     }
-    
+
     @Override
 	protected void setBackground(Image img, String arrange,
 			Color backgroundColor, Color borderColor, int borderWidth) {

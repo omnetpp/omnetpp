@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -62,40 +62,40 @@ public class NewNEDComponentWizardPage extends WizardPage {
 		"#PACKAGEDECL#"+COMMENT+"network #NAME#\n{\n}\n"
 	};
 
-	private static final String CC_FILE = 
+	private static final String CC_FILE =
 		"#include \"#NAME#.h\"\n" +
-		"#NAMESPACE_BEGIN#" + 
-		"Define_Module(#NAME#);\n" + 
-		"\n" + 
-		"void #NAME#::initialize()\n" + 
-		"{\n" + 
-		"	// TODO - Generated method body\n" + 
-		"}\n" + 
-		"\n" + 
-		"void #NAME#::handleMessage(cMessage *msg)\n" + 
-		"{\n" + 
-		"	// TODO - Generated method body\n" + 
+		"#NAMESPACE_BEGIN#" +
+		"Define_Module(#NAME#);\n" +
+		"\n" +
+		"void #NAME#::initialize()\n" +
+		"{\n" +
+		"	// TODO - Generated method body\n" +
 		"}\n" +
-		"#NAMESPACE_END#"; 
-	private static final String H_FILE = 
-		"#ifndef __#UPPERCASENAME#_H__\n" + 
-		"#define __#UPPERCASENAME#_H__\n" + 
-		"\n" + 
-		"#include <omnetpp.h>\n" + 
-        "#NAMESPACE_BEGIN#" + 
-		"/**\n" + 
-		" * TODO - Generated class\n" + 
-		" */\n" + 
-		"class #NAME# : public cSimpleModule\n" + 
-		"{\n" + 
-		"  protected:\n" + 
-		"    virtual void initialize();\n" + 
-		"    virtual void handleMessage(cMessage *msg);\n" + 
-		"};\n" + 
+		"\n" +
+		"void #NAME#::handleMessage(cMessage *msg)\n" +
+		"{\n" +
+		"	// TODO - Generated method body\n" +
+		"}\n" +
+		"#NAMESPACE_END#";
+	private static final String H_FILE =
+		"#ifndef __#UPPERCASENAME#_H__\n" +
+		"#define __#UPPERCASENAME#_H__\n" +
+		"\n" +
+		"#include <omnetpp.h>\n" +
+        "#NAMESPACE_BEGIN#" +
+		"/**\n" +
+		" * TODO - Generated class\n" +
+		" */\n" +
+		"class #NAME# : public cSimpleModule\n" +
+		"{\n" +
+		"  protected:\n" +
+		"    virtual void initialize();\n" +
+		"    virtual void handleMessage(cMessage *msg);\n" +
+		"};\n" +
 	    "#NAMESPACE_END#" +
 		"#endif\n";
 
-	public static enum Type {SIMPLE, COMPOUND, NETWORK} 
+	public static enum Type {SIMPLE, COMPOUND, NETWORK}
 
 	private IWorkbench workbench;
 	private Type type;
@@ -141,7 +141,7 @@ public class NewNEDComponentWizardPage extends WizardPage {
 			@Override
 			public Object[] getChildren(Object element) {
 				List<IContainer> filtered = new ArrayList<IContainer>();
-				for (Object resource : super.getChildren(element))   
+				for (Object resource : super.getChildren(element))
 					if (resource instanceof IContainer && ((IContainer)resource).isAccessible()) // TODO filter for NEd source folders
 						filtered.add((IContainer)resource);
 
@@ -230,7 +230,7 @@ public class NewNEDComponentWizardPage extends WizardPage {
 			if (license==null || !LicenseUtils.isAcceptedLicense(license))
 			    license = LicenseUtils.getDefaultLicense();
 			String bannerComment = LicenseUtils.getBannerComment(license, "//");
-		
+
 			// create NED file
 			contents = bannerComment + contents;
 			newNedFile.create(new ByteArrayInputStream(contents.getBytes()), true, null);

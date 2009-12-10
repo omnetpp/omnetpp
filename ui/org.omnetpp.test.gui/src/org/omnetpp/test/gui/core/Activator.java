@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -23,7 +23,7 @@ public class Activator extends AbstractUIPlugin {
 
     // The shared instance
     private static Activator plugin;
-    
+
     /**
      * The constructor
      */
@@ -62,7 +62,7 @@ public class Activator extends AbstractUIPlugin {
     public static Activator getDefault() {
         return plugin;
     }
-    
+
     public void logError(Throwable exception) {
         getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, exception.toString(), exception));
     }

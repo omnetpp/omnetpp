@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -80,35 +80,35 @@ public class CsvExportWizard extends AbstractExportWizard {
 		private Combo quoteCharCombo;
 		//private Combo quoteMethodCombo;
 		private Button headerCheckbox;
-	
+
 		protected CsvExportPage(String pageName, String title,
 				ImageDescriptor titleImage) {
 			super(pageName, title, titleImage);
 		}
-	
+
 		@Override
 		protected void createPanels(Composite parent) {
 			super.createPanels(parent);
 			createCsvOptionsPanel(parent);
 		}
-	
+
 		@Override
 		protected void createFileSelectionPanel(Composite parent) {
 			Group group = new Group(parent, SWT.NONE);
 			group.setText("Output files");
 			group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			group.setLayout(new GridLayout(1, false));
-		
-			fileSelectionPanel = 
+
+			fileSelectionPanel =
 				new FileSelectionPanel(group, SWT.NONE, "Base file name:", SWT.SAVE, "Save to file",
 						getFileDialogFilterExtensions());
 			fileSelectionPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			setControl(fileSelectionPanel);
-		
+
 			Label label = new Label(group, SWT.WRAP);
 			label.setText("When several files are generated the file names are formed by appending '-1','-2',... to the base file name.");
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+
 			fileSelectionPanel.addPropertyChangeListener(new IPropertyChangeListener() {
 				public void propertyChange(PropertyChangeEvent event) {
 					if (FileSelectionPanel.PROP_FILENAME.equals(event.getProperty()))
@@ -116,7 +116,7 @@ public class CsvExportWizard extends AbstractExportWizard {
 				}
 			});
 		}
-	
+
 		private void createCsvOptionsPanel(Composite parent) {
 			Group group = new Group(parent, SWT.NONE);
 			group.setText("CSV options");
@@ -146,7 +146,7 @@ public class CsvExportWizard extends AbstractExportWizard {
 		protected String[] getFileDialogFilterExtensions() {
 			return new String[] { "*.csv", "*.*" };
 		}
-	
+
 		public char getSeparator() {
 			String text = separatorCombo.getText();
 			if ("Comma".equals(text))
@@ -160,23 +160,23 @@ public class CsvExportWizard extends AbstractExportWizard {
 			else
 				return ',';
 		}
-	
+
 		public String getEOL() {
 			String text = eolCombo.getText();
 			if ("CR LF".equals(text))
-				return "\r\n"; 
+				return "\r\n";
 			else if ("CR".equals(text))
 				return "\r";
 			else if ("LF".equals(text))
 				return "\n";
 			return "\r\n";
 		}
-	
+
 		public char getQuoteChar() {
 			String text = quoteCharCombo.getText();
 			return StringUtils.isEmpty(text) ? '"' : text.charAt(0);
 		}
-	
+
 		public boolean getHeader() {
 			return headerCheckbox.getSelection();
 		}

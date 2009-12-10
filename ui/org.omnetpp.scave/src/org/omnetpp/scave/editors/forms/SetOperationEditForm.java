@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -74,7 +74,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		this.setOperation = setOperation;
 		this.parent = parent;
 		this.manager = manager;
-	
+
 		sourceDatasets = new java.util.ArrayList<Dataset>();
 		sourceDatasets.add(null);
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
@@ -100,7 +100,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		Label label;
 
 		panel.setLayout(new GridLayout(2, false));
-	
+
 		// source dataset
 		label = new Label(panel, SWT.NONE);
 		label.setText("Source dataset:");
@@ -113,14 +113,14 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		for (int i = 1; i < sourceDatasets.size(); ++i)
 			datasetNames[i] = sourceDatasets.get(i).getName();
 		sourceDatasetCombo.setItems(datasetNames);
-	
+
 		label = new Label(panel, SWT.NONE);
 		label.setText("Data type:");
 		label.setLayoutData(new GridData());
 		datatypeCombo = new Combo(panel, SWT.BORDER | SWT.READ_ONLY);
 		datatypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		datatypeCombo.setItems(ScaveModelUtil.getResultTypeNames());
-	
+
 		label = new Label(panel, SWT.NONE);
 		label.setText("Filter pattern:");
 		label.setLayoutData(new GridData());
@@ -129,7 +129,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		filterText = filterField.getText();
 
 		filterText.setFocus();
-	
+
 		// update the filter hints when the type selection changes
 		datatypeCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -171,7 +171,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		default:
 			throw new IllegalArgumentException("Unexpected feature: " + feature.getName());
 		}
-	
+
 	}
 
 	public void setValue(EStructuralFeature feature, Object value) {

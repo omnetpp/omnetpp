@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -54,7 +54,7 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	public void redo() {
 		IRuntimeModule submodule = getModule();
 		IRuntimeModule parentModule = submodule.getParentModule();
-	
+
 		if (parentModule == animationEnvironment.getSimulation().getRootModule()) {
 			addFigure(background);
 			addFigure(label);
@@ -70,7 +70,7 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	public void undo() {
 		IRuntimeModule module = getModule();
 		IRuntimeModule parentModule = module.getParentModule();
-	
+
 		if (parentModule == animationEnvironment.getSimulation().getRootModule()) {
 			bubbleTimer.reset();
 			getTimerQueue().addTimer(bubbleTimer);
@@ -84,14 +84,14 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	//FIXME to be replaced by specific calls
 	protected IFigure addFigure(IFigure figure) {
 		getRootFigure().add(figure);
-	
+
 		return figure;
 	}
 
 	//FIXME to be replaced by specific calls
 	protected IFigure removeFigure(IFigure figure) {
 		getRootFigure().remove(figure);
-	
+
 		return figure;
 	}
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -98,7 +98,7 @@ public class ProcessingOpPropertySource extends PropertySource {
 	}
 
 	private class ParamsPropertySource implements IPropertySource2 {
-	
+
 		List<Param> params;
 		StringMap paramDefs;
 		StringMap defaultValues;
@@ -161,7 +161,7 @@ public class ProcessingOpPropertySource extends PropertySource {
 			Assert.isLegal(id instanceof String);
 			setPropertyValue(id, defaultValues.get((String)id));
 		}
-	
+
 		public boolean isPropertySet(Object id) {
 			Assert.isLegal(id instanceof String);
 			if (defaultValues.has_key((String)id))

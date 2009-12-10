@@ -11,11 +11,11 @@
                 pattern="[a-zA-Z0-9]+"
                 persist="true"/>
     </property-group>
-    
+
     <process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
-        <simple name="name" value="$(projectName)" /> 
-        <simple name="artifactExtension" value="exe" /> 
-        <simple name="isCProject" value="false" /> 
+        <simple name="name" value="$(projectName)" />
+        <simple name="artifactExtension" value="exe" />
+        <simple name="isCProject" value="false" />
     </process>
 
     <process type="org.eclipse.cdt.core.CreateSourceFolder">

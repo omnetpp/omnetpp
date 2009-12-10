@@ -14,7 +14,7 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    if (argc < 2) 
+    if (argc < 2)
     {
         printf("error: missing argument\n");
         return 0;
@@ -22,7 +22,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
     DWORD dwHandle = 0;
     DWORD dwSize = GetFileVersionInfoSize(argv[1], /*out*/ &dwHandle);
-    if (dwSize == 0) 
+    if (dwSize == 0)
     {
         printf("error: file not found or no version info in file\n");
         return 0;

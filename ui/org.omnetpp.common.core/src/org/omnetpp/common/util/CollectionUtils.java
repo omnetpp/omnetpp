@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * Yet another CollectionUtils class.
- * 
+ *
  * @author Levy, Andras
  */
 public class CollectionUtils {
@@ -42,7 +42,7 @@ public class CollectionUtils {
         Collections.reverse(sortable);
         return sortable;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static Map getDeepCopyOf(Map map) {
         Map result = new HashMap();

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -53,7 +53,7 @@ public class MenuAccess extends WidgetAccess {
 				String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
 				return menuItemLabel.matches(label);
 			}
-			
+
 			@Override
 			public String toString() {
 			    return "menu item with label: "+label;
@@ -74,17 +74,17 @@ public class MenuAccess extends WidgetAccess {
 				resultMenuItems.add(menuItem);
 		return resultMenuItems;
 	}
-	
+
     @UIStep
     public void assertMenuItemsEnabled(String[] labels) {
-        for (String label : labels) 
-            findMenuItemByLabel(label).assertEnabled();        
+        for (String label : labels)
+            findMenuItemByLabel(label).assertEnabled();
     }
 
     @UIStep
     public void assertMenuItemsDisabled(String[] labels) {
-        for (String label : labels) 
-            findMenuItemByLabel(label).assertDisabled();        
+        for (String label : labels)
+            findMenuItemByLabel(label).assertDisabled();
     }
 
     @UIStep
@@ -108,7 +108,7 @@ public class MenuAccess extends WidgetAccess {
                     return menu.isVisible() && menu.getShell().getMenuBar() != menu;
                 }
             }, menus);
-        
+
         Menu menu = (Menu)theOnlyObject(menus, null);
 
         if (debug)
@@ -120,7 +120,7 @@ public class MenuAccess extends WidgetAccess {
     private static void collectMenus(Composite composite, IPredicate predicate, List<Menu> collectedMenus) {
         if (composite instanceof Decorations) {
             Menu[] menus = (Menu[])ReflectionUtils.getFieldValue(composite, "menus");
-            
+
             if (menus != null)
                 for (Menu menu : menus)
                     if (menu != null && predicate.matches(menu))

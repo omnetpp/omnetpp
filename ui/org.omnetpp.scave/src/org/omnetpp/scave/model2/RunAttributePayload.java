@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,9 +40,9 @@ public class RunAttributePayload {
 			return true;
 		if (!(other instanceof RunAttributePayload))
 			return false;
-	
+
 		RunAttributePayload otherAttr = (RunAttributePayload)other;
-	
+
 		return this.name.equals(otherAttr.name) &&
 				(this.value == null && otherAttr.value == null ||
 				 this.value != null && this.value.equals(otherAttr.value));

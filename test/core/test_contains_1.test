@@ -1,6 +1,6 @@
 %description:
 Test %contains checks of opp_test. This testing is incomplete -- should
-also check that if one of the %contains checks fail this makes the test case 
+also check that if one of the %contains checks fail this makes the test case
 fail.
 
 %file: x.txt

@@ -13,7 +13,7 @@
 %}
 
 namespace std {
-    
+
     template<class T> class vector {
       public:
         typedef size_t size_type;

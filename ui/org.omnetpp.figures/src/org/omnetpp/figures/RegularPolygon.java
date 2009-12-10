@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,7 +25,7 @@ public class RegularPolygon extends Polygon {
     protected int prefAngle = 0;
     // number of sides
     protected int noOfSides = 3;
-    
+
     /**
      * Creates a polygon with given geometry.
      * @param sides Number of sides (>2)
@@ -33,7 +33,7 @@ public class RegularPolygon extends Polygon {
     public RegularPolygon(int sides) {
         setGeometry(sides, 0);
     }
-    
+
     /**
      * Creates a polygon with given geometry.
      * @param sides Number of sides (>2)
@@ -42,7 +42,7 @@ public class RegularPolygon extends Polygon {
     public RegularPolygon(int sides,int angle) {
         setGeometry(sides, angle);
     }
-    
+
     /**
      * Sets the geometry of the polyline
      * @param sides Number of sides (must be greater than 2 otherwise an IllegalArgumentException is thrown)
@@ -66,14 +66,14 @@ public class RegularPolygon extends Polygon {
      * Note also that getBounds will return the REAL bounds of the figure. Dimensions that was
      * filled with negative values in setBounds will be correctly calculated in getBounds call.
      * If both dimension is negative, the figure will use its preferred size, or request the size
-     * from the underlying layout manager.  
+     * from the underlying layout manager.
      */
     @Override
     public void setBounds(Rectangle rect) {
         setPoints(createScaledAndTranslatedPointList(templatePointList, rect));
     }
 
-    // TODO sclaling is still not perfect. in some linelength settings the actual shape is smaller 
+    // TODO sclaling is still not perfect. in some linelength settings the actual shape is smaller
     // than the calculated bounding box
     // FIXME check and test for 0 width or hight (div by zero!!!)
     protected PointList createScaledAndTranslatedPointList(PointList templList, Rectangle requestedBounds) {
@@ -90,7 +90,7 @@ public class RegularPolygon extends Polygon {
         Rectangle templBounds = templList.getBounds().getCopy();
         double wScale = (double)targetBounds.width / templBounds.width;
         double hScale = (double)targetBounds.height / templBounds.height;
-        // if one of the requested dimensions are less than 0 
+        // if one of the requested dimensions are less than 0
         // keep the aspect ratio and use the same scaling factor for both dimension
         if (requestedBounds.width < 0) wScale = hScale;
         if (requestedBounds.height < 0) hScale = wScale;
@@ -99,27 +99,27 @@ public class RegularPolygon extends Polygon {
         // calculate the required translation taking into account the linewidth too
         double dx = targetBounds.x - templBounds.x + (double)getLineWidth()/2;
         double dy = targetBounds.y - templBounds.y + (double)getLineWidth()/2;
-     
-        // scale and translate all the points like the bounds 
+
+        // scale and translate all the points like the bounds
         PointList scaledPl = new PointList(templList.size());
         for (int i=0; i<templList.size(); ++i) {
             Point templP = templList.getPoint(i);
-            scaledPl.addPoint((int)Math.floor(templP.x * wScale + dx), 
+            scaledPl.addPoint((int)Math.floor(templP.x * wScale + dx),
                               (int)Math.floor(templP.y * hScale + dy));
         }
         return scaledPl;
     }
-    
+
     // create a template point list, so we have to recreate this only if the base geometry
     // has been changed (number of sides or angle)
     protected PointList createPointList(int sides, int radius, int angle) {
         PointList pl = new PointList(sides);
-        
+
         double angleStart = toRadians(angle);
         double angleStep = 2 * PI / sides;
         for (int i=0; i<sides; ++i) {
             double currAngle = angleStart + angleStep * i;
-            pl.addPoint((int)Math.round(-radius*sin(currAngle)), 
+            pl.addPoint((int)Math.round(-radius*sin(currAngle)),
                         (int)Math.round(-radius*cos(currAngle)));
         }
         return pl;

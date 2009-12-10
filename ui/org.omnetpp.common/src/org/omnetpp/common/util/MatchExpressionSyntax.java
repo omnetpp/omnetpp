@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,21 +18,21 @@ import org.eclipse.core.runtime.Assert;
 
 /**
  * Parser for filter texts with error recovery.
- * 
+ *
  * A filter expression is called simple if it is a conjunction of field matchers.
  * E.g: name("n") AND replication("r10") AND module(sink).
- * 
+ *
  * The purpose of this parser is to build a parse tree even if the input
  * is incomplete, erronous. The parse tree can be used to split a simple filter
  * expression into separate field matchers or to offer completions at a given position.
- * 
+ *
  * Therefore the language it accepts is an extension of the language that can be used
  * as a filter in {@link ScaveModelUtil.filterIDList}.
- * 
+ *
  * @author tomi
  */
 public class MatchExpressionSyntax {
-	
+
 	/**
 	 * Parse the <code>filter</code> string and returns the parse tree.
 	 */
@@ -41,7 +41,7 @@ public class MatchExpressionSyntax {
 		Parser parser = new Parser(lexer);
 		return parser.parse();
 	}
-	
+
 	public enum TokenType
 	{
 		AND,
@@ -52,7 +52,7 @@ public class MatchExpressionSyntax {
 		CP,
 		END,
 	}
-	
+
 	/**
 	 * Leaf nodes of the parse tree.
 	 */
@@ -63,46 +63,46 @@ public class MatchExpressionSyntax {
 		int startPos, endPos;
 		Node parent;
 		boolean incomplete;
-		
+
 		public Token(TokenType type, int startPos, int endPos) {
 			this(type, null, startPos, endPos);
 		}
-		
+
 		public Token(TokenType type, String value, int startPos, int endPos) {
 			this.type = type;
 			this.value = value;
 			this.startPos = startPos;
 			this.endPos = endPos;
 		}
-		
+
 		public TokenType getType() {
 			return type;
 		}
-		
+
 		public String getValue() {
 			return value;
 		}
-		
+
 		public int getStartPos() {
 			return startPos;
 		}
-		
+
 		public int getEndPos() {
 			return endPos;
 		}
-		
+
 		public Node getParent() {
 			return parent;
 		}
-		
+
 		public boolean isEmpty() {
 			return startPos == endPos;
 		}
-		
+
 		public boolean isIncomplete() {
 			return incomplete;
 		}
-		
+
 		public String toString() {
 			if (value == null)
 				return String.format("%s<%d,%d>", type.name(), startPos, endPos);
@@ -110,7 +110,7 @@ public class MatchExpressionSyntax {
 				return String.format("%s(%s)<%d,%d>", type.name(), value, startPos, endPos);
 		}
 	}
-	
+
 	public static interface INodeVisitor {
 		/**
 		 * @return true if traversal should be continued
@@ -118,9 +118,9 @@ public class MatchExpressionSyntax {
 		boolean visit(Node node);
 		void visit(Token token);
 	}
-	
+
 	/**
-	 * Internal nodes of the parse tree. 
+	 * Internal nodes of the parse tree.
 	 */
 	public static class Node
 	{
@@ -130,18 +130,18 @@ public class MatchExpressionSyntax {
 		public static final int UNARY_OPERATOR_EXPR = 3;          // <operator> <node>
 		public static final int BINARY_OPERATOR_EXPR = 4;          // <node> <operator> <node>
 		public static final int PARENTHESISED_EXPR = 5;
-		
+
 		public int type;
 		Object[] content; // Tokens and Nodes
 		Node parent;
-		
+
 		public Node(Node expr, Token end) {
 			type = ROOT;
 			content = new Object[2];
 			addChild(0, expr);
 			addChild(1, end);
 		}
-		
+
 		public Node(Token fieldName, Token open, Token pattern, Token close) {
 			type = FIELDPATTERN;
 			content = new Object[4];
@@ -150,20 +150,20 @@ public class MatchExpressionSyntax {
 			addChild(2, pattern);
 			addChild(3, close);
 		}
-		
+
 		public Node(Token pattern) {
 			type = PATTERN;
 			content = new Object[1];
 			addChild(0, pattern);
 		}
-		
+
 		public Node(Token operator, Node operand) {
 			type = UNARY_OPERATOR_EXPR;
 			content = new Object[2];
 			addChild(0, operator);
 			addChild(1, operand);
 		}
-		
+
 		public Node(Token operator, Node leftOperand, Node rightOperand) {
 			type = BINARY_OPERATOR_EXPR;
 			content = new Object[3];
@@ -171,7 +171,7 @@ public class MatchExpressionSyntax {
 			addChild(1, operator);
 			addChild(2, rightOperand);
 		}
-		
+
 		public Node(Token open, Node expr, Token close) {
 			type = PARENTHESISED_EXPR;
 			content = new Object[3];
@@ -179,29 +179,29 @@ public class MatchExpressionSyntax {
 			addChild(1, expr);
 			addChild(2, close);
 		}
-		
+
 		private void addChild(int index, Node child) {
 			child.parent = this;
 			content[index] = child;
 		}
-		
+
 		private void addChild(int index, Token child) {
 			child.parent = this;
 			content[index] = child;
 		}
-		
+
 		public Node getParent() {
 			return parent;
 		}
-		
+
 		public int getType() {
 			return type;
 		}
-		
+
 		public Object[] getContent() {
 			return content;
 		}
-		
+
 		public Node getExpr() {
 			Assert.isTrue(type == ROOT || type == PARENTHESISED_EXPR);
 			if (type == ROOT)
@@ -209,7 +209,7 @@ public class MatchExpressionSyntax {
 			else
 				return (Node)content[1];
 		}
-		
+
 		public Token getOperator() {
 			Assert.isTrue(type == UNARY_OPERATOR_EXPR || type == BINARY_OPERATOR_EXPR);
 			if (type == UNARY_OPERATOR_EXPR)
@@ -217,41 +217,41 @@ public class MatchExpressionSyntax {
 			else
 				return (Token)content[1];
 		}
-		
+
 		public Node getOperand() {
 			Assert.isTrue(type == UNARY_OPERATOR_EXPR);
 			return (Node)content[1];
 		}
-		
+
 		public Node getLeftOperand() {
 			Assert.isTrue(type == BINARY_OPERATOR_EXPR);
 			return (Node)content[0];
 		}
-		
+
 		public Node getRightOperand() {
 			Assert.isTrue(type == BINARY_OPERATOR_EXPR);
 			return (Node)content[2];
 		}
-		
+
 		public Token getField() {
 			Assert.isTrue(type == FIELDPATTERN);
 			return (Token)content[0];
 		}
-		
+
 		public String getFieldName() {
 			return getField().getValue();
 		}
-		
+
 		public Token getOpeningParen() {
 			Assert.isTrue(type == FIELDPATTERN || type == PARENTHESISED_EXPR);
 			return type == FIELDPATTERN ? (Token)content[1] : (Token)content[0];
 		}
-		
+
 		public Token getClosingParen() {
 			Assert.isTrue(type == FIELDPATTERN || type == PARENTHESISED_EXPR);
 			return type == FIELDPATTERN ? (Token)content[3] : (Token)content[2];
 		}
-		
+
 		public Token getPattern() {
 			Assert.isTrue(type == FIELDPATTERN || type == PATTERN);
 			if (type == FIELDPATTERN)
@@ -259,11 +259,11 @@ public class MatchExpressionSyntax {
 			else
 				return (Token)content[0];
 		}
-		
+
 		public String getPatternString() {
 			return getPattern().getValue();
 		}
-		
+
 		public void accept(INodeVisitor visitor) {
 			boolean cont = visitor.visit(this);
 			if (cont) {
@@ -275,14 +275,14 @@ public class MatchExpressionSyntax {
 				}
 			}
 		}
-		
-		
+
+
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
 			format(sb, 0);
 			return sb.toString();
 		}
-		
+
 		private void format(StringBuffer sb, int level) {
 			// indent
 			sb.append(StringUtils.repeat("  ", level));
@@ -318,17 +318,17 @@ public class MatchExpressionSyntax {
 			}
 		}
 	}
-	
+
 	/**
 	 * Lexer for filter expression.
-	 * 
+	 *
 	 * TODO: \\ and \" within patterns
 	 */
 	static class Lexer
 	{
 		public static final int EOF = -1;
 		public static final Map<String, TokenType> keywords = new HashMap<String, TokenType>(6);
-		
+
 		static {
 			keywords.put("OR", TokenType.OR);
 			keywords.put("or", TokenType.OR);
@@ -337,34 +337,34 @@ public class MatchExpressionSyntax {
 			keywords.put("NOT", TokenType.NOT);
 			keywords.put("not", TokenType.NOT);
 		}
-		
+
 		PushbackReader input;
 		int pos; 				// index of the next character
 		boolean finished;
-		
+
 		public Lexer(String input) {
 			this(new StringReader(input));
 		}
-		
+
 		public Lexer(Reader input) {
 			this.input = new PushbackReader(input, 1);
 			this.pos = 0;
 		}
-		
+
 		public TokenType getKeywordByPrefix(String prefix) { // XXX assumes that keyword prefixes are unique
 			for (Map.Entry<String,TokenType> entry : keywords.entrySet())
 				if (entry.getKey().startsWith(prefix))
 					return entry.getValue();
 			return null;
 		}
-		
+
 		public Token getNextToken() {
 			int ch, la;
 			StringBuffer value;
-			
+
 			if (finished)
 				return new Token(TokenType.END, pos, pos);
-			
+
 			while (true) {
 				int startPos = pos;
 				ch = getChar();
@@ -409,7 +409,7 @@ public class MatchExpressionSyntax {
 				}
 			}
 		}
-		
+
 		private int getChar() {
 			try {
 				int ch = input.read();
@@ -422,7 +422,7 @@ public class MatchExpressionSyntax {
 				return EOF;
 			}
 		}
-		
+
 		private void ungetChar(int ch) {
 			try {
 				input.unread(ch);
@@ -435,36 +435,36 @@ public class MatchExpressionSyntax {
 			}
 		}
 	}
-	
+
 	/**
-	 * Parser for filter expressions. 
-	 * 
+	 * Parser for filter expressions.
+	 *
 	 */
 	static class Parser
 	{
 		Lexer lexer;
-		
+
 		Token lookAhead1;
 		Token lookAhead2;
-		
+
 		public Parser(Lexer lexer) {
 			this.lexer = lexer;
 		}
-		
+
 		/*
 		 * expression: 		expr EOF
-		 * 
+		 *
 		 * expr:			orExpr
-		 * 
+		 *
 		 * orExpr:				andExpr OR orExpr
 		 * 					|	andExpr
-		 * 
+		 *
 		 * andExpr:				notExpr AND andExpr
 		 * 					|	notExpr
-		 * 
+		 *
 		 * notExpr:				NOT primaryExpr
 		 * 					|	primaryExpr
-		 * 
+		 *
 		 * primaryExpr:			( expr )
 		 * 					|	LITERAL ( LITERAL )
 		 * 					|	LITERAL
@@ -474,7 +474,7 @@ public class MatchExpressionSyntax {
 			getNextToken();
 			return expression();
 		}
-		
+
 		public Node expression() {
 			Node expr = expr();
 			// when there is something extra at the end,
@@ -493,11 +493,11 @@ public class MatchExpressionSyntax {
 			Token end = match(TokenType.END);
 			return new Node(expr, end);
 		}
-		
+
 		private Node expr() {
 			return orExpr();
 		}
-		
+
 		private Node orExpr() {
 			Node first = andExpr();
 			if (lookAhead1.type == TokenType.OR) {
@@ -508,7 +508,7 @@ public class MatchExpressionSyntax {
 			else
 				return first;
 		}
-		
+
 		private Node andExpr() {
 			Node first = notExpr();
 			if (lookAhead1.type == TokenType.AND) {
@@ -519,7 +519,7 @@ public class MatchExpressionSyntax {
 			else
 				return first;
 		}
-		
+
 		private Node notExpr() {
 			if (lookAhead1.type == TokenType.NOT) {
 				Token operator = match(TokenType.NOT);
@@ -529,9 +529,9 @@ public class MatchExpressionSyntax {
 			else
 				return primaryExpr();
 		}
- 		
+
 		private Node primaryExpr() {
-			
+
 			if (lookAhead1.type == TokenType.OP) {
 				Token open = match(TokenType.OP);
 				Node expr = expr();
@@ -553,7 +553,7 @@ public class MatchExpressionSyntax {
 			// recover
 			while (lookAhead1.type != TokenType.END && lookAhead1.type != TokenType.OP && lookAhead1.type != TokenType.STRING_LITERAL)
 				getNextToken();
-			
+
 			if (lookAhead1.type != TokenType.END)
 				return primaryExpr();
 			else {
@@ -561,11 +561,11 @@ public class MatchExpressionSyntax {
 				return new Node(pattern);
 			}
 		}
-		
+
 		private Token match(TokenType token) {
 			return match(token, false);
 		}
-		
+
 		private Token match(TokenType tokenExpected, boolean create) {
 
 			if (tokenExpected != lookAhead1.type && !create) {
@@ -573,7 +573,7 @@ public class MatchExpressionSyntax {
 					getNextToken();
 				}
 			}
-			
+
 			if (tokenExpected == lookAhead1.type) {
 				return getNextToken();
 			}
@@ -581,7 +581,7 @@ public class MatchExpressionSyntax {
 				return new Token(tokenExpected, "", lookAhead1.startPos, lookAhead1.startPos);
 			}
 		}
-		
+
 		private Token getNextToken() {
 			Token token = lookAhead1;
 			lookAhead1 = lookAhead2;

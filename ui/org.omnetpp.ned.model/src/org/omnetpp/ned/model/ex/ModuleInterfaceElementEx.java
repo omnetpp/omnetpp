@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -82,7 +82,7 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
 	public INedTypeLookupContext getParentLookupContext() {
 		return getParentLookupContextFor(this);
 	}
-    
+
     // parameter query support
     public Map<String, ParamElementEx> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();

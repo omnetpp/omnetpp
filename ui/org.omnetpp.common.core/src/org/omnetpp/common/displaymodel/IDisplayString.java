@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * Declares the supported display string tags, with types, descriptions, 
+ * Declares the supported display string tags, with types, descriptions,
  * categorization, default values, and so on.
  *
  * @author rhornig
@@ -50,14 +50,14 @@ public interface IDisplayString {
     public enum PropGroup {
         Base, Position, Polygon, Icon, Range, Text, Connection, Line, BackgroundLayout, Background, BackgroundPosition, BackgroundStyle
     }
-    
+
     /**
      * Utility class for handling enumerated display string values, like "dashed/dotted/solid"
      * or "left/right/top". A value needs to be recognized in the display string ("das" ==> "dashed"),
      * combo box selection has to be offered (with options "dashed", "dotted" and "solid"),
      * and the value has to be written back into the display string in a short form ("dashed" as "da").
      * This class facilitates the above tasks.
-     * 
+     *
      * @author andras
      */
     public class EnumSpec {
@@ -68,14 +68,14 @@ public interface IDisplayString {
     	}
     	private Map<String,Item> specs = new LinkedHashMap<String, Item>();
     	private Item[] specsReversed;
-    
+
     	/**
     	 * Format of the specification string: "name=shorthandRegex,shorthand;...".
-    	 * Spaces are allowed. The order of items is significant, because shorthand regexes 
+    	 * Spaces are allowed. The order of items is significant, because shorthand regexes
     	 * will be matched in REVERSE order (last-to-first).
-    	 * 
-    	 * Example: "solid=s.*,s; dotted=d.*,d; dashed=da.*,da". Note that "d" will be 
-    	 * recognized as "dotted", because of reverse-order matching. 
+    	 *
+    	 * Example: "solid=s.*,s; dotted=d.*,d; dashed=da.*,da". Note that "d" will be
+    	 * recognized as "dotted", because of reverse-order matching.
     	 */
     	public EnumSpec(String specString) {
         	for (String specText : specString.split(";")) {
@@ -88,14 +88,14 @@ public interface IDisplayString {
         	}
         	specsReversed = specs.values().toArray(new Item[]{});
         	ArrayUtils.reverse(specsReversed);
-        
+
         	// sanity checks
         	for (Item spec : specs.values()) {
         		Assert.isTrue(spec.name.equals(getNameFor(spec.name)), "enum name must map to itself");
         		Assert.isTrue(spec.name.equals(getNameFor(spec.shorthand)), "enum shorthand must map to itself");
         	}
     	}
-    
+
     	/**
     	 * Returns an array of all names ("dotted", "dashed", etc).
     	 */
@@ -125,8 +125,8 @@ public interface IDisplayString {
     	}
 
     	/**
-    	 * Return the shorthand (standard abbreviation) whose shorthandRegex 
-    	 * matches the given string, or null if none matches. Note: matching 
+    	 * Return the shorthand (standard abbreviation) whose shorthandRegex
+    	 * matches the given string, or null if none matches. Note: matching
     	 * is done in reverse order.
     	 */
     	public String getShorthandFor(String text) {
@@ -137,7 +137,7 @@ public interface IDisplayString {
     	}
 
     	/**
-    	 * Returns the shorthand (standard abbreviation) for the given name, 
+    	 * Returns the shorthand (standard abbreviation) for the given name,
     	 * e.g. returns "da" for "dashed". It is an error if the name does not exist.
     	 */
     	public String getShorthandForName(String name) {
@@ -146,7 +146,7 @@ public interface IDisplayString {
     	}
 
     }
-    
+
     /**
      * Describes ALL possible tag values and arguments and adds additional info,
      * including type, tag-name, position inside the tag and
@@ -290,7 +290,7 @@ public interface IDisplayString {
         public EnumSpec getEnumSpec() {
 			return enumSpec;
 		}
-        
+
         public String getName() {
             return name;
         }
@@ -298,7 +298,7 @@ public interface IDisplayString {
         public String getDesc() {
             return description;
         }
-        
+
         /**
          * Returns the first sentence of the description
          */
@@ -323,15 +323,15 @@ public interface IDisplayString {
         			enumDesc += (enumDesc.equals("") ? "" : ", ") + name + " (" + getEnumSpec().getShorthandForName(name) + ")";
 			return enumDesc;
 		}
-        
+
         private String getTagArgDefault(String tagName, int tagIndex) {
         	String displayString = IDisplayString.EMPTY_DEFAULTS_STR;
-        	Assert.isTrue(StringUtils.containsNone(displayString, " \t\\"), 
+        	Assert.isTrue(StringUtils.containsNone(displayString, " \t\\"),
         			"display string defaults cannot contain backslash or whitespace"); // to simplify parsing
         	for (String tag : displayString.split(";"))
         		if (tag.startsWith(tagName+"=")) {
         			String[] elems = StringUtils.removeStart(tag, tagName+"=").split(",");
-        			return tagIndex >= elems.length ? null : elems[tagIndex]; 
+        			return tagIndex >= elems.length ? null : elems[tagIndex];
         		}
         	return null;
         }
@@ -339,13 +339,13 @@ public interface IDisplayString {
 
 
     /**
-     * Returns true if the property is specified in the display string or 
+     * Returns true if the property is specified in the display string or
      * in the fallback chain (except the EMPTY_DEFAULTS).
      */
     public boolean containsProperty(Prop prop);
 
     /**
-     * Returns true if the tag is specified in the display string or in the 
+     * Returns true if the tag is specified in the display string or in the
      * fallback chain (except the EMPTY_DEFAULTS).
      */
     public boolean containsTag(Tag tagName);
@@ -431,7 +431,7 @@ public interface IDisplayString {
     public void set(String newValue);
 
     /**
-     * Compute a hash code based on this display string and all fallback display strings. 
+     * Compute a hash code based on this display string and all fallback display strings.
      */
     public int cumulativeHashCode();
 }

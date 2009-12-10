@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,9 +15,9 @@ import org.omnetpp.scave.engine.OutputVectorEntry;
  * Reader for an indexed vector file.
  * It copies the structures returned by an IndexedVectorFileReader.getEntryBySerial(),
  * because the underlying C++ objects of OutputVectorEntries can be
- * deleted by the next getEntryBySerial() call, so their use is 
+ * deleted by the next getEntryBySerial() call, so their use is
  * dangerous.
- * 
+ *
  * @author tomi
  */
 public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
@@ -46,7 +46,7 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 		OutputVectorEntry ownedEntry = new OutputVectorEntry(
 											entry.getSerial(),
 											entry.getEventNumber(),
-											new BigDecimal(entry.getSimtime()), // because entry.getSimtime() points to the class member 
+											new BigDecimal(entry.getSimtime()), // because entry.getSimtime() points to the class member
 											entry.getValue());
 		return ownedEntry;
 	}

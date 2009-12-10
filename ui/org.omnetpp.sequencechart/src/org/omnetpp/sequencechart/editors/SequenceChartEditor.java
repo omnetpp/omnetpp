@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -45,11 +45,11 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
 /**
  * Sequence chart display tool. (It is not actually an editor; it is only named so
  * because it extends EditorPart).
- * 
+ *
  * @author levy
  */
 public class SequenceChartEditor
-    extends EventLogEditor 
+    extends EventLogEditor
     implements ISequenceChartProvider, INavigationLocationProvider, IGotoMarker, IShowInSource, IShowInTargetList
 {
 	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
@@ -77,7 +77,7 @@ public class SequenceChartEditor
 				site.getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
 		}
 		catch (PartInitException e) {
-			SequenceChartPlugin.getDefault().logException(e);				
+			SequenceChartPlugin.getDefault().logException(e);
 		}
 	}
 
@@ -85,7 +85,7 @@ public class SequenceChartEditor
 	public void dispose() {
 		if (resourceChangeListener != null)
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-	
+
 		if (selectionListener != null)
 			getSite().getPage().removeSelectionListener(selectionListener);
 
@@ -108,7 +108,7 @@ public class SequenceChartEditor
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != SequenceChartEditor.this && selection instanceof IEventLogSelection) {
 					IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
-				
+
 					if (eventLogSelection.getEventLogInput() == sequenceChart.getInput()) {
 						sequenceChart.setSelection(selection);
 						markLocation();
@@ -129,7 +129,7 @@ public class SequenceChartEditor
 		private org.omnetpp.common.engine.BigDecimal startSimulationTime;
 
 		private org.omnetpp.common.engine.BigDecimal endSimulationTime;
-	
+
 		public SequenceChartLocation(org.omnetpp.common.engine.BigDecimal startSimulationTime, org.omnetpp.common.engine.BigDecimal endSimulationTime) {
 			this.startSimulationTime = startSimulationTime;
 			this.endSimulationTime = endSimulationTime;
@@ -257,7 +257,7 @@ public class SequenceChartEditor
                             if (((FileEditorInput)thisEditor.getEditorInput()).getFile().getProject().equals(resource)) {
                                 thisEditor.getSite().getPage().closeEditor(thisEditor, true);
                             }
-                        }            
+                        }
                     });
                 }
 
@@ -270,7 +270,7 @@ public class SequenceChartEditor
             	throw new RuntimeException(e);
             }
 		}
-	
+
         public boolean visit(IResourceDelta delta) {
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
             	Display.getDefault().asyncExec(new Runnable() {
@@ -298,7 +298,7 @@ public class SequenceChartEditor
     public String[] getShowInTargetIds() {
         // contents of the "Show In..." context menu
         return new String[] {
-                IConstants.EVENTLOG_VIEW_ID, 
+                IConstants.EVENTLOG_VIEW_ID,
                 //TODO IConstants.MODULEHIERARCHY_VIEW_ID,
                 };
     }

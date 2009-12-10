@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -28,11 +28,11 @@ public class ParamResolution {
 		IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
 	}
 
-	// fullPath and param name (from paramDeclaration or paramAssignment) identify the NED parameter. 
+	// fullPath and param name (from paramDeclaration or paramAssignment) identify the NED parameter.
 	// For vector elementPath, fullPath contains "[*]".
 	// elementPath[] relates fullPath to NEDElements. The network is elementPath[1]'s
-	// parent CompoundModuleElement, or paramDeclaration's parent Compound/SimpleModuleElement if 
-	// elementPath[[] is empty. After that, the type of elementPath[[i] is the parent 
+	// parent CompoundModuleElement, or paramDeclaration's parent Compound/SimpleModuleElement if
+	// elementPath[[] is empty. After that, the type of elementPath[[i] is the parent
 	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclaration).
 	// elementPath[[0] may be null.
 	public String fullPath;
@@ -44,17 +44,17 @@ public class ParamResolution {
 	public ParamResolutionType type;
 
 	// during analysis of which section
-	public String activeSection; 
+	public String activeSection;
 
-	// section+key identify the value assignment in the inifile; 
+	// section+key identify the value assignment in the inifile;
 	// they are null if parameter is assigned from NED
-	//XXX add IFile ?   
+	//XXX add IFile ?
 	public String section;
 	public String key;
 
 	// for convenience
-	public ParamResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath, 
-			               ParamElementEx paramDeclaration, ParamElementEx paramAssignment, ParamResolutionType type, 
+	public ParamResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath,
+			               ParamElementEx paramDeclaration, ParamElementEx paramAssignment, ParamResolutionType type,
 			               String activeSection, String section, String key) {
 		this.fullPath = fullPath;
 		this.elementPath = elementPath.toArray(new ISubmoduleOrConnection[0]);

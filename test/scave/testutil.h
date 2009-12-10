@@ -29,7 +29,7 @@ public:
 		gettimeofday(&end, NULL);
 	    long elapsedTime = timeval_diff_usec(end, start);
 	    std::cout << "Time: " << elapsedTime/1000 << "ms" << std::endl;
-	} 
+	}
 };
 
 #endif

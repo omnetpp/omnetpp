@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.eclipse.draw2d.geometry.Point;
 public abstract class AbstractGraphLayoutAlgorithm
 {
 	protected static boolean debug = false;
- 
+
 	protected static boolean firstTime = true;
 
 	protected int defaultEdgeLen;
@@ -52,7 +52,7 @@ public abstract class AbstractGraphLayoutAlgorithm
             privRand01();
         Assert.isTrue(rndseed == 1043618065);
         // Debug.println("Layouter: internal RNG tested and OK");
-    }    
+    }
 
     /**
      * Constructor
@@ -61,9 +61,9 @@ public abstract class AbstractGraphLayoutAlgorithm
     	// test the RNG once per session -- do not remove this code!
     	if (firstTime) {
     		firstTime = false;
-    		rngSelfTest(); 
+    		rngSelfTest();
     	}
-    
+
         // go on with constructor
     	rndseed = 1;
         defaultEdgeLen = 40;
@@ -119,7 +119,7 @@ public abstract class AbstractGraphLayoutAlgorithm
     public int getSeed() {
     	return rndseed;
     }
-    
+
     /**
      * Set preferred graph edge length
      */

@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Control;
 
 
 /**
- * 
+ *
  * @author Levy
  */
 //XXX from inner class of ReplayAnimationEditor
@@ -49,7 +49,7 @@ public class FormLayoutMouseListener implements MouseListener, MouseMoveListener
         extractDragControlInformation(e);
 
         if ((e.stateMask & SWT.CONTROL) != 0) {
-//FIXME find another way to determine preferred size!!!!            
+//FIXME find another way to determine preferred size!!!!
 //            if (dragControl.getChildren()[0] instanceof FigureCanvas) {
 //                FigureCanvas figureCanvas = (FigureCanvas)dragControl.getChildren()[0];
 //                Point size = figureCanvas.getPreferredSize();

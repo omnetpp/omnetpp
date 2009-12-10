@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Bottom part of the InputsPage.
- * 
+ *
  * @author Andras
  */
 public class DataPanel extends Composite {
@@ -50,7 +50,7 @@ public class DataPanel extends Composite {
 
 	private void initialize() {
 		this.setLayout(new FillLayout());
-	
+
 		CTabFolder tabfolder = new CTabFolder(this, SWT.TOP | SWT.BORDER);
 		getFormToolkit().adapt(tabfolder);
 
@@ -58,17 +58,17 @@ public class DataPanel extends Composite {
 		fileRunView = createLabelAndTree(tabfolder, "Physical: by file and run");
 		runFileView = createLabelAndTree(tabfolder, "Physical: by run and file");
 		logicalView = createLabelAndTree(tabfolder, "Logical: by experiment, measurement, replication");
-	
+
 		tabfolder.setSelection(0);
 	}
 
 	private TreeViewer createLabelAndTree(CTabFolder parent, String text) {
 		Tree tree = getFormToolkit().createTree(parent, SWT.NONE);
-	
+
 		CTabItem tabitem = new CTabItem(parent, SWT.NONE);
 		tabitem.setText(text);
 		tabitem.setControl(tree);
-	
+
 		return new TreeViewer(tree);
 	}
 

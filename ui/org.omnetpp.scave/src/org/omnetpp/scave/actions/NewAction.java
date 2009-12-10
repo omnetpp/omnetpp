@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -58,13 +58,13 @@ public class NewAction extends AbstractScaveAction {
 					return dialog.open();
 				}
 			});
-		
+
 			if (returnCode == Window.OK) {
 				Command command = CreateChildCommand.create(
 						editor.getEditingDomain(),
 						parent,
 						wizard.getNewChildDescriptor(),
-						selection.toList());  
+						selection.toList());
 				editor.executeCommand(command);
 			}
 		}

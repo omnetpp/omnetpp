@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,23 +25,23 @@ public class MultiPageEditorPartAccess
 	public MultiPageEditorPartAccess(MultiPageEditorPart multiPageEditorPart) {
 		super(multiPageEditorPart);
 	}
-	
+
     @Override
 	public MultiPageEditorPart getWorkbenchPart() {
 		return (MultiPageEditorPart)workbenchPart;
 	}
-    
+
     @UIStep
     public void assertActivePage(String label) {
     	Assert.assertTrue("Page is not active: " + label, isPageActive(label));
     }
-    
+
 	@UIStep
 	public CTabItemAccess getCTabItem(int pageIndex) {
-		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getItem", pageIndex); 
-		return (CTabItemAccess)createAccess(item); 
+		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getItem", pageIndex);
+		return (CTabItemAccess)createAccess(item);
 	}
-	
+
 	@UIStep
 	public ControlAccess getControl(int pageIndex) {
 		Control control = (Control)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getControl", pageIndex);
@@ -70,13 +70,13 @@ public class MultiPageEditorPartAccess
 		int activePage = (Integer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActivePage");
 		return activePage >= 0 ? getControl(activePage) : null;
 	}
-	
+
 	@UIStep
 	public CTabItemAccess getActiveCTabItem() {
 		int activePage = (Integer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActivePage");
 		return activePage >= 0 ? getCTabItem(activePage) : null;
 	}
-	
+
 	public void activatePageWithMouseClick(String label) {
 	    getCTabItem(label).click();
 	}
@@ -85,19 +85,19 @@ public class MultiPageEditorPartAccess
 	public CTabItemAccess getCTabItem(String label) {
         return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal(), label));
     }
-	
+
 	@InBackgroundThread
 	public EditorPartAccess activatePageEditor(String label) {
 		activatePageWithMouseClick(label);
 		return getActivePageEditor();
 	}
-	
+
 	@InBackgroundThread
 	public ControlAccess activatePageControl(String label) {
 		activatePageWithMouseClick(label);
 		return getActivePageControl();
 	}
-	
+
 	@InBackgroundThread
 	public EditorPartAccess ensureActiveEditor(String label) {
 		if (!isPageActive(label))

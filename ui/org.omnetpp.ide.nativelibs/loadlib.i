@@ -13,7 +13,7 @@
 #include "exception.h"
 static void testExceptionHandling() {
     try {
-        throw opp_runtime_error("if you see this exception, omnetpp's native library (\"opplibs\") was built incorrectly"); 
+        throw opp_runtime_error("if you see this exception, omnetpp's native library (\"opplibs\") was built incorrectly");
     } catch (std::exception&) { /*OK!*/ }
 }
 %}
@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Display;
   static {
       try {
           System.loadLibrary("opplibs");
-      } 
+      }
       catch (final UnsatisfiedLinkError e) {
           displayError(e);
           throw e;
@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Display;
                       "all OMNeT++-related functionality will be unaccessible.\n\n" +
                       "Details:\n\n" +
                       "UnsatisfiedLinkError: " + e.getMessage() + "\n\n" +
-                      (Platform.getOS().equals(Platform.OS_LINUX) ? 
+                      (Platform.getOS().equals(Platform.OS_LINUX) ?
                               "Try upgrading your Linux installation to a more recent version, " +
                               "or installing newer versions of libc and libstdc++." : "")
               );

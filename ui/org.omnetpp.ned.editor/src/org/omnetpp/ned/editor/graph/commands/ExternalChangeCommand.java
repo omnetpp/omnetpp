@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,19 +24,19 @@ public class ExternalChangeCommand extends Command {
 	public void addEvent(NEDModelEvent event) {
 		events.add(event);
 	}
-	
+
 	@Override
 	public void execute() {
 		// intentionally left blank, because the changes are already applied
 		// that's why it is an external command
 	}
-	
+
 	@Override
 	public void redo() {
 		for (NEDModelEvent event : events)
 			redoEvent(event);
 	}
-	
+
 	private void redoEvent(NEDModelEvent event) {
 		if (event instanceof NEDAttributeChangeEvent) {
 			NEDAttributeChangeEvent attributeChangeEvent = (NEDAttributeChangeEvent)event;
@@ -58,7 +58,7 @@ public class ExternalChangeCommand extends Command {
 		else
 			throw new RuntimeException("Unknown event type");
 	}
-	
+
 	@Override
 	public void undo() {
 		for (int i = events.size() - 1; i >= 0; i--)

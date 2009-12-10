@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -103,7 +103,7 @@ public class EventLogInput extends FileEditorInput
 		this.eventLogWatcher = new RecurringJob(3000) {
 			public void run() {
 	            Display.getDefault().asyncExec(new Runnable() {
-	                // synchronize may destructively modify the underlying structure of the event log 
+	                // synchronize may destructively modify the underlying structure of the event log
 	                // and thus it must be called from the UI thread to prevent UI concurrent paints
 	                public void run() {
 	                    checkEventLogForChanges();
@@ -111,7 +111,7 @@ public class EventLogInput extends FileEditorInput
 	            });
 			}
 		};
-	
+
 		setEventLog(eventLog);
 		restoreState();
 	}
@@ -148,7 +148,7 @@ public class EventLogInput extends FileEditorInput
 	public void dispose() {
 		if (eventLogWatcher != null)
 			eventLogWatcher.stop();
-	
+
 		if (eventLog != null)
 		    eventLog.getFileReader().ensureFileClosed();
 	}
@@ -234,13 +234,13 @@ public class EventLogInput extends FileEditorInput
                 }
                 else {
                     ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(entry.getModuleId());
-                    
+
                     if (moduleTreeItem != null && moduleTreeItem.getModuleName().equals("<unknown>")) {
                         // FIXME: what about references to this tree item? are there any?
                         moduleTreeItem.remove();
                         moduleTreeItem = null;
                     }
-        
+
                     if (moduleTreeItem == null)
                         moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
                 }
@@ -265,7 +265,7 @@ public class EventLogInput extends FileEditorInput
 			/// store event log
 			getEventLogTableFacade().setEventLog(eventLog);
 			getSequenceChartFacade().setEventLog(eventLog);
-		
+
 			eventLogFilterRemoved();
 
 			storeState();
@@ -280,7 +280,7 @@ public class EventLogInput extends FileEditorInput
 
 		// create new filter
 		FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
-	
+
 		// collection limits
 		if (eventLogFilterParameters.enableCollectionLimits) {
             filteredEventLog.setCollectMessageReuses(eventLogFilterParameters.collectMessageReuses);
@@ -317,7 +317,7 @@ public class EventLogInput extends FileEditorInput
 		}
 		else
 			filteredEventLog.setTracedEventNumber(-1);
-	
+
 		filteredEventLog.setEnableMessageFilter(eventLogFilterParameters.enableMessageFilter);
 		if (eventLogFilterParameters.enableMessageFilter) {
 		    if (eventLogFilterParameters.enableMessageExpressionFilter)
@@ -325,13 +325,13 @@ public class EventLogInput extends FileEditorInput
 
             if (eventLogFilterParameters.enableMessageClassNameFilter)
                 filteredEventLog.setMessageClassNames(eventLogFilterParameters.getMessageClassNames());
-            
+
             if (eventLogFilterParameters.enableMessageNameFilter)
                 filteredEventLog.setMessageNames(eventLogFilterParameters.getMessageNames());
 
             if (eventLogFilterParameters.enableMessageIdFilter)
                 filteredEventLog.setMessageIds(eventLogFilterParameters.getSelectedMessageIds());
-            
+
             if (eventLogFilterParameters.enableMessageTreeIdFilter)
                 filteredEventLog.setMessageTreeIds(eventLogFilterParameters.getSelectedMessageTreeIds());
 
@@ -346,7 +346,7 @@ public class EventLogInput extends FileEditorInput
 		setEventLog(filteredEventLog);
 		getEventLogTableFacade().setEventLog(filteredEventLog);
 		getSequenceChartFacade().setEventLog(filteredEventLog);
-	
+
 		eventLogFiltered();
 
 		storeState();
@@ -400,7 +400,7 @@ public class EventLogInput extends FileEditorInput
 
 	public void removeEventLogChangedListener(IEventLogChangeListener listener) {
 		eventLogChangeListeners.remove(listener);
-	
+
 		if (eventLogChangeListeners.size() == 0)
 			eventLogWatcher.stop();
 	}

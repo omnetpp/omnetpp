@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 
 /**
  * Common interface of the forms for editing scave objects.
- * 
+ *
  * EditDialog and NewScaveObjectWizard uses this interface.
  * ScaveObjectEditFormFactory can be used to create the
  * edit forms for scave objects.
@@ -48,12 +48,12 @@ public interface IScaveObjectEditForm {
 	EStructuralFeature[] getFeatures();
 
 	/**
-	 * Returns the value of the control associated with the specified feature. 
+	 * Returns the value of the control associated with the specified feature.
 	 */
 	Object getValue(EStructuralFeature feature);
 
 	/**
-	 * Sets the value of the control associated with the specified feature. 
+	 * Sets the value of the control associated with the specified feature.
 	 */
 	void setValue(EStructuralFeature feature, Object value);
 }

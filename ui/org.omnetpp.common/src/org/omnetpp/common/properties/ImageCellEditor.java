@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,14 +30,14 @@ public class ImageCellEditor extends TextCellEditorEx {
 
         @Override
         protected List<IContentProposal> getProposalCandidates(String prefix) {
-            if (prefix.contains("/")) 
+            if (prefix.contains("/"))
                 return sort(toProposals(ImageFactory.getImageNameList().toArray(new String[]{})));
-            else 
+            else
                 return sort(toProposals(ImageFactory.getCategories().toArray(new String[]{})));
         }
-        
+
     }
-    
+
     public ImageCellEditor() {
 		super();
 	}
@@ -54,7 +54,7 @@ public class ImageCellEditor extends TextCellEditorEx {
 	protected Control createControl(Composite parent) {
 	    Control result = super.createControl(parent);
         IContentProposalProvider proposalProvider = new ImageContentProposalProvider();
-        new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider, 
+        new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider,
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "/".toCharArray(), true);
 
         return result;
@@ -62,10 +62,10 @@ public class ImageCellEditor extends TextCellEditorEx {
 
 	@Override
 	protected Object openDialogBox(Control cellEditorWindow) {
-		ImageSelectionDialog cellDialog = 
+		ImageSelectionDialog cellDialog =
 			new ImageSelectionDialog(cellEditorWindow.getShell(), (String)getValue());
 
-		if (cellDialog.open() == Dialog.OK) 
+		if (cellDialog.open() == Dialog.OK)
 		    return cellDialog.getImageId();
 
 		// dialog cancelled

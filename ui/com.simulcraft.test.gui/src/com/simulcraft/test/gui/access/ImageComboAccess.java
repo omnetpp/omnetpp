@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -28,7 +28,7 @@ public class ImageComboAccess extends ControlAccess
 	public ImageCombo getControl() {
 		return (ImageCombo)widget;
 	}
-    
+
     @UIStep
     public boolean isEditable() {
     	return (getControl().getStyle() & SWT.READ_ONLY) == 0;
@@ -70,7 +70,7 @@ public class ImageComboAccess extends ControlAccess
         else
             typeIn(content);
     }
-    
+
     @InBackgroundThread
     public void clickAndTypeOver(String content) {
         click();
@@ -84,11 +84,11 @@ public class ImageComboAccess extends ControlAccess
         int y = bounds.y + bounds.height / 2;
         clickAbsolute(LEFT_MOUSE_BUTTON, getControl().getParent().toDisplay(x, y));
     }
-    
+
     @InBackgroundThread
     public void selectItem(String content) {
         clickOnArrow();
-        
+
         if (isEditable()) {
         	typeOver("");
         	pressKey(SWT.ARROW_DOWN);
@@ -101,7 +101,7 @@ public class ImageComboAccess extends ControlAccess
             pressKey(SWT.ARROW_DOWN);
 
         pressEnter();
-        
+
         assertTextContent(content);
     }
 

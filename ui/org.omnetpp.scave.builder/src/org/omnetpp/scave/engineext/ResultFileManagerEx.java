@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,9 +27,9 @@ import org.omnetpp.scave.engine.VectorResult;
 
 /**
  * ResultFileManager with notification capability. Also re-wraps
- * all returned IDLists into IDListEx (IDList with notification 
+ * all returned IDLists into IDListEx (IDList with notification
  * capability.)
- * 
+ *
  * @author andras
  */
 public class ResultFileManagerEx extends ResultFileManager {
@@ -446,6 +446,6 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	private IDList wrap(IDList obj) {
-		return obj; // TODO eliminate wrap() calls 
+		return obj; // TODO eliminate wrap() calls
 	}
 }

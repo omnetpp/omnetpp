@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -79,7 +79,7 @@ public abstract class ExtendsPropertySource extends NedBasePropertySource {
         public boolean isPropertyResettable(Object propName) {
             return true;
         }
-        
+
         public INedTypeElement getNedTypeModel() {
             return (INedTypeElement)getModel();
         }

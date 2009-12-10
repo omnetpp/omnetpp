@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,7 +24,7 @@ public class StyledTextClickRecognizer extends EventRecognizer {
     public JavaSequence recognizeEvent(Event e) {
         if (e.widget instanceof StyledText && (e.type == SWT.MouseDown || e.type == SWT.MouseDoubleClick) && e.button == 1) { // left click into a StyledText
             StyledText styledText = (StyledText) e.widget;
-            
+
             int offset;
             try {
                 offset = styledText.getOffsetAtLocation(new Point(e.x, e.y));

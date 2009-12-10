@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -33,7 +33,7 @@ import org.omnetpp.common.util.StringUtils;
 /**
  * Tests OMNeT++ project templates. Creates one instance of every possible project.
  * This should go through without an error; then results should be inspected manually.
- * 
+ *
  * @author Andras
  */
 public class ProjectTemplatesTest extends TestCase {
@@ -60,7 +60,7 @@ public class ProjectTemplatesTest extends TestCase {
         ScopedPreferenceStore prefs = CommonPlugin.getConfigurationPreferenceStore();
         prefs.setValue(IConstants.PREF_DEFAULT_LICENSE, license);
         prefs.setValue(IConstants.PREF_COPYRIGHT_LINE, copyrightLine);
-        
+
         // create blank project
         String projectName = "test-"+(isCpp?"CPP-":"NONCPP-")+template.getName()+"-"+license+"-"+(StringUtils.isEmpty(copyrightLine) ? "anon" : "(C)");
         IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
@@ -68,9 +68,9 @@ public class ProjectTemplatesTest extends TestCase {
             project.delete(true, true, null);
         project.create(null);
         project.open(null);
-        
+
         //configureCDTProject(project); -- doesn't work
-        
+
         // configure it using the project
         template.configure(project, null, null);
     }
@@ -95,5 +95,5 @@ public class ProjectTemplatesTest extends TestCase {
             mngr.setProjectDescription(project, des, false, null);
         }
     }
-    
+
 }

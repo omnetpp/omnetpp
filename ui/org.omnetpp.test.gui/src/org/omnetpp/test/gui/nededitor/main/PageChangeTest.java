@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -69,7 +69,7 @@ public class PageChangeTest
         nedEditor.ensureActiveGraphicalEditor();
         graphicalNedEditor.findCompoundModule("TestCompound").findSubmoduleFigureByName("name");
     }
-    
+
     public void testUneditedFileIsNotDirty() throws Exception {
         // NED text below is intentionally unformatted to verify that no unnecessary reindenting/reformatting occurs
         String fileContent = "simple A {}\nmodule TestCompound { submodules: name : A; }";
@@ -85,7 +85,7 @@ public class PageChangeTest
         textEditor.assertContent(fileContent);
         nedEditor.assertNotDirty();
     }
-    
+
     public void testTextEditingDoesNotReformat() throws Exception {
         // NED text below is intentionally unformatted to verify that no unnecessary reindenting/reformatting occurs
         String fileContent = "simple A {}\nmodule TestCompound { submodules: name : A; }";

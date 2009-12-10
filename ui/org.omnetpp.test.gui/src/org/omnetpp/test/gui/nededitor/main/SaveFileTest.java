@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,7 +17,7 @@ import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.NedEditorAccess;
 import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
-public class SaveFileTest 
+public class SaveFileTest
 	extends NedFileTestCase
 {
     final String CONTENT = "simple Test {}";

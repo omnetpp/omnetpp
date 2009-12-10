@@ -1,6 +1,6 @@
 2009-xx-xx Andras Varga
 
-	* INCOMPATIBLE NED SEMANTICS CHANGE 4.0: 
+	* INCOMPATIBLE NED SEMANTICS CHANGE 4.0:
             fixed parameter values CANNOT be overwritten from subclasses or submodule sections
                  (this is for consistency with pattern assignments)
 
@@ -22,15 +22,15 @@
 
 2005-08-08  Andras Varga
 
-	* cnednetworkbuilder.cc: assign submodule parameters, gatesizes etc 
+	* cnednetworkbuilder.cc: assign submodule parameters, gatesizes etc
 	in that submodule's context (use cContextSwitcher); same for network.
 	This is mainly needed for ModNameParamResolver to work correctly
-	($MODULE_NAME etc for XPath expressions are taken from the module 
+	($MODULE_NAME etc for XPath expressions are taken from the module
 	in context).
 
 2005-08-07  Andras Varga
 
-	* cnednetworkbuilder.cc: don't look for module type if module vector 
+	* cnednetworkbuilder.cc: don't look for module type if module vector
 	size is zero
 
 2005-07-26  Andras Varga

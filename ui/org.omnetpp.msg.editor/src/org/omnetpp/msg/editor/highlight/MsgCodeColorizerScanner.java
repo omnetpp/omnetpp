@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,7 +20,7 @@ import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
  * @author rhornig
  */
 public class MsgCodeColorizerScanner extends RuleBasedScanner {
-    
+
 	/**
 	 * Creates a NED code scanner
 	 */
@@ -32,7 +32,7 @@ public class MsgCodeColorizerScanner extends RuleBasedScanner {
 
         // Add rule for strings
 		rules.add(new SingleLineRule("\"", "\"", SyntaxHighlightHelper.codeStringToken, '\\'));
-        
+
         // Add rule for detecting numeric constants
         rules.add(new NumberRule(SyntaxHighlightHelper.codeNumberToken));
 
@@ -49,7 +49,7 @@ public class MsgCodeColorizerScanner extends RuleBasedScanner {
 		for (int i= 0; i < SyntaxHighlightHelper.highlightConstants.length; i++)
 			wordRule.addWord(SyntaxHighlightHelper.highlightConstants[i], SyntaxHighlightHelper.codeStringToken);
 		rules.add(wordRule);
-        
+
 		IRule[] result= new IRule[rules.size()];
 		rules.toArray(result);
 		setRules(result);

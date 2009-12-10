@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,14 +40,14 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
  */
 public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
     private static final String COMMENT = "//\n// TODO auto-generated module\n//\n";
-    
+
     private static final String[] NEDFILE_TEMPLATES = {
         "#PACKAGEDECL#",
         "#PACKAGEDECL#"+COMMENT+"simple #NAME#\n{\n}\n",
         "#PACKAGEDECL#"+COMMENT+"module #NAME#\n{\n}\n",
         "#PACKAGEDECL#"+COMMENT+"network #NAME#\n{\n}\n"
     };
-    
+
 	private IWorkbench workbench;
 	private static int exampleCount = 1;
 
@@ -64,7 +64,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 		setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newnedfile_wiz.png"));
 
 		setFileExtension("ned");
-		setFileName("new" + exampleCount + ".ned"); 
+		setFileName("new" + exampleCount + ".ned");
 		workbench = aWorkbench;
 	}
 
@@ -126,11 +126,11 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         String name = getFileName();
         if (name == null || "".equals(name))
             return null;
-        
+
         // make a valid identifier
         name = name.substring(0, name.lastIndexOf('.'));
         name = StringUtils.capitalize(StringUtils.makeValidIdentifier(name));
-        
+
         // determine package
         IFile newFile = createFileHandle(getContainerFullPath().append(getFileName()));
         String packagedecl = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
@@ -147,7 +147,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         contents = LicenseUtils.getBannerComment(license, "//") + contents;
 		return new ByteArrayInputStream(contents.getBytes());
 	}
-    
+
 	public boolean finish() {
         IFile newFile = createNewFile();
 		if (newFile == null)

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,7 +22,7 @@ import org.omnetpp.common.project.ProjectUtils;
 
 /**
  * Add/remove OMNeT++ nature to the selected project.
- * 
+ *
  * @author Andras
  */
 public class ToggleNatureAction implements IObjectActionDelegate {
@@ -54,10 +54,10 @@ public class ToggleNatureAction implements IObjectActionDelegate {
     public void selectionChanged(IAction action, ISelection selection) {
         this.selection = selection;
         List<IProject> projects = getSelectedOpenProjects();
-        
+
         if (action.isEnabled() == projects.isEmpty())
             action.setEnabled(!projects.isEmpty());
-        
+
         if (anyProjectMissesNature(projects))
             action.setText("Add OMNeT++ Support");
         else

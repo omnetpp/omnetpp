@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -22,22 +22,22 @@ public class CTabItemAccess extends ClickableWidgetAccess
 	public CTabItemAccess(CTabItem cTabItem) {
 		super(cTabItem);
 	}
-	
+
     @Override
 	public CTabItem getWidget() {
 		return (CTabItem)widget;
 	}
-    
+
     @UIStep
     public CTabFolderAccess getCTabFolder() {
         return (CTabFolderAccess)createAccess(getWidget().getParent());
     }
-    
+
     @UIStep
     public boolean isClosable() {
 		return (Boolean)ReflectionUtils.getFieldValue(getWidget(), "showClose");
     }
-	
+
 	@Override
 	protected Menu getContextMenu() {
 		return null;
@@ -47,12 +47,12 @@ public class CTabItemAccess extends ClickableWidgetAccess
 	protected Point getAbsolutePointToClick() {
 		return toAbsolute(getCenter(getWidget().getBounds()));
 	}
-	
+
 	@Override
 	protected Point toAbsolute(Point point) {
         return getWidget().getParent().toDisplay(point);
 	}
-	
+
 	@UIStep
 	public void clickOnCloseIcon() {
 		Assert.assertTrue("CTabItem is not closable", isClosable());
@@ -61,11 +61,11 @@ public class CTabItemAccess extends ClickableWidgetAccess
 		Point center = new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 		clickAbsolute(LEFT_MOUSE_BUTTON, getWidget().getParent().toDisplay(center));
 	}
-	
+
     @UIStep
     public CTabItemAccess reveal() {
         getWidget().getParent().showItem(getWidget());
         return this;
     }
-	
+
 }

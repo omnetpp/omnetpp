@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Widget;
 import com.simulcraft.test.gui.core.UIStep;
 
 public class WidgetAccess
-	extends ClickableAccess 
+	extends ClickableAccess
 {
 	protected Widget widget;
 
@@ -26,7 +26,7 @@ public class WidgetAccess
 	public Widget getWidget() {
 		return widget;
 	}
-	
+
 	@UIStep
 	public void assertDisposed() {
 	    Assert.assertTrue("control or widget not yet disposed", getWidget().isDisposed());

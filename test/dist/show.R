@@ -1,5 +1,5 @@
 # show.R
-# 
+#
 # Draws plots of the experimental distributions stored in csv files in the current working directory
 # together with the theoretical probability distribution.
 #

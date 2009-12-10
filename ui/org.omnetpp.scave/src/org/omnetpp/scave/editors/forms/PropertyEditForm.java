@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -72,7 +72,7 @@ public class PropertyEditForm implements IScaveObjectEditForm {
 	 */
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout(2, false));
-	
+
 		Label label = new Label(panel, SWT.NONE);
 		label.setText("Name:");
 		nameText = new Text(panel, SWT.BORDER);
@@ -82,7 +82,7 @@ public class PropertyEditForm implements IScaveObjectEditForm {
 		label.setText("Value:");
 		valueText = new Text(panel, SWT.BORDER);
 		valueText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	
+
 	}
 
 	/**

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -156,7 +156,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	protected PropertySheetPage propertySheetPage;
 
 	/**
-	 * The selection change listener added to all viewers 
+	 * The selection change listener added to all viewers
 	 */
 	ISelectionChangedListener selectionChangedListener = new ISelectionChangedListener() {
 		public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
@@ -240,7 +240,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	/**
 	 * Adapter used to update the problem indication when resources are demanded loaded.
 	 */
-	protected EContentAdapter problemIndicationAdapter = 
+	protected EContentAdapter problemIndicationAdapter =
 		new EContentAdapter() {
 			public void notifyChanged(Notification notification) {
 				if (notification.getNotifier() instanceof Resource) {
@@ -420,7 +420,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 			updateProblemIndication();
 		}
 	}
-  
+
 	/**
 	 * Updates the problems indication with the information described in the specified diagnostic.
 	 */
@@ -550,7 +550,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	}
 
 	/**
-	 * Utility function to update selection in a viewer without generating 
+	 * Utility function to update selection in a viewer without generating
 	 * further notifications.
 	 */
 	public void setViewerSelectionNoNotify(Viewer target, ISelection selection) {
@@ -630,7 +630,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	}
 
 	/**
-	 * This is the method called to load a resource into the editing 
+	 * This is the method called to load a resource into the editing
 	 * domain's resource set based on the editor's input.
 	 */
 	public void createModel() {
@@ -696,12 +696,12 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		createModel();
 		// do the real job
         doCreatePages();
-        // refresh 
+        // refresh
 		updateProblemIndication();
 	}
 
 	/**
-	 * createPages() delegates real work here. 
+	 * createPages() delegates real work here.
 	 * @author Andras
 	 */
 	protected abstract void doCreatePages();
@@ -724,7 +724,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 
 		createContextMenuFor(modelViewer);
 		setupDragAndDropSupportFor(modelViewer);
-	
+
 		// on double-click, open (the dataset or chart), or bring up the Properties dialog
 		modelViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -737,7 +737,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 				}
 			}
 		});
-	
+
 	}
 
 	/**
@@ -775,7 +775,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 					new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
 			initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
 			contentOutlineViewer.expandToLevel(3);
-		
+
 			// Make sure our popups work.
 			//
 			createContextMenuFor(contentOutlineViewer);
@@ -906,7 +906,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 
 	/**
 	 * This returns wether something has been persisted to the URI of the specified resource.
-	 * The implementation uses the URI converter from the editor's resource set to try to open an input stream. 
+	 * The implementation uses the URI converter from the editor's resource set to try to open an input stream.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated

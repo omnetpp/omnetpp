@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -106,7 +106,7 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		TableAccess table = getSelectedTable();
 		MenuAccess menu = table.activateContextMenuWithMouseClick();
 		menu.activateMenuItemWithMouse("Choose table columns.*");
-	
+
 		ShellAccess shell = Access.findShellWithTitle("Select Columns.*");
 		shell.findButtonWithLabel("Select All").selectWithMouseClick();
 		shell.findButtonWithLabel("OK").selectWithMouseClick();
@@ -179,7 +179,7 @@ public class BrowseDataPageAccess extends CompositeAccess {
 	public void sortByTableColumn(String columnName, int direction) {
 		TableColumnAccess column = getColumn(columnName);
 		column.sort(direction);
-	
+
 	}
 
 	protected TableAccess findDataTable(Composite composite) {

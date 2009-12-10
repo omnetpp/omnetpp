@@ -52,7 +52,7 @@ while (<IN>)
                 \@display(\"t=$2\");
         };\n";
    }
-  
+
    if ($content =~ s/edge \[.*?source ([0-9]+).*?target ([0-9]+)//s)
    {
       if ($connections == 0)

@@ -2,8 +2,8 @@
 #
 # Detects the platform and architecture, and starts the IDE with the right launcher
 #
-IDEDIR=`dirname $0`/../ide                                                                                        
-cd $IDEDIR                                                                                                        
+IDEDIR=`dirname $0`/../ide
+cd $IDEDIR
 PLATFORM=`uname -sm`
 LAUNCHER=omnetpp
 
@@ -20,21 +20,21 @@ fi
 #set default language so GCC will report errors in english. see bug #3
 export LANG=en_US.UTF-8
 
-case $PLATFORM in 
+case $PLATFORM in
 *MINGW*)
-	./${LAUNCHER}.exe & 
-        ;; 
-*Linux*x86_64*) 
-	./${LAUNCHER}64 & 
-        ;; 
-*Linux*) 
-	./$LAUNCHER & 
-        ;; 
+	./${LAUNCHER}.exe &
+        ;;
+*Linux*x86_64*)
+	./${LAUNCHER}64 &
+        ;;
+*Linux*)
+	./$LAUNCHER &
+        ;;
 *Darwin*)
 	open ${LAUNCHER}.app
-        ;; 
-*) 
+        ;;
+*)
 	echo OMNeT++ IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel/PPC
 	exit 1
-        ;; 
+        ;;
 esac

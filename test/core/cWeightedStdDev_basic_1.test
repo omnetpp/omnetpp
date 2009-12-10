@@ -1,9 +1,9 @@
 %description:
-Basic cWeightedStdDev test: for integer weights it should yield the same 
+Basic cWeightedStdDev test: for integer weights it should yield the same
 results as cStdDev with collect() called those many times.
 
-Note: there might be a small difference in getStddev() values between the two 
-for smaller N's, because cStdDev uses the "N-1" formula, while cWeigtedStdDev 
+Note: there might be a small difference in getStddev() values between the two
+for smaller N's, because cStdDev uses the "N-1" formula, while cWeigtedStdDev
 uses the "N" formula (N-1 gets nasty in the weighted case).
 
 %global:

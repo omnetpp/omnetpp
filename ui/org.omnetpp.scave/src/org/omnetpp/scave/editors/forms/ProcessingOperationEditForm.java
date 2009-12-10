@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -124,14 +124,14 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout());
-	
+
 		Group group;
-	
+
 		group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		group.setLayout(new GridLayout());
 		group.setText("Operation");
-	
+
 		operationCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
 		operationCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		operationCombo.setItems(operationNames);
@@ -141,30 +141,30 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 				handleOperationTypeChanged();
 			}
 		});
-	
+
 		description = new Label(group, SWT.WRAP);
 		description.setText("");
 		description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	
+
 		group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		group.setLayout(new GridLayout());
 		group.setText("Input grouping");
-	
+
 		groupByFieldsPanel = new ResultItemFieldsSelectorPanel(group, SWT.NONE);
 		groupByFieldsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		groupByFieldsPanel.setSelectableResultItemFields(Arrays.asList(fields));
-	
+
 		group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setLayout(new GridLayout());
 		group.setText("Parameters");
-	
+
 		paramsTable = new Table(group, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 		paramsTable.setHeaderVisible(true);
 		paramsTable.setLinesVisible(true);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.minimumHeight = paramsTable.getHeaderHeight() + paramsTable.getItemHeight() * 5; 
+		gridData.minimumHeight = paramsTable.getHeaderHeight() + paramsTable.getItemHeight() * 5;
 		paramsTable.setLayoutData(gridData);
 		TableColumn column = new TableColumn(paramsTable, SWT.NONE);
 		column.setText("Name");
@@ -175,7 +175,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		column = new TableColumn(paramsTable, SWT.NONE);
 		column.setText("Description");
 		column.setWidth(200);
-	
+
 		tableEditor = new TableEditor(paramsTable);
 		tableEditor.horizontalAlignment = SWT.LEFT;
 		tableEditor.grabHorizontal = true;
@@ -256,7 +256,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 			tableEditor.getEditor().dispose();
 			tableEditor.setEditor(null);
 		}
-	
+
 		int index = operationCombo.getSelectionIndex();
 		NodeType type = index >= 0 ? operationTypes[index] : null;
 		paramsTable.removeAll();

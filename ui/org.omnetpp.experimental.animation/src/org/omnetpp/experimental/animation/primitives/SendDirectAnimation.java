@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,11 +21,11 @@ public class SendDirectAnimation extends SendMessageAnimation {
 
 	protected int destinationModuleId;
 
-	public SendDirectAnimation(ReplayAnimationController animationController, 
+	public SendDirectAnimation(ReplayAnimationController animationController,
 							   AnimationPosition animationPosition,
-							   double propagationTime, 
-							   double transmissionTime, 
-							   int sourceModuleId, 
+							   double propagationTime,
+							   double transmissionTime,
+							   int sourceModuleId,
 							   int destinationModuleId,
 							   IRuntimeMessage msg) {
 		super(animationController, animationPosition, propagationTime, transmissionTime, null, msg);

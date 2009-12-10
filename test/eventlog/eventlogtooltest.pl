@@ -18,7 +18,7 @@ sub testEcho1
    {
       print("*** FAIL: Echo returned different content for $fileName\n\n");
    }
-   else 
+   else
    {
       print("PASS\n\n");
    }
@@ -51,7 +51,7 @@ sub testEcho2
    {
       print("*** FAIL: Echo returned different content for $fileName\n");
    }
-   else 
+   else
    {
       print("PASS\n\n");
    }
@@ -99,7 +99,7 @@ sub testEvents
       $offset = `$eventLogTool offsets -e $i $fileName`;
       $offset =~ s/\n//;
       $event = `$eventLogTool events -f $offset $fileName`;
-    
+
       if ($event !~ /E # $i/)
       {
          print("*** FAIL: Event $i not found for offset $offset in $fileName\n");

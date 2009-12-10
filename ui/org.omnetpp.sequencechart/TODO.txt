@@ -71,7 +71,7 @@ Features:
  + setup mouse gestures for easy navigation along the message dependencies
  + follow log file changes when pressing end
  + event numbers on the bottom axis are not visible when axes are balanced
- + SVG export 
+ + SVG export
    + whole eventlog
    + visible area
    + range specified by two events
@@ -107,7 +107,7 @@ Features:
  - avoid displaying too much events at once (due to being slow) when turning filtering on and off (maybe remember position and zoom level?)
 
 Known bugs:
-! - scrolling with the scroll bar sometimes causes empty cached canvas regions, bad drawing, refresh helps 
+! - scrolling with the scroll bar sometimes causes empty cached canvas regions, bad drawing, refresh helps
     (this is a bug in eclipse, see bug id: 245523, GC state becomes corrupt)
 ! - navigation history
 ! - scroll bar is not quasi linear in Net60 (due to the initialize event being too long compared to all the others)

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -99,7 +99,7 @@ public class CloneSubmoduleCommand extends Command {
         }
 
         newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
-        
+
         // keep track of the new modules so we can delete them in undo
         newModules.add(newModule);
 

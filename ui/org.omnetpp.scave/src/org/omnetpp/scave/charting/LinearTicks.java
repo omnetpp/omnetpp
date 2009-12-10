@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Utility class for calculating ticks.
- * 
+ *
  * @author Andras
  */
 public class LinearTicks implements ITicks {
@@ -30,7 +30,7 @@ public class LinearTicks implements ITicks {
 		this.end = new BigDecimal(end).setScale(-scale, RoundingMode.CEILING);
 		BigDecimal spacing = BigDecimal.valueOf(approxDelta);
 		BigDecimal delta = new BigDecimal(1).scaleByPowerOfTen(scale);
-	
+
 		if (delta.divide(BigDecimal.valueOf(5)).compareTo(spacing) > 0) {
 			// use 2, 4, 6, 8, etc. if possible
 			this.majorTickDelta = delta.divide(BigDecimal.valueOf(5));
@@ -54,11 +54,11 @@ public class LinearTicks implements ITicks {
 	public Iterator<BigDecimal> iterator() {
 		class TickIterator implements Iterator<BigDecimal> {
 			BigDecimal current;
-		
+
 			public TickIterator() {
 				current = start;
 			}
-		
+
 			public boolean hasNext() {
 				return current.compareTo(end) < 0;
 			}
@@ -75,7 +75,7 @@ public class LinearTicks implements ITicks {
 				throw new UnsupportedOperationException();
 			}
 		};
-	
+
 		return new TickIterator();
 	}
 }

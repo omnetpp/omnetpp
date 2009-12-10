@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,13 +25,13 @@ public class EditorPartAccess
 	public IEditorPart getWorkbenchPart() {
 		return (IEditorPart)workbenchPart;
 	}
-	
+
 	@Override @UIStep
     public CTabItemAccess getCTabItem() {
 		String tabLabel = getWorkbenchPart().isDirty() ? "\\*" + getPartName() : getPartName();
         return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), tabLabel));
     }
-	
+
 	@UIStep
 	public void saveWithHotKey() {
 		pressKey('s', SWT.CONTROL);
@@ -46,7 +46,7 @@ public class EditorPartAccess
 	public StyledTextAccess findStyledText() {
 		return getComposite().findStyledText();
 	}
-	
+
     @UIStep
 	public ToolBarManagerAccess getToolBarManager() {
         return new ToolBarManagerAccess(getWorkbenchPart().getEditorSite().getActionBars().getToolBarManager());

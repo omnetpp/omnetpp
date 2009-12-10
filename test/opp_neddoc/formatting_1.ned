@@ -59,7 +59,7 @@
 //
 // Backslash handling: a single backslash should prevent hyperlinking a word.
 // So this should be hyperlinked: Formatting_1, but this not: \Formatting_1.
-// Single backslashes should also be removed, so none should be here: 
+// Single backslashes should also be removed, so none should be here:
 // \one,\Two, Th\ree. Double backslashes should become one, so you should
 // see one \\here, another here: \\, and two here: \\\\.
 //

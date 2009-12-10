@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -44,14 +44,14 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 								IRuntimeMessage msg) {
 		super(animationController, animationPosition, propagationTime, transmissionTime, msg);
 		this.connectionId = connectionId;
-	
+
 		toolTip = new Label();
 		toolTip.setText("Sending time: " + getBeginSimulationTime() +
 				" arrival time: " + endSimulationTime +
 				" propagation time: " + propagationTime +
 				" transmission time: " + transmissionTime);
 
-		Color color = ColorFactory.getGoodDarkColor(msg == null ? 0 : msg.getEncapsulationId()); 
+		Color color = ColorFactory.getGoodDarkColor(msg == null ? 0 : msg.getEncapsulationId());
 		messageEllipse = new Ellipse();
 		messageEllipse.setSize(20, 20);
 		messageEllipse.setForegroundColor(color);
@@ -62,7 +62,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 		messageLine.setForegroundColor(color);
 		messageLine.setLineWidth(5);
 		messageLine.setToolTip(toolTip);
-	
+
 		messageLabel = new Label();
 	}
 
@@ -70,7 +70,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 	public void redo() {
 		if (isDisplayed()) {
 			CompoundModuleFigure enclosingModuleFigure = getEnclosingModuleFigure();
-		
+
 			if (transmissionTime != 0)
 				enclosingModuleFigure.addMessageFigure(messageLine);
 

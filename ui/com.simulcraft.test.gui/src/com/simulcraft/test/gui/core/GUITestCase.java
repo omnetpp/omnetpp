@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -26,7 +26,7 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ClickableAccess;
 
 
-public abstract class GUITestCase 
+public abstract class GUITestCase
     extends TestCase
 {
     private static boolean debug = false;
@@ -47,13 +47,13 @@ public abstract class GUITestCase
     }
 
 	/**
-	 * Scales ALL time and delay in the test case. For example, setting it to 2 will result 
-	 * in a test case running twice as slow as normal. 
+	 * Scales ALL time and delay in the test case. For example, setting it to 2 will result
+	 * in a test case running twice as slow as normal.
 	 */
 	public static void setTimeScale(double timeScale) {
 	    Access.setTimeScale(timeScale);
 	}
-	
+
     /**
      * The average time between keypresses during typing
      */
@@ -67,35 +67,35 @@ public abstract class GUITestCase
     public static void setShortcutDisplayDelay(int delay) {
         KeyPressAnimator.shortcutDisplayDelay = delay;
     }
-    
+
     /**
      * A little delay before the mouse starts moving
      */
     public static void setDelayBeforeMouseMove(int delay) {
         ClickableAccess.delayBeforeMouseMove = delay;
     }
-    
+
     /**
      * A delay after the mouse stops moving
      */
     public static void setDelayAfterMouseMove(int delay) {
         ClickableAccess.delayAfterMouseMove = delay;
     }
-    
+
     /**
      * How long does it take to move the mouse from the start to the end location
      */
     public static void setMouseMoveDuration(int delay) {
         ClickableAccess.mouseMoveDurationMillis = delay;
     }
-    
+
     /**
      * How long does it take to click with the mouse
      */
     public static void setMouseClickDuration(int delay) {
         ClickableAccess.mouseClickDurationMillis = delay;
     }
-    
+
     public static void setMouseClickAnimation(boolean animate) {
         MouseClickAnimator.mouseClickAnimation = animate;
     }
@@ -177,7 +177,7 @@ public abstract class GUITestCase
         }
         else if (t instanceof SWTException) {
             Throwable cause = ((SWTException)t).throwable;
-            
+
             if (cause != null)
                 return getInterestingCause(cause);
             else
@@ -186,7 +186,7 @@ public abstract class GUITestCase
         else
             return t;
     }
-    
+
     private void closeShells() {
         // KLUDGE: close all shells except the workbench window's shell
         // so that there are no hanging windows left open
@@ -202,7 +202,7 @@ public abstract class GUITestCase
             }
         }
     }
-    
+
     private void closeMenus() {
         // KLUDGE: close all menus so that there are no hanging menus left open
         // SWT does not close open menus when exceptions pass through the event loop
@@ -213,7 +213,7 @@ public abstract class GUITestCase
     private void closeMenus(Composite composite) {
         if (composite instanceof Decorations) {
             Menu[] menus = (Menu[])ReflectionUtils.getFieldValue(composite, "menus");
-            
+
             if (menus != null)
                 for (Menu menu : menus)
                     if (menu != null && menu.isVisible())
@@ -233,7 +233,7 @@ public abstract class GUITestCase
 	 * Runs the given runnable in a synchronized way from the event dispatch thread.
 	 * The idea is to run the runnable at least once and keep trying if there was an exception and
 	 * there is still some remaining time to run otherwise throw the first exception caught from the runnable.
-	 * 
+	 *
 	 * @param timeToRun -1 means run exactly once while positive values mean the runnable may be run multiple times
 	 * @param step the runnable to be run from the event dispatch thread
 	 * @return
@@ -244,13 +244,13 @@ public abstract class GUITestCase
 			try {
 				step.run();
 				return step.runAndReturn();
-			} 
+			}
 			catch (Throwable t) {
 				throw new TestException(t);
 			}
 		}
 
-		//System.out.print("sleep 1s to help debugging");  
+		//System.out.print("sleep 1s to help debugging");
 		//Access.sleep(1);
 
 		long begin = System.currentTimeMillis();
@@ -262,7 +262,7 @@ public abstract class GUITestCase
 		while (!hasBeenRunOnce || System.currentTimeMillis() - begin < timeToRun * 1000) {
 			if (hasBeenRunOnce)
 				Access.sleep(0.5);
-				
+
             Access.log(debug, hasBeenRunOnce ? "Rerunning step" : "Running step");
 			stepThrowables[0] = null;
 
@@ -271,7 +271,7 @@ public abstract class GUITestCase
 					try {
 						step.run();
 						result[0] = step.runAndReturn();
-					} 
+					}
 					catch (Throwable t) {
 						// just store the exception for later use and ignore it for now
 						stepThrowables[0] = t;
@@ -282,7 +282,7 @@ public abstract class GUITestCase
 
 			Access.log(debug, "Waiting for GUI thread to process events");
 
-			waitUntilEventQueueBecomesEmpty();		
+			waitUntilEventQueueBecomesEmpty();
 
 			// check if step has been run successfully and return
 			if (stepThrowables[0] == null)
@@ -303,7 +303,7 @@ public abstract class GUITestCase
 		    try {Thread.sleep(200);} catch (InterruptedException e) {}
 		    Thread.yield();
 		}
-		
+
 		// note: actually, the next line waits until the last UI event *begins* processing not when it finishes processing
 		while (PlatformUtils.hasPendingUIEvents()) {
 		    doPendingAsyncExecs();
@@ -314,7 +314,7 @@ public abstract class GUITestCase
     private static boolean hasWorkbenchWindow() {
         // note: getActiveWorkbenchWindow() may only be called from UI thread...
         final boolean[] result = new boolean[1];
-        Display.getDefault().syncExec(new Runnable() { 
+        Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 result[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null;
             }

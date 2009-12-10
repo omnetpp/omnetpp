@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
 
 /**
- * Extends CachingCanvas with zoom handling capabilities. Dragging and mouse wheel 
+ * Extends CachingCanvas with zoom handling capabilities. Dragging and mouse wheel
  * zooming behaviours can be added via ZoomableCanvasMouseSupport.
  *
  * @author andras
@@ -50,11 +50,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		this.minY = minY;
 		this.maxX = Math.max(minX, maxX);
 		this.maxY = Math.max(minY, maxY);
-	
+
 		// don't allow zero width/height (as it will cause division by zero)
 		if (this.minX == this.maxX)  this.maxX = this.minX + 1;
 		if (this.minY == this.maxY)  this.maxY = this.minY + 1;
-	
+
 		zoomToFit(); // includes updateVirtualSize(), clearCanvasCache(), redraw() etc.
 		// Debug.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
 	}
@@ -91,7 +91,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		org.eclipse.swt.graphics.Rectangle clientArea = getClientArea();
 		org.eclipse.swt.graphics.Rectangle viewport = getViewportRectangle();
 		return new Insets(
-				viewport.y - clientArea.y, 
+				viewport.y - clientArea.y,
 				viewport.x - clientArea.x,
 				clientArea.y + clientArea.height - viewport.y - viewport.height,
 				clientArea.x + clientArea.width - viewport.x - viewport.width);
@@ -158,7 +158,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	}
 
 	public void resetCoordinateOverflowCount() {
-		numCoordinateOverflows = 0;			
+		numCoordinateOverflows = 0;
 	}
 
 	protected int toInt(double c) {
@@ -168,7 +168,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	private int largeValue(double c) {
 		if (!Double.isInfinite(c)) // infinite is OK and does not count as coordinate overflow
 			numCoordinateOverflows++;
-		return MAXPIX; 
+		return MAXPIX;
 	}
 
 	public double getViewportCenterCoordX() {
@@ -284,7 +284,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		// adjust zoom
 		zoomXBy(((double)getViewportWidth()) / r.width);
 		zoomYBy(((double)getViewportHeight()) / r.height);
-	
+
 		// position to original top-left corner
 		scrollHorizontalTo(toVirtualX(x));
 		scrollVerticalTo(toVirtualY(y));
@@ -299,7 +299,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	}
 
 	/**
-	 * Ensure canvas is not zoomed out more than possible (area must fill viewport).  
+	 * Ensure canvas is not zoomed out more than possible (area must fill viewport).
 	 */
 	public void validateZoom() {
 		setZoomX(getZoomX());
@@ -330,17 +330,17 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	}
 
 	/**
-	 * Returns an object for efficient plot-to-canvas coordinate mapping. The returned 
+	 * Returns an object for efficient plot-to-canvas coordinate mapping. The returned
 	 * object is intended for *one-time* plotting the chart: it SHOULD BE DISCARDED
-	 * at the end of the paint() method, because it captures chart geometry in "final" 
+	 * at the end of the paint() method, because it captures chart geometry in "final"
 	 * variables which become obsolete once the user scrolls/resizes the chart.
 	 */
 	protected ICoordsMapping getOptimizedCoordinateMapper() {
-		// Unoptimized version (for testing): 
+		// Unoptimized version (for testing):
 		// return this;
-	
+
 		// how this method was created (also hints for maintenance): copy the corresponding
-		// methods from ZoomableCachingCanvas, and create "final" variables for all 
+		// methods from ZoomableCachingCanvas, and create "final" variables for all
 		// member accesses and method calls in it.
 		final double zoomX = getZoomX();
 		final double zoomY = getZoomY();
@@ -353,7 +353,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 
 		ICoordsMapping mapping = new ICoordsMapping() {
 			private int numOverflows; // counts pixel coordinate overflows
-		
+
 			public double fromCanvasX(int x) {
 				Assert.isTrue(-MAXPIX<x && x<MAXPIX);
 				return (x + viewportLeftMinusLeftInset) / zoomX + minX;
@@ -371,7 +371,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			public double fromCanvasDistY(int y) {
 				return y / zoomY;
 			}
-		
+
 			public int toCanvasX(double xCoord) {
 				double x = (xCoord - minX)*zoomX - viewportLeftMinusLeftInset;
 				return toInt(x);
@@ -391,15 +391,15 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 				double y = yCoord * zoomY;
 				return toInt(y);
 			}
-		
+
 			private int toInt(double c) {
 				return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NAN_PIX : (int)c;
 			}
-		
+
 			private int largeValue(double c) {
 				if (!Double.isInfinite(c)) // infinite is OK and does not count as coordinate overflow
 					numOverflows++;
-				return MAXPIX; 
+				return MAXPIX;
 			}
 
 			public int getNumCoordinateOverflows() {
@@ -407,10 +407,10 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			}
 
 			public void resetCoordinateOverflowCount() {
-				numOverflows = 0;			
+				numOverflows = 0;
 			}
 		};
-	
+
 		// run a mini regression test before we return it
 		Assert.isTrue(toCanvasX(minX)==mapping.toCanvasX(minX) && toCanvasX(maxX)==mapping.toCanvasX(maxX));
 		Assert.isTrue(toCanvasY(minY)==mapping.toCanvasY(minY) && toCanvasY(maxY)==mapping.toCanvasY(maxY));
@@ -438,7 +438,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		double minY = Math.max(area.minY, this.minY);
 		double maxX = Math.min(area.maxX, this.maxX);
 		double maxY = Math.min(area.maxY, this.maxY);
-	
+
 		if (minX < maxX && minY < maxY) {
 			setZoomX(getViewportWidth() / (maxX - minX));
 			setZoomY(getViewportHeight() / (maxY - minY));

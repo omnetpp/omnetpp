@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.Path;
 
 /**
  * Utility class dealing with CDT's data model.
- * 
+ *
  * @author andras
  */
 @SuppressWarnings("restriction")
@@ -45,10 +45,10 @@ public class CDTUtils {
     }
 
     /**
-     * Returns the source entries (source folders with exclusion patterns) for 
+     * Returns the source entries (source folders with exclusion patterns) for
      * the given project and the active configuration. Returns empty array
      * for non-CDT projects.
-     * 
+     *
      * NOTE: Do NOT use from property pages (or from code like MetaMakemake that gets
      * invoked from property pages), as it returns the saved state not the edited one.
      */
@@ -57,7 +57,7 @@ public class CDTUtils {
         IConfiguration activeConfiguration = buildInfo==null ? null : buildInfo.getDefaultConfiguration();
         return activeConfiguration==null ? new ICSourceEntry[0] : activeConfiguration.getSourceEntries();
     }
-    
+
     /**
      * Returns the source locations from the given source entries. (This method does not access CDT state.)
      */
@@ -68,10 +68,10 @@ public class CDTUtils {
             sourceFolders.add(sourceEntry.getFullPath().isEmpty() ? project : project.getFolder(sourceEntry.getFullPath()));
         return sourceFolders;
     }
- 
+
     /**
      * Returns the source entry which exactly corresponds to the given folder.
-     * (This method does not access CDT state.) 
+     * (This method does not access CDT state.)
      */
     public static ICSourceEntry getSourceEntryFor(IContainer folder, ICSourceEntry[] sourceEntries) {
         IPath folderPath = folder.getProjectRelativePath();
@@ -81,27 +81,27 @@ public class CDTUtils {
         return null;
     }
 
-    /** 
+    /**
      * Returns true if the given resource is excluded from its containing source location,
      * or is outside all source locations.
-     * 
+     *
      * Replaces similar function in CDataUtil (CDT), because that one cannot properly
      * handle nested source folders.
-     * 
+     *
      * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=251846
-     * 
+     *
      * (This method does not access CDT state.)
      */
     public static boolean isExcluded(IResource resource, ICSourceEntry[] entries) {
         ICSourceEntry entry = getSourceEntryThatCovers(resource, entries);
-        if (entry == null) 
+        if (entry == null)
             return true;
         entry = CDataUtil.makeRelative(resource.getProject(), entry);
         return CDataUtil.isExcluded(resource.getProjectRelativePath(), entry);
     }
-    
+
     /**
-     * Returns the source entry whose subdirtree the resource is located in, or null. 
+     * Returns the source entry whose subdirtree the resource is located in, or null.
      * Exclude patterns are ignored. (This method does not access CDT state.)
      */
     public static ICSourceEntry getSourceEntryThatCovers(IResource resource, ICSourceEntry[] entries) {
@@ -119,7 +119,7 @@ public class CDTUtils {
     }
 
     /**
-     * Excludes/includes the given resource in the given source entries, and returns 
+     * Excludes/includes the given resource in the given source entries, and returns
      * the modified source entries. (This method does not access CDT state.)
      */
     public static ICSourceEntry[] setExcluded(IResource resource, boolean exclude, ICSourceEntry[] sourceEntries) throws CoreException {
@@ -127,9 +127,9 @@ public class CDTUtils {
         ICSourceEntry[] newEntries = CDataUtil.setExcluded(resource.getProjectRelativePath(), (resource instanceof IFolder), exclude, sourceEntries);
         return newEntries;
     }
- 
+
     /**
-     * Causes CDT to forget discovered include paths, and invoke the toolchain's 
+     * Causes CDT to forget discovered include paths, and invoke the toolchain's
      * ScannerInfoCollector class again. This is important because we use ScannerInfoCollector
      * to add the project's source directories to the include path.
      */

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -43,7 +43,7 @@ public class EventLogFindTextDialog extends Dialog {
     protected EventLogFindTextDialog(Shell parentShell) {
         super(parentShell);
     }
-    
+
     @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogSettings(CommonPlugin.getDefault(), getClass().getName());
@@ -76,7 +76,7 @@ public class EventLogFindTextDialog extends Dialog {
         group.setText("Direction");
         group.setLayout(new GridLayout());
         group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 1, 1));
-        
+
         forward = new Button(group, SWT.RADIO);
         forward.setText("Forward");
         forward.setSelection(!isBackward);
@@ -89,7 +89,7 @@ public class EventLogFindTextDialog extends Dialog {
         group.setText("Case");
         group.setLayout(new GridLayout());
         group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 1, 1));
-        
+
         caseSensitive = new Button(group, SWT.RADIO);
         caseSensitive.setText("Sensitive");
         caseSensitive.setSelection(!isCaseInsensitive);

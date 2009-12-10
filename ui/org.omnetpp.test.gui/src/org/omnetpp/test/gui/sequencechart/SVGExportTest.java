@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -38,7 +38,7 @@ public class SVGExportTest
         sequenceChart.releaseModifiers(SWT.CONTROL);
         testExport("Range.*");
     }
-    
+
     public void testExportVisibleArea() throws Exception {
         testExport("Visible area.*");
     }

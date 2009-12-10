@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -65,12 +65,12 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author tomi
  */
 public class BarChartEditForm extends ChartEditForm {
-	
+
 	public static final String TAB_BARS = "Bars";
 	public static final String TAB_CONTENT = "Content";
 
 	public static final List<String> EMPTY_STRING_LIST = Collections.unmodifiableList(new ArrayList<String>());
-	
+
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
 		pkg.getChart_Name(),
 		pkg.getBarChart_GroupByFields(),
@@ -78,7 +78,7 @@ public class BarChartEditForm extends ChartEditForm {
 		pkg.getBarChart_AveragedFields(),
 		pkg.getChart_Properties(),
 	};
-	
+
 	private static final String[] fieldNames = new String[] {
 		ResultItemField.MODULE, ResultItemField.NAME,
 		RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
@@ -90,7 +90,7 @@ public class BarChartEditForm extends ChartEditForm {
 	private Viewer groupFieldsList;
 	private Viewer barFieldsList;
 	private Viewer averagedFieldsList;
-	
+
 	// Labels
 	private Button wrapLabelsCheckbox;
 
@@ -101,13 +101,13 @@ public class BarChartEditForm extends ChartEditForm {
 	public BarChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
 	}
-	
+
 	public void populateTabFolder(TabFolder tabfolder) {
 		super.populateTabFolder(tabfolder);
 		createTab(TAB_CONTENT, tabfolder, 1);
 		createTab(TAB_BARS, tabfolder, 2);
 	}
-	
+
 	public void populateTabItem(TabItem item) {
 		super.populateTabItem(item);
 		String name = item.getText();
@@ -120,10 +120,10 @@ public class BarChartEditForm extends ChartEditForm {
 			Label label = new Label(panel, SWT.WRAP);
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			label.setText("You can move fields by dragging.");
-			
+
 			CustomSashForm sashForm = new CustomSashForm(panel, SWT.VERTICAL);
 			sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-			
+
 			unusedFieldsList = createFieldsList(sashForm, null, true);
 			unusedFieldsList.setInput(Arrays.asList(fieldNames));
 
@@ -141,7 +141,7 @@ public class BarChartEditForm extends ChartEditForm {
 			}
 		}
 	}
-	
+
 	private TableViewer createFieldsList(Composite parent, String label, final boolean sorted) {
 		Composite panel = new Composite(parent, SWT.NONE);
 		panel.setLayout(new GridLayout());
@@ -152,18 +152,18 @@ public class BarChartEditForm extends ChartEditForm {
 		viewer.setLabelProvider(new LabelProvider());
 		viewer.setContentProvider(new ListContentProvider());
 		viewer.setInput(EMPTY_STRING_LIST);
-		final Table control = viewer.getTable();  
+		final Table control = viewer.getTable();
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		//gridData.minimumHeight = control.getItemHeight() * fieldNames.length; 
+		//gridData.minimumHeight = control.getItemHeight() * fieldNames.length;
 		control.setLayoutData(gridData);
 		control.setLinesVisible(false);
 		control.setHeaderVisible(false);
-		
+
 		final Widget[] dropTarget = new Widget[1], dragSource = new Widget[1];
-		
+
 		// configure as drag source
 		final Transfer transfer = LocalTransfer.getInstance();
-		viewer.addDragSupport(DND.DROP_MOVE, new Transfer[] { transfer }, 
+		viewer.addDragSupport(DND.DROP_MOVE, new Transfer[] { transfer },
 			new DragSourceListener() {
 				public void dragStart(DragSourceEvent event) {
 					dropTarget[0] = null;
@@ -171,12 +171,12 @@ public class BarChartEditForm extends ChartEditForm {
 					if (!selection.isEmpty()) {
 						event.doit = true;
 						dragSource[0] = control;
-						
+
 					}
 					else
 						event.doit = false;
 				}
-				
+
 				public void dragSetData(DragSourceEvent event) {
 					if (transfer.isSupportedType(event.dataType)) {
 						ISelection selection = viewer.getSelection();
@@ -185,7 +185,7 @@ public class BarChartEditForm extends ChartEditForm {
 										EMPTY_STRING_LIST);
 					}
 				}
-	
+
 				public void dragFinished(DragSourceEvent event) {
 					if (event.doit && event.detail == DND.DROP_MOVE &&  dropTarget[0] != control) {
 						ISelection selection = viewer.getSelection();
@@ -198,7 +198,7 @@ public class BarChartEditForm extends ChartEditForm {
 					dragSource[0] = null;
 				}
 		});
-		
+
 		// configure drop target
 		viewer.addDropSupport(DND.DROP_MOVE, new Transfer[] { transfer },
 			new TableDropTargetEffect(control) {
@@ -207,13 +207,13 @@ public class BarChartEditForm extends ChartEditForm {
 					event.feedback = DND.FEEDBACK_NONE;
 					super.dragEnter(event);
 				}
-	
+
 				@Override
 				public void dragLeave(DropTargetEvent event) {
 					event.feedback = DND.FEEDBACK_NONE;
 					super.dragLeave(event);
 				}
-	
+
 				@Override
 				public void dragOver(DropTargetEvent event) {
 					if (!sorted)
@@ -222,7 +222,7 @@ public class BarChartEditForm extends ChartEditForm {
 						event.detail = DND.DROP_NONE;
 					super.dragOver(event);
 				}
-	
+
 				@SuppressWarnings("unchecked")
 				public void drop(DropTargetEvent event) {
 					if (transfer.isSupportedType(event.currentDataType) && (event.data instanceof List)) {
@@ -230,7 +230,7 @@ public class BarChartEditForm extends ChartEditForm {
 						List<String> data = (List<String>)event.data;
 						ListOrderedSet items = new ListOrderedSet();
 						items.addAll(getInput(viewer));
-						
+
 						if (sorted) {
 							items.addAll(data);
 							viewer.setInput(sortFields((Set<String>)items));
@@ -246,7 +246,7 @@ public class BarChartEditForm extends ChartEditForm {
 						event.detail = DND.DROP_NONE;
 					}
 				}
-				
+
 				@SuppressWarnings("unchecked")
 				private int getInsertionIndex(DropTargetEvent event) {
 					if (event.item instanceof Item) {
@@ -263,13 +263,13 @@ public class BarChartEditForm extends ChartEditForm {
 					return control.getItemCount();
 				}
 			});
-		
+
 		return viewer;
 	}
-	
+
 	private List<String> sortFields(Set<String> fields) {
 		List<String> result = new ArrayList<String>(fields.size());
-		
+
 		for (String field : fieldNames) {
 			if (fields.contains(field))
 				result.add(field);
@@ -281,7 +281,7 @@ public class BarChartEditForm extends ChartEditForm {
 	public EStructuralFeature[] getFeatures() {
 		return features;
 	}
-	
+
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
@@ -293,7 +293,7 @@ public class BarChartEditForm extends ChartEditForm {
 		}
 		return super.getValue(feature);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
@@ -309,19 +309,19 @@ public class BarChartEditForm extends ChartEditForm {
 		}
 		super.setValue(feature, value);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<String> getInput(Viewer list) {
 		return (List<String>)list.getInput();
 	}
-	
+
 	private void setContent(Viewer list, List<String> fields) {
 		list.setInput(fields);
 		List<String> unusedFields = new ArrayList<String>(getInput(unusedFieldsList));
 		unusedFields.removeAll(fields);
 		unusedFieldsList.setInput(unusedFields);
 	}
-	
+
 	@Override
 	protected void collectProperties(ChartProperties newProps) {
 		super.collectProperties(newProps);

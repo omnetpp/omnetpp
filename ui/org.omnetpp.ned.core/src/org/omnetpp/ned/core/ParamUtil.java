@@ -23,8 +23,8 @@ public class ParamUtil {
      */
     public static class KeyMatcher {
         public String key;
-        public String generalizedKey; // key, with indices ("[0]", "[5..]" etc) replaced with "[*]" 
-        public boolean keyEqualsGeneralizedKey;  // if key.equals(generalizedKey) 
+        public String generalizedKey; // key, with indices ("[0]", "[5..]" etc) replaced with "[*]"
+        public boolean keyEqualsGeneralizedKey;  // if key.equals(generalizedKey)
         public PatternMatcher matcher;  // pattern is generalizedKey
     }
     private static Map<String,KeyMatcher> keyMatcherCache = new HashMap<String, KeyMatcher>();
@@ -37,16 +37,16 @@ public class ParamUtil {
             keyMatcher.generalizedKey = key.replaceAll("\\[[^]]+\\]", "[*]");  // replace "[anything]" with "[*]"
             keyMatcher.keyEqualsGeneralizedKey = key.equals(keyMatcher.generalizedKey);
             try {
-                keyMatcher.matcher = new PatternMatcher(keyMatcher.generalizedKey, true, true, true); 
+                keyMatcher.matcher = new PatternMatcher(keyMatcher.generalizedKey, true, true, true);
             } catch (RuntimeException e) {
                 // bogus key (contains unmatched "{" or something); create matcher that does not match anything
-                keyMatcher.matcher = new PatternMatcher("", true, true, true); 
+                keyMatcher.matcher = new PatternMatcher("", true, true, true);
             }
             keyMatcherCache.put(key, keyMatcher);
         }
         return keyMatcher;
     }
-    
+
     public static boolean matchesPattern(String pattern, String value) {
         if (PatternMatcher.containsWildcards(pattern) || pattern.indexOf('[') != -1)
             return getOrCreateKeyMatcher(pattern).matcher.matches(value);
@@ -95,7 +95,7 @@ public class ParamUtil {
 
         return result;
     }
-    
+
     private static RecursiveParamDeclarationVisitor createFindMatchingParamDeclarationVisitor(final String fullPattern, final Object[] result) {
         return new RecursiveParamDeclarationVisitor() {
             @Override
@@ -117,13 +117,13 @@ public class ParamUtil {
 
     /**
      * Finds the parameter assignments for the provided parameter declaration by walking up on the element path.
-     * 
+     *
      * For single parameters this function returns a list with either the first non default assignment, or the last default assignment,
      * or the declaration if there is no such assignment.
-     * 
+     *
      * For parameters under a submodule vector path it returns the list of all matching assignments without considering
      * the index arguments. The only exception is when a total parameter assignment is used that overrides all previous assignments.
-     * 
+     *
      * The list of returned assignments is guaranteed to be non empty. The order of assignments reflects the way they are applied when
      * the runtime will determine the parameter value. That is, the first matching assignment (in terms of indices) will determine the
      * value. This is achieved by sorting out the non default assignments to the beginning, while leaving the defaults at the end in
@@ -134,7 +134,7 @@ public class ParamUtil {
         String paramName = paramDeclaration.getName();
         String paramRelativePath = paramName;
 
-	    // always add the parameter declaration, it will either be overwritten with a total assignment or extended with partial assignments 
+	    // always add the parameter declaration, it will either be overwritten with a total assignment or extended with partial assignments
         if (!collectParamAssignments(foundParamAssignments, paramDeclaration, true)) {
             // walk up the submodule path starting from the end (i.e. from the deepest submodule)
             outer: for (int i = elementPath.size() - 1; i >= 0; i--) {
@@ -156,7 +156,7 @@ public class ParamUtil {
                 for (String name : paramAssignments.keySet()) {
                     if (matchesPattern(name, paramRelativePath)) {
                         ParamElementEx paramAssignment = paramAssignments.get(name);
-    
+
                         if (collectParamAssignments(foundParamAssignments, paramAssignment, false))
                         	break outer;
                     }
@@ -167,7 +167,7 @@ public class ParamUtil {
                 paramRelativePath = fullName + "." + paramRelativePath;
             }
         }
-        
+
         return (ArrayList<ParamElementEx>)CollectionUtils.toSorted(CollectionUtils.toReversed(foundParamAssignments), new Comparator<ParamElementEx>() {
             public int compare(ParamElementEx p1, ParamElementEx p2) {
                 if (p1 == p2)
@@ -219,7 +219,7 @@ public class ParamUtil {
             if (StringUtils.isNotEmpty(connection.getSrcGateIndex()))
                 gateIndex = useWildcard ? "*" : connection.getSrcGateIndex();
             else if (connection.getSrcGatePlusplus())
-                gateIndex = "*"; 
+                gateIndex = "*";
 
             String gateName = connection.getGateNameWithIndex(connection.getSrcGate(), connection.getSrcGateSubg(), gateIndex, false);
             String moduleName = connection.getSrcModule();
@@ -287,7 +287,7 @@ public class ParamUtil {
             // TODO: at least look at the NED param assignments
             return null;
         }
-        
+
         protected boolean visitParamDeclarations(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath) {
             INEDTypeInfo typeInfo = typeInfoPath.lastElement();
             return visitParamDeclarations(fullPath, typeInfoPath, elementPath, typeInfo.getParamDeclarations());

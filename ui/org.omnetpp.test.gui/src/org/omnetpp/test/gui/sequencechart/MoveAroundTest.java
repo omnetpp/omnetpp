@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -31,7 +31,7 @@ public class MoveAroundTest
         super.setUpInternal();
         openFileFromProjectExplorerViewInSequenceChartEditor();
     }
-    
+
     public void testMoveFromBeginToEndUsingArrowKeys() {
         moveTroughUsingArrowKeys(true);
     }
@@ -56,7 +56,7 @@ public class MoveAroundTest
             sequenceChart.pressKey(forward ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT);
         }
     }
-    
+
     public void testMoveFromBeginToEndUsingMouse() {
         moveThroughUsingMouse(true);
     }
@@ -64,7 +64,7 @@ public class MoveAroundTest
     public void testMoveFromEndToBeginUsingMouse() {
         moveThroughUsingMouse(false);
     }
-    
+
     public void moveThroughUsingMouse(boolean forward) {
         SequenceChartAccess sequenceChart = findSequenceChart();
         SequenceChart control = sequenceChart.getControl();
@@ -98,7 +98,7 @@ public class MoveAroundTest
         Assert.isTrue(!(Boolean)ReflectionUtils.getFieldValue(control, "internalErrorHappenedDuringPaint"));
         Assert.isTrue((Boolean)ReflectionUtils.getFieldValue(control, "paintHasBeenFinished"));
     }
-    
+
     @UIStep
     private void assertSelectionEvent(SequenceChartAccess sequenceChart) {
         Assert.isTrue(sequenceChart.getControl().getSelectionEvent() != null);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -33,18 +33,18 @@ public class NewNedComponentWizard extends Wizard implements INewWizard {
     		setWindowTitle("New Compound Module");
 		}
     }
-    
+
     public static class NewNetworkWizard extends NewNedComponentWizard {
     	public NewNetworkWizard() {
     		super(NewNEDComponentWizardPage.Type.NETWORK);
     		setWindowTitle("New Network");
 		}
     }
-    
+
     protected NewNedComponentWizard(NewNEDComponentWizardPage.Type type) {
     	this.type = type;
 	}
-    
+
     @Override
     public void addPages() {
         page = new NewNEDComponentWizardPage(workbench, selection, type);

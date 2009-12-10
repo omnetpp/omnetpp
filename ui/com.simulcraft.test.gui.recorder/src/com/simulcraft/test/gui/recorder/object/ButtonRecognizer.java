@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -14,7 +14,7 @@ import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.JavaSequence;
 
 public class ButtonRecognizer extends ObjectRecognizer {
-    
+
     public ButtonRecognizer(GUIRecorder recorder) {
         super(recorder);
     }

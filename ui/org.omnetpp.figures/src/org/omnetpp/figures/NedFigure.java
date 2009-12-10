@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -81,7 +81,7 @@ abstract public class NedFigure extends Figure implements IProblemDecorationSupp
 		}
 		return tooltipText;
 	}
-    
+
     public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
         Image image = NedFigure.getProblemImageFor(maxSeverity);
         if (image != null)

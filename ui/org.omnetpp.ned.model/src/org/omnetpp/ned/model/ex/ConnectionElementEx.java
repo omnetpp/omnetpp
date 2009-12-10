@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -164,7 +164,7 @@ public class ConnectionElementEx extends ConnectionElement
     }
 
     /**
-     * To be used when the actual type for a "like" channel is known. 
+     * To be used when the actual type for a "like" channel is known.
      */
     public DisplayString getDisplayString(IChannelKindTypeElement channelType) {
         if (displayString == null)
@@ -270,20 +270,20 @@ public class ConnectionElementEx extends ConnectionElement
     }
 
     // Parameter query support. Note: code is similar to SubmoduleElementEx
-    
+
     /**
      * Returns parameter assignments of this channel, including those in the NED
      * type it instantiates. For "like" channels the actual channel type is unknown,
-     * so the interface NED type is used.  
+     * so the interface NED type is used.
      */
     public Map<String, ParamElementEx> getParamAssignments() {
         return getParamAssignments(getNEDTypeInfo());
     }
-    
+
     /**
      * Returns parameter assignments of this channel, including those in the NED
-     * type it instantiates, assuming that the channel's actual type is the 
-     * compound or simple module type passed in the <code>channelType</code> 
+     * type it instantiates, assuming that the channel's actual type is the
+     * compound or simple module type passed in the <code>channelType</code>
      * parameter. This is useful when the channel is a "like" channel, and the
      * caller knows the actual channel type (e.g. from an inifile).
      */
@@ -292,7 +292,7 @@ public class ConnectionElementEx extends ConnectionElement
 
         if (channelType != null)
             result.putAll(channelType.getParamAssignments());
-        
+
         // add local parameter assignments
         for (ParamElementEx ownParam : getOwnParams())
             result.put(ownParam.getName(), ownParam);
@@ -303,26 +303,26 @@ public class ConnectionElementEx extends ConnectionElement
     /**
      * Returns parameter declarations of this channel, including those in the NED
      * type it instantiates. For "like" channels the actual channel type is unknown,
-     * so the interface NED type is used.  
+     * so the interface NED type is used.
      */
     public Map<String, ParamElementEx> getParamDeclarations() {
         return getParamDeclarations(getNEDTypeInfo());
     }
 
     /**
-     * Returns parameter declarations of this channel, assuming that the channel's 
-     * actual type is the compound or simple module type passed in the 
-     * <code>channelType</code> parameter. This is useful when the channel is 
-     * a "like" channel, and the caller knows the actual channel type 
+     * Returns parameter declarations of this channel, assuming that the channel's
+     * actual type is the compound or simple module type passed in the
+     * <code>channelType</code> parameter. This is useful when the channel is
+     * a "like" channel, and the caller knows the actual channel type
      * (e.g. from an inifile).
      */
     public Map<String, ParamElementEx> getParamDeclarations(INEDTypeInfo channelType) {
         return channelType == null ? new HashMap<String, ParamElementEx>() : channelType.getParamDeclarations();
     }
-    
+
     public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
         List<ParamElementEx> chain = getNEDTypeInfo().getParameterInheritanceChain(parameterName);
-        
+
         for (ParamElementEx param : getOwnParams()) {
             if (parameterName.equals(param.getName())) {
                 chain.add(0, param);

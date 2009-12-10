@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -57,7 +57,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
         };
         NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedChangeListener);
     }
-    
+
     @Override
     protected void unhookListeners() {
         super.unhookListeners();
@@ -71,7 +71,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
     }
 
     /**
-     * Utility function for subclasses: tries to find a NED element among the parents 
+     * Utility function for subclasses: tries to find a NED element among the parents
      * which may have parameters (simple module, compound module, channel, submodule, connection).
      * Returns element itself if it already matches. Returns null if not found.
      */
@@ -92,7 +92,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
         // Note: we make no attempt to filter out selection changes while view is pinned
         // to a different editor (i.e. not the active editor), because we might miss updates.
         //XXX check.
-        
+
         //Debug.println("*** CONTENT REBUILD");
         IEditorPart activeEditor = getAssociatedEditor();
         if (activeEditor==null) {
@@ -169,5 +169,5 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
     public boolean show(ShowInContext context) {
         return true;
     }
-    
+
 }

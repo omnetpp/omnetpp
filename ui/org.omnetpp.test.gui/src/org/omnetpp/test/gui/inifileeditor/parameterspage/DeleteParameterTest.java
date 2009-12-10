@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -74,7 +74,7 @@ public class DeleteParameterTest extends InifileEditorTestCase {
         tree.findTreeItemByContent(".*par1.*").reveal().clickLeftEdge();
         tree.findTreeItemByContent(".*par4.*").reveal().clickLeftEdge();
         tree.releaseModifiers(SWT.CONTROL);
-        
+
         //parametersPage.findButtonWithLabel("Remove").activateWithMouseClick();
         parametersPage.pressKey(SWT.DEL);
 
@@ -87,5 +87,5 @@ public class DeleteParameterTest extends InifileEditorTestCase {
                 "**.foo1 = 100\n" +
                 "**.foo4 = 400\n");
     }
-    
+
 }

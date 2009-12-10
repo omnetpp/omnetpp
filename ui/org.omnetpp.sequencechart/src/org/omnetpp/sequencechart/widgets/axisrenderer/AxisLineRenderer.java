@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -38,7 +38,7 @@ public class AxisLineRenderer implements IAxisRenderer {
 
         graphics.setForegroundColor(module.isCompoundModule() ? ColorFactory.DIM_GREY : ColorFactory.BLACK);
         graphics.drawLine(rect.x, 0, rect.right(), 0);
-	
+
 		if (module.isCompoundModule()) {
             graphics.drawLine(rect.x, 2, rect.right(), 2);
             graphics.setForegroundColor(ColorFactory.WHITE);

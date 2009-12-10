@@ -4,7 +4,7 @@ export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
 all: pdf html eclipse
 
-html:  
+html:
 	xsltproc --xinclude --output tmp1.xml trans.xsl ide-overview.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/html/docbook.xsl!g" custom-html-docbook.xsl >custom-html-docbook-tmp.xsl
@@ -17,7 +17,7 @@ html:
 	cp pictures/*.png ../../ide-overview/pictures
 
 .PHONY : eclipse
-eclipse: 
+eclipse:
 	xsltproc --xinclude --output tmp1.xml trans.xsl ide-overview.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/eclipse/eclipse.xsl!g" custom-html-docbook.xsl >custom-html-docbook-tmp.xsl
@@ -28,8 +28,8 @@ eclipse:
 	cd eclipse && xsltproc ../custom-html-docbook-tmp.xsl ../tmp.xml
 	rm tmp.xml custom-html-docbook-tmp.xsl
 
-pdf:  
-	xsltproc --xinclude --stringparam output pdf --output tmp1.xml trans.xsl ide-overview.xml 
+pdf:
+	xsltproc --xinclude --stringparam output pdf --output tmp1.xml trans.xsl ide-overview.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml

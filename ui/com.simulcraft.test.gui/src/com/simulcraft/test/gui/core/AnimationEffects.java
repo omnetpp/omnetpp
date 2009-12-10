@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,10 +27,10 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ClickableAccess;
 
 // Notes for Linux/GTK:
-//   - XOR mode doesn't work   
+//   - XOR mode doesn't work
 //   - can only draw on ONE control, EXLUDING its children! ie. drawing on a Shell
 //     will only draw on a few empty pixel strips not covered by children... setting clipRect doesn't help
-// Workarounds: 
+// Workarounds:
 //   - XOR: save bg image and restore it?
 //   - clipping: draw on cursorControl (AND maybe all its parents and siblings??? crazy!)
 //
@@ -45,7 +45,7 @@ public class AnimationEffects  {
         "<body text=\"#000000\" bgcolor=\"#cde1f9\">\n";
     private static final String HTML_EPILOG =
         "</body></html>\n";
-    
+
     public static void displayTextBox(String text, int delayMillis) {
     	displayTextBox(text, ColorFactory.BLACK, 16, delayMillis);
     }
@@ -70,7 +70,7 @@ public class AnimationEffects  {
         Point textExtent = gc.textExtent(text);
 
         //Point p = getPositionNearFocusWidget();
-        Point p = display.getCursorLocation();  
+        Point p = display.getCursorLocation();
 
         Rectangle r = new Rectangle(p.x + 10, p.y + 10, textExtent.x + 20, textExtent.y + 10);
 
@@ -102,14 +102,14 @@ public class AnimationEffects  {
 
     public static void displayTextBox2(String text, Color textColor, int fontSize, int delayMillis) {
     	System.out.println("SHOWING: " + text); Display.getCurrent().beep();
-    
+
         Shell shell = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
         Display display = Display.getCurrent();
 
         //Point p = getPositionNearFocusWidget();
-        Point p = display.getCursorLocation();  
+        Point p = display.getCursorLocation();
         shell.setLocation(p.x + 20, p.y + 10);
-        
+
         // choose font, calculate position and size
         GC gc = new GC(shell);
         Font font = new Font(display, "Arial", fontSize, SWT.NORMAL);
@@ -140,7 +140,7 @@ public class AnimationEffects  {
 
     @SuppressWarnings("deprecation")
     public static void animateClick(int x, int y) {
-        // draw inflating red circle 
+        // draw inflating red circle
         GC gc = new GC(Display.getCurrent());
         gc.setForeground(ColorFactory.CYAN); // complement of red
         gc.setLineWidth(2);
@@ -168,7 +168,7 @@ public class AnimationEffects  {
 
     @SuppressWarnings("deprecation")
     private static void drawXorLine(int x1, int y1, int x2, int y2) {
-        // draw red line 
+        // draw red line
         GC gc = new GC(Display.getCurrent());
         gc.setForeground(ColorFactory.CYAN); // complement of red
         gc.setLineWidth(2);
@@ -202,7 +202,7 @@ public class AnimationEffects  {
         informationControl.setInformation(msg);
         informationControl.setSize(w, h);
         informationControl.setLocation(new Point(x,y));
-        
+
         informationControl.setVisible(true);
         informationControl.setFocus();
         return informationControl;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -86,15 +86,15 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	static final Line[] NO_LINES = new Line[0];
 
 	static class Line implements Comparable<Line> {
-		
+
 		String key;
 		InterpolationMode interpolationMode;
 		int series;
-		
+
 		public Line(String key) {
 			this(key, InterpolationMode.Unspecified);
 		}
-		
+
 		public Line(String key, InterpolationMode interpolationMode) {
 			Assert.isNotNull(key);
 			this.key = key;
@@ -105,7 +105,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		public int compareTo(Line other) {
 			return StringUtils.dictionaryCompare(key, other.key);
 		}
-		
+
 		@Override
 		public boolean equals(Object other) {
 			if (this == other)
@@ -120,10 +120,10 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			return key.hashCode();
 		}
 	}
-	
-	
+
+
 	private Line[] lines = NO_LINES;
-	
+
 	// "Axes" page controls
 	private Text xAxisMinText;
 	private Text xAxisMaxText;
@@ -135,11 +135,11 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	private Combo symbolSizeCombo;
 	private ImageCombo lineTypeCombo;
 	private PreviewCanvas previewCanvas;
-	
+
 	public BaseLineChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
 	}
-	
+
 	protected void setLines(Line[] lines) {
 		if (lines == null)
 			lines = NO_LINES;
@@ -161,7 +161,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		super.populateTabItem(item);
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
-		
+
 		if (TAB_AXES.equals(name)) {
 			Group group = getAxisBoundsGroup();
 			xAxisMinText = createTextField("X axis", group, getMaxBoundLabel());
@@ -201,11 +201,11 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					updatePreview();
 				}
 			});
-			
+
 			Group subpanel = createGroup("Properties", panel);
 			subpanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			subpanel.setLayout(new GridLayout(2, false));
-			
+
 			displayLineCheckbox = new TristateButton(subpanel, SWT.CHECK);
 			displayLineCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 			displayLineCheckbox.setText("Display line");
@@ -261,12 +261,12 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			previewCanvas = new PreviewCanvas(previewPanel);
 			previewCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			previewCanvas.setLines(lines);
-			
+
 			selectLine(getSelectedLineKey());
 			updateLinePropertyEditFields((VectorChartProperties)properties);
 		}
 	}
-	
+
 	protected String getSelectedLineKey() {
 		if (formParameters != null) {
 			Object selection = formParameters.get(PARAM_SELECTED_OBJECT);
@@ -275,7 +275,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		}
 		return null;
 	}
-	
+
 	protected void selectLine(String lineName) {
 		Table table = linesTableViewer.getTable();
 		if (lineName != null) {
@@ -288,7 +288,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		}
 		table.selectAll();
 	}
-	
+
 	protected ImageCombo createImageComboField(String labelText, Composite parent) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
@@ -297,21 +297,21 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		return combo;
 	}
-	
+
 	@Override
 	protected void collectProperties(ChartProperties newProps) {
 		// fill newProps (initially empty) with the updated chart properties from the dialog;
 		// when this returns, newProps will be set on the model (overwriting existing properties).
 		super.collectProperties(newProps);
-		
+
 		VectorChartProperties newProperties = (VectorChartProperties)newProps;
-		
-		// Axis properties 
+
+		// Axis properties
 		newProperties.setXAxisMin(Converter.stringToDouble(xAxisMinText.getText()));
 		newProperties.setXAxisMax(Converter.stringToDouble(xAxisMaxText.getText()));
-		
+
 		// Line properties
-		
+
 		// read dialog contents
 		List<?> selection = ((IStructuredSelection) linesTableViewer.getSelection()).toList();
 		boolean applyToAll = (selection.size() == ((Object[])linesTableViewer.getInput()).length);
@@ -328,7 +328,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		for (Property property : origProps) {
 			String name = property.getName();
 			String value = property.getValue();
-			boolean copyIt = 
+			boolean copyIt =
 				(name.startsWith(PROP_DISPLAY_LINE) && (!applyToAll || displayLine == null)) ||
 				(name.startsWith(PROP_SYMBOL_TYPE) && (!applyToAll || symbolType.equals(NO_CHANGE))) ||
 				(name.startsWith(PROP_SYMBOL_SIZE) && (!applyToAll || symbolSize.equals(NO_CHANGE))) ||
@@ -337,14 +337,14 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			if (copyIt)
 				newProps.setProperty(name, value);
 		}
-		
+
 		// apply the necessary changes
 		if (applyToAll) {
 			setLineProperties(newProps, null, symbolType, symbolSize, lineType, lineColor);
 		}
 		else {
 			for (Object sel : selection.toArray()) {
-				Line line = (Line) sel; 
+				Line line = (Line) sel;
 				setLineProperties(newProps, line.key, symbolType, symbolSize, lineType, lineColor);
 			}
 		}
@@ -372,12 +372,12 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	private static boolean isAutoOrEmpty(String text) {
 		return text.equals("") || text.equals(AUTO);
 	}
-	
+
 	@Override
 	protected void setProperties(ChartProperties props) {
 		// initializes form contents from the model (i.e. props)
 		super.setProperties(props);
-		
+
 		VectorChartProperties properties = (VectorChartProperties)props;
 		// Axis properties
 		xAxisMinText.setText(StringUtils.defaultString(Converter.doubleToString(properties.getXAxisMin())));
@@ -408,17 +408,17 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			colorEdit.setText(NO_CHANGE);
 		}
 	}
-	
+
 	private void updatePreview() {
 		previewCanvas.redraw();
 	}
-	
+
 	private class PreviewCanvas extends Canvas implements PaintListener, ILinePlot
 	{
 		VectorChartProperties props;
 		IXYDataset dataset;
 		ICoordsMapping coordsMapping;
-		
+
 		public PreviewCanvas(Composite parent) {
 			super(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED);
 			setBackground(ColorFactory.WHITE);
@@ -426,7 +426,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			coordsMapping = createCoordsMapping();
 			addPaintListener(this);
 		}
-		
+
 		public void setLines(Line[] lines) {
 			String[] lineNames = new String[lines.length];
 			InterpolationMode[] interpolationModes = new InterpolationMode[lines.length];
@@ -437,7 +437,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			}
 			dataset = new RandomXYDataset(0, lineNames, interpolationModes, 4);
 		}
-		
+
 		// ILinePlot interface
 		public IXYDataset getDataset() { return dataset; }
 		public Rectangle getPlotRectangle() { return new Rectangle(0, 0, getSize().x, getSize().y); }
@@ -445,7 +445,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		public double inverseTransformY(double y) {	return y; }
 		public double transformX(double x) { return x; }
 		public double transformY(double y) { return y; }
-		
+
 		private boolean getDisplayLine(Line line) {
 			if (displayLineCheckbox.getGrayed()) {
 				if (props != null)
@@ -456,7 +456,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			else
 				return displayLineCheckbox.getSelection();
 		}
-		
+
 		private IVectorPlotter getVectorPlotter(Line line) {
 			LineType lineType = null;
 			if (props != null)
@@ -469,10 +469,10 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 							VectorChart.getLineTypeForInterpolationMode(line.interpolationMode) :
 							LineType.Linear;
 			}
-			
+
 			return VectorPlotterFactory.createVectorPlotter(lineType);
 		}
-		
+
 		private IChartSymbol getChartSymbol(Line line) {
 			SymbolType type = null;
 			if (props != null)
@@ -480,7 +480,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 								props.getLineProperties(line.key).getSymbolType(),
 								null,
 								SymbolType.class);
-			
+
 			if (type == null) {
 				if (line.series >= 0) {
 					switch (line.series % 6) {
@@ -498,10 +498,10 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			}
 
 			int size = getSymbolSize(line);
-			
+
 			return ChartSymbolFactory.createChartSymbol(type, size);
 		}
-		
+
 		private <T extends Enum<T>> T getEnumProperty(ImageCombo combo, T property, T defaultValue, Class<T> clazz) {
 			String editText = combo.getText();
 			if (editText != null && !editText.equals(NO_CHANGE)) {
@@ -511,19 +511,19 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			}
 			return property != null ? property : defaultValue;
 		}
-		
+
 		private int getSymbolSize(Line line) {
 			String sizeStr = symbolSizeCombo.getText();
 			Integer size = null;
-			
+
 			if ((sizeStr == null || sizeStr.equals(NO_CHANGE)) && props != null)
 				size = props.getLineProperties(line.key).getSymbolSize();
 			else
 				size = Converter.stringToInteger(sizeStr);
-			
+
 			return size != null ? size : ChartDefaults.DEFAULT_SYMBOL_SIZE;
 		}
-		
+
 		public Color getLineColor(Line line) {
 			String colorStr = colorEdit.getText();
 			if (colorStr == null && props != null)
@@ -542,7 +542,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		public void paintControl(PaintEvent e) {
 			GC gc = e.gc;
 			drawBackground(gc, e.x, e.y, e.width, e.height);
-			
+
 			IStructuredSelection selection = (IStructuredSelection)linesTableViewer.getSelection();
 			List<Line> selectedLines = selection.toList();
 			for (Line line : selectedLines) {
@@ -553,23 +553,23 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					gc.setAntialias(SWT.ON);
 					gc.setForeground(color);
 					gc.setBackground(color);
-					
+
 					if (line.series >= 0);
 						plotter.plot(this, line.series, gc, coordsMapping, symbol);
 				}
 			}
 		}
-		
+
 		private ICoordsMapping createCoordsMapping() {
 			return new ICoordsMapping() {
 				private int getWidth() {
 					return getSize().x;
 				}
-				
+
 				private int getHeight() {
 					return getSize().y;
 				}
-				
+
 				public double fromCanvasDistX(int x) {
 					return ((double)x)/getWidth();
 				}
@@ -610,6 +610,6 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 				}
 			};
 		}
-		
+
 	}
 }

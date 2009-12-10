@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -50,13 +50,13 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 
 	protected cStaticFlag staticFlag;
 	protected ToolBar liveToolBar;
-	protected ToolItem liveStopToolItem; 
+	protected ToolItem liveStopToolItem;
 	protected ToolItem liveRestartToolItem;
 	protected ToolItem liveStepToolItem;
 	protected ToolItem liveRunToolItem;
 	protected ToolItem liveFastToolItem;
 	protected ToolItem liveExpressToolItem;
-	protected ToolItem liveFinishToolItem; 
+	protected ToolItem liveFinishToolItem;
 
 	@Override
 	public void dispose() {
@@ -64,7 +64,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 
 		// see matching code in createPartControl()
 		AnimationPlugin.getDefault().setCurrentLiveAnimation(null);
-	
+
 		// release simkernel
 		shutdownSimulation();
 	}
@@ -90,7 +90,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		this.parent = parent;
 		parent.setLayout(new FormLayout());
 		parent.setBackground(new Color(null, 228, 228, 228));
-	
+
 		createCoolbar();
 		createSimulationToolbar();
 		createNavigationToolbar();
@@ -98,7 +98,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		createSpeedSlider();
 
 		createAnimationController();
-	
+
 		coolBar.setWrapIndices(new int[] {2,3});
 	}
 
@@ -165,7 +165,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		liveRestartToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				getLiveAnimationController().restartSimulation();
-			
+
 				liveStopToolItem.setEnabled(false);
 
 				liveRestartToolItem.setEnabled(true);
@@ -173,7 +173,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				liveRunToolItem.setEnabled(true);
 				liveFastToolItem.setEnabled(true);
 				liveExpressToolItem.setEnabled(true);
-				liveFinishToolItem.setEnabled(true); 
+				liveFinishToolItem.setEnabled(true);
 			}
 		});
 
@@ -185,7 +185,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				getLiveAnimationController().stepSimulation();
 			}
 		});
-	
+
 		liveRunToolItem = new ToolItem(liveToolBar, SWT.PUSH);
 		liveRunToolItem.setToolTipText("Run");
 	    liveRunToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_RUN_GIF).createImage());
@@ -194,7 +194,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				getLiveAnimationController().runSimulation();
 			}
 		});
-	
+
 		liveFastToolItem = new ToolItem(liveToolBar, SWT.PUSH);
 		liveFastToolItem.setToolTipText("Fast");
 	    liveFastToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_FAST_GIF).createImage());
@@ -231,7 +231,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				getLiveAnimationController().finishSimulation();
 			}
 		});
-	
+
 		//toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT)); XXX does not work
 
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
@@ -243,7 +243,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 	@Override
 	protected void createAnimationController() {
 		AnimationCanvas canvas = createAnimationCanvas();
-	
+
 		animationController = new LiveAnimationController(canvas);
 		animationController.addAnimationListener(this);
 		animationController.restart();
@@ -254,7 +254,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 	}
 
 	@Override
-	public void controllerStateChanged() {	
+	public void controllerStateChanged() {
 		super.controllerStateChanged();
 
 		if (!liveToolBar.isDisposed()) {
@@ -262,7 +262,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				liveStopToolItem.setEnabled(true);
 			else
 				liveStopToolItem.setEnabled(false);
-		
+
 			if (getLiveAnimationController().isSimulationFinished()) {
 				liveRestartToolItem.setEnabled(true);
 
@@ -271,7 +271,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 				liveRunToolItem.setEnabled(false);
 				liveFastToolItem.setEnabled(false);
 				liveExpressToolItem.setEnabled(false);
-				liveFinishToolItem.setEnabled(false); 
+				liveFinishToolItem.setEnabled(false);
 			}
 		}
 	}

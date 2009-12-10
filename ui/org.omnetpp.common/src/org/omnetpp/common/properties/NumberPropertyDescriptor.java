@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -58,14 +58,14 @@ class NumberCellEditorValidator implements ICellEditorValidator
 	public String isValid(Object value) {
 		if (value instanceof Double)
 			return null;
-	
+
 		if (value != null && !(value instanceof String))
 			return "Unexpected type: " + value.getClass().getName();
-	
+
 		String strValue = (String)value;
 		if (StringUtils.isEmpty(strValue))
 			return null;
-	
+
 		try {
 			Double.parseDouble(strValue);
 			return null;

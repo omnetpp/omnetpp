@@ -1,15 +1,15 @@
 #set($smTool = $modelTool.getSMTool($sm))
 /******************************************
- State machine class: $sm.Name          
+ State machine class: $sm.Name
  ******************************************/
 class ${smTool.ClassName}: ${modelTool.BaseMachineClassName}
 	{
 	public:
 		/* Constructor of state machine $sm.Name */
 		${smTool.ClassName}($modelTool.ClassName& aModel): ${modelTool.BaseMachineClassName}(aModel), iState($smTool.getStateTool($sm.Top).Const) {}
-		
+
         void HandleL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
-		
+
 #listHeader($smTool.COAssocs "Controlled objects setters" 8)
 #foreach($assoc in $smTool.COAssocs)
 		void ${smTool.getSetterName($assoc)}($assoc.target.ImplName* ${smTool.getParamName($assoc)}) {${smTool.getInstanceName($assoc)} = ${smTool.getParamName($assoc)};}
@@ -21,7 +21,7 @@ class ${smTool.ClassName}: ${modelTool.BaseMachineClassName}
 #end
 
 	private:
-		enum EState 
+		enum EState
             {
 #foreach ($state in $smTool.States)
             $smTool.getStateTool($state).Const,
@@ -43,7 +43,7 @@ class ${smTool.ClassName}: ${modelTool.BaseMachineClassName}
 
 		TBool IsStable(EState aState) const;
 		EState GetSuperstate(EState aState) const;
-		const TDesC& StateName(EState aState) const; 
+		const TDesC& StateName(EState aState) const;
 		const TDesC& MachineName() const;
 		EState TransiteOnEventL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
 		EState TransiteToStableL(EState aState, $contextClass& aContext);

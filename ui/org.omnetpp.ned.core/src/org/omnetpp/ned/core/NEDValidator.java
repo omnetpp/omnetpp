@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -246,7 +246,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
             errors.addError(node, "no such interface: '" + name+"'");
             return;
         }
-        
+
         boolean isModule = componentNode instanceof IModuleTypeElement || componentNode instanceof ModuleInterfaceElement;
         if (isModule && !(e.getNEDElement() instanceof ModuleInterfaceElement)) {
             errors.addError(node, "'"+name+"' is not a module interface");
@@ -267,10 +267,10 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 //        }
 
         //TODO check compliance to interface (somewhere, not necessarily in the function)
-        
+
         // then process children
         validateChildren(node);
-	
+
 	}
 
 	@Override
@@ -409,7 +409,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
     @SuppressWarnings("unchecked")
     protected void validateParamAssignment(Object[] result, ParamElementEx paramAssignment, ParamElementEx paramDeclaration) {
         ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration((Vector<INEDTypeInfo>)result[1], (Vector<ISubmoduleOrConnection>)result[2], paramDeclaration);
-        
+
         validateParamValue(paramDeclaration, paramAssignment);
 
         if (paramAssignments.indexOf(paramAssignment) == -1) {
@@ -424,7 +424,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
                 errors.addError(paramAssignment, "Cannot override already fixed parameter value");
         }
     }
-    
+
     protected void validateParamValue(ParamElementEx paramDeclaration, ParamElementEx paramAssignment) {
         // determine assignment's data type
         int assignmentType = -1;
@@ -438,10 +438,10 @@ public class NEDValidator extends AbstractNEDValidatorEx {
         else if (assignmentValue.startsWith("xmldoc"))
             assignmentType = NED_PARTYPE_XML;
         else {
-            try { 
+            try {
                 assignmentUnit = UnitConversion.parseQuantityForUnit(assignmentValue); // throws exception if not a quantity
                 Assert.isNotNull(assignmentUnit);
-            } 
+            }
             catch (RuntimeException e) {
                 // void
             }
@@ -467,7 +467,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
         if (assignmentUnit != null) {
             try {
                 UnitConversion.parseQuantity(assignmentValue, declarationUnit); // throws exception on incompatible units
-            } 
+            }
             catch (RuntimeException e) {
                 errors.addError(paramAssignment, e.getMessage());
             }

@@ -4,7 +4,7 @@ module SyntaxHighlight_1
         numApps : numeric,
         destAddr: string, // this is <i>italic</i>, and we have "string contstants"
                           // here as well as numbers 1, 2, 3.14, 6e23 and
-                          // keywords simple, module, gate, index, sizeof. 
+                          // keywords simple, module, gate, index, sizeof.
                           // In a comment, none of them should be highlighted.
                           // But links to module etc. names should be
                           // hyperlinked, such as SyntaxHighlight_1 or

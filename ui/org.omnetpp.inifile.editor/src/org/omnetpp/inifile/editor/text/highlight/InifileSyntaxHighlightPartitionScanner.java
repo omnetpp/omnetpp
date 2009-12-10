@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -30,7 +30,7 @@ public class InifileSyntaxHighlightPartitionScanner extends RuleBasedPartitionSc
 	 */
 	public InifileSyntaxHighlightPartitionScanner() {
 		// Add rule for single-line comments.
-		//XXX problem: this also fires inside string constants... 
+		//XXX problem: this also fires inside string constants...
 		IToken nedDocToken = new Token(INI_COMMENT);
 		IPredicateRule commentRule = new EndOfLineRule("#", nedDocToken);
 		setPredicateRules(new IPredicateRule[] { commentRule });

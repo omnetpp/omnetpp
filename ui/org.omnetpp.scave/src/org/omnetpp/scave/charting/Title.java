@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -55,7 +55,7 @@ public class Title {
 	public Rectangle layout(GC gc, Rectangle parent) {
 		if (text == null || text.length() == 0)
 			return parent;
-	
+
 		TextLayout textLayout = new TextLayout(gc.getDevice());
 		textLayout.setFont(font);
 		textLayout.setText(text);
@@ -64,7 +64,7 @@ public class Title {
 		org.eclipse.swt.graphics.Rectangle rect = textLayout.getBounds();
 		textLayout.dispose();
 		bounds = new Rectangle(parent.x + (parent.width - rect.width) / 2, parent.y, rect.width, rect.height);
-	
+
 		return new Rectangle(parent.x, Math.min(bounds.y + bounds.height, parent.y + parent.height),
 				parent.width, Math.max(parent.height - bounds.height, 0));
 	}
@@ -72,7 +72,7 @@ public class Title {
 	public void draw(GC gc) {
 		if (text == null || text.length() == 0 || bounds == null)
 			return;
-	
+
 		TextLayout textLayout = new TextLayout(gc.getDevice());
 		textLayout.setFont(font);
 		textLayout.setText(text);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,11 +20,11 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
  * TextEditor-related utility functions
- * 
+ *
  * @author Andras
  */
 public class TextEditorUtil {
-	/** 
+	/**
 	 * Returns the document for the given text editor.
 	 */
 	public static IDocument getDocument(ITextEditor editor) {
@@ -51,17 +51,17 @@ public class TextEditorUtil {
 		// select it unless it's one line only
 		if (selectUnlessOneLine && doc.getLineOfOffset(startOffset) != doc.getLineOfOffset(endOffset-1))
 			editor.selectAndReveal(startOffset, replacement.length());
-		else 
+		else
 		    editor.selectAndReveal(selectionOffset +replacement.length()-oldLength, selectionLength);
-	
+
 	}
 
 	/**
-	 * Needs to be called after modifying text editor contents via IDocument.replace(), 
+	 * Needs to be called after modifying text editor contents via IDocument.replace(),
 	 * otherwise marker annotations will disappear from replaced regions.
      *
-	 * This function re-reads markers from the editor's underlying IFile, and synchronizes 
-	 * them onto the marker annotations of the text editor. 
+	 * This function re-reads markers from the editor's underlying IFile, and synchronizes
+	 * them onto the marker annotations of the text editor.
 	 */
 	public static void resetMarkerAnnotations(ITextEditor editor) {
 		IAnnotationModel model = editor.getDocumentProvider().getAnnotationModel(editor.getEditorInput());
@@ -72,7 +72,7 @@ public class TextEditorUtil {
 	}
 
 	/**
-	 * Detects the boundary of a single word under the current position (defined by the wordDetector)  
+	 * Detects the boundary of a single word under the current position (defined by the wordDetector)
 	 */
 	public static IRegion detectWordRegion(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) throws BadLocationException {
 		int offset = documentOffset;
@@ -88,11 +88,11 @@ public class TextEditorUtil {
 		if (offset > 0 && wordDetector.isWordStart(viewer.getDocument().getChar(offset - 1)))
 			offset--;
 		// now we should stand on the first char of the word
-		if (offset + length < viewer.getDocument().getLength() 
+		if (offset + length < viewer.getDocument().getLength()
 				&& wordDetector.isWordStart(viewer.getDocument().getChar(offset + length)))
 			length++;
 		// now iterate through the rest of chars until a character cannot be recognized as an in/word char
-		while(offset + length < viewer.getDocument().getLength() 
+		while(offset + length < viewer.getDocument().getLength()
 				&& wordDetector.isWordPart(viewer.getDocument().getChar(offset + length)))
 			length++;
 

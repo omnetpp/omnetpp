@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -42,7 +42,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 
 /**
- * Edit section name and some of its attributes 
+ * Edit section name and some of its attributes
  * @author Andras
  */
 //FIXME sectionTypeCombo is not finished! to be used everywhere!!!!
@@ -68,10 +68,10 @@ public class SectionDialog extends TitleAreaDialog {
     private String description;
     private String extendsSection;
     private String networkName;
-    
-    
+
+
 	/**
-	 * Operation depends on the sectionName parameter: if sectionName names an 
+	 * Operation depends on the sectionName parameter: if sectionName names an
 	 * existing section, that's interpreted as "rename/edit section"; if there's
 	 * no such section or sectionName is null, it's "create new section".
 	 */
@@ -82,7 +82,7 @@ public class SectionDialog extends TitleAreaDialog {
 		this.dialogTitle = dialogTitle;
 		this.dialogMessage = dialogMessage;
 		this.sectionName = this.originalSectionName = sectionName;
-	
+
 		// if we are editing an existing section, initialize dialog fields from the inifile
 		if (sectionName != null && doc.containsSection(sectionName)) {
 			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getName());
@@ -92,7 +92,7 @@ public class SectionDialog extends TitleAreaDialog {
 			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getName());;
 		}
 	}
-    
+
     @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogSettings(InifileEditorPlugin.getDefault(), getClass().getName());
@@ -116,10 +116,10 @@ public class SectionDialog extends TitleAreaDialog {
         composite.setLayout(new GridLayout(1,false));
 
         Group group1 = createGroup(composite, "Name and description");
-        
+
 		// section name field
 		createLabel(group1, "Section Name:", parent.getFont());
-	
+
 		configNameText = new Text(group1, SWT.SINGLE | SWT.BORDER);
 		configNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -145,7 +145,7 @@ public class SectionDialog extends TitleAreaDialog {
 			extendsCombo.setEnabled(false);
 		else {
 			String[] sectionNames = getNonCycleSectionNames(originalSectionName);
-			if (sectionNames.length==0) 
+			if (sectionNames.length==0)
 				sectionNames = new String[] {GENERAL};  // we lie that [General] exists
 			extendsCombo.setItems(sectionNames);
 			extendsCombo.setVisibleItemCount(Math.min(20, extendsCombo.getItemCount()));
@@ -153,25 +153,25 @@ public class SectionDialog extends TitleAreaDialog {
 		}
 
 		// fill network combo
-		IProject contextProject = doc.getDocumentFile().getProject();	
+		IProject contextProject = doc.getDocumentFile().getProject();
 		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames(contextProject);
 		String[] networkNames = networkNameSet.toArray(new String[]{});
 		Arrays.sort(networkNames);
 		networkCombo.setItems(networkNames);
 		networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
-	
+
 		// fill dialog fields with initial contents
-		if (sectionName!=null) 
+		if (sectionName!=null)
 			configNameText.setText(sectionName.replaceFirst(CONFIG_+" *", ""));
-		if (description!=null) 
+		if (description!=null)
 			descriptionText.setText(description);
-        if (extendsSection!=null) 
-        	extendsCombo.setText(extendsSection); 
-        if (networkName!=null) 
+        if (extendsSection!=null)
+        	extendsCombo.setText(extendsSection);
+        if (networkName!=null)
         	networkCombo.setText(networkName);
 		configNameText.selectAll();
 		descriptionText.selectAll();
-        
+
         // set up validation on content changes
         ModifyListener listener = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
@@ -192,7 +192,7 @@ public class SectionDialog extends TitleAreaDialog {
 	}
 
 	/**
-	 * Return list of sections that would not create a cycle if the given 
+	 * Return list of sections that would not create a cycle if the given
 	 * section extended them.
 	 */
 	protected String[] getNonCycleSectionNames(String section) {
@@ -229,7 +229,7 @@ public class SectionDialog extends TitleAreaDialog {
         // create OK and Cancel buttons by default
         okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-        
+
         // do this here because setting the text will set enablement on the OK button
         validateDialogContents();
     }
@@ -238,7 +238,7 @@ public class SectionDialog extends TitleAreaDialog {
 		// prevent notification loops
 		if (insideValidation) return;
 		insideValidation = true;
-	
+
 		// when a base section with "network=" is selected, make it impossible to override it here
         extendsSection = extendsCombo.getText();
         String ownNetworkName = doc.getValue(originalSectionName, ConfigRegistry.CFGID_NETWORK.getName());
@@ -250,13 +250,13 @@ public class SectionDialog extends TitleAreaDialog {
         else {
         	networkCombo.setEnabled(true);
         }
-        
+
 		// validate contents
         String errorMessage = validate();
 		setErrorMessage(errorMessage);
 		if (okButton != null)  // it is initially null
 			okButton.setEnabled(errorMessage==null);
-	
+
 		insideValidation = false;
 	}
 
@@ -270,7 +270,7 @@ public class SectionDialog extends TitleAreaDialog {
 		if (!configName.replaceAll("[a-zA-Z0-9-_]", "").equals(""))
 			throw new RuntimeException("Config name contains illegal character(s)");
 		if (!(CONFIG_+configName).equals(originalSectionName))
-			if (doc.containsSection(CONFIG_+configName)) 
+			if (doc.containsSection(CONFIG_+configName))
 				return "A section named ["+CONFIG_+configName+"] already exists";
 
 		//XXX check that selected network exists

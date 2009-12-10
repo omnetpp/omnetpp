@@ -9,13 +9,13 @@ moduleinterface IModule
         int p1;
 }
 
-module Foo like IModule 
+module Foo like IModule
 {
     parameters:
         volatile int p1;
 }
 
-network Test 
+network Test
 {
 }
 

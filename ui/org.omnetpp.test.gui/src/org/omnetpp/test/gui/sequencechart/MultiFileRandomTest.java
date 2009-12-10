@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ public class MultiFileRandomTest extends TestCase {
                 "PureAloha2-0.log", "SlottedAloha2-0.log"})
             doTest("results/" + fileName);
     }
-    
+
     private void doTest(String fileName) {
         new RandomTest(fileName, 10 * 1000, false).testRandom();
     }

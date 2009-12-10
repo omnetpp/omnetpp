@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -43,9 +43,9 @@ import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
- * Standard implementation of IInifileDocument. Setters change the 
- * underlying text document (IDocument). Parsing is lazy: changes on the 
- * text document cause a "changed" flag to be set here, and getters 
+ * Standard implementation of IInifileDocument. Setters change the
+ * underlying text document (IDocument). Parsing is lazy: changes on the
+ * text document cause a "changed" flag to be set here, and getters
  * automatically re-parse the text document if it's out of date.
  *
  * @see InifileAnalyzer
@@ -59,7 +59,7 @@ public class InifileDocument implements IInifileDocument {
     private boolean changed; // whether changed since last parsed
 
     // InifileDocument, InifileAnalyzer, and NEDResources are all accessed from
-    // background threads (must be synchronized), and the analyze procedure needs 
+    // background threads (must be synchronized), and the analyze procedure needs
     // NEDResources -- so use NEDResources as lock to prevent deadlocks
     private Object lock = NEDResourcesPlugin.getNEDResources();
 
@@ -92,7 +92,7 @@ public class InifileDocument implements IInifileDocument {
     private LinkedHashMap<String,Section> sections = new LinkedHashMap<String,Section>();
 
     // reverse (linenumber-to-section/key) mapping
-    private ArrayList<SectionHeadingLine> mainFileSectionHeadingLines = new ArrayList<SectionHeadingLine>(); 
+    private ArrayList<SectionHeadingLine> mainFileSectionHeadingLines = new ArrayList<SectionHeadingLine>();
     private ArrayList<KeyValueLine> mainFileKeyValueLines = new ArrayList<KeyValueLine>();
 
     // include directives
@@ -125,7 +125,7 @@ public class InifileDocument implements IInifileDocument {
         documentListener = new IDocumentListener() {
             public void documentAboutToBeChanged(DocumentEvent event) {}
             public void documentChanged(DocumentEvent event) {
-                markAsChanged();			
+                markAsChanged();
             }
         };
         document.addDocumentListener(documentListener);
@@ -140,14 +140,14 @@ public class InifileDocument implements IInifileDocument {
                         event.getDelta().accept(new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) throws CoreException {
                                 IResource resource = delta.getResource();
-                                if (delta.getKind()==IResourceDelta.CHANGED && (delta.getFlags() & IResourceDelta.CONTENT)!=0 && 
+                                if (delta.getKind()==IResourceDelta.CHANGED && (delta.getFlags() & IResourceDelta.CONTENT)!=0 &&
                                         resource instanceof IFile && "ini".equals(resource.getFileExtension()) && resource!=documentFile)
                                     result[0] = true;
                                 return result[0]==false;
                             }
                         });
-                        // looks like if there are multiple files open, we can cause a workspace 
-                        // deadlock if we invalidate here, so we defer it 
+                        // looks like if there are multiple files open, we can cause a workspace
+                        // deadlock if we invalidate here, so we defer it
                         //XXX even this can cause VERY STRANGE THINGS to happen (infinite notification loops?)
                         // so better leave out the whole thing?
                         if (result[0]) {
@@ -181,9 +181,9 @@ public class InifileDocument implements IInifileDocument {
         }
     }
 
-    /** 
+    /**
      * To be called from the editor!
-     */ 
+     */
     public void dispose() {
         unhookListeners();
     }
@@ -211,7 +211,7 @@ public class InifileDocument implements IInifileDocument {
             markerSynchronizer = new ProblemMarkerSynchronizer(INIFILEPROBLEM_MARKER_ID);
             markerSynchronizer.register(documentFile);
 
-            // remove markers from include files: needed because an "include" directive 
+            // remove markers from include files: needed because an "include" directive
             // might have gotten deleted from the file since last parsed
             for (IFile file : includedFiles)
                 markerSynchronizer.register(file);
@@ -226,7 +226,7 @@ public class InifileDocument implements IInifileDocument {
             class Callback implements InifileParser.ParserCallback {
                 Section currentSection = null;
                 SectionHeadingLine currentSectionHeading = null;
-                IFile currentFile; 
+                IFile currentFile;
 
                 public Callback(IFile file) {
                     this.currentFile = file;
@@ -285,7 +285,7 @@ public class InifileDocument implements IInifileDocument {
                 public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {
                     if (!directive.equals("include"))
                         addError(currentFile, lineNumber, "Unknown directive");
-                    else { 
+                    else {
                         IncludeLine line = new IncludeLine();
                         line.file = currentFile;
                         line.lineNumber = lineNumber;
@@ -299,7 +299,7 @@ public class InifileDocument implements IInifileDocument {
                             includedFiles.add(file);
                             markerSynchronizer.register(file);
                             new InifileParser().parse(file, new Callback(file));
-                        } 
+                        }
                         catch (ParseException e) {
                             addError(currentFile, e.getLineNumber(), e.getMessage());
                         } catch (IOException e) {
@@ -317,16 +317,16 @@ public class InifileDocument implements IInifileDocument {
 
             try {
                 new InifileParser().parse(streamReader, new Callback(documentFile));
-            } 
+            }
             catch (IOException e) {
                 // cannot happen with string input
-            } 
+            }
             catch (ParseException e) {
                 addError(documentFile, e.getLineNumber(), e.getMessage());
             }
             Debug.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
 
-            // mark data structure as up to date (even if there was an error, because 
+            // mark data structure as up to date (even if there was an error, because
             // we don't want to keep re-parsing again and again)
             changed = false;
 
@@ -334,18 +334,18 @@ public class InifileDocument implements IInifileDocument {
             markerSynchronizer.runAsWorkspaceJob();
             markerSynchronizer = null;
 
-            // NOTE: notify listeners (fireModelChanged()) is NOT done here! It is done 
+            // NOTE: notify listeners (fireModelChanged()) is NOT done here! It is done
             // when the underlying text document (IDocument) changes, just after we set
             // changed=true.
         }
     }
 
     protected void addError(IFile file, int line, String message) {
-        addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line); 
+        addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line);
     }
 
     protected void addWarning(IFile file, int line, String message) {
-        addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line); 
+        addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line);
     }
 
     private void addMarker(final IFile file, final String type, int severity, String message, int line) {
@@ -419,7 +419,7 @@ public class InifileDocument implements IInifileDocument {
                 }
                 int offset = document.getLineOffset(lineNumber-1); //IDocument is 0-based
                 document.replace(offset, 0, text+"\n");
-            } 
+            }
             catch (BadLocationException e) {
                 throw new RuntimeException("Cannot insert line: bad location: "+e.getMessage());
             }
@@ -440,7 +440,7 @@ public class InifileDocument implements IInifileDocument {
 
                 boolean lineNumberChange = (text==null) || (line.numLines != StringUtils.countNewLines(text)+1);
                 return lineNumberChange;
-            } 
+            }
             catch (BadLocationException e) {
                 throw new RuntimeException("Cannot set value: bad location: "+e.getMessage());
             }
@@ -488,7 +488,7 @@ public class InifileDocument implements IInifileDocument {
     public void setValue(String section, String key, String value) {
         KeyValueLine line = getEditableEntry(section, key);
         if (!nullSafeEquals(line.value, value)) {
-            line.value = value; 
+            line.value = value;
             String text = line.key + " = " + line.value + line.rawComment;
             if (!replaceLine(line, text))
                 changed = false; // suppress re-parsing
@@ -530,7 +530,7 @@ public class InifileDocument implements IInifileDocument {
 
         // perform insertion (also checks that section exists)
         int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lastLine+1 : getEditableEntry(section, beforeKey).lineNumber;
-        addLineAt(atLine, text.trim());  // trim(): because addLine() already inserts a trailing "\n" 
+        addLineAt(atLine, text.trim());  // trim(): because addLine() already inserts a trailing "\n"
     }
 
     public void removeKeys(String[] sections, String keys[]) {
@@ -549,7 +549,7 @@ public class InifileDocument implements IInifileDocument {
     public LineInfo getEntryLineDetails(String section, String key) {
         KeyValueLine line = lookupEntry(section, key);
         return line==null ? null : new LineInfo(line.file, line.lineNumber, line.numLines, !isEditable(line));
-    } 
+    }
 
     public String getComment(String section, String key) {
         return stripCommentPrefix(getRawComment(section, key));
@@ -567,7 +567,7 @@ public class InifileDocument implements IInifileDocument {
         validateRawComment(rawComment);
         KeyValueLine line = getEditableEntry(section, key);
         if (!line.rawComment.equals(rawComment)) {
-            line.rawComment = rawComment; 
+            line.rawComment = rawComment;
             String text = line.key + " = " + line.value + line.rawComment;
             if (!replaceLine(line, text))
                 changed = false;  // suppress re-parsing
@@ -600,7 +600,7 @@ public class InifileDocument implements IInifileDocument {
         if (!nullSafeEquals(line.key, newKey)) {
             if (lookupEntry(section, newKey) != null)
                 throw new IllegalArgumentException("Cannot rename key "+oldKey+": key "+newKey+" already exists in section ["+section+"]");
-            line.key = newKey; 
+            line.key = newKey;
             String text = line.key + " = " + line.value + line.rawComment;
             replaceLine(line, text);
         }
@@ -701,7 +701,7 @@ public class InifileDocument implements IInifileDocument {
                         int length = document.getLineOffset(line.lastLine-1+line.numLines) - offset;
                         document.replace(offset, length, "");
                         deletedSomething = true;
-                    } 
+                    }
                     catch (BadLocationException e) {
                         throw new RuntimeException("Cannot delete section: bad location: "+e.getMessage());
                     }
@@ -738,7 +738,7 @@ public class InifileDocument implements IInifileDocument {
 
         // find insertion point
         int lineNumber;
-        if (beforeSectionName==null)                                       
+        if (beforeSectionName==null)
             lineNumber = bottomIncludes.isEmpty() ? document.getNumberOfLines()+1 : bottomIncludes.get(0).lineNumber;
             else
                 lineNumber = getFirstEditableSectionHeading(beforeSectionName).lineNumber;
@@ -754,7 +754,7 @@ public class InifileDocument implements IInifileDocument {
         if (line == null)
             return null;
         return new LineInfo(line.file, line.lineNumber, line.lastLine-line.lineNumber+1, !isEditable(line));
-    } 
+    }
 
     public String getSectionComment(String section) {
         return stripCommentPrefix(getRawSectionComment(section));
@@ -775,7 +775,7 @@ public class InifileDocument implements IInifileDocument {
         validateRawComment(rawComment);
         SectionHeadingLine line = getFirstEditableSectionHeading(sectionName);
         if (!line.rawComment.equals(rawComment)) {
-            line.rawComment = rawComment; 
+            line.rawComment = rawComment;
             String text = "[" + line.sectionName + "]" + line.rawComment;
             if (!replaceLine(line, text))
                 changed = false; // suppress re-parsing
@@ -837,14 +837,14 @@ public class InifileDocument implements IInifileDocument {
     }
 
     /**
-     * Adds a listener to this document 
+     * Adds a listener to this document
      */
     public void addInifileChangeListener(IInifileChangeListener listener) {
         listeners.add(listener);
     }
 
     /**
-     * Adds a listener to this document 
+     * Adds a listener to this document
      */
     public void removeInifileChangeListener(IInifileChangeListener listener) {
         listeners.remove(listener);

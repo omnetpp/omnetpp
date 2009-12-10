@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,7 +25,7 @@ import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 
 /**
  * Presents hover information for ini files.
- * 
+ *
  * @author Andras
  */
 public class InifileTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
@@ -59,9 +59,9 @@ public class InifileTextHover implements ITextHover, ITextHoverExtension, IInfor
 		InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 		if (key == null)
 			return InifileHoverUtils.getSectionHoverText(section, doc, analyzer, false);
-		else 
+		else
 			return InifileHoverUtils.getEntryHoverText(section, key, doc, analyzer);
-	}    
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.ITextHover#getHoverRegion(org.eclipse.jface.text.ITextViewer, int)

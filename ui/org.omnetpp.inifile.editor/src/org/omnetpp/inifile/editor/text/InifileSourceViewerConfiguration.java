@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return new DefaultAnnotationHover();
 	}
-	
+
 	@Override
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		return null;
@@ -61,7 +61,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 		ContentAssistant assistant = new ContentAssistant();
 		//assistant.setDocumentPartitioning(...);
 		assistant.setContentAssistProcessor(new InifileCompletionProcessor(editorData), IDocument.DEFAULT_CONTENT_TYPE);
-        
+
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(500);
 		assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
@@ -83,7 +83,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-        
+
 		PresentationReconciler reconciler= new PresentationReconciler();
         // syntax highlighting is using a separate partitioner
 		reconciler.setDocumentPartitioning(InifileSyntaxHighlightPartitionScanner.PARTITIONING_ID);
@@ -93,11 +93,11 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
-        // colorizer for comments 
+        // colorizer for comments
 		dr = new DefaultDamagerRepairer(new InifileCommentColorizerScanner());
 		reconciler.setDamager(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
 		reconciler.setRepairer(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
-        
+
 		return reconciler;
 	}
 
@@ -122,10 +122,10 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 
     @Override
     public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-        return new IHyperlinkDetector[] { 
-    		new URLHyperlinkDetector(), 
-    		new InifileHyperlinkDetector(editorData), 
-    		//FIXME new NEDHyperlinkDetector() 
+        return new IHyperlinkDetector[] {
+    		new URLHyperlinkDetector(),
+    		new InifileHyperlinkDetector(editorData),
+    		//FIXME new NEDHyperlinkDetector()
         };
     }
 }

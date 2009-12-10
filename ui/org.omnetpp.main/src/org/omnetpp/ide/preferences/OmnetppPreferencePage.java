@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -36,9 +36,9 @@ import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * The OMNeT++ preference page that is contributed to the Preferences dialog.
- * 
+ *
  * XXX Problems with this page:
- *  1. search does not work (try typing "Doxygen") -- this is probably due to nested group controls  
+ *  1. search does not work (try typing "Doxygen") -- this is probably due to nested group controls
  *  2. Custom license text does not resize (at all!)
  *  3. basically, the whole layout management is a complete mess
  */
@@ -59,7 +59,7 @@ public class OmnetppPreferencePage
         addAndFillIntoGrid(new DirectoryFieldEditor(IConstants.PREF_OMNETPP_ROOT, "Install location:", spacer), spacer, 3);
         addAndFillIntoGrid(new DirectoryListFieldEditor(IConstants.PREF_OMNETPP_IMAGE_PATH, "Image path:", spacer), spacer, 3);
         createLabel(spacer, "Note: Image path changes take effect on next restart.", 3);
-        
+
         Group group2 = createGroup(parent, "Tools for generating documentation", 3, 3, GridData.FILL_HORIZONTAL);
         Composite spacer2 = createComposite(group2, 3, 3, GridData.FILL_HORIZONTAL);
         addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_DOXYGEN_EXECUTABLE, "Doxygen executable path:", spacer2), spacer2, 3);
@@ -79,9 +79,9 @@ public class OmnetppPreferencePage
         ((GridLayout)spacer3.getLayout()).numColumns = 3; // idiotic field editors change it in their fillIntoGrid methods!!!
         // Note: at this point, horizSpan of the Combo and the Text is 1, but after an asyncExec it becomes 2!!! probably the dialog plays games
 
-        //TODO disable "custom license header" when not "custom" is selected!!!! 
-        
-        
+        //TODO disable "custom license header" when not "custom" is selected!!!!
+
+
 //        UIUtils.dumpWidgetHierarchy(parent);
 //        final Composite finalParent = parent;
 //        Display.getDefault().asyncExec(new Runnable() {
@@ -160,7 +160,7 @@ public class OmnetppPreferencePage
         protected boolean checkState() {
             String fileName = ProcessUtils.lookupExecutable(getStringValue());
             boolean state = StringUtils.isEmpty(fileName) || new File(fileName).exists();
-            
+
             if (!state)
                 showErrorMessage("Executable file not found: " + getStringValue());
             else
@@ -174,13 +174,13 @@ public class OmnetppPreferencePage
         public DirectoryListFieldEditor(String name, String labelText, Composite parent) {
             super(name, labelText, parent);
             setErrorMessage("Value contains nonexistent directory");
-        }    
+        }
 
         @Override
         protected String changePressed() {
             String original = getTextControl().getText();
             String newDir = super.changePressed(); // directory selection dialog
-            if (newDir == null) 
+            if (newDir == null)
                 return null; // cancel
             if (StringUtils.isEmpty(original))
                 return newDir;
@@ -189,7 +189,7 @@ public class OmnetppPreferencePage
             boolean append = MessageDialog.openQuestion(getShell(), "Append?", "Append to existing contents as another directory? (Choosing No will replace it).");
             return append ? (original + ";" + newDir) : newDir;
         }
-        
+
         @Override
         protected boolean doCheckState() {
             String dirNames = getTextControl().getText();
@@ -199,6 +199,6 @@ public class OmnetppPreferencePage
             return true;
         }
     }
-   
+
 }
 

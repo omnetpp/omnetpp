@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,7 +29,7 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
 
         // Add rule for strings
 		rules.add(new SingleLineRule("\"", "\"", InifileTextEditorHelper.codeStringToken, '\\'));
-        
+
         // Add rule for detecting numeric constants
         rules.add(new NumberRule(InifileTextEditorHelper.codeNumberToken));
 
@@ -48,7 +48,7 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
             wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
 
 		rules.add(wordRule);
-        
+
 		setRules(rules.toArray(new IRule[]{}));
 	}
 }

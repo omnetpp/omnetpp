@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public class InifileFormEditorAccess
     @InBackgroundThread
     public CompositeAccess activateCategoryPage(String category) {
         getCategoryTree().findTreeItemByContent(category).click();
-        Access.sleep(1); //XXX no idea why this is needed. should work without it too (because click() is a "step" which includes the processing of the event, and there's no asyncExec in the inifile code here) 
+        Access.sleep(1); //XXX no idea why this is needed. should work without it too (because click() is a "step" which includes the processing of the event, and there's no asyncExec in the inifile code here)
         return (CompositeAccess)createAccess(getControl().getActiveCategoryPage());
     }
 
@@ -58,7 +58,7 @@ public class InifileFormEditorAccess
         FormPage activeFormPage = getControl().getActiveCategoryPage();
         if (activeFormPage.getPageCategory().equals(category))
             return (CompositeAccess)createAccess(activeFormPage);
-        else 
+        else
             return activateCategoryPage(category);
     }
 
@@ -71,7 +71,7 @@ public class InifileFormEditorAccess
     }
 
     @InBackgroundThread
-    public void editSectionByDialog(String sectionName, boolean usingContextMenu, 
+    public void editSectionByDialog(String sectionName, boolean usingContextMenu,
             String newSectionName, String description, String baseSection, String networkName) {
         CompositeAccess sectionsPage = ensureActiveCategoryPage("Sections");
         TreeAccess sectionsTree = sectionsPage.findTree();

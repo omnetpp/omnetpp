@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,21 +39,21 @@ import org.omnetpp.scave.ScavePlugin;
  * @author tomi
  */
 public class CreateChartTemplateDialog extends TitleAreaDialog {
-	
+
 	private static String RUNID_FIELD_KEY = "org.omnetpp.scave.editors.ui.CreateChartTemplateDialog.runidfield";
-	
+
 	String datasetName;
 	String chartName;
 	String[] filterFields;
-	
+
 	Text datasetnameText;
 	Text chartnameText;
 	Table filterFieldsTable;
-	
+
 	public CreateChartTemplateDialog(Shell parentShell) {
 		super(parentShell);
 	}
-	
+
 	@Override
 	protected IDialogSettings getDialogBoundsSettings() {
 	    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
@@ -70,7 +70,7 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 	public String[] getFilterFields() {
 		return filterFields;
 	}
-	
+
 	@Override
 	protected void configureShell(Shell newShell) {
 		newShell.setText("Create chart template");
@@ -84,7 +84,7 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayoutData(new GridData(GridData.FILL_BOTH));
         panel.setLayout(new GridLayout(2, false));
-        
+
         Label label = new Label(panel, SWT.NONE);
         label.setText("Dataset name:");
 		datasetnameText = new Text(panel, SWT.BORDER);
@@ -93,7 +93,7 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		label.setText("Chart name:");
 		chartnameText = new Text(panel, SWT.BORDER);
 		chartnameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+
 		Group group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		group.setLayout(new GridLayout(1, false));
@@ -117,14 +117,14 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 
 		return panel;
 	}
-	
+
 	private TableItem createFilterFieldItem(Composite parent, String label, String field) {
 		TableItem item = new TableItem(filterFieldsTable, SWT.NONE);
 		item.setText(label);
 		item.setData(RUNID_FIELD_KEY, field);
 		return item;
 	}
-	
+
 	@Override
 	protected void okPressed() {
 		datasetName = datasetnameText.getText();

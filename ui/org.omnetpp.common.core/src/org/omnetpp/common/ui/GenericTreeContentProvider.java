@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -19,7 +19,7 @@ public class GenericTreeContentProvider implements ITreeContentProvider {
 
 	public Object[] getChildren(Object parentElement) {
 		Assert.isTrue(parentElement instanceof GenericTreeNode); // by contract, element MUST be a GenericTreeNode
-		GenericTreeNode parent = (GenericTreeNode)parentElement; 
+		GenericTreeNode parent = (GenericTreeNode)parentElement;
 		return parent.getChildren();
 	}
 

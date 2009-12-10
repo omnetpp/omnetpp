@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,7 +27,7 @@ public final class LargeRect {
 	}
 
 	/**
-	 * Construct a new instance of this class given the 
+	 * Construct a new instance of this class given the
 	 * x, y, width and height values.
 	 */
 	public LargeRect (long x, long y, long width, long height) {
@@ -106,7 +106,7 @@ public final class LargeRect {
 	}
 
 	/**
-	 * Returns <code>true</code> if the given retangle is inside the area specified 
+	 * Returns <code>true</code> if the given retangle is inside the area specified
 	 * by the receiver, and <code>false</code> otherwise.
 	 */
 	public boolean contains (LargeRect r) {
@@ -126,8 +126,8 @@ public final class LargeRect {
 	}
 
 	/**
-	 * Returns an integer hash code for the receiver. Any two 
-	 * objects that return <code>true</code> when passed to 
+	 * Returns an integer hash code for the receiver. Any two
+	 * objects that return <code>true</code> when passed to
 	 * <code>equals</code> must return the same value for this
 	 * method.
 	 */
@@ -158,7 +158,7 @@ public final class LargeRect {
 
 	/**
 	 * Returns a new rectangle which represents the intersection
-	 * of the receiver and the given rectangle. 
+	 * of the receiver and the given rectangle.
 	 * <p>
 	 * The intersection of two rectangles is the rectangle that
 	 * covers the area which is contained within both rectangles.
@@ -241,9 +241,9 @@ public final class LargeRect {
 	}
 
 	/**
-	 * Returns a new rectangle which represents the receiver minus the 
+	 * Returns a new rectangle which represents the receiver minus the
 	 * given rectangle. Returns null if the difference is not a rectangular area.
-	 * 
+	 *
 	 * @author andras
 	 */
 	public LargeRect minus (LargeRect rect) {
@@ -260,10 +260,10 @@ public final class LargeRect {
 	}
 
 	/**
-	 * Returns an array of new rectangles which represent the receiver minus the 
+	 * Returns an array of new rectangles which represent the receiver minus the
 	 * given rectangle. This means at most 4 rectangles in the worst case (when
-	 * rect is completely inside the receiver rect.) 
-	 * 
+	 * rect is completely inside the receiver rect.)
+	 *
 	 * @author andras
 	 */
 	public LargeRect[] advancedMinus (LargeRect rect) {

@@ -538,7 +538,7 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out</screen>
           NED types of INET available in your project, and also puts INET directories on
           the C++ include path. Make sure the INET project builds a (static/shared)
           library, not an executable, so your project can link with it -- you can check
-          that by opening INET's Project Properties dialog, and going to the 
+          that by opening INET's Project Properties dialog, and going to the
           C/C++ Build / Makemake page.</para>
         </listitem>
         <listitem>
@@ -778,10 +778,10 @@ simple Router16 extends Router {
     ports = 16;
 }</screen>
 
-            <para>Note: the C++ class will be inherited from the base 
-            module, that is, all three module types will use the ``Router'' 
-            C++ class, even if you have ``Router8'' etc classes in C++! 
-            To replace the C++ class as well, you need to add a ``@class'' 
+            <para>Note: the C++ class will be inherited from the base
+            module, that is, all three module types will use the ``Router''
+            C++ class, even if you have ``Router8'' etc classes in C++!
+            To replace the C++ class as well, you need to add a ``@class''
             property:</para>
 
 <screen>simple AdvancedRouter extends Router {

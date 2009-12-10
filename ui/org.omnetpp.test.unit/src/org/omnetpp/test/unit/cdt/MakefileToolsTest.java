@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,7 +15,7 @@ public class MakefileToolsTest extends TestCase {
 
     @Test
     public void testParseIncludes() {
-        String src = 
+        String src =
             "#include <one.h>\n" +
             "#include fake1.h\n" +
             "#include <fake2.h\n" +
@@ -27,13 +27,13 @@ public class MakefileToolsTest extends TestCase {
             "#include <../sys/five.h>//something\n" +
             "#include \"six.h\"\n" +
             " \t # \t  include \"../seven.h\"//something\n" +
-            "#include \"last.h\"  ";  // note unterminated last line (no \n) 
+            "#include \"last.h\"  ";  // note unterminated last line (no \n)
 
-//FIXME todo         
+//FIXME todo
 //        List<Include> includes = DependencyCache.parseIncludes(src);
 //        String concat = StringUtils.join(includes, ",");
 //        Assert.assertEquals(concat, "<one.h>,<two.h>,<two.h>,<three.h>,<sys/four.h>,<../sys/five.h>,\"six.h\",\"../seven.h\",\"last.h\"");
 
     }
-    
+
 }

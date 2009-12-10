@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,7 +24,7 @@ public abstract class ClickableWidgetAccess
 	}
 
 	protected abstract Point getAbsolutePointToClick();
-	
+
 	protected abstract Point toAbsolute(Point point);
 
 	protected abstract Menu getContextMenu();
@@ -74,11 +74,11 @@ public abstract class ClickableWidgetAccess
 
     @InAnyThread
 	public void dragToAbsolute(int x, int y) {
-	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), new Point(x,y));    
+	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), new Point(x,y));
 	}
 
     @InAnyThread
 	public void dragTo(ClickableWidgetAccess target) {
-	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), target.getAbsolutePointToClick());    
+	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), target.getAbsolutePointToClick());
 	}
 }

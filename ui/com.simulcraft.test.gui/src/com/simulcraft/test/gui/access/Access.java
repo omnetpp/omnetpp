@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -56,17 +56,17 @@ public class Access
     public final static int RIGHT_MOUSE_BUTTON = 3;
     private static final String TEST_RUNNING = "com.simulcraft.test.running";
     private static double timeScale = 1.0;
-	
+
     public static boolean debug = false;
-    
+
     public static boolean mustHaveActiveShell = true;
-    
+
     protected static ArrayList<IAccessFactory> accessFactories = new ArrayList<IAccessFactory>();
-    
+
     public interface IAccessFactory {
         public Class<?> findAccessClass(Class<?> instanceClass) throws ClassNotFoundException;
     }
-    
+
 	static {
         System.setProperty(TEST_RUNNING, "1");
 
@@ -81,7 +81,7 @@ public class Access
 	    if (condition)
 	        System.out.println(text);
 	}
-	
+
     public static double getTimeScale() {
         return timeScale;
     }
@@ -89,7 +89,7 @@ public class Access
     public static void setTimeScale(double timeScale) {
         Access.timeScale = timeScale;
     }
-    
+
     public static int rescaleTime(int virtualMs) {
         return (int)(timeScale * virtualMs);
     }
@@ -105,19 +105,19 @@ public class Access
 	public static Access createAccess(Object instance, boolean allowMissing) {
 	    if (allowMissing && instance == null)
 	        return null;
-	    
+
 		Class<?> clazz = instance.getClass();
 
 		while (clazz != Object.class) {
             for (IAccessFactory factory : accessFactories) {
                 try {
     		        return (Access)ReflectionUtils.invokeConstructor(factory.findAccessClass(clazz), instance);
-    			} 
+    			}
     			catch (ClassNotFoundException e) {
     				// skip this class
     			}
             }
-			
+
 			clazz = clazz.getSuperclass();
 		}
 
@@ -129,12 +129,12 @@ public class Access
 		Display display = Display.getCurrent();
 		return display != null ? display : Display.getDefault();
 	}
-	
+
     @UIStep
 	public static ControlAccess getFocusControl() {
 	    return (ControlAccess) createAccess(Display.getCurrent().getFocusControl());
 	}
-	
+
 	@UIStep
 	public static WorkbenchWindowAccess getWorkbenchWindow() {
 		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -160,7 +160,7 @@ public class Access
 				log(debug, "Trying to collect shell: " + shell.getText());
 				return shell.getText().matches(title);
 			}
-			
+
 			public String toString() {
 			    return "a Shell with title: " + title;
 			}
@@ -194,9 +194,9 @@ public class Access
 	@InBackgroundThread
 	public static void sleep(double seconds) {
 	    Assert.assertTrue(seconds >= 0);
-	 
+
 	    int milliSec = rescaleTime((int)(seconds * 1000));
-	    
+
 	    if (milliSec > 0) {
     		try {
     			Thread.sleep(milliSec);
@@ -240,7 +240,7 @@ public class Access
 	public void pressEnter() {
 		pressKey(SWT.KEYPAD_CR);
 	}
-	
+
 	@UIStep
 	public void pressKey(int keyCode) {
 		pressKey(keyCode, SWT.None);
@@ -286,7 +286,7 @@ public class Access
     @UIStep
     public void holdDownModifiers(int modifierKeys) {
         Event event;
-        
+
         if ((modifierKeys & SWT.SHIFT) != 0) {
         	event = newEvent(SWT.KeyDown);
         	event.keyCode = SWT.SHIFT;
@@ -332,7 +332,7 @@ public class Access
 	protected void postMouseEvent(int type, int button, int x, int y) {
 		postMouseEvent(type, button, x, y, 0);
 	}
-	
+
 	protected void postMouseEvent(int type, int button, int x, int y, int delayMillis) {
 		//TODO: suggest SWT maintainers to introduce post() method with a delayMillis parameter
 		if (PlatformUtils.isGtk && type == SWT.MouseMove && delayMillis != 0) {
@@ -340,7 +340,7 @@ public class Access
 			int xDisplay = (Integer)ReflectionUtils.invokeStaticMethod(PlatformUtils.OS_, "GDK_DISPLAY");
 			ReflectionUtils.invokeStaticMethod(PlatformUtils.OS_, "XTestFakeMotionEvent", xDisplay, -1, x, y, rescaleTime(delayMillis));
 		}
-		
+
 		Event event = newEvent(type); // e.g. SWT.MouseMove
 		event.button = button;
 		event.x = x;
@@ -360,18 +360,18 @@ public class Access
 	    Shell shell = (Shell) theOnlyObject(collectContentAssistPopups(predicate), predicate);
         return new ContentAssistAccess(new ShellAccess(shell).findTable().getControl());
     }
-	
+
 	@InBackgroundThread
 	public static void assertHasNoContentAssistPopup() {
 	    Access.sleep(0.5);
 	    Assert.assertTrue("Found content assist popup.", collectContentAssistPopups(getContentAssistPredicate()).size() == 0);
 	}
-	
+
 	@UIStep
     protected static List<Object> collectContentAssistPopups(IPredicate predicate) {
         return collectObjects(getDisplay().getShells(), predicate);
     }
-	
+
 	protected static IPredicate getContentAssistPredicate() {
 	    return new IPredicate() {
             public boolean matches(Object object) {
@@ -379,25 +379,25 @@ public class Access
                 Shell shell = (Shell)object;
                 if (shell.getText().equals("") && shell.isVisible()) {
                     Composite parent = shell;
-                    //shell.getStyle() == 0x020004F0                   
+                    //shell.getStyle() == 0x020004F0
                     if (shell.getChildren().length==1 && shell.getChildren()[0].getClass() == Composite.class) // Table is a composite too
                         parent = (Composite)shell.getChildren()[0];
-                    
+
                     if (parent.getChildren().length==1 && parent.getChildren()[0] instanceof Table) {
                         Table table = (Table)parent.getChildren()[0];
-                        if (table.getColumnCount() == 0) 
+                        if (table.getColumnCount() == 0)
                             return true;
                     }
                 }
                 return false;
             }
-            
+
             public String toString() {
                 return "a content assist Shell";
             }
         };
 	}
-	
+
     @UIStep
 	public static Object findObject(List<Object> objects, IPredicate predicate) {
 		return theOnlyObject(collectObjects(objects, predicate), predicate);
@@ -427,7 +427,7 @@ public class Access
 	public static List<Object> collectObjects(List<Object> objects, IPredicate predicate) {
 		return collectObjects(objects.toArray(new Object[0]), predicate);
 	}
-	
+
 	@UIStep
 	public static List<Object> collectObjects(Object[] objects, IPredicate predicate) {
 		ArrayList<Object> resultObjects = new ArrayList<Object>();
@@ -474,19 +474,19 @@ public class Access
 	protected static CTabItem findDescendantCTabItemByLabel(Composite composite, String label) {
 		return (CTabItem)findDescendantTabItemByLabel(composite, label, true);
 	}
-	
+
 	protected static TabItem findDescendantTabItemByLabel(Composite composite, String label) {
 		return (TabItem)findDescendantTabItemByLabel(composite, label, false);
 	}
-	
+
 	private static Item[] getTabItems(Composite tabfolder) {
 		return tabfolder instanceof CTabFolder ? ((CTabFolder)tabfolder).getItems() : ((TabFolder)tabfolder).getItems();
 	}
-	
+
 	private static Item findDescendantTabItemByLabel(Composite composite, final String label, final boolean custom) {
 		Composite folder = (Composite)findDescendantControl(composite, new IPredicate() {
 			public boolean matches(Object object) {
-				if ((object instanceof CTabFolder && custom || object instanceof TabFolder && !custom) 
+				if ((object instanceof CTabFolder && custom || object instanceof TabFolder && !custom)
 				        && ((Control)object).isVisible()) {  // FIXME put isVisible everywhere
 					List<Object> matchingItems = collectObjects(getTabItems((Composite)object), new IPredicate() {
 						public boolean matches(Object object) {
@@ -503,7 +503,7 @@ public class Access
 				}
 				return false;
 			}
-            
+
             public String toString() {
                 return "a " + (custom ? CTabItem.class : TabItem.class).getName() + " with label: " + label;
             }
@@ -513,13 +513,13 @@ public class Access
 			public boolean matches(Object object) {
 				return ((Item)object).getText().matches(label);
 			}
-            
+
             public String toString() {
                 return "an Item with label: " + label;
             }
 		});
 	}
-	
+
 	public interface IValue {
 	    public double valueOf(Object object);
 	}
@@ -528,7 +528,7 @@ public class Access
     public static Control findControlMaximizing(List<Control> controls, IValue valueFunction) {
         Control result = null;
         double max = Double.NEGATIVE_INFINITY;
-        
+
         for (Control control : controls) {
             double value = valueFunction.valueOf(control);
 
@@ -574,7 +574,7 @@ public class Access
 				figures.add(figure);
 		}
 	}
-	
+
 	@UIStep
 	public static EditPart findDescendantEditPart(EditPart editPart, final Class<? extends EditPart> clazz) {
 	    return findDescendantEditPart(editPart, instanceOf(clazz));
@@ -615,7 +615,7 @@ public class Access
 	    String predicateString = predicate == null ?  "<unknown>" : predicate.toString();
 		Assert.assertTrue("While searching for " + predicateString + ", found " + objects.size() + " objects when exactly one is expected [" + StringUtils.join(objects, ", ") + "]", objects.size() < 2);
 		Assert.assertTrue("While searching for " + predicateString + ", found zero object when exactly one is expected", allowMissing || objects.size() > 0);
-		
+
 		if (objects.size() == 0)
 		    return null;
 		else
@@ -637,7 +637,7 @@ public class Access
 	protected static EditPart theOnlyEditPart(List<? extends EditPart> controls, IPredicate predicate) {
 		return (EditPart)theOnlyObject(controls, predicate);
 	}
-	
+
 	protected static Object atMostOneObject(List<? extends Object> objects) {
 		Assert.assertTrue("Found "+objects.size()+" objects when one or zero is expected ["+StringUtils.join(objects, ", ")+"]", objects.size() < 2);
 		return objects.isEmpty() ? null : objects.get(0);
@@ -711,7 +711,7 @@ public class Access
 
 	protected static void dumpWidgetHierarchy(Control control, int level) {
 		System.out.println(StringUtils.repeat("  ", level) + control.toString() + (!control.isVisible() ? " (not visible)" : ""));
-		
+
 		if (control.getMenu() != null)
 			dumpMenu(control.getMenu(), level);
 
@@ -723,7 +723,7 @@ public class Access
     public static void dumpMenu(Menu menu) {
         dumpMenu(menu, 0);
     }
-	
+
 	protected static void dumpMenu(Menu menu, int level) {
 		for (MenuItem menuItem : menu.getItems()) {
 		    System.out.println(StringUtils.repeat("  ", level) + menuItem.getText());

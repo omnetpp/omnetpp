@@ -36,7 +36,7 @@ import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
  */
 //TODO ConnectionFigure must be fixed too!
 public class GraphicalModulePart extends InspectorPart {
-	protected static final cDisplayString EMPTY_DISPLAYSTRING = new cDisplayString(""); 
+	protected static final cDisplayString EMPTY_DISPLAYSTRING = new cDisplayString("");
 
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
@@ -267,7 +267,7 @@ public class GraphicalModulePart extends InspectorPart {
     	else
     		return EMPTY_DISPLAYSTRING;
     }
-    
+
     protected void handleMouseDoubleClick(MouseEvent me) {
     	SubmoduleFigureEx submoduleFigure = findSubmoduleAt(me.x,me.y);
 		System.out.println("clicked submodule: " + submoduleFigure);

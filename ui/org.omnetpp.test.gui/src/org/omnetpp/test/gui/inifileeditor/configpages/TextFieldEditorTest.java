@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -31,13 +31,13 @@ public class TextFieldEditorTest extends InifileEditorTestCase {
     public void testFocusTransfer() throws Exception {
         // text field should gain focus when its label is clicked
         TextAccess text = prepareTest();
-        text.assertHasNoFocus(); 
+        text.assertHasNoFocus();
 
         InifileFormEditorAccess formEditor = findInifileEditor().ensureActiveFormEditor();
         LabelAccess label = formEditor.getActiveCategoryPage().findLabel("Output vector file.*");
         label.click();
-        
-        text.assertHasFocus(); // must get focus when its text gets 
+
+        text.assertHasFocus(); // must get focus when its text gets
     }
 
     public void testCtrlA() throws Exception {

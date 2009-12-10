@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -37,7 +37,7 @@ import org.omnetpp.scave.model.InputFile;
 public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabelDecorator, IResourceChangeListener {
 
 	LocalResourceManager resourceManager;
-	
+
     public ScaveModelLabelDecorator() {
     	//
     	resourceManager = new LocalResourceManager(JFaceResources.getResources(PlatformUI.getWorkbench().getDisplay()));
@@ -51,7 +51,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         resourceManager.dispose();
         super.dispose();
     }
-	
+
 	public Image decorateImage(Image image, Object element) {
 		if (element instanceof InputFile) {
 			InputFile inputFile = (InputFile)element;
@@ -78,11 +78,11 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}
-	
+
 	private boolean containsWildcard(String resourcePath) {
 		return resourcePath.indexOf('?') >= 0 || resourcePath.indexOf('*') >= 0;
 	}
-	
+
 	private int maxSeverityLevel(IFile file) {
         int maxLevel = -1;
         try {
@@ -95,7 +95,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         }
         return maxLevel;
 	}
-	
+
 	private DecorationOverlayIcon createDecoratedIcon(Image base, int severity) {
 		if (severity == IMarker.SEVERITY_ERROR)
 			return new DecorationOverlayIcon(base, ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
@@ -113,7 +113,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
                         new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) {
                                 // we are interested only in marker annotation changes
-                                if ((delta.getFlags() & IResourceDelta.MARKERS) != 0 && 
+                                if ((delta.getFlags() & IResourceDelta.MARKERS) != 0 &&
                                 		delta.getResource() instanceof IFile) {
                                 	someMarkerChanged[0] = true;
                                 }

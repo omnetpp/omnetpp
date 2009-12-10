@@ -1,6 +1,6 @@
-# this is a gtkrc file which makes the eclipse platform look much better 
+# this is a gtkrc file which makes the eclipse platform look much better
 # and compact on GTK. Just copy this file into your home directory and name it
-# as .gtkrc or .gtkrc-2.0 
+# as .gtkrc or .gtkrc-2.0
 
 style "gtkcompact" {
 font_name="Sans 8"

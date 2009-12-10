@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -43,13 +43,13 @@ public class ChartMenuManager extends MenuManager {
 	private Chart chart;
 	private ScaveEditorContributor editorContributor;
 	private ILabelProvider labelProvider;
-	
+
 	public ChartMenuManager(Chart chart, ScaveEditor editor) {
 		super("#PopupMenu");
 		this.chart = chart;
 		this.editorContributor = ScaveEditorContributor.getDefault();
 		this.labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
-		
+
 		setRemoveAllWhenShown(true);
 		addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager submenuManager) {
@@ -57,7 +57,7 @@ public class ChartMenuManager extends MenuManager {
 			}
 		});
 	}
-	
+
 	protected void updateContextMenu() {
 			add(editorContributor.getZoomInAction());
 			add(editorContributor.getZoomOutAction());
@@ -97,7 +97,7 @@ public class ChartMenuManager extends MenuManager {
 			add(new Separator());
 			add(editorContributor.getRefreshChartAction());
 	}
-	
+
 	protected IMenuManager createProcessingSubmenu(boolean isApply) {
 		IMenuManager submenuManager = new MenuManager(isApply ? "Apply" : "Compute");
 		submenuManager.add(new NewChartProcessingOpAction("Mean", createOp(isApply, "mean")));
@@ -118,13 +118,13 @@ public class ChartMenuManager extends MenuManager {
 		submenuManager.add(new NewChartProcessingOpAction("Other...", createOp(isApply, null)));
 		return submenuManager;
 	}
-	
+
 	protected IMenuManager createRemoveProcessingSubmenu() {
 		IMenuManager submenuManager = new MenuManager("Remove");
 		// list all chart processing operations in the menu
 		//XXX when Chart would remain the only item in the Group, ungroup it!
 		for (EObject child : chart.eContainer().eContents()) {
-			if (child == chart) 
+			if (child == chart)
 				break; // only list objects *before* the chart
 			if (child instanceof ProcessingOp) {
 				String text = StringUtils.capitalize(labelProvider.getText(child));
@@ -133,7 +133,7 @@ public class ChartMenuManager extends MenuManager {
 		}
 		return submenuManager;
 	}
-	
+
 	protected static ProcessingOp createOp(boolean isApply, String operation) {
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 		ProcessingOp applyOrCompute = isApply ? factory.createApply() : factory.createCompute();
@@ -149,7 +149,7 @@ public class ChartMenuManager extends MenuManager {
 		applyOrCompute.getParams().add(param);
 		return applyOrCompute;
 	}
-	
+
 	protected static Map<String,Object> createFormProperties(String key1, Object value1) {
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put(key1, value1);

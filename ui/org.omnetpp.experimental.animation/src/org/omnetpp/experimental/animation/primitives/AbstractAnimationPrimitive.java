@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -58,7 +58,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	public double getEndAnimationTime() {
 		return getBeginAnimationTime();
 	}
- 
+
 	public boolean isActive() {
 		return isActive;
 	}
@@ -122,7 +122,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 
 	protected SubmoduleFigure getSubmoduleFigure(int moduleId) {
 		IRuntimeModule module = getSimulation().getModuleByID(moduleId);
-	
+
 		if (module != null)
 			return (SubmoduleFigure)animationEnvironment.getFigure(module);
 		else
@@ -133,7 +133,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	{
 		IRuntimeModule parentModule = getSimulation().getRootModule();
 		IRuntimeModule module = getSimulation().getModuleByID(enclosedModuleId);
-	
+
 		while (module != null && module.getParentModule() != parentModule) {
 			module = module.getParentModule();
 		}

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,7 +29,7 @@ public class ShowOutputVectorViewAction extends AbstractScaveAction {
 		try {
 			IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			workbenchPage.showView(VectorBrowserView.ID);
-		} 
+		}
 		catch (PartInitException e) {
 			IStatus error = ScavePlugin.getErrorStatus(0, "Failed to open Output Vector View", e);
 			ErrorDialog dialog = new ErrorDialog(scaveEditor.getSite().getShell(), null, null, error, IStatus.ERROR);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -15,28 +15,28 @@ import org.eclipse.swt.widgets.Event;
 public class EventUtils {
 
     enum EventType {
-        KeyDown(SWT.KeyDown), KeyUp(SWT.KeyUp), MouseDown(SWT.MouseDown), 
-        MouseUp(SWT.MouseUp), MouseMove(SWT.MouseMove), MouseEnter(SWT.MouseEnter), 
-        MouseExit(SWT.MouseExit), MouseDoubleClick(SWT.MouseDoubleClick), 
-        Paint(SWT.Paint), Move(SWT.Move), Resize(SWT.Resize), Dispose(SWT.Dispose), 
-        Selection(SWT.Selection), DefaultSelection(SWT.DefaultSelection), 
-        FocusIn(SWT.FocusIn), FocusOut(SWT.FocusOut), Expand(SWT.Expand), 
-        Collapse(SWT.Collapse), Iconify(SWT.Iconify), Deiconify(SWT.Deiconify), 
-        Close(SWT.Close), Show(SWT.Show), Hide(SWT.Hide), Modify(SWT.Modify), 
-        Verify(SWT.Verify), Activate(SWT.Activate), Deactivate(SWT.Deactivate), 
-        Help(SWT.Help), DragDetect(SWT.DragDetect), Arm(SWT.Arm), 
-        Traverse(SWT.Traverse), MouseHover(SWT.MouseHover), 
-        HardKeyDown(SWT.HardKeyDown), HardKeyUp(SWT.HardKeyUp), 
-        MenuDetect(SWT.MenuDetect), SetData(SWT.SetData), 
-        MouseWheel(SWT.MouseWheel), Settings(SWT.Settings), 
-        EraseItem(SWT.EraseItem), MeasureItem(SWT.MeasureItem), 
+        KeyDown(SWT.KeyDown), KeyUp(SWT.KeyUp), MouseDown(SWT.MouseDown),
+        MouseUp(SWT.MouseUp), MouseMove(SWT.MouseMove), MouseEnter(SWT.MouseEnter),
+        MouseExit(SWT.MouseExit), MouseDoubleClick(SWT.MouseDoubleClick),
+        Paint(SWT.Paint), Move(SWT.Move), Resize(SWT.Resize), Dispose(SWT.Dispose),
+        Selection(SWT.Selection), DefaultSelection(SWT.DefaultSelection),
+        FocusIn(SWT.FocusIn), FocusOut(SWT.FocusOut), Expand(SWT.Expand),
+        Collapse(SWT.Collapse), Iconify(SWT.Iconify), Deiconify(SWT.Deiconify),
+        Close(SWT.Close), Show(SWT.Show), Hide(SWT.Hide), Modify(SWT.Modify),
+        Verify(SWT.Verify), Activate(SWT.Activate), Deactivate(SWT.Deactivate),
+        Help(SWT.Help), DragDetect(SWT.DragDetect), Arm(SWT.Arm),
+        Traverse(SWT.Traverse), MouseHover(SWT.MouseHover),
+        HardKeyDown(SWT.HardKeyDown), HardKeyUp(SWT.HardKeyUp),
+        MenuDetect(SWT.MenuDetect), SetData(SWT.SetData),
+        MouseWheel(SWT.MouseWheel), Settings(SWT.Settings),
+        EraseItem(SWT.EraseItem), MeasureItem(SWT.MeasureItem),
         PaintItem(SWT.PaintItem);
         private int typeCode;
 
         EventType(int typeCode) {
-            this.typeCode = typeCode; 
+            this.typeCode = typeCode;
         }
-        
+
         public int getTypeCode() {
             return typeCode;
         }
@@ -47,20 +47,20 @@ public class EventUtils {
 
         public static EventType[] getKeyboardEventTypes() {
             return new EventType[] {
-                EventType.KeyDown, EventType.KeyUp,  
-                EventType.HardKeyDown, EventType.HardKeyUp  
+                EventType.KeyDown, EventType.KeyUp,
+                EventType.HardKeyDown, EventType.HardKeyUp
             };
         }
 
         public static EventType[] getMouseEventTypes() {
             return new EventType[] {
-                EventType.MouseDown, EventType.MouseUp, EventType.MouseMove, 
-                EventType.MouseEnter, EventType.MouseExit, 
-                EventType.MouseDoubleClick, EventType.MouseWheel, 
-                EventType.MouseHover 
+                EventType.MouseDown, EventType.MouseUp, EventType.MouseMove,
+                EventType.MouseEnter, EventType.MouseExit,
+                EventType.MouseDoubleClick, EventType.MouseWheel,
+                EventType.MouseHover
             };
         }
-        
+
         public static EventType lookup(int typeCode) {
             for (EventType e : values())
                 if (e.typeCode == typeCode)
@@ -69,7 +69,7 @@ public class EventUtils {
         }
 
     };
-    
+
     public static String getEventDescription(Event event) {
         EventType eventType = EventType.lookup(event.type);
         String result = eventType.name()+" ";
@@ -81,5 +81,5 @@ public class EventUtils {
         result += "  detail: " + event.detail;
         return result;
     }
-    
+
 }

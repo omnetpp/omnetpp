@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Control;
 public class CheckboxControlCellEditor extends CellEditor {
 
     Button chkBtn;
-    
+
     public CheckboxControlCellEditor(Composite parent) {
         super(parent);
     }
@@ -33,10 +33,10 @@ public class CheckboxControlCellEditor extends CellEditor {
     @Override
     protected Control createControl(Composite parent) {
         chkBtn = new Button(parent, SWT.CHECK);
-        
+
         // see also ComboBoxCellEditor, TextCellEditor etc for explanation
         chkBtn.addKeyListener(new KeyAdapter() {
-            // hook key pressed - see PR 14201  
+            // hook key pressed - see PR 14201
             public void keyPressed(KeyEvent e) {
                 keyReleaseOccured(e);
                 // note: as a result of processing the above call, clients may have

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -8,13 +8,13 @@
 package org.omnetpp.inifile.editor.model;
 
 /**
- * One entry in the ConfigRegistry. Describes a configuration option. 
- * 
+ * One entry in the ConfigRegistry. Describes a configuration option.
+ *
  * @author Andras
  */
 public class ConfigOption {
-    /** 
-     * Configuration option data types 
+    /**
+     * Configuration option data types
      */
     public enum DataType {
       CFG_BOOL,
@@ -56,15 +56,15 @@ public class ConfigOption {
     public boolean isPerObject() {
 		return isPerObject;
 	}
-    
+
     public boolean isGlobal() {
     	return isGlobal;
     }
-    
+
     public DataType getDataType() {
     	return dataType;
     }
-        
+
 	public String getDefaultValue() {
 		return defaultValue;
 	}

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,7 +49,7 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  */
 public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementConstants {
     private static boolean debug = false;
-    
+
 	protected INedTypeElement componentNode;
 
 	protected int debugId = lastDebugId++;
@@ -354,7 +354,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	public void invalidate() {
 	    if (debug)
 	        Debug.println(getName() +  ": invalidated *all* members (local+inherited)");
-	    
+
 		fullyQualifiedName = null;
         needsRefreshLocal = true;
 		needsRefreshInherited = true;
@@ -365,7 +365,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	public void invalidateInherited() {
         if (debug)
             Debug.println(getName() +  ": invalidated inherited members");
-        
+
 		fullyQualifiedName = null;
 		needsRefreshInherited = true;
 		allUsedTypes = null;
@@ -388,7 +388,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     public String getPackageName() {
         return componentNode.getContainingNedFileElement().getPackage();
     }
-    
+
 	public INedTypeElement getNEDElement() {
 		return componentNode;
 	}
@@ -418,7 +418,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
         NedFileElementEx fileElement = componentNode.getContainingNedFileElement();
         String namespace = getResolver().getSimplePropertyFor(fileElement, INEDTypeResolver.NAMESPACE_PROPERTY);
-        
+
         if (namespace == null)
             return className;
         else
@@ -486,7 +486,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     }
 
     public Set<INedTypeElement> getLocalUsedTypes() {
-        if (localUsedTypes == null) { 
+        if (localUsedTypes == null) {
             localUsedTypes = new HashSet<INedTypeElement>();
             refreshLocalMembersIfNeeded();
             collectTypesInCompoundModule(localUsedTypes);
@@ -552,7 +552,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
                 allUsedTypes.addAll(component.getLocalUsedTypes());
             }
         }
-        
+
         return allUsedTypes;
     }
 

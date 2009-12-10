@@ -2,42 +2,42 @@
 
 2009-03-08  Andras Varga
 
-	* fixed #52: exclude display update time when doing time-based updates 
+	* fixed #52: exclude display update time when doing time-based updates
 	in Express and Fast modes
 
 2009-02-27  ------ omnetpp-4.0rc2 released ------
 
 2009-01-05  Rudolf Hornig
-    
+
         * fixed: display string for messages made consistent with module display
         strings: "o" tag removed, use b=width,height,shape,color,borderwidth instead.
-        
+
         * New feature: A special color name "kind" can be used in message display strings
         (both in "i" and "b" tag)
 
 2008-12-14  Andras Varga
 
-	* fixed bug #34: in Fast mode, bubble didn't get displayed for 
+	* fixed bug #34: in Fast mode, bubble didn't get displayed for
 	recently created modules
 
 2008-12-12  ------ omnetpp-4.0rc1 released ------
 
 2008-12-09  Andras Varga
 
-	* UI updates during Fast and Express Run changed from event-based 
+	* UI updates during Fast and Express Run changed from event-based
 	(i.e. "every x events") to time-based ("every x milliseconds").
 	Time only checked every 16 and 256 events though, respectively,
 	to save CPU cycles.
 
 2008-12-06  Andras Varga
 
-	* fixed #16: reimplemented filtering. Now I store the log messages 
-	in the memory myself, and on closing the filter dialog I re-fill 
-	the text widget with manually filtered contents. This fixes strange 
+	* fixed #16: reimplemented filtering. Now I store the log messages
+	in the memory myself, and on closing the filter dialog I re-fill
+	the text widget with manually filtered contents. This fixes strange
 	scrolling behavior (bug #17) as well. New files: logbuffer.cc/h
 
-	* New feature: when you open a per-module output window, it comes up 
-	containing previous messages (and not empty as it used to). This 
+	* New feature: when you open a per-module output window, it comes up
+	containing previous messages (and not empty as it used to). This
 	feature was made possible by storing the log.
 
 2008-11-27  Andras Varga

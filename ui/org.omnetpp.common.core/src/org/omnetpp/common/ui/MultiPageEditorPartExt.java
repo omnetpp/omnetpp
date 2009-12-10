@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,7 +17,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 
 /**
  * Multi-page editor with closable pages.
- * 
+ *
  * @author Andras
  */
 public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
@@ -34,7 +34,7 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 		CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE, index);
 		item.setControl(control);
 
-		// CTabItem does not dispose the page contents widget, only calls 
+		// CTabItem does not dispose the page contents widget, only calls
 		// setVisible(false) on it; so we have to do it here
 		item.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {

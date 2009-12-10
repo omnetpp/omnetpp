@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -12,9 +12,9 @@ import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
- * An inifile field editor which displays CheckboxFieldEditor, and lets the user 
- * expand it to a CheckboxTableFieldEditor. 
- * 
+ * An inifile field editor which displays CheckboxFieldEditor, and lets the user
+ * expand it to a CheckboxTableFieldEditor.
+ *
  * @author Andras
  */
 public class ExpandableCheckboxFieldEditor extends ExpandableFieldEditor {
@@ -39,7 +39,7 @@ public class ExpandableCheckboxFieldEditor extends ExpandableFieldEditor {
 
     @Override
 	protected FieldEditor createFieldEditor(boolean isExpanded) {
-		if (!isExpanded)  
+		if (!isExpanded)
 		    return new CheckboxFieldEditor(this, entry, inifile, formPage, labelText);
 		else {
 		    CheckboxTableFieldEditor editor = new CheckboxTableFieldEditor(this, entry, inifile, formPage, labelText);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -94,10 +94,10 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				return getChildren(inputElement);
 			}
 		});
-	
+
 		Assert.isTrue(inifileDocument!=null);
 		getTreeViewer().setInput(inifileDocument);
-	
+
  		// add tooltip support
  		new HoverSupport().adapt(getTreeViewer().getTree(), new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
@@ -106,7 +106,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, inifileDocument, null, true);
 			}
  		});
-	
+
 	}
 
 	/* (non-Javadoc)
@@ -143,7 +143,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 
 	/**
 	 * Sets the input of the outline page
-	 * 
+	 *
 	 * @param input the input of this outline page
 	 */
 	public void setInput(Object input) {
@@ -153,7 +153,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		Assert.isTrue(input instanceof IInifileDocument || input == null);
 		inifileDocument = (IInifileDocument) input;
 		// Note: when first invoked, treeViewer==null yet
-		if (getTreeViewer() != null && !getTreeViewer().getTree().isDisposed()) 
+		if (getTreeViewer() != null && !getTreeViewer().getTree().isDisposed())
 			getTreeViewer().setInput(inifileDocument);
 		if (inifileDocument != null)
 			inifileDocument.addInifileChangeListener(this);
@@ -171,7 +171,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				        viewer.refresh();
 				}
 			});
-		}	
+		}
 	}
 
 	/* (non-Javadoc)

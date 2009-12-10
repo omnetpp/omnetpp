@@ -108,10 +108,10 @@ sub exec_program()
         #$status = system ("$cmd >$outfile 2>$errfile");
         $shell=$ENV{'COMSPEC'};
         if ($shell eq "") {
-            print STDERR "$arg0: WARNING: no %COMSPEC% environment variable, using cmd.exe\n"; 
+            print STDERR "$arg0: WARNING: no %COMSPEC% environment variable, using cmd.exe\n";
             $shell="cmd.exe";
         }
-        # On the next line, cmd.exe may fail to pass back program exit code. 
+        # On the next line, cmd.exe may fail to pass back program exit code.
         # When this happens, use the above (commented out) "system" line.
         $status = system($shell, split(" ", "/c $cmd >$outfile 2>$errfile"));
         print "  returned status = $status\n" if ($debug);

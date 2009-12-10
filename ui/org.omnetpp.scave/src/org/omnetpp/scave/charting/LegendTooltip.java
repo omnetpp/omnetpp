@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -53,7 +53,7 @@ class LegendTooltip implements ILegend
 		Image icon = ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
 		button.setImage(icon);
 		button.setSize(button.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-	
+
 		final HoverSupport hoverSupport = new HoverSupport();
 		hoverSupport.setHoverSizeConstaints(320,400);
 		hoverSupport.adapt(button, new IHoverTextProvider() {
@@ -61,7 +61,7 @@ class LegendTooltip implements ILegend
 				return getTooltipText(x, y, preferredSize);
 			}
 		});
-	
+
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 					IInformationControl infoControl = hoverSupport.getInformationControl();

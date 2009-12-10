@@ -9,7 +9,7 @@ import org.omnetpp.runtimeenv.views.ObjectTreeView;
 
 
 /**
- * 
+ *
  * @author Andras
  */
 public class Perspective implements IPerspectiveFactory {
@@ -21,7 +21,7 @@ public class Perspective implements IPerspectiveFactory {
 
         IFolderLayout leftFolder = layout.createFolder("left", IPageLayout.LEFT, 0.25f, editorArea); //$NON-NLS-1$
         leftFolder.addView(ObjectTreeView.ID);
-        
+
         IFolderLayout leftBottomFolder = layout.createFolder("leftbottom", IPageLayout.BOTTOM, 0.50f, "left"); //$NON-NLS-1$
         leftBottomFolder.addView(ObjectPropertiesView.ID);
 

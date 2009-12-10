@@ -78,7 +78,7 @@ class UnknownElement;
 
 /**
  * Tag codes
- * 
+ *
  * @ingroup Data
  */
 enum NEDElementCode {
@@ -144,12 +144,12 @@ enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};
 
 /**
  * GENERATED CLASS. Represents the \<files\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT files ((ned-file|msg-file)*)\>
- * 
+ *
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API FilesElement : public NEDElement
@@ -188,7 +188,7 @@ class NEDXML_API FilesElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<ned-file\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT ned-file (comment*, (package|import|property-decl|property|
  *                     simple-module|compound-module|module-interface|
@@ -197,7 +197,7 @@ class NEDXML_API FilesElement : public NEDElement
  *      filename           CDATA     \#REQUIRED
  *      version            CDATA     "2"\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API NedFileElement : public NEDElement
@@ -250,14 +250,14 @@ class NEDXML_API NedFileElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<comment\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT comment EMPTY\>
  * \<!ATTLIST comment
  *      locid              NMTOKEN   \#REQUIRED
  *      content            CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API CommentElement : public NEDElement
@@ -300,13 +300,13 @@ class NEDXML_API CommentElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<package\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT package (comment*)\>
  * \<!ATTLIST package
  *      name               CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API PackageElement : public NEDElement
@@ -347,13 +347,13 @@ class NEDXML_API PackageElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<import\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT import (comment*)\>
  * \<!ATTLIST import
  *      import-spec        CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ImportElement : public NEDElement
@@ -394,14 +394,14 @@ class NEDXML_API ImportElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<property-decl\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT property-decl (comment*, property-key*, property*)\>
  * \<!ATTLIST property-decl
  *      name               NMTOKEN   \#REQUIRED
  *      is-array           (true|false) "false"\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API PropertyDeclElement : public NEDElement
@@ -447,13 +447,13 @@ class NEDXML_API PropertyDeclElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<extends\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT extends (comment*)\>
  * \<!ATTLIST extends
  *      name               CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ExtendsElement : public NEDElement
@@ -494,13 +494,13 @@ class NEDXML_API ExtendsElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<interface-name\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT interface-name (comment*)\>
  * \<!ATTLIST interface-name
  *      name               CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API InterfaceNameElement : public NEDElement
@@ -541,13 +541,13 @@ class NEDXML_API InterfaceNameElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<simple-module\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT simple-module (comment*, extends?, interface-name*, parameters?, gates?)\>
  * \<!ATTLIST simple-module
  *      name               NMTOKEN   \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API SimpleModuleElement : public NEDElement
@@ -592,13 +592,13 @@ class NEDXML_API SimpleModuleElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<module-interface\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT module-interface (comment*, extends*, parameters?, gates?)\>
  * \<!ATTLIST module-interface
  *      name               NMTOKEN   \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ModuleInterfaceElement : public NEDElement
@@ -642,14 +642,14 @@ class NEDXML_API ModuleInterfaceElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<compound-module\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT compound-module (comment*, extends?, interface-name*,
  *                            parameters?, gates?, types?, submodules?, connections?)\>
  * \<!ATTLIST compound-module
  *      name               NMTOKEN   \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API CompoundModuleElement : public NEDElement
@@ -697,13 +697,13 @@ class NEDXML_API CompoundModuleElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<channel-interface\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT channel-interface (comment*, extends*, parameters?)\>
  * \<!ATTLIST channel-interface
  *      name                NMTOKEN   \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ChannelInterfaceElement : public NEDElement
@@ -746,13 +746,13 @@ class NEDXML_API ChannelInterfaceElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<channel\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT channel (comment*, extends?, interface-name*, parameters?)\>
  * \<!ATTLIST channel
  *      name                NMTOKEN   \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ChannelElement : public NEDElement
@@ -796,13 +796,13 @@ class NEDXML_API ChannelElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<parameters\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT parameters (comment*, (property|param)*)\>
  * \<!ATTLIST parameters
  *     is-implicit         (true|false)  "false"\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ParametersElement : public NEDElement
@@ -845,7 +845,7 @@ class NEDXML_API ParametersElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<param\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT param (comment*, expression?, property*)\>
  * \<!ATTLIST param
@@ -856,7 +856,7 @@ class NEDXML_API ParametersElement : public NEDElement
  *      is-pattern         (true|false)  "false"
  *      is-default         (true|false)  "false"\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ParamElement : public NEDElement
@@ -914,7 +914,7 @@ class NEDXML_API ParamElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<property\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT property (comment*, property-key*)\>
  * \<!ATTLIST property
@@ -922,7 +922,7 @@ class NEDXML_API ParamElement : public NEDElement
  *      name               NMTOKEN   \#REQUIRED
  *      index              NMTOKEN   \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API PropertyElement : public NEDElement
@@ -970,13 +970,13 @@ class NEDXML_API PropertyElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<property-key\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT property-key (comment*, literal*)\>
  * \<!ATTLIST property-key
  *      name               CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API PropertyKeyElement : public NEDElement
@@ -1018,12 +1018,12 @@ class NEDXML_API PropertyKeyElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<gates\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT gates (comment*, gate*)\>
- * 
+ *
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API GatesElement : public NEDElement
@@ -1062,7 +1062,7 @@ class NEDXML_API GatesElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<gate\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT gate (comment*, expression?, property*)\>
  * \<!ATTLIST gate
@@ -1071,7 +1071,7 @@ class NEDXML_API GatesElement : public NEDElement
  *      is-vector          (true|false) "false"
  *      vector-size        CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API GateElement : public NEDElement
@@ -1123,13 +1123,13 @@ class NEDXML_API GateElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<types\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT types (comment*, (channel|channel-interface|simple-module|
  *                                compound-module|module-interface)*)\>
- * 
+ *
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API TypesElement : public NEDElement
@@ -1172,12 +1172,12 @@ class NEDXML_API TypesElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<submodules\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT submodules (comment*, submodule*)\>
- * 
+ *
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API SubmodulesElement : public NEDElement
@@ -1216,7 +1216,7 @@ class NEDXML_API SubmodulesElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<submodule\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT submodule (comment*, expression*, parameters?, gates?)\>
  * \<!ATTLIST submodule
@@ -1226,7 +1226,7 @@ class NEDXML_API SubmodulesElement : public NEDElement
  *      like-param         CDATA     \#IMPLIED
  *      vector-size        CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API SubmoduleElement : public NEDElement
@@ -1282,13 +1282,13 @@ class NEDXML_API SubmoduleElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<connections\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT connections (comment*, (connection|connection-group)*)\>
  * \<!ATTLIST connections
  *      allow-unconnected (true|false) "false"\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ConnectionsElement : public NEDElement
@@ -1331,7 +1331,7 @@ class NEDXML_API ConnectionsElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<connection\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT connection (comment*, expression*, channel-spec?, (loop|condition)*)\>
  * \<!ATTLIST connection
@@ -1349,7 +1349,7 @@ class NEDXML_API ConnectionsElement : public NEDElement
  *      dest-gate-subg      (i|o)     \#IMPLIED
  *      arrow-direction    (l2r|r2l|bidir) \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ConnectionElement : public NEDElement
@@ -1430,7 +1430,7 @@ class NEDXML_API ConnectionElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<channel-spec\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT channel-spec (comment*, expression*, parameters?)\>
  * \<!ATTLIST channel-spec
@@ -1438,7 +1438,7 @@ class NEDXML_API ConnectionElement : public NEDElement
  *      like-type          CDATA     \#IMPLIED
  *      like-param         CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ChannelSpecElement : public NEDElement
@@ -1487,12 +1487,12 @@ class NEDXML_API ChannelSpecElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<connection-group\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT connection-group (comment*, (loop|condition)*, connection*)\>
- * 
+ *
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ConnectionGroupElement : public NEDElement
@@ -1533,7 +1533,7 @@ class NEDXML_API ConnectionGroupElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<loop\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT loop (comment*, expression*)\>
  * \<!ATTLIST loop
@@ -1541,7 +1541,7 @@ class NEDXML_API ConnectionGroupElement : public NEDElement
  *      from-value          CDATA     \#IMPLIED
  *      to-value            CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API LoopElement : public NEDElement
@@ -1589,13 +1589,13 @@ class NEDXML_API LoopElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<condition\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT condition (comment*, expression?)\>
  * \<!ATTLIST condition
  *      condition           CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ConditionElement : public NEDElement
@@ -1637,13 +1637,13 @@ class NEDXML_API ConditionElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<expression\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT expression (comment*, (operator|function|ident|literal))\>
  * \<!ATTLIST expression
  *      target              CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ExpressionElement : public NEDElement
@@ -1688,13 +1688,13 @@ class NEDXML_API ExpressionElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<operator\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT operator (comment*, (operator|function|ident|literal)+)\>
  * \<!ATTLIST operator
  *      name                CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API OperatorElement : public NEDElement
@@ -1739,13 +1739,13 @@ class NEDXML_API OperatorElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<function\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT function (comment*, (operator|function|ident|literal)*)\>
  * \<!ATTLIST function
  *      name                NMTOKEN   \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API FunctionElement : public NEDElement
@@ -1790,14 +1790,14 @@ class NEDXML_API FunctionElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<ident\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT ident (comment*, (operator|function|ident|literal)?)\>
  * \<!ATTLIST ident
  *      module              CDATA     \#IMPLIED
  *      name                NMTOKEN   \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API IdentElement : public NEDElement
@@ -1845,7 +1845,7 @@ class NEDXML_API IdentElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<literal\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT literal (comment*)\>
  * \<!ATTLIST literal
@@ -1854,7 +1854,7 @@ class NEDXML_API IdentElement : public NEDElement
  *      text                CDATA     \#IMPLIED
  *      value               CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API LiteralElement : public NEDElement
@@ -1904,7 +1904,7 @@ class NEDXML_API LiteralElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<msg-file\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|
  *                     struct-decl|class-decl|message-decl|packet-decl|enum-decl|
@@ -1913,7 +1913,7 @@ class NEDXML_API LiteralElement : public NEDElement
  *      filename            CDATA     \#IMPLIED
  *      version             CDATA     "2"\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API MsgFileElement : public NEDElement
@@ -1971,13 +1971,13 @@ class NEDXML_API MsgFileElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<namespace\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT namespace (comment*)\>
  * \<!ATTLIST namespace
  *      name                CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API NamespaceElement : public NEDElement
@@ -2018,13 +2018,13 @@ class NEDXML_API NamespaceElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<cplusplus\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT cplusplus (comment*)\>
  * \<!ATTLIST cplusplus
  *      body                CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API CplusplusElement : public NEDElement
@@ -2065,13 +2065,13 @@ class NEDXML_API CplusplusElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<struct-decl\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT struct-decl (comment*)\>
  * \<!ATTLIST struct-decl
  *      name                CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API StructDeclElement : public NEDElement
@@ -2112,7 +2112,7 @@ class NEDXML_API StructDeclElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<class-decl\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT class-decl (comment*)\>
  * \<!ATTLIST class-decl
@@ -2120,7 +2120,7 @@ class NEDXML_API StructDeclElement : public NEDElement
  *      is-cobject      (true|false)  "false"
  *      extends-name        CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ClassDeclElement : public NEDElement
@@ -2167,13 +2167,13 @@ class NEDXML_API ClassDeclElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<message-decl\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT message-decl (comment*)\>
  * \<!ATTLIST message-decl
  *      name                CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API MessageDeclElement : public NEDElement
@@ -2214,13 +2214,13 @@ class NEDXML_API MessageDeclElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<packet-decl\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT packet-decl (comment*)\>
  * \<!ATTLIST packet-decl
  *      name                CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API PacketDeclElement : public NEDElement
@@ -2261,13 +2261,13 @@ class NEDXML_API PacketDeclElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<enum-decl\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT enum-decl (comment*)\>
  * \<!ATTLIST enum-decl
  *      name                CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API EnumDeclElement : public NEDElement
@@ -2308,7 +2308,7 @@ class NEDXML_API EnumDeclElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<enum\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT enum (comment*, enum-fields?)\>
  * \<!ATTLIST enum
@@ -2316,7 +2316,7 @@ class NEDXML_API EnumDeclElement : public NEDElement
  *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API EnumElement : public NEDElement
@@ -2364,12 +2364,12 @@ class NEDXML_API EnumElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<enum-fields\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT enum-fields (comment*, enum-field*)\>
- * 
+ *
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API EnumFieldsElement : public NEDElement
@@ -2408,14 +2408,14 @@ class NEDXML_API EnumFieldsElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<enum-field\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT enum-field (comment*)\>
  * \<!ATTLIST enum-field
  *      name                NMTOKEN   \#REQUIRED
  *      value               CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API EnumFieldElement : public NEDElement
@@ -2459,7 +2459,7 @@ class NEDXML_API EnumFieldElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<message\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT message (comment*, (property|field)*)\>
  * \<!ATTLIST message
@@ -2467,7 +2467,7 @@ class NEDXML_API EnumFieldElement : public NEDElement
  *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API MessageElement : public NEDElement
@@ -2516,7 +2516,7 @@ class NEDXML_API MessageElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<packet\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT packet (comment*, (property|field)*)\>
  * \<!ATTLIST packet
@@ -2524,7 +2524,7 @@ class NEDXML_API MessageElement : public NEDElement
  *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API PacketElement : public NEDElement
@@ -2573,7 +2573,7 @@ class NEDXML_API PacketElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<class\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT class (comment*, (property|field)*)\>
  * \<!ATTLIST class
@@ -2581,7 +2581,7 @@ class NEDXML_API PacketElement : public NEDElement
  *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API ClassElement : public NEDElement
@@ -2630,7 +2630,7 @@ class NEDXML_API ClassElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<struct\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT struct (comment*, (property|field)*)\>
  * \<!ATTLIST struct
@@ -2638,7 +2638,7 @@ class NEDXML_API ClassElement : public NEDElement
  *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API StructElement : public NEDElement
@@ -2687,7 +2687,7 @@ class NEDXML_API StructElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<field\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT field (comment*, property*)\>
  * \<!ATTLIST field
@@ -2699,7 +2699,7 @@ class NEDXML_API StructElement : public NEDElement
  *      vector-size         CDATA     \#IMPLIED
  *      default-value       CDATA     \#IMPLIED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API FieldElement : public NEDElement
@@ -2759,13 +2759,13 @@ class NEDXML_API FieldElement : public NEDElement
 
 /**
  * GENERATED CLASS. Represents the \<unknown\> XML element in memory. DTD declaration:
- * 
+ *
  * <pre>
  * \<!ELEMENT unknown        ANY\>
  * \<!ATTLIST unknown
  *      element             CDATA     \#REQUIRED\>
  * </pre>
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API UnknownElement : public NEDElement
@@ -2805,7 +2805,7 @@ class NEDXML_API UnknownElement : public NEDElement
 
 /**
  * GENERATED CLASS. Factory for NEDElement subclasses.
- * 
+ *
  * @ingroup Data
  */
 class NEDXML_API NEDElementFactory

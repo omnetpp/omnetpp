@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -78,7 +78,7 @@ public class VirtualTable<T>
 
 	/**
 	 * The distance of the fix point element from the top of the visible area.
-	 * 0 means the fix point element is display as the top visible element, positive value means below it. 
+	 * 0 means the fix point element is display as the top visible element, positive value means below it.
 	 */
 	protected int fixPointDistance;
 
@@ -161,8 +161,8 @@ public class VirtualTable<T>
 		createCanvas(composite);
 		createTable(composite);
 
-		scrolledComposite.setContent(composite); 
-	
+		scrolledComposite.setContent(composite);
+
 		getVerticalBar().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				ScrollBar scrollBar = (ScrollBar)e.widget;
@@ -194,7 +194,7 @@ public class VirtualTable<T>
     	hoverSupport.adapt(canvas, new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				T element = getElementAtDistanceFromFixPoint(y / getRowHeight() + getTopVisibleElementDistanceFromFixPoint());
-			
+
 				if (element == null)
 					return null;
 				else
@@ -278,20 +278,20 @@ public class VirtualTable<T>
 			public void keyReleased(KeyEvent e) {
 			}
 		});
-	
+
 		canvas.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				if (input != null && contentProvider != null) {
 					T element = getVisibleElementAt(e.y / getRowHeight());
 
-					if (element != null && 
+					if (element != null &&
 						(e.button == 1 || selectionElements == null || !selectionElements.contains(element))) {
 						if ((e.stateMask & SWT.MOD1) != 0) {
 							if (selectionElements.contains(element))
 								selectionElements.remove(element);
 							else
 								selectionElements.add(element);
-						
+
 							fireSelectionChanged();
 						}
 						else
@@ -338,7 +338,7 @@ public class VirtualTable<T>
 				recomputeTableSize();
 			}
 		});
-	
+
 		return tableColumn;
 	}
 
@@ -411,7 +411,7 @@ public class VirtualTable<T>
 
 	protected void fireSelectionChanged() {
 		ISelection selection = getSelection();
-	
+
 		if (selection != null)
 			fireSelectionChanged(new SelectionChangedEvent(this, selection));
 	}
@@ -489,7 +489,7 @@ public class VirtualTable<T>
 
 		selectionElements = new ArrayList<T>();
 		selectionElements.add(element);
-	
+
 		fireSelectionChanged();
 	}
 
@@ -534,7 +534,7 @@ public class VirtualTable<T>
 	public void gotoElement(T element) {
 		Assert.isTrue(element != null);
 
-		setSelectionElement(element);	
+		setSelectionElement(element);
 		scrollToElement(element);
 	}
 
@@ -550,7 +550,7 @@ public class VirtualTable<T>
 	 */
 	public void gotoBegin() {
 		T firstElement = contentProvider.getFirstElement();
-	
+
 		if (firstElement != null)
 			setSelectionElement(firstElement);
 
@@ -562,7 +562,7 @@ public class VirtualTable<T>
 	 */
 	public void gotoEnd() {
 		T lastElement = contentProvider.getLastElement();
-	
+
 		if (lastElement != null)
 			setSelectionElement(lastElement);
 
@@ -613,14 +613,14 @@ public class VirtualTable<T>
 		double topWeight = 1 / topPercentage;
 		double bottomWeight = 1 / (1 - bottomPercentage);
 		double percentage;
-	
+
 		if (Double.isInfinite(topWeight))
 			percentage = topPercentage;
 		else if (Double.isInfinite(bottomWeight))
 			percentage = bottomPercentage;
 		else
 			percentage = (topPercentage * topWeight + bottomPercentage * bottomWeight) / (topWeight + bottomWeight);
-		
+
 		ScrollBar verticalBar = getVerticalBar();
 		verticalBar.setSelection((int)((verticalBar.getMaximum() - verticalBar.getThumb()) * percentage));
 	}
@@ -633,13 +633,13 @@ public class VirtualTable<T>
 
 		if (element == null) {
 			element = getTopVisibleElement();
-		
+
 			if (element == null)
 			    return;
 		}
 
 		element = contentProvider.getNeighbourElement(element, numberOfElements);
-	
+
 		if (element == null) {
 			if (numberOfElements < 0)
 				element = contentProvider.getFirstElement();
@@ -758,7 +758,7 @@ public class VirtualTable<T>
 		int size = 0;
 		for (int i = 0; i < table.getColumnCount(); i++)
 			size += table.getColumn(i).getWidth();
-	
+
 		table.setSize(size, table.getSize().y);
         composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
@@ -782,7 +782,7 @@ public class VirtualTable<T>
 
 				if (element != null) {
 					boolean isSelectedElement = selectionElements != null && selectionElements.contains(element);
-				
+
 					if (isSelectedElement) {
 						gc.setBackground(Display.getCurrent().getSystemColor(canvas.isFocusControl() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_BACKGROUND));
 						gc.fillRectangle(new Rectangle(0, i * getRowHeight(), clipping.x + clipping.width, getRowHeight()));
@@ -811,7 +811,7 @@ public class VirtualTable<T>
 
 						rowRenderer.drawCell(gc, element, columnOrder[j]);
 						x += column.getWidth();
-					
+
 						if (drawLines) {
 							gc.setForeground(LINE_COLOR);
 							gc.drawLine(0, 0, 0, getRowHeight());
@@ -834,10 +834,10 @@ public class VirtualTable<T>
 			Debug.println("Redrawing canvas");
 
 		canvas.redraw();
-	
+
 		if (contentProvider != null && input != null && fixPointElement != null && isVisible()) {
 			T topElement = getTopVisibleElement();
-		
+
 			if (topElement != null)
 				relocateFixPoint(topElement, 0);
 		}
@@ -873,7 +873,7 @@ public class VirtualTable<T>
     public Point getVisibleElementLocation(T visibleElement) {
         int visibleElementCount = getVisibleElementCount();
         int rowNumber = (int)contentProvider.getDistanceToElement(getTopVisibleElement(), visibleElement, visibleElementCount);
-        
+
         if (rowNumber == visibleElementCount)
             throw new IllegalArgumentException("Element is not visisble: " + visibleElement);
 
@@ -888,7 +888,7 @@ public class VirtualTable<T>
 	 * Returns the top visible element.
 	 */
 	public T getTopVisibleElement() {
-		if (contentProvider == null || fixPointElement == null) 
+		if (contentProvider == null || fixPointElement == null)
 			return null;
 		else
 			return getElementAtDistanceFromFixPoint(getTopVisibleElementDistanceFromFixPoint());
@@ -898,7 +898,7 @@ public class VirtualTable<T>
 	 * Returns the bottom visible element even if it is not fully visible.
 	 */
 	public T getBottomVisibleElement() {
-		if (contentProvider == null || fixPointElement == null) 
+		if (contentProvider == null || fixPointElement == null)
 			return null;
 		else
 			return getElementAtDistanceFromFixPoint(getBottomVisibleElementDistanceFromFixPoint());
@@ -908,7 +908,7 @@ public class VirtualTable<T>
 	 * Returns the bottom fully visible element.
 	 */
 	public T getBottomFullyVisibleElement() {
-		if (contentProvider == null || fixPointElement == null) 
+		if (contentProvider == null || fixPointElement == null)
 			return null;
 		else
 			return getElementAtDistanceFromFixPoint(getBottomFullyVisibleElementDistanceFromFixPoint());
@@ -920,7 +920,7 @@ public class VirtualTable<T>
 	public int getVisibleElementCount() {
 		int rowHeight = getRowHeight();
 		int height = canvas.getSize().y;
-	
+
 		return (int)Math.ceil((double)height / rowHeight);
 	}
 
@@ -930,7 +930,7 @@ public class VirtualTable<T>
 	public int getFullyVisibleElementCount() {
 		int rowHeight = getRowHeight();
 		int height = canvas.getSize().y;
-	
+
 		return (int)Math.floor((double)height / rowHeight);
 	}
 
@@ -964,7 +964,7 @@ public class VirtualTable<T>
 	private boolean elementListEquals(List<T> a, List<T> b) {
 		if (a == b)
 			return true;
-	
+
 		if (a == null || b == null || a.size() != b.size())
 			return false;
 
@@ -975,7 +975,7 @@ public class VirtualTable<T>
 			if (!(ae == null ? be == null : ae.equals(be)))
 				return false;
 		}
-	
+
 		return true;
 	}
 }
@@ -987,7 +987,7 @@ class VirtualTableCompositeLayout extends Layout {
 	protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 		Table table = (Table)composite.getChildren()[1];
 		Rectangle r = composite.getParent().getClientArea();
-	
+
 		return new Point(table.getSize().x, r.height);
 	}
 
@@ -996,10 +996,10 @@ class VirtualTableCompositeLayout extends Layout {
 		if (composite.getChildren().length == 2) {
 			Canvas canvas = (Canvas)composite.getChildren()[0];
 			Table table = (Table)composite.getChildren()[1];
-	
+
 			Rectangle r = composite.getParent().getClientArea();
 			int headerHeight = table.getHeaderHeight();
-		
+
 			if (debug)
 				Debug.println("Relayouting virtual table: " + r.height);
 

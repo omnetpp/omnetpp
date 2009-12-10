@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -73,7 +73,7 @@ public class InifileUtils {
 
     public static final Image ICON_KEY_EQUALS_DEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_default.png");
     public static final Image ICON_KEY_EQUALS_ASK = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_ask.png");
-    
+
     public static final Image ICON_INIPARMISC = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inimisc.png");
 
 	/**
@@ -102,7 +102,7 @@ public class InifileUtils {
 	 */
 	public static List<SectionKey> lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
 		//
-		// note: we need to return multiple matches because of keys like "*.node[0].power=...", 
+		// note: we need to return multiple matches because of keys like "*.node[0].power=...",
 	    // "*.node[1..5].power=...", and "net.node[6..].power=..." etc. Scanning stops at
 	    // "*.node[*].power=" because that eats all matching params (anything after that cannot match)
 	    //
@@ -209,14 +209,14 @@ public class InifileUtils {
         String extendsName = doc.getValue(section, EXTENDS);
         if (extendsName==null)
         	return doc.containsSection(GENERAL) ? GENERAL : null;
-        else if (doc.containsSection(CONFIG_+extendsName)) 
+        else if (doc.containsSection(CONFIG_+extendsName))
         	return CONFIG_+extendsName;
         else
         	return null;
 	}
 
 	/**
-	 * Same as resolveBaseSection(), but it returns [General] even if it doesn't exist 
+	 * Same as resolveBaseSection(), but it returns [General] even if it doesn't exist
 	 */
 	public static String resolveBaseSectionPretendingGeneralExists(IInifileDocument doc, String section) {
 		String baseSection = resolveBaseSection(doc, section);
@@ -277,7 +277,7 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Returns true if key1 should precede key2 when new keys are added 
+	 * Returns true if key1 should precede key2 when new keys are added
 	 * in the inifile (preferred order)
 	 */
 	private static boolean precedesKey(String key1, String key2) {
@@ -292,7 +292,7 @@ public class InifileUtils {
 		if (key.equals(CFGID_NETWORK.getName())) return 3;
 		KeyType type = InifileAnalyzer.getKeyType(key);
 		if (type == KeyType.CONFIG) return 4;
-		//FIXME "=default" should come here: if (key.endsWith(dot_APPLY_DEFAULT)) return 7; // (!!!) 
+		//FIXME "=default" should come here: if (key.endsWith(dot_APPLY_DEFAULT)) return 7; // (!!!)
         if (type == KeyType.PER_OBJECT_CONFIG) return 5;
         if (type == KeyType.PARAM) return 6;
         return 100; // cannot get here
@@ -320,7 +320,7 @@ public class InifileUtils {
 	public static void renameSection(IInifileDocument doc, String oldSectionName, String newSectionName) {
 		doc.renameSection(oldSectionName, newSectionName);
 
-		// change referring extends= keys in other sections 
+		// change referring extends= keys in other sections
 		String oldName = removeSectionNamePrefix(oldSectionName);
 		String newName = removeSectionNamePrefix(newSectionName);
 		for (String section : doc.getSectionNames())
@@ -376,7 +376,7 @@ public class InifileUtils {
 		return severity;
 	}
 
-	/** 
+	/**
 	 * Returns an image for the given section, complete with error/warning markers etc.
 	 */
 	public static Image getSectionImage(String sectionName, InifileAnalyzer analyzer) {
@@ -392,13 +392,13 @@ public class InifileUtils {
 					(!containsIteration && containsRepeat) ? ICON_SECTION_REPEAT :
 						(!containsIteration && !containsRepeat) ? ICON_SECTION_SINGLE :
 						ICON_SECTION; // never happens
-	
+
 		// error/warning decoration
 		IMarker[] markers = getProblemMarkersForWholeSection(sectionName, doc);
 		int maxProblemSeverity = getMaximumSeverity(markers);
-		Image overlayImage = maxProblemSeverity == IMarker.SEVERITY_ERROR ? ICON_OVR_ERROR : 
+		Image overlayImage = maxProblemSeverity == IMarker.SEVERITY_ERROR ? ICON_OVR_ERROR :
 			maxProblemSeverity == IMarker.SEVERITY_WARNING ? ICON_OVR_WARNING : null; // note: ignore Infos
-	
+
 		// return decorated image
 		String key = "section:"+exists+":"+containsIteration+":"+containsRepeat+":"+maxProblemSeverity;
 		return InifileEditorPlugin.getDecoratedImage(sectionImage, overlayImage, SWT.BEGINNING|SWT.BOTTOM, key);
@@ -414,7 +414,7 @@ public class InifileUtils {
 	        return ICON_PAR_INI;
         if (paramResolutions.length == 1)
             return suggestImage(paramResolutions[0].type);
-        
+
         // there are more than one ParamResolutions -- collect their types
 	    Set<ParamResolutionType> types = new HashSet<ParamResolutionType>();
 	    for (ParamResolution p : paramResolutions)

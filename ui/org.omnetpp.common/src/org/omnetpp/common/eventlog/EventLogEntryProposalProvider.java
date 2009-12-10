@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -45,7 +45,7 @@ import org.omnetpp.eventlog.engine.SimulationEndEntry;
 
 public class EventLogEntryProposalProvider extends MatchExpressionContentProposalProvider {
     private Class<?> clazz;
-    
+
     private static Map<Class<?>, ContentProposal> classToDefaultFieldProposalMap = new HashMap<Class<?>, ContentProposal>();
 
     private static Map<String, Class<?>> defaultFieldToClassMap = new HashMap<String, Class<?>>();
@@ -76,7 +76,7 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
         storeProposals(SendHopEntry.class);
         storeProposals(DeleteMessageEntry.class);
     }
-    
+
     private static void storeProposals(Class<?> clazz) {
         try {
             EventLogEntry eventLogEntry = (EventLogEntry)clazz.newInstance();
@@ -85,7 +85,7 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
             String defaultField = eventLogEntry.getDefaultAttribute();
             classToDefaultFieldProposalMap.put(clazz, new ContentProposal(defaultField));
             defaultFieldToClassMap.put(defaultField, clazz);
-            
+
             // field proposals
             PStringVector names = eventLogEntry.getAttributeNames();
             ContentProposal[] fieldProposals = new ContentProposal[(int)names.size()];
@@ -94,7 +94,7 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
                 String name = names.get(i);
                 fieldProposals[i] = new ContentProposal(name);
             }
-            
+
             classToFieldProposalsMap.put(clazz, fieldProposals);
         }
         catch (Exception e) {
@@ -114,7 +114,7 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
             String prefix;
             int startIndex, endIndex;
             boolean atEnd = token.getEndPos() <= position;
-            
+
             // content: incomplete unary operator
             // example: "N|"
             // action: replace with complete binary operator

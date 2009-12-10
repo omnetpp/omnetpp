@@ -4,7 +4,7 @@
     xmlns:fo="http://www.w3.org/1999/XSL/Format"
     version="1.0">
 
-<!-- 
+<!--
   For a complete guide of DocBook customizations see
     http://www.sagehill.net/docbookxsl
  -->
@@ -13,8 +13,8 @@
 <!-- The local path to Norm Walsh's DocBook FO stylesheets -->
 <xsl:import href="@DOCBOOK_STYLESHEET@"/>
 
-<!-- The local path to your common customization stylesheet 
-<xsl:import href="file:///not set"/> 
+<!-- The local path to your common customization stylesheet
+<xsl:import href="file:///not set"/>
 -->
 
 

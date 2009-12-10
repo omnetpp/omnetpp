@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -20,8 +20,8 @@ import org.eclipse.core.runtime.Platform;
  * NOTE: This is an EXACT copy of MingwEnvironmentVariableSupplier in the CDT;
  * we'd want to subclass it but it's not exported from its plugin, so we had to
  * copy it.  --Andras
- * 
- * 
+ *
+ *
  * @author Doug Schaefer
  *
  */
@@ -108,7 +108,7 @@ public class MingwEnvironmentVariableSupplier_COPY implements
 			IPath msysBinPath = getMsysBinDir();
 			if (msysBinPath != null)
 				pathStr += ';' + msysBinPath.toOSString();
-	
+
 			path = new MingwBuildEnvironmentVariable("PATH", pathStr, IBuildEnvironmentVariable.ENVVAR_PREPEND);
 		}
 	}

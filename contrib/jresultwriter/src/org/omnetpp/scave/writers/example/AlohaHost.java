@@ -16,20 +16,20 @@ public class AlohaHost extends Component {
 
     int numPkSent = 0;
     IOutputVector radioStateVector;
-    
+
     private double exponential(double mean) {
         return -mean * Math.log(rng.nextDouble());
     }
 
-    public AlohaHost(String name, SimulationManager sim, Component parent, 
-            double interarrivalTime, double packetDuration, 
+    public AlohaHost(String name, SimulationManager sim, Component parent,
+            double interarrivalTime, double packetDuration,
             AlohaServer alohaServer, Random rng) {
         super(name, sim, parent);
         this.interarrivalTime = interarrivalTime;
         this.packetDuration = packetDuration;
         this.alohaServer = alohaServer;
         this.rng = rng;
-        
+
         radioStateVector = createOutputVector("radioState", null, null, IResultManager.IM_SAMPLE_HOLD);
         radioStateVector.record(0); //"idle"
 
@@ -39,7 +39,7 @@ public class AlohaHost extends Component {
         endTxEvent = new Event() {
             void execute() { endTransmission(); }
         };
-        
+
         schedule(exponential(interarrivalTime), startTxEvent);
     }
 

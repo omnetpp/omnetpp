@@ -14,7 +14,7 @@ public class AlohaServer extends Component {
     double totalReceiveTime = 0; // non-collision
     double totalCollisionTime = 0;
     IOutputVector numCurrentTransmissionsVector;
-  
+
     public AlohaServer(String name, SimulationManager sim, Component parent) {
         super(name, sim, parent);
         numCurrentTransmissionsVector = createOutputVector("numConcurrentTransmissions", null, null, IResultManager.IM_SAMPLE_HOLD);
@@ -28,7 +28,7 @@ public class AlohaServer extends Component {
             collision = true;
         numCurrentTransmissions++;
         numCurrentTransmissionsVector.record(numCurrentTransmissions);
-        
+
         totalPackets++;
     }
 

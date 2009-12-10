@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -24,7 +24,7 @@ public class SimulationDebugLaunchDelegate extends LocalCDILaunchDelegate {
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// check if program name is not provided in this case we should use opp_run as the executable
     	config = OmnetppLaunchUtils.convertLaunchConfig(config, mode);
-	
+
 		super.launch(config, mode, launch, monitor);
 	}
 }

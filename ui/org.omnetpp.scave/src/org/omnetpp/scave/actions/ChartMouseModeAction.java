@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -46,7 +46,7 @@ public class ChartMouseModeAction extends AbstractScaveAction {
 		ChartCanvas canvas = scaveEditor.getActiveChartCanvas();
 		if (canvas != null) {
 			canvas.setMouseMode(destMode);
-			this.setChecked(true); 
+			this.setChecked(true);
 			scaveEditor.fakeSelectionChange(); // fire an update so that the other tool gets unchecked
 		}
 	}

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -189,7 +189,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
-    
+
     protected Object getConstraintForClone(GraphicalEditPart part, ChangeBoundsRequest request) {
     	IFigure figure = part.getFigure();
     	Rectangle bounds = new PrecisionRectangle(((SubmoduleFigure)figure).getShapeBounds());
@@ -201,7 +201,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     	bounds.translate(getLayoutOrigin().getNegated());
     	return getConstraintFor(bounds);
     }
-    
+
     protected Command getAddCommand(Request generic) {
     	ChangeBoundsRequest request = (ChangeBoundsRequest)generic;
     	List editParts = request.getEditParts();
@@ -217,14 +217,14 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     		//convert r to absolute from childpart figure
     		childPart.getFigure().translateToAbsolute(r);
     		r = request.getTransformedRectangle(r);
-    		//convert this figure to relative 
+    		//convert this figure to relative
     		getLayoutContainer().translateToRelative(r);
     		getLayoutContainer().translateFromParent(r);
     		r.translate(getLayoutOrigin().getNegated());
     		constraint = getConstraintFor(r);
     		/*
     		 * @TODO:Pratik Should create a new createAddCommand(...) which is given the
-    		 * request so that attaching to/detaching from guides can be taken care of.  
+    		 * request so that attaching to/detaching from guides can be taken care of.
     		 */
     		command.add(createAddCommand(childPart,
     			translateToModelConstraint(constraint)));
@@ -248,7 +248,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         return new Rectangle(rect.getCenter(), rect.getSize());
     }
 
-    
+
     // XYLayoutEditPolicy
     private static final Dimension DEFAULT_SIZE = new Dimension(-1, -1);
 //    private XYLayout xyLayout;
@@ -258,7 +258,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      * from getting lost. If the Request is a MOVE, the existing width and height are
      * preserved. During RESIZE, the new width and height have a lower bound determined by
      * {@link #getMinimumSizeFor(GraphicalEditPart)}.
-     * 
+     *
      * @see ConstrainedLayoutEditPolicy#getConstraintFor(ChangeBoundsRequest, GraphicalEditPart)
      */
     protected Object getConstraintFor(ChangeBoundsRequest request, GraphicalEditPart child) {
@@ -361,5 +361,5 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     	feedback.setBounds(new Rectangle(p, size).expand(getCreationFeedbackOffset(request)));
     }
 
-    
+
 }

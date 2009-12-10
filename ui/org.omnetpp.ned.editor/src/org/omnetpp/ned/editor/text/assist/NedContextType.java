@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,7 +17,7 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 public class NedContextType extends TemplateContextType {
 
 	/**
-	 * Creates a new NED context type. 
+	 * Creates a new NED context type.
 	 */
 	public NedContextType() {
         addResolver(new GlobalTemplateVariables.Cursor());

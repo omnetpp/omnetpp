@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -78,7 +78,7 @@ public class NEDTreeTraversal {
 		// traverse submodules
 		if (recurse && effectiveTypeInfo.getNEDElement() instanceof CompoundModuleElementEx) {
             CompoundModuleElementEx compoundModul = (CompoundModuleElementEx)effectiveTypeInfo.getNEDElement();
-            
+
             List<SubmoduleElementEx> submodules = compoundModul.getSubmodules();
             ArrayList<ISubmoduleOrConnection> elements = new ArrayList<ISubmoduleOrConnection>();
             elements.addAll(submodules);
@@ -109,7 +109,7 @@ public class NEDTreeTraversal {
 
 	/**
 	 * The returned type name can be null or empty, and can be a short name which
-	 * needs to be looked up in the enclosing compound module's context. 
+	 * needs to be looked up in the enclosing compound module's context.
 	 * However, if the module is a "like" submodule, resolving the type to fully
 	 * qualified name needs to be done here.
 	 */

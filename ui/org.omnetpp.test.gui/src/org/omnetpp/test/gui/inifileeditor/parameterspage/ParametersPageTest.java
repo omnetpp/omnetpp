@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public class ParametersPageTest extends InifileEditorTestCase {
         CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
         ComboAccess combo = parametersPage.findComboAfterLabel("Config.*");
         TreeAccess parametersTree = parametersPage.findTree();
-        
+
         combo.selectItem("General");
         parametersTree.assertContent(toArray(nw("General", nw("par1"))));
         combo.selectItem("Config Foo");

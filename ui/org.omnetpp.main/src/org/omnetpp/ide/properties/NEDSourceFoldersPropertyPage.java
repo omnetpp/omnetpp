@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -40,7 +40,7 @@ import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * This property page is shown for OMNeT++ Projects (projects with the
- * omnetpp nature), and lets the user edit the contents of the ".nedfolders" 
+ * omnetpp nature), and lets the user edit the contents of the ".nedfolders"
  * file.
  *
  * @author Andras
@@ -65,7 +65,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 
 		final IProject project = getProject();
 
-        createWrapLabel(composite, 
+        createWrapLabel(composite,
                 "NED Source Folders are root folders for the NED package hierarchy. " +
                 "A NED file with the package declaration 'org.foo.bar' must be in the " +
                 "'org/foo/bar' subdirectory, unless the NED Source Folder directly " +
@@ -73,19 +73,19 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
                 "case, 'package.ned' defines what package the NED Source Folder root " +
                 "corresponds to. Other NED files in that folder and subfolders must be " +
                 "consistent with that declaratiobn (i.e. only the root 'package.ned' has " +
-                "special meaning.)", 
+                "special meaning.)",
                 2, 300);
 
         Label label = new Label(composite, SWT.NONE);
         label.setText("&NED Source Folders for project '" + project.getName() + "':");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        
+
 		treeViewer = new CheckboxTreeViewer(composite, SWT.BORDER);
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		((GridData)treeViewer.getTree().getLayoutData()).heightHint = 300;
-	
+
 		treeViewer.setLabelProvider(new WorkbenchLabelProvider());
-	
+
 		treeViewer.setContentProvider(new WorkbenchContentProvider() {
 	        @Override
 	        public Object[] getChildren(Object element) {
@@ -101,7 +101,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		treeViewer.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				if (event.getChecked()) {
-			        // when a folder is checked, uncheck its subtree and all parents up to the root  
+			        // when a folder is checked, uncheck its subtree and all parents up to the root
 					IResource e = (IResource)event.getElement();
 					treeViewer.setSubtreeChecked(e, false);
 					treeViewer.setChecked(e, true);
@@ -114,7 +114,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		treeViewer.setInput(project.getParent());
 
 		loadNedFoldersFile();
-	
+
 		return composite;
 	}
 
@@ -157,13 +157,13 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 			}
 			if (treeViewer.getCheckedElements().length == 0)
 				treeViewer.setChecked(project, true);
-		} 
+		}
 		catch (IOException e) {
 			errorDialog("Cannot read NED Source Paths: ", e);
 		} catch (CoreException e) {
 			errorDialog("Cannot read NED Source Paths: ", e);
 		}
-	
+
 	}
 
 	private void saveNedFoldersFile() {
@@ -171,11 +171,11 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 			IProject project = getProject();
 			IContainer[] folders = (IContainer[]) ArrayUtils.addAll(new IContainer[]{}, treeViewer.getCheckedElements());
 			ProjectUtils.saveNedFoldersFile(project, folders);
-		} 
+		}
 		catch (CoreException e) {
 			errorDialog("Cannot store NED Source Folder list: ", e);
 		}
-	} 
+	}
 
 	private void errorDialog(String message, Throwable e) {
 		IStatus status = new Status(IMarker.SEVERITY_ERROR, OmnetppMainPlugin.PLUGIN_ID, e.getMessage(), e);

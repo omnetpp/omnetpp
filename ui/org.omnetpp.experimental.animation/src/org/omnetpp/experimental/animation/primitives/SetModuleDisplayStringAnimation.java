@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -39,7 +39,7 @@ public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 			submoduleConstraint.setVectorName(module.getFullPath());
 			submoduleConstraint.setVectorSize(module.getVectorSize());
 			submoduleConstraint.setVectorIndex(module.getIndex());
-		
+
 			oldDisplayString = moduleFigure.getLastDisplayString();
 
 			moduleFigure.setConstraint(submoduleConstraint);

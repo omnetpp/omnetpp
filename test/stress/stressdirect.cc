@@ -49,7 +49,7 @@ void StressDirect::handleMessage(cMessage *msg)
     msg->setName("Direct");
 	sendDirect(msg,
 	           par("propagationDelay").doubleValue(),
-	           par("transmissionDelay").doubleValue(), 
-			   randomModule, 
+	           par("transmissionDelay").doubleValue(),
+			   randomModule,
 			   "directIn");
 }

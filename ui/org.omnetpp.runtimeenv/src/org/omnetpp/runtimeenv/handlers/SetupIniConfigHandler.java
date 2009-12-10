@@ -81,7 +81,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 				}
 				return element.toString();
 			}
-		
+
 			@Override
 			public Image getImage(Object element) {
 				cConfigurationEx cfg = GUIEnv.cast(cSimulation.getActiveEnvir()).getConfigEx();

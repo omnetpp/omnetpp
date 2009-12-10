@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -18,7 +18,7 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
  * Annotation used to specify data for descriptors generated for
  * subclasses of PropertySource.
  * The annotation is put onto the getter method of the property.
- * 
+ *
  * @see PropertySource
  *
  * @author tomi
@@ -55,7 +55,7 @@ public @interface Property {
 	String description() default "";
 	/**
 	 * Name of the method in the PropertySource, that creates the descriptor for this property.
-	 * If not set, but there is a method named "create<property_name>Descriptor" it will be the 
+	 * If not set, but there is a method named "create<property_name>Descriptor" it will be the
 	 * factory method (property_name = name of the getter method - "get" or "is").
 	 * Factory methods must have an (Object id, String displayName) arg-list and return an
 	 * instance of PropertyDescriptor.
@@ -67,7 +67,7 @@ public @interface Property {
 	 * property descriptor.
 	 * If descriptorClass is not set, the descriptor type is inferred from the type of the property
 	 * (return type of the getter method).
-	 * The returned class must have an (Object id, String displayName) constructor. 
+	 * The returned class must have an (Object id, String displayName) constructor.
 	 */
 	Class<? extends PropertyDescriptor> descriptorClass() default PropertyDescriptor.class;
 

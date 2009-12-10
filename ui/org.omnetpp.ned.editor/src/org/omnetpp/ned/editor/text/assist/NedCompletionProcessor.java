@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -121,7 +121,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		// if the position is invalid return no proposals
 		if (info == null || info.linePrefix == null || info.linePrefixTrimmed == null)
 		    return new ICompletionProposal[0];
-		
+
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 		NedFileElementEx nedFileElement = res.getNedFileElement(file);
@@ -137,7 +137,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		    if (nedTypeInfo != null && nedTypeInfo.getNEDElement() instanceof CompoundModuleElementEx)
 		        context = (CompoundModuleElementEx)nedTypeInfo.getNEDElement();
 		}
-		
+
 		INEDTypeInfo nedEnclosingTypeInfo = null;
 		if (info.enclosingNedTypeName != null) { // we are inside an inner type
 		    nedEnclosingTypeInfo = res.lookupNedType(info.enclosingNedTypeName, nedFileElement);
@@ -303,7 +303,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		if (info.sectionType == SECT_SUBMODULES) {
 			// Debug.println("testing proposals for SUBMODULES scope");
 			if (line.matches(".*:")) {
-			    if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types) 
+			    if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types)
 	                addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULE_FILTER);
 			    else  // top level type
 			        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULE_FILTER);
@@ -316,7 +316,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 					addProposals(viewer, documentOffset, result, new String[]{" like "}, "keyword");
 			}
 			else if (line.matches(".*\\blike")) {
-                if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types) 
+                if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types)
                     addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
                 else  // top level type
                     addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
@@ -376,7 +376,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
             }
             addProposals(viewer, documentOffset, result, innerTypeNames, "inner type");
         }
-        
+
         // add top level types
         // XXX offer "like" template too
         Set<String> qnames = res.getNedTypeQNames(predicate, project);
@@ -464,14 +464,14 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
     		// detect if we are inside an inner type
     		if (source.matches("(?s).*\\btypes\\b.*\\btypes\\b.*"))
     		    return null;      // inner types within inner types are not supported
-    		
+
     		// handle inner types
-    		boolean insideInnertype = source.matches("(?s).*\\btypes\\b\\s*:[^:]*\\{.*"); 
+    		boolean insideInnertype = source.matches("(?s).*\\btypes\\b\\s*:[^:]*\\{.*");
     		String enclosingNedTypeName = null;
             if (insideInnertype) {
                 String sourceBeforeTypes = source.replaceFirst("(?s)^(.*)\\btypes\\s*:.*$", "$1");
                 enclosingNedTypeName = sourceBeforeTypes.replaceFirst("(?s)^.*(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]+).*$", "$2");
-                if (enclosingNedTypeName.equals(source)) 
+                if (enclosingNedTypeName.equals(source))
                     enclosingNedTypeName = null;  // replace failed
                 // use only the source after the type keyword (the inner type source)
                 source = source.replaceFirst("(?s)^.*\\btypes\\s*:(.*)$", "$1");
@@ -498,12 +498,12 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 				sectionType = SECT_PARAMETERS;
 			else
 				sectionType = SECT_GLOBAL;
-		
+
 			// detect module name: identifier after last "simple", "module", etc.
 			String nedTypeName = source.replaceFirst("(?s)^.*\\b(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]+).*\\{.*$", "$2");
-			if (nedTypeName.equals(source)) 
+			if (nedTypeName.equals(source))
 			    nedTypeName = null;  // replace failed
-			
+
 			// detect submodule type: last occurrence of "identifier {"
 			String submoduleTypeName = null;
 			if (sectionType == SECT_SUBMODULE_GATES || sectionType == SECT_SUBMODULE_PARAMETERS) {
@@ -515,7 +515,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			if (sectionType == SECT_GLOBAL)
 			    nedTypeName = enclosingNedTypeName = submoduleTypeName = null;
-			
+
 //			Debug.println(">>>"+source+"<<<");
 //			Debug.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
 //			Debug.println("PREFIX: >>"+prefix+"<<");
@@ -526,7 +526,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			ret.linePrefix = prefix;
 			ret.linePrefixTrimmed = prefix2;
 			ret.nedTypeName = nedTypeName;
-			ret.enclosingNedTypeName = enclosingNedTypeName; 
+			ret.enclosingNedTypeName = enclosingNedTypeName;
 			ret.sectionType = sectionType;
 			ret.submoduleTypeName = submoduleTypeName;
 			return ret;

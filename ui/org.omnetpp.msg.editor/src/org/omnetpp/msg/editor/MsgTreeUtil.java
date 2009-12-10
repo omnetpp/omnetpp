@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -17,7 +17,7 @@ import org.omnetpp.ned.engine.NEDSyntaxValidator;
 
 /**
  * Parsing and manipulating MSG files
- * 
+ *
  * @author Andras
  */
 public class MsgTreeUtil {
@@ -51,23 +51,23 @@ public class MsgTreeUtil {
             swigTree = np.parseMSGText(source, "buffer");
             if (swigTree == null)
                 return null;
-    
+
             if (!swigErrors.empty()) {
                 swigTree.delete();
                 return null;
             }
-    
+
             // run DTD validation (once again)
             int numMessages = swigErrors.numMessages();
             NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
             dtdvalidator.validate(swigTree);
             Assert.isTrue(swigErrors.numMessages() == numMessages, "MSG tree produced by parser fails DTD validation");
-    
+
             // additional syntax-related validation
             NEDSyntaxValidator syntaxValidator = new NEDSyntaxValidator(false, swigErrors);
             syntaxValidator.validate(swigTree);
             Assert.isTrue(swigErrors.numMessages() == numMessages, "MSG tree produced by parser fails syntax validation");
-    
+
             return swigTree;
         }
         catch (Exception e) {

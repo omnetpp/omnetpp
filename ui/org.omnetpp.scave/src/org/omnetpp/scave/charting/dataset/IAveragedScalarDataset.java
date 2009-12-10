@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -13,7 +13,7 @@ public interface IAveragedScalarDataset extends IScalarDataset {
 
 	/**
      * Returns the collected statistics for the value associated with the cell.
-     * 
+     *
      * @param row  the row index
      * @param column  the column index
      * @return the statistics

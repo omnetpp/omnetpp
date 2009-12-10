@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -35,8 +35,8 @@ public class DatasetsItemProvider extends
 	 */
 	@Override
 	protected Command createAddCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Collection<?> collection, int index) {
-		Command addCommand = super.createAddCommand(domain, owner, feature, collection, index); 
-	
+		Command addCommand = super.createAddCommand(domain, owner, feature, collection, index);
+
 		Collection<Chart> charts = ScaveModelUtil.collectUnreferencedCharts(collection);
 		if (charts.size() > 0 && owner.eResource() != null) {
 			CompoundCommand command = new CompoundCommand(addCommand.getLabel(), addCommand.getDescription());

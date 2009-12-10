@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 
 /**
  * A default implementation of ISelectionProvider.
- * 
+ *
  * @author tomi
  */
 public class SelectionProvider implements ISelectionProvider
@@ -45,7 +45,7 @@ public class SelectionProvider implements ISelectionProvider
 	}
 
 	/**
-	 * Note: we always notify (not only when the new selection is different 
+	 * Note: we always notify (not only when the new selection is different
 	 * from the old one), in order to allow firing extra ("fake") notifications.
 	 */
 	public void setSelection(ISelection selection) {

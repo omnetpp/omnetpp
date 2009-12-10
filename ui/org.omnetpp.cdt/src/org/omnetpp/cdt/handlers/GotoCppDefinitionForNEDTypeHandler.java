@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -48,7 +48,7 @@ import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 /**
  * Goes to a C++ definition of a NED simple module or channel.
- * 
+ *
  * @author Levy
  */
 @SuppressWarnings("restriction")
@@ -144,7 +144,7 @@ public class GotoCppDefinitionForNEDTypeHandler extends AbstractHandler {
                                 IFile file = project.getWorkspace().getRoot().getFile(new Path(indexFile.getLocation().getFullPath()));
                                 CEditor editor = (CEditor)IDE.openEditor(page, file, true);
                                 IASTFileLocation location = name.getFileLocation();
-                                ISourceRange range = new SourceRange(location.getNodeOffset(), location.getNodeLength()); 
+                                ISourceRange range = new SourceRange(location.getNodeOffset(), location.getNodeLength());
                                 editor.setSelection(range, true);
                                 return true;
                             }

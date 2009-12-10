@@ -17,7 +17,7 @@ tabLoadExpand: 0
 tabInsAsBlank: 0
 sectionDisplay: 5000, 1000
 
-wordWrap: disabled 76 >!:~#  
+wordWrap: disabled 76 >!:~#
 
 wordSep:'&()[]{}\<>,;-+*.:?!=-|"
 
@@ -87,13 +87,13 @@ color: myDarkBlue, normal, myDarkBlue, bold
 funcParml: (
 
 color: myDarkYellow, normal, myDarkYellow, normal
-decPrefix: 
+decPrefix:
 
 color: darkgreen, normal, darkgreen, normal
 hexPrefix: 0x
 
 color: green, normal, black, normal
-binPrefix: 
+binPrefix:
 
 color: darkgray, normal, darkgray, normal
 octalPrefix: 0

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -47,7 +47,7 @@ public class TableColumnAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width, cannot click", getWidget().getWidth() > 0);
         return point;
 	}
-    
+
     @Override
     protected Point toAbsolute(Point point) {
         // TODO:
@@ -94,6 +94,6 @@ public class TableColumnAccess extends ClickableWidgetAccess
 		}
 		Assert.assertTrue("failed to sort table by " + getWidget().getText(),
 				table.getSortColumn() == getWidget() && table.getSortDirection() == direction);
-	
+
 	}
 }

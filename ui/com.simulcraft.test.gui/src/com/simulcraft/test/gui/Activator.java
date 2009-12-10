@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -27,7 +27,7 @@ public class Activator extends AbstractUIPlugin {
 
     // The shared instance
     private static Activator plugin;
-    
+
     /**
      * The constructor
      */
@@ -50,7 +50,7 @@ public class Activator extends AbstractUIPlugin {
         KeyPressAnimator keyPressAnimator = new KeyPressAnimator();
         Display.getDefault().addFilter(SWT.KeyDown, keyPressAnimator);
         Display.getDefault().addFilter(SWT.KeyUp, keyPressAnimator);
-        
+
         Display.getDefault().addFilter(SWT.MouseDown, new MouseClickAnimator());
     }
 

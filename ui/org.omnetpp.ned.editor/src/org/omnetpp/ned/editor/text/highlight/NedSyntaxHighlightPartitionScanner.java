@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -21,11 +21,11 @@ import org.eclipse.jface.text.rules.*;
  */
 public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanner {
 
-    public final static String PARTITIONING_ID = "__ned_syntaxhighlight_partitioning";   
+    public final static String PARTITIONING_ID = "__ned_syntaxhighlight_partitioning";
 
-    public final static String NED_PRIVATE_DOC = "__ned_privatedoc"; 
-    public final static String NED_DOC = "__ned_doc"; 
-	public final static String[] SUPPORTED_PARTITION_TYPES 
+    public final static String NED_PRIVATE_DOC = "__ned_privatedoc";
+    public final static String NED_DOC = "__ned_doc";
+	public final static String[] SUPPORTED_PARTITION_TYPES
         = new String[] { IDocument.DEFAULT_CONTENT_TYPE, NED_PRIVATE_DOC, NED_DOC };
 
 	/**
@@ -40,10 +40,10 @@ public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanne
 		List<IRule> rules= new ArrayList<IRule>();
 
         // Add rule for single line private comments.
-        rules.add(new EndOfLineRule("//#", nedPrivateDocToken)); 
-		
+        rules.add(new EndOfLineRule("//#", nedPrivateDocToken));
+
         // Add rule for single line comments.
-		rules.add(new EndOfLineRule("//", nedDocToken)); 
+		rules.add(new EndOfLineRule("//", nedDocToken));
 
 		setPredicateRules(rules.toArray(new IPredicateRule[]{}));
 	}

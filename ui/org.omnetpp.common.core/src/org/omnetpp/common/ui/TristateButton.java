@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
@@ -29,12 +29,12 @@ import org.eclipse.swt.widgets.Listener;
  * button. If for any reason the api calls fail, this class will revert to its
  * default algorithm of colouring the button (which probably won't show up
  * properly... but at least there won't be crashes).
- * 
+ *
  * The win32 portions of this class are based off Klaus Wenger's code, which was
- * posted as a workaround for Eclipse bug #22261 
+ * posted as a workaround for Eclipse bug #22261
  * (https://bugs.eclipse.org/bugs/show_bug.cgi?id=22261). The code has been
  * reflected to ensure that this class will compile on non-Windows platforms.
- * 
+ *
  * @author emiranda, <a href="mailto:klaus.wenger@u14n.com">Klaus Wenger</a>
  */
 @SuppressWarnings("unchecked")
@@ -43,22 +43,22 @@ public class TristateButton extends Button {
     private boolean eventEn;       // Used for disabling events so that we don't self trigger them
     private boolean allowUserGray; // Allows users to set the "gray" state by clicking on the checkbox
     private Class   win32os;       // Reference to the Windows OS class
-    
+
     public static final int WIN32_TRISTATE_FAIL = 590;
-    
+
     /**
      * Constructor.
      */
     public TristateButton(Composite parent, int style) {
         this(parent,style,false);
     }
-    
+
     /**
      * Constructor.
      */
     public TristateButton(Composite parent,int style,boolean allowUserGray) {
         super(parent, style);
-        
+
         try {
             // Try to grab the win32 OS module
             // This should always work in win32 and always fail on other platforms
@@ -69,24 +69,24 @@ public class TristateButton extends Button {
             // running Windows
             win32os = null;
         }
-        
+
         this.allowUserGray = allowUserGray;
-        
+
         eventEn = true;
-        
+
         setGrayed(grayed = false);
         this.addListener(SWT.Selection,new Listener () {
             public void handleEvent(Event e) {
                 if (!eventEn)
                     return;
-                
+
                 if (grayed && win32os == null)
                     // Since Windows does this natively, we don't need to uncolour if
                     // the user is running windows
                     setGrayed(false);
                 else if (TristateButton.this.allowUserGray && !grayed && getSelection())
                     setGrayed(true);
-                
+
                 grayed = getGrayed(); // Fix for win32 getting stuck on gray
             }
         });
@@ -95,25 +95,25 @@ public class TristateButton extends Button {
     protected void checkSubclass () {
         // Forcing permitted subclassing
     }
-    
+
     protected void checkWidget() {
         super.checkWidget();
-        
+
         if (win32os == null)
             return;
-        
+
         try {
             Method getWindowLong = win32os.getMethod("GetWindowLong",int.class,int.class); //$NON-NLS-1$
             Method setWindowLong = win32os.getMethod("SetWindowLong",int.class,int.class,int.class); //$NON-NLS-1$
             Field  handle        = getClass().getField("handle"); //$NON-NLS-1$
             Field  gwl_style     = win32os.getField("GWL_STYLE"); //$NON-NLS-1$
             Field  bs_checkbox   = win32os.getField("BS_CHECKBOX"); //$NON-NLS-1$
-            
+
             int bits = ((Integer)getWindowLong.invoke(null,handle.get(this),gwl_style.get(null))).intValue();
-            
+
             bits |= BS_3STATE;
             bits &= ~bs_checkbox.getInt(null);
-            
+
             setWindowLong.invoke(null,handle.get(this),gwl_style.get(this),new Integer(bits));
         }
         catch(Exception ex) {
@@ -130,14 +130,14 @@ public class TristateButton extends Button {
     public void setAllowUserGray(boolean allowUserGray) {
         this.allowUserGray = allowUserGray;
     }
-    
+
     /**
      * Sets the button into / out of the "gray" state.
      */
     public void setGrayed(boolean grayed) {
         if ((getStyle() & SWT.CHECK) == 0)
             return;
-            
+
         if (win32os != null) {
             try {
                 Method getWindowLong = win32os.getMethod("GetWindowLong",int.class,int.class); //$NON-NLS-1$
@@ -148,12 +148,12 @@ public class TristateButton extends Button {
                 Field  bst_unchecked = win32os.getField("BST_UNCHECKED"); //$NON-NLS-1$
                 Field  gwl_style     = win32os.getField("GWL_STYLE"); //$NON-NLS-1$
                 Field  bm_setcheck   = win32os.getField("BM_SETCHECK"); //$NON-NLS-1$
-            
+
                 checkWidget();
-                
+
                 int flags = grayed ? BST_INDETERMINATE : getSelection()
                         ? bst_checked.getInt(null) : bst_unchecked.getInt(null);
-                
+
                 /*
                  * Feature in Windows. When BM_SETCHECK is used
                  * to set the checked state of a radio or check
@@ -172,38 +172,38 @@ public class TristateButton extends Button {
                 win32os = null;
                 setGrayed(grayed);
             }
-            return;         
+            return;
         }
-        
+
         Color c = grayed ? new Color(null,192,192,192) : new Color(null,0,0,0);
         setForeground(c);
-        
+
         this.grayed = grayed;
-        
+
         eventEn = false;
         // Prevent event from being handled locally so we don't get stuct in
         // a firing / handling loop
         setSelection(true);
         eventEn = true;
     }
-    
+
     /**
      * Checks if the button is in the "gray" state.
      */
     public boolean getGrayed() {
         if ((getStyle() & SWT.CHECK) == 0)
             return false;
-        
+
         if (win32os != null) {
             try {
                 Method sendMessage = win32os.getMethod("SendMessage",int.class,int.class,int.class,int.class); //$NON-NLS-1$
                 Field  handle      = getClass().getField("handle"); //$NON-NLS-1$
                 Field  bm_getcheck = win32os.getField("BM_GETCHECK"); //$NON-NLS-1$
-                
+
                 checkWidget();
-                
+
                 int state = ((Integer)sendMessage.invoke(null,handle.get(this),bm_getcheck.get(null),new Integer(0),new Integer(0))).intValue();
-                
+
                 return (state & BST_INDETERMINATE) != 0;
             }
             catch(Exception ex) {
@@ -214,10 +214,10 @@ public class TristateButton extends Button {
                 setGrayed(false);
             }
         }
-        
+
         return grayed;
     }
-    
+
     private static final int BS_3STATE = 0x00000005;
     private static final int BST_INDETERMINATE = 0x0002;
 }
