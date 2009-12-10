@@ -32,13 +32,6 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 OPT_DIR=$(TOOLS_DIR:\=/)/msys
 
 #
-# Java JDK. This JDK will be used for building GUIEnv; it should contain
-# the JNI headers and export libraries as well. If you don't want to
-# build GUIEnv, set GUIENV_IF_POSSIBLE=missing-dependency later in this file.
-#
-JAVA_HOME=$(TOOLS_DIR:\=/)/jdk1.5.0
-
-#
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
 # Tcl/Tk 8.4 (minimum 8.4.0) and BLT 2.4 required.
 # Leave BLT_VER empty if you don't have BLT. BLT is expected to reside
@@ -122,7 +115,6 @@ USE_PTHREADS_STATIC_LIB=yes
 # missing-dependency.
 #
 TKENV_IF_POSSIBLE=tkenv
-GUIENV_IF_POSSIBLE=guienv
 JNILIBS_IF_POSSIBLE=jnilibs
 
 #
@@ -201,18 +193,6 @@ OMNETPP_IMAGE_PATH=./images;./bitmaps;$(OMNETPP_ROOT)/images
 
 OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 
-!if "$(OMNETPP_GUIENV_CONFIG_DIR)"==""
-!if exist($(OMNETPP_UI_DIR))
-# during development (ui/ tree exists), use "guienv" launch config in the workspace (assuming it's ui/)
-OMNETPP_GUIENV_CONFIG_DIR=$(OMNETPP_UI_DIR)/.metadata/.plugins/org.eclipse.pde.core/guienv
-OMNETPP_GUIENV_LAUNCHER=C:\eclipse\plugins\org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar
-!else
-# in a deployed installation, config (and launcher) should be under the ide/ tree
-OMNETPP_GUIENV_CONFIG_DIR=$(OMNETPP_IDE_DIR)/.guienv
-OMNETPP_GUIENV_LAUNCHER=$(OMNETPP_IDE_DIR)/plugins/org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar
-!endif
-!endif
-
 #
 # Libraries
 #
@@ -281,8 +261,7 @@ PTHREAD_LIBS=pthreadVC2.lib wsock32.lib /libpath:"$(PTHREADS_DIR)/lib"
 #
 CMDENV_LIBS = /include:_cmdenv_lib oppenvir$D.lib oppcmdenv$D.lib
 TKENV_LIBS = /include:_tkenv_lib oppenvir$D.lib opptkenv$D.lib opplayout$D.lib
-GUIENV_LIBS = /include:_guienv_lib oppenvir$D.lib oppguienv$D.lib opplayout$D.lib
-ALL_ENV_LIBS = $(CMDENV_LIBS) $(TKENV_LIBS)  #XXX $(GUIENV_LIBS)
+ALL_ENV_LIBS = $(CMDENV_LIBS) $(TKENV_LIBS)
 
 KERNEL_LIBS = oppsim$D.lib
 
@@ -309,7 +288,6 @@ LIB_SUFFIX=.dll
 LIB_SUFFIX=.lib
 
 TKENV_LIBS = $(TKENV_LIBS) $(TK_LIBS) $(ZLIB_LIBS)
-GUIENV_LIBS = $(GUIENV_LIBS) $(JAVA_LIBS)
 
 !if "$(WITH_NETBUILDER)"=="yes"
 KERNEL_LIBS = $(KERNEL_LIBS) $(XML_LIBS)

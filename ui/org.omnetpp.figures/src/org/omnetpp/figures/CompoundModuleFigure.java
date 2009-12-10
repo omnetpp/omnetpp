@@ -356,7 +356,7 @@ public class CompoundModuleFigure extends NedFigure
             layouter.layout(submoduleLayer);
         }
 
-		layouter.invalidate();
+		  layouter.invalidate();
         repaint();
 	}
 

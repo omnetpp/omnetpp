@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <stdio.h>
 #include "filereader.h"
 #include "stringpool.h"
 #include "eventlog.h"

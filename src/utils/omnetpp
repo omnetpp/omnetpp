@@ -19,22 +19,24 @@ fi
 
 #set default language so GCC will report errors in english. see bug #3
 export LANG=en_US.UTF-8
+# fix button clicking issue with newer GTK versions
+export GDK_NATIVE_WINDOWS=1
 
 case $PLATFORM in
 *MINGW*)
-	./${LAUNCHER}.exe &
+	./win32/${LAUNCHER}.exe &
         ;;
 *Linux*x86_64*)
-	./${LAUNCHER}64 &
+	./linux64/${LAUNCHER} &
         ;;
 *Linux*)
-	./$LAUNCHER &
+	./linux/$LAUNCHER &
         ;;
 *Darwin*)
-	open ${LAUNCHER}.app
+	open ./macosx/${LAUNCHER}.app
         ;;
 *)
-	echo OMNeT++ IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel/PPC
+	echo OMNeT++ IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel
 	exit 1
         ;;
 esac

@@ -243,4 +243,14 @@ public class NullGraphics extends Graphics
     @Override
     public void translate(int dx, int dy) {
     }
+
+	public float getLineWidthFloat() {
+		return 0;
+	}
+
+	public void setLineMiterLimit(float miterLimit) {
+	}
+
+	public void setLineWidthFloat(float width) {
+	}
 }
