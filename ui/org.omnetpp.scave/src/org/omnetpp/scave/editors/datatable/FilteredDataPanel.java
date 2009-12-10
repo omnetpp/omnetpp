@@ -187,7 +187,8 @@ public class FilteredDataPanel extends Composite {
 		String runId = filterPanel.getRunNameCombo().getText();
 		String moduleName = filterPanel.getModuleNameCombo().getText();
 		String name = filterPanel.getNameCombo().getText();
-		return new FilterUtil(runId, moduleName, name).getFilterPattern();
+		String filterPattern = new FilterUtil(runId, moduleName, name).getFilterPattern();
+        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text 
 	}
 
 	public void setFilterParams(Filter filter) {
