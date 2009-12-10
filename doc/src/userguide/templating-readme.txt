@@ -37,30 +37,31 @@ the output files) and a GUI description language (for custom wizard pages to
 gather user input for the file generation). Because of the use of a 
 templating engine, we'll also refer to custom wizards as "content templates".
 
-In the templates/ folder, every subfolder that contains a `template.properties`
+In the `templates/` folder, every subfolder that contains a `template.properties`
 file is treated as a content template. (Other folders are ignored.) Every
 content template folder may contain several types of files: 
 
 * The `template.properties` file contains general information about the wizard.
-  Defines the initial value for the template variables and specifies the 
-  custom wizard pages to be invoked when the wizard is run. 
+  Defines the initial value for the template variables, and specifies the 
+  custom wizard pages to be shown when the wizard is run. 
 * `*.ftl` files are template files that will be copied (without the `.ftl` extension)
   into the target folder after template variable substitution. 
 * `*.xswt` files describe custom wizard pages to gather user input.  
-* More rarely used files are `*.fti` (template include) files included by `*.ftl` 
+* `*.fti` (template include) files are included by `*.ftl` 
   files. This can be used to factor out common parts from the template files.
-*  `*.jar` files that can be used to extend the wizard's functionality 
+*  `*.jar` files can be used to extend the wizard's functionality 
   with dynamically loaded Java code.
 * All other files are regarded as files that have to be copied into the
   target folder verbatim when the wizard runs. The wizard folder may contain
   subdirectories which may also contain files of the above type (except
-  template.properties of course).
+  `template.properties` of course).
 
 
-The IDE offers several OMNeT++-related wizard dialogs: New OMNeT++ Project,
+The IDE offers several OMNeT++ related wizard dialogs: New OMNeT++ Project,
 New NED File, New Simple Module, and so on. Every content template can
 contribute to one or more of those wizard dialogs.
 
+=== An Example Wizard
 
 ==== Configuring the Wizard
 
@@ -169,8 +170,8 @@ The file name for the output will be the value of the `targetFileName` variable.
 The rest of template variables will be substituted into the template. 
 
 Specific wizard dialogs will also define extra variables for use in the
-templates, e.g. the wizard types that create a single file will put the
-`newFileName` variable into the context. To see all defined variables, 
+templates, e.g. the wizard type that creates a simulation with all required files
+ will put the `simulationName` variable into the context. To see all defined variables, 
 check the Appendix.
 
 TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
@@ -179,14 +180,14 @@ TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
      productive in the shortest time possible.
 
 
-==== Wizard Types
+=== Wizard Types
 
 The wizard will set the `wizardType` template variable when it executes,
 so template code can check under which wizard type it runs (using `<#if>..</#if>`), and
-act accordingly. This feature allows the creation of templates that 
+act accordingly. This feature allows one to create templates that 
 can be used for multiple wizard types. 
 
-Create a file called `omnetpp.ini.ftl` and fill with:	
+Create a file called `omnetpp.ini.ftl` and for our example, fill with:	
 
 	<#if wizardType=="simulation">
 	network = ${targetTypeName}
@@ -249,7 +250,8 @@ templateImage::
 supportedWizardTypes::
                 Comma-separated or JSON-syntax list of wizard types (e.g.
                 "nedfile", "simplemodule", "project", "inifile") that
-                this template supports. More about this later.
+                this template supports. If not specified, the wizard will support
+                all known wizard types.
 ignoreResources::
                 Comma-separated or JSON-syntax list of non-template files or
                 folders; those files won't get copied over to the new project.
@@ -763,7 +765,7 @@ contribute new variables, functions or macros to the template context.
    you explicitly convert numeric variables to numbers at the top of templates,
    for example like this: `<#assign numHosts = numHosts?number>`
 
- * For some reason, FreeMarker refuses to print boolean variables, i.e. `$\{isFoo}`
+ * For some reason, FreeMarker refuses to print boolean variables, i.e. `${isFoo}`
    results in a runtime error. The common workaround is to write
    `<#if isFoo>true<#else>false</#if>`; this can be shortened with our iif() function:
    `${isFoo, "true", "false"}`.
@@ -811,7 +813,7 @@ appears.
 
 * How to carry forward data from a previous page to the next?
 
-Use FreeMarker variables (`$\{varName}`) in the page.
+Use FreeMarker variables (`${varName}`) in the page.
 
 * How can I fill a combo box with values that I'll only know at runtime?
 
@@ -824,7 +826,7 @@ You can implement custom SWT controls in Java, and use them in the
 wizard pages. The custom controls may even be packaged into jar files
 in the template's directory, i.e. you do not need to write a separate
 Eclipse plug-in or something. Have a look at the source files of the
-existing custom controls (`FileChooser, NedTypeChooser, InfoLink, etc).
+existing custom controls (`FileChooser, NedTypeChooser, InfoLink`, etc).
 
 * How to dynamically enable/disable controls on a page, depending on other controls (i.e. a checkbox or radio button)
 
@@ -835,7 +837,7 @@ that features a checkbox, and enables/disables child controls
 when the checkbox selection changes; (3) write the full custom wizard
 page entirely in Java, and register it in `template.properties` with
 page.xx.class= instead of page.xx.file; (4) implement scripting support
-for XSWT 1.x and contribute the patch to us :)
+for XSWT 1.x and contribute the patch to us.
 
 * In the Project wizard, how does it get decided which templates get offered if the "with C++ checkbox" gets selected or not selected on the first page?
 
@@ -854,15 +856,15 @@ provides basic syntax highlighting. An extremely
 useful feature of the IDE is the XSWT Preview, where you can preview
 the form being edited (it updates when you save the file). The Preview should
 open automatically when you open the XSWT file; if it does not (or you close it),
-you can access it via the `Window|Show View...` menu item.
+you can access it via the *Window|Show View...* menu item.
 
 Some (custom) widgets may not appear in the Preview; this is because the
 Preview does not load jar files from the projects.
 
 ==== Editing Template Files
 
-The Freemarker Editor is opened when you double-click files with the ftl or
-fti extension. (The latter stands for Freemarker Template Include, and it is
+The Freemarker Editor is opened when you double-click files with the *.ftl or
+*.fti extension. (The latter stands for Freemarker Template Include, and it is
 intended for template fragments that you include into other templates. Otherwise
 the wizard ignores fti files, i.e. does not copy them into the new project or
 folder.) The Freemarker Editor offers basic syntax highlight, validation
@@ -871,57 +873,68 @@ correct), and basic content assist. Content assist can help you with directives
 (`<#...>` syntax) and builtin operations (like `?number, ?size, ?default`, etc).
 The content assist popup appears automatically when you type '<#' (actually
 a closing '>' is also needed for the editor to recognize the tag), and
-when you hit '?' within a directive or an interpolation ($\{...}).
+when you hit '?' within a directive or an interpolation (`${...}`).
 
 
 === Append. A: Predefined Template Variables
 
-[cols="35%,^10%,^15%,^10%,^10%,^10%,^10%"]
+[cols="30%,^10%,^10%,^10%,^10%,^10%,^10%,^10%^"]
 |==============
-|variable name | project | simulation | msgfile | inifile | nedfile | wizard
-|`addProjectReference`  | X |   |   |   |   | 
-|`author`  				| X | X | X | X | X | X
-|`date`                 | X | X | X | X | X | X
-|`licenseCode`    		| X | X | X | X | X | X
-|`licenseText`    		| X | X | X | X | X | X
-|`makemakeOptions`     	| X |   |   |   |   | 
-|`msgTypeName`     	    |   |   | X |   |   | 
-|`namespaceName`       	|   | X | X |   | X | 
-|`nedPackageName`       | X | X |   | X | X | 
-|`nedSourceFolders`    	| X |   |   |   |   | 
-|`newWizardName`     	|   |   |   |   |   | X
-|`newWizardProject`     |   |   |   |   |   | X 
-|`projectName`    		| X | X | X | X | X | X
-|`PROJECTNAME`    		| X | X | X | X | X | X
-|`projectname`    		| X | X | X | X | X | X
-|`rawProjectName`    	| X | X | X | X | X | X 
-|`requiresCPlusPlus`    | X |   |   |   |   | 
-|`simulationFolderName` |   | X |   |   |   | 
-|`simulationName`    	|   | X |   |   |   | 
-|`sourceFolders`     	| X |   |   |   |   | 
-|`targetFileName`       |   |   | X | X | X | 
-|`targetFolder`    		| X | X | X | X | X | X
-|`targetMainFile`       | X | X | X | X | X | 
-|`targetTypeName`       | X | X | X | X | X | 
-|`templateCategory`    	| X | X | X | X | X | X
-|`templateDescription`  | X | X | X | X | X | X 
-|`templateFolderName`   | X | X | X | X | X | X 
-|`templateFolderPath`   | X | X | X | X | X | X
-|`templateName`    		| X | X | X | X | X | X
-|`templateProject`    	| X | X | X | X | X | X
-|`templateURL`    		| X | X | X | X | X | X
-|`withCplusplusSupport` | X |   |   |   |   | 
-|`wizardType`    		| X | X | X | X | X | X
-|`year` 				| X | X | X | X | X | X
+|variable name | project | simul. | msgfile | inifile | nedfile | wizard | export
+|`addProjectReference`  | X |   |   |   |   |   |
+|`author`  				| X | X | X | X | X | X | X
+|`date`                 | X | X | X | X | X | X | X
+|`licenseCode`    		| X | X | X | X | X | X | X
+|`licenseText`    		| X | X | X | X | X | X | X
+|`makemakeOptions`     	| X |   |   |   |   |   |
+|`msgTypeName`     	    |   |   | X |   |   |   |
+|`namespaceName`       	|   | X | X |   | X |   |
+|`nedPackageName`       | X | X |   | X | X |   |
+|`nedSourceFolders`    	| X |   |   |   |   |   |
+|`newWizardName`     	|   |   |   |   |   | X |
+|`newWizardProject`     |   |   |   |   |   | X |
+|`projectName`    		| X | X | X | X | X | X |
+|`PROJECTNAME`    		| X | X | X | X | X | X |
+|`projectname`    		| X | X | X | X | X | X |
+|`rawProjectName`    	| X | X | X | X | X | X | 
+|`requiresCPlusPlus`    | X |   |   |   |   |   |
+|`simulationFolderName` |   | X |   |   |   |   |
+|`simulationName`    	|   | X |   |   |   |   |
+|`sourceFolders`     	| X |   |   |   |   |   |
+|`targetFileName`       |   |   | X | X | X |   |
+|`targetFolder`    		| X | X | X | X | X | X |
+|`targetMainFile`       | X | X | X | X | X |   |
+|`targetTypeName`       | X | X | X | X | X |   |
+|`templateCategory`    	| X | X | X | X | X | X | X
+|`templateDescription`  | X | X | X | X | X | X | X
+|`templateFolderName`   | X | X | X | X | X | X | X
+|`templateFolderPath`   | X | X | X | X | X | X | X
+|`templateName`    		| X | X | X | X | X | X | X
+|`templateProject`    	| X | X | X | X | X | X | X
+|`templateURL`    		| X | X | X | X | X | X | X
+|`withCplusplusSupport` | X |   |   |   |   |   |
+|`wizardType`    		| X | X | X | X | X | X | X
+|`year` 				| X | X | X | X | X | X | X
 |==============
-
-In this section we describe the individual wizard types and their supported
-template variables. Variables will be marked with one or more letter to show in 
-which wizard types they are supported as shown on in the previous table  
-(A: supported in all wizards; P: project;S:: simulation; M: messagefile; I: inifile;
-N: nedfile, simplemodule, compoundmodule, network; W: wizard).
 
 ==== General
+
+In the following sections we describe the individual wizard types and their supported
+template variables. Variables will be marked with one or more letter to show in 
+which wizard types they are supported as shown on in the previous table  
+
+* A: supported in all wizards 
+* P: project
+* S: simulation
+* M: messagefile 
+* I: inifile
+* N: nedfile, simplemodule, compoundmodule, network 
+* W: wizard
+
+If the variable is marked as `R/O` (read-only), you should not modify its value
+in your wizard pages. Modification of read-only values may result in inconsystent 
+output files.
+
 
 date (A)::  current date in yyyy-mm-dd format
 year (A)::  year in yyyy format
@@ -938,12 +951,12 @@ wizardType (A):: the type of the wizard. Any of the following:
 templateName (A):: name of the template
 templateDescription (A):: template description
 templateCategory (A):: template category
-templateURL (A):: the URL the template was loaded from (Only for built-in and 
+templateURL (A):: the URL, the template was loaded from (only for built-in and 
                   other URL-based wizards)
 
 
 The following variables are only defined if the template was loaded from the workspace
-(i.e. a project's templates/ subdirectory):
+(i.e. a project's `templates/` subdirectory):
 
 templateFolderName (A)::  name of the folder (without path) in which the template files are
 templateFolderPath (A)::  full workspace path of the folder in which the template files are
@@ -951,15 +964,15 @@ templateProject (A)::  name of the project that defines the template
 
 ==== File name related variables
 
-targetFolder (A):: the project or folder path in which the project will generate files.
+targetFolder (A) (R/O):: the project or folder path in which the project will generate files.
    For project wizards, this holds the name of the project being created; for
    file wizards, it holds the name of the folder in which the file will be created;
    for simulation wizard, it holds the name of the folder where files will be created.
-targetFileName (NIM):: the name of the new file to be created 
-targetTypeName (PSNIM):: a typename that can be used as the main 'type' for the resulting code.
-                         (for P = $\{projectName}, for S = $\{simulationName}, for NIM = $\{targetFileName}) // XXX revise
-targetMainFile (PSNIM):: a file name that can be used as the 'main' output file for the template 
-                         (for PS = $\{targetTypeName}.ned, for NIM = $\{targetFileName})
+targetFileName (N,I,M) (R/O):: the name of the new file to be created 
+targetTypeName (P,S,N,I,M):: a typename that can be used as the main 'type' for the resulting code.
+                         (for P = `${projectName}`, for S = `${simulationName}`, for N,I,M = `${targetFileName}`)
+targetMainFile (P,S,N,I,M):: a file name that can be used as the 'main' output file for the template 
+                         (for P,S = `${targetTypeName}.ned`, for N,I,M = `${targetFileName}`)
 
 ==== Project name related variables
 
@@ -968,7 +981,7 @@ projectName (A)::  sanitized project name with first letter capitalized
 projectname (A)::  sanitized project name in all lowercase
 PROJECTNAME (A)::  sanitized project name in all uppercase
 
-sanitization means making the name suitable as a NED or C/C++ identifier
+Sanitization means making the name suitable as a NED or C/C++ identifier
 (spaces, punctuation and other unfit chars replaced with underscore, etc.)
 
 ==== C++ project control
@@ -976,24 +989,24 @@ sanitization means making the name suitable as a NED or C/C++ identifier
 addProjectReference (P):: if true, make project as dependent on this one
 sourceFolders (P):: source folders to be created and configured
 makemakeOptions (P):: makemake options, as "folder1:options1,folder2:options2,..."
-withCplusplusSupport (P):: whether the project supports C++ code compilation  // FIXME do we need both?
+withCplusplusSupport (P):: whether the project supports C++ code compilation 
 requiresCPlusPlus (P):: if true, the wizard requires the "support C++ option" during the project creation
-namespaceName (SNM):: the namespace where C++ classes should be placed 
+namespaceName (S,N,M):: the namespace where C++ classes should be placed 
 
 ==== NED files and message files
  
 nedSourceFolders (P):: NED source folders to be created and configured
-nedPackageName (PSNI):: (P: $\{projectname}, SNI:autocalculated)
+nedPackageName (P,S,N,I):: (P: $\{projectname}, S,N,I:autocalculated)
 msgTypeName (M):: the name of the message class
 
 ==== Variables specific to New Simulation wizards
 
-simulationFolderName (S):: the folder where the simulation will be created
-simulationName (S):: the name of the simulation
+simulationFolderName (S) (R/O):: the folder where the simulation will be created
+simulationName (S) (R/O):: the name of the simulation
 
 ==== Variables for New Wizard generation
 
-newWizardName (W):: the name of the new wizard to be created
+newWizardName (W) (R/O):: the name of the new wizard to be created
 newWizardProject (W):: the project where the new wizard will be created
 
 ==== Miscellaneus
@@ -1015,20 +1028,24 @@ are added automatically to the context as a template variable.
 
 === Append. B: Functions, Classes and Macros available from Templates
 
-iif(condition, valueIfTrue, valueIfFalse)::
-   Inline if. The FreeMarker language does not have a conditional operator
-   (like ?: of C/C++), but the iif() function can save you from the verbosity
-   of having to spell out <#if>..<#else>..</#if> everywhere such thing is needed.
-   Note that unlike in C/C++ the evaluation is not lazy, i.e. both the "then" and
-   the "else" expressions are always evaluated.
 
-<@do expression !>::
-   FreeMarker does not have a construct for calling a function and then discarding
-   the result. One could use <#assign dummy = expression>, but this, apart from
-   being ugly, will fail if the called (Java) function is void or returns null.
-   We recommend our small "@do" macro which takes one argument and does nothing,
-   and the exclamation mark (the FreeMarker default value operator) cures the
-   void/null problem.
+	
+	iif(condition, valueIfTrue, valueIfFalse)
+	
+Inline if. The FreeMarker language does not have a conditional operator
+(like ?: of C/C++ ), but the iif() function can save you from the verbosity
+of having to spell out <#if>..<#else>..</#if> everywhere such thing is needed.
+Note that unlike in C/C++ the evaluation is not lazy, i.e. both the "then" and
+the "else" expressions are always evaluated.
+
+   <@do expression !>::
+   
+FreeMarker does not have a construct for calling a function and then discarding
+the result. One could use <#assign dummy = expression>, but this, apart from
+being ugly, will fail if the called (Java) function is void or returns null.
+We recommend our small "@do" macro which takes one argument and does nothing,
+and the exclamation mark (the FreeMarker default value operator) cures the
+void/null problem.
 
 The following Java classes are available during template processing:
 
@@ -1060,12 +1077,12 @@ Example template code:
      ${key} ==> ${props.get(key)}
   </#list>
 
-==== Math:
+==== Math
 
 Represents the Java Math class, which contains mathematical functions.
-See http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html
+See http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html .
 
-Math functions:
+Math has the following methods:
 
   double cos(double x)
 
@@ -1079,9 +1096,9 @@ etc.
 
 Represents the Apache Commons StringUtils class, which contains over a hundred
 utility functions for manipulating strings.
-See http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html
+See http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html .
 
-StringUtils methods
+StringUtils has the following methods::
 
   boolean isEmpty(String s)
 
@@ -1107,9 +1124,9 @@ etc.
 
 Represents the Apache Commons WordUtils class, which contains utility functions 
 for manipulating strings as word sequences.
-See http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html
+See http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html .
 
-WordUtils methods
+WordUtils has the following methods:
 
   String wrap(String str, int wrapLength)
   
@@ -1126,7 +1143,7 @@ functions for manipulating collections (like lists). Functions include computing
 set union, intersection, and difference.
 See http://commons.apache.org/collections/apidocs/org/apache/commons/collections/CollectionUtils.html
 
-CollectionUtils methods
+CollectionUtils has the following methods:
 
   Collection union(Collection a, Collection b)
 
@@ -1136,7 +1153,7 @@ CollectionUtils methods
 
 etc.
 
-==== FileUtils:
+==== FileUtils
 
 Contains utility functions for reading files in the following formats: XML,
 JSON, CSV, property file, and functions to read and return a text file
@@ -1148,7 +1165,7 @@ and the other files on "external" files, i.e. files in the file system.
 Files are interpreted in the Java platform's default encoding (unless XML files,
 which specify their own encoding.)
 
-FileUtils functions:
+FileUtils has the following methods:
 
   org.w3c.dom.Document readXMLFile(String fileName)
   org.w3c.dom.Document readExternalXMLFile(String fileName)
@@ -1316,7 +1333,7 @@ It is OK to invoke it on a nonexistent directory.
 
 Provides utility methods to work with NED types and check their existence.
 
-NedUtils methods
+NedUtils has the following methods:
 
   boolean isVisibleType(String typeName, String inFolder)
 
@@ -1341,7 +1358,7 @@ be found in the sources (Javadoc).
 See http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/resInt.htm
 and http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspaceRoot.html
 
-IDEUtils methods
+IDEUtils has the following methods:
 
   boolean openConfirm(String title, String message, 
                               String detailsMessage)
@@ -1360,7 +1377,7 @@ Opens a standard message dialog, with an closable details message.
 
 Provides a collection of Java language related utility functions.
 
-LangUtils methods
+LangUtils shas the following methods:
 
   boolean hasMethod(Object object, String methodName)
 
@@ -1403,6 +1420,10 @@ Returns the class of the given object. Provided because BeanWrapper
 seems to have a problem with the getClass() method.
 
 ==== ProcessUtils
+
+Provides functionality to start external applications from the wizard, 
+
+ProcessUtis has the following methods:
 
   ProcessResult exec(String command, String[] arguments, 
                              String workingDirectory, 
