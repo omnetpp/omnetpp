@@ -151,7 +151,7 @@ public class ToolButton extends Canvas {
 			if (textHeight == -1)
 				updateTextExtent(gc);
 			gc.setForeground(isEnabled() ? ColorFactory.BLACK : ColorFactory.GREY50);
-			gc.drawText(text, BORDER+image.getBounds().width+BORDER, (r.height-textHeight+1) / 2);
+			gc.drawText(text, BORDER + (image==null ? 0 : image.getBounds().width+BORDER), (r.height-textHeight+1) / 2);
 		}
 		if (!isEnabled())
 			drawBorder(gc, r, disabledOuterBorderColor, disabledInnerBorderColor);
@@ -185,9 +185,13 @@ public class ToolButton extends Canvas {
 	protected void updateTextExtent(GC gc) {
 		if (getFont() != null)
 			gc.setFont(getFont());
-		Point size = gc.textExtent(text);
-		textWidth = size.x;
-		textHeight = size.y;
+		if (text == null)
+			textWidth = textHeight = 0;
+		else {
+			Point size = gc.textExtent(text);
+			textWidth = size.x;
+			textHeight = size.y;
+		}
 	}
 
 	public Point computeSize(int wHint, int hHint, boolean changed) {
@@ -225,7 +229,6 @@ public class ToolButton extends Canvas {
 
 	public void setText(String string) {
 		checkWidget();
-		if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		text = string;
 		textWidth = textHeight = -1;
 	}

@@ -699,8 +699,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 									}
 								};
 
-								if (dialog.open() == Window.OK) {
-								}
+								dialog.open();
 							}
 						});
 					}

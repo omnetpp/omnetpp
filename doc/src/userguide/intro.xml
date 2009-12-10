@@ -72,6 +72,23 @@
     </para>
   </sect1>
   <sect1>
+    <title>Configuring &Omnetpp; Preferences
+    </title>
+    <para>The &Omnetpp;
+      IDE preferences dialog is available through the standard preferences menu, under the main Window menu item.
+      These settings are global and shared between all projects. The &Omnetpp; install locations are
+      automatically filled in for you after installation. The default settings for the NED documentation generation
+      assume that the PATH environment variable is already set, so that third party tools can be found. The licence
+      configuration settings specify the preferred licence type or a custom licence text. The IDE will copy the
+      licence into new files and projects. The licence will also be shown in the generated NED documentation.
+      <picture file="pictures/Intro-Preferences.png">
+        Configuring &Omnetpp; Preferences
+      </picture>
+      Use the Browse buttons to find files or folders easily. Specify full path for executables if you don't want
+      to extend the PATH environment variable.
+    </para>
+  </sect1>
+  <sect1>
     <title>Creating &Omnetpp;
       Projects
     </title>

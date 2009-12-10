@@ -125,7 +125,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
     	// add [size] if it's a module vector
     	if (StringUtils.isNotEmpty(submNode.getVectorSize()))
     		nameToDisplay += "["+submNode.getVectorSize()+"]";
-    	getSubmoduleFigure().setName(nameToDisplay);
+    	SubmoduleFigure submoduleFigure = getSubmoduleFigure();
+        submoduleFigure.setName(nameToDisplay);
+        submoduleFigure.setAlpha(submNode.isDynamic() ? 64 : 255);
 
     	// parse a display string, so it's easier to get values from it.
     	// for other visual properties
@@ -136,12 +138,12 @@ public class SubmoduleEditPart extends ModuleEditPart {
         float scale = getScale();
 
         // set the rest of the display properties
-        getSubmoduleFigure().setDisplayString(scale, dps);
+        submoduleFigure.setDisplayString(scale, dps);
 
-        getSubmoduleFigure().setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
+        submoduleFigure.setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
 
         // show/hide the pin marker
-        getSubmoduleFigure().setPinVisible(dps.getLocation(scale) != null);
+        submoduleFigure.setPinVisible(dps.getLocation(scale) != null);
     }
 
     @Override

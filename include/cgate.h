@@ -245,6 +245,11 @@ class SIM_API cGate : public cObject, noncopyable
     const char *getBaseName() const;
 
     /**
+     * Returns the suffix part of the gate name ("$i", "$o" or "").
+     */
+    const char *getNameSuffix() const;
+
+    /**
      * Returns the properties for this gate. Properties cannot be changed
      * at runtime.
      */

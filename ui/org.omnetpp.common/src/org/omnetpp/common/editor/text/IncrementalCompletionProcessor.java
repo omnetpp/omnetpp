@@ -31,7 +31,6 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.swt.graphics.Image;
-
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.StringUtils;
 
@@ -84,7 +83,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
     protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String description) {
         String descriptions[] = new String[proposalString.length];
         Arrays.fill(descriptions, description);
-        return createProposals(viewer, documentOffset, wordDetector, startStr, proposalString, endStr, descriptions);
+        return createProposals(viewer, documentOffset, wordDetector, startStr, proposalString, endStr, descriptions, null);
 
     }
 
@@ -92,7 +91,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * Create a List of ICompletionProposal from an array of string. Checks the word under the current cursor
      * position and filters the proposal accordingly.
      */
-    protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String[] descriptions) {
+    protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposals, String endStr, String[] descriptions, Image[] images) {
         List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
         String prefix;
         IRegion wordRegion;
@@ -106,10 +105,10 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 
         // we have to sort the name and the description together so we merge them in a single string
         String SEPARATOR = "\u0000";  // ASCII 0
-        String displayLine[] = new String[proposalString.length];
-        for (int i=0; i<proposalString.length; i++) {
-            Assert.isTrue(!proposalString[i].contains(SEPARATOR), "Proposal string contains an internal terminator char.");
-            displayLine[i] = proposalString[i]+SEPARATOR+StringUtils.nullToEmpty(descriptions[i]);
+        String displayLine[] = new String[proposals.length];
+        for (int i=0; i<proposals.length; i++) {
+            Assert.isTrue(!proposals[i].contains(SEPARATOR), "Proposal string contains an internal terminator char.");
+            displayLine[i] = proposals[i]+SEPARATOR+StringUtils.nullToEmpty(descriptions[i]);
         }
 
         Arrays.sort(displayLine, StringUtils.dictionaryComparator);
@@ -119,7 +118,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             String descr = StringUtils.substringAfter(displayLine[i], SEPARATOR);
             if (prop.toLowerCase().startsWith(prefix.toLowerCase())) {
             	String displayText = StringUtils.isEmpty(descr) ? StringUtils.strip(prop) : StringUtils.strip(prop)+" - "+descr;
-                propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), null, displayText, null, null));
+                propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), images == null ? null : images[i], displayText, null, null));
             }
         }
 

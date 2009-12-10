@@ -16,12 +16,13 @@ JMODELDIR = src/$(subst .,/,$(JMODELPKG))
 all: genjava
 
 genjava:
+	mkdir -p $(JMODELDIR)
 	$(PERL) etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd $(BASEPKG) $(JMODELPKG) $(JMODELDIR)
 
 depend:
 
 clean:
-	-rm -f $(JMODELDIR)/*.java
+	-rm -rf $(JMODELDIR)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

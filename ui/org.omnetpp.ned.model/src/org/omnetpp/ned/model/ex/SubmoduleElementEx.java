@@ -26,6 +26,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.GatesElement;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
@@ -37,6 +38,8 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
 public class SubmoduleElementEx extends SubmoduleElement
     implements ISubmoduleOrConnection, IConnectableElement, IHasName, IHasIndex, IHasGates
 {
+    private static final String PROP_DYNAMIC = "dynamic";
+
     public static final String DEFAULT_NAME = "unnamed";
 
     protected DisplayString displayString = null;
@@ -304,4 +307,44 @@ public class SubmoduleElementEx extends SubmoduleElement
         return submoduleType == null ? new HashMap<String, GateElementEx>() : submoduleType.getGateDeclarations();
     }
 
+    // TODO: properly implement property: name, index pair
+    public Map<String, PropertyElementEx> getProperties() {
+        Map<String, PropertyElementEx> map = new HashMap<String, PropertyElementEx>();
+        INEDElement section = getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
+        if (section != null) {
+            for (INEDElement node : section) {
+                if (node instanceof PropertyElementEx) {
+                    PropertyElementEx property = (PropertyElementEx)node;
+                    map.put(property.getName(), property);
+                }
+            }
+        }
+
+        return map;
+    }
+
+    public boolean isDynamic() {
+        PropertyElementEx property = getLocalProperty(PROP_DYNAMIC);
+        return property != null && !"false".equals(property.getSimpleValue());
+
+    }
+
+    protected PropertyElementEx getLocalProperty(String name) {
+        INEDElement section = getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
+        if (section != null) {
+            for (INEDElement node : section) {
+                if (node instanceof PropertyElementEx) {
+                    PropertyElementEx property = (PropertyElementEx)node;
+                    if (name.equals(property.getName()))
+                        return property;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void setIsDynamic(boolean value) {
+        NEDElementUtilEx.setBooleanProperty(this, PROP_DYNAMIC, value);
+    }
 }

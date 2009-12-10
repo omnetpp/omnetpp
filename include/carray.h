@@ -191,6 +191,17 @@ class SIM_API cArray : public cOwnedObject
     void clear();
 
     /**
+     * Returns the allocated size of the underlying array.
+     */
+    int getCapacity() const {return capacity;}
+
+    /**
+     * Resizes the the underlying array, without changing the contents of
+     * this array. The specified capacity cannot be less than size().
+     */
+    void setCapacity(int capacity);
+
+    /**
      * Inserts the object into the array. Only the pointer of the object
      * will be stored. The return value is the object's index in the
      * array.

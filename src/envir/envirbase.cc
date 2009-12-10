@@ -793,7 +793,7 @@ void EnvirBase::readParameter(cPar *par)
     }
     else if (opp_strcmp(str, "ask")==0)
     {
-        askParameter(par);
+        askParameter(par, false);
     }
     else if (!opp_isempty(str))
     {
@@ -805,7 +805,7 @@ void EnvirBase::readParameter(cPar *par)
         if (par->containsValue())
             par->acceptDefault();
         else
-            askParameter(par);
+            askParameter(par, true);
     }
 }
 

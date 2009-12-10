@@ -606,13 +606,10 @@ JAVA_LIBS
 JAVA_CFLAGS
 WITH_PARSIM
 WITH_NETBUILDER
-OMNETPP_GUIENV_CONFIG_DIR
-OMNETPP_GUIENV_LAUNCHER
 OMNETPP_TKENV_DIR
 EMBED_TCL_CODE
 ALL_ENV_LIBS
 JNILIBS_IF_POSSIBLE
-GUIENV_IF_POSSIBLE
 TKENV_IF_POSSIBLE
 AKAROA_LIBS
 AKAROA_CFLAGS
@@ -1983,7 +1980,7 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 OMNETPP_PRODUCT="OMNeT++"
 OMNETPP_RELEASE=`cat Version`
 OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
-OMNETPP_BUILDID=internal
+OMNETPP_BUILDID="090924-86599a"
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
 # We'll collect in this variable the components we've detected problems with
@@ -2020,19 +2017,6 @@ OMNETPP_OUT_DIR="$OMNETPP_ROOT/out"
 OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
-
-if test -d "$OMNETPP_UI_DIR"; then
-    # during development (ui/ tree exists), use "guienv" launch config in the workspace (assuming it's ui/)
-    OMNETPP_GUIENV_CONFIG_DIR="$OMNETPP_UI_DIR/.metadata/.plugins/org.eclipse.pde.core/guienv"
-    # find launcher; note that wildcard will be expanded later
-    ECLIPSE_DIR=${ECLIPSE_DIR:-$HOME/eclipse}
-    OMNETPP_GUIENV_LAUNCHER="$ECLIPSE_DIR/plugins/org.eclipse.equinox.launcher_1.*.jar"
-else
-    # in a deployed installation, config (and launcher) should be under the ide/ tree
-    OMNETPP_GUIENV_CONFIG_DIR="$OMNETPP_IDE_DIR/.guienv"
-    # find launcher; note that wildcard will be expanded later
-    OMNETPP_GUIENV_LAUNCHER="$OMNETPP_IDE_DIR/plugins/org.eclipse.equinox.launcher_1.*.jar"
-fi
 
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
@@ -5064,7 +5048,7 @@ if test -n "$NO_TCL"; then
     TKENV_IF_POSSIBLE=missing-dependency
 
     # and build samples using Cmdenv (TBD)
-    ALL_ENV_LIBS='$(GUIENV) $(CMDENV_LIBS)'
+    ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
 else  #matching "fi" is after BLT testing
 
@@ -6856,7 +6840,7 @@ $as_echo "$as_me: WARNING: Tcl cannot load BLT (wish command \"package require B
     TKENV_IF_POSSIBLE=tkenv
 
     # and build samples using Tkenv
-    ALL_ENV_LIBS='$(TKENV_LIBS) $(GUIENV_LIBS) $(CMDENV_LIBS)'
+    ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
@@ -6995,22 +6979,6 @@ if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
    JNILIBS_IF_POSSIBLE=missing-dependency
 else
    JNILIBS_IF_POSSIBLE=jnilibs
-fi
-
-#----------------------
-# GUIEnv checks
-#----------------------
-GUIENV_IF_POSSIBLE=guienv
-if test "$jni_ok" = "no"; then
-   GUIENV_IF_POSSIBLE=missing-dependency
-   { $as_echo "$as_me:$LINENO: WARNING: JNI missing -- cannot build GUIEnv" >&5
-$as_echo "$as_me: WARNING: JNI missing -- cannot build GUIEnv" >&2;}
-fi
-OMNETPP_GUIENV_LAUNCHER="`echo $OMNETPP_GUIENV_LAUNCHER`"   # expand wildcard
-if test ! -f "$OMNETPP_GUIENV_LAUNCHER"; then
-   GUIENV_IF_POSSIBLE=missing-dependency
-   { $as_echo "$as_me:$LINENO: WARNING: Skipping GUIEnv because Eclipse launcher plugin was not found (or multiple instances found): OMNETPP_GUIENV_LAUNCHER=$OMNETPP_GUIENV_LAUNCHER" >&5
-$as_echo "$as_me: WARNING: Skipping GUIEnv because Eclipse launcher plugin was not found (or multiple instances found): OMNETPP_GUIENV_LAUNCHER=$OMNETPP_GUIENV_LAUNCHER" >&2;}
 fi
 
 #----------------------
@@ -8042,10 +8010,6 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
-
-
-
-
 
 
 
@@ -9282,6 +9246,23 @@ if test -f ide/configuration/config.ini ; then
     perl -i~ -pe 's!osgi.instance.area.default=.*$!osgi.instance.area.default='$OMNETPP_SAMPLES_DIR'!g' ide/configuration/config.ini
     rm ide/configuration/config.ini~
 fi
+
+# patch the launcher.ini file to point to the platform specific configuration area
+patchIDEconfig () {
+  if test -f ide/$1/$2.ini ; then
+    perl -i~ -pe 'BEGIN{undef $/;} s!-configuration\n.*?\n!-configuration\n'$OMNETPP_ROOT'/ide/'$1'/configuration\n!smg' ide/$1/$2.ini
+    rm ide/$1/$2.ini~
+  fi
+}
+
+patchIDEconfig linux omnest
+patchIDEconfig linux64 omnest
+patchIDEconfig macosx omnest
+patchIDEconfig win32 omnest
+patchIDEconfig linux omnetpp
+patchIDEconfig linux64 omnetpp
+patchIDEconfig macosx omnetpp
+patchIDEconfig win32 omnetpp
 
 #----------------------
 # Check $OPP_PROBLEM_PACKAGES

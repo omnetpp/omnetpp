@@ -29,6 +29,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.omnetpp.ned.editor.text.assist.NedCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
+import org.omnetpp.ned.editor.text.assist.NedDisplayStringCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedDocCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedPrivateDocCompletionProcessor;
 import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
@@ -76,6 +77,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		ContentAssistant assistant= new ContentAssistant();
 		assistant.setDocumentPartitioning(NedContentAssistPartitionScanner.PARTITIONING_ID);
 		assistant.setContentAssistProcessor(new NedCompletionProcessor(editor), IDocument.DEFAULT_CONTENT_TYPE);
+        assistant.setContentAssistProcessor(new NedDisplayStringCompletionProcessor(editor), NedContentAssistPartitionScanner.NED_STRING); // for display strings
         assistant.setContentAssistProcessor(new NedDocCompletionProcessor(), NedContentAssistPartitionScanner.NED_DOC);
         assistant.setContentAssistProcessor(new NedPrivateDocCompletionProcessor(), NedContentAssistPartitionScanner.NED_PRIVATE_DOC);
 

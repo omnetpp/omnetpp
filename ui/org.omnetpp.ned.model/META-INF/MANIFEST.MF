@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ NED File Data Model
 Bundle-SymbolicName: org.omnetpp.ned.model;singleton:=true
-Bundle-Version: 4.0.0.qualifier
+Bundle-Version: 4.1.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.ned.model,
@@ -12,6 +12,7 @@ Export-Package: org.omnetpp.ned.model,
  org.omnetpp.ned.model.pojo,
  org.omnetpp.ned.model.ui
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.compare.core,
  org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.ui.workbench.texteditor,

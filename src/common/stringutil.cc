@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <limits.h>

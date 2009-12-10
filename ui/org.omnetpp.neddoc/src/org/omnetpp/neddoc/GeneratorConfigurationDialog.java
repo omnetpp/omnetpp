@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 
@@ -226,9 +227,9 @@ public class GeneratorConfigurationDialog
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
         boolean dotAvailable = OmnetppPreferencePage.isGraphvizDotAvailable();
-        generateNedTypeFigures = createCheckbox(group, "Network diagrams", configuration.generateNedTypeFigures && dotAvailable);
-        generateInheritanceDiagrams = createCheckbox(group, "Inheritance diagrams", configuration.generateInheritanceDiagrams && dotAvailable);
-        generateUsageDiagrams = createCheckbox(group, "Usage diagrams", configuration.generateUsageDiagrams && dotAvailable);
+        generateNedTypeFigures = createCheckbox(group, "Network diagrams (requires Graphviz)", configuration.generateNedTypeFigures && dotAvailable);
+        generateInheritanceDiagrams = createCheckbox(group, "Inheritance diagrams (requires Graphviz)", configuration.generateInheritanceDiagrams && dotAvailable);
+        generateUsageDiagrams = createCheckbox(group, "Usage diagrams (requires Graphviz)", configuration.generateUsageDiagrams && dotAvailable);
         generateNedTypeFigures.setEnabled(dotAvailable);
         generateInheritanceDiagrams.setEnabled(dotAvailable);
         generateUsageDiagrams.setEnabled(dotAvailable);
@@ -236,7 +237,7 @@ public class GeneratorConfigurationDialog
         generateSourceContent = createCheckbox(group, "Source listings", configuration.generateSourceContent);
 
         boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
-        generateDoxy = createCheckbox(group, "C++ documentation (using Doxygen)", configuration.generateDoxy && doxygenAvailable);
+        generateDoxy = createCheckbox(group, "C++ documentation (requires Doxygen)", configuration.generateDoxy && doxygenAvailable);
         generateDoxy.setEnabled(doxygenAvailable);
 
         Label label = new Label(group, SWT.NONE);
@@ -353,6 +354,10 @@ public class GeneratorConfigurationDialog
                 generator.setRootRelativeDoxyPath(new Path(DocumentationGeneratorPropertyPage.getDoxyPath(project)));
                 generator.setRootRelativeNeddocPath(new Path(DocumentationGeneratorPropertyPage.getNeddocPath(project)));
                 generator.setAbsoluteDoxyConfigFilePath(project.getFile(DocumentationGeneratorPropertyPage.getDoxyConfigFilePath(project)).getLocation());
+
+                String customCssPath = DocumentationGeneratorPropertyPage.getCustomCssPath(project);
+                if (!StringUtils.isEmpty(customCssPath))
+                    generator.setCustomCssPath(project.getFile(DocumentationGeneratorPropertyPage.getCustomCssPath(project)).getLocation());
             }
             catch (CoreException e) {
                 throw new RuntimeException(e);

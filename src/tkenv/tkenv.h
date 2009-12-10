@@ -91,6 +91,7 @@ class TKENV_API Tkenv : public EnvirBase
       bool opt_penguin_mode;       // msg animation: message appearance
       bool opt_showlayouting;      // show layouting process in graphical module inspectors
       bool opt_usenewlayouter;     // use new layouting algorithms
+      bool opt_arrangevectorconnections;     // arrange connections on vector gates parallel to each outher
       bool opt_bubbles;            // show result of bubble() calls
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
       long opt_stepdelay;          // Delay between steps in ms
@@ -176,7 +177,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       virtual void readOptions();
       virtual void readPerRunOptions();
-      virtual void askParameter(cPar *par);
+      virtual void askParameter(cPar *par, bool unassigned);
       virtual void printLastLogLine();
 
   public:

@@ -9,7 +9,9 @@ package org.omnetpp.figures;
 
 import org.eclipse.draw2d.ConnectionLocator;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.MidpointLocator;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.swt.SWT;
@@ -31,8 +33,8 @@ public class ConnectionFigure extends PolylineConnection {
     protected Label textFigure = new Label();
     protected ConnectionLabelLocator labelLocator = new ConnectionLabelLocator(this);
     protected TooltipFigure tooltipFigure;
-	private IDisplayString lastDisplayString;  //FIXME this might be problematic... --Andras
 	protected boolean isArrowHeadEnabled;
+    protected IFigure centerDecoration;
 
 	@Override
     public void addNotify() {
@@ -65,6 +67,16 @@ public class ConnectionFigure extends PolylineConnection {
 				getTargetDecoration().setVisible(arrowHeadEnabled);
 	    }
     }
+
+	public void setMidpointDecoration(IFigure decoration) {
+	    if (centerDecoration == decoration)
+	        return;
+	    if (centerDecoration != null)
+	        remove(centerDecoration);
+	    centerDecoration = decoration;
+	    if (centerDecoration != null)
+	        add(centerDecoration, new MidpointLocator(this, 0));
+	}
 
     protected void setStyle(Color color, int width, String style) {
     	style = style == null ? "" : style;
@@ -123,8 +135,6 @@ public class ConnectionFigure extends PolylineConnection {
 	 * @param dps The display string object containing the properties
 	 */
 	public void setDisplayString(IDisplayString dps) {
-		lastDisplayString = dps;
-
         setStyle(ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.CONNECTION_COL)),
 				dps.getAsInt(IDisplayString.Prop.CONNECTION_WIDTH, 1),
 				dps.getAsString(IDisplayString.Prop.CONNECTION_STYLE));
@@ -149,12 +159,4 @@ public class ConnectionFigure extends PolylineConnection {
 	    super.paint(graphics);
 	    graphics.popState();
 	}
-
-    /**
-     * Returns the most recently set display string
-     */
-	public IDisplayString getLastDisplayString() {
-    	return lastDisplayString;
-    }
-
 }

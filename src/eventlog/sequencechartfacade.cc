@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <stdio.h>
 #include <algorithm>
 #include <set>
 #include <math.h>

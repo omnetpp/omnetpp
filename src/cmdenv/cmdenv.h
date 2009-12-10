@@ -80,7 +80,7 @@ class CMDENV_API Cmdenv : public EnvirBase
 
      virtual void readOptions();
      virtual void readPerRunOptions();
-     virtual void askParameter(cPar *par);
+     virtual void askParameter(cPar *par, bool unassigned);
 
      // new functions:
      void help();

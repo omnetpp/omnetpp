@@ -421,10 +421,12 @@
     <commercial>
       <sect2>
         <title>Other features</title>
+<!--FIXME TODO
         <sect3>
           <title>Printing</title>
-          <para>You can print the content of the</para>
+          <para>You can print the content of the ...</para>
         </sect3>
+-->
         <sect3>
           <title>Exporting images</title>
           <para> To export a compound module as a picture, select the compound module and bring up its context

@@ -46,6 +46,7 @@ import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.IGotoNedElement;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -161,7 +162,8 @@ public class NedEditor
     @Override
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		if (!(editorInput instanceof IFileEditorInput))
-            throw new PartInitException("Invalid input type (only workspace files can be opened): " + editorInput);
+            throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + editorInput.getName(),
+                "Please make sure the project is open before trying to open a file in it.");
 
 		IFile file = ((FileEditorInput)editorInput).getFile();
 		if (!file.exists()) {

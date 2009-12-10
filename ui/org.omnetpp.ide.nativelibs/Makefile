@@ -126,6 +126,7 @@ depend:
 
 clean:
 	-rm -f *.cxx *.o *.a *.so $(DLL_TARGET_DIR)/*.dll $(DLL_TARGET_DIR)/*.so $(DLL_TARGET_DIR)/*.jnilib
+	-rm -rf $(COMMON_JAVADIR) $(NEDXML_JAVADIR) $(SCAVE_JAVADIR) $(LAYOUT_JAVADIR) $(EVENTLOG_JAVADIR)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

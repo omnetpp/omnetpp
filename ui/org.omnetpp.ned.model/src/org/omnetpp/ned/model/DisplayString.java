@@ -344,7 +344,7 @@ public class DisplayString implements IDisplayString {
         int hash = 0;
 
         for (DisplayString ds = this; ds != null; ds = ds.getFallbackDisplayString())
-            hash += ds.hashCode();
+            hash += ds.toString().hashCode();
 
         return hash;
     }

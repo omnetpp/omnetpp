@@ -125,6 +125,14 @@ const char *cGate::getName() const
         return desc->namep->name.c_str();
 }
 
+const char *cGate::getNameSuffix() const
+{
+    if (desc->namep->type==INOUT)
+        return desc->isInput(this) ? "$i" : "$o";
+    else
+        return "";
+}
+
 const char *cGate::getFullName() const
 {
     // if not in a vector, normal getName() will do

@@ -1,3 +1,22 @@
+2009-09-15 Rudolf Hornig
+	* fixed: New automatic anchor placement algorithm. Connection layouting
+	is much better now for long shaped modules. width>>height or height>>width
+
+	* New feature: INOUT connections do not have arrows.
+
+	* New feature: Clicking on the graphical inspector or on the timeline brings up
+	the inspectors for ALL the modules, connections and messages under the mouse.
+	Previously only the topmost object was offered.
+
+	* New feature: An option was added to enable/disable whether connections attached
+	to a gate vector, connecting the same two modules should be drawn parallel to each
+	other (old behaviour) or just as a single connection line (new default)
+
+2009-09-01  Andras Varga
+
+	* fix: images with file names containing upper-case characters were
+	not loaded by Tkenv
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-03-08  Andras Varga

@@ -260,17 +260,18 @@ class SIM_API cPar : public cObject
     double doubleValue() const;
 
     /**
-     * Returns the parameter's unit, as declared with \@getUnit() in the NED source,
-     * or NULL if no unit is specified. Unit is only valid for LONG and DOUBLE
+     * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc),
+     * as declared with the \@unit property of the parameter in NED,
+     * or NULL if no unit was specified. Unit is only valid for LONG and DOUBLE
      * types.
      */
     const char *getUnit() const;
 
     /**
      * Returns value as const char *. The cPar type must be STRING.
-     * This method may can only be invoked when the parameter's value is a
-     * string constant and not the result of expression evaluation (otherwise
-     * an error is thrown). This practically means this method cannot be used
+     * This method may only be invoked when the parameter's value is a
+     * string constant and not the result of expression evaluation, otherwise
+     * an error is thrown. This practically means this method cannot be used
      * on parameters declared as "volatile string" in NED; they can only be
      * accessed using stdstringValue().
      */

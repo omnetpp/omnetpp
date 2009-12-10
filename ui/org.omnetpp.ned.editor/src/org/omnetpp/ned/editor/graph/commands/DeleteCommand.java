@@ -14,9 +14,8 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.pojo.ConnectionsElement;
+import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 
 /**
  * Deletes an object from the model and as a special case also removes all
@@ -25,16 +24,6 @@ import org.omnetpp.ned.model.pojo.ConnectionsElement;
  * @author rhornig
  */
 public class DeleteCommand extends Command {
-
-    // an inner class to store data to be able to undo a connection deletion
-    private static class ConnectionUndoItem {
-        public ConnectionElementEx node;            // the NODE that was deleted
-        public ConnectionsElement parent;           // the parent of the deleted node
-        public ConnectionElementEx nextSibling;     // the next sibling to be able to insert it back into the correct position
-        public IConnectableElement srcModule;             // the src module the connection was originally attached to
-        public IConnectableElement destModule;            // the dest module the connection was originally attached to
-    }
-
     private static class ElementUndoItem {
         public INEDElement node;
         public INEDElement parent;
@@ -42,10 +31,9 @@ public class DeleteCommand extends Command {
     }
 
     private final ElementUndoItem elementUndoItem = new ElementUndoItem();
-    private final List<ConnectionUndoItem> connectionUndoItems = new ArrayList<ConnectionUndoItem>();
+    private final List<ElementUndoItem> connectionUndoItems = new ArrayList<ElementUndoItem>();
 
     public DeleteCommand(INEDElement toBeDeleted) {
-    	super();
     	elementUndoItem.node = toBeDeleted;
     }
 
@@ -68,6 +56,10 @@ public class DeleteCommand extends Command {
             deleteConnections((SubmoduleElementEx)elementUndoItem.node);
 
         elementUndoItem.node.removeFromParent();
+
+        // check if the element is a connection, because its group should be deleted too if empty
+        if (elementUndoItem.node instanceof ConnectionElementEx)
+            deleteEmptyConnectionGroup(elementUndoItem.parent);
     }
 
     @Override
@@ -77,35 +69,33 @@ public class DeleteCommand extends Command {
     }
 
     private void deleteConnections(SubmoduleElementEx module) {
-        // TODO maybe it would be enough to iterate through ALL connections one time
-        // no need to separate src and dest connections
-        for (ConnectionElementEx wire : module.getSrcConnections()) {
-            // store all data required to undo the operation
-            ConnectionUndoItem uitem = new ConnectionUndoItem();
-            uitem.node = wire;
-            uitem.parent = (ConnectionsElement)wire.getParent();
-            uitem.nextSibling = (ConnectionElementEx)wire.getNextConnectionSibling();
-            uitem.srcModule = wire.getSrcModuleRef();
-            uitem.destModule = wire.getDestModuleRef();
-            connectionUndoItems.add(uitem);
-            // now detach the connection from the other module on the destination side
-            wire.setDestModuleRef(null);    // detach the destination end of the connections
-           	wire.removeFromParent();
-        }
+        ArrayList<ConnectionElementEx> connections = new ArrayList<ConnectionElementEx>();
+        connections.addAll(module.getSrcConnections());
+        connections.addAll(module.getDestConnections());
 
-        for (ConnectionElementEx wire : module.getDestConnections()) {
-            // store all data required to undo the operation
-            ConnectionUndoItem uitem = new ConnectionUndoItem();
-            uitem.node = wire;
-            uitem.parent = (ConnectionsElement)wire.getParent();
-            uitem.nextSibling = (ConnectionElementEx)wire.getNextConnectionSibling();
-            uitem.srcModule = wire.getSrcModuleRef();
-            uitem.destModule = wire.getDestModuleRef();
+        for (ConnectionElementEx node : connections) {
+            ElementUndoItem uitem = new ElementUndoItem();
+            uitem.node = node;
+            uitem.parent = node.getParent();
+            uitem.nextSibling = node.getNextConnectionSibling();
             connectionUndoItems.add(uitem);
-            // now detach the connection from the other module on the destination side
-            wire.setSrcModuleRef(null);    // detach the destination end of the connections
-            // remove it from the model too
-           	wire.removeFromParent();
+            node.removeFromParent();
+            deleteEmptyConnectionGroup(uitem.parent);
+        }
+    }
+
+    private void deleteEmptyConnectionGroup(INEDElement node) {
+        if (node instanceof ConnectionGroupElement) {
+            ConnectionGroupElement group = (ConnectionGroupElement)node;
+
+            if (group.getFirstConnectionChild() == null) {
+                ElementUndoItem uitem = new ElementUndoItem();
+                uitem.node = group;
+                uitem.parent = group.getParent();
+                uitem.nextSibling = group.getNextSibling();
+                connectionUndoItems.add(uitem);
+                group.removeFromParent();
+            }
         }
     }
 
@@ -113,11 +103,7 @@ public class DeleteCommand extends Command {
         // we have to iterate backwards, so all element will be put
         // back into its correct place
         for (int i = connectionUndoItems.size()-1; i>=0; --i) {
-            ConnectionUndoItem ui = connectionUndoItems.get(i);
-            // attach to the nodes it was originally attached to
-            ui.node.setSrcModuleRef(ui.srcModule);
-            ui.node.setDestModuleRef(ui.destModule);
-            // put it back to the model in the correct position
+            ElementUndoItem ui = connectionUndoItems.get(i);
             ui.parent.insertChildBefore(ui.nextSibling, ui.node);
         }
         connectionUndoItems.clear();

@@ -134,14 +134,14 @@ void EventlogFileManager::flush()
 
 void EventlogFileManager::simulationEvent(cMessage *msg)
 {
+    cModule *mod = simulation.getContextModule();
+
+    isModuleEventLogRecordingEnabled = simulation.getContextModule()->isRecordEvents();
+    isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
+    isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
+
     if (isEventLogRecordingEnabled)
     {
-        cModule *mod = simulation.getContextModule();
-
-        isModuleEventLogRecordingEnabled = simulation.getContextModule()->isRecordEvents();
-        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
-        isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
-
         EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog,
             simulation.getEventNumber(), simulation.getSimTime(), mod->getId(),
             msg->getPreviousEventNumber(), msg->getId());

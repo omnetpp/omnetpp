@@ -60,10 +60,12 @@ public class DocumentationGeneratorPropertyPage
     public static QualifiedName DOXY_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyPath");
     public static QualifiedName DOXY_CONFIG_FILE_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyConfigFilePath");
     public static QualifiedName NEDDOC_PATH_QNAME = new QualifiedName("DocumentationGenerator", "NeddocPath");
+    public static QualifiedName CUSTOM_CSS_QNAME = new QualifiedName("DocumentationGenerator", "CustomCss");
 
 	private Text doxyPath;
 	private Text doxyConfigFilePath;
 	private Text neddocPath;
+	private Text customCssPath;
 
     public DocumentationGeneratorPropertyPage() {
 		super();
@@ -127,6 +129,24 @@ public class DocumentationGeneratorPropertyPage
 
         try {
             setText(doxyConfigFilePath, getDoxyConfigFilePath(project));
+        }
+        catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        Label label = new Label(group, SWT.WRAP);
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
+        label.setText("Note: for referencing external doxygen documentation see the TAGFILES option\n");
+
+        group = new Group(composite, SWT.NONE);
+        group.setText("HTML");
+        group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        group.setLayout(new GridLayout(3, false));
+
+        customCssPath = addTextAndBrowse(group, "Custom CSS path:", false);
+
+        try {
+            setText(customCssPath, getCustomCssPath(project));
         }
         catch (CoreException e) {
             throw new RuntimeException(e);
@@ -203,6 +223,7 @@ public class DocumentationGeneratorPropertyPage
             project.setPersistentProperty(DOXY_PATH_QNAME, doxyPath.getText());
             project.setPersistentProperty(DOXY_CONFIG_FILE_PATH_QNAME, doxyConfigFilePath.getText());
             project.setPersistentProperty(NEDDOC_PATH_QNAME, neddocPath.getText());
+            project.setPersistentProperty(CUSTOM_CSS_QNAME, customCssPath.getText());
 
             return true;
         }
@@ -242,6 +263,10 @@ public class DocumentationGeneratorPropertyPage
             return value;
     }
 
+    public static String getCustomCssPath(IProject project) throws CoreException {
+        return project.getPersistentProperty(CUSTOM_CSS_QNAME);
+    }
+
     public static String replaceDoxygenConfigurationEntry(String content, String key, String value) {
         key = key.replace("\\", "\\\\");
         value = value.replace("\\", "\\\\");
@@ -272,6 +297,7 @@ public class DocumentationGeneratorPropertyPage
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
             content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "TAGFILES", OmnetppMainPlugin.getOmnetppRootDir() + "/doc/api/opptags.xml=" + OmnetppMainPlugin.getOmnetppRootDir() + "/doc/api");
             FileUtils.writeTextFile(fileName, content);
         }
         catch (Exception x) {

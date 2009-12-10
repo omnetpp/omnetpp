@@ -47,6 +47,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
@@ -280,8 +281,11 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		if (!(editorInput instanceof IFileEditorInput))
-			throw new PartInitException("Invalid input: it must be a file in the workspace");
+            throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + editorInput.getName(),
+			    "Please make sure the project is open before trying to open a file in it.");
+
 		super.init(site, editorInput);
+
 		setPartName(editorInput.getName());
 	}
 

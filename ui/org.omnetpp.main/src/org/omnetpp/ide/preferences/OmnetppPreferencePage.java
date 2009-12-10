@@ -32,7 +32,6 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.MultiLineTextFieldEditor;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.ProcessUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * The OMNeT++ preference page that is contributed to the Preferences dialog.

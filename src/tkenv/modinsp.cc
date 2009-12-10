@@ -667,6 +667,27 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
     cGate *dest_gate = gate->getNextGate();
 
     char gateptr[32], srcptr[32], destptr[32], indices[32];
+
+    // check if this is a two way connection (an other connection is pointing back
+    // to the this gate's pair from the next gate's pair)
+    bool twoWayConnection = true;
+    // check if this gate is really part of an in/out gate pair
+    // gate      o-------------------->o dest_gate
+    // gate_pair o<--------------------o dest_gate_pair
+    if (gate->getNameSuffix()[0]) {
+      const cGate *gate_pair = mod->gateHalf(gate->getBaseName(),
+                                        gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
+                                        gate->isVector() ? gate->getIndex() : -1);
+
+      if (dest_gate->getNameSuffix()[0]) {
+        const cGate *dest_gate_pair = dest_gate->getOwnerModule()->gateHalf(dest_gate->getBaseName(),
+                                            dest_gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
+                                            dest_gate->isVector() ? dest_gate->getIndex() : -1);
+          twoWayConnection = dest_gate_pair == gate_pair->getPreviousGate();
+      }
+    }
+
+
     ptrToStr(gate, gateptr);
     ptrToStr(mod, srcptr);
     ptrToStr(dest_gate->getOwnerModule(), destptr);
@@ -682,8 +703,10 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
             "{", dispstr, "} ",
             srcptr, " ",
             destptr, " ",
-            indices,
-            NULL ));
+            indices, " ",
+            twoWayConnection ? "1" : "0",
+            NULL
+             ));
 }
 
 void TGraphicalModWindow::redrawMessages()

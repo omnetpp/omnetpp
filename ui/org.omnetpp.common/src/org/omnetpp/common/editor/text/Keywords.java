@@ -22,7 +22,7 @@ public class Keywords {
 			"table", "td", "th", "tr", "tt", "kbd", "ul", "var" };
 
 	public final static String[] DOC_KEYWORDS = { "author", "bug", "date", "see", "since", "todo",
-			"version", "warning" };
+			"version", "warning" , "page", "titlepage"};
 
 	public final static String[] NED_GATE_TYPES = { "inout", "input", "output" };
 
