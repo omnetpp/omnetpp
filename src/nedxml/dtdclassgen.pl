@@ -248,7 +248,7 @@ print H "\n\n";
 # tag codes
 print H "/**\n";
 print H " * Tag codes\n";
-print H " * \n";
+print H " *\n";
 print H " * \@ingroup Data\n";
 print H " */\n";
 print H "enum NEDElementCode {\n";
@@ -317,14 +317,15 @@ foreach $element (@elements)
     $decl =~ s/</\\</mg;
     $decl =~ s/>/\\>/mg;
     $decl =~ s/#/\\#/mg;
+    $decl =~ s/ *$//mg;
 
     print H "/**\n";
     print H " * GENERATED CLASS. Represents the \\<$element\\> XML element in memory. DTD declaration:\n";
-    print H " * \n";
+    print H " *\n";
     print H " * <pre>\n";
     print H $decl;
     print H " * </pre>\n";
-    print H " * \n";
+    print H " *\n";
     print H " * \@ingroup Data\n";
     print H " */\n";
     print H "class NEDXML_API $elementclass : public NEDElement\n";
@@ -514,7 +515,7 @@ foreach $element (@elements)
 #
 print H "/**\n";
 print H " * GENERATED CLASS. Factory for NEDElement subclasses.\n";
-print H " * \n";
+print H " *\n";
 print H " * \@ingroup Data\n";
 print H " */\n";
 print H "class NEDXML_API NEDElementFactory\n";
@@ -589,7 +590,7 @@ print VAL_CC "NAMESPACE_BEGIN\n\n";
 
 print VAL_H "/**\n";
 print VAL_H " * GENERATED CLASS. Abtract base class for NED validators.\n";
-print VAL_H " * \n";
+print VAL_H " *\n";
 print VAL_H " * \@ingroup Validation\n";
 print VAL_H " */\n";
 print VAL_H "class NEDXML_API NEDValidatorBase\n";
@@ -667,7 +668,7 @@ print DTDVAL_CC "NAMESPACE_BEGIN\n\n";
 
 print DTDVAL_H "/**\n";
 print DTDVAL_H " * GENERATED CLASS. Validates a NEDElement tree by the DTD.\n";
-print DTDVAL_H " * \n";
+print DTDVAL_H " *\n";
 print DTDVAL_H " * \@ingroup Validation\n";
 print DTDVAL_H " */\n";
 print DTDVAL_H "class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase\n";
