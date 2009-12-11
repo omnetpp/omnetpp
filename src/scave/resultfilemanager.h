@@ -90,6 +90,7 @@ struct SCAVE_API ResultItem
 struct SCAVE_API ScalarResult : public ResultItem
 {
     double value;
+    bool isField;
 };
 
 /**
@@ -300,14 +301,15 @@ class SCAVE_API ResultFileManager
     enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
-    // ID: 1 bit computed, 7 bit type, 24 bit fileid, 32 bit pos
+    // ID: 1 bit computed, 1 bit field, 6 bit type, 24 bit fileid, 32 bit pos
     static bool _computed(ID id) { return (id >> 63) != 0; }
-    static int _type(ID id)   {return (id >> 56) & 0x7fUL;}
+    static bool _field(ID id) { return (id >> 62) != 0; }
+    static int _type(ID id)   {return (id >> 56) & 0x3fUL;}
     static int _fileid(ID id) {return (id >> 32) & 0x00fffffful;}
     static int _pos(ID id)    {return id & 0xffffffffUL;}
-    static ID _mkID(bool computed, int type, int fileid, int pos) {
+    static ID _mkID(bool computed, bool field, int type, int fileid, int pos) {
         assert((type>>7)==0 && (fileid>>24)==0 && (pos>>31)<=1);
-        return ((computed ? (ID)1 << 63 : (ID)0) | (ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
+        return ((computed ? (ID)1 << 63 : (ID)0) | (field ? (ID)1 << 62 : (ID)0) | (ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
     }
 
     // utility functions called while loading a result file
@@ -316,7 +318,7 @@ class SCAVE_API ResultFileManager
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
     void processLine(char **vec, int numTokens, sParseContext &ctx);
-    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
+    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value, bool isField);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap &attrs);
 
@@ -324,7 +326,7 @@ class SCAVE_API ResultFileManager
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
 
     template <class T>
-    void collectIDs(IDList &result, std::vector<T> ResultFile::* vec, int type) const;
+    void collectIDs(IDList &result, std::vector<T> ResultFile::* vec, int type, bool includeComputed = false, bool includeFields = true) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem& uncheckedGetItem(ID id) const;
@@ -374,10 +376,10 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueModuleParamValues(const RunList& runList, const char *paramName) const;
 
     // getting lists of data items
-    IDList getAllScalars() const;
-    IDList getAllVectors() const;
-    IDList getAllHistograms() const;
-    IDList getAllItems() const;
+    IDList getAllScalars(bool includeComputed = false, bool includeFields = true) const;
+    IDList getAllVectors(bool includeComputed = false) const;
+    IDList getAllHistograms(bool includeComputed = false) const;
+    IDList getAllItems(bool includeComputed = false, bool includeFields = true) const;
     IDList getScalarsInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;

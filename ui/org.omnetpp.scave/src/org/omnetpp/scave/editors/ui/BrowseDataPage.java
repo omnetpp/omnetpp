@@ -138,7 +138,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private void configureFilteredDataPanel(FilteredDataPanel panel) {
 		final IDataControl control = panel.getDataControl();
 		control.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
+			@Override
+            public void widgetSelected(SelectionEvent event) {
 				showStatusMessage(String.format("Selected %d out of %d rows", control.getSelectionCount(), control.getItemCount()));
 			}
 		});
@@ -222,10 +223,10 @@ public class BrowseDataPage extends ScaveEditorPage {
 	 * the tab labels as well.
 	 */
 	protected void refreshPage(final ResultFileManager manager) {
-	    IDList items = manager.getAllItems();
-		IDList vectors = manager.getAllVectors();
-		IDList scalars = manager.getAllScalars();
-		IDList histograms = manager.getAllHistograms();
+	    IDList items = manager.getAllItems(false, false);
+		IDList vectors = manager.getAllVectors(false);
+		IDList scalars = manager.getAllScalars(false, true);
+		IDList histograms = manager.getAllHistograms(false);
 
         tabFolder.getAllPanel().setIDList(items);
 		tabFolder.getScalarsPanel().setIDList(scalars);
