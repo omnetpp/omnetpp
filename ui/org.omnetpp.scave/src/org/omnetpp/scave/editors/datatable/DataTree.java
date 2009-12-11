@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.CsvWriter;
+import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -315,11 +316,12 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
     public List<? extends Object> getChildNodes(final List<? extends Object> path) {
         final Object firstNode = path == null || path.size() == 0 ? null : path.get(0);
 
+        // TODO: shall we rather use an enum and a generic tree node? we could get rid of the path stuff and use a simpler lazy tree interface
         return ResultFileManager.callWithReadLock(manager, new Callable<List<? extends Object>>() {
             public List<? extends Object> call() throws Exception {
                 Set<Object> set = new HashSet<Object>();
 
-                if (firstNode instanceof Long) {
+                if (firstNode instanceof Long) { // result item level
                     ResultItem resultItem = manager.getItem((Long)firstNode);
                     set.add(new NameValuePayload("Module name", String.valueOf(resultItem.getModuleName())));
                     set.add(new NameValuePayload("Type", resultItem.getType().toString().replaceAll("TYPE_", "").toLowerCase()));
@@ -349,25 +351,43 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
                         set.add(new NameValuePayload("Mean", String.valueOf(histogram.getMean())));
                         set.add(new NameValuePayload("StdDev", String.valueOf(histogram.getStddev())));
                         set.add(new NameValuePayload("Variance", String.valueOf(histogram.getVariance())));
+                        set.add(new BinsPayload((Long)firstNode, histogram.getBins().size()));
                     }
+                    else
+                        throw new IllegalArgumentException();
                 }
-                else {
+                else if (firstNode instanceof BinsPayload) { // bins level for histograms
+                    ResultItem resultItem = manager.getItem(((BinsPayload)firstNode).id);
+                    HistogramResult histogram = (HistogramResult)resultItem;
+                    DoubleVector bins = histogram.getBins();
+                    DoubleVector values = histogram.getValues();
+                    List<Object> list = new ArrayList<Object>();
+                    for (int i = 0; i < bins.size(); i++) {
+                        double bin1 = bins.get(i);
+                        double bin2 = i < bins.size() - 1 ? bins.get(i + 1) : Double.POSITIVE_INFINITY;
+                        double value = values.get(i);
+                        double valueFloor = Math.floor(value);
+                        list.add(new NameValuePayload(String.valueOf(bin1) + " .. " + String.valueOf(bin2), value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value)));
+                    }
+                    return list;
+                }
+                else if (!(firstNode instanceof NameValuePayload)) { // non leaf levels
                     for (int i = 0; i < idList.size(); i++) {
                         long id = idList.get(i);
                         ResultItem resultItem = manager.getItem(id);
                         Run run = resultItem.getFileRun().getRun();
                         if (matchesPath(path, id)) {
-                            if (firstNode == null) {
+                            if (firstNode == null) { // root node
                                 if (showFlatExperimentMeasurementReplicationTree)
                                     set.add(new ExperimentMeasurementReplicationPayload(run.getAttribute(RunAttribute.EXPERIMENT), run.getAttribute(RunAttribute.MEASUREMENT), run.getAttribute(RunAttribute.REPLICATION)));
                                 else
                                     set.add(new ExperimentPayload(run.getAttribute(RunAttribute.EXPERIMENT)));
                             }
-                            else if (firstNode instanceof ExperimentPayload)
+                            else if (firstNode instanceof ExperimentPayload) // logical level
                                 set.add(new MeasurementPayload(run.getAttribute(RunAttribute.MEASUREMENT)));
-                            else if (firstNode instanceof MeasurementPayload)
+                            else if (firstNode instanceof MeasurementPayload) // logical level
                                 set.add(new ReplicationPayload(run.getAttribute(RunAttribute.REPLICATION)));
-                            else if (firstNode instanceof ReplicationPayload || firstNode instanceof ExperimentMeasurementReplicationPayload) {
+                            else if (firstNode instanceof ReplicationPayload || firstNode instanceof ExperimentMeasurementReplicationPayload) { // logical level
                                 String moduleName = resultItem.getModuleName();
 
                                 if (showFlatModuleTree)
@@ -377,7 +397,7 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
                                     set.add(index == -1 || ".".equals(moduleName) ? moduleName : moduleName.substring(0, index));
                                 }
                             }
-                            else if (firstNode instanceof String) {
+                            else if (firstNode instanceof String) { // module tree levels
                                 String moduleName = resultItem.getModuleName();
                                 String modulePrefix = getModulePrefix(path);
                                 if (moduleName.equals(modulePrefix))
@@ -503,7 +523,7 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
             ResultItem resultItem = manager.getItem(id);
             Run run = resultItem.getFileRun().getRun();
             Object lastElement = path.get(lastIndex);
-            Object firstElement = path.size() == 0 ? null : path.get(0);
+            Object firstElement = path.get(0);
             String modulePrefix = getModulePrefix(path);
 
             if (lastElement instanceof ExperimentPayload) {
@@ -577,6 +597,37 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
 
         public int compareTo(NameValuePayload other) {
             return name.compareTo(other.name);
+        }
+    }
+
+    protected static class BinsPayload extends NameValuePayload {
+        public long id;
+
+        public BinsPayload(long id, long count) {
+            super("Bins", String.valueOf(count));
+            this.id = id;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + (int) (id ^ (id >>> 32));
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            BinsPayload other = (BinsPayload) obj;
+            if (id != other.id)
+                return false;
+            return true;
         }
     }
 }
