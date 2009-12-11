@@ -87,8 +87,6 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-// work in progress ...
-// TODO add icon
 public class DatasetView extends ViewWithMessagePart implements ISelectionProvider	{
 
 	public static final String ID = "org.omnetpp.scave.DatasetView";
@@ -142,7 +140,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 
 	@Override
 	protected Control createViewControl(Composite parent) {
-		tabFolder = new FilteredDataTabFolder(parent, SWT.NONE);
+		tabFolder = new FilteredDataTabFolder(parent, SWT.BOTTOM);
         tabFolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.FILL_BOTH));
 		setVisibleDataPanel(tabFolder.getVectorsPanel());
 		showFilter(false);

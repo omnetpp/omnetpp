@@ -9,21 +9,21 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.ResultType;
 
+/**
+ * A TabFolder that contains All, Vectors, Scalars, Histograms tabs with 
+ * corresponding data trees/tables. This is a passive UI component.
+ * 
+ * @author Levy
+ */
 public class FilteredDataTabFolder extends TabFolder {
     protected TabItem allTab;
-
     protected TabItem vectorsTab;
-
     protected TabItem scalarsTab;
-
     protected TabItem histogramsTab;
 
     protected FilteredDataPanel allPanel;
-
     protected FilteredDataPanel vectorsPanel;
-
     protected FilteredDataPanel scalarsPanel;
-
     protected FilteredDataPanel histogramsPanel;
 
     public FilteredDataTabFolder(Composite parent, int style) {

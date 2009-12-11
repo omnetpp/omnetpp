@@ -107,11 +107,14 @@ public class DataTable extends Table implements IDataControl {
 	}
 
 	private static final Column
-		COL_DIRECTORY = new Column("Directory", null, 60, true),
+		COL_DIRECTORY = new Column("Folder", null, 60, true),
 		COL_FILE = new Column("File name", FILE,100, true),
-		COL_CONFIG = new Column("Config name", CONFIGNAME, 100, true),
+		COL_CONFIG = new Column("Config name", CONFIGNAME, 80, true),
 		COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 20, true),
 		COL_RUN_ID = new Column("Run id", RUN, 100, true),
+		COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 80, false),
+		COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 120, false),
+		COL_REPLICATION = new Column("Replication", REPLICATION, 60, false),
 		COL_MODULE = new Column("Module", MODULE, 160, true),
 		COL_DATA = new Column("Name", NAME, 100, true),
 		COL_VALUE = new Column("Value", null, 80, true),
@@ -121,29 +124,29 @@ public class DataTable extends Table implements IDataControl {
         COL_VARIANCE = new Column("Variance", null, 60, true),
 		COL_MIN = new Column("Min", null, 60, false),
 		COL_MAX = new Column("Max", null, 60, false),
-		COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 60, false),
-		COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 60, false),
-		COL_REPLICATION = new Column("Replication", REPLICATION, 60, false),
-		COL_VECTOR_ID = new Column("Vector id", null, 60, false),
+		COL_VECTOR_ID = new Column("Vector id", null, 40, false),
 		COL_MIN_TIME = new Column("Min time", null, 60, false),
 		COL_MAX_TIME = new Column("Max time", null, 60, false);
 
 	private static final Column[] allScalarColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, 
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+		COL_MODULE, COL_DATA,
 		COL_VALUE
 	};
 
 	private static final Column[] allVectorColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
-		COL_VECTOR_ID,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, 
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+		COL_MODULE, COL_DATA,
+		COL_VECTOR_ID,
 		COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX, COL_MIN_TIME, COL_MAX_TIME
 	};
 
 	private static final Column[] allHistogramColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, 
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+		COL_MODULE, COL_DATA,
 		COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX
 	};
 

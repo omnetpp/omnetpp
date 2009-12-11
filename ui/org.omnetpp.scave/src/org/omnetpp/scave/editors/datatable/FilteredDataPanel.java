@@ -84,6 +84,7 @@ public class FilteredDataPanel extends Composite {
 	protected void initialize(ResultType type) {
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginHeight = 0;
+        gridLayout.marginWidth = 0;
 		setLayout(gridLayout);
 		filterPanel = new FilteringPanel(this, SWT.NONE);
 		filterPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
