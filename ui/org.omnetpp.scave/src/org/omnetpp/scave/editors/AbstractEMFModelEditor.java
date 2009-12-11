@@ -114,6 +114,7 @@ import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelDecorator;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
+import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
 
 
@@ -834,6 +835,21 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 					public void setActionBars(IActionBars actionBars) {
 						super.setActionBars(actionBars);
 						getActionBarContributor().shareGlobalActions(this, actionBars);
+					}
+					
+					@Override
+					public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+					    if (selection instanceof IDListSelection) {
+					        // re-package first element into ResultItemRef, otherwise property sheet
+					        // only gets a Long due to sel.toArray() in base class
+				            IDListSelection idList = (IDListSelection)selection;
+				            if (!idList.isEmpty()) {
+				                long id = (Long)idList.getFirstElement();
+                                ResultItemRef resultItemRef = new ResultItemRef(id, idList.getResultFileManager());
+                                selection = new StructuredSelection(resultItemRef);
+				            }   
+					    }
+					    super.selectionChanged(part, selection);
 					}
 				};
 		}

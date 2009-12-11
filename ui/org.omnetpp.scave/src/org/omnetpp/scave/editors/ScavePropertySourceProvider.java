@@ -23,6 +23,7 @@ import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ProcessingOpPropertySource;
+import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.SetOperationPropertySource;
 
 /**
@@ -62,6 +63,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 			if (properties instanceof VectorChartProperties)
 				return ((VectorChartProperties)properties).getLineProperties(lineID.getKey());
 		}
+		else if (object instanceof ResultItemRef)
+		    return new ResultItemPropertySource((ResultItemRef)object);
 
 		return delegate.getPropertySource(object);
 	}
