@@ -215,6 +215,7 @@ public class DataTree extends Tree implements IDataControl {
         item.setData(node);
         item.setImage(contentProvider.getImage(node));
         item.setItemCount(contentProvider.getChildNodes(path).size());
+        item.setExpanded(contentProvider.isExpandedByDefault(node));
     }
 
     private List<Object> getPath(TreeItem treeItem) {
@@ -231,6 +232,8 @@ public class DataTree extends Tree implements IDataControl {
 
 interface IVirtualTreeContentProvider<T> {
     public List<? extends T> getChildNodes(List<? extends T> path);
+
+    public boolean isExpandedByDefault(Object node);
 
     public Image getImage(Object node);
 
@@ -332,6 +335,10 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
                 return result;
             }
         });
+    }
+
+    public boolean isExpandedByDefault(Object node) {
+        return node instanceof ExperimentPayload || node instanceof MeasurementPayload;
     }
 
     public Image getImage(Object node) {
