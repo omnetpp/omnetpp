@@ -10,8 +10,11 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -20,6 +23,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -34,6 +38,7 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.model2.ExperimentMeasurementReplicationPayload;
 import org.omnetpp.scave.model2.ExperimentPayload;
 import org.omnetpp.scave.model2.MeasurementPayload;
 import org.omnetpp.scave.model2.ReplicationPayload;
@@ -53,9 +58,10 @@ public class DataTree extends Tree implements IDataControl {
         super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
         setHeaderVisible(true);
         setLinesVisible(true);
-        setMenu(contextMenuManager.createContextMenu(this));
+        setMenu(createContextMenu());
         addColumn("Name", 400);
         addColumn("Value", 200);
+        contentProvider = new ResultFileManagerTreeContentProvider();
 
         addListener(SWT.SetData, new Listener() {
             public void handleEvent(final Event e) {
@@ -71,12 +77,17 @@ public class DataTree extends Tree implements IDataControl {
         });
     }
 
+    public IVirtualTreeContentProvider<Object> getContentProvider() {
+        return contentProvider;
+    }
+
     public ResultFileManager getResultFileManager() {
         return manager;
     }
 
     public void setResultFileManager(ResultFileManager manager) {
         this.manager = manager;
+        contentProvider.setResultFileManager(manager);
     }
 
     public IDList getIDList() {
@@ -85,7 +96,7 @@ public class DataTree extends Tree implements IDataControl {
 
     public void setIDList(IDList idList) {
         this.idList = idList;
-        contentProvider = new ResultFileManagerTreeContentProvider(manager, idList);
+        contentProvider.setIDList(idList);
         refresh();
         fireContentChangedEvent();
     }
@@ -188,6 +199,13 @@ public class DataTree extends Tree implements IDataControl {
     protected void checkSubclass() {
     }
 
+    protected Menu createContextMenu() {
+        contextMenuManager.add(new ToggleShowFlatModuleTree());
+        contextMenuManager.add(new ToggleShowFlatExperimentMeasurementReplicationTree());
+        contextMenuManager.add(new Separator());
+        return contextMenuManager.createContextMenu(this);
+    }
+
     protected void fireContentChangedEvent() {
         if (listeners != null) {
             for (Object listener : new ArrayList<Object>(Arrays.asList(this.listeners.getListeners())))
@@ -228,9 +246,43 @@ public class DataTree extends Tree implements IDataControl {
 
         return path;
     }
+
+    class ToggleShowFlatModuleTree extends Action {
+        public ToggleShowFlatModuleTree() {
+            super("Flat module tree", IAction.AS_CHECK_BOX);
+        }
+
+        @Override
+        public void run() {
+            if (contentProvider instanceof ResultFileManagerTreeContentProvider) {
+                ResultFileManagerTreeContentProvider resultFileManagerTreeContentProvider = (ResultFileManagerTreeContentProvider)contentProvider;
+                resultFileManagerTreeContentProvider.showFlatModuleTree = !resultFileManagerTreeContentProvider.showFlatModuleTree;
+                refresh();
+            }
+        }
+    }
+
+    class ToggleShowFlatExperimentMeasurementReplicationTree extends Action {
+        public ToggleShowFlatExperimentMeasurementReplicationTree() {
+            super("Flat logical tree", IAction.AS_CHECK_BOX);
+        }
+
+        @Override
+        public void run() {
+            if (contentProvider instanceof ResultFileManagerTreeContentProvider) {
+                ResultFileManagerTreeContentProvider resultFileManagerTreeContentProvider = (ResultFileManagerTreeContentProvider)contentProvider;
+                resultFileManagerTreeContentProvider.showFlatExperimentMeasurementReplicationTree = !resultFileManagerTreeContentProvider.showFlatExperimentMeasurementReplicationTree;
+                refresh();
+           }
+        }
+    }
 }
 
 interface IVirtualTreeContentProvider<T> {
+    public void setResultFileManager(ResultFileManager manager);
+
+    public void setIDList(IDList idList);
+
     public List<? extends T> getChildNodes(List<? extends T> path);
 
     public boolean isExpandedByDefault(Object node);
@@ -245,14 +297,23 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
 
     protected IDList idList;
 
-    public ResultFileManagerTreeContentProvider(ResultFileManager manager, IDList idList) {
+    public boolean showFlatModuleTree;
+
+    public boolean showFlatExperimentMeasurementReplicationTree;
+
+    public ResultFileManagerTreeContentProvider() {
+    }
+
+    public void setResultFileManager(ResultFileManager manager) {
         this.manager = manager;
+    }
+
+    public void setIDList(IDList idList) {
         this.idList = idList;
     }
 
     public List<? extends Object> getChildNodes(final List<? extends Object> path) {
         final Object firstNode = path == null || path.size() == 0 ? null : path.get(0);
-        final int lastIndex = path == null ? -1 : path.size() - 1;
 
         return ResultFileManager.callWithReadLock(manager, new Callable<List<? extends Object>>() {
             public List<? extends Object> call() throws Exception {
@@ -296,20 +357,29 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
                         ResultItem resultItem = manager.getItem(id);
                         Run run = resultItem.getFileRun().getRun();
                         if (matchesPath(path, id)) {
-                            if (firstNode == null)
-                                set.add(new ExperimentPayload(run.getAttribute(RunAttribute.EXPERIMENT)));
+                            if (firstNode == null) {
+                                if (showFlatExperimentMeasurementReplicationTree)
+                                    set.add(new ExperimentMeasurementReplicationPayload(run.getAttribute(RunAttribute.EXPERIMENT), run.getAttribute(RunAttribute.MEASUREMENT), run.getAttribute(RunAttribute.REPLICATION)));
+                                else
+                                    set.add(new ExperimentPayload(run.getAttribute(RunAttribute.EXPERIMENT)));
+                            }
                             else if (firstNode instanceof ExperimentPayload)
                                 set.add(new MeasurementPayload(run.getAttribute(RunAttribute.MEASUREMENT)));
                             else if (firstNode instanceof MeasurementPayload)
                                 set.add(new ReplicationPayload(run.getAttribute(RunAttribute.REPLICATION)));
-                            else if (firstNode instanceof ReplicationPayload) {
+                            else if (firstNode instanceof ReplicationPayload || firstNode instanceof ExperimentMeasurementReplicationPayload) {
                                 String moduleName = resultItem.getModuleName();
-                                int index = moduleName.indexOf('.');
-                                set.add(index == -1 || ".".equals(moduleName) ? moduleName : moduleName.substring(0, index));
+
+                                if (showFlatModuleTree)
+                                    set.add(moduleName);
+                                else {
+                                    int index = moduleName.indexOf('.');
+                                    set.add(index == -1 || ".".equals(moduleName) ? moduleName : moduleName.substring(0, index));
+                                }
                             }
                             else if (firstNode instanceof String) {
                                 String moduleName = resultItem.getModuleName();
-                                String modulePrefix = lastIndex < 3 ? null : StringUtils.join(CollectionUtils.toReversed(path.subList(0, lastIndex - 2)), ".");
+                                String modulePrefix = getModulePrefix(path);
                                 if (moduleName.equals(modulePrefix))
                                     set.add(id);
                                 else if (moduleName.startsWith(modulePrefix)) {
@@ -374,6 +444,10 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
             ReplicationPayload payload = (ReplicationPayload)node;
             return index == 0 ? payload.name + " (replication)" : "";
         }
+        else if (node instanceof ExperimentMeasurementReplicationPayload) {
+            ExperimentMeasurementReplicationPayload payload = (ExperimentMeasurementReplicationPayload)node;
+            return index == 0 ? payload.experiment + (StringUtils.isEmpty(payload.measurement) ? "" : " : " + payload.measurement) + " : " + payload.replication : "";
+        }
         else if (node instanceof String) {
             String payload = (String)node;
             return index == 0 ? payload : "";
@@ -405,22 +479,58 @@ class ResultFileManagerTreeContentProvider implements IVirtualTreeContentProvide
             throw new IllegalArgumentException();
     }
 
-    protected boolean matchesPath(List<? extends Object> path, long id) {
-        int lastIndex = path == null ? -1 : path.size() - 1;
-        ResultItem resultItem = manager.getItem(id);
-        Run run = resultItem.getFileRun().getRun();
-        ExperimentPayload experimentPayload = lastIndex < 0 ? null : (ExperimentPayload)path.get(lastIndex);
-        MeasurementPayload measurementPayload = lastIndex < 1 ? null : (MeasurementPayload)path.get(lastIndex - 1);
-        ReplicationPayload replicationPayload = lastIndex < 2 ? null : (ReplicationPayload)path.get(lastIndex - 2);
-        Object firstElement = path == null || path.size() == 0 ? null : path.get(0);
-        String modulePrefix = lastIndex < 3 ? null : StringUtils.join(CollectionUtils.toReversed(path.subList(firstElement instanceof Long ? 1 : 0, lastIndex - 2)), ".");
+    protected String getModulePrefix(final List<? extends Object> path) {
+        StringBuffer modulePrefix = new StringBuffer();
+        for (int j =  path.size() - 1; j >= 0; j--) {
+            Object element = path.get(j);
+            if (element instanceof String) {
+                if (modulePrefix.length() == 0)
+                    modulePrefix.append(element);
+                else {
+                    modulePrefix.append('.');
+                    modulePrefix.append(element);
+                }
+            }
+        }
+        return modulePrefix.toString();
+    }
 
-        return
-            (experimentPayload == null || experimentPayload.name.equals(run.getAttribute(RunAttribute.EXPERIMENT))) &&
-            (measurementPayload == null || measurementPayload.name.equals(run.getAttribute(RunAttribute.MEASUREMENT))) &&
-            (replicationPayload == null || replicationPayload.name.equals(run.getAttribute(RunAttribute.REPLICATION))) &&
-            (modulePrefix == null || resultItem.getModuleName().startsWith(modulePrefix)) &&
-            (!(firstElement instanceof Long) || (Long)firstElement == id);
+    protected boolean matchesPath(List<? extends Object> path, long id) {
+        if (path == null || path.size() == 0)
+            return true;
+        else {
+            int lastIndex = path.size() - 1;
+            ResultItem resultItem = manager.getItem(id);
+            Run run = resultItem.getFileRun().getRun();
+            Object lastElement = path.get(lastIndex);
+            Object firstElement = path.size() == 0 ? null : path.get(0);
+            String modulePrefix = getModulePrefix(path);
+
+            if (lastElement instanceof ExperimentPayload) {
+                ExperimentPayload experimentPayload = lastIndex < 0 ? null : (ExperimentPayload)lastElement;
+                MeasurementPayload measurementPayload = lastIndex < 1 ? null : (MeasurementPayload)path.get(lastIndex - 1);
+                ReplicationPayload replicationPayload = lastIndex < 2 ? null : (ReplicationPayload)path.get(lastIndex - 2);
+
+                return
+                    (experimentPayload == null || experimentPayload.name.equals(run.getAttribute(RunAttribute.EXPERIMENT))) &&
+                    (measurementPayload == null || measurementPayload.name.equals(run.getAttribute(RunAttribute.MEASUREMENT))) &&
+                    (replicationPayload == null || replicationPayload.name.equals(run.getAttribute(RunAttribute.REPLICATION))) &&
+                    (modulePrefix == null || resultItem.getModuleName().startsWith(modulePrefix)) &&
+                    (!(firstElement instanceof Long) || (Long)firstElement == id);
+            }
+            else if (lastElement instanceof ExperimentMeasurementReplicationPayload) {
+                ExperimentMeasurementReplicationPayload payload = (ExperimentMeasurementReplicationPayload)lastElement;
+
+                return
+                    (payload == null || payload.experiment.equals(run.getAttribute(RunAttribute.EXPERIMENT))) &&
+                    (payload == null || payload.measurement.equals(run.getAttribute(RunAttribute.MEASUREMENT))) &&
+                    (payload == null || payload.replication.equals(run.getAttribute(RunAttribute.REPLICATION))) &&
+                    (modulePrefix == null || resultItem.getModuleName().startsWith(modulePrefix)) &&
+                    (!(firstElement instanceof Long) || (Long)firstElement == id);
+            }
+            else
+                throw new IllegalArgumentException("Unknown path");
+        }
     }
 
     protected static class NameValuePayload implements Comparable<NameValuePayload> {
