@@ -52,6 +52,7 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
@@ -122,7 +123,6 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		site.setSelectionProvider(this);
 	}
 
-
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
@@ -137,8 +137,8 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		createContextMenu(tabFolder.getVectorsPanel());
 		createContextMenu(tabFolder.getScalarsPanel());
 		createContextMenu(tabFolder.getHistogramsPanel());
+        workbechSelectionChanged(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection());
 	}
-
 
 	@Override
 	protected Control createViewControl(Composite parent) {
@@ -162,7 +162,8 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private FilteredDataPanel configurePanel(FilteredDataPanel panel) {
 		IDataControl control = panel.getDataControl();
         control.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				IDataControl control = (IDataControl)e.widget;
 				if (control.getSelectionCount() == 0)
 					setSelection(StructuredSelection.EMPTY);
@@ -209,7 +210,8 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		    menuManager.add(new ChooseTableColumnsAction((DataTable)control));
 		menuManager.add(setFilterAction);
 		control.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
 					public Object call() throws Exception {
 						setFilterAction.update(panel);
@@ -536,7 +538,8 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			}
 		}
 
-		public void run() {
+		@Override
+        public void run() {
 			setVisibleDataPanel(panel);
 		}
 	}
