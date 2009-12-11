@@ -63,31 +63,40 @@ contribute to one or more of those wizard dialogs.
 
 === An Example Wizard
 
+As an example - in the following sections -  we will create a simple wizard that 
+will support either creating a simulation (complete with NED and INI files),
+or just a single NED file with a network defined in it. The user will be able to 
+specify the type and the number of the submodules.
+
 ==== Configuring the Wizard
 
 The first step when creating a wizard is to create a new folder
 under the `templates` directory of the project. A file named `template.properties` 
-must be present in the newly created directory. The file is used to configure 
+must be present in the newly created directory. This file is used to configure 
 the wizard. 
 
   templateName = New Test Wizard
-  templateDescription = Generate an exampmle
+  templateDescription = Generate an example
   templateCategory = Test Wizards
   supportedWizardTypes = simulation, network
 
 Specify at least the name, type and category for your wizard. Category is used to
-specify how the wizards will be visually grouped. Wizard type specifies, in which
-New ... Wizard  your new wizard will appear. You can specify one or more of the
-following types: `project, simulation, nedfile, inifile, msgfile, wizard, 
-simplemodue, compoundmodule, network, import, export` 
+specify how the wizards will be visually grouped. Wizard type specifies in which
+New ... Wizard  your wizard will appear. You can specify for example: `project, 
+simulation, network` etc. In our case the wizard will be added both to 
+the New Simulation Wizard and to the New Network Wizard.
 
-You can decide now what data you would like to gather from the user. Define 
-template variables and their values as key-value pairs:
+We can now decide, what data we would like to ask from the user. 
+Template variables and their values can be defined as key-value pairs:
 
-  nodeName = Dummy
+  nodeType = Dummy
   networkSize = 6
  
-The wizard should have a custom page, where the user can specify the value of the above variables.
+The `nodeType` variable will be used as the submodule type in our network, while
+the `networkSize` defines how many submodules we want in the network.
+
+We have to define a custom wizard page, where the user can specify the value 
+of the above variables.
 
   page.1.file = parameters.xswt
   page.1.title = Network parameters 
@@ -103,7 +112,8 @@ Files with `.xswt` extension (Wizard Page definitions) are used to define the UI
 add new wizard pages to gather user input for the template generation. In the previous
 section we have specified that the file called `parameters.xswt` will contain the new
 wizard page definition. We will add a 'spinner' control to specify the size of our network 
-and a 'text' control to specify the node type:
+and a 'text' control to specify the node type. Create a new file called `parameters.xswt`
+with the following content: 
 
   <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 	  <import xmlns="http://sweet_swt.sf.net/xswt">
@@ -117,29 +127,34 @@ and a 'text' control to specify the node type:
 	    <package name="org.omnetpp.ned.editor.wizards.support" />
 	    <package name="org.omnetpp.cdt.wizard.support" />
 	  </import>
+	  <!-- Create a two column layout  -->
 	  <layout x:class="GridLayout" numColumns="2"/>
 	  <x:children>
+    	<!-- First row  -->
 	    <label text="Number nodes in the network:"/>
 	    <spinner x:id="networkSize" minimum="2" x:style="BORDER"/>
+    	<!-- Second row  -->
 	    <label text="Type of Nodes:"/>
-	    <text x:id="nodeName" x:style="BORDER"/>
+	    <text x:id="nodeType" x:style="BORDER"/>
 	  </x:children>
   </xswt>
 
-The above page will have two columns. The first column contains a label,
-while the second contains an editable control.
-Please note the `x:id="varName"` attributes in the spinner and text control 
-definitions. We can bind a template variable to a control using the `id` attribute.
-When the user finishes with the wizard page, the content of the controls will be 
-automatically copied to the specified template variables.   
+The above defined wizard page will have two columns. The first column contains labels,
+while the second one contains the editable controls.
+The `x:id="varName"` attributes in the spinner and text control definitions are used 
+to bind a template variable to the control.
+When a page is displayed, the content of the bound variables are copied into the controls.
+When the user navigates away from the page or press the 'Finish' button the content of the
+controls are copied back to the bound variables. The filled variables    
 
 
 ==== Creating Templated Files
 
 When the template is used, the contents of the template folder (and subfolders)
 will be copied over into the new project preserving the directory structure,
-with the exception of `template.properties` and other known special-purpose files.
-(It is also possible to specify other files and folders to ignore during copying.)
+with the exception of `template.properties`. (It is also possible to specify 
+other files and folders to ignore during copying specifying a file list
+for the `ignoreResources` configuration key.)
 
 When the wizard is being used, a pool of variables is kept by the wizard dialog.
 These variables are initialized from the `key = value` lines in the 
@@ -154,7 +169,13 @@ to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (`*.ftl`) files.
 
-Create a file named `untitled.ned.flt`. 
+Create a file with a filename that ends in `.flt` 
+e.g.`untitled.ned.flt`. This will create a template file that will be processed
+by the templating engine. The name of the file does not matter, because the
+<@setoutput .../> directive instructs the templating engine to output 
+everything from the current file into the file that is specified by the 
+`targetFileName` variable. `targetFileName` is automatically filled out by 
+the wizard, based on the filename the user selected on the first wizard page. 
 
 	<@setoutput path=targetFileName?default("")/>
 	${bannerComment}
@@ -163,10 +184,10 @@ Create a file named `untitled.ned.flt`.
 	
 	network ${targetTypeName}
 	{
-		node[${networkSize}] : ${nodeName}
+		node[${networkSize}] : ${nodeType}
 	}
 
-The file name for the output will be the value of the `targetFileName` variable.
+The `targetFileName` and `targetTypeName` are automatically filled out by the wizard.
 The rest of template variables will be substituted into the template. 
 
 Specific wizard dialogs will also define extra variables for use in the
