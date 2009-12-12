@@ -26,7 +26,7 @@ public class ElementListSelectOrCreateDialog extends ElementListSelectionDialog 
 	protected Object[] elements; //Note: duplicate of super.fElements and fFilteredList.fElements, as they are not accessible
 
 	public interface ICallback {
-		public Object createNewObject();
+		public Object createNewObject(String currentFilter);
 	}
 
 	public ElementListSelectOrCreateDialog(Shell parent, ILabelProvider renderer) {
@@ -45,7 +45,7 @@ public class ElementListSelectOrCreateDialog extends ElementListSelectionDialog 
 
 		newButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				Object newObject = callback.createNewObject();
+				Object newObject = callback.createNewObject(getFilter());
 				if (newObject != null)
 					addToDialog(newObject);
 			}

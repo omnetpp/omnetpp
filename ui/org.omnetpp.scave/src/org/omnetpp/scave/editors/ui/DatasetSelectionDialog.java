@@ -50,8 +50,9 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 
 		// configure the "New" button to prompt for new dataset name
 		setCallback(new ElementListSelectOrCreateDialog.ICallback() {
-			public Object createNewObject() {
-				InputDialog dlg = new InputDialog(editor.getSite().getShell(), "New Dataset", "Enter name for new Dataset:", "", null);
+			public Object createNewObject(String currentFilter) {
+			    String initialName = currentFilter==null ? "" : currentFilter.trim().replaceAll("[*?]", "");
+				InputDialog dlg = new InputDialog(editor.getSite().getShell(), "New Dataset", "Enter name for new dataset:", initialName, null);
 				if (dlg.open()== Window.OK) {
 					String datasetName = dlg.getValue();
 					Analysis analysis = editor.getAnalysis();
