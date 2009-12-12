@@ -24,9 +24,9 @@
     </nedTypeChooser>
   
     <label text="File to export to:"/>
-    <fileChooser x:id="fileName">
+    <saveAsChooser x:id="fileName">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </fileChooser>
+    </saveAsChooser>
 
     <label x:style="WRAP" text="NOTE: The wizard will export items in the NED definition without any processing. In other words, it has the following limitations: it does not export modules from the potential base class(es); does not expand module vectors, connection 'for' loops and conditions; does not export parameter settings except those explicitly written in the NED declaration.">
         <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>

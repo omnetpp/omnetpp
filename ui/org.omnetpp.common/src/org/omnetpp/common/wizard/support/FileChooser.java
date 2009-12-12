@@ -107,12 +107,11 @@ public class FileChooser extends AbstractChooser {
     }
 
     public String getFileName() {
-        return getTextControl().getText();
+        return getText();
     }
 
     public void setFileName(String file) {
-        getTextControl().setText(file);
-        getTextControl().selectAll();
+        setText(file);
     }
 
     @Override
