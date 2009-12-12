@@ -207,8 +207,6 @@ public class TemplateSelectionPage extends WizardPage {
         List<IContentTemplate> templates = getTemplates();
         setTemplates(templates);
         setSelectedTemplate(getRememberedTemplate(templates));
-
-        setPageComplete(false);
     }
 
     protected void selectionChanged() {
