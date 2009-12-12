@@ -567,138 +567,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						subMenuItem.setText("Custom nonlinear...");
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
-								TitleAreaDialog dialog = new TitleAreaDialog(Display.getCurrent().getActiveShell()) {
-									private SequenceChartFacade sequenceChartFacade;
-
-									private double oldNonLinearMinimumTimelineCoordinateDelta;
-
-									private double oldNonLinearFocus;
-
-									private org.omnetpp.common.engine.BigDecimal[] oldLeftRightSimulationTimeRange;
-
-									private Label minimumLabel;
-
-									private Label focusLabel;
-
-									private Scale minimum;
-
-									private Scale focus;
-
-									@Override
-									protected Control createDialogArea(Composite parent) {
-										sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
-										oldLeftRightSimulationTimeRange = sequenceChart.getViewportSimulationTimeRange();
-										oldNonLinearMinimumTimelineCoordinateDelta = sequenceChartFacade.getNonLinearMinimumTimelineCoordinateDelta();
-										oldNonLinearFocus = sequenceChartFacade.getNonLinearFocus();
-
-										setHelpAvailable(false);
-										setTitle("Custom nonlinear timeline mode");
-										setMessage("Please select appropriate nonlinearity factors");
-
-										Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
-										container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-										container.setLayout(new GridLayout());
-
-										minimumLabel = new Label(container, SWT.NONE);
-										minimumLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-
-										minimum = new Scale(container, SWT.NONE);
-										minimum.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-										minimum.setMinimum(0);
-										minimum.setMaximum(1000);
-										minimum.addSelectionListener(new SelectionAdapter() {
-											@Override
-											public void widgetSelected(SelectionEvent e) {
-												setNonLinearMinimumTimelineCoordinateDeltaText();
-												apply();
-											}
-										});
-										minimum.setSelection(getNonLinearMinimumTimelineCoordinateDeltaScale());
-										setNonLinearMinimumTimelineCoordinateDeltaText();
-
-										focusLabel = new Label(container, SWT.NONE);
-										focusLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-
-										focus = new Scale(container, SWT.NONE);
-										focus.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-										focus.setMinimum(0);
-										focus.setMaximum(1000);
-										focus.addSelectionListener(new SelectionAdapter() {
-											@Override
-											public void widgetSelected(SelectionEvent e) {
-												setNonLinearFocusText();
-												apply();
-											}
-										});
-										focus.setSelection(getNonLinearFocusScale());
-										setNonLinearFocusText();
-
-										return container;
-									}
-
-									@Override
-									protected void configureShell(Shell newShell) {
-										newShell.setText("Custom nonlinear timeline mode");
-										super.configureShell(newShell);
-									}
-
-									@Override
-									protected void okPressed() {
-										apply();
-										super.okPressed();
-									}
-
-									@Override
-									protected void cancelPressed() {
-										sequenceChartFacade.setNonLinearMinimumTimelineCoordinateDelta(oldNonLinearMinimumTimelineCoordinateDelta);
-										sequenceChartFacade.setNonLinearFocus(oldNonLinearFocus);
-
-										redrawSequenceChart();
-
-										super.cancelPressed();
-									}
-
-									private void apply() {
-										sequenceChartFacade.setNonLinearFocus(getNonLinearFocus());
-										sequenceChartFacade.setNonLinearMinimumTimelineCoordinateDelta(getNonLinearMinimumTimelineCoordinateDelta());
-
-										redrawSequenceChart();
-									}
-
-									private void redrawSequenceChart() {
-										sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
-										sequenceChart.setViewportSimulationTimeRange(oldLeftRightSimulationTimeRange);
-									}
-
-									private void setNonLinearMinimumTimelineCoordinateDeltaText() {
-                                        BigDecimal value = new BigDecimal(100 * getNonLinearMinimumTimelineCoordinateDelta());
-                                        value = value.round(new MathContext(3));
-										minimumLabel.setText("Relative minimum distance to maximum distance: " + value + "%");
-									}
-
-									private int getNonLinearMinimumTimelineCoordinateDeltaScale() {
-										return (int)(1000 * sequenceChartFacade.getNonLinearMinimumTimelineCoordinateDelta());
-									}
-
-									private double getNonLinearMinimumTimelineCoordinateDelta() {
-										return (double)minimum.getSelection() / 1000;
-									}
-
-									private int getNonLinearFocusScale() {
-										return (int)((Math.log10(sequenceChartFacade.getNonLinearFocus()) + 18) * 40);
-									}
-
-									private double getNonLinearFocus() {
-										return Math.pow(10, ((double)focus.getSelection() / 40) - 18);
-									}
-
-									private void setNonLinearFocusText() {
-                                        BigDecimal value = new BigDecimal(getNonLinearFocus());
-                                        value = value.round(new MathContext(3));
-										focusLabel.setText("Nonlinear simulation time focus: " + TimeUtils.secondsToTimeString(value));
-									}
-								};
-
+								TitleAreaDialog dialog = new CustomNonlinearOptionsDialog(Display.getCurrent().getActiveShell(), sequenceChart);
 								dialog.open();
 							}
 						});
@@ -1586,6 +1455,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 				public ExportToSVGDialog(Shell shell) {
 					super(shell);
+			        setShellStyle(getShellStyle() | SWT.RESIZE);
 				}
 
 				public int getExtraSpace() {
@@ -1701,7 +1571,139 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 
-	private abstract class SequenceChartAction extends Action {
+	static class CustomNonlinearOptionsDialog extends TitleAreaDialog {
+	    private SequenceChart sequenceChart;
+        private SequenceChartFacade sequenceChartFacade;
+        private double oldNonLinearMinimumTimelineCoordinateDelta;
+        private double oldNonLinearFocus;
+        private org.omnetpp.common.engine.BigDecimal[] oldLeftRightSimulationTimeRange;
+        private Label minimumLabel;
+        private Label focusLabel;
+        private Scale minimum;
+        private Scale focus;
+
+        private CustomNonlinearOptionsDialog(Shell parentShell, SequenceChart sequenceChart) {
+            super(parentShell);
+            this.sequenceChart = sequenceChart;
+            setShellStyle(getShellStyle() | SWT.RESIZE);
+        }
+
+        @Override
+        protected Control createDialogArea(Composite parent) {
+        	sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
+        	oldLeftRightSimulationTimeRange = sequenceChart.getViewportSimulationTimeRange();
+        	oldNonLinearMinimumTimelineCoordinateDelta = sequenceChartFacade.getNonLinearMinimumTimelineCoordinateDelta();
+        	oldNonLinearFocus = sequenceChartFacade.getNonLinearFocus();
+
+        	setHelpAvailable(false);
+        	setTitle("Custom nonlinear timeline mode");
+        	setMessage("Please select appropriate nonlinearity factors");
+
+        	Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
+        	container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        	container.setLayout(new GridLayout());
+
+        	minimumLabel = new Label(container, SWT.NONE);
+        	minimumLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+        	minimum = new Scale(container, SWT.NONE);
+        	minimum.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        	minimum.setMinimum(0);
+        	minimum.setMaximum(1000);
+        	minimum.addSelectionListener(new SelectionAdapter() {
+        		@Override
+        		public void widgetSelected(SelectionEvent e) {
+        			setNonLinearMinimumTimelineCoordinateDeltaText();
+        			apply();
+        		}
+        	});
+        	minimum.setSelection(getNonLinearMinimumTimelineCoordinateDeltaScale());
+        	setNonLinearMinimumTimelineCoordinateDeltaText();
+
+        	focusLabel = new Label(container, SWT.NONE);
+        	focusLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+        	focus = new Scale(container, SWT.NONE);
+        	focus.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        	focus.setMinimum(0);
+        	focus.setMaximum(1000);
+        	focus.addSelectionListener(new SelectionAdapter() {
+        		@Override
+        		public void widgetSelected(SelectionEvent e) {
+        			setNonLinearFocusText();
+        			apply();
+        		}
+        	});
+        	focus.setSelection(getNonLinearFocusScale());
+        	setNonLinearFocusText();
+
+        	return container;
+        }
+
+        @Override
+        protected void configureShell(Shell newShell) {
+        	newShell.setText("Custom nonlinear timeline mode");
+        	super.configureShell(newShell);
+        }
+
+        @Override
+        protected void okPressed() {
+        	apply();
+        	super.okPressed();
+        }
+
+        @Override
+        protected void cancelPressed() {
+        	sequenceChartFacade.setNonLinearMinimumTimelineCoordinateDelta(oldNonLinearMinimumTimelineCoordinateDelta);
+        	sequenceChartFacade.setNonLinearFocus(oldNonLinearFocus);
+
+        	redrawSequenceChart();
+
+        	super.cancelPressed();
+        }
+
+        private void apply() {
+        	sequenceChartFacade.setNonLinearFocus(getNonLinearFocus());
+        	sequenceChartFacade.setNonLinearMinimumTimelineCoordinateDelta(getNonLinearMinimumTimelineCoordinateDelta());
+
+        	redrawSequenceChart();
+        }
+
+        private void redrawSequenceChart() {
+        	sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
+        	sequenceChart.setViewportSimulationTimeRange(oldLeftRightSimulationTimeRange);
+        }
+
+        private void setNonLinearMinimumTimelineCoordinateDeltaText() {
+            BigDecimal value = new BigDecimal(100 * getNonLinearMinimumTimelineCoordinateDelta());
+            value = value.round(new MathContext(3));
+        	minimumLabel.setText("Relative minimum distance to maximum distance: " + value + "%");
+        }
+
+        private int getNonLinearMinimumTimelineCoordinateDeltaScale() {
+        	return (int)(1000 * sequenceChartFacade.getNonLinearMinimumTimelineCoordinateDelta());
+        }
+
+        private double getNonLinearMinimumTimelineCoordinateDelta() {
+        	return (double)minimum.getSelection() / 1000;
+        }
+
+        private int getNonLinearFocusScale() {
+        	return (int)((Math.log10(sequenceChartFacade.getNonLinearFocus()) + 18) * 40);
+        }
+
+        private double getNonLinearFocus() {
+        	return Math.pow(10, ((double)focus.getSelection() / 40) - 18);
+        }
+
+        private void setNonLinearFocusText() {
+            BigDecimal value = new BigDecimal(getNonLinearFocus());
+            value = value.round(new MathContext(3));
+        	focusLabel.setText("Nonlinear simulation time focus: " + TimeUtils.secondsToTimeString(value));
+        }
+    }
+
+    private abstract class SequenceChartAction extends Action {
 		public SequenceChartAction(String text, int style) {
 			super(text, style);
 		}
