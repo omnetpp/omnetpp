@@ -14,7 +14,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -23,7 +22,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -44,22 +42,23 @@ import org.omnetpp.scave.model2.ExperimentPayload;
 import org.omnetpp.scave.model2.MeasurementPayload;
 import org.omnetpp.scave.model2.ReplicationPayload;
 
+/**
+ * This is a class that Levy didn't have time to document :)
+ * 
+ * @author Levy
+ */
 public class DataTree extends Tree implements IDataControl {
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-
     protected ListenerList listeners;
-
     protected ResultFileManager manager;
-
     protected IDList idList;
-
     protected IVirtualTreeContentProvider<Object> contentProvider;
 
     public DataTree(Composite parent, int style) {
         super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
         setHeaderVisible(true);
         setLinesVisible(true);
-        setMenu(createContextMenu());
+        setMenu(contextMenuManager.createContextMenu(this));
         addColumn("Name", 400);
         addColumn("Value", 200);
         contentProvider = new ResultFileManagerTreeContentProvider();
@@ -200,12 +199,13 @@ public class DataTree extends Tree implements IDataControl {
     protected void checkSubclass() {
     }
 
-    protected Menu createContextMenu() {
-        contextMenuManager.add(new ToggleShowFlatModuleTree());
-        contextMenuManager.add(new ToggleShowFlatExperimentMeasurementReplicationTree());
-        contextMenuManager.add(new Separator());
-        return contextMenuManager.createContextMenu(this);
+    public IAction createFlattenedModuleTreeAction() {
+        return new FlattenedModuleTreeAction();
     }
+    
+    public IAction createFlattenedLogicalTreeAction() {
+        return new FlattenedLogicalTreeAction();
+    }        
 
     protected void fireContentChangedEvent() {
         if (listeners != null) {
@@ -248,9 +248,9 @@ public class DataTree extends Tree implements IDataControl {
         return path;
     }
 
-    class ToggleShowFlatModuleTree extends Action {
-        public ToggleShowFlatModuleTree() {
-            super("Flat module tree", IAction.AS_CHECK_BOX);
+    class FlattenedModuleTreeAction extends Action {
+        public FlattenedModuleTreeAction() {
+            super("Flattened Module Tree", IAction.AS_CHECK_BOX);
         }
 
         @Override
@@ -263,9 +263,9 @@ public class DataTree extends Tree implements IDataControl {
         }
     }
 
-    class ToggleShowFlatExperimentMeasurementReplicationTree extends Action {
-        public ToggleShowFlatExperimentMeasurementReplicationTree() {
-            super("Flat logical tree", IAction.AS_CHECK_BOX);
+    class FlattenedLogicalTreeAction extends Action {
+        public FlattenedLogicalTreeAction() {
+            super("Flattened Logical Tree", IAction.AS_CHECK_BOX);
         }
 
         @Override

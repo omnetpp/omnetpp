@@ -25,8 +25,8 @@ public class ChooseTableColumnsAction extends Action {
 	private DataTable table;
 
 	public ChooseTableColumnsAction(DataTable table) {
-		setText("Choose table columns...");
-		setToolTipText("Choose table columns");
+		setText("Choose Table Columns...");
+		setToolTipText("Choose Table Columns");
 		this.table = table;
 	}
 

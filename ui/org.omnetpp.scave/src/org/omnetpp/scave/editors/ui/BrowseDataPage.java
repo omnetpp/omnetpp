@@ -25,6 +25,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
+import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.datatable.FilteredDataTabFolder;
 import org.omnetpp.scave.editors.datatable.IDataControl;
@@ -126,6 +127,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 			contextMenuManager.add(setFilterAction);
 			if (panel.getDataControl() instanceof DataTable)
 			    contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
+	        if (panel.getDataControl() instanceof DataTree) {
+	            DataTree dataTree = (DataTree)panel.getDataControl();
+	            contextMenuManager.add(dataTree.createFlattenedModuleTreeAction());
+	            contextMenuManager.add(dataTree.createFlattenedLogicalTreeAction());
+	        }
 			contextMenuManager.add(new Separator());
 			contextMenuManager.add(editorContributor.getShowOutputVectorViewAction());
 		}

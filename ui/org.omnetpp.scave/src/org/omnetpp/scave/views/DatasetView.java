@@ -62,6 +62,7 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
+import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.datatable.FilteredDataTabFolder;
 import org.omnetpp.scave.editors.datatable.IDataControl;
@@ -206,6 +207,11 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		IMenuManager menuManager = control.getContextMenuManager();
 		if (control instanceof DataTable)
 		    menuManager.add(new ChooseTableColumnsAction((DataTable)control));
+		if (control instanceof DataTree) {
+            DataTree dataTree = (DataTree)control;
+            menuManager.add(dataTree.createFlattenedModuleTreeAction());
+            menuManager.add(dataTree.createFlattenedLogicalTreeAction());
+        }
 		menuManager.add(setFilterAction);
 		control.addSelectionListener(new SelectionAdapter() {
 			@Override
