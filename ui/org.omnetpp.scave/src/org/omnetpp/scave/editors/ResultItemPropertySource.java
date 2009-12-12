@@ -1,5 +1,11 @@
 package org.omnetpp.scave.editors;
 
+import static org.omnetpp.scave.engine.RunAttribute.CONFIGNAME;
+import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
+import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
@@ -36,6 +42,14 @@ public class ResultItemPropertySource implements IPropertySource {
     }
 
     // display labels as well as property IDs
+    public static final String PROP_DIRECTORY = "Folder";
+    public static final String PROP_FILE = "File";
+    public static final String PROP_CONFIG = "Config";
+    public static final String PROP_RUNNUMBER = "Run number";
+    public static final String PROP_RUN_ID = "Run Id";
+    public static final String PROP_EXPERIMENT = "Experiment";
+    public static final String PROP_MEASUREMENT = "Measurement";
+    public static final String PROP_REPLICATION = "Replication";
     public static final String PROP_KIND = "Kind";
     public static final String PROP_NAME = "Name";
     public static final String PROP_MODULE = "Module";
@@ -47,6 +61,7 @@ public class ResultItemPropertySource implements IPropertySource {
     public static final String PROP_MEAN = "Mean";
     public static final String PROP_STDDEV = "StdDev";
     public static final String PROP_VARIANCE = "Variance";
+    public static final String PROP_VECTOR_ID = "Vector Id";
     public static final String PROP_START_EVENT_NUM = "Start event number";
     public static final String PROP_END_EVENT_NUM = "End event number";
     public static final String PROP_START_TIME = "Start time";
@@ -55,19 +70,27 @@ public class ResultItemPropertySource implements IPropertySource {
     public static final String[] BASE_PROPERTY_IDS = { 
         PROP_KIND, PROP_MODULE, PROP_NAME, PROP_TYPE 
     };
+
+    public static final String[] CONTAINER_PROPERTY_IDS = { 
+        PROP_DIRECTORY, PROP_FILE, PROP_RUN_ID,
+        PROP_CONFIG, PROP_RUNNUMBER,  
+        PROP_EXPERIMENT, PROP_MEASUREMENT, PROP_REPLICATION
+    };
     
     public static final String[] SCALAR_PROPERTY_IDS = { 
         PROP_VALUE 
     };
     public static final String[] VECTOR_PROPERTY_IDS = { 
         PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV, PROP_VARIANCE,  
-        PROP_START_EVENT_NUM, PROP_END_EVENT_NUM, PROP_START_TIME, PROP_END_TIME
+        PROP_START_EVENT_NUM, PROP_END_EVENT_NUM, PROP_START_TIME, PROP_END_TIME,
+        PROP_VECTOR_ID
     };
     public static final String[] HISTOGRAM_PROPERTY_IDS = { 
         PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV, PROP_VARIANCE  
     };
 
-    protected static final IPropertyDescriptor[] BASE_PROPERTY_DESCS = makeDescriptors(BASE_PROPERTY_IDS, "", "General");
+    protected static final IPropertyDescriptor[] BASE_PROPERTY_DESCS = makeDescriptors(BASE_PROPERTY_IDS, "", "General"); // not "Base" because we this to appear after "Fields" in the property sheet
+    protected static final IPropertyDescriptor[] CONTAINER_PROPERTY_DESCS = makeDescriptors(CONTAINER_PROPERTY_IDS, "", "Location"); // not "Container" because we want this group to appear at the bottom of the property sheet 
     protected static final IPropertyDescriptor[] SCALAR_PROPERTY_DESCS = makeDescriptors(SCALAR_PROPERTY_IDS, "", "Fields");
     protected static final IPropertyDescriptor[] VECTOR_PROPERTY_DESCS = makeDescriptors(VECTOR_PROPERTY_IDS, "", "Fields");
     protected static final IPropertyDescriptor[] HISTOGRAM_PROPERTY_DESCS = makeDescriptors(HISTOGRAM_PROPERTY_IDS, "", "Fields");
@@ -109,18 +132,21 @@ public class ResultItemPropertySource implements IPropertySource {
                 bins[i] = new ReadonlyPropertyDescriptor("%"+i, String.valueOf(bin1) + " .. " + String.valueOf(bin2), "Bins");
             }
         }
-        return concat(BASE_PROPERTY_DESCS, fields, attrs, bins);
+        return concat(BASE_PROPERTY_DESCS, CONTAINER_PROPERTY_DESCS, fields, attrs, bins);
     }
 
-    private IPropertyDescriptor[] concat(IPropertyDescriptor[] a1, IPropertyDescriptor[] a2, IPropertyDescriptor[] a3, IPropertyDescriptor[] a4) {
-        return (IPropertyDescriptor[])ArrayUtils.addAll(a1, ArrayUtils.addAll(a2, ArrayUtils.addAll(a3, a4)));
+    private IPropertyDescriptor[] concat(IPropertyDescriptor[] a1, IPropertyDescriptor[] a2, IPropertyDescriptor[] a3, IPropertyDescriptor[] a4, IPropertyDescriptor[] a5) {
+        return (IPropertyDescriptor[])ArrayUtils.addAll(a1, ArrayUtils.addAll(a2, ArrayUtils.addAll(a3, ArrayUtils.addAll(a4, a5))));
     }
     
     public Object getPropertyValue(Object propertyId) {
         ResultItem resultItem = manager.getItem(id);
         
+        // result attribute
         if (propertyId instanceof String && propertyId.toString().charAt(0)=='@') 
             return resultItem.getAttribute(propertyId.toString().substring(1));
+        
+        // histogram bin
         if (resultItem instanceof HistogramResult && propertyId instanceof String && propertyId.toString().charAt(0)=='%') {
             int i = Integer.parseInt(propertyId.toString().substring(1));
             double value = ((HistogramResult)resultItem).getValues().get(i);
@@ -128,6 +154,15 @@ public class ResultItemPropertySource implements IPropertySource {
             return value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value);
         }
         
+        if (propertyId.equals(PROP_DIRECTORY)) return resultItem.getFileRun().getFile().getDirectory();
+        if (propertyId.equals(PROP_FILE)) return resultItem.getFileRun().getFile().getFileName();
+        if (propertyId.equals(PROP_CONFIG)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(CONFIGNAME));
+        if (propertyId.equals(PROP_RUNNUMBER)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(RUNNUMBER));
+        if (propertyId.equals(PROP_RUN_ID)) return resultItem.getFileRun().getRun().getRunName();
+        if (propertyId.equals(PROP_EXPERIMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(EXPERIMENT));
+        if (propertyId.equals(PROP_MEASUREMENT)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(MEASUREMENT));
+        if (propertyId.equals(PROP_REPLICATION)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(REPLICATION));
+
         if (propertyId.equals(PROP_MODULE)) return resultItem.getModuleName();
         if (propertyId.equals(PROP_NAME)) return resultItem.getName();
         if (propertyId.equals(PROP_TYPE)) return resultItem.getType().toString().replaceAll("TYPE_", "").toLowerCase();
@@ -150,6 +185,7 @@ public class ResultItemPropertySource implements IPropertySource {
             if (propertyId.equals(PROP_END_EVENT_NUM)) return vector.getEndEventNum();
             if (propertyId.equals(PROP_START_TIME)) return vector.getStartTime();
             if (propertyId.equals(PROP_END_TIME)) return vector.getEndTime();
+            if (propertyId.equals(PROP_VECTOR_ID)) return vector.getVectorId();
         }
         else if (resultItem instanceof HistogramResult) {
             HistogramResult histogram = (HistogramResult)resultItem;
