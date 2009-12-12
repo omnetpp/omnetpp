@@ -1,4 +1,4 @@
-<#if !supportExport>
+<#if supportExport>
 <?xml version="1.0" encoding="UTF-8"?>
 <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 
@@ -11,18 +11,19 @@
     <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" numColumns="1"/>
+  <layout x:class="GridLayout" numColumns="2"/>
   <x:children>
-    <group text="Grid size">
+  
+    <label x:style="WRAP" text="This example wizard exports the list of all NED types into a text file.">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+  
+    <label text="Export to file:"/>
+    <saveAsChooser x:id="fileName">
       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-      <layout x:class="GridLayout" numColumns="2"/>
-      <x:children>
-        <label text="Columns:"/>
-        <spinner x:id="columns" minimum="1" maximum="100" x:style="BORDER"/>
-        <label text="Rows:"/>
-        <spinner x:id="rows" minimum="1" maximum="100" x:style="BORDER"/>
-      </x:children>
-    </group>
+      <setFocus/>
+    </saveAsChooser>
+
   </x:children>
 </xswt>
 </#if>

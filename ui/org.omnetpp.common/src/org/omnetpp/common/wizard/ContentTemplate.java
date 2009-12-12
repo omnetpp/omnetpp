@@ -274,7 +274,7 @@ public abstract class ContentTemplate implements IContentTemplate {
             SETOUTPUT_MARKER +
             "</#macro>\n" +
             "\n" +
-            "<#function iif condition truevalue falsevalue>\n" + 
+            "<#function iif condition truevalue falsevalue=\"\">\n" + 
             "    <#if condition><#return truevalue><#else><#return falsevalue></#if>\n" + 
             "</#function>\n" +
             "\n";

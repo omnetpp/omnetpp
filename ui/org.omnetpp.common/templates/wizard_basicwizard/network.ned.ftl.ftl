@@ -1,3 +1,4 @@
+<#if !supportExport>
 <#noparse>
 <@setoutput path=targetMainFile?default("")/>
 ${bannerComment}
@@ -43,4 +44,5 @@ network ${targetTypeName}
 }
 
 </#noparse>
+</#if>
 

@@ -18,7 +18,9 @@
       <layout x:class="GridLayout" numColumns="1"/>
       <x:children>
         <button x:id="wantIntroPage" text="Intro page" x:style="CHECK"/>
+<#if !supportExport>
         <button x:id="wantBasicForm" text="Basic data entry form" x:style="CHECK"/>
+</#if>
       </x:children>
     </composite>
 

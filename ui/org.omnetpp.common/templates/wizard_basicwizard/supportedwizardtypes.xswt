@@ -25,6 +25,9 @@
         <button x:id="supportNedfile" text="New NED File..." x:style="CHECK"/>
         <button x:id="supportMsgfile" text="New MSG File..." x:style="CHECK"/>
         <button x:id="supportInifile" text="New INI File..." x:style="CHECK"/>
+        <button x:id="supportImport" text="Import..." x:style="CHECK"/>
+        <label x:style="SEPARATOR|HORIZONTAL"/>
+        <button x:id="supportExport" text="Export.. (uncheck all other options)" x:style="CHECK"/>
       </x:children>
     </composite>
 
