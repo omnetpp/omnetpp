@@ -52,6 +52,7 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 
 	public CreateChartTemplateDialog(Shell parentShell) {
 		super(parentShell);
+        setShellStyle(getShellStyle() | SWT.RESIZE);
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 
 	@Override
 	protected void configureShell(Shell newShell) {
-		newShell.setText("Create chart template");
+		newShell.setText("Create Chart Template");
 		super.configureShell(newShell);
 	}
 
