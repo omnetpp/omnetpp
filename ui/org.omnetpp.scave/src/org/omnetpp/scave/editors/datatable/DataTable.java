@@ -450,7 +450,7 @@ public class DataTable extends Table implements IDataControl {
 			return "";
 
 		try {
-
+		    //TODO: code very similar to ResultItemPropertySource -- make them common?
 			long id = idList.get(row);
 			ResultItem result = manager.getItem(id);
 
@@ -509,6 +509,10 @@ public class DataTable extends Table implements IDataControl {
 					return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 				}
                 else if (COL_STDDEV.equals(column)) {
+                    double variance = vector.getVariance();
+                    return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
+                }
+                else if (COL_VARIANCE.equals(column)) {
                     double variance = vector.getVariance();
                     return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
                 }
