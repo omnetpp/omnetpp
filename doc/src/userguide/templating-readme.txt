@@ -37,6 +37,10 @@ the output files) and a GUI description language (for custom wizard pages to
 gather user input for the file generation). Because of the use of a 
 templating engine, we'll also refer to custom wizards as "content templates".
 
+The IDE offers several OMNeT\++ related wizard dialogs: 'New OMNeT++ Project',
+'New NED File', 'New Simple Module', and so on. Every content template can
+contribute to one or more of those wizard dialogs.
+
 In the `templates/` folder, every subfolder that contains a `template.properties`
 file is treated as a content template. (Other folders are ignored.) Every
 content template folder may contain several types of files: 
@@ -56,14 +60,75 @@ content template folder may contain several types of files:
   subdirectories which may also contain files of the above type (except
   `template.properties` of course).
 
+==== Template Processing
 
-The IDE offers several OMNeT\++ related wizard dialogs: 'New OMNeT++ Project',
-'New NED File', 'New Simple Module', and so on. Every content template can
-contribute to one or more of those wizard dialogs.
+Template processing uses the FreeMarker library ('http://freemarker.org'), and
+all template syntax supported by FreeMarker can be used. Especially, variable
+references of the syntax `${varName}` will be replaced with the variable value.
 
-=== An Example Wizard
+The FreeMarker language also offers constructs that make it a full programming
+language: variable assignments, conditionals, loops, switch statement,
+functions, macros, expression evaluation, built-in operators, etc, as well
+as access to fields and methods of classes defined in Java. This means that
+any algorithm can be expressed in the FreeMarker language, and if that would
+not be enough, one can also pull in existing or custom-written Java libraries.
 
-As an example - in the following sections -  we will create a simple wizard that 
+TIP: Documentation for the FreeMarker template language can be found at:
+     'http://freemarker.org/docs/index.html'
+
+==== Defining the GUI
+
+Custom wizard pages are defined in XSWT ('http://xswt.sourceforge.net').  
+XSWT is an XML based language that allows the definition of SWT (the widget set 
+used by Eclipse) widget hierarchies, without the need to write any code in Java. XSWT also maps 
+widget properties to XML attributes so the visual appearance of the wizard pages 
+can be easily tweaked. It is also possible to invoke methods on the generated widgets
+and use the SWT layout containers, allowing further customizations. Each `.xswt` file 
+in the template directory defines a separate wizard page which can be shown 
+either conditionally or unconditionally.  
+
+TIP: An XSWT tutorial and documentation can be found at:
+      'http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home'
+
+NOTE: Currently we use XSWT 1.1.2. Newer XSWT integration builds from
+      'http://www.coconut-palm-software.com/~xswt/integration/plugins/'
+      did not work out well.
+
+
+=== Using the IDE
+
+The IDE offers support for editing both `.ftl` and `.xswt` files to help
+the creation of wizard pages and templates. 
+
+==== Editing XSWT Files
+
+Double-clicking on an XSWT file will open it in the XSWT editor. The editor
+provides basic syntax highlighting. An extremely
+useful feature of the IDE is the XSWT Preview, where you can preview
+the form being edited (it updates when you save the file). The Preview should
+open automatically when you open the XSWT file; if it does not (or you close it),
+you can access it via the 'Window|Show View...' menu item.
+
+Some (custom) widgets may not appear in the Preview; this is because the
+Preview does not load jar files from the projects.
+
+==== Editing Template Files
+
+The Freemarker Editor is opened when you double-click files with the *.ftl or
+*.fti extension. (The latter stands for Freemarker Template Include, and it is
+intended for template fragments that you include into other templates. Otherwise
+the wizard ignores fti files, i.e. does not copy them into the new project or
+folder.) The Freemarker Editor offers basic syntax highlight, validation
+(error markers appear during editing if the template is not syntactically
+correct), and basic content assist. Content assist can help you with directives
+(`<#...>` syntax) and builtin operations (like `?number, ?size, ?default`, etc).
+The content assist popup appears automatically when you type '<#' (actually
+a closing '>' is also needed for the editor to recognize the tag), and
+when you hit '?' within a directive or an interpolation (`${...}`).
+
+=== Writing an Example Wizard
+
+In the following sections, we will create a simple wizard as an example, that 
 will support either creating a simulation (complete with NED and INI files),
 or just a single NED file with a network defined in it. The user will be able to 
 specify the type and the number of the submodules the network contains.
@@ -115,7 +180,7 @@ wizard page definition. We will add a 'spinner' control to specify the size of o
 and a 'text' control to specify the node type. Create a new file called `parameters.xswt`
 with the following content: 
 
-  <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+	<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
 	  <import xmlns="http://sweet_swt.sf.net/xswt">
 	    <!-- Import all widgets and utility classes  -->
 	    <package name="java.lang"/>
@@ -130,17 +195,17 @@ with the following content:
 	  <!-- Create a two column layout  -->
 	  <layout x:class="GridLayout" numColumns="2"/>
 	  <x:children>
-    	<!-- First row  -->
+        <!-- First row  -->
 	    <label text="Number of nodes in the network:"/>
 	    <spinner x:id="networkSize" minimum="2" x:style="BORDER"/>
-    	<!-- Second row  -->
+        <!-- Second row  -->
 	    <label text="Type of nodes:"/>
 	    <text x:id="nodeType" x:style="BORDER"/>
 	  </x:children>
-  </xswt>
+	</xswt>
 
 The above defined wizard page will have two columns. The first column contains labels,
-while the second contains the editable controls.
+while the second contains the editable widgets.
 The `x:id="varName"` attributes in the spinner and text control definitions are used 
 to bind a template variable to the control. When a page is displayed, the content of 
 the bound variables are copied into the controls. When the user navigates away from 
@@ -148,6 +213,7 @@ the page or press the 'Finish' button, the content of the controls are copied ba
 to the bound variables. These variables can be used in the template files we are 
 about to define in the following section.    
 
+NOTE: To see all the widgets available, check Appendix.
 
 ==== Creating Templated Files
 
@@ -175,8 +241,9 @@ Because of the extension, this file will be processed by the templating engine.
 The actual name of the file does not matter, because the
 `<@setoutput .../>` directive instructs the templating engine to output 
 everything from the current file into the file that is specified by the 
-`targetFileName` variable. `targetFileName` is automatically filled out by 
-the wizard, based on the filename the user selected on the first wizard page. 
+`targetFileName` variable. The `targetFileName`, `targetTypeName`, ${bannerComment}
+ and `nedPackageName` variables are automatically filled out by the wizard, based 
+on the filename and folder the user selected on the first wizard page. 
 
 	<@setoutput path=targetFileName?default("")/>
 	${bannerComment}
@@ -188,13 +255,9 @@ the wizard, based on the filename the user selected on the first wizard page.
 		node[${networkSize}] : ${nodeType}
 	}
 
-The `targetFileName`, `targetTypeName` and `nedPackageName` variables are 
-automatically filled out by the wizard, based on what file or folder name 
-the user has selected in the wizard. The rest of template variables 
-are provided by the custom wizard page and will be substituted into the 
-template automatically. 
+The template variables will be substituted into the template automatically. 
 
-Specific wizard dialogs will also define extra variables for use in the
+Specific wizard dialog types will also define extra variables for use in the
 templates, e.g. the wizard type that creates a complete simulation (with all required files),
 will put the `simulationName` variable into the context. To see all defined variables, 
 check the Appendix.
@@ -263,7 +326,7 @@ Other variables that are useful for these templates are:
 For these wizards the user selects a folder and a file name where the generated
 file should be placed.  The selected file name can be accessed as 
 \${targetFileName} and the target folder as \${targetFolder}. \${targetTypeName} is also 
-defined which is a sanitized and capitalized version of the `tagetFileName` variable. 
+defined which is a sanitized and capitalized version of the `targetFileName` variable. 
 It can be used as a NED or C++ type inside the templates.
 'New ... File Wizards' usually generate only a single file, but multiple files can be 
 generated too if necessary (e.g. simple modules would generate NED, CC and H files). 
@@ -271,13 +334,12 @@ There are additional helper variables like:
 
  * `nedPackageName` for INI and NED files is defining the current NED package which is 
     calculated automatically based on the selected targetFolder
- * `msgTypeName` is a sanitized type name that can be used in MSG files only
  * `namespaceName` is the current C++ namespace for NED and MSG file wizards  
     (those that usually generate code). It is calculated automatically from the 
     targetFolder and from the information provided with the `@namespace`
     property in the existing NED files.  
 
-==== Import wizards
+==== Import Wizards
 
   wizardType = import
 
@@ -287,7 +349,7 @@ the user directly (i.e. custom wizard pages ask for a file or folder to
 be imported). If you specify the `import` type for any wizard, it will be added to the 
 'File|Import' wizard dialog.
 
-==== Export / Import Wizards 
+==== Export Wizards 
 
   wizardType = export
 
@@ -357,21 +419,7 @@ makemakeOptions::
 There are additional options for adding custom pages into the wizard, as described
 in the next section.
 
-=== Template Processing
-
-Template processing uses the FreeMarker library (http://freemarker.org), and
-all template syntax supported by FreeMarker can be used. Especially, variable
-references of the syntax $\{varName} will be replaced with the variable value.
-
-The FreeMarker language also offers constructs that make it a full programming
-language: variable assignments, conditionals, loops, switch statement,
-functions, macros, expression evaluation, built-in operators, etc, as well
-as access to fields and methods of classes defined in Java. This means that
-any algorithm can be expressed in the FreeMarker language, and if that would
-not be enough, one can also pull in existing or custom-written Java libraries.
-
-TIP: Documentation for the FreeMarker template language can be found at:
-     http://freemarker.org/docs/index.html
+=== Templates
 
 Several variables are predefined, such as `templateName, targetFolder, date,
 author`; others like `targetFileName, targetTypeName, simulationFolderName,
@@ -453,269 +501,6 @@ All property file entries are available as template variables too. Also, most
 property values may refer to other property values or template variables, using
 the $\{name} syntax.
 
-NOTE: Custom wizard pages are defined in XSWT (http://xswt.sourceforge.net,
-      http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home).
-
-NOTE: Currently we use XSWT 1.1.2. Newer XSWT integration builds from
-      http://www.coconut-palm-software.com/~xswt/integration/plugins/
-      did not work out well.
-
-
-=== Conditional Custom Wizard Pages
-
-Now that templating and XSWT were covered, we can revisit how one can use page
-conditions. Consider the following practical example:
-
-Suppose a wizard for wireless networks. On the first page of the wizard there
-is a "[] configure routing" checkbox with the ID "wantRouting". If this
-checkbox gets selected, you want to display a second page where the user can
-select a routing protocol, then further configuration pages depending on
-the particular routing protocol the user chose. To achieve this, you would
-add the following lines to template.properties:
-
-  # page with the "wantRouting" checkbox
-  page.1.title = General
-  # page with the "protocol" combobox
-  page.2.title = Choose Routing Protocol
-  page.3.title = AODV Options
-  page.4.title = DSDV Options
-
-  page.2.condition = wantRouting
-  page.3.condition = wantRouting && protocol=="AODV"
-  page.4.condition = wantRouting && protocol=="DSDV"
-
-You get the idea. This allows the creation of conditional pages. 
-
-
-==== Standard SWT widgets
-
-TIP: The SWT controls are documented on the Eclipse web site. See:
-http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/package-summary.html
-
-It is possible to bind template variables to a specific control by using the `x:id` 
-attribute.
-
-  <text x:id="templateVariableName" />
- 
-This is the way how template variables are bound to the controls (R=read, W=write):
-
-Button::        This SWT class represents buttons, checkboxes and radio
-                buttons, depending on its style attribute (`SWT.PUSH,
-                SWT.CHECK, SWT.RADIO`).
-                * W: the string "true" selects the checkbox/radiobutton,
-                   everything else clears it.
-                * R: returns a Boolean.
-
-Combo, CCombo:: Represent a combo box and a custom combo box. It can be
-                made read-only (with the `SWT.READ_ONLY` style); a read-only
-                combo allows list selection but no manual editing.
-                The list items can be specified from XSWT. Variables only
-                work with the textedit part (cannot add/remove list items).
-                * W: the string value gets written into the combo. If the combo
-                   is read-only and contains no such item, nothing happens.
-                * R: returns the currently selected item as string.
-
-DateTime::      A widget for editing date/time.
-                * W: accepts a string in the following format: "yyyy-mm-dd hh:mm:ss".
-                   If the string is not in the right format, an error occurs.
-                * R: returns a string in the same format, "yyyy-mm-dd hh:mm:ss".
-
-Label::         Label widget (not interactive).
-                * W: sets the label to the string
-                * R: returns the label
-
-List::          A listbox widget that allows selection of one or more items,
-                depending on the style attribute (`SWT.SINGLE` or `SWT.MULTI`).
-                List items can be specified from XSWT. Template variables only
-                work with the selection (cannot add/remove list items).
-                * W: accepts a string with comma-separated items, and selects the
-                   corresponding item(s) in the listbox. Items that are not
-                   among the listbox items are ignored.
-                * R: Returns a string array object (String[]) that can be
-                   iterated over in the template.
-
-Scale::         A graphical widget for selecting a numeric value.
-                * W: accepts strings with an integer value. Non-numeric strings
-                   will cause an error (a message dialog will be displayed).
-                * R: returns an Integer which can be used in arithmetic
-                   expressions in the template.
-
-Slider::        A scrollbar-like widget for selecting a positive numeric value.
-                Handled in a similar way as Scale.
-
-Spinner::       Similar to a textedit, but contains little up and down arrows,
-                and can be used to input an integer number.
-                Handled in a similar way as Scale.
-
-StyledText::    A textedit widget which allows displaying and editing of
-                styled text. Handled similarly to Text.
-
-Text::          A textedit widget. It can be single-line or multi-line,
-                depending on the style attribute (`SWT.SINGLE, SWT.MULTI`).
-                * W: accepts a (potentially multi-line) string.
-                * R: returns the edited text as a string.
-
-==== Custom widgets
-
-HttpLink::      A control containing a text and a hyperlink between `<a></a>` tags. An URL can 
-                be specified to be opened in an external browser.
-                * W: accepts a string with the target URL. 
-                * R: returns the target URL as string.
-                * Other attributes:
-[options="compact"]
-                ** text : the textual content of the control `<a></a>` denotes the link inside.
-                ** URL : the target URL where the control points to 
-
-InfoLink::      A control for which displays a text with embedded link(s), and clicking
-                on a link will display a hover text in a window. The hover text can be given 
-                the with setHoverText method (i.e. the hoverText XSWT attribute), or bound 
-                to a template variable (using the x:id XSWT attribute).
-                * W: accepts a string with the hover text for the control. 
-                * R: returns the hover text as string.
-                * Other attributes:
-[options="compact"]
-                ** text : the content of the control
-                ** hoverText : the html formatted text displayed in the hover control 
-                ** hoverMinimumWidth : the minimal width for the hover control
-                ** hoverMinimumHeight : the minimal height for the hover control
-                ** hoverPreferredWidth : the preferred width for the hover control
-                ** hoverPreferredHeight : the preferred height for the hover control
-
-FileLink::      A control for displaying the name of a resource as a link. When clicked, it shows
-                the resource (opens Project Explorer and focuses it to the resource).
-                * W: accepts a string with the workspace path of the resource to be shown. 
-                * R: returns the full workspace path of the resource.
-                * Other attributes:
-[options="compact"]
-                ** resourcePath : the full workspace path of the file  
-
-FileChooser::   A control for selecting a file from the workspace. Implemented as a Composite with 
-                a single-line Text and a Browse button.
-                * W: accepts a string with the workspace file name. 
-                * R: returns the name of the selected file as a string from the workspace.
-                * Other attributes:
-[options="compact"]
-                ** fileName : the full workspace path of the selected file.
-
-ExternalFileChooser::
-                A control for selecting a file from the filesystem. Implemented as a Composite with 
-                a single-line Text and a Browse button.
-                * W: accepts a string with the full file name. 
-                * R: returns the name of the selected file as a string from the filesystem.
-                * Other attributes:
-[options="compact"]
-                ** fileName : the full filesystem path of the selected file.
-
-GateChooser::   A control for selecting a gate of a NED module type. If the module
-                exists, it lets the user select one of its gates from a combo;
-                if it doesn't, it lets the user enter a gate name.
-                * W: accepts strings with a gate name. 
-                * R: returns the name of the selected gate as a string.
-                * Other attributes:
-[options="compact"]
-                ** gateName : the name of the selected gate
-                ** nedTypeName : the NED type whose gates should be enumerated.
-                ** gateFilter : type filter for the enumerated gates. Expects a
-                  binary OR (|) of the following values: `GateChooser.INPUT, 
-                  GateChooser.OUTPUT, GateChooser.INOUT, GateChooser.VECTOR, 
-                  GateChooser.SCALAR`.
-
-  <gateChooser x:id="gateName" 
-    nedTypeName="${nodeType}" 
-    gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
-                
-NedTypeChooser:: 
-				A control for selecting a NED module type. An existing type name can be selected
-				or a new one can be entered.
-                * W: accepts strings with a ned type name. 
-                * R: returns the name of the selected ned type as a string.
-                * Other attributes:
-[options="compact"]
-                ** nedName : the NED module type as a string
-                ** acceptedTypes : filter for the enumeration of types. Expects a
-                  binary OR (|) of the following values: `NedTypeChooser.MODULE, 
-                NedTypeChooser.SIMPLE_MODULE, NedTypeChooser.COMPOUND_MODULE, 
-                NedTypeChooser.MODULEINTERFACE, NedTypeChooser.CHANNEL, 
-                NedTypeChooser.CHANNELINTERFACE, NedTypeChooser.NETWORK`.
-
-  <nedTypeChooser x:id="channelType" 
-       acceptedTypes="NedTypeChooser.CHANNEL"/>
-
-NOTE: Table and tree widgets are currently not supported in a useful way, the main
-reason being that SWT Tables and Trees are not editable by default.
-
-Some non-interactive widgets which cannot be connected to template variables
-but are useful in forms as structuring elements: 
-
-Composite:: Used to group two or more controls into a single one.
-
-  <composite>
-    <layoutData x:class="GridData" horizontalSpan="2"/>
-    <layout x:class="GridLayout"/>
-    <x:children>
-      <button x:id="dynamic" text="Dynamic" x:style="RADIO"/>
-      <button x:id="static" text="Static" x:style="RADIO"/>
-    </x:children>
-  </composite>
-
-Group::  Used to group the controls with a visual heading.
-
-  <group text="Heading text">
-    <x:children>
-       <label text="Control 1"/>
-       <label text="Control 2"/>
-    </x:children>
-  </group>
-
-TabFolder/TabItem:: Can be used to group the controls into separate pages.
-
-  <tabFolder>
-    <x:children>
-      <composite x:id="page1"></composite>
-      <composite x:id="page2"></composite>
-      <tabItem text="Tab 1" control="page1"/>
-      <tabItem text="Tab 2" control="page2"/>
-    </x:children>
-  </tabFolder>
-
-=== Binding of Template Variables to Widgets
-
-XSWT allows one to tag widgets with id attributes. Widget IDs will become the
-names of template variables, with the values being the content of widgets.
-For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
-(Java type "String"), while checkboxes and radio buttons provide a boolean
-(Java type "Boolean").
-
-XSWT also allows filling up the widgets with default values, but this feature
-should be used with care, because the defaults set in XSWT may not make it
-to the file templates! This is so because if the user clicks Finish early,
-the rest of the wizard pages (and their widgets) may not be created at all,
-so values set in the XSWT will take no effect.
-
-For this reason, defaults should ALWAYS be set in the property file. To do so,
-simply use a key with the ID of the widget; those values will be written
-into the wizard page when the page is created. For example, if you have a
-text widget with `id="numNodes"` and a checkbox with `id="generateTraffic"`, then
-the following lines
-
-  numNodes = 100
-  generateTraffic = true
-
-will fill in the text widget with "100" and select the checkbox. Widgets that
-do not have such lines in the property file will be left alone.
-
-Compound data structures (arrays, maps, and any combination of them) can be
-specified in the JSON syntax (http://json.org). They can be iterated over
-in the templates, and can be used as input/output for custom compound widgets.
-Examples:
-
-  apps = ["ftp", "smtp", "news"]
-  layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}
-
-If you get an error complaining about syntax errors in a JSON entry, the
-http://jsonlint.com website can help you locate the problem.
-
-The property file takes precedence over values in the XSWT file.
 
 ==== XSWT Form Creation
 
@@ -754,11 +539,71 @@ Layout data can also be added as a new tag inside a control element:
                 grabExcessHorizontalSpace="true"/>
   </text>
 
-TIP: An XSWT tutorial and documentation can be found at:
-http://www.coconut-palm-software.com/the_new_visual_editor/doku.php?id=xswt:home
+==== Binding of Template Variables to Widgets
 
+XSWT allows one to tag widgets with id attributes. Widget IDs will become the
+names of template variables, with the values being the content of widgets.
+For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
+(Java type "String"), while checkboxes and radio buttons provide a boolean
+(Java type "Boolean").
 
-==== Conditional Controls
+XSWT also allows filling up the widgets with default values, but this feature
+should be used with care, because the defaults set in XSWT may not make it
+to the file templates! This is so because if the user clicks Finish early,
+the rest of the wizard pages (and their widgets) may not be created at all,
+so values set in the XSWT will take no effect.
+
+For this reason, defaults should ALWAYS be set in the property file. To do so,
+simply use a key with the ID of the widget; those values will be written
+into the wizard page when the page is created. For example, if you have a
+text widget with `id="numNodes"` and a checkbox with `id="generateTraffic"`, then
+the following lines
+
+  numNodes = 100
+  generateTraffic = true
+
+will fill in the text widget with "100" and select the checkbox. Widgets that
+do not have such lines in the property file will be left alone.
+
+Compound data structures (arrays, maps, and any combination of them) can be
+specified in the JSON syntax ('http://json.org'). They can be iterated over
+in the templates, and can be used as input/output for custom compound widgets.
+Examples:
+
+  apps = ["ftp", "smtp", "news"]
+  layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}
+
+If you get an error complaining about syntax errors in a JSON entry, the
+'http://jsonlint.com' website can help you locate the problem.
+
+The property file takes precedence over values in the XSWT file.
+
+==== Conditional Pages
+
+Now that basic XSWT usage was covered, we can revisit how one can use page
+conditions. Consider the following practical example:
+
+Suppose a wizard for wireless networks. On the first page of the wizard there
+is a "[] configure routing" checkbox with the ID "wantRouting". If this
+checkbox gets selected, you want to display a second page where the user can
+select a routing protocol, then further configuration pages depending on
+the particular routing protocol the user chose. To achieve this, you would
+add the following lines to template.properties:
+
+  # page with the "wantRouting" checkbox
+  page.1.title = General
+  # page with the "protocol" combobox
+  page.2.title = Choose Routing Protocol
+  page.3.title = AODV Options
+  page.4.title = DSDV Options
+
+  page.2.condition = wantRouting
+  page.3.condition = wantRouting && protocol=="AODV"
+  page.4.condition = wantRouting && protocol=="DSDV"
+
+You get the idea. This allows the creation of conditional pages. 
+
+==== Conditional Widgets
 
 It is also possible to create controls conditionally.
 To overcome the limitation that XSWT page descriptions are completely static,
@@ -971,36 +816,200 @@ Use the FileUtils class and the @do macro to call the methods on it.
   </#list>
 
 
-=== Using the IDE
+=== Append. A: Widgets in XSWT
 
-==== Editing XSWT Files
+==== Standard SWT widgets
 
-Double-clicking on an XSWT file will open it in the XSWT editor. The editor
-provides basic syntax highlighting. An extremely
-useful feature of the IDE is the XSWT Preview, where you can preview
-the form being edited (it updates when you save the file). The Preview should
-open automatically when you open the XSWT file; if it does not (or you close it),
-you can access it via the 'Window|Show View...' menu item.
+TIP: The SWT controls are documented on the Eclipse web site. See:
+'http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/package-summary.html'
 
-Some (custom) widgets may not appear in the Preview; this is because the
-Preview does not load jar files from the projects.
+It is possible to bind template variables to a specific control by using the `x:id` 
+attribute.
 
-==== Editing Template Files
+  <text x:id="templateVariableName" />
+ 
+This is the way how template variables are bound to the controls (R=read, W=write):
 
-The Freemarker Editor is opened when you double-click files with the *.ftl or
-*.fti extension. (The latter stands for Freemarker Template Include, and it is
-intended for template fragments that you include into other templates. Otherwise
-the wizard ignores fti files, i.e. does not copy them into the new project or
-folder.) The Freemarker Editor offers basic syntax highlight, validation
-(error markers appear during editing if the template is not syntactically
-correct), and basic content assist. Content assist can help you with directives
-(`<#...>` syntax) and builtin operations (like `?number, ?size, ?default`, etc).
-The content assist popup appears automatically when you type '<#' (actually
-a closing '>' is also needed for the editor to recognize the tag), and
-when you hit '?' within a directive or an interpolation (`${...}`).
+Button::        This SWT class represents buttons, checkboxes and radio
+                buttons, depending on its style attribute (`SWT.PUSH,
+                SWT.CHECK, SWT.RADIO`).
+                * W: the string "true" selects the checkbox/radiobutton,
+                   everything else clears it.
+                * R: returns a Boolean.
 
+Combo, CCombo:: Represent a combo box and a custom combo box. It can be
+                made read-only (with the `SWT.READ_ONLY` style); a read-only
+                combo allows list selection but no manual editing.
+                The list items can be specified from XSWT. Variables only
+                work with the textedit part (cannot add/remove list items).
+                * W: the string value gets written into the combo. If the combo
+                   is read-only and contains no such item, nothing happens.
+                * R: returns the currently selected item as string.
 
-=== Append. A: Predefined Template Variables
+DateTime::      A widget for editing date/time.
+                * W: accepts a string in the following format: "yyyy-mm-dd hh:mm:ss".
+                   If the string is not in the right format, an error occurs.
+                * R: returns a string in the same format, "yyyy-mm-dd hh:mm:ss".
+
+Label::         Label widget (not interactive).
+                * W: sets the label to the string
+                * R: returns the label
+
+List::          A listbox widget that allows selection of one or more items,
+                depending on the style attribute (`SWT.SINGLE` or `SWT.MULTI`).
+                List items can be specified from XSWT. Template variables only
+                work with the selection (cannot add/remove list items).
+                * W: accepts a string with comma-separated items, and selects the
+                   corresponding item(s) in the listbox. Items that are not
+                   among the listbox items are ignored.
+                * R: Returns a string array object (String[]) that can be
+                   iterated over in the template.
+
+Scale::         A graphical widget for selecting a numeric value.
+                * W: accepts strings with an integer value. Non-numeric strings
+                   will cause an error (a message dialog will be displayed).
+                * R: returns an Integer which can be used in arithmetic
+                   expressions in the template.
+
+Slider::        A scrollbar-like widget for selecting a positive numeric value.
+                Handled in a similar way as Scale.
+
+Spinner::       Similar to a textedit, but contains little up and down arrows,
+                and can be used to input an integer number.
+                Handled in a similar way as Scale.
+
+StyledText::    A textedit widget which allows displaying and editing of
+                styled text. Handled similarly to Text.
+
+Text::          A textedit widget. It can be single-line or multi-line,
+                depending on the style attribute (`SWT.SINGLE, SWT.MULTI`).
+                * W: accepts a (potentially multi-line) string.
+                * R: returns the edited text as a string.
+
+==== Custom widgets
+
+HttpLink::      A control containing a text and a hyperlink between `<a></a>` tags. An URL can 
+                be specified to be opened in an external browser.
+                * W: accepts a string with the target URL. 
+                * R: returns the target URL as string.
+                * Other attributes:
+[options="compact"]
+                ** text : the textual content of the control `<a></a>` denotes the link inside.
+                ** URL : the target URL where the control points to 
+
+InfoLink::      A control for which displays a text with embedded link(s), and clicking
+                on a link will display a hover text in a window. The hover text can be given 
+                the with setHoverText method (i.e. the hoverText XSWT attribute), or bound 
+                to a template variable (using the x:id XSWT attribute).
+                * W: accepts a string with the hover text for the control. 
+                * R: returns the hover text as string.
+                * Other attributes:
+[options="compact"]
+                ** text : the content of the control
+                ** hoverText : the html formatted text displayed in the hover control 
+                ** hoverMinimumWidth : the minimal width for the hover control
+                ** hoverMinimumHeight : the minimal height for the hover control
+                ** hoverPreferredWidth : the preferred width for the hover control
+                ** hoverPreferredHeight : the preferred height for the hover control
+
+FileLink::      A control for displaying the name of a resource as a link. When clicked, it shows
+                the resource (opens Project Explorer and focuses it to the resource).
+                * W: accepts a string with the workspace path of the resource to be shown. 
+                * R: returns the full workspace path of the resource.
+                * Other attributes:
+[options="compact"]
+                ** resourcePath : the full workspace path of the file  
+
+FileChooser::   A control for selecting a file from the workspace. Implemented as a Composite with 
+                a single-line Text and a Browse button.
+                * W: accepts a string with the workspace file name. 
+                * R: returns the name of the selected file as a string from the workspace.
+                * Other attributes:
+[options="compact"]
+                ** fileName : the full workspace path of the selected file.
+
+ExternalFileChooser::
+                A control for selecting a file from the filesystem. Implemented as a Composite with 
+                a single-line Text and a Browse button.
+                * W: accepts a string with the full file name. 
+                * R: returns the name of the selected file as a string from the filesystem.
+                * Other attributes:
+[options="compact"]
+                ** fileName : the full filesystem path of the selected file.
+
+GateChooser::   A control for selecting a gate of a NED module type. If the module
+                exists, it lets the user select one of its gates from a combo;
+                if it doesn't, it lets the user enter a gate name.
+                * W: accepts strings with a gate name. 
+                * R: returns the name of the selected gate as a string.
+                * Other attributes:
+[options="compact"]
+                ** gateName : the name of the selected gate
+                ** nedTypeName : the NED type whose gates should be enumerated.
+                ** gateFilter : type filter for the enumerated gates. Expects a
+                  binary OR (|) of the following values: `GateChooser.INPUT, 
+                  GateChooser.OUTPUT, GateChooser.INOUT, GateChooser.VECTOR, 
+                  GateChooser.SCALAR`.
+
+  <gateChooser x:id="gateName" 
+    nedTypeName="${nodeType}" 
+    gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
+                
+NedTypeChooser:: 
+				A control for selecting a NED module type. An existing type name can be selected
+				or a new one can be entered.
+                * W: accepts strings with a ned type name. 
+                * R: returns the name of the selected ned type as a string.
+                * Other attributes:
+[options="compact"]
+                ** nedName : the NED module type as a string
+                ** acceptedTypes : filter for the enumeration of types. Expects a
+                  binary OR (|) of the following values: `NedTypeChooser.MODULE, 
+                NedTypeChooser.SIMPLE_MODULE, NedTypeChooser.COMPOUND_MODULE, 
+                NedTypeChooser.MODULEINTERFACE, NedTypeChooser.CHANNEL, 
+                NedTypeChooser.CHANNELINTERFACE, NedTypeChooser.NETWORK`.
+
+  <nedTypeChooser x:id="channelType" 
+       acceptedTypes="NedTypeChooser.CHANNEL"/>
+
+NOTE: Table and tree widgets are currently not supported in a useful way, the main
+reason being that SWT Tables and Trees are not editable by default.
+
+Some non-interactive widgets which cannot be connected to template variables
+but are useful in forms as structuring elements: 
+
+Composite:: Used to group two or more controls into a single one.
+
+  <composite>
+    <layoutData x:class="GridData" horizontalSpan="2"/>
+    <layout x:class="GridLayout"/>
+    <x:children>
+      <button x:id="dynamic" text="Dynamic" x:style="RADIO"/>
+      <button x:id="static" text="Static" x:style="RADIO"/>
+    </x:children>
+  </composite>
+
+Group::  Used to group the controls with a visual heading.
+
+  <group text="Heading text">
+    <x:children>
+       <label text="Control 1"/>
+       <label text="Control 2"/>
+    </x:children>
+  </group>
+
+TabFolder/TabItem:: Can be used to group the controls into separate pages.
+
+  <tabFolder>
+    <x:children>
+      <composite x:id="page1"></composite>
+      <composite x:id="page2"></composite>
+      <tabItem text="Tab 1" control="page1"/>
+      <tabItem text="Tab 2" control="page2"/>
+    </x:children>
+  </tabFolder>
+
+=== Append. B: Predefined Template Variables
 
 [cols="30%,^10%,^10%,^10%,^10%,^10%,^10%,^10%"]
 |==============
@@ -1011,7 +1020,6 @@ when you hit '?' within a directive or an interpolation (`${...}`).
 |`licenseCode`    		| X | X | X | X | X | X | X
 |`licenseText`    		| X | X | X | X | X | X | X
 |`makemakeOptions`     	| X |   |   |   |   |   |
-|`msgTypeName`     	    |   |   | X |   |   |   |
 |`namespaceName`       	|   | X | X |   | X |   |
 |`nedPackageName`       | X | X |   | X | X |   |
 |`nedSourceFolders`    	| X |   |   |   |   |   |
@@ -1137,8 +1145,6 @@ nedPackageName (P,S,N,I):: The NED package name. For projects it is `${projectna
                            for simulations, NED and INI files, it is automatically
                            calculated from the folder hierarchy where the file
                            is generated.
-msgTypeName (M):: The name of the message class based on the capitalized and sanitized file name.
-                  (e.g. for `test.msg` it is `Test`) 
 
 ==== Variables specific to New Simulation wizards
 
@@ -1161,7 +1167,7 @@ the whole context used during template processing.
 
 creationContext (A):: The template evaluation context. Provided for low level access.
 classes (A)::         Access to class static models. It is possible to access 
-                      class static methods via this variable. See http://freemarker.org/docs/pgui_misc_beanwrapper.html#autoid_54
+                      class static methods via this variable. See 'http://freemarker.org/docs/pgui_misc_beanwrapper.html#autoid_54'
                       for further details.
 nedResources (A):: Provides direct access to the in memory model of the parsed NED files. It is possible to query,
                    check and iterate over the available NED types. 
@@ -1171,7 +1177,7 @@ NOTE: In addition to the above variables, all keys found in the template.propert
 are added automatically to the context as a template variable.
 
 
-=== Append. B: Functions, Classes and Macros available from Templates
+=== Append. C: Functions, Classes and Macros available from Templates
 
 In addition to the standard FreeMarker template constructs, there are 
 several java utility classes, template macros and functions 
@@ -1211,7 +1217,7 @@ The following Java classes are available during template processing:
 ==== Math
 
 Represents the Java Math class, which contains mathematical functions.
-See http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html .
+See 'http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html' .
 
 Math has the following methods:
 
@@ -1227,7 +1233,7 @@ etc.
 
 Represents the Apache Commons StringUtils class, which contains over a hundred
 utility functions for manipulating strings.
-See http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html .
+See: 'http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html' .
 
 StringUtils has the following methods:
 
@@ -1255,7 +1261,7 @@ etc.
 
 Represents the Apache Commons WordUtils class, which contains utility functions 
 for manipulating strings as word sequences.
-See http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html .
+See 'http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html' .
 
 WordUtils has the following methods:
 
@@ -1272,7 +1278,7 @@ etc.
 Represents the Apache Commons CollectionUtils class, which contains some useful
 functions for manipulating collections (like lists). Functions include computing
 set union, intersection, and difference.
-See http://commons.apache.org/collections/apidocs/org/apache/commons/collections/CollectionUtils.html
+See 'http://commons.apache.org/collections/apidocs/org/apache/commons/collections/CollectionUtils.html'
 
 CollectionUtils has the following methods:
 
@@ -1309,8 +1315,8 @@ DOM tree.
 
 Parses a JSON file. The result is a Boolean, Integer, Double, String,
 List or Map, or any data structure composed of them. The JSON syntax is
-documented at http://json.org; if you want to check whether a particular
-text file corresponds to the JSON syntax, use http://jsonlint.com.
+documented at 'http://json.org' ; if you want to check whether a particular
+text file corresponds to the JSON syntax, use 'http://jsonlint.com' .
 
   String[][] readCSVFile(String fileName, boolean ignoreFirstLine,
                          boolean ignoreBlankLines, 
@@ -1486,8 +1492,8 @@ Provides entry points into various aspects of the IDE. This includes access to
 the Eclipse workspace (projects, folders, files), and the NED index. The former
 is documented in the Eclipse Platform help; documentation for the latter can
 be found in the sources (Javadoc).
-See http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/resInt.htm
-and http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspaceRoot.html
+See 'http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/resInt.htm'
+and 'http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspaceRoot.html'
 
 IDEUtils has the following methods:
 
