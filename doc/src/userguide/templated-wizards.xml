@@ -33,15 +33,15 @@ Wizards are implemented by mixing a templating engine (for generating
 the output files) and a GUI description language (for custom wizard pages to
 gather user input for the file generation). Because of the use of a
 templating engine, we&#8217;ll also refer to custom wizards as "content templates".</simpara>
-<simpara>In the templates/ folder, every subfolder that contains a <literal>template.properties</literal>
+<simpara>In the <literal>templates/</literal> folder, every subfolder that contains a <literal>template.properties</literal>
 file is treated as a content template. (Other folders are ignored.) Every
 content template folder may contain several types of files:</simpara>
 <itemizedlist>
 <listitem>
 <simpara>
 The <literal>template.properties</literal> file contains general information about the wizard.
-  Defines the initial value for the template variables and specifies the
-  custom wizard pages to be invoked when the wizard is run.
+  Defines the initial value for the template variables, and specifies the
+  custom wizard pages to be shown when the wizard is run.
 </simpara>
 </listitem>
 <listitem>
@@ -57,13 +57,13 @@ The <literal>template.properties</literal> file contains general information abo
 </listitem>
 <listitem>
 <simpara>
-More rarely used files are <literal>*.fti</literal> (template include) files included by <literal>*.ftl</literal>
+<literal>*.fti</literal> (template include) files are included by <literal>*.ftl</literal>
   files. This can be used to factor out common parts from the template files.
 </simpara>
 </listitem>
 <listitem>
 <simpara>
-<literal>*.jar</literal> files that can be used to extend the wizard&#8217;s functionality
+<literal>*.jar</literal> files can be used to extend the wizard&#8217;s functionality
   with dynamically loaded Java code.
 </simpara>
 </listitem>
@@ -72,33 +72,43 @@ More rarely used files are <literal>*.fti</literal> (template include) files inc
 All other files are regarded as files that have to be copied into the
   target folder verbatim when the wizard runs. The wizard folder may contain
   subdirectories which may also contain files of the above type (except
-  template.properties of course).
+  <literal>template.properties</literal> of course).
 </simpara>
 </listitem>
 </itemizedlist>
-<simpara>The IDE offers several OMNeT<literal>-related wizard dialogs: New OMNeT</literal> Project,
+<simpara>The IDE offers several OMNeT<literal> related wizard dialogs: New OMNeT</literal> Project,
 New NED File, New Simple Module, and so on. Every content template can
 contribute to one or more of those wizard dialogs.</simpara>
+</section>
+<section id="_an_example_wizard">
+<title>An Example Wizard</title>
+<simpara>As an example - in the following sections -  we will create a simple wizard that
+will support either creating a simulation (complete with NED and INI files),
+or just a single NED file with a network defined in it. The user will be able to
+specify the type and the number of the submodules the network contains.</simpara>
 <section id="_configuring_the_wizard">
 <title>Configuring the Wizard</title>
 <simpara>The first step when creating a wizard is to create a new folder
 under the <literal>templates</literal> directory of the project. A file named <literal>template.properties</literal>
-must be present in the newly created directory. The file is used to configure
-the wizard.</simpara>
+must be present in the newly created directory. This file is used to configure
+the wizard. Create <literal>template.properties</literal> and add the following lines to it:</simpara>
 <literallayout class="monospaced">templateName = New Test Wizard
-templateDescription = Generate an exampmle
+templateDescription = Generate an example
 templateCategory = Test Wizards
 supportedWizardTypes = simulation, network</literallayout>
 <simpara>Specify at least the name, type and category for your wizard. Category is used to
-specify how the wizards will be visually grouped. Wizard type specifies, in which
-New &#8230; Wizard  your new wizard will appear. You can specify one or more of the
-following types: <literal>project, simulation, nedfile, inifile, msgfile, wizard,
-simplemodue, compoundmodule, network, import, export</literal></simpara>
-<simpara>You can decide now what data you would like to gather from the user. Define
-template variables and their values as key-value pairs:</simpara>
-<literallayout class="monospaced">nodeName = Dummy
+specify how the wizards will be visually grouped. Wizard type specifies in which
+New &#8230; Wizard  your wizard will appear. You can specify: <literal>project,
+simulation, network</literal> etc. In our case the wizard will be added both to
+the New Simulation Wizard and to the New Network Wizard.</simpara>
+<simpara>We can now decide, what data we would like to ask from the user.
+Template variables and their values can be defined as key-value pairs:</simpara>
+<literallayout class="monospaced">nodeType = Dummy
 networkSize = 6</literallayout>
-<simpara>The wizard should have a custom page, where the user can specify the value of the above variables.</simpara>
+<simpara>The <literal>nodeType</literal> variable will be used as the submodule type in our network, while
+the <literal>networkSize</literal> defines how many submodules we want in the network.</simpara>
+<simpara>We have to define a custom wizard page, where the user can specify the value
+of the above variables (i.e. overwrite their default value specified above).</simpara>
 <literallayout class="monospaced">page.1.file = parameters.xswt
 page.1.title = Network parameters</literallayout>
 <simpara>We will use the file <literal>parameters.xswt</literal> to define the layout and the content of the new wizard page.</simpara>
@@ -111,7 +121,8 @@ page.1.title = Network parameters</literallayout>
 add new wizard pages to gather user input for the template generation. In the previous
 section we have specified that the file called <literal>parameters.xswt</literal> will contain the new
 wizard page definition. We will add a <emphasis>spinner</emphasis> control to specify the size of our network
-and a <emphasis>text</emphasis> control to specify the node type:</simpara>
+and a <emphasis>text</emphasis> control to specify the node type. Create a new file called <literal>parameters.xswt</literal>
+with the following content:</simpara>
 <literallayout class="monospaced">&lt;xswt xmlns:x="http://sweet_swt.sf.net/xswt"&gt;
         &lt;import xmlns="http://sweet_swt.sf.net/xswt"&gt;
           &lt;!-- Import all widgets and utility classes  --&gt;
@@ -124,27 +135,33 @@ and a <emphasis>text</emphasis> control to specify the node type:</simpara>
           &lt;package name="org.omnetpp.ned.editor.wizards.support" /&gt;
           &lt;package name="org.omnetpp.cdt.wizard.support" /&gt;
         &lt;/import&gt;
+        &lt;!-- Create a two column layout  --&gt;
         &lt;layout x:class="GridLayout" numColumns="2"/&gt;
         &lt;x:children&gt;
-          &lt;label text="Number nodes in the network:"/&gt;
+      &lt;!-- First row  --&gt;
+          &lt;label text="Number of nodes in the network:"/&gt;
           &lt;spinner x:id="networkSize" minimum="2" x:style="BORDER"/&gt;
-          &lt;label text="Type of Nodes:"/&gt;
-          &lt;text x:id="nodeName" x:style="BORDER"/&gt;
+      &lt;!-- Second row  --&gt;
+          &lt;label text="Type of nodes:"/&gt;
+          &lt;text x:id="nodeType" x:style="BORDER"/&gt;
         &lt;/x:children&gt;
 &lt;/xswt&gt;</literallayout>
-<simpara>The above page will have two columns. The first column contains a label,
-while the second contains an editable control.
-Please note the <literal>x:id="varName"</literal> attributes in the spinner and text control
-definitions. We can bind a template variable to a control using the <literal>id</literal> attribute.
-When the user finishes with the wizard page, the content of the controls will be
-automatically copied to the specified template variables.</simpara>
+<simpara>The above defined wizard page will have two columns. The first column contains labels,
+while the second contains the editable controls.
+The <literal>x:id="varName"</literal> attributes in the spinner and text control definitions are used
+to bind a template variable to the control. When a page is displayed, the content of
+the bound variables are copied into the controls. When the user navigates away from
+the page or press the <emphasis>Finish</emphasis> button, the content of the controls are copied back
+to the bound variables. These variables can be used in the template files we are
+about to define in the following section.</simpara>
 </section>
 <section id="_creating_templated_files">
 <title>Creating Templated Files</title>
-<simpara>When the template is used, the contents of the template folder (and subfolders)
-will be copied over into the new project preserving the directory structure,
-with the exception of <literal>template.properties</literal> and other known special-purpose files.
-(It is also possible to specify other files and folders to ignore during copying.)</simpara>
+<simpara>When the template is used, the contents of the template folder (and its subfolders)
+will be copied over into the new project, preserving the directory structure,
+with the exception of <literal>template.properties</literal>. (It is also possible to specify
+other files and folders to be ignored by specifying a file list for the
+<literal>ignoreResources</literal> configuration key.)</simpara>
 <simpara>When the wizard is being used, a pool of variables is kept by the wizard dialog.
 These variables are initialized from the <literal>key = value</literal> lines in the
 <literal>template.properties</literal> files; they can get displayed and/or edited
@@ -156,64 +173,139 @@ NED Source Folders by the New OMNeT++ Project wizard). Variables can be used
 to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (<literal>*.ftl</literal>) files.</simpara>
-<simpara>Create a file named <literal>untitled.ned.flt</literal>.</simpara>
+<simpara>Let&#8217;s create a file with a filename with <literal>.flt</literal> extension (e.g.<literal>untitled.ned.flt</literal>).
+Because of the extension, this file will be processed by the templating engine.
+The actual name of the file does not matter, because the
+&lt;@setoutput &#8230;/&gt; directive instructs the templating engine to output
+everything from the current file into the file that is specified by the
+<literal>targetFileName</literal> variable. <literal>targetFileName</literal> is automatically filled out by
+the wizard, based on the filename the user selected on the first wizard page.</simpara>
 <literallayout class="monospaced">&lt;@setoutput path=targetFileName?default("")/&gt;
 ${bannerComment}</literallayout>
 <literallayout class="monospaced">&lt;#if nedPackageName!=""&gt;package ${nedPackageName};&lt;/#if&gt;</literallayout>
 <literallayout class="monospaced">network ${targetTypeName}
 {
-        node[${networkSize}] : ${nodeName}
+        node[${networkSize}] : ${nodeType}
 }</literallayout>
-<simpara>The file name for the output will be the value of the <literal>targetFileName</literal> variable.
-The rest of template variables will be substituted into the template.</simpara>
+<simpara>The <literal>targetFileName</literal>, <literal>targetTypeName</literal> and <literal>nedPackageName</literal> variables are
+automatically filled out by the wizard based on what file or folder name
+the user has selected in the wizard. The rest of template variables
+are provided by the custom wizard page and will be substituted into the
+template automatically.</simpara>
 <simpara>Specific wizard dialogs will also define extra variables for use in the
-templates, e.g. the wizard types that create a single file will put the
-<literal>newFileName</literal> variable into the context. To see all defined variables,
+templates, e.g. the wizard type that creates a complete simulation (with all required files),
+will put the <literal>simulationName</literal> variable into the context. To see all defined variables,
 check the Appendix.</simpara>
 <tip><simpara>The "New Wizard" wizard in the IDE provides you with more than a handful of
      working examples, useful utilities for writing wizards, sample code for
      accessing various features, and so on. The aim of these wizards is to get you
      productive in the shortest time possible.</simpara></tip>
-</section>
-<section id="_wizard_types">
-<title>Wizard Types</title>
-<simpara>The wizard will set the <literal>wizardType</literal> template variable when it executes,
-so template code can check under which wizard type it runs (using <literal>&lt;#if&gt;..&lt;/#if&gt;</literal>), and
-act accordingly. This feature allows the creation of templates that
-can be used for multiple wizard types.</simpara>
-<simpara>Create a file called <literal>omnetpp.ini.ftl</literal> and fill with:</simpara>
+<simpara>As a last step we create also an INI file template:</simpara>
+<simpara>Create a file called <literal>omnetpp.ini.ftl</literal> and for our example, fill with:</simpara>
 <literallayout class="monospaced">&lt;#if wizardType=="simulation"&gt;
 network = ${targetTypeName}
 &lt;/#if&gt;</literallayout>
 <simpara>We need the INI file only if we are creating a simulation. If the
 current type is not <emphasis>simulation</emphasis>, an empty file will be generated
 and it will not be copied to the destination folder.</simpara>
+</section>
+</section>
+<section id="_wizard_types">
+<title>Wizard Types</title>
+<simpara>The wizard will set the <literal>wizardType</literal> template variable when it executes,
+so template code can check under which wizard type it runs (using <literal>&lt;#if&gt;..&lt;/#if&gt;</literal>), and
+act accordingly. This feature allows one to create templates that
+can be used for multiple wizard types.</simpara>
 <simpara>There are several types of wizards you can create. Each one has a different
 goal:</simpara>
 <section id="_new_project_wizards">
 <title>New Project Wizards</title>
+<literallayout class="monospaced">wizardType = project</literallayout>
 <simpara>Project wizards can create&#8201;&#8212;&#8201;as their name suggest&#8201;&#8212;&#8201;new projects. All necessary files
 required by the new project can be included in the template. It is possible to adjust
 project properties to customize the new project. You can enable C++ code support, set
 source and NED folders. The files in the template folder will be directly copied to the
-new project folder.</simpara>
+new project folder. See the appendix for the variable names that are supported
+in project wizards.</simpara>
 </section>
 <section id="_new_simulation_wizards">
 <title>New Simulation Wizards</title>
-<simpara>A new simulation is basically a network definition plus an INI file
-describing the initial configurations and parameter values. These
-files are typically created in a separate directory that is selected
-in the wizard as the <emphasis>simulation folder</emphasis>.</simpara>
+<literallayout class="monospaced">wizardType = simulation</literallayout>
+<simpara>A new simulation is basically a new folder containing all files required to create a
+simulation. Usually contains NED files and an INI file, but may contain also CC, H and MSG
+files if the new simulation requires also additional behavior. For new simulations
+the user selects a parent folder and a simulation name. The <literal>targetFolder</literal>, <literal>targetMainFile</literal>,
+<literal>simulationName</literal> and <literal>simualtionFolderName</literal> variables are based on this selection.</simpara>
+<simpara>Other variables that are useful for these templates are:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>namespaceName</literal> can be used to refer to the current C++ namespace in CC, H files.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>nedPackageName</literal> can be used to refer to the current NED package (based on the current folder
+    of the file)
+</simpara>
+</listitem>
+</itemizedlist>
 </section>
 <section id="_new_ini_msg_or_ned_file_wizards">
 <title>New INI,MSG or NED File Wizards</title>
-<simpara>New &#8230; File Wizards generate only a single file. The filename can be accessed in the</simpara>
+<literallayout class="monospaced">wizardType = simplemodule, compoundmodule, network, nedfile,
+             inifile or msgfile</literallayout>
+<simpara>For these wizards the user selects a folder and a file name where the generated
+file should be placed.  The selected file name can be accessed as
+defined which is a sanitized and capitalized version of the <literal>tagetFileName</literal> variable.
+It can be used as a NED or C++ type inside the templates.
+New &#8230; File Wizards usually generate only a single file, but multiple files can be
+generated too if necessary (e.g. simple modules would generate NED, CC and H files).
+There are additional helper variables like:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>nedPackageName</literal> for INI and NED files is defining the current NED package which is
+    calculated automatically based on the selected targetFolder
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>msgTypeName</literal> is a sanitized type name that can be used in MSG files only
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>namespaceName</literal> is the current C++ namespace for NED and MSG file wizards
+    (those that usually generate code). It is calculated automatically from the
+    targetFolder and from the information provided with the <literal>@namespace</literal>
+    property in the existing NED files.
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section id="_import_wizards">
+<title>Import wizards</title>
+<literallayout class="monospaced">wizardType = import</literallayout>
+<simpara>Import wizards work similarly to other wizards with the only difference,
+that the input for them is coming from external file rather than from
+the user directly (i.e. custom wizard pages ask for a file or folder to
+be imported). If you specify the <literal>import</literal> type for any wizard, it will be added to the
+File | Import wizard dialog.</simpara>
 </section>
 <section id="_export_import_wizards">
 <title>Export / Import Wizards</title>
-<simpara>Export and import wizards work similarly like the other wizards, but the input
-and output files must be specified on custom wizard pages.</simpara>
-</section>
+<literallayout class="monospaced">wizardType = export</literallayout>
+<simpara>Export wizards appear in the File | Export dialog and their custom pages
+usually ask for an input (e.g NED file or type, a folder etc.) and possibly some other
+options, controlling the export algorithm (formatting, output file name etc).
+Exports are different than the rest of the templates, because their template
+files are not allowed to generate output. You must explicitly create and write
+files using the <literal>FileUtils</literal> helper class. The results of the export are not
+necessarily created in a project, they can be written anywhere on the filesystem.</simpara>
+<warning><simpara>If a the template file attempt to output some content, an error will be
+generated by the wizard. You should generate files only using the methods of the
+FileUtils class.</simpara></warning>
 </section>
 </section>
 <section id="_configuration_keys">
@@ -277,7 +369,8 @@ supportedWizardTypes
 <simpara>
                 Comma-separated or JSON-syntax list of wizard types (e.g.
                 "nedfile", "simplemodule", "project", "inifile") that
-                this template supports. More about this later.
+                this template supports. If not specified, the wizard will support
+                all known wizard types.
 </simpara>
 </listitem>
 </varlistentry>
@@ -930,8 +1023,9 @@ ATTR: gateFilter : type filter for the enumerated gates. Expects a
                   GateChooser.OUTPUT, GateChooser.INOUT, GateChooser.VECTOR,
                   GateChooser.SCALAR</literal>.
 </simpara>
-<literallayout class="monospaced">&lt;gateChooser x:id="gateName" nedTypeName="${nodeType}"
-     gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/&gt;</literallayout>
+<literallayout class="monospaced">&lt;gateChooser x:id="gateName"
+  nedTypeName="${nodeType}"
+  gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/&gt;</literallayout>
 </listitem>
 </itemizedlist>
 </listitem>
@@ -1195,7 +1289,7 @@ Type mismatch. Variables have types in FreeMarker, and one can get type conversi
 </listitem>
 <listitem>
 <simpara>
-For some reason, FreeMarker refuses to print boolean variables, i.e. <literal>$\{isFoo}</literal>
+For some reason, FreeMarker refuses to print boolean variables, i.e. <literal>${isFoo}</literal>
    results in a runtime error. The common workaround is to write
    <literal>&lt;#if isFoo&gt;true&lt;#else&gt;false&lt;/#if&gt;</literal>; this can be shortened with our iif() function:
    <literal>${isFoo, "true", "false"}</literal>.
@@ -1220,132 +1314,151 @@ Some Java functionality (the instanceof operator, <literal>Class.newInstance()</
 </listitem>
 </itemizedlist>
 </section>
-<section id="_xswt_tips_and_trick">
-<title>XSWT Tips and Trick:</title>
-<variablelist>
-<varlistentry>
-<term>
-How can I make a checkbox or radio button? <literal>&lt;checkbox&gt;</literal> and <literal>&lt;radio&gt;</literal> are not recognized in my XSWT files! 
-</term>
+<section id="_xswt_tips_and_tricks">
+<title>XSWT Tips and Tricks:</title>
+<itemizedlist>
 <listitem>
 <simpara>
-   They are called <literal>&lt;button x:style="CHECK"&gt;</literal> and <literal>&lt;button x:style="RADIO"&gt;</literal> in SWT.
+How can I make a checkbox or radio button? <literal>&lt;checkbox&gt;</literal> and <literal>&lt;radio&gt;</literal> are not recognized in my XSWT files!
 </simpara>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
+</itemizedlist>
+<simpara>They are called <literal>&lt;button x:style="CHECK"&gt;</literal> and <literal>&lt;button x:style="RADIO"&gt;</literal> in SWT.</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
 My text fields, combo boxes etc look strange, what do I do wrong?
-</term>
-<listitem>
-<simpara>
-   You usually want to add the BORDER option, like this: <literal>&lt;text x:style="BORDER"&gt;</literal>
 </simpara>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
+</itemizedlist>
+<simpara>You usually want to add the BORDER option, like this: <literal>&lt;text x:style="BORDER"&gt;</literal></simpara>
+<itemizedlist>
+<listitem>
+<simpara>
 How to make a long label wrap nicely?
-</term>
-<listitem>
-<simpara>
-   You will find that specifying x:style="WRAP" is necessary, but not enough. It is
-   also needed that the label widget expands and fills the space horizontally:
 </simpara>
+</listitem>
+</itemizedlist>
+<simpara>You will find that specifying x:style="WRAP" is necessary, but not enough. It is
+also needed that the label widget expands and fills the space horizontally:</simpara>
 <literallayout class="monospaced">&lt;label text="Some long text...." x:style="WRAP"&gt;
-    &lt;layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/&gt;
+    &lt;layoutData x:class="GridData" horizontalAlignment="FILL"
+       grabExcessHorizontalSpace="true"/&gt;
 &lt;/label&gt;</literallayout>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
+<itemizedlist>
+<listitem>
+<simpara>
 How to set the focus?
-</term>
-<listitem>
-<simpara>
-   Add <literal>&lt;setFocus/&gt;</literal> to the XML body of the desired widget.
 </simpara>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
+</itemizedlist>
+<simpara>Add <literal>&lt;setFocus/&gt;</literal> to the XML body of the desired widget.</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
 How to make widgets conditional on some previous input?
-</term>
-<listitem>
-<simpara>
-   You can use <literal>&lt;#if&gt;</literal> and other FreeMarker directives in XSWT files. These
-   files undergo template processing each time the corresponding page
-   appears.
 </simpara>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
+</itemizedlist>
+<simpara>You can use <literal>&lt;#if&gt;</literal> and other FreeMarker directives in XSWT files. These
+files undergo template processing each time the corresponding page
+appears.</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
 How to carry forward data from a previous page to the next?
-</term>
-<listitem>
-<simpara>
-   Use FreeMarker variables (<literal>$\{varName}</literal>) in the page.
 </simpara>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
+</itemizedlist>
+<simpara>Use FreeMarker variables (<literal>${varName}</literal>) in the page.</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
 How can I fill a combo box with values that I&#8217;ll only know at runtime?
-</term>
-<listitem>
-<simpara>
-   You can generate the <literal>&lt;option&gt;</literal> children of the combo using FreeMarker
-   directives, e.g. <literal>&lt;#list&gt;...&lt;/#list&gt;</literal>
 </simpara>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
+</itemizedlist>
+<simpara>You can generate the <literal>&lt;option&gt;</literal> children of the combo using FreeMarker
+directives, e.g. <literal>&lt;#list&gt;...&lt;/#list&gt;</literal></simpara>
+<itemizedlist>
+<listitem>
+<simpara>
 How can I have some more sophisticated user input than simple textedit fields and checkboxes?
-</term>
-<listitem>
-<simpara>
-   You can implement custom SWT controls in Java, and use them in the
-   wizard pages. The custom controls may even be packaged into jar files
-   in the template&#8217;s directory, i.e. you do not need to write a separate
-   Eclipse plug-in or something. Have a look at the source files of the
-   existing custom controls (`FileChooser, NedTypeChooser, InfoLink, etc).
 </simpara>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
+</itemizedlist>
+<simpara>You can implement custom SWT controls in Java, and use them in the
+wizard pages. The custom controls may even be packaged into jar files
+in the template&#8217;s directory, i.e. you do not need to write a separate
+Eclipse plug-in or something. Have a look at the source files of the
+existing custom controls (<literal>FileChooser, NedTypeChooser, InfoLink</literal>, etc).</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
 How to dynamically enable/disable controls on a page, depending on other controls (i.e. a checkbox or radio button)
-</term>
-<listitem>
-<simpara>
-   Currently you cannot. If you are desperate, you have the following options:
-   (1) put the dependent controls onto a separate page, which you can make
-   conditional; (2) write a custom CheckboxComposite control in Java
-   that features a checkbox, and enables/disables child controls
-   when the checkbox selection changes; (3) write the full custom wizard
-   page entirely in Java, and register it in <literal>template.properties</literal> with
-   page.xx.class= instead of page.xx.file; (4) implement scripting support
-   for XSWT 1.x and contribute the patch to us :)
 </simpara>
 </listitem>
-</varlistentry>
-<varlistentry>
-<term>
+</itemizedlist>
+<simpara>Currently you cannot. If you are desperate, you have the following options:
+(1) put the dependent controls onto a separate page, which you can make
+conditional; (2) write a custom CheckboxComposite control in Java
+that features a checkbox, and enables/disables child controls
+when the checkbox selection changes; (3) write the full custom wizard
+page entirely in Java, and register it in <literal>template.properties</literal> with
+page.xx.class= instead of page.xx.file; (4) implement scripting support
+for XSWT 1.x and contribute the patch to us.</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
 In the Project wizard, how does it get decided which templates get offered if the "with C++ checkbox" gets selected or not selected on the first page?
-</term>
-<listitem>
-<simpara>
-   If the C<literal> support checkbox is cleared, templates that require
-   C</literal> support will not appear; when it is checked, there is no
-   such filtering. A template is regarded as one that requires C++ support
-   if the template.properties file contains any of the following:
-   <literal>sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true</literal>.
 </simpara>
 </listitem>
-</varlistentry>
-</variablelist>
+</itemizedlist>
+<simpara>If the C<literal> support checkbox is cleared, templates that require
+C</literal> support will not appear; when it is checked, there is no
+such filtering. A template is regarded as one that requires C++ support
+if the template.properties file contains any of the following:
+<literal>sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true</literal>.</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+How to make calculations?
+</simpara>
+<literallayout class="monospaced">The value of 10*cos(0.2) is ${10*Math.cos(0.2)}.</literallayout>
+</listitem>
+<listitem>
+<simpara>
+Can I use conditional operators like <literal>cond ? x : y</literal> in C++ ?
+</simpara>
+<literallayout class="monospaced">Conditional output: ${iif(condition,"yes","no")}</literallayout>
+</listitem>
+<listitem>
+<simpara>
+How can I create a file ?
+Use the FileUtils class and the @do macro to call the methods on it.
+</simpara>
+<literallayout class="monospaced">&lt;@do FileUtils.createFile("empty.txt", "")!/&gt;</literallayout>
+</listitem>
+<listitem>
+<simpara>
+How can I create lists and how can I iterate over it?
+</simpara>
+<literallayout class="monospaced">The words of the sentence '${sentence}':
+&lt;#list StringUtils.split(sentence) as word&gt;
+   ${word}
+&lt;/#list&gt;</literallayout>
+</listitem>
+<listitem>
+<simpara>
+How can I use hash tables?
+</simpara>
+<literallayout class="monospaced">Properties in the file ${filename}:
+&lt;#assign props = FileUtils.readPropertyFile(filename)&gt;
+&lt;#list props?keys as key&gt;
+   ${key} ==&gt; ${props.get(key)}
+&lt;/#list&gt;</literallayout>
+</listitem>
+</itemizedlist>
 </section>
 <section id="_using_the_ide">
 <title>Using the IDE</title>
@@ -1356,14 +1469,14 @@ provides basic syntax highlighting. An extremely
 useful feature of the IDE is the XSWT Preview, where you can preview
 the form being edited (it updates when you save the file). The Preview should
 open automatically when you open the XSWT file; if it does not (or you close it),
-you can access it via the <literal>Window|Show View...</literal> menu item.</simpara>
+you can access it via the <emphasis role="strong">Window|Show View&#8230;</emphasis> menu item.</simpara>
 <simpara>Some (custom) widgets may not appear in the Preview; this is because the
 Preview does not load jar files from the projects.</simpara>
 </section>
 <section id="_editing_template_files">
 <title>Editing Template Files</title>
-<simpara>The Freemarker Editor is opened when you double-click files with the ftl or
-fti extension. (The latter stands for Freemarker Template Include, and it is
+<simpara>The Freemarker Editor is opened when you double-click files with the *.ftl or
+*.fti extension. (The latter stands for Freemarker Template Include, and it is
 intended for template fragments that you include into other templates. Otherwise
 the wizard ignores fti files, i.e. does not copy them into the new project or
 folder.) The Freemarker Editor offers basic syntax highlight, validation
@@ -1372,7 +1485,7 @@ correct), and basic content assist. Content assist can help you with directives
 (<literal>&lt;#...&gt;</literal> syntax) and builtin operations (like <literal>?number, ?size, ?default</literal>, etc).
 The content assist popup appears automatically when you type <emphasis>&lt;#</emphasis> (actually
 a closing <emphasis>&gt;</emphasis> is also needed for the editor to recognize the tag), and
-when you hit <emphasis>?</emphasis> within a directive or an interpolation (${&#8230;}).</simpara>
+when you hit <emphasis>?</emphasis> within a directive or an interpolation (<literal>${...}</literal>).</simpara>
 </section>
 </section>
 <section id="_append_a_predefined_template_variables">
@@ -1381,23 +1494,25 @@ when you hit <emphasis>?</emphasis> within a directive or an interpolation (${&#
 frame="all"
 rowsep="1" colsep="1"
 >
-<tgroup cols="7">
-<colspec colname="col_1" colwidth="35*"/>
+<tgroup cols="8">
+<colspec colname="col_1" colwidth="30*"/>
 <colspec colname="col_2" colwidth="10*"/>
-<colspec colname="col_3" colwidth="15*"/>
+<colspec colname="col_3" colwidth="10*"/>
 <colspec colname="col_4" colwidth="10*"/>
 <colspec colname="col_5" colwidth="10*"/>
 <colspec colname="col_6" colwidth="10*"/>
 <colspec colname="col_7" colwidth="10*"/>
+<colspec colname="col_8" colwidth="10*"/>
 <tbody>
 <row>
 <entry align="left" valign="top"><simpara>variable name</simpara></entry>
 <entry align="center" valign="top"><simpara>project</simpara></entry>
-<entry align="center" valign="top"><simpara>simulation</simpara></entry>
+<entry align="center" valign="top"><simpara>simul.</simpara></entry>
 <entry align="center" valign="top"><simpara>msgfile</simpara></entry>
 <entry align="center" valign="top"><simpara>inifile</simpara></entry>
 <entry align="center" valign="top"><simpara>nedfile</simpara></entry>
 <entry align="center" valign="top"><simpara>wizard</simpara></entry>
+<entry align="center" valign="top"><simpara>export</simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>addProjectReference</literal></simpara></entry>
@@ -1407,9 +1522,11 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>author</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
@@ -1425,9 +1542,11 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>licenseCode</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
@@ -1443,10 +1562,12 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>makemakeOptions</literal></simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
@@ -1461,6 +1582,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>namespaceName</literal></simpara></entry>
@@ -1469,6 +1591,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
@@ -1479,10 +1602,12 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>nedSourceFolders</literal></simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
@@ -1497,6 +1622,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>newWizardProject</literal></simpara></entry>
@@ -1506,6 +1632,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>projectName</literal></simpara></entry>
@@ -1515,6 +1642,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>PROJECTNAME</literal></simpara></entry>
@@ -1524,6 +1652,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>projectname</literal></simpara></entry>
@@ -1533,6 +1662,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>rawProjectName</literal></simpara></entry>
@@ -1542,10 +1672,12 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>requiresCPlusPlus</literal></simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
@@ -1560,6 +1692,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>simulationName</literal></simpara></entry>
@@ -1569,10 +1702,12 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>sourceFolders</literal></simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
@@ -1587,6 +1722,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>targetFolder</literal></simpara></entry>
@@ -1596,6 +1732,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>targetMainFile</literal></simpara></entry>
@@ -1604,6 +1741,7 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
@@ -1614,9 +1752,11 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>templateCategory</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
@@ -1632,9 +1772,11 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>templateFolderName</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
@@ -1650,9 +1792,11 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>templateName</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
@@ -1668,9 +1812,11 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>templateURL</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
@@ -1686,9 +1832,11 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
 <entry align="center" valign="top"><simpara></simpara></entry>
+<entry align="center" valign="top"><simpara></simpara></entry>
 </row>
 <row>
 <entry align="left" valign="top"><simpara><literal>wizardType</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
@@ -1704,21 +1852,61 @@ rowsep="1" colsep="1"
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
 <entry align="center" valign="top"><simpara>X</simpara></entry>
+<entry align="center" valign="top"><simpara>X</simpara></entry>
 </row>
 </tbody>
 </tgroup>
 </informaltable>
-<simpara>In this section we describe the individual wizard types and their supported
-template variables. Variables will be marked with one or more letter to show in
-which wizard types they are supported as shown on in the previous table
-(A: supported in all wizards; P: project;S:: simulation; M: messagefile; I: inifile;
-N: nedfile, simplemodule, compoundmodule, network; W: wizard).</simpara>
 <section id="_general">
 <title>General</title>
+<simpara>In the following sections we describe the individual wizard types and their supported
+template variables. Variables will be marked with one or more letter to show in
+which wizard types they are supported as shown on in the previous table</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+A: supported in all wizards
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+P: project
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+S: simulation
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+M: messagefile
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+I: inifile
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+N: nedfile, simplemodule, compoundmodule, network
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+W: wizard
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>If a variable is marked as <literal>R/O</literal> (read-only), you should not modify its value
+in your wizard pages. The value of these variables are already used by the wizard
+when the template expansion occures. Modification of read-only values may result
+in inconsistent output files.</simpara>
 <variablelist>
 <varlistentry>
 <term>
-date (A)
+date (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1728,7 +1916,7 @@ current date in yyyy-mm-dd format
 </varlistentry>
 <varlistentry>
 <term>
-year (A)
+year (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1738,7 +1926,7 @@ year in yyyy format
 </varlistentry>
 <varlistentry>
 <term>
-author (A)
+author (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1748,7 +1936,7 @@ user name ("user.name" Java system property)
 </varlistentry>
 <varlistentry>
 <term>
-licenseCode (A)
+licenseCode (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1758,7 +1946,7 @@ license identifier for the @license NED property
 </varlistentry>
 <varlistentry>
 <term>
-licenseText (A)
+licenseText (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1783,19 +1971,19 @@ banner comment for source files; includes license text
 <variablelist>
 <varlistentry>
 <term>
-wizardType (A)
+wizardType (A) (R/O)
 </term>
 <listitem>
 <simpara>
 the type of the wizard. Any of the following:
-                 project, simulation, nedfile, inifile, messagefile,
-                 simplemodule, compoundmodule, network, wizard
+                 <literal>project, simulation, nedfile, inifile, msgfile,
+                 simplemodule, compoundmodule, network, wizard, export, import</literal>
 </simpara>
 </listitem>
 </varlistentry>
 <varlistentry>
 <term>
-templateName (A)
+templateName (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1805,7 +1993,7 @@ name of the template
 </varlistentry>
 <varlistentry>
 <term>
-templateDescription (A)
+templateDescription (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1815,32 +2003,33 @@ template description
 </varlistentry>
 <varlistentry>
 <term>
-templateCategory (A)
+templateCategory (A) (R/O)
 </term>
 <listitem>
 <simpara>
-template category
+template category, used to visually group the
+                       templates in the wizards
 </simpara>
 </listitem>
 </varlistentry>
 <varlistentry>
 <term>
-templateURL (A)
+templateURL (A) (R/O)
 </term>
 <listitem>
 <simpara>
-the URL the template was loaded from (Only for built-in and
+the URL, the template was loaded from (only for built-in and
                   other URL-based wizards)
 </simpara>
 </listitem>
 </varlistentry>
 </variablelist>
 <simpara>The following variables are only defined if the template was loaded from the workspace
-(i.e. a project&#8217;s templates/ subdirectory):</simpara>
+(i.e. a project&#8217;s <literal>templates/</literal> subdirectory):</simpara>
 <variablelist>
 <varlistentry>
 <term>
-templateFolderName (A)
+templateFolderName (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1850,7 +2039,7 @@ name of the folder (without path) in which the template files are
 </varlistentry>
 <varlistentry>
 <term>
-templateFolderPath (A)
+templateFolderPath (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1860,7 +2049,7 @@ full workspace path of the folder in which the template files are
 </varlistentry>
 <varlistentry>
 <term>
-templateProject (A)
+templateProject (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1875,7 +2064,7 @@ name of the project that defines the template
 <variablelist>
 <varlistentry>
 <term>
-targetFolder (A)
+targetFolder (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1888,33 +2077,34 @@ the project or folder path in which the project will generate files.
 </varlistentry>
 <varlistentry>
 <term>
-targetFileName (NIM)
+targetFileName (N,I,M) (R/O)
 </term>
 <listitem>
 <simpara>
-the name of the new file to be created
+the name of the new file to be created. The file can be specified on the
+                               first wizard page.
 </simpara>
 </listitem>
 </varlistentry>
 <varlistentry>
 <term>
-targetTypeName (PSNIM)
+targetTypeName (P,S,N,I,M)
 </term>
 <listitem>
 <simpara>
 a typename that can be used as the main <emphasis>type</emphasis> for the resulting code.
-                         (for P = ${projectName}, for S = ${simulationName}, for NIM = ${targetFileName}) // XXX revise
+                         (for projects it&#8217;s the <literal>${projectName}</literal>, for simulations it&#8217;s the specified <literal>${simulationName}</literal>, for the rest of wizards it is calculated from the <literal>${targetFileName}</literal>)
 </simpara>
 </listitem>
 </varlistentry>
 <varlistentry>
 <term>
-targetMainFile (PSNIM)
+targetMainFile (P,S,N,I,M)
 </term>
 <listitem>
 <simpara>
 a file name that can be used as the <emphasis>main</emphasis> output file for the template
-                         (for PS = ${targetTypeName}.ned, for NIM = ${targetFileName})
+                         (for projects and simulations it&#8217;s <literal>${targetTypeName}.ned</literal>, for ned,msg and ini files it is <literal>${targetFileName}</literal>)
 </simpara>
 </listitem>
 </varlistentry>
@@ -1964,7 +2154,7 @@ sanitized project name in all uppercase
 </listitem>
 </varlistentry>
 </variablelist>
-<simpara>sanitization means making the name suitable as a NED or C/C++ identifier
+<simpara>Sanitization means making the name suitable as a NED or C/C++ identifier
 (spaces, punctuation and other unfit chars replaced with underscore, etc.)</simpara>
 </section>
 <section id="_c_project_control">
@@ -1976,7 +2166,21 @@ addProjectReference (P)
 </term>
 <listitem>
 <simpara>
-if true, make project as dependent on this one
+If true, the wizard will make the result project as
+                          dependent on the project containing the wizard itself.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+withCplusplusSupport (P) (R/O)
+</term>
+<listitem>
+<simpara>
+Whether the project supports C<literal> code compilation.
+                                 This is the state of the "C</literal> support" checkbox on the first
+                                 page of the project wizard. Setting this variable does
+                                 not have any effect on the created project.
 </simpara>
 </listitem>
 </varlistentry>
@@ -1986,7 +2190,7 @@ sourceFolders (P)
 </term>
 <listitem>
 <simpara>
-source folders to be created and configured
+Source folders to be created and configured automatically
 </simpara>
 </listitem>
 </varlistentry>
@@ -1996,17 +2200,9 @@ makemakeOptions (P)
 </term>
 <listitem>
 <simpara>
-makemake options, as "folder1:options1,folder2:options2,&#8230;"
-</simpara>
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>
-withCplusplusSupport (P)
-</term>
-<listitem>
-<simpara>
-whether the project supports C++ code compilation  // FIXME do we need both?
+makemake options, as "folder1:options1,folder2:options2,&#8230;".
+                      The wizard will automatically configure the C++ project with the
+                      given options.
 </simpara>
 </listitem>
 </varlistentry>
@@ -2016,17 +2212,22 @@ requiresCPlusPlus (P)
 </term>
 <listitem>
 <simpara>
-if true, the wizard requires the "support C++ option" during the project creation
+If true, the wizard requires the "support C<literal> option" during the project creation.
+                        If any of the <literal>sourceFolders, makemakeOptions</literal> are present or <literal>withCplusplusSupport=true</literal>,
+                        the template will be displayed only if the "support C</literal> option" option was set on the
+                        first page of the project wizard.
 </simpara>
 </listitem>
 </varlistentry>
 <varlistentry>
 <term>
-namespaceName (SNM)
+namespaceName (S,N,M)
 </term>
 <listitem>
 <simpara>
-the namespace where C++ classes should be placed
+The namespace where C++ classes should be placed.
+                        This is determined automatically by looking up the value of the
+                        <literal>@namespace</literal> property in NED files in the NED source folder.
 </simpara>
 </listitem>
 </varlistentry>
@@ -2041,17 +2242,20 @@ nedSourceFolders (P)
 </term>
 <listitem>
 <simpara>
-NED source folders to be created and configured
+NED source folders to be created and configured automatically.
 </simpara>
 </listitem>
 </varlistentry>
 <varlistentry>
 <term>
-nedPackageName (PSNI)
+nedPackageName (P,S,N,I)
 </term>
 <listitem>
 <simpara>
-(P: ${projectname}, SNI:autocalculated)
+The NED package name. For projects it is <literal>${projectname}</literal>,
+                           for simulations, NED and INI files, it is automatically
+                           calculated from the folder hierarchy where the file
+                           is generated.
 </simpara>
 </listitem>
 </varlistentry>
@@ -2061,7 +2265,8 @@ msgTypeName (M)
 </term>
 <listitem>
 <simpara>
-the name of the message class
+The name of the message class based on the capitalized and sanitized file name.
+                  (e.g. for <literal>test.msg</literal> it is <literal>Test</literal>)
 </simpara>
 </listitem>
 </varlistentry>
@@ -2072,7 +2277,7 @@ the name of the message class
 <variablelist>
 <varlistentry>
 <term>
-simulationFolderName (S)
+simulationFolderName (S) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2082,11 +2287,12 @@ the folder where the simulation will be created
 </varlistentry>
 <varlistentry>
 <term>
-simulationName (S)
+simulationName (S) (R/O)
 </term>
 <listitem>
 <simpara>
-the name of the simulation
+The name of the simulation. It is the capitalized and
+                           sanitized name derived from the <literal>simulationFolderName</literal> .
 </simpara>
 </listitem>
 </varlistentry>
@@ -2097,11 +2303,13 @@ the name of the simulation
 <variablelist>
 <varlistentry>
 <term>
-newWizardName (W)
+newWizardName (W) (R/O)
 </term>
 <listitem>
 <simpara>
-the name of the new wizard to be created
+The name of the new wizard to be created. It is the name
+                          of the folder under the <literal>templates</literal> directory where
+                          all the template files will be stored.
 </simpara>
 </listitem>
 </varlistentry>
@@ -2111,7 +2319,7 @@ newWizardProject (W)
 </term>
 <listitem>
 <simpara>
-the project where the new wizard will be created
+The project where the new wizard will be created.
 </simpara>
 </listitem>
 </varlistentry>
@@ -2140,7 +2348,8 @@ classes (A)
 <listitem>
 <simpara>
 Access to class static models. It is possible to access
-                      class static methods via this variable.
+                      class static methods via this variable. See <ulink url="http://freemarker.org/docs/pgui_misc_beanwrapper.html#autoid_54">http://freemarker.org/docs/pgui_misc_beanwrapper.html#autoid_54</ulink>
+                      for further details.
 </simpara>
 </listitem>
 </varlistentry>
@@ -2150,7 +2359,8 @@ nedResources (A)
 </term>
 <listitem>
 <simpara>
-all currently known NED types
+Provides direct access to the in memory model of the parsed NED files. It is possible to query,
+                   check and iterate over the available NED types.
 </simpara>
 </listitem>
 </varlistentry>
@@ -2160,7 +2370,7 @@ msgResources (A)
 </term>
 <listitem>
 <simpara>
-all currently known message types
+Provides access to the in memory model of the parsed NED files.
 </simpara>
 </listitem>
 </varlistentry>
@@ -2171,64 +2381,115 @@ are added automatically to the context as a template variable.</simpara></note>
 </section>
 <section id="_append_b_functions_classes_and_macros_available_from_templates">
 <title>Append. B: Functions, Classes and Macros available from Templates</title>
+<simpara>In addition to the standard FreeMarker template constructs, there are
+several java utility classes, template macros and functions
+that can be used in your wizard templates to ease the development of
+custom wizards. The following sections briefly describe these calsses and
+methods.</simpara>
+<section id="_custom_macros_and_functions">
+<title>Custom Macros and Functions</title>
+<literallayout class="monospaced">iif(condition, valueIfTrue, valueIfFalse)</literallayout>
+<simpara>Inline if. The FreeMarker language does not have a conditional operator
+(like ?: of C/C<literal> ), but the iif() function can save you from the verbosity
+of having to spell out &lt;#if&gt;..&lt;#else&gt;..&lt;/#if&gt;, where such thing is needed.
+Note that unlike in C/C</literal> the evaluation is not lazy, i.e. both the "then" and
+the "else" expressions are always evaluated.</simpara>
 <variablelist>
-<varlistentry>
-<term>
-iif(condition, valueIfTrue, valueIfFalse)
-</term>
-<listitem>
-<simpara>
-   Inline if. The FreeMarker language does not have a conditional operator
-   (like ?: of C/C<literal>), but the iif() function can save you from the verbosity
-   of having to spell out &lt;#if&gt;..&lt;#else&gt;..&lt;/#if&gt; everywhere such thing is needed.
-   Note that unlike in C/C</literal> the evaluation is not lazy, i.e. both the "then" and
-   the "else" expressions are always evaluated.
-</simpara>
-</listitem>
-</varlistentry>
 <varlistentry>
 <term>
 &lt;@do expression !&gt;
 </term>
 <listitem>
 <simpara>
-   FreeMarker does not have a construct for calling a function and then discarding
-   the result. One could use &lt;#assign dummy = expression&gt;, but this, apart from
-   being ugly, will fail if the called (Java) function is void or returns null.
-   We recommend our small "@do" macro which takes one argument and does nothing,
-   and the exclamation mark (the FreeMarker default value operator) cures the
-   void/null problem.
+FreeMarker does not have a construct for calling a function and then discarding
+the result. One could use &lt;#assign dummy = expression&gt;, but this, apart from
+being ugly, will fail if the called (Java) function is void or returns null.
+We recommend our small "@do" macro which takes one argument and does nothing,
+and the exclamation mark (the FreeMarker default value operator) cures the
+void/null problem.
 </simpara>
 </listitem>
 </varlistentry>
 </variablelist>
-<simpara>The following Java classes are available during template processing:
-  Math::                    java.lang.Math
-  StringUtils::     org.apache.commons.lang.StringUtils
-  CollectionUtils::     org.apache.commons.lang.CollectionUtils
-  WordUtils::       org.apache.commons.lang.CollectionUtils
-  FileUtils::       see below for documentation
-  IDEUtils::        see below for documentation
-  LangUtils::       see below for documentation</simpara>
-<simpara>Example template code:</simpara>
-<literallayout class="monospaced">The value of 10*cos(0.2) is ${10*Math.cos(0.2)}.</literallayout>
-<literallayout class="monospaced">Conditional output: ${iif(condition,"yes","no")}</literallayout>
-<literallayout class="monospaced">Create an empty file:
-&lt;@do FileUtils.createFile("empty.txt", "")!/&gt;</literallayout>
-<literallayout class="monospaced">The words of the sentence '${sentence}':
-&lt;#list StringUtils.split(sentence) as word&gt;
-   ${word}
-&lt;/#list&gt;</literallayout>
-<literallayout class="monospaced">Properties in the file ${filename}:
-&lt;#assign props = FileUtils.readPropertyFile(filename)&gt;
-&lt;#list props?keys as key&gt;
-   ${key} ==&gt; ${props.get(key)}
-&lt;/#list&gt;</literallayout>
+<simpara>The following Java classes are available during template processing:</simpara>
+<variablelist>
+<varlistentry>
+<term>
+Math
+</term>
+<listitem>
+<simpara>
+java.lang.Math
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+StringUtils
+</term>
+<listitem>
+<simpara>
+org.apache.commons.lang.StringUtils
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+CollectionUtils
+</term>
+<listitem>
+<simpara>
+org.apache.commons.lang.CollectionUtils
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+WordUtils
+</term>
+<listitem>
+<simpara>
+org.apache.commons.lang.CollectionUtils
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+FileUtils
+</term>
+<listitem>
+<simpara>
+see below for documentation
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+IDEUtils
+</term>
+<listitem>
+<simpara>
+see below for documentation
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+LangUtils
+</term>
+<listitem>
+<simpara>
+see below for documentation
+</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</section>
 <section id="_math">
-<title>Math:</title>
+<title>Math</title>
 <simpara>Represents the Java Math class, which contains mathematical functions.
-See <ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html">http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html</ulink></simpara>
-<simpara>Math functions:</simpara>
+See <ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html">http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html</ulink> .</simpara>
+<simpara>Math has the following methods:</simpara>
 <literallayout class="monospaced">double cos(double x)</literallayout>
 <literallayout class="monospaced">double sin(double x)</literallayout>
 <literallayout class="monospaced">double pow(double x, double y)</literallayout>
@@ -2238,9 +2499,16 @@ See <ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Math.html">htt
 <title>StringUtils</title>
 <simpara>Represents the Apache Commons StringUtils class, which contains over a hundred
 utility functions for manipulating strings.
-See <ulink url="http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html">http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html</ulink></simpara>
-<simpara>StringUtils methods</simpara>
-<literallayout class="monospaced">boolean isEmpty(String s)</literallayout>
+See <ulink url="http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html">http://commons.apache.org/lang/api/org/apache/commons/lang/StringUtils.html</ulink> .</simpara>
+<variablelist>
+<varlistentry>
+<term>
+StringUtils has the following methods
+</term>
+<listitem>
+<simpara>
+  boolean isEmpty(String s)
+</simpara>
 <literallayout class="monospaced">boolean isBlank(String s)</literallayout>
 <literallayout class="monospaced">String capitalize(String s)</literallayout>
 <literallayout class="monospaced">String upperCase(String s)</literallayout>
@@ -2249,14 +2517,17 @@ See <ulink url="http://commons.apache.org/lang/api/org/apache/commons/lang/Strin
 <literallayout class="monospaced">boolean endsWith(String s, String prefix)</literallayout>
 <literallayout class="monospaced">String[] split(String s)</literallayout>
 <literallayout class="monospaced">String join(String[] strings)</literallayout>
+</listitem>
+</varlistentry>
+</variablelist>
 <simpara>etc.</simpara>
 </section>
 <section id="_wordutils">
 <title>WordUtils</title>
 <simpara>Represents the Apache Commons WordUtils class, which contains utility functions
 for manipulating strings as word sequences.
-See <ulink url="http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html">http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html</ulink></simpara>
-<simpara>WordUtils methods</simpara>
+See <ulink url="http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html">http://commons.apache.org/lang/api/org/apache/commons/lang/WordUtils.html</ulink> .</simpara>
+<simpara>WordUtils has the following methods:</simpara>
 <literallayout class="monospaced">String wrap(String str, int wrapLength)</literallayout>
 <literallayout class="monospaced">String capitalize(String str)</literallayout>
 <literallayout class="monospaced">String swapCase(String str)</literallayout>
@@ -2268,14 +2539,14 @@ See <ulink url="http://commons.apache.org/lang/api/org/apache/commons/lang/WordU
 functions for manipulating collections (like lists). Functions include computing
 set union, intersection, and difference.
 See <ulink url="http://commons.apache.org/collections/apidocs/org/apache/commons/collections/CollectionUtils.html">http://commons.apache.org/collections/apidocs/org/apache/commons/collections/CollectionUtils.html</ulink></simpara>
-<simpara>CollectionUtils methods</simpara>
+<simpara>CollectionUtils has the following methods:</simpara>
 <literallayout class="monospaced">Collection union(Collection a, Collection b)</literallayout>
 <literallayout class="monospaced">Collection intersection(Collection a, Collection b)</literallayout>
 <literallayout class="monospaced">Collection subtract(Collection a, Collection b)</literallayout>
 <simpara>etc.</simpara>
 </section>
 <section id="_fileutils">
-<title>FileUtils:</title>
+<title>FileUtils</title>
 <simpara>Contains utility functions for reading files in the following formats: XML,
 JSON, CSV, property file, and functions to read and return a text file
 as a single string, as an array of lines, and as a an array of string arrays
@@ -2284,7 +2555,7 @@ as a single string, as an array of lines, and as a an array of string arrays
 and the other files on "external" files, i.e. files in the file system.
 Files are interpreted in the Java platform&#8217;s default encoding (unless XML files,
 which specify their own encoding.)</simpara>
-<simpara>FileUtils functions:</simpara>
+<simpara>FileUtils has the following methods:</simpara>
 <literallayout class="monospaced">org.w3c.dom.Document readXMLFile(String fileName)
 org.w3c.dom.Document readExternalXMLFile(String fileName)</literallayout>
 <simpara>Parses an XML file, and return the Document object of the resulting
@@ -2370,10 +2641,10 @@ access operations provided by the File API, such as exists(), length(), etc.</si
 to the destination path. For projects and folders, it copies recursively
 (i.e. copies the whole folder tree). From the project root directory it
 leaves out dot files, hidden files, and team private files.</simpara>
-<literallayout class="monospaced">methods:  void copyURL(String url, String destFilePath,
-                       IProgressMonitor monitor)</literallayout>
+<literallayout class="monospaced">void copyURL(String url, String destFilePath,
+                      IProgressMonitor monitor)</literallayout>
 <simpara>Copies the file at the given URL to the given destination workspace file.</simpara>
-<literallayout class="monospaced">methods:String createTempFile(String content)</literallayout>
+<literallayout class="monospaced">String createTempFile(String content)</literallayout>
 <simpara>Writes the given string to a temporary file, and returns the path of the
 temporary file in the file system. The file will be automatically deleted
 when the IDE exits, but it can be also deleted earlier via deleteExternalFile().</simpara>
@@ -2399,7 +2670,7 @@ It is OK to invoke it on a nonexistent directory.</simpara>
 <section id="_nedutils">
 <title>NedUtils</title>
 <simpara>Provides utility methods to work with NED types and check their existence.</simpara>
-<simpara>NedUtils methods</simpara>
+<simpara>NedUtils has the following methods:</simpara>
 <literallayout class="monospaced">boolean isVisibleType(String typeName, String inFolder)</literallayout>
 <simpara>Returns whether the given NED type is visible in the given folder.
 If the type is a fully qualified name, it is recognized if it is
@@ -2419,7 +2690,7 @@ is documented in the Eclipse Platform help; documentation for the latter can
 be found in the sources (Javadoc).
 See <ulink url="http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/resInt.htm">http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/resInt.htm</ulink>
 and <ulink url="http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspaceRoot.html">http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspaceRoot.html</ulink></simpara>
-<simpara>IDEUtils methods</simpara>
+<simpara>IDEUtils has the following methods:</simpara>
 <literallayout class="monospaced">boolean openConfirm(String title, String message,
                             String detailsMessage)
 boolean openQuestion(String title, String message,
@@ -2435,7 +2706,7 @@ boolean openInformation(String title, String message,
 <section id="_langutils">
 <title>LangUtils</title>
 <simpara>Provides a collection of Java language related utility functions.</simpara>
-<simpara>LangUtils methods</simpara>
+<simpara>LangUtils shas the following methods:</simpara>
 <literallayout class="monospaced">boolean hasMethod(Object object, String methodName)</literallayout>
 <simpara>Returns true if the object has a method with the given name.
 Method args and return type are not taken into account.
@@ -2463,6 +2734,8 @@ seems to have a problem with the getClass() method.</simpara>
 </section>
 <section id="_processutils">
 <title>ProcessUtils</title>
+<simpara>Provides functionality to start external applications from the wizard,</simpara>
+<simpara>ProcessUtis has the following methods:</simpara>
 <literallayout class="monospaced">ProcessResult exec(String command, String[] arguments,
                            String workingDirectory,
                            String standardInput, double timeout)</literallayout>

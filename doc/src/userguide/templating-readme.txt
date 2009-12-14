@@ -66,14 +66,14 @@ contribute to one or more of those wizard dialogs.
 As an example - in the following sections -  we will create a simple wizard that 
 will support either creating a simulation (complete with NED and INI files),
 or just a single NED file with a network defined in it. The user will be able to 
-specify the type and the number of the submodules.
+specify the type and the number of the submodules the network contains.
 
 ==== Configuring the Wizard
 
 The first step when creating a wizard is to create a new folder
 under the `templates` directory of the project. A file named `template.properties` 
 must be present in the newly created directory. This file is used to configure 
-the wizard. 
+the wizard. Create `template.properties` and add the following lines to it:  
 
   templateName = New Test Wizard
   templateDescription = Generate an example
@@ -82,7 +82,7 @@ the wizard.
 
 Specify at least the name, type and category for your wizard. Category is used to
 specify how the wizards will be visually grouped. Wizard type specifies in which
-New ... Wizard  your wizard will appear. You can specify for example: `project, 
+New ... Wizard  your wizard will appear. You can specify: `project, 
 simulation, network` etc. In our case the wizard will be added both to 
 the New Simulation Wizard and to the New Network Wizard.
 
@@ -96,7 +96,7 @@ The `nodeType` variable will be used as the submodule type in our network, while
 the `networkSize` defines how many submodules we want in the network.
 
 We have to define a custom wizard page, where the user can specify the value 
-of the above variables.
+of the above variables (i.e. overwrite their default value specified above).
 
   page.1.file = parameters.xswt
   page.1.title = Network parameters 
@@ -131,30 +131,31 @@ with the following content:
 	  <layout x:class="GridLayout" numColumns="2"/>
 	  <x:children>
     	<!-- First row  -->
-	    <label text="Number nodes in the network:"/>
+	    <label text="Number of nodes in the network:"/>
 	    <spinner x:id="networkSize" minimum="2" x:style="BORDER"/>
     	<!-- Second row  -->
-	    <label text="Type of Nodes:"/>
+	    <label text="Type of nodes:"/>
 	    <text x:id="nodeType" x:style="BORDER"/>
 	  </x:children>
   </xswt>
 
 The above defined wizard page will have two columns. The first column contains labels,
-while the second one contains the editable controls.
+while the second contains the editable controls.
 The `x:id="varName"` attributes in the spinner and text control definitions are used 
-to bind a template variable to the control.
-When a page is displayed, the content of the bound variables are copied into the controls.
-When the user navigates away from the page or press the 'Finish' button the content of the
-controls are copied back to the bound variables. The filled variables    
+to bind a template variable to the control. When a page is displayed, the content of 
+the bound variables are copied into the controls. When the user navigates away from 
+the page or press the 'Finish' button, the content of the controls are copied back 
+to the bound variables. These variables can be used in the template files we are 
+about to define in the following section.    
 
 
 ==== Creating Templated Files
 
-When the template is used, the contents of the template folder (and subfolders)
-will be copied over into the new project preserving the directory structure,
+When the template is used, the contents of the template folder (and its subfolders)
+will be copied over into the new project, preserving the directory structure,
 with the exception of `template.properties`. (It is also possible to specify 
-other files and folders to ignore during copying specifying a file list
-for the `ignoreResources` configuration key.)
+other files and folders to be ignored by specifying a file list for the 
+`ignoreResources` configuration key.)
 
 When the wizard is being used, a pool of variables is kept by the wizard dialog.
 These variables are initialized from the `key = value` lines in the 
@@ -169,9 +170,9 @@ to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (`*.ftl`) files.
 
-Create a file with a filename that ends in `.flt` 
-e.g.`untitled.ned.flt`. This will create a template file that will be processed
-by the templating engine. The name of the file does not matter, because the
+Let's create a file with a filename with `.flt` extension (e.g.`untitled.ned.flt`). 
+Because of the extension, this file will be processed by the templating engine. 
+The actual name of the file does not matter, because the
 <@setoutput .../> directive instructs the templating engine to output 
 everything from the current file into the file that is specified by the 
 `targetFileName` variable. `targetFileName` is automatically filled out by 
@@ -187,12 +188,15 @@ the wizard, based on the filename the user selected on the first wizard page.
 		node[${networkSize}] : ${nodeType}
 	}
 
-The `targetFileName` and `targetTypeName` are automatically filled out by the wizard.
-The rest of template variables will be substituted into the template. 
+The `targetFileName`, `targetTypeName` and `nedPackageName` variables are 
+automatically filled out by the wizard based on what file or folder name 
+the user has selected in the wizard. The rest of template variables 
+are provided by the custom wizard page and will be substituted into the 
+template automatically. 
 
 Specific wizard dialogs will also define extra variables for use in the
-templates, e.g. the wizard type that creates a simulation with all required files
- will put the `simulationName` variable into the context. To see all defined variables, 
+templates, e.g. the wizard type that creates a complete simulation (with all required files),
+will put the `simulationName` variable into the context. To see all defined variables, 
 check the Appendix.
 
 TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
@@ -200,13 +204,7 @@ TIP: The "New Wizard" wizard in the IDE provides you with more than a handful of
      accessing various features, and so on. The aim of these wizards is to get you
      productive in the shortest time possible.
 
-
-=== Wizard Types
-
-The wizard will set the `wizardType` template variable when it executes,
-so template code can check under which wizard type it runs (using `<#if>..</#if>`), and
-act accordingly. This feature allows one to create templates that 
-can be used for multiple wizard types. 
+As a last step we create also an INI file template:
 
 Create a file called `omnetpp.ini.ftl` and for our example, fill with:	
 
@@ -217,34 +215,93 @@ Create a file called `omnetpp.ini.ftl` and for our example, fill with:
 We need the INI file only if we are creating a simulation. If the 
 current type is not 'simulation', an empty file will be generated
 and it will not be copied to the destination folder. 
+
+
+=== Wizard Types
+
+The wizard will set the `wizardType` template variable when it executes,
+so template code can check under which wizard type it runs (using `<#if>..</#if>`), and
+act accordingly. This feature allows one to create templates that 
+can be used for multiple wizard types.
 	
 There are several types of wizards you can create. Each one has a different
 goal:
 
-===== New Project Wizards
+==== New Project Wizards
+
+  wizardType = project
 
 Project wizards can create -- as their name suggest -- new projects. All necessary files
 required by the new project can be included in the template. It is possible to adjust 
 project properties to customize the new project. You can enable C++ code support, set 
 source and NED folders. The files in the template folder will be directly copied to the
-new project folder.   
+new project folder. See the appendix for the variable names that are supported 
+in project wizards.    
 
-===== New Simulation Wizards
+==== New Simulation Wizards
 
-A new simulation is basically a network definition plus an INI file 
-describing the initial configurations and parameter values. These 
-files are typically created in a separate directory that is selected 
-in the wizard as the 'simulation folder'. 
+  wizardType = simulation
 
-===== New INI,MSG or NED File Wizards
+A new simulation is basically a new folder containing all files required to create a
+simulation. Usually contains NED files and an INI file, but may contain also CC, H and MSG
+files if the new simulation requires also additional behavior. For new simulations
+the user selects a parent folder and a simulation name. The `targetFolder`, `targetMainFile`,
+`simulationName` and `simualtionFolderName` variables are based on this selection. 
 
-New ... File Wizards generate only a single file. The filename can be accessed in the 
-\${targetFileName} and the target folder as \${targetFolder}.  
+Other variables that are useful for these templates are:
 
-===== Export / Import Wizards 
+ * `namespaceName` can be used to refer to the current C++ namespace in CC, H files.
+ * `nedPackageName` can be used to refer to the current NED package (based on the current folder
+    of the file)
+     
 
-Export and import wizards work similarly like the other wizards, but the input 
-and output files must be specified on custom wizard pages.
+==== New INI,MSG or NED File Wizards
+
+  wizardType = simplemodule, compoundmodule, network, nedfile, 
+               inifile or msgfile
+
+For these wizards the user selects a folder and a file name where the generated
+file should be placed.  The selected file name can be accessed as 
+\${targetFileName} and the target folder as \${targetFolder}. \${targetTypeName} is also 
+defined which is a sanitized and capitalized version of the `tagetFileName` variable. 
+It can be used as a NED or C++ type inside the templates.
+New ... File Wizards usually generate only a single file, but multiple files can be 
+generated too if necessary (e.g. simple modules would generate NED, CC and H files). 
+There are additional helper variables like:
+
+ * `nedPackageName` for INI and NED files is defining the current NED package which is 
+    calculated automatically based on the selected targetFolder
+ * `msgTypeName` is a sanitized type name that can be used in MSG files only
+ * `namespaceName` is the current C++ namespace for NED and MSG file wizards  
+    (those that usually generate code). It is calculated automatically from the 
+    targetFolder and from the information provided with the `@namespace`
+    property in the existing NED files.  
+
+==== Import wizards
+
+  wizardType = import
+
+Import wizards work similarly to other wizards with the only difference,
+that the input for them is coming from external file rather than from 
+the user directly (i.e. custom wizard pages ask for a file or folder to
+be imported). If you specify the `import` type for any wizard, it will be added to the 
+File | Import wizard dialog.
+
+==== Export / Import Wizards 
+
+  wizardType = export
+
+Export wizards appear in the File | Export dialog and their custom pages
+usually ask for an input (e.g NED file or type, a folder etc.) and possibly some other
+options, controlling the export algorithm (formatting, output file name etc). 
+Exports are different than the rest of the templates, because their template 
+files are not allowed to generate output. You must explicitly create and write 
+files using the `FileUtils` helper class. The results of the export are not 
+necessarily created in a project, they can be written anywhere on the filesystem.
+
+WARNING: If a the template file attempt to output some content, an error will be 
+generated by the wizard. You should generate files only using the methods of the 
+FileUtils class.
 
 === Configuration Keys
 
@@ -928,7 +985,7 @@ when you hit '?' within a directive or an interpolation (`${...}`).
 
 === Append. A: Predefined Template Variables
 
-[cols="30%,^10%,^10%,^10%,^10%,^10%,^10%,^10%^"]
+[cols="30%,^10%,^10%,^10%,^10%,^10%,^10%,^10%"]
 |==============
 |variable name | project | simul. | msgfile | inifile | nedfile | wizard | export
 |`addProjectReference`  | X |   |   |   |   |   |
