@@ -7,7 +7,7 @@ ${bannerComment}
 //
 // TODO generated message class
 //
-${msgKeyword} ${msgTypeName} {
+${msgKeyword} ${targetTypeName} {
     int someField;
     string anotherField;
     double arrayField1[];
@@ -22,7 +22,7 @@ ${msgKeyword} SomeMessage;
 //
 // TODO generated message class
 //
-${msgKeyword} ${msgTypeName} extends SomeMessage {
+${msgKeyword} ${targetTypeName} extends SomeMessage {
     int someField;
 }
 <#elseif doUseCppType>
@@ -40,7 +40,7 @@ class noncobject OtherType;
 //
 // TODO generated message class
 //
-${msgKeyword} ${msgTypeName} {
+${msgKeyword} ${targetTypeName} {
     SomeType field1;
     OtherType field2;
 }
@@ -48,7 +48,7 @@ ${msgKeyword} ${msgTypeName} {
 //
 // TODO generated message class
 //
-${msgKeyword} ${msgTypeName} {
+${msgKeyword} ${targetTypeName} {
     @customize(true);  // see the generated C++ header for more info
     int someField;
     abstract int anotherField;

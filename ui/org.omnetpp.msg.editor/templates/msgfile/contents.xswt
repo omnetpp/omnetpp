@@ -18,7 +18,7 @@
       <layout x:class="GridLayout" x:numColumns="2"/>
       <x:children>
         <label x:text="Message class name:"/>
-        <text x:id="msgTypeName" x:style="BORDER">
+        <text x:id="targetTypeName" x:style="BORDER">
           <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
           <setFocus/>
         </text>

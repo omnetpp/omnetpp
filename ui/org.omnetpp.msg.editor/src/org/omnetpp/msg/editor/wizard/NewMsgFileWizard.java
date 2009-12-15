@@ -40,12 +40,6 @@ public class NewMsgFileWizard extends TemplateBasedNewFileWizard {
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
 
-        // msgname: make a valid identifier
-        String name = getFirstPage().getFileName();
-        name = name.substring(0, name.lastIndexOf('.'));
-        name = StringUtils.capitalize(StringUtils.makeValidIdentifier(name));
-        context.getVariables().put("msgTypeName", name);
-
         // namespace
         String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
         context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
