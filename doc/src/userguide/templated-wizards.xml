@@ -823,7 +823,7 @@ Some Java functionality (the instanceof operator, <literal>Class.newInstance()</
 </itemizedlist>
 </section>
 <section id="_xswt_tips_and_tricks">
-<title>XSWT Tips and Tricks:</title>
+<title>XSWT Tips and Tricks</title>
 <itemizedlist>
 <listitem>
 <simpara>
@@ -1964,7 +1964,7 @@ in inconsistent output files.</simpara>
 <variablelist>
 <varlistentry>
 <term>
-date (A) (R/O)
+<literal>date</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1974,7 +1974,7 @@ current date in yyyy-mm-dd format
 </varlistentry>
 <varlistentry>
 <term>
-year (A) (R/O)
+<literal>year</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1984,7 +1984,7 @@ year in yyyy format
 </varlistentry>
 <varlistentry>
 <term>
-author (A) (R/O)
+<literal>author</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -1994,7 +1994,7 @@ user name ("user.name" Java system property)
 </varlistentry>
 <varlistentry>
 <term>
-licenseCode (A) (R/O)
+<literal>licenseCode</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2004,7 +2004,7 @@ license identifier for the @license NED property
 </varlistentry>
 <varlistentry>
 <term>
-licenseText (A) (R/O)
+<literal>licenseText</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2014,7 +2014,7 @@ copyright notice for the given license
 </varlistentry>
 <varlistentry>
 <term>
-bannerComment (A)
+<literal>bannerComment</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2029,7 +2029,7 @@ banner comment for source files; includes license text
 <variablelist>
 <varlistentry>
 <term>
-wizardType (A) (R/O)
+<literal>wizardType</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2041,7 +2041,7 @@ the type of the wizard. Any of the following:
 </varlistentry>
 <varlistentry>
 <term>
-templateName (A) (R/O)
+<literal>templateName</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2051,7 +2051,7 @@ name of the template
 </varlistentry>
 <varlistentry>
 <term>
-templateDescription (A) (R/O)
+<literal>templateDescription</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2061,7 +2061,7 @@ template description
 </varlistentry>
 <varlistentry>
 <term>
-templateCategory (A) (R/O)
+<literal>templateCategory</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2072,7 +2072,7 @@ template category, used to visually group the
 </varlistentry>
 <varlistentry>
 <term>
-templateURL (A) (R/O)
+<literal>templateURL</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2087,7 +2087,7 @@ the URL, the template was loaded from (only for built-in and
 <variablelist>
 <varlistentry>
 <term>
-templateFolderName (A) (R/O)
+<literal>templateFolderName</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2097,7 +2097,7 @@ name of the folder (without path) in which the template files are
 </varlistentry>
 <varlistentry>
 <term>
-templateFolderPath (A) (R/O)
+<literal>templateFolderPath</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2107,7 +2107,7 @@ full workspace path of the folder in which the template files are
 </varlistentry>
 <varlistentry>
 <term>
-templateProject (A) (R/O)
+<literal>templateProject</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2122,7 +2122,7 @@ name of the project that defines the template
 <variablelist>
 <varlistentry>
 <term>
-targetFolder (A) (R/O)
+<literal>targetFolder</literal> (A) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2135,7 +2135,7 @@ the project or folder path in which the project will generate files.
 </varlistentry>
 <varlistentry>
 <term>
-targetFileName (N,I,M) (R/O)
+<literal>targetFileName</literal> (N,I,M) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2146,7 +2146,7 @@ the name of the new file to be created. The file can be specified on the
 </varlistentry>
 <varlistentry>
 <term>
-targetTypeName (P,S,N,I,M)
+<literal>targetTypeName</literal> (P,S,N,I,M)
 </term>
 <listitem>
 <simpara>
@@ -2157,7 +2157,7 @@ a typename that can be used as the main <emphasis>type</emphasis> for the result
 </varlistentry>
 <varlistentry>
 <term>
-targetMainFile (P,S,N,I,M)
+<literal>targetMainFile</literal> (P,S,N,I,M)
 </term>
 <listitem>
 <simpara>
@@ -2173,7 +2173,7 @@ a file name that can be used as the <emphasis>main</emphasis> output file for th
 <variablelist>
 <varlistentry>
 <term>
-rawProjectName (A)
+<literal>rawProjectName</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2183,7 +2183,7 @@ the project name, "as is"
 </varlistentry>
 <varlistentry>
 <term>
-projectName (A)
+<literal>projectName</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2193,7 +2193,7 @@ sanitized project name with first letter capitalized
 </varlistentry>
 <varlistentry>
 <term>
-projectname (A)
+<literal>projectname</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2203,7 +2203,7 @@ sanitized project name in all lowercase
 </varlistentry>
 <varlistentry>
 <term>
-PROJECTNAME (A)
+<literal>PROJECTNAME</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2220,7 +2220,7 @@ sanitized project name in all uppercase
 <variablelist>
 <varlistentry>
 <term>
-addProjectReference (P)
+<literal>addProjectReference</literal> (P)
 </term>
 <listitem>
 <simpara>
@@ -2231,7 +2231,7 @@ If true, the wizard will make the result project as
 </varlistentry>
 <varlistentry>
 <term>
-withCplusplusSupport (P) (R/O)
+<literal>withCplusplusSupport</literal> (P) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2244,7 +2244,7 @@ Whether the project supports C++ code compilation.
 </varlistentry>
 <varlistentry>
 <term>
-sourceFolders (P)
+<literal>sourceFolders</literal> (P)
 </term>
 <listitem>
 <simpara>
@@ -2254,7 +2254,7 @@ Source folders to be created and configured automatically
 </varlistentry>
 <varlistentry>
 <term>
-makemakeOptions (P)
+<literal>makemakeOptions</literal> (P)
 </term>
 <listitem>
 <simpara>
@@ -2266,7 +2266,7 @@ makemake options, as "folder1:options1,folder2:options2,&#8230;".
 </varlistentry>
 <varlistentry>
 <term>
-requiresCPlusPlus (P)
+<literal>requiresCPlusPlus</literal> (P)
 </term>
 <listitem>
 <simpara>
@@ -2279,7 +2279,7 @@ If true, the wizard requires the "support C++ option" during the project creatio
 </varlistentry>
 <varlistentry>
 <term>
-namespaceName (S,N,M)
+<literal>namespaceName</literal> (S,N,M)
 </term>
 <listitem>
 <simpara>
@@ -2296,7 +2296,7 @@ The namespace where C++ classes should be placed.
 <variablelist>
 <varlistentry>
 <term>
-nedSourceFolders (P)
+<literal>nedSourceFolders</literal> (P)
 </term>
 <listitem>
 <simpara>
@@ -2306,7 +2306,7 @@ NED source folders to be created and configured automatically.
 </varlistentry>
 <varlistentry>
 <term>
-nedPackageName (P,S,N,I)
+<literal>nedPackageName</literal> (P,S,N,I)
 </term>
 <listitem>
 <simpara>
@@ -2324,7 +2324,7 @@ The NED package name. For projects it is <literal>${projectname}</literal>,
 <variablelist>
 <varlistentry>
 <term>
-simulationFolderName (S) (R/O)
+<literal>simulationFolderName</literal> (S) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2334,7 +2334,7 @@ the folder where the simulation will be created
 </varlistentry>
 <varlistentry>
 <term>
-simulationName (S) (R/O)
+<literal>simulationName</literal> (S) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2350,7 +2350,7 @@ The name of the simulation. It is the capitalized and
 <variablelist>
 <varlistentry>
 <term>
-newWizardName (W) (R/O)
+<literal>newWizardName</literal> (W) (R/O)
 </term>
 <listitem>
 <simpara>
@@ -2362,7 +2362,7 @@ The name of the new wizard to be created. It is the name
 </varlistentry>
 <varlistentry>
 <term>
-newWizardProject (W)
+<literal>newWizardProject</literal> (W)
 </term>
 <listitem>
 <simpara>
@@ -2380,7 +2380,7 @@ the whole context used during template processing.</simpara>
 <variablelist>
 <varlistentry>
 <term>
-creationContext (A)
+<literal>creationContext</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2390,7 +2390,7 @@ The template evaluation context. Provided for low level access.
 </varlistentry>
 <varlistentry>
 <term>
-classes (A)
+<literal>classes</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2402,7 +2402,7 @@ Access to class static models. It is possible to access
 </varlistentry>
 <varlistentry>
 <term>
-nedResources (A)
+<literal>nedResources</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2413,7 +2413,7 @@ Provides direct access to the in memory model of the parsed NED files. It is pos
 </varlistentry>
 <varlistentry>
 <term>
-msgResources (A)
+<literal>msgResources</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2441,23 +2441,13 @@ methods.</simpara>
 of having to spell out &lt;#if&gt;..&lt;#else&gt;..&lt;/#if&gt;, where such thing is needed.
 Note that unlike in C/C++ the evaluation is not lazy, i.e. both the "then" and
 the "else" expressions are always evaluated.</simpara>
-<variablelist>
-<varlistentry>
-<term>
-&lt;@do expression !&gt;
-</term>
-<listitem>
-<simpara>
-FreeMarker does not have a construct for calling a function and then discarding
+<literallayout class="monospaced">&lt;@do expression !&gt;</literallayout>
+<simpara>FreeMarker does not have a construct for calling a function and then discarding
 the result. One could use &lt;#assign dummy = expression&gt;, but this, apart from
 being ugly, will fail if the called (Java) function is void or returns null.
 We recommend our small "@do" macro which takes one argument and does nothing,
 and the exclamation mark (the FreeMarker default value operator) cures the
-void/null problem.
-</simpara>
-</listitem>
-</varlistentry>
-</variablelist>
+void/null problem.</simpara>
 <simpara>The following Java classes are available during template processing:</simpara>
 <variablelist>
 <varlistentry>
