@@ -62,6 +62,8 @@ The <literal>template.properties</literal> file contains general information abo
 <simpara>
 <literal>*.fti</literal> (template include) files are included by <literal>*.ftl</literal>
   files. This can be used to factor out common parts from the template files.
+  The wizard ignores <literal>.fti</literal> files, i.e. does not copy them into the new
+  project or folder.
 </simpara>
 </listitem>
 <listitem>
@@ -92,6 +94,29 @@ any algorithm can be expressed in the FreeMarker language, and if that would
 not be enough, one can also pull in existing or custom-written Java libraries.</simpara>
 <tip><simpara>Documentation for the FreeMarker template language can be found at:
      <emphasis>http://freemarker.org/docs/index.html</emphasis></simpara></tip>
+<simpara>Templates can use several sources for input. They can:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+gather information from the user, using custom wizard pages
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+call any Java code to execute any arbitrarily complex algorithm
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+call external programs
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+read and write from/to any file on the filesystem
+</simpara>
+</listitem>
+</itemizedlist>
 </section>
 <section id="_defining_the_gui">
 <title>Defining the GUI</title>
@@ -127,22 +152,19 @@ Preview does not load jar files from the projects.</simpara>
 </section>
 <section id="_editing_template_files">
 <title>Editing Template Files</title>
-<simpara>The Freemarker Editor is opened when you double-click files with the *.ftl or
-*.fti extension. (The latter stands for Freemarker Template Include, and it is
-intended for template fragments that you include into other templates. Otherwise
-the wizard ignores fti files, i.e. does not copy them into the new project or
-folder.) The Freemarker Editor offers basic syntax highlight, validation
+<simpara>The Freemarker Editor is opened when you double-click files with the <literal>*.ftl</literal> or
+<literal>*.fti</literal> extension.  The Freemarker Editor offers basic syntax highlight, validation
 (error markers appear during editing if the template is not syntactically
 correct), and basic content assist. Content assist can help you with directives
 (<literal>&lt;#...&gt;</literal> syntax) and builtin operations (like <literal>?number, ?size, ?default</literal>, etc).
-The content assist popup appears automatically when you type <emphasis>&lt;#</emphasis> (actually
-a closing <emphasis>&gt;</emphasis> is also needed for the editor to recognize the tag), and
-when you hit <emphasis>?</emphasis> within a directive or an interpolation (<literal>${...}</literal>).</simpara>
+The content assist popup appears automatically when you type <literal>&lt;#</literal> (actually
+a closing <literal>&gt;</literal> is also needed for the editor to recognize the tag), and
+when you hit <literal>?</literal> within a directive or an interpolation (<literal>${...}</literal>).</simpara>
 </section>
 </section>
 <section id="_writing_an_example_wizard">
 <title>Writing an Example Wizard</title>
-<simpara>In the following sections, we will create a simple wizard as an example, that
+<simpara>In the following sections, we will create a simple wizard as an example, which
 will support either creating a simulation (complete with NED and INI files),
 or just a single NED file with a network defined in it. The user will be able to
 specify the type and the number of the submodules the network contains.</simpara>
@@ -151,23 +173,24 @@ specify the type and the number of the submodules the network contains.</simpara
 <simpara>The first step when creating a wizard is to create a new folder
 under the <literal>templates</literal> directory of the project. A file named <literal>template.properties</literal>
 must be present in the newly created directory. This file is used to configure
-the wizard. Create <literal>template.properties</literal> and add the following lines to it:</simpara>
+the wizard. Create a folder a folder named <literal>templates/examplewizard</literal> under the
+project, then create <literal>template.properties</literal> and add the following lines to it:</simpara>
 <literallayout class="monospaced">templateName = New Test Wizard
 templateDescription = Generate an example
 templateCategory = Test Wizards
 supportedWizardTypes = simulation, network</literallayout>
-<simpara>Specify at least the name, type and category for your wizard. Category is used to
+<simpara>These lines specify the name, type and category for the wizard. Category is used to
 specify how the wizards will be visually grouped. Wizard type specifies in which
 <emphasis>New &#8230; Wizard</emphasis>  your wizard will appear. You can specify: <literal>project,
-simulation, network</literal> etc. In our case the wizard will be added both to
+simulation, network</literal> etc. In our case, the wizard will be added both to
 the <emphasis>New Simulation Wizard</emphasis> and to the <emphasis>New Network Wizard</emphasis>.</simpara>
-<simpara>We can now decide, what data we would like to ask from the user.
+<simpara>We can now decide what data we would like to ask from the user.
 Template variables and their values can be defined as key-value pairs:</simpara>
 <literallayout class="monospaced">nodeType = Dummy
 networkSize = 6</literallayout>
 <simpara>The <literal>nodeType</literal> variable will be used as the submodule type in our network, while
 the <literal>networkSize</literal> defines how many submodules we want in the network.</simpara>
-<simpara>We have to define a custom wizard page, where the user can specify the value
+<simpara>We define a custom wizard page where the user can specify the values
 of the above variables (i.e. override their default value, specified above).</simpara>
 <literallayout class="monospaced">page.1.file = parameters.xswt
 page.1.title = Network parameters</literallayout>
@@ -184,7 +207,7 @@ wizard page definition. We will add a <emphasis>spinner</emphasis> control to sp
 and a <emphasis>text</emphasis> control to specify the node type. Create a new file called <literal>parameters.xswt</literal>
 with the following content:</simpara>
 <literallayout class="monospaced">&lt;xswt xmlns:x="http://sweet_swt.sf.net/xswt"&gt;
-  &lt;import xmlns="http://sweet_swt.sf.net/xswt"&gt;
+  &lt;x:import&gt;
     &lt;!-- Import all widgets and utility classes  --&gt;
     &lt;package name="java.lang"/&gt;
     &lt;package name="org.eclipse.swt.widgets" /&gt;
@@ -194,7 +217,7 @@ with the following content:</simpara>
     &lt;package name="org.omnetpp.common.wizard.support" /&gt;
     &lt;package name="org.omnetpp.ned.editor.wizards.support" /&gt;
     &lt;package name="org.omnetpp.cdt.wizard.support" /&gt;
-  &lt;/import&gt;
+  &lt;/x:import&gt;
   &lt;!-- Create a two column layout  --&gt;
   &lt;layout x:class="GridLayout" numColumns="2"/&gt;
   &lt;x:children&gt;
@@ -207,7 +230,7 @@ with the following content:</simpara>
   &lt;/x:children&gt;
 &lt;/xswt&gt;</literallayout>
 <simpara>The above defined wizard page will have two columns. The first column contains labels,
-while the second contains the editable widgets.
+and the second contains editable widgets.
 The <literal>x:id="varName"</literal> attributes in the spinner and text control definitions are used
 to bind a template variable to the control. When a page is displayed, the content of
 the bound variables are copied into the controls. When the user navigates away from
@@ -234,14 +257,15 @@ NED Source Folders by the <emphasis>New OMNeT++ Project</emphasis> wizard). Vari
 to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (<literal>*.ftl</literal>) files.</simpara>
-<simpara>Let&#8217;s create a file with a filename with <literal>.flt</literal> extension (e.g.<literal>untitled.ned.flt</literal>).
+<simpara>Let&#8217;s create a file with a filename with <literal>.ftl</literal> extension (e.g.<literal>untitled.ned.ftl</literal>).
 Because of the extension, this file will be processed by the templating engine.
 The actual name of the file does not matter, because the
 <literal>&lt;@setoutput .../&gt;</literal> directive instructs the templating engine to output
 everything from the current file into the file that is specified by the
- and <literal>nedPackageName</literal> variables are automatically filled out by the wizard, based
+<literal>targetFileName</literal> variable. The <literal>targetFileName</literal>, <literal>targetTypeName</literal>, <literal>bannerComment</literal>
+and <literal>nedPackageName</literal> variables are automatically filled out by the wizard, based
 on the filename and folder the user selected on the first wizard page.</simpara>
-<literallayout class="monospaced">&lt;@setoutput path=targetFileName?default("")/&gt;
+<literallayout class="monospaced">&lt;@setoutput path=targetFileName /&gt;
 ${bannerComment}</literallayout>
 <literallayout class="monospaced">&lt;#if nedPackageName!=""&gt;package ${nedPackageName};&lt;/#if&gt;</literallayout>
 <literallayout class="monospaced">network ${targetTypeName}
@@ -263,8 +287,8 @@ check the Appendix.</simpara>
 network = ${targetTypeName}
 &lt;/#if&gt;</literallayout>
 <simpara>We need the INI file only if we are creating a simulation. If the
-current type is not <literal>simulation</literal>, an empty file will be generated
-and it will not be copied to the destination folder.</simpara>
+current type is not <literal>simulation</literal>, the content will be empty, and the
+file will not be written to disk.</simpara>
 </section>
 </section>
 <section id="_wizard_types">
@@ -339,11 +363,12 @@ There are additional helper variables like:</simpara>
 <section id="_import_wizards">
 <title>Import Wizards</title>
 <literallayout class="monospaced">wizardType = import</literallayout>
-<simpara>Import wizards work similarly to other wizards with the only difference,
-that the input for them is coming from external file rather than from
-the user directly (i.e. custom wizard pages ask for a file or folder to
-be imported). If you specify the <literal>import</literal> type for any wizard, it will be added to the
-<emphasis>File|Import</emphasis> wizard dialog.</simpara>
+<simpara>Import wizard is not a standalone type, but rather a flag on other wizard types.
+It makes the wizard appear in the <emphasis>File|Import&#8230;</emphasis> dialog in addition to the <emphasis>File|New &#8230;</emphasis>
+dialogs.</simpara>
+<note><simpara>If an import wizard supports more than one wizard type (e.g. project, simulation, nedfile, import),
+the <emphasis>File|Import&#8230;</emphasis> dialog will use only one of these types. The type is chosen in the following oder
+of preference: <literal>network, nedfile, compoundmodule, simplemodule, msgfile, inifile, simulation, project</literal></simpara></note>
 </section>
 <section id="_export_wizards">
 <title>Export Wizards</title>
@@ -354,8 +379,9 @@ options, controlling the export algorithm (formatting, output file name etc).
 Exports are different than the rest of the templates, because their template
 files are not allowed to generate output. You must explicitly create and write
 files using the <literal>FileUtils</literal> helper class. The results of the export are not
-necessarily created in a project, they can be written anywhere on the filesystem.</simpara>
-<warning><simpara>If a the template file attempt to output some content, an error will be
+necessarily created in a project, they can be written anywhere in the filesystem
+or the workspace (i.e. projects).</simpara>
+<warning><simpara>If a the template file attempts to output some content, an error will be
 generated by the wizard. You should generate files only using the methods of the
 FileUtils class.</simpara></warning>
 </section>
@@ -369,7 +395,7 @@ and various other options.</simpara>
 <variablelist>
 <varlistentry>
 <term>
-templateName
+<literal>templateName</literal> 
 </term>
 <listitem>
 <simpara>
@@ -381,7 +407,7 @@ templateName
 </varlistentry>
 <varlistentry>
 <term>
-templateDescription
+<literal>templateDescription</literal> 
 </term>
 <listitem>
 <simpara>
@@ -392,7 +418,7 @@ templateDescription
 </varlistentry>
 <varlistentry>
 <term>
-templateCategory
+<literal>templateCategory</literal> 
 </term>
 <listitem>
 <simpara>
@@ -404,7 +430,7 @@ templateCategory
 </varlistentry>
 <varlistentry>
 <term>
-templateImage
+<literal>templateImage</literal> 
 </term>
 <listitem>
 <simpara>
@@ -415,7 +441,7 @@ templateImage
 </varlistentry>
 <varlistentry>
 <term>
-supportedWizardTypes
+<literal>supportedWizardTypes</literal> 
 </term>
 <listitem>
 <simpara>
@@ -428,7 +454,7 @@ supportedWizardTypes
 </varlistentry>
 <varlistentry>
 <term>
-ignoreResources
+<literal>ignoreResources</literal> 
 </term>
 <listitem>
 <simpara>
@@ -446,7 +472,7 @@ options can be overridden from custom wizard pages.</simpara>
 <variablelist>
 <varlistentry>
 <term>
-addProjectReference
+<literal>addProjectReference</literal> 
 </term>
 <listitem>
 <simpara>
@@ -457,7 +483,7 @@ addProjectReference
 </varlistentry>
 <varlistentry>
 <term>
-sourceFolders
+<literal>sourceFolders</literal> 
 </term>
 <listitem>
 <simpara>
@@ -468,7 +494,7 @@ sourceFolders
 </varlistentry>
 <varlistentry>
 <term>
-nedSourceFolders
+<literal>nedSourceFolders</literal> 
 </term>
 <listitem>
 <simpara>
@@ -479,7 +505,7 @@ nedSourceFolders
 </varlistentry>
 <varlistentry>
 <term>
-makemakeOptions
+<literal>makemakeOptions</literal> 
 </term>
 <listitem>
 <simpara>
@@ -495,7 +521,7 @@ in the next section.</simpara>
 </section>
 <section id="_templates">
 <title>Templates</title>
-<simpara>Several variables are predefined, such as <literal>templateName, targetFolder, date,
+<simpara>For wizards several variables are predefined, such as <literal>templateName, targetFolder, date,
 author</literal>; others like <literal>targetFileName, targetTypeName, simulationFolderName,
 nedPackageName</literal>, etc. are defined only for certain wizard dialogs.
 A full list of variables is provided in the Appendix.</simpara>
@@ -522,12 +548,12 @@ i.e. processing will skip writing it without any question, warning or error.
 This allows you to easily create conditional files. This also means that you
 cannot create empty files this way. However, this "limitation" is easy to overcome
 as most file formats (ned, c++, ini, xml, etc) have a comment syntax, so you
-can just write a file that contains only a comment ("// file intentionally left blank").
+can just write a file that contains only a comment ( <literal>// file intentionally left blank</literal> ).
 Alternatively, you can create an empty file using the FileUtils Java utility class
 (<literal>&lt;@do FileUtils.createFile("empty.txt", "")!/&gt;</literal>).</simpara>
 <note><simpara>Although blank files are not created, the template engine will not delete an
       existing file that happens to be already there with the same name.</simpara></note>
-<tip><simpara>A typical usage: <literal>&lt;@setoutput path=fileName?default("")/&gt;</literal>, which means that if
+<tip><simpara>A typical usage: <literal>&lt;@setoutput path=fileName /&gt;</literal>, which means that if
      the fileName variable undefined (absent), use "" as file name, i.e. save to
      the original file name.</simpara></tip>
 </section>
@@ -540,7 +566,7 @@ pages.</simpara>
 <variablelist>
 <varlistentry>
 <term>
-page.&lt;i&gt;.file
+<literal>page.&lt;i&gt;.file</literal> 
 </term>
 <listitem>
 <simpara>
@@ -550,7 +576,7 @@ page.&lt;i&gt;.file
 </varlistentry>
 <varlistentry>
 <term>
-page.&lt;i&gt;.class
+<literal>page.&lt;i&gt;.class</literal> 
 </term>
 <listitem>
 <simpara>
@@ -564,7 +590,7 @@ page.&lt;i&gt;.class
 </varlistentry>
 <varlistentry>
 <term>
-page.&lt;i&gt;.title
+<literal>page.&lt;i&gt;.title</literal> 
 </term>
 <listitem>
 <simpara>
@@ -575,7 +601,7 @@ page.&lt;i&gt;.title
 </varlistentry>
 <varlistentry>
 <term>
-page.&lt;i&gt;.description
+<literal>page.&lt;i&gt;.description</literal> 
 </term>
 <listitem>
 <simpara>
@@ -586,7 +612,7 @@ page.&lt;i&gt;.description
 </varlistentry>
 <varlistentry>
 <term>
-page.&lt;i&gt;.condition
+<literal>page.&lt;i&gt;.condition</literal> 
 </term>
 <listitem>
 <simpara>
@@ -599,7 +625,7 @@ page.&lt;i&gt;.condition
                 valid FreeMarker expression that can produce true or "true" as
                 a result will do. The expression must be supplied without the
                 <literal>${</literal> and <literal>}</literal> marks: the string you enter will be substituted into
-                "<literal>${( &lt;condition&gt; )?string}</literal>" string (will replace "<literal>&lt;condition&gt;</literal>"),
+                the "<literal>${( &lt;condition&gt; )?string}</literal>" string (will replace "<literal>&lt;condition&gt;</literal>"),
                 and evaluate as such. An example will be provided later.
 </simpara>
 </listitem>
@@ -607,21 +633,47 @@ page.&lt;i&gt;.condition
 </variablelist>
 <simpara>All property file entries are available as template variables too. Also, most
 property values may refer to other property values or template variables, using
-the ${name} syntax.</simpara>
-<section id="_xswt_form_creation">
-<title>XSWT Form Creation</title>
+the <literal>${name}</literal> syntax.</simpara>
+<section id="_xswt_forms">
+<title>XSWT Forms</title>
+<simpara>An XSWT form is defined in an XML file with a root element <literal>&lt;xswt&gt;</literal>.
+Some XSWT specific elements and attributes (<literal>import</literal> and <literal>package</literal>
+declarations, <literal>id</literal> and <literal>class</literal> attributes to name a few) are
+defined in the <literal>http://sweet_swt.sf.net/xswt</literal> XML namespace
+(we use the <literal>x</literal> namespace prefix here).</simpara>
+<simpara>Controls that can be used in XSWT are instantiated by an element
+with same name as the control (but staring with lowercase).</simpara>
+<simpara>Controls and classes used in an XSWT file must be imported before they can be used.</simpara>
+<literallayout class="monospaced">&lt;xswt xmlns:x="http://sweet_swt.sf.net/xswt"&gt;
+  &lt;x:import&gt;
+    &lt;package name="java.lang"/&gt;
+    &lt;package name="org.eclipse.swt.widgets" /&gt;
+    &lt;package name="org.eclipse.swt.custom" /&gt;
+    &lt;package name="org.eclipse.swt.graphics" /&gt;
+    &lt;package name="org.eclipse.swt.layout" /&gt;
+    &lt;package name="org.omnetpp.common.wizard.support" /&gt;
+    &lt;package name="org.omnetpp.ned.editor.wizards.support" /&gt;
+    &lt;package name="org.omnetpp.cdt.wizard.support" /&gt;
+  &lt;/x:import&gt;
+  &lt;label text="Hello"/&gt;
+&lt;/xswt&gt;</literallayout>
 <simpara>Entities and attributes in an XSWT file are directly mapped to the corresponding
-SWT controls and their properties. For example the <literal>&lt;styledText&gt;</literal> tag is mapped
+SWT controls and their properties. For example, the <literal>&lt;styledText&gt;</literal> tag is mapped
 to the StyledText SWT control. Similarly the <emphasis>text</emphasis> attribute is mapped to the
-<literal>text</literal> property of the StyledText control. It is also possible to call any public
-method on the control by embedding a "call" as a child tag:</simpara>
-<literallayout class="monospaced">&lt;styledtext text="Hello world!"&gt;
-        &lt;setFocus/&gt;
+<literal>text</literal> property of the StyledText control (a property has always a setXXX() and getXXX()
+method pair).</simpara>
+<literallayout class="monospaced">&lt;styledText text="Hello world!" /&gt;</literallayout>
+<simpara>Alternatively, it is possible to call a public method on the control
+by embedding a "call" as a child tag and supplying the parameters as p0, p1 etc.:</simpara>
+<literallayout class="monospaced">&lt;styledText&gt;
+        &lt;setText x:p0="Hello World"/&gt;
 &lt;/styledText&gt;</literallayout>
-<simpara>Constants in controls declared <literal>public final</literal> can be used in an XSWT file by appending
-the java class name before them:</simpara>
+<note><simpara>Because of a limitation in XSWT, only methods accepting <literal>String</literal> parameters can be
+      accessed this way.</simpara></note>
+<simpara>Integer constants in controls (<literal>public static final int</literal> fields) can be used in an
+XSWT file by appending the java class name before them:</simpara>
 <literallayout class="monospaced">&lt;gateChooser gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/&gt;</literallayout>
-<simpara>Constants in the SWT class do not need the <literal>SWT.</literal> prefix. You can use:</simpara>
+<simpara>Constants in the SWT class do not need the <literal>SWT.</literal> prefix. You can write:</simpara>
 <literallayout class="monospaced">&lt;button x:style="RADIO"/&gt;</literallayout>
 <simpara>Children can be added to a compound control inside the <literal>&lt;x:children&gt;&lt;/x:children&gt;</literal> tags.</simpara>
 <literallayout class="monospaced">&lt;group text="Hello"&gt;
@@ -630,42 +682,46 @@ the java class name before them:</simpara>
     &lt;label text="Message 2" /&gt;
   &lt;/x:children&gt;
 &lt;/group&gt;</literallayout>
-<simpara>Layout data can also be added as a new tag inside a control element:</simpara>
+<simpara>Layout and layout data can also be added as a new tag inside a control element:</simpara>
 <literallayout class="monospaced">&lt;text x:id="numServers" x:style="BORDER"&gt;
   &lt;layoutData x:class="GridData" horizontalAlignment="FILL"
               grabExcessHorizontalSpace="true"/&gt;
 &lt;/text&gt;</literallayout>
+<note><simpara>Layout is always needed, otherwise the control will not appear on the page.</simpara></note>
+<tip><simpara>SWT is documented on the Eclipse website. See:
+     <emphasis>http://www.eclipse.org/swt/docs.php</emphasis> for documentation, examples and tutorials.</simpara></tip>
 </section>
 <section id="_binding_of_template_variables_to_widgets">
 <title>Binding of Template Variables to Widgets</title>
-<simpara>XSWT allows one to tag widgets with id attributes. Widget IDs will become the
+<simpara>XSWT allows one to tag widgets with ID attributes. Widget IDs will become the
 names of template variables, with the values being the content of widgets.
 For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
 (Java type "String"), while checkboxes and radio buttons provide a boolean
 (Java type "Boolean").</simpara>
-<simpara>XSWT also allows filling up the widgets with default values, but this feature
+<simpara>XSWT also allows filling up the widgets with default values
+(e.g. <literal>&lt;styledText text="default value"/&gt;</literal> ), but this feature
 should be used with care, because the defaults set in XSWT may not make it
-to the file templates! This is so because if the user clicks Finish early,
+to the file templates. This is so because if the user clicks Finish early,
 the rest of the wizard pages (and their widgets) may not be created at all,
 so values set in the XSWT will take no effect.</simpara>
-<simpara>For this reason, defaults should ALWAYS be set in the property file. To do so,
+<simpara>For this reason, defaults should always be set in the property file. To do so,
 simply use a key with the ID of the widget; those values will be written
 into the wizard page when the page is created. For example, if you have a
-text widget with <literal>id="numNodes"</literal> and a checkbox with <literal>id="generateTraffic"</literal>, then
+text widget with <literal>x:id="numNodes"</literal> and a checkbox with <literal>x:id="generateTraffic"</literal>, then
 the following lines</simpara>
 <literallayout class="monospaced">numNodes = 100
 generateTraffic = true</literallayout>
 <simpara>will fill in the text widget with "100" and select the checkbox. Widgets that
-do not have such lines in the property file will be left alone.</simpara>
+do not have such lines in the property file will be left alone.
+The property file takes precedence over values specified in the XSWT file.</simpara>
 <simpara>Compound data structures (arrays, maps, and any combination of them) can be
 specified in the JSON syntax (<emphasis>http://json.org</emphasis>). They can be iterated over
 in the templates, and can be used as input/output for custom compound widgets.
 Examples:</simpara>
 <literallayout class="monospaced">apps = ["ftp", "smtp", "news"]
 layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}</literallayout>
-<simpara>If you get an error complaining about syntax errors in a JSON entry, the
-<emphasis>http://jsonlint.com</emphasis> website can help you locate the problem.</simpara>
-<simpara>The property file takes precedence over values in the XSWT file.</simpara>
+<tip><simpara>If you get an error complaining about syntax errors in a JSON entry, the
+<emphasis>http://jsonlint.com</emphasis> website can help you locate the problem.</simpara></tip>
 </section>
 <section id="_conditional_pages">
 <title>Conditional Pages</title>
@@ -699,8 +755,12 @@ used as input for generating XSWT source. This feature can be useful to make
 conditional widgets (i.e. using <literal>&lt;#if&gt;</literal> to make part of the page appear only
 when a certain option has been activated on earlier pages); to create a
 previously unknown number of widgets (using a <literal>&lt;#list&gt;..&lt;/#list&gt;</literal> loop);
-to populate combo boxes, listboxes or other widgets with options; and more.
-If the user navigates in the wizard back and forth several times (using the
+to populate combo boxes, listboxes or other widgets with options; and more.</simpara>
+<literallayout class="monospaced">&lt;!-- Show only if the wizard is run from the New Simulation wizard--&gt;
+&lt;#if wizardType=="simulation"&gt;
+&lt;label text="Description how the wizard works for new simulations."/&gt;
+&lt;/#if&gt;</literallayout>
+<simpara>If the user navigates in the wizard back and forth several times (using the
 Next and Back buttons), the contents of wizard pages are always re-created
 with using the current values of template variables just before getting
 displayed, so they will always be up to date.</simpara>
@@ -708,6 +768,8 @@ displayed, so they will always be up to date.</simpara>
 </section>
 <section id="_extending_the_wizards_in_java">
 <title>Extending the Wizards in Java</title>
+<simpara>It is possible to create new Wizard pages, custom widgets or add new template
+variables by extending the wizards in Java.</simpara>
 <section id="_creating_wizard_pages">
 <title>Creating Wizard Pages</title>
 <simpara>Defining a wizard page in Java requires that you install the Eclipse PDE
@@ -738,6 +800,9 @@ it is possible to use compound data types as well, i.e. those composed of
 the List and Map interfaces of the Java Collections API. The default values
 can be given in the template.properties file in the JSON notation, and the
 result can be used in the templates (iteration via <literal>&lt;#list&gt;</literal>, etc).</simpara>
+</section>
+<section id="_extending_your_template_with_custom_classes_and_widgets">
+<title>Extending your Template with Custom Classes and Widgets</title>
 <simpara>Jar files placed into the plugins/ subdirectory of an OMNeT++ project will be
 loaded automatically, and will be available for all templates. Jar files in
 that directory may be plain Java jars and Eclipse plug-in jars. (The latter
@@ -749,7 +814,7 @@ be loaded automatically when the template is used, and the classes in it will
 be available for that template. Custom SWT widget classes can be imported and
 used in XSWT forms, and other code can be used in the template files via the
 bean wrapper (e.g. <literal>${classes["org.example.SomeClass"].someStaticMethod(...)}</literal>,
-see the example wizards.) Like .xswt files and <literal>template.properties</literal>, jar files
+see the example wizards.) Like <literal>.xswt</literal> files and <literal>template.properties</literal>, jar files
 are not copied over into the destination folder when the wizard executes.</simpara>
 </section>
 <section id="_extending_the_template_processing">
@@ -800,13 +865,13 @@ Type mismatch. Variables have types in FreeMarker, and one can get type conversi
 For some reason, FreeMarker refuses to print boolean variables, i.e. <literal>${isFoo}</literal>
    results in a runtime error. The common workaround is to write
    <literal>&lt;#if isFoo&gt;true&lt;#else&gt;false&lt;/#if&gt;</literal>; this can be shortened with our iif() function:
-   <literal>${isFoo, "true", "false"}</literal>.
+   <literal>${iff(isFoo, "true", "false")}</literal>.
 </simpara>
 </listitem>
 <listitem>
 <simpara>
 Many string operations are available both as builtin FreeMarker operators
-   (varname?trim) and as Java methods via  FreeMarkers&#8217;s BeanWrapper (<literal>varname.trim()</literal>).
+   (<literal>varname?trim</literal>) and as Java methods via  FreeMarkers&#8217;s BeanWrapper (<literal>varname.trim()</literal>).
    If you are mixing the two, it is possible that you&#8217;ll start getting
    spurious errors for the Java method calls. In that case, simply change
    Java method calls to FreeMarker builtins, and all will be well.
@@ -816,7 +881,7 @@ Many string operations are available both as builtin FreeMarker operators
 <simpara>
 Some Java functionality (the instanceof operator, <literal>Class.newInstance()</literal>, etc)
    cannot be accessed via BeanWrapper. If you hit such a limitation, check
-   our LangUtils class that provides FreeMarker-callable static methods
+   our <literal>LangUtils</literal> class that provides FreeMarker-callable static methods
    to plug these holes.
 </simpara>
 </listitem>
@@ -824,89 +889,36 @@ Some Java functionality (the instanceof operator, <literal>Class.newInstance()</
 </section>
 <section id="_xswt_tips_and_tricks">
 <title>XSWT Tips and Tricks</title>
-<itemizedlist>
-<listitem>
-<simpara>
-How can I make a checkbox or radio button? <literal>&lt;checkbox&gt;</literal> and <literal>&lt;radio&gt;</literal> are not recognized in my XSWT files!
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara><emphasis role="strong">How can I make a checkbox or radio button? <literal>&lt;checkbox&gt;</literal> and <literal>&lt;radio&gt;</literal> are not recognized in my XSWT files!</emphasis></simpara>
 <simpara>They are called <literal>&lt;button x:style="CHECK"&gt;</literal> and <literal>&lt;button x:style="RADIO"&gt;</literal> in SWT.</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-My text fields, combo boxes etc look strange, what do I do wrong?
-</simpara>
-</listitem>
-</itemizedlist>
-<simpara>You usually want to add the BORDER option, like this: <literal>&lt;text x:style="BORDER"&gt;</literal></simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-How to make a long label wrap nicely?
-</simpara>
-</listitem>
-</itemizedlist>
-<simpara>You will find that specifying x:style="WRAP" is necessary, but not enough. It is
+<simpara><emphasis role="strong">My text fields, combo boxes etc look strange, what do I do wrong?</emphasis></simpara>
+<simpara>You usually want to add the <literal>BORDER</literal> option, like this: <literal>&lt;text x:style="BORDER"&gt;</literal></simpara>
+<simpara><emphasis role="strong">How to make a long label wrap nicely?</emphasis></simpara>
+<simpara>Specifying x:style="WRAP" is necessary, but not enough. It is
 also needed that the label widget expands and fills the space horizontally:</simpara>
 <literallayout class="monospaced">&lt;label text="Some long text...." x:style="WRAP"&gt;
     &lt;layoutData x:class="GridData" horizontalAlignment="FILL"
        grabExcessHorizontalSpace="true"/&gt;
 &lt;/label&gt;</literallayout>
-<itemizedlist>
-<listitem>
-<simpara>
-How to set the focus?
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara><emphasis role="strong">How to set the focus?</emphasis></simpara>
 <simpara>Add <literal>&lt;setFocus/&gt;</literal> to the XML body of the desired widget.</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-How to make widgets conditional on some previous input?
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara><emphasis role="strong">How to make widgets conditional on some previous input?</emphasis></simpara>
 <simpara>You can use <literal>&lt;#if&gt;</literal> and other FreeMarker directives in XSWT files. These
 files undergo template processing each time the corresponding page
 appears.</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-How to carry forward data from a previous page to the next?
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara><emphasis role="strong">How to carry forward data from a previous page to the next?</emphasis></simpara>
 <simpara>Use FreeMarker variables (<literal>${varName}</literal>) in the page.</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-How can I fill a combo box with values that I&#8217;ll only know at runtime?
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara><emphasis role="strong">How can I fill a combo box with values that I&#8217;ll only know at runtime?</emphasis></simpara>
 <simpara>You can generate the <literal>&lt;option&gt;</literal> children of the combo using FreeMarker
 directives, e.g. <literal>&lt;#list&gt;...&lt;/#list&gt;</literal></simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-How can I have some more sophisticated user input than simple textedit fields and checkboxes?
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara><emphasis role="strong">How can I have some more sophisticated user input than simple textedit fields and checkboxes?</emphasis></simpara>
 <simpara>You can implement custom SWT controls in Java, and use them in the
 wizard pages. The custom controls may even be packaged into jar files
 in the template&#8217;s directory, i.e. you do not need to write a separate
 Eclipse plug-in or something. Have a look at the source files of the
 existing custom controls (<literal>FileChooser, NedTypeChooser, InfoLink</literal>, etc).</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-How to dynamically enable/disable controls on a page, depending on other controls (i.e. a checkbox or radio button)
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara><emphasis role="strong">How to dynamically enable/disable controls on a page, depending on
+ other controls (i.e. a checkbox or radio button)</emphasis></simpara>
 <simpara>Currently you cannot. If you are desperate, you have the following options:
 (1) put the dependent controls onto a separate page, which you can make
 conditional; (2) write a custom CheckboxComposite control in Java
@@ -915,58 +927,29 @@ when the checkbox selection changes; (3) write the full custom wizard
 page entirely in Java, and register it in <literal>template.properties</literal> with
 page.xx.class= instead of page.xx.file; (4) implement scripting support
 for XSWT 1.x and contribute the patch to us.</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-In the Project wizard, how does it get decided which templates get offered if the "with C++ checkbox" gets selected or not selected on the first page?
-</simpara>
-</listitem>
-</itemizedlist>
-<simpara>If the C<literal> support checkbox is cleared, templates that require
-C</literal> support will not appear; when it is checked, there is no
+<simpara><emphasis role="strong">In the Project wizard, how does it get decided which templates get
+offered when the "with C++ checkbox" gets selected and when
+not selected on the first page?</emphasis></simpara>
+<simpara>If the C++ support checkbox is cleared, templates that require
+C++ support will not appear; when it is checked, there is no
 such filtering. A template is regarded as one that requires C++ support
 if the template.properties file contains any of the following:
 <literal>sourceFolders=, makemakeOptions=, or requiresCPlusPlus=true</literal>.</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-How to make calculations?
-</simpara>
+<simpara><emphasis role="strong">How can I do arithmetics in templates?</emphasis></simpara>
 <literallayout class="monospaced">The value of 10*cos(0.2) is ${10*Math.cos(0.2)}.</literallayout>
-</listitem>
-<listitem>
-<simpara>
-Can I use conditional operators like <literal>cond ? x : y</literal> in C++ ?
-</simpara>
+<simpara><emphasis role="strong">Can I use conditional operators like <literal>cond ? x : y</literal> in C++ ?</emphasis></simpara>
 <literallayout class="monospaced">Conditional output: ${iif( 2 &gt; 1,"yes","no")}</literallayout>
-</listitem>
-<listitem>
-<simpara>
-How can I create a file ?
-Use the FileUtils class and the @do macro to call the methods on it.
-</simpara>
-<literallayout class="monospaced">&lt;@do FileUtils.createFile("empty.txt", "")!/&gt;</literallayout>
-</listitem>
-<listitem>
-<simpara>
-How can I create lists and how can I iterate over it?
-</simpara>
+<simpara><emphasis role="strong">How can I create lists and how can I iterate over them?</emphasis></simpara>
 <literallayout class="monospaced">The words of the sentence '${sentence}':
 &lt;#list StringUtils.split(sentence) as word&gt;
    ${word}
 &lt;/#list&gt;</literallayout>
-</listitem>
-<listitem>
-<simpara>
-How can I use hash tables?
-</simpara>
+<simpara><emphasis role="strong">How can I use hash tables?</emphasis></simpara>
 <literallayout class="monospaced">Properties in the file ${filename}:
 &lt;#assign props = FileUtils.readPropertyFile(filename)&gt;
 &lt;#list props?keys as key&gt;
    ${key} ==&gt; ${props.get(key)}
 &lt;/#list&gt;</literallayout>
-</listitem>
-</itemizedlist>
 </section>
 <section id="_append_a_widgets_in_xswt">
 <title>Append. A: Widgets in XSWT</title>
@@ -1390,6 +1373,76 @@ Other attributes:
 <listitem>
 <simpara>
 fileName : the full filesystem path of the selected file.
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+</itemizedlist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+SaveAsChooser
+</term>
+<listitem>
+<simpara>
+A control for selecting a name for a new file from the workspace.
+                Implemented as a Composite with a single-line Text and a Browse button.
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+W: accepts a string with the workspace file name.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+R: returns the name of the selected file as a string from the workspace.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Other attributes:
+</simpara>
+<itemizedlist spacing="compact">
+<listitem>
+<simpara>
+fileName : the full workspace path for the new file.
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+</itemizedlist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+ExternalSaveAsChooser
+</term>
+<listitem>
+<simpara>
+                A control for selecting a name for a new file in the filesystem.
+                Implemented as a Composite with a single-line Text and a Browse button.
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+W: accepts a string with the full file name.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+R: returns the name (with full filesystem path) of the new file as a string.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Other attributes:
+</simpara>
+<itemizedlist spacing="compact">
+<listitem>
+<simpara>
+fileName : the full filesystem path for the new file.
 </simpara>
 </listitem>
 </itemizedlist>
@@ -1957,14 +2010,12 @@ W: wizard
 </simpara>
 </listitem>
 </itemizedlist>
-<simpara>If a variable is marked as <literal>R/O</literal> (read-only), you should not modify its value
-in your wizard pages. The value of these variables are already used by the wizard
-when the template expansion occures. Modification of read-only values may result
-in inconsistent output files.</simpara>
+<simpara>Variables marked as (*) are set by the wizard automatically and
+generally it does not make sense to change their values.</simpara>
 <variablelist>
 <varlistentry>
 <term>
-<literal>date</literal> (A) (R/O)
+<literal>date</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -1974,7 +2025,7 @@ current date in yyyy-mm-dd format
 </varlistentry>
 <varlistentry>
 <term>
-<literal>year</literal> (A) (R/O)
+<literal>year</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -1984,7 +2035,7 @@ year in yyyy format
 </varlistentry>
 <varlistentry>
 <term>
-<literal>author</literal> (A) (R/O)
+<literal>author</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -1994,7 +2045,7 @@ user name ("user.name" Java system property)
 </varlistentry>
 <varlistentry>
 <term>
-<literal>licenseCode</literal> (A) (R/O)
+<literal>licenseCode</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2004,7 +2055,7 @@ license identifier for the @license NED property
 </varlistentry>
 <varlistentry>
 <term>
-<literal>licenseText</literal> (A) (R/O)
+<literal>licenseText</literal> (A)
 </term>
 <listitem>
 <simpara>
@@ -2029,7 +2080,7 @@ banner comment for source files; includes license text
 <variablelist>
 <varlistentry>
 <term>
-<literal>wizardType</literal> (A) (R/O)
+<literal>wizardType</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2041,7 +2092,7 @@ the type of the wizard. Any of the following:
 </varlistentry>
 <varlistentry>
 <term>
-<literal>templateName</literal> (A) (R/O)
+<literal>templateName</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2051,7 +2102,7 @@ name of the template
 </varlistentry>
 <varlistentry>
 <term>
-<literal>templateDescription</literal> (A) (R/O)
+<literal>templateDescription</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2061,7 +2112,7 @@ template description
 </varlistentry>
 <varlistentry>
 <term>
-<literal>templateCategory</literal> (A) (R/O)
+<literal>templateCategory</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2072,7 +2123,7 @@ template category, used to visually group the
 </varlistentry>
 <varlistentry>
 <term>
-<literal>templateURL</literal> (A) (R/O)
+<literal>templateURL</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2087,7 +2138,7 @@ the URL, the template was loaded from (only for built-in and
 <variablelist>
 <varlistentry>
 <term>
-<literal>templateFolderName</literal> (A) (R/O)
+<literal>templateFolderName</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2097,7 +2148,7 @@ name of the folder (without path) in which the template files are
 </varlistentry>
 <varlistentry>
 <term>
-<literal>templateFolderPath</literal> (A) (R/O)
+<literal>templateFolderPath</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2107,7 +2158,7 @@ full workspace path of the folder in which the template files are
 </varlistentry>
 <varlistentry>
 <term>
-<literal>templateProject</literal> (A) (R/O)
+<literal>templateProject</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2122,7 +2173,7 @@ name of the project that defines the template
 <variablelist>
 <varlistentry>
 <term>
-<literal>targetFolder</literal> (A) (R/O)
+<literal>targetFolder</literal> (A,*)
 </term>
 <listitem>
 <simpara>
@@ -2135,7 +2186,7 @@ the project or folder path in which the project will generate files.
 </varlistentry>
 <varlistentry>
 <term>
-<literal>targetFileName</literal> (N,I,M) (R/O)
+<literal>targetFileName</literal> (N,I,M,*)
 </term>
 <listitem>
 <simpara>
@@ -2231,7 +2282,7 @@ If true, the wizard will make the result project as
 </varlistentry>
 <varlistentry>
 <term>
-<literal>withCplusplusSupport</literal> (P) (R/O)
+<literal>withCplusplusSupport</literal> (P,*)
 </term>
 <listitem>
 <simpara>
@@ -2324,7 +2375,7 @@ The NED package name. For projects it is <literal>${projectname}</literal>,
 <variablelist>
 <varlistentry>
 <term>
-<literal>simulationFolderName</literal> (S) (R/O)
+<literal>simulationFolderName</literal> (S,*)
 </term>
 <listitem>
 <simpara>
@@ -2334,7 +2385,7 @@ the folder where the simulation will be created
 </varlistentry>
 <varlistentry>
 <term>
-<literal>simulationName</literal> (S) (R/O)
+<literal>simulationName</literal> (S,*)
 </term>
 <listitem>
 <simpara>
@@ -2350,7 +2401,7 @@ The name of the simulation. It is the capitalized and
 <variablelist>
 <varlistentry>
 <term>
-<literal>newWizardName</literal> (W) (R/O)
+<literal>newWizardName</literal> (W,*)
 </term>
 <listitem>
 <simpara>
