@@ -15,7 +15,7 @@
 			<fileset dir="../">
 				<include name="org.omnetpp.*/**" />
 				<include name="org.swtworkbench.*/**" />
-				<include name="org.visigoths.freemarker.*/**" />
+				<include name="org.visigoths.*/**" />
 				<exclude name="*/bin/**" />
 				<exclude name="org.omnetpp.ide/**" />
 				<exclude name="org.omnetpp.scave.old/**" />
