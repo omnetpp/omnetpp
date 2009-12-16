@@ -877,7 +877,7 @@ by reading a property file):
   </#list>
 
 
-=== Appendix A: Widgets in XSWT
+=== Appendix A - Widgets in XSWT
 
 ==== Standard SWT widgets
 
@@ -1087,7 +1087,7 @@ TabFolder/TabItem:: Can be used to group the controls into separate pages.
     </x:children>
   </tabFolder>
 
-=== Appendix B: Predefined Template Variables
+=== Appendix B - Predefined Template Variables
 
 [cols="30%,^10%,^10%,^10%,^10%,^10%,^10%,^10%"]
 |==============
@@ -1253,7 +1253,7 @@ NOTE: In addition to the above variables, all keys found in the template.propert
 are added automatically to the context as a template variable.
 
 
-=== Appendix C: Functions, Classes and Macros available from Templates
+=== Appendix C - Functions, Classes and Macros available from Templates
 
 In addition to the standard FreeMarker template constructs, there are
 several java utility classes, template macros and functions
