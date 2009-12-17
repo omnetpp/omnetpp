@@ -339,6 +339,7 @@ public abstract class ContentTemplate implements IContentTemplate {
                 String newValue = writer.toString();
                 if (value.equals(newValue) || k >= 100)
                     return newValue;
+                value = newValue;
             }
         }
         catch (IOException e) {
