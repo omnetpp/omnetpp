@@ -356,7 +356,18 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 			extension.exposeModelRange(new Region(offset, length));
 		}
 	}
-
+	
+    public void setHighlightRange(int offset, int length, boolean moveCursor) {
+        // Overridden to work around for bug in AbstractTextEditor: if range indicator is 
+        // already at the desired offset/length, it ignores moveCursor (i.e. does not move 
+        // the cursor). 
+        if (getSourceViewer() == null)
+            return;
+        super.setHighlightRange(offset, length, moveCursor);
+        if (moveCursor && getSourceViewer().getSelectedRange().x != offset)
+            getSourceViewer().setSelectedRange(offset, 0);
+    }
+    
 	/**
 	 * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
 	 * active part.
