@@ -218,7 +218,7 @@ public class XSWTDataBinding {
         }
         else {
             String str = value.toString().trim();
-            if (str.isEmpty())
+            if (str.length() == 0)
                 return new String[0];
             else if (splitRegex != null)
                 return str.split(splitRegex);

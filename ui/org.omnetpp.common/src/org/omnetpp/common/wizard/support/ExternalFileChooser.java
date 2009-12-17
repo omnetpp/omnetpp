@@ -47,7 +47,7 @@ public class ExternalFileChooser extends AbstractChooser {
 
     @Override
     protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
-        if (getText().isEmpty())
+        if (StringUtils.isEmpty(getText()))
             return null;
         String contents = getFilePreviewContents();
         String html = (contents == null) ? "<i>Cannot open file</i>" : "<pre>"+StringUtils.quoteForHtml(contents)+"</pre>";

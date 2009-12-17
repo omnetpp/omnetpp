@@ -128,7 +128,7 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
 
     @Override
     protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
-        if (getText().isEmpty())
+        if (StringUtils.isEmpty(getText()))
             return null;
         INEDTypeInfo nedType = lookupNedType();
         String contents = nedType==null ? null : nedType.getNEDElement().getNEDSource();

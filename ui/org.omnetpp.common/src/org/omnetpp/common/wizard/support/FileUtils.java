@@ -315,7 +315,7 @@ public class FileUtils {
                 }
                 if (ignoreBlankLines && (nextLine.length==0 || (nextLine.length==1 && StringUtils.isBlank(nextLine[0]))))
                     continue;
-                if (ignoreCommentLines && nextLine.length>0 && !nextLine[0].isEmpty() && nextLine[0].charAt(0)=='#')
+                if (ignoreCommentLines && nextLine.length>0 && nextLine[0].charAt(0)=='#')
                     continue;
                 tokenizedLines.add(nextLine);
                 isFirstLine = false;

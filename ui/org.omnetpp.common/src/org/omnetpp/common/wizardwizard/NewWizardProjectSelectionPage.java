@@ -113,7 +113,7 @@ public class NewWizardProjectSelectionPage extends WizardPage {
             return;
         }
         String wizardName = text.getText();
-        if (wizardName.isEmpty()) {
+        if (StringUtils.isEmpty(wizardName)) {
             setMessage("Enter name for wizard");
             setPageComplete(false);
             return;
