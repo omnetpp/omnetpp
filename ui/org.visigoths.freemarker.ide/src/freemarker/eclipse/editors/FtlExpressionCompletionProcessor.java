@@ -34,7 +34,6 @@ public class FtlExpressionCompletionProcessor implements IContentAssistProcessor
             "xml", "matches", "groups",
     };
 
-    @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 
         // get the current line, up to the cursor
@@ -64,27 +63,22 @@ public class FtlExpressionCompletionProcessor implements IContentAssistProcessor
         return result.toArray(new ICompletionProposal[result.size()]);
     }
 
-    @Override
     public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
         return null;
     }
 
-    @Override
     public char[] getCompletionProposalAutoActivationCharacters() {
         return new char[] { '?' };
     }
 
-    @Override
     public char[] getContextInformationAutoActivationCharacters() {
         return null;
     }
 
-    @Override
     public IContextInformationValidator getContextInformationValidator() {
         return null;
     }
 
-    @Override
     public String getErrorMessage() {
         return null;
     }

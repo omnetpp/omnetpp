@@ -20,5 +20,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench.texteditor;bundle-version="3.4.0",
  org.junit;bundle-version="3.8.2",
  org.visigoths.freemarker;bundle-version="2.3.15"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
