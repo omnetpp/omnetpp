@@ -18,7 +18,7 @@
     <!-- priority classes -->
     <label text="Number of priority classes:"/>
     <spinner x:id="priorities" minimum="2" x:style="BORDER">
-    	<setFocus/>
+	<setFocus/>
     </spinner>
 
     <!-- job priority -->

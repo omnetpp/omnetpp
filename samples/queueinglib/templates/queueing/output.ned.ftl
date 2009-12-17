@@ -34,11 +34,11 @@ network ${targetTypeName}
 <#if numServers=="1" || numServers=="">
         source.out --> server.in++;
         server.out --> sink.in++;
-<#else>        
+<#else>
         source.out --> queue.in++;
         for i = 0..sizeof(server)-1 {
 	        queue.out++ --> server[i].in++;
-    	    server[i].out --> sink.in++;
+	    server[i].out --> sink.in++;
         }
 </#if>
 }

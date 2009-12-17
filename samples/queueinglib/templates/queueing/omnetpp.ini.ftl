@@ -18,6 +18,7 @@ network = ${targetTypeName}
 *.server.delay =  ${serviceTime}
 <#else>
 *.server[*].serviceTime = ${serviceTime}
+${targetTypeName}.numServers = ${numServers}
   <#if systemCapacity!="">
 *.queue.capacity = ${systemCapacity} - sizeof(server)
   </#if>
