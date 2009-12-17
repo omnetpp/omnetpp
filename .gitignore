@@ -13,6 +13,7 @@
 *.pdb
 *.idb
 *.manifest
+.tkenvrc
 lex.*yy.cc
 /config.log
 /config.status
@@ -65,14 +66,6 @@ Thumbs.db
 /ui/org.omnetpp.test.gui/test-workspace/.metadata
 /test/*/work/
 /test/nedtool/nedc-negtests/*.out
-/doc/api/
-/doc/nedxml-api/
-/doc/parsim-api/
-/doc/scave-engine/
-/doc/tictoc-tutorial/
-/doc/src/*/eclipse/
-/doc/src/*/tmp/
-/doc/src/manual/*.htm
 /msys/
 /mingw/
 /samples/*/doc/
