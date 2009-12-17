@@ -809,15 +809,18 @@ public class GraphicalNedEditor
 				typeComment = StringUtils.trimToEmpty(typeElement.getComment());
 		}
 
+		String htmlComment = "";
 		if (!StringUtils.isEmpty(comment)) {
-			hoverText += "<br/><br/>" + StringUtils.makeHtmlDocu(comment);
+			htmlComment += StringUtils.makeHtmlDocu(comment);
 		}
 
 		if (!StringUtils.isEmpty(typeComment)) {
 			//typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
-			hoverText += "<br/><br/>" + StringUtils.makeHtmlDocu(typeComment);
+		    htmlComment += StringUtils.makeHtmlDocu(typeComment);
 		}
 
+		hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source  
+		    
 		//debug code:
 		//hoverText += "<br/><br/>" + "SyntaxProblemMaxCumulatedSeverity:" + element.getSyntaxProblemMaxCumulatedSeverity() +
 		//			", ConsistencyProblemMaxCumulatedSeverity:" + element.getConsistencyProblemMaxCumulatedSeverity();
@@ -826,7 +829,7 @@ public class GraphicalNedEditor
 		//", ConsistencyProblemMaxCumulatedSeverity:" + fileElement.getConsistencyProblemMaxCumulatedSeverity();
 
 		String nedCode = StringUtils.stripLeadingCommentLines(element.getNEDSource().trim(), "//");
-		hoverText += "<br/><br/>" + "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
+		hoverText += "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
 
 		outPreferredSize.preferredWidth = Math.max(300, 7*(5+StringUtils.getMaximumLineLength(nedCode)));
 
