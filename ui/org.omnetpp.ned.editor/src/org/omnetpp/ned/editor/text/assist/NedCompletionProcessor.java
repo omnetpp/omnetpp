@@ -184,12 +184,14 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 	    		// after dot: offer params (and after sizeof(), gates too) of given submodule
 	    		if (nedTypeInfo!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
-					// Debug.println(" offering params of type "+submodTypeName);
-					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
-					if (submodType!=null) {
-						if (line.matches(".*\\bsizeof *\\(.*"))
-							addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
-						addProposals(viewer, documentOffset, result, submodType.getParamDeclarations().keySet(), "parameter");
+					if (submodTypeName != null) {
+					    // Debug.println(" offering params of type "+submodTypeName);
+					    INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
+					    if (submodType!=null) {
+					        if (line.matches(".*\\bsizeof *\\(.*"))
+					            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
+					        addProposals(viewer, documentOffset, result, submodType.getParamDeclarations().keySet(), "parameter");
+					    }
 					}
 	    		}
 	    	}
