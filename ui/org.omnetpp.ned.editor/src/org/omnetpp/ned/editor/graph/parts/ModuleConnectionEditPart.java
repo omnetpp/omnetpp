@@ -163,8 +163,17 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         cfig.setDisplayString(connectionModel.getDisplayString());
         cfig.setArrowHeadEnabled(connectionModel.getArrowDirection() != NEDElementConstants.NED_ARROWDIR_BIDIR);
 
-        boolean isGroup = connectionModel.getParent() instanceof ConnectionGroupElement;
-        ConnectionKindFigure figure = new ConnectionKindFigure(isGroup, connectionModel.getFirstConditionChild() != null);
+        boolean isConditional = connectionModel.getFirstConditionChild() != null;
+        boolean isGroup = connectionModel.getFirstLoopChild() != null;
+        if (connectionModel.getParent() instanceof ConnectionGroupElement) {
+            ConnectionGroupElement parent = (ConnectionGroupElement) connectionModel.getParent();
+            if (!isConditional && parent.getFirstConditionChild() != null)
+                isConditional = true;
+            if (!isGroup && parent.getFirstLoopChild() != null)
+                isGroup = true;
+        }
+        
+        ConnectionKindFigure figure = new ConnectionKindFigure(isConditional, isGroup);
 
         cfig.setMidpointDecoration(figure);
     }
