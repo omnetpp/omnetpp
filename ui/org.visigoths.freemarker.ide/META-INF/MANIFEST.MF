@@ -18,6 +18,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.editors;bundle-version="3.4.0",
  org.eclipse.ui.workbench;bundle-version="3.4.0",
  org.eclipse.ui.workbench.texteditor;bundle-version="3.4.0",
- org.junit;bundle-version="3.8.2",
- org.visigoths.freemarker;bundle-version="2.3.15"
+ org.visigoths.freemarker;bundle-version="2.3.15",
+ org.junit4;bundle-version="4.5.0"
 Bundle-ActivationPolicy: lazy
