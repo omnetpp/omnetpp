@@ -65,6 +65,8 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.editor.text.NedCommentFormatter;
+import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.IPredicate;
@@ -575,151 +577,10 @@ public class DocumentationGenerator {
     }
 
     protected String processHTMLContent(String clazz, String comment) {
-        // add sentries to facilitate processing
-        comment = "\n\n" + comment + "\n\n";
-
-        // remove '//#' lines (those are comments to be ignored by documentation generation)
-        comment = comment.replaceAll("(?s)(?<=\n)[ \t]*//#.*?\n", "\n");
-
-        // remove '// ', '/// ' and '//////...' from beginning of lines
-        comment = comment.replaceAll("(?s)\n[ \t]*//+ ?", "\n");
-
-        // extract existing <pre> sections to prevent tampering inside them
-        final ArrayList<String> preList = new ArrayList<String>();
-        comment = replaceMatches(comment, "(?s)<pre>(.*?)</pre>", new IRegexpReplacementProvider() {
-            public String getReplacement(Matcher matcher) {
-                preList.add(matcher.group(0));
-
-                return "<pre" + (preList.size() - 1) + "/>";
-            }
-        });
-
-        // a plain '-------' line outside <pre> is replaced by a divider (<hr> tag)
-        comment = comment.replaceAll("(?s)\n[ \t]*------+[ \t]*\n", "\n<hr/>\n");
-
-        // lines outside <pre> containing whitespace only count as blank
-        comment = comment.replaceAll("(?s)\n[ \t]+\n", "\n\n");
-
-        // insert blank line (for later processing) in front of lines beginning with '- ' or '-# '
-        comment = comment.replaceAll("(?s)\n( *-#? )", "\n\n$1");
-
-        // if briefcomment, keep only the 1st paragraph
-        if (clazz.equals("briefcomment"))
-           comment = comment.replaceAll("(?s)(.*?[^ \t\n].*?)\n\n.*", "$1\n\n");
-
-        // format @author, @date, @todo, @bug, @see, @since, @warning, @version
-        comment = comment.replaceAll("@author\\b", "\n\n<b>Author:</b>");
-        comment = comment.replaceAll("@date\\b", "\n\n<b>Date:</b>");
-        comment = comment.replaceAll("@todo\\b", "\n\n<b>TODO:</b>");
-        comment = comment.replaceAll("@bug\\b", "\n\n<b>BUG:</b>");
-        comment = comment.replaceAll("@see\\b", "\n\n<b>See also:</b>");
-        comment = comment.replaceAll("@since\\b", "\n\n<b>Since:</b>");
-        comment = comment.replaceAll("@warning\\b", "\n\n<b>WARNING:</b>");
-        comment = comment.replaceAll("@version\\b", "\n\n<b>Version:</b>");
-        comment = comment.replaceAll("\n\n\n+", "\n\n");
-
-        // wrap paragraphs NOT beginning with '-' into <p></p>.
-        // well, we should write "paragraphs not beginning with '- ' or '-# '", but
-        // how do you say that in a Perl regex?
-        // (note: (?=...) and (?<=...) constructs are lookahead and lookbehind assertions,
-        // see e.g. http://tlc.perlarchive.com/articles/perl/pm0001_perlretut.shtml).
-        comment = comment.replaceAll("(?s)(?<=\n\n)[ \t]*([^- \t\n].*?)(?=\n\n)", "<p>$1</p>");
-
-        // wrap paragraphs beginning with '-' into <li></li> and <ul></ul>
-        // every 3 spaces increase indent level by one.
-        comment = comment.replaceAll("(?s)(?<=\n\n)          *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><ul><li>$1</li></ul></ul></ul></ul>");
-        comment = comment.replaceAll("(?s)(?<=\n\n)       *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><li>$1</li></ul></ul></ul>");
-        comment = comment.replaceAll("(?s)(?<=\n\n)    *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><li>$1</li></ul></ul>");
-        comment = comment.replaceAll("(?s)(?<=\n\n) *-[ \t]+(.*?)(?=\n\n)", "  <ul><li>$1</li></ul>");
-        for (int i = 0; i < 4; i++) {
-            comment = comment.replaceAll("(?s)</ul>[ \t\n]*<ul>", "\n\n  ");
-        }
-
-        // wrap paragraphs beginning with '-#' into <li></li> and <ol></ol>.
-        // every 3 spaces increase indent level by one.
-        comment = comment.replaceAll("(?s)(?<=\n\n)          *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><ol><li>$1</li></ol></ol></ol></ol>");
-        comment = comment.replaceAll("(?s)(?<=\n\n)       *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><li>$1</li></ol></ol></ol>");
-        comment = comment.replaceAll("(?s)(?<=\n\n)    *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><li>$1</li></ol></ol>");
-        comment = comment.replaceAll("(?s)(?<=\n\n) *-#[ \t]+(.*?)(?=\n\n)", "  <ol><li>$1</li></ol>");
-        for (int i = 0; i < 4; i++) {
-            comment = comment.replaceAll("(?s)</ol>[ \t\n]*<ol>", "\n\n  ");
-        }
-
-        // now we can trim excess blank lines
-        comment = comment.replaceAll("\n\n+", "\n");
-
-        // now we can put back <pre> regions
-        comment = replaceMatches(comment, "<pre(\\d+)/>", new IRegexpReplacementProvider() {
-            public String getReplacement(Matcher matcher) {
-                return preList.get(Integer.parseInt(matcher.group(1)));
-            }
-        });
-
-        // escape html content
-        comment = StringEscapeUtils.escapeHtml(comment);
-
-        // extract <nohtml> sections to prevent substituting inside them;
-        // also backslashed words to prevent putting hyperlinks on them
-        final ArrayList<String> nohtmlList = new ArrayList<String>();
-        comment = replaceMatches(comment, "(?s)&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;", new IRegexpReplacementProvider() {
-            public String getReplacement(Matcher matcher) {
-                nohtmlList.add(matcher.group(1));
-
-                return "<nohtml" + (nohtmlList.size() - 1) + "/>";
-            }
-        });
-        comment = replaceMatches(comment, "(?i)(\\\\[a-z_]+)", new IRegexpReplacementProvider() {
-            public String getReplacement(Matcher matcher) {
-                nohtmlList.add(matcher.group(1));
-
-                return "<nohtml" + (nohtmlList.size() - 1) + "/>";
-            }
-        });
-
-        // put hyperlinks on type names
-        comment = replaceTypeReferences(comment);
-
-        // restore accented characters e.g. "&ouml;" from their "&amp;ouml;" forms
-        comment = comment.replaceAll("&amp;([a-z]+);", "&$1;");
-
-        // restore " from &quot; (important for attributes of html tags, see below)
-        comment = comment.replaceAll("&quot;","\"");
-
-        // restore html elements and leave other content untouched
-        String htmlElements = "a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|font|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|pre|small|span|strong|sub|sup|table|td|th|tr|tt|kbd|u|ul|var";
-        comment = comment.replaceAll("&lt;((" + htmlElements + ")( [^\n]*?)?/?)&gt;", "<$1>");
-        comment = comment.replaceAll("&lt;(/(" + htmlElements + "))&gt;", "<$1>");
-
-        // put back <nohtml> sections
-        comment = replaceMatches(comment, "<nohtml(\\d+)/>", new IRegexpReplacementProvider() {
-            public String getReplacement(Matcher matcher) {
-                return nohtmlList.get(Integer.parseInt(matcher.group(1)));
-            }
-        });
-
-        // remove backslashes; double backslashes become single ones
-        comment = comment.replaceAll("\\\\(.)", "$1");
-
-        // escape $ signs to avoid referring groups in appendReplacement
-        comment = comment.replace("$", "\\$");
-
-        return comment;
-    }
-
-    protected interface IRegexpReplacementProvider {
-        public String getReplacement(Matcher matcher);
-    }
-
-    protected String replaceMatches(String comment, String regexp, IRegexpReplacementProvider provider) {
-        Matcher matcher = Pattern.compile(regexp).matcher(comment);
-        StringBuffer buffer = new StringBuffer();
-
-        while (matcher.find())
-            matcher.appendReplacement(buffer, provider.getReplacement(matcher).replace("$", "\\$"));
-
-        matcher.appendTail(buffer);
-
-        return buffer.toString();
+        return NedCommentFormatter.makeHtmlDocu(comment, clazz.equals("briefcomment"), new INeddocProcessor() {
+            public String process(String comment) {
+                return replaceTypeReferences(comment);
+            }});
     }
 
     protected String replaceTypeReferences(String comment) {

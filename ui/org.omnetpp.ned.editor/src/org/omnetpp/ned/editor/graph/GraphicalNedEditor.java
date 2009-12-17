@@ -100,6 +100,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.ShowViewAction;
+import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -811,12 +812,12 @@ public class GraphicalNedEditor
 
 		String htmlComment = "";
 		if (!StringUtils.isEmpty(comment)) {
-			htmlComment += StringUtils.makeHtmlDocu(comment);
+			htmlComment += NedCommentFormatter.makeHtmlDocu(comment, false, null);
 		}
 
 		if (!StringUtils.isEmpty(typeComment)) {
 			//typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
-		    htmlComment += StringUtils.makeHtmlDocu(typeComment);
+		    htmlComment += NedCommentFormatter.makeHtmlDocu(typeComment, false, null);
 		}
 
 		hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source  

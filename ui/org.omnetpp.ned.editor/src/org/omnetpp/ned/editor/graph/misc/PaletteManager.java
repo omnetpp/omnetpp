@@ -39,6 +39,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
@@ -463,7 +464,7 @@ public class PaletteManager {
         final CombinedTemplateCreationEntry toolEntries[] = new CombinedTemplateCreationEntry[1];
 		CombinedTemplateCreationEntry toolEntry = new CombinedTemplateCreationEntry(
                 getLabelFor(typeElement.getNEDTypeInfo()),
-                StringUtils.makeBriefDocu(typeElement.getComment(), 300),
+                NedCommentFormatter.makeBriefDocu(typeElement.getComment(), 300),
                 new ModelFactory(NEDElementTags.NED_SUBMODULE, instanceName, fullyQualifiedTypeName, typeElement instanceof ModuleInterfaceElement),
                 imageDescNorm, imageDescLarge)
 		{
@@ -522,7 +523,7 @@ public class PaletteManager {
             if (!excludedPackages.contains(packageName)) {
                 ConnectionCreationToolEntry tool = new ConnectionCreationToolEntry(
                         getLabelFor(typeInfo),
-                        StringUtils.makeBriefDocu(modelElement.getComment(), 300),
+                        NedCommentFormatter.makeBriefDocu(modelElement.getComment(), 300),
                         new ModelFactory(NEDElementTags.NED_CONNECTION, "n/a", fullyQualifiedName, modelElement instanceof ChannelInterfaceElement),
                         ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
                         ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)

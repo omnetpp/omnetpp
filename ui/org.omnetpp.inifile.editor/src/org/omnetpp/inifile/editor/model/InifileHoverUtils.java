@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
+import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
@@ -327,7 +328,7 @@ public class InifileHoverUtils {
         if (paramDeclNode.getIsVolatile())
             paramType = "volatile " + paramType;
         String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
-        String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 250);
+        String comment = NedCommentFormatter.makeBriefDocu(paramDeclNode.getComment(), 250);
         String optComment = comment==null ? "" : ("<br>&nbsp;&nbsp;&nbsp;<i>\"" + comment + "\"</i>");
 
         // print parameter declaration
@@ -360,7 +361,7 @@ public class InifileHoverUtils {
 
 		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeElement().getName();
-		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
+		String comment = NedCommentFormatter.makeBriefDocu(paramDeclNode.getComment(), 60);
 		String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 
 		String text = ""; //TODO

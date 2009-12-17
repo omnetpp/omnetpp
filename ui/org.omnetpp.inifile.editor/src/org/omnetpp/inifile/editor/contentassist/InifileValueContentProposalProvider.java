@@ -28,6 +28,7 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
+import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -149,7 +150,7 @@ s	 * before getting presented to the user.
 				for (String networkName : nedResources.getNetworkQNames(contextProject)) {
 					INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNEDElement();
 					if ((iniFilePackage+".").equals(network.getNEDTypeInfo().getNamePrefix())) {
-						String docu = StringUtils.makeTextDocu(network.getComment());
+						String docu = NedCommentFormatter.makeTextDocu(network.getComment());
 						p1.add(new ContentProposal(network.getName(), network.getName()+" - "+iniFilePackage, docu));
 					}
 				}
@@ -158,7 +159,7 @@ s	 * before getting presented to the user.
 			List<IContentProposal> p2 = new ArrayList<IContentProposal>();
 			for (String networkName : nedResources.getNetworkQNames(contextProject)) {
 				INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNEDElement();
-				String docu = StringUtils.makeTextDocu(network.getComment());
+				String docu = NedCommentFormatter.makeTextDocu(network.getComment());
 				// TODO make a better presentation ( name - package ) = prefix filtering should be correctly implemented (prefix should match the name ONLY excluding the package)
 //				String namePrefix = StringUtils.removeEnd(network.getNEDTypeInfo().getNamePrefix(),".");
 //				String label = StringUtils.join(network.getName(), " - ", namePrefix);
@@ -283,7 +284,7 @@ s	 * before getting presented to the user.
 		    if (types != null)
 	            for (INEDTypeInfo type : types) {
 	                String docu = type.getFullyQualifiedName() + "\n\n";
-	                docu += StringUtils.nullToEmpty(StringUtils.makeTextDocu(type.getNEDElement().getComment()));
+	                docu += StringUtils.nullToEmpty(NedCommentFormatter.makeTextDocu(type.getNEDElement().getComment()));
 	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", docu));
 	            }
 			p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
