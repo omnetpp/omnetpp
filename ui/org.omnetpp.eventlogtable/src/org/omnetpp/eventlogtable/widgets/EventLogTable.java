@@ -136,7 +136,7 @@ public class EventLogTable
 	    paintHasBeenFinished = false;
 
         if (internalErrorHappenedDuringPaint)
-            drawNotificationMessage(gc, "Internal error happend during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
+            drawNotificationMessage(gc, "Internal error happened during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
         else if (eventLogInput == null) {
 			super.paint(gc);
 			paintHasBeenFinished = true;
