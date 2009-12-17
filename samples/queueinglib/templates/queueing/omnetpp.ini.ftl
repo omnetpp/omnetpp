@@ -3,25 +3,26 @@
 network = ${targetTypeName}
 
 *.source.interArrivalTime = ${interArrivalTime}
-<#if population!="">
+  <#if population!="">
 *.source.numJobs = ${population}
-</#if>
-<#if numServers=="1">
+  </#if>
+  <#if numServers=="1">
 *.server.serviceTime = ${serviceTime}
-  <#if systemCapacity!="">
+    <#if systemCapacity!="">
 *.server.capacity = ${systemCapacity}
-  </#if>
-  <#if discipline!="FIFO">
+    </#if>
+    <#if discipline!="FIFO">
 *.server.fifo = false
-  </#if>
-<#elseif numServers=="">
+    </#if>
+  <#elseif numServers=="">
 *.server.delay =  ${serviceTime}
-<#else>
+  <#else>
 *.server[*].serviceTime = ${serviceTime}
+    <#if parametric>
 ${targetTypeName}.numServers = ${numServers}
-  <#if systemCapacity!="">
+    </#if>
+    <#if systemCapacity!="">
 *.queue.capacity = ${systemCapacity} - sizeof(server)
+    </#if>
   </#if>
-</#if>
-
 </#if>

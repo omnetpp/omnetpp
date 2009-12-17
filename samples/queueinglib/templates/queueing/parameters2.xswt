@@ -35,7 +35,9 @@
     <combo x:id="discipline" x:style="BORDER|READ_ONLY">
       <add x:p0="FIFO"/>
       <add x:p0="LIFO"/>
+      <!--
       <add x:p0="Priority"/>
+      -->
     </combo>
     <label/>
   </x:children>

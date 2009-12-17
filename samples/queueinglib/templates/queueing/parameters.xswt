@@ -19,7 +19,7 @@
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
     </httpLink>
 
-    <group text="Basic parameters ">
+    <group text="Basic Parameters ">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="3"/>
       <x:children>
@@ -49,7 +49,7 @@
       </x:children>
     </group>
 
-    <group text="NED Topology type">
+    <group text="NED Topology Type">
       <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
@@ -58,8 +58,8 @@
       <layoutData x:class="GridData" horizontalSpan="2"/>
       <layout x:class="GridLayout"/>
       <x:children>
-        <button x:id="dynamic" text="Dynamic" x:style="RADIO"/>
         <button x:id="static" text="Static" x:style="RADIO"/>
+        <button x:id="parametric" text="Parametric" x:style="RADIO"/>
       </x:children>
     </composite>
 
