@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <?asciidoc-toc?>
 <?asciidoc-numbered?>
 
-<article lang="en">
-<articleinfo>
+<book lang="en">
+<bookinfo>
     <title>IDE Customization Guide</title>
-</articleinfo>
-<section id="_writing_wizards">
+</bookinfo>
+<chapter id="_writing_wizards">
 <title>Writing Wizards</title>
 <section id="_motivation">
 <title>Motivation</title>
@@ -364,8 +364,10 @@ variable is initialized to <emphasis>projectName</emphasis>+<literal>.ned</liter
 that the template actually creates this file. It is allowed to provide a
 different initialization value for these variables in <literal>template.properties</literal>,
 and to let the user change them in custom pages.</simpara>
-<note><simpara>The <literal>targetFileName</literal> variable is not set, because the project wizard
-is not required to create a file.</simpara></note>
+<tip><simpara>If the new project contains a simulation, it is recommeded that <literal>targetTypeName</literal>
+     and <literal>targetMainFile</literal> are used as network name and NED file name.</simpara></tip>
+<note><simpara>The <literal>targetFileName</literal> variable is not set because the project wizard
+      is not required to create a file.</simpara></note>
 <simpara>See the appendix for the variable names that are supported in project wizard
 templates.</simpara>
 </section>
@@ -395,8 +397,10 @@ variable is initialized to <emphasis>simulationName</emphasis>+<literal>.ned</li
 that the template actually creates this file. It is allowed to provide a
 different initialization value for these variables in <literal>template.properties</literal>,
 and to let the user change them in custom pages.</simpara>
-<note><simpara>The <literal>targetFileName</literal> variable is not set, because the simulation wizard
-is not required to create a file.</simpara></note>
+<tip><simpara>The intended purpose of <literal>targetTypeName</literal> and <literal>targetMainFile</literal> is to be used
+     as network name and NED file name in the new simulation.</simpara></tip>
+<note><simpara>The <literal>targetFileName</literal> variable is not set because the simulation wizard
+      is not required to create a file.</simpara></note>
 <simpara>The <literal>nedPackageName</literal> and <literal>namespaceName</literal> variables are set by the wizard to the
 NED package name and C++ namespace expected for the given folder. These values
 are derived from the folder path, the toplevel <literal>package.ned</literal> file and the
@@ -457,11 +461,11 @@ as import source on the first page of the <emphasis>Import</emphasis> dialog. Th
 the content template selection page. After choosing a template, the next page
 will be the file, folder or project name selection page of the <emphasis>New&#8230;</emphasis> wizard,
 followed by the custom wizard pages.</simpara>
-<note><simpara>If an import wizard supports more than one wizard types (e.g. <literal>project</literal>, <literal>simulation</literal>, <literal>nedfile</literal>, etc.),
-the <emphasis>File|Import&#8230;</emphasis> dialog will use only one of those types. The type is chosen in the following order
-of preference: <literal>network</literal>, <literal>nedfile</literal>, <literal>compoundmodule</literal>, <literal>simplemodule</literal>, <literal>msgfile</literal>,
-<literal>inifile</literal>, <literal>simulation</literal>, <literal>project</literal>. This may be changed in the future to explicit
-wizard type selection.</simpara></note>
+<note><simpara>If an import wizard supports more than one wizard types (e.g. <literal>project</literal>, <literal>simulation</literal>,
+  <literal>nedfile</literal>, etc.), the <emphasis>File|Import&#8230;</emphasis> dialog will use only one of those types. The type
+  is chosen in the following order of preference: <literal>network</literal>, <literal>nedfile</literal>, <literal>compoundmodule</literal>,
+  <literal>simplemodule</literal>, <literal>msgfile</literal>, <literal>inifile</literal>, <literal>simulation</literal>, <literal>project</literal>. This may be changed
+  in the future to explicit wizard type selection.</simpara></note>
 </section>
 <section id="_export_wizards">
 <title>Export Wizards</title>
@@ -491,7 +495,29 @@ the target files programmatically.</simpara>
 <section id="_new_wizard_wizard">
 <title>New Wizard Wizard</title>
 <literallayout class="monospaced">wizardType = wizard</literallayout>
-<simpara>TODO Like &#8230;</simpara>
+<simpara>A <emphasis>New Wizard</emphasis> wizard creates a wizard under the <literal>templates/</literal> folder of a workspace
+project.</simpara>
+<simpara>The first two pages of the wizard are standard: they prompt the user for
+the project to hold the wizard, the wizard name (name of the new folder under
+<literal>templates/</literal>), and let the user choose a content template. These pages are
+followed by pages provided by the selected content template.</simpara>
+<simpara>When the user clicks <emphasis>Finish</emphasis>, the wizard creates the folder under the
+<literal>templates/</literal> folder of the chosen project. After that, template files are copied
+into the new folder, performing template processing as necessary.</simpara>
+<simpara>There are a few useful variables that template files can make use of. The
+<literal>newWizardName</literal> variable contains the name of the new folder (without path),
+and <literal>newWizardProject</literal> contains the name of the project. The project name variables
+(<literal>rawProjectName</literal>, <literal>projectName</literal>, <literal>PROJECTNAME</literal>, etc.) and <literal>targetFolder</literal>
+variables are also set. These variables cannot be edited in custom wizard pages.</simpara>
+<note><simpara>The wizard does not set the <literal>targetFileName</literal> and <literal>targetMainFile</literal> variables.</simpara></note>
+<simpara>See the appendix for the variable names that are supported in <emphasis>New Wizard</emphasis> wizard
+templates.</simpara>
+<tip><simpara>To create a <literal>template.properties</literal> file for the new wizard, use a
+   <literal>template.properties.ftl</literal> file in the wizard wizard. Similarly, you&#8217;ll
+   likely have files with the <literal>.xswt.ftl</literal> and <literal>.ftl.ftl</literal> extensions in the
+   wizard wizard. Inside <literal>.ftl.ftl</literal> files, use the <literal>&lt;#noparse&gt;..&lt;/#noparse&gt;</literal>
+   directive to protect parts that you want to be copied verbatim into the
+   created wizards.</simpara></tip>
 </section>
 </section>
 <section id="_configuration_keys">
@@ -2971,5 +2997,5 @@ list are optional.</simpara>
 If not found, it returns the original string.</simpara>
 </section>
 </section>
-</section>
-</article>
+</chapter>
+</book>

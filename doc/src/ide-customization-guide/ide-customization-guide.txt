@@ -368,8 +368,11 @@ that the template actually creates this file. It is allowed to provide a
 different initialization value for these variables in `template.properties`,
 and to let the user change them in custom pages.
 
-NOTE: The `targetFileName` variable is not set, because the project wizard
-is not required to create a file.
+TIP: If the new project contains a simulation, it is recommeded that `targetTypeName`
+     and `targetMainFile` are used as network name and NED file name.
+
+NOTE: The `targetFileName` variable is not set because the project wizard
+      is not required to create a file.
 
 See the appendix for the variable names that are supported in project wizard
 templates.
@@ -407,8 +410,11 @@ that the template actually creates this file. It is allowed to provide a
 different initialization value for these variables in `template.properties`,
 and to let the user change them in custom pages.
 
-NOTE: The `targetFileName` variable is not set, because the simulation wizard
-is not required to create a file.
+TIP: The intended purpose of `targetTypeName` and `targetMainFile` is to be used
+     as network name and NED file name in the new simulation.
+
+NOTE: The `targetFileName` variable is not set because the simulation wizard
+      is not required to create a file.
 
 The `nedPackageName` and `namespaceName` variables are set by the wizard to the
 NED package name and C++ namespace expected for the given folder. These values
@@ -488,11 +494,11 @@ the content template selection page. After choosing a template, the next page
 will be the file, folder or project name selection page of the 'New...' wizard,
 followed by the custom wizard pages.
 
-NOTE: If an import wizard supports more than one wizard types (e.g. `project`, `simulation`, `nedfile`, etc.),
-the 'File|Import...' dialog will use only one of those types. The type is chosen in the following order
-of preference: `network`, `nedfile`, `compoundmodule`, `simplemodule`, `msgfile`,
-`inifile`, `simulation`, `project`. This may be changed in the future to explicit
-wizard type selection.
+NOTE: If an import wizard supports more than one wizard types (e.g. `project`, `simulation`,
+  `nedfile`, etc.), the 'File|Import...' dialog will use only one of those types. The type
+  is chosen in the following order of preference: `network`, `nedfile`, `compoundmodule`,
+  `simplemodule`, `msgfile`, `inifile`, `simulation`, `project`. This may be changed
+  in the future to explicit wizard type selection.
 
 ==== Export Wizards
 
@@ -532,7 +538,35 @@ TIP: The content text may be assembled using plain string concatenation
 
   wizardType = wizard
 
-TODO Like ...
+A 'New Wizard' wizard creates a wizard under the `templates/` folder of a workspace
+project.
+
+The first two pages of the wizard are standard: they prompt the user for
+the project to hold the wizard, the wizard name (name of the new folder under
+`templates/`), and let the user choose a content template. These pages are
+followed by pages provided by the selected content template.
+
+When the user clicks 'Finish', the wizard creates the folder under the
+`templates/` folder of the chosen project. After that, template files are copied
+into the new folder, performing template processing as necessary.
+
+There are a few useful variables that template files can make use of. The
+`newWizardName` variable contains the name of the new folder (without path),
+and `newWizardProject` contains the name of the project. The project name variables
+(`rawProjectName`, `projectName`, `PROJECTNAME`, etc.) and `targetFolder`
+variables are also set. These variables cannot be edited in custom wizard pages.
+
+NOTE: The wizard does not set the `targetFileName` and `targetMainFile` variables.
+
+See the appendix for the variable names that are supported in 'New Wizard' wizard
+templates.
+
+TIP: To create a `template.properties` file for the new wizard, use a
+   `template.properties.ftl` file in the wizard wizard. Similarly, you'll
+   likely have files with the `.xswt.ftl` and `.ftl.ftl` extensions in the
+   wizard wizard. Inside `.ftl.ftl` files, use the `<#noparse>..</#noparse>`
+   directive to protect parts that you want to be copied verbatim into the
+   created wizards.
 
 === Configuration Keys
 
