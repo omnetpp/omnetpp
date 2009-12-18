@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
 
-<book lang="en">
-<bookinfo>
+<article lang="en">
+<articleinfo>
     <title>IDE Customization Guide</title>
-</bookinfo>
-<chapter id="_writing_wizards">
+</articleinfo>
+<section id="_writing_wizards">
 <title>Writing Wizards</title>
 <section id="_motivation">
 <title>Motivation</title>
@@ -96,7 +98,7 @@ language: variable assignments, conditionals, loops, switch statement,
 functions, macros, expression evaluation, built-in operators, etc, as well
 as access to fields and methods of classes defined in Java. This means that
 any algorithm can be expressed in the FreeMarker language, and if that would
-not be enough, one can also pull in existing or custom-written Java libraries.</simpara>
+not be enough, one can directly access Java classes using FreeMarker&#8217;s Bean Wrapper.</simpara>
 <tip><simpara>Documentation for the FreeMarker template language can be found at:
      <emphasis>http://freemarker.org/docs/index.html</emphasis></simpara></tip>
 <simpara>Templates can use several sources for input. They can:</simpara>
@@ -204,7 +206,7 @@ page.1.title = Network parameters</literallayout>
 "Configuration Keys" section for an exhaustive list of options.</simpara></note>
 </section>
 <section id="_creating_a_new_wizard_page">
-<title>Creating a new Wizard Page</title>
+<title>Creating a New Wizard Page</title>
 <simpara>Files with <literal>.xswt</literal> extension (Wizard Page definitions) are used to define the UI and
 add new wizard pages to gather user input for the template generation. In the previous
 section we have specified that the file called <literal>parameters.xswt</literal> will contain the new
@@ -223,13 +225,13 @@ with the following content:</simpara>
     &lt;package name="org.omnetpp.ned.editor.wizards.support" /&gt;
     &lt;package name="org.omnetpp.cdt.wizard.support" /&gt;
   &lt;/x:import&gt;
-  &lt;!-- Create a two column layout  --&gt;
+  &lt;!-- Create a two-column layout  --&gt;
   &lt;layout x:class="GridLayout" numColumns="2"/&gt;
   &lt;x:children&gt;
-&lt;!-- First row  --&gt;
+    &lt;!-- First row --&gt;
     &lt;label text="Number of nodes in the network:"/&gt;
     &lt;spinner x:id="networkSize" minimum="2" x:style="BORDER"/&gt;
-&lt;!-- Second row  --&gt;
+    &lt;!-- Second row --&gt;
     &lt;label text="Type of nodes:"/&gt;
     &lt;text x:id="nodeType" x:style="BORDER"/&gt;
   &lt;/x:children&gt;
@@ -262,6 +264,21 @@ NED Source Folders by the <emphasis>New OMNeT++ Project</emphasis> wizard). Vari
 to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (<literal>*.ftl</literal>) files.</simpara>
+<simpara>Let us have a 1-minute look at the FreeMarker template language.
+Variables can be inserted into the output using the <literal>${varname}</literal> syntax. One can
+also write expressions inside <literal>${..}</literal>; for example, <literal>${numServers?number + 1}</literal>
+uses the <literal>number</literal> builtin operator to convert the <literal>numServers</literal> variable to a number,
+and adds one to it and inserts the result into the template output. FreeMarker
+exposes many other functions (conversion to string, upper-case version of a string,
+size of an array, etc.) as builtin operators as well.</simpara>
+<simpara>Programming facilities can be accessed via directives that have the <literal>&lt;#...&gt;</literal> syntax:
+use <literal>&lt;#if&gt;</literal> (<literal>&lt;#if&gt; cond&gt;..&lt;#elseif cond&gt;..&lt;#else&gt;..&lt;/#if&gt;</literal>) for conditionals;
+<literal>&lt;#list&gt;</literal> for iterations and loops (e.g. <literal>&lt;#list words as w&gt;..&lt;/#list&gt;</literal>;
+<literal>&lt;#list 0..9 as i&gt;..&lt;/#list&gt;</literal>; <literal>&lt;#list 9..0 as i&gt;..&lt;/#list&gt;</literal>);
+<literal>&lt;#assign&gt;</literal> for assigning variables (<literal>&lt;#assign x=5&gt;</literal>; <literal>&lt;#assign x&gt;the number ${i}&lt;/#assign&gt;</literal>).
+One can define functions (<literal>&lt;#function&gt;</literal>) and macros (<literal>&lt;#macros&gt;</literal>), include
+other templates (<literal>&lt;#include&gt;</literal>). Here we only covered a small fraction of FreeMarker&#8217;s
+possibilities; we recommend that you read the FreeMarker manual for more information.</simpara>
 <simpara>Let&#8217;s create a file with a filename with <literal>.ftl</literal> extension (e.g.<literal>untitled.ned.ftl</literal>).
 Because of the extension, this file will be processed by the templating engine.
 The actual name of the file does not matter, because the
@@ -465,9 +482,25 @@ and various other options.</simpara>
 <simpara>
                 Comma-separated or JSON-syntax list of non-template files or
                 folders; those files won&#8217;t get copied over to the new project.
-                Wildcards are accepted. The template.properties file and
-                custom wizard page files automatically count as nontemplates,
-                so they don&#8217;t have to be listed.
+                The <literal>template.properties</literal> file and custom wizard page files
+                automatically count as nontemplates, so they don&#8217;t have to be listed.
+                Wildcards (<literal>*</literal>, <literal>**</literal>, <literal>?</literal>) are accepted. Note that <literal>*.foo</literal>
+                is interpreted as <literal>./*.foo</literal>; write <literal>**/*.foo</literal> to mean foo files
+                anywhere.
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+<literal>verbatimFiles</literal> 
+</term>
+<listitem>
+<simpara>
+                Comma-separated or JSON-syntax list of files that need to be
+                copied over into the target project verbatim, even if they have
+                the <literal>.ftl</literal> extension. Wildcards (<literal>*</literal>, <literal>**</literal>, <literal>?</literal>) are accepted.
+                Note that <literal>*.foo</literal> is interpreted as <literal>./*.foo</literal>; write <literal>**/*.foo</literal>
+                to mean foo files anywhere.
 </simpara>
 </listitem>
 </varlistentry>
@@ -951,22 +984,6 @@ C++ support will not appear; when it is checked, there is no
 such filtering. A template is regarded as one that requires C++ support
 if the <literal>template.properties</literal> file contains any of the following:
 <literal>sourceFolders=</literal>, <literal>makemakeOptions=</literal>, or <literal>requiresCPlusPlus=true</literal>.</simpara>
-<simpara><emphasis role="strong">How can I do arithmetics in templates?</emphasis></simpara>
-<simpara>To print the value of 10*cos(0.2), write <literal>${10*Math.cos(0.2)}</literal>.</simpara>
-<simpara><emphasis role="strong">Can I use conditional operators like <literal>cond ? x : y</literal> in C++ ?</emphasis></simpara>
-<simpara>Conditional output: <literal>${iif( 2 &gt; 1,"yes","no")}</literal></simpara>
-<simpara><emphasis role="strong">How can I create lists and how can I iterate over them?</emphasis></simpara>
-<simpara>The words of the sentence <literal>${sentence}</literal>:</simpara>
-<literallayout class="monospaced">&lt;#list StringUtils.split(sentence) as word&gt;
-   ${word}
-&lt;/#list&gt;</literallayout>
-<simpara><emphasis role="strong">How can I iterate over hash tables?</emphasis></simpara>
-<simpara>To enumerate the keys and values in a hash table (for example, one returned
-by reading a property file):</simpara>
-<literallayout class="monospaced">&lt;#assign props = FileUtils.readPropertyFile(filename)&gt;
-&lt;#list props?keys as key&gt;
-   ${key} ==&gt; ${props.get(key)}
-&lt;/#list&gt;</literallayout>
 </section>
 <section id="_appendix_a_widgets_in_xswt">
 <title>Appendix A - Widgets in XSWT</title>
@@ -2570,7 +2587,27 @@ see below for documentation
 </varlistentry>
 <varlistentry>
 <term>
+NedUtils
+</term>
+<listitem>
+<simpara>
+see below for documentation
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
 IDEUtils
+</term>
+<listitem>
+<simpara>
+see below for documentation
+</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>
+ProcessUtils
 </term>
 <listitem>
 <simpara>
@@ -2842,17 +2879,10 @@ list are optional.</simpara>
 <literallayout class="monospaced">String lookupExecutable(String name)</literallayout>
 <simpara>Finds the given executable in the path, and returns it with full path.
 If not found, it returns the original string.</simpara>
-<simpara>TODO document what are the variables nedResources and msgResources; write a few examples about their usage</simpara>
-<simpara>TODO document glob patterns in verbatimFiles etc</simpara>
 <simpara>TODO show how to write templates that are suitable for more than one wizard.</simpara>
-<simpara>TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())</simpara>
-<simpara>TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
-JARs in the templates)</simpara>
-<simpara>TODO add a little nutshell XSWT tutorial!</simpara>
 <simpara>TODO also some minimal FreeMarker tutorial (variables are ${}, there is &lt;#if&gt;,
   &lt;#list&gt;; and there&#8217;s lots more, see the manual and/or the provided examples</simpara>
-<simpara>TODO document export/import wizards</simpara>
 </section>
 </section>
-</chapter>
-</book>
+</section>
+</article>

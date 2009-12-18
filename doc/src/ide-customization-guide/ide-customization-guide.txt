@@ -75,7 +75,7 @@ language: variable assignments, conditionals, loops, switch statement,
 functions, macros, expression evaluation, built-in operators, etc, as well
 as access to fields and methods of classes defined in Java. This means that
 any algorithm can be expressed in the FreeMarker language, and if that would
-not be enough, one can also pull in existing or custom-written Java libraries.
+not be enough, one can directly access Java classes using FreeMarker's Bean Wrapper.
 
 TIP: Documentation for the FreeMarker template language can be found at:
      'http://freemarker.org/docs/index.html'
@@ -181,7 +181,7 @@ We will use the file `parameters.xswt` to define the layout and the content of t
 NOTE: There are numerous other configuration keys that can be used in `template.properties`. See the
 "Configuration Keys" section for an exhaustive list of options.
 
-==== Creating a new Wizard Page
+==== Creating a New Wizard Page
 
 Files with `.xswt` extension (Wizard Page definitions) are used to define the UI and
 add new wizard pages to gather user input for the template generation. In the previous
@@ -202,13 +202,13 @@ with the following content:
 	    <package name="org.omnetpp.ned.editor.wizards.support" />
 	    <package name="org.omnetpp.cdt.wizard.support" />
 	  </x:import>
-	  <!-- Create a two column layout  -->
+	  <!-- Create a two-column layout  -->
 	  <layout x:class="GridLayout" numColumns="2"/>
 	  <x:children>
-        <!-- First row  -->
+	    <!-- First row -->
 	    <label text="Number of nodes in the network:"/>
 	    <spinner x:id="networkSize" minimum="2" x:style="BORDER"/>
-        <!-- Second row  -->
+	    <!-- Second row -->
 	    <label text="Type of nodes:"/>
 	    <text x:id="nodeType" x:style="BORDER"/>
 	  </x:children>
@@ -246,7 +246,24 @@ to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (`*.ftl`) files.
 
-Let's create a file with a filename with `.ftl` extension (e.g.`untitled.ned.ftl`).
+Let us have a one-minute look at the FreeMarker template language.
+Variables can be inserted into the output using the `${varname}` syntax. One can
+also write expressions inside `${..}`. For example, `${numServers?number + 1}`
+uses the `number` builtin operator to convert the `numServers` variable to a number,
+and adds one to it and inserts the result into the template output. FreeMarker
+exposes many other functions (conversion to string, upper-case version of a string,
+size of an array, etc.) as builtin operators.
+
+Programming facilities can be accessed via directives that have the `<#...>` syntax.
+Use `<#if>` (`<#if> cond>..<#elseif cond>..<#else>..</#if>`) for conditionals;
+`<#list>` for iterations and loops (e.g. `<#list words as w>..</#list>`;
+`<#list 0..9 as i>..</#list>`; `<#list 9..0 as i>..</#list>`);
+`<#assign>` for assigning variables (`<#assign x=5>`; `<#assign x>the number ${i}</#assign>`).
+One can define functions (`<#function>`) and macros (`<#macros>`), and include
+other templates (`<#include>`). Here we only covered a small fraction of FreeMarker's
+possibilities; we recommend that you read the FreeMarker manual for more information.
+
+Let us create a file with a filename with `.ftl` extension (e.g.`untitled.ned.ftl`).
 Because of the extension, this file will be processed by the templating engine.
 The actual name of the file does not matter, because the
 `<@setoutput .../>` directive instructs the templating engine to output
@@ -409,9 +426,18 @@ Recognized property file keys:
 `ignoreResources` ::
                 Comma-separated or JSON-syntax list of non-template files or
                 folders; those files won't get copied over to the new project.
-                Wildcards are accepted. The template.properties file and
-                custom wizard page files automatically count as nontemplates,
-                so they don't have to be listed.
+                The `template.properties` file and custom wizard page files
+                automatically count as nontemplates, so they don't have to be listed.
+                Wildcards (`*`, `**`, `?`) are accepted. Note that `*.foo`
+                is interpreted as `./*.foo`; write `**/*.foo` to mean foo files
+                anywhere.
+
+`verbatimFiles` ::
+                Comma-separated or JSON-syntax list of files that need to be
+                copied over into the target project verbatim, even if they have
+                the `.ftl` extension. Wildcards (`*`, `**`, `?`) are accepted.
+                Note that `*.foo` is interpreted as `./*.foo`; write `**/*.foo`
+                to mean foo files anywhere.
 
 The 'New OMNeT++ Project' wizard also recognizes the following options. These
 options can be overridden from custom wizard pages.
@@ -850,32 +876,6 @@ such filtering. A template is regarded as one that requires C++ support
 if the `template.properties` file contains any of the following:
 `sourceFolders=`, `makemakeOptions=`, or `requiresCPlusPlus=true`.
 
-*How can I do arithmetics in templates?*
-
-To print the value of 10*cos(0.2), write `${10*Math.cos(0.2)}`.
-
-*Can I use conditional operators like `cond ? x : y` in C++ ?*
-
-Conditional output: `${iif( 2 > 1,"yes","no")}`
-
-*How can I create lists and how can I iterate over them?*
-
-The words of the sentence `${sentence}`:
-
-  <#list StringUtils.split(sentence) as word>
-     ${word}
-  </#list>
-
-*How can I iterate over hash tables?*
-
-To enumerate the keys and values in a hash table (for example, one returned
-by reading a property file):
-
-  <#assign props = FileUtils.readPropertyFile(filename)>
-  <#list props?keys as key>
-     ${key} ==> ${props.get(key)}
-  </#list>
-
 
 === Appendix A - Widgets in XSWT
 
@@ -1282,12 +1282,14 @@ void/null problem.
 
 The following Java classes are available during template processing:
 
-  Math::		    java.lang.Math
+  Math::            java.lang.Math
   StringUtils::     org.apache.commons.lang.StringUtils
-  CollectionUtils::	org.apache.commons.lang.CollectionUtils
+  CollectionUtils:: org.apache.commons.lang.CollectionUtils
   WordUtils::       org.apache.commons.lang.CollectionUtils
   FileUtils::       see below for documentation
+  NedUtils::        see below for documentation
   IDEUtils::        see below for documentation
+  ProcessUtils::    see below for documentation
   LangUtils::       see below for documentation
 
 ==== Math
@@ -1653,21 +1655,3 @@ list are optional.
 Finds the given executable in the path, and returns it with full path.
 If not found, it returns the original string.
 
-
-TODO document what are the variables nedResources and msgResources; write a few examples about their usage
-
-TODO document glob patterns in verbatimFiles etc
-
-TODO show how to write templates that are suitable for more than one wizard.
-
-TODO check: BeanWrapper cannot access inherited methods? (e.g. toString())
-
-TODO tutorial: XSWT, FTL, how to edit stuff; how to use Java classes (new widgets in XSWT,
-JARs in the templates)
-
-TODO add a little nutshell XSWT tutorial!
-
-TODO also some minimal FreeMarker tutorial (variables are ${}, there is <#if>,
-  <#list>; and there's lots more, see the manual and/or the provided examples
-
-TODO document export/import wizards
