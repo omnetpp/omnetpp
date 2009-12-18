@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <label text="This wizard generates a random graph. The algorithm is provided in a jar file with source, so if you clone this wizard (File -&gt; New -&gt; Wizard), you can improve or replace it." x:style="WRAP">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+
+    <group text="Size">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label text="Number of nodes:"/>
+        <spinner x:id="numNodes" x:style="BORDER" maximum="1000" increment="10">
+          <layoutData x:class="GridData" widthHint="50"/>
+        </spinner>
+    
+        <label text="Number of links:"/>
+        <spinner x:id="numLinks" x:style="BORDER" maximum="10000" increment="10">
+          <layoutData x:class="GridData" widthHint="50"/>
+        </spinner>
+
+        <label text="Note: the wizard generates a connected graph, so the number of links must be at least the number of nodes minus one." x:style="WRAP">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </label>
+    
+      </x:children>
+    </group>  
+
+    <group text="Parameters">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label text="RNG seed:"/>
+        <spinner x:id="seed" x:style="BORDER">
+          <layoutData x:class="GridData" widthHint="50"/>
+        </spinner>
+    
+        <label text="P1 (affects node degrees):"/>
+        <scale x:id="param1Times100" minimum="1" maximum="500"/>
+    
+        <label text="P2 (affects link span):"/>
+        <scale x:id="param2Times100" minimum="1" maximum="500"/>
+
+      </x:children>
+    </group>  
+
+  </x:children>
+</xswt>

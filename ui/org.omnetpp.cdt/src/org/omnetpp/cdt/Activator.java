@@ -10,6 +10,7 @@ package org.omnetpp.cdt;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -26,7 +27,6 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.cdt.cache.DependencyCache;
-import org.omnetpp.cdt.wizard.ProjectTemplateStore;
 import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
 
@@ -42,8 +42,6 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
 
     // The shared instance
     private static Activator plugin;
-
-    private ProjectTemplateStore projectTemplateStore;
 
     /**
      * The constructor
@@ -97,7 +95,8 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     }
 
     public static CoreException wrapIntoCoreException(Throwable exception) {
-        return wrapIntoCoreException(exception.getMessage(), exception);
+        String msg = StringUtils.defaultIfEmpty(exception.getMessage(), exception.getClass().getSimpleName());
+        return wrapIntoCoreException(msg, exception);
     }
 
     public static CoreException wrapIntoCoreException(String message, Throwable exception) {
@@ -187,12 +186,6 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
 
     public static DependencyCache getDependencyCache() {
         return getDefault().dependencyCache;
-    }
-
-    public static ProjectTemplateStore getProjectTemplateStore() {
-        if (getDefault().projectTemplateStore == null)
-            getDefault().projectTemplateStore = new ProjectTemplateStore();
-        return getDefault().projectTemplateStore;
     }
 
     /**

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+	<import xmlns="http://sweet_swt.sf.net/xswt">
+		<package name="java.lang"/>
+		<package name="org.eclipse.swt.widgets"/>
+		<package name="org.eclipse.swt.layout"/>
+	</import>
+	<x:children>
+		<composite>
+			<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+			<layout x:class="gridLayout" marginHeight="0" marginWidth="0"/>
+			<x:children>
+				<label text="Java Editor settingx:"/>
+				<tabFolder>
+					<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+					<x:children>
+					
+						<composite x:id="appearance">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<label text="Displayed &amp;tab width:"/>
+								<text x:style="BORDER" text="4" textLimit="3"><layoutData x:class="gridData" widthHint="20"/></text>
+								<label text="Print margin col&amp;umn:"/>
+								<text x:style="BORDER" text="80" textLimit="3"><layoutData x:class="gridData" widthHint="20"/></text>
+								<button x:style="CHECK" text="Synchroni&amp;ze outline selection on cursor move (editor must be reopened)"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button selection="true" x:style="CHECK" text="Show overview &amp;ruler"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button x:style="CHECK" text="Show lin&amp;e numbers"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button selection="true" x:style="CHECK" text="Highlight &amp;matching brackets"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button selection="true" x:style="CHECK" text="Hi&amp;ghlight current line"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button x:style="CHECK" text="Sho&amp;w print margin"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<composite><layoutData x:class="gridData" heightHint="5"/></composite>
+								<composite>
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="2"/>
+									<layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="2"/>
+									<x:children>						
+										<label text="Appearance color optionx:"><layoutData x:class="gridData" horizontalSpan="2"/></label>							
+										<list selection="0" x:style="BORDER|SINGLE">
+											<layoutData x:class="gridData" heightHint="100" widthHint="220"/>
+											<!-- x:p0 specifies the 0th constructor argument for the String passed to add() (ie: the string's value). -->
+											<add x:p0="Line number foreground"/>
+											<add x:p0="Matching brackets highlight"/>
+											<add x:p0="Current line highlight"/>
+											<add x:p0="Print margin"/>
+											<add x:p0="Find scope"/>
+											<add x:p0="Linked position"/>
+											<add x:p0="Link"/>
+										</list>
+										<composite>							
+											<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.BEGINNING"/>
+											<layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="2"/>
+											<x:children>
+												<label text="C&amp;olor:"/>
+												<button><layoutData x:class="gridData" widthHint="40"/></button>
+											</x:children>
+										</composite>
+									</x:children>
+								</composite>				
+							</x:children>
+						</composite>
+						<tabItem text="Appeara&amp;nce" control="appearance"/>
+
+						<composite x:id="syntax">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="2"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>						
+								<group text="Background color:">
+									<layoutData x:class="gridData"/>
+									<layout x:class="gridLayout" numColumns="3"/>
+									<x:children>
+										<button selection="true" x:style="RADIO" text="S&amp;ystem default"><layoutData x:class="gridData" verticalAlignment="GridData.BEGINNING"/></button>
+										<button x:style="RADIO" text="C&amp;ustom:"><layoutData x:class="gridData" verticalAlignment="GridData.BEGINNING"/></button>
+										<button><layoutData x:class="gridData" widthHint="40"/></button>
+									</x:children>
+								</group>
+								<composite><layoutData x:class="gridData" heightHint="0" widthHint="0"/></composite>
+								<label text="Fo&amp;reground:"><layoutData x:class="gridData" horizontalSpan="2"/></label>							
+								<list x:style="BORDER|SINGLE">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+									<add x:p0="Multi-line comment"/>
+									<add x:p0="Single-line comment"/>
+									<add x:p0="Keywords"/>
+									<add x:p0="Strings"/>
+									<add x:p0="Others"/>
+									<add x:p0="Task Tags"/>
+									<add x:p0="Javadoc keywords"/>
+									<add x:p0="Javadoc HTML tags"/>
+									<add x:p0="Javadoc links"/>
+									<add x:p0="Javadoc others"/>
+								</list>							
+								<composite>							
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.BEGINNING"/>
+									<layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="2"/>
+									<x:children>
+										<label text="C&amp;olor:"/>
+										<button><layoutData x:class="gridData" widthHint="40"/></button>
+										<button x:style="CHECK" text="&amp;Bold"><layoutData x:class="gridData" horizontalSpan="2"/></button>										
+									</x:children>
+								</composite>
+								<label text="Preview:"><layoutData x:class="gridData" horizontalSpan="2"/></label>										
+								<text x:style="BORDER"><layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="2" verticalAlignment="GridData.FILL"/></text>	
+							</x:children>
+						</composite>		
+						<tabItem text="Synta&amp;x" control="syntax"/>
+
+						<composite x:id="code_assist">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<composite>
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="2"/>
+									<layout x:class="gridLayout" marginWidth="0" numColumns="2"/>
+									<x:children>
+										<button selection="true" x:style="RADIO" text="Completion inser&amp;ts"/>
+										<button x:style="RADIO" text="Completion over&amp;writes"/>
+									</x:children>
+								</composite>
+								<button selection="true" x:style="CHECK" text="Insert single &amp;proposals automatically"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button selection="true" x:style="CHECK" text="Show only proposals &amp;visible in the invocation context"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button x:style="CHECK" text="Present proposals in a&amp;lphabetical order"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button selection="true" x:style="CHECK" text="Automatically add import instead of &amp;qualified name"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button x:style="CHECK" text="&amp;Fill argument names on method completion"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button enabled="false" selection="true" x:style="CHECK" text="&amp;Guess filled argument names"><layoutData x:class="gridData" horizontalIndent="20"/></button>
+								<button selection="true" x:style="CHECK" text="&amp;Enable auto activation"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<label text="Auto activation dela&amp;y:"/>
+								<text x:style="BORDER" text="500" textLimit="4"><layoutData x:class="gridData" widthHint="30"/></text>
+								<label text="Auto activation &amp;triggers for Java:"/>
+								<text x:style="BORDER" text="." textLimit="4"><layoutData x:class="gridData" widthHint="30"/></text>
+								<label text="Auto activation triggers for &amp;Javadoc:"/>
+								<text x:style="BORDER" text="@" textLimit="4"><layoutData x:class="gridData" widthHint="30"/></text>
+								<composite>
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="2"/>
+									<layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="2"/>
+									<x:children>						
+										<label text="Code assist colo&amp;r optionx:"><layoutData x:class="gridData" horizontalSpan="2"/></label>							
+										<list x:style="BORDER|SINGLE">
+											<layoutData x:class="gridData" heightHint="100" widthHint="180"/>
+											<add x:p0="Completion proposal background"/>
+											<add x:p0="Completion proposal foreground"/>
+											<add x:p0="Method parameter background"/>
+											<add x:p0="Method parameter foreground"/>
+											<add x:p0="Completion overwrite background"/>
+											<add x:p0="Completion overwrite foreground"/>
+										</list>							
+										<composite>							
+											<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.BEGINNING"/>
+											<layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="2"/>
+											<x:children>
+												<label text="C&amp;olor:"/>
+												<button><layoutData x:class="gridData" widthHint="40"/></button>
+											</x:children>
+										</composite>
+									</x:children>
+								</composite>				
+							</x:children>
+						</composite>
+						<tabItem text="&amp;Code Assist" control="code_assist"/>
+
+						<composite x:id="annotations">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<button selection="true" x:style="CHECK" text="Analyze annotations &amp;while typing"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<button selection="true" x:style="CHECK" text="Indicate annotations solvable with &amp;Quick Fix in vertical ruler"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<composite><layoutData x:class="gridData" heightHint="5"/></composite>
+								<composite>
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="2"/>
+									<layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="2"/>
+									<x:children>						
+										<label text="Annotation &amp;presentation:"><layoutData x:class="gridData" horizontalSpan="2"/></label>							
+										<list x:style="BORDER|SINGLE">
+											<layoutData x:class="gridData" heightHint="100" widthHint="150"/>
+											<add x:p0="Errors"/>
+											<add x:p0="Warnings"/>
+											<add x:p0="Tasks"/>
+											<add x:p0="Search Results"/>
+											<add x:p0="Bookmarks"/>
+											<add x:p0="Others"/>
+										</list>							
+										<composite>							
+											<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.BEGINNING"/>
+											<layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="2"/>
+											<x:children>
+												<button selection="true" x:style="CHECK" text="Show in &amp;text"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+												<button selection="true" x:style="CHECK" text="Show in overview &amp;ruler"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+												<label text="C&amp;olor:"/>
+												<button><layoutData x:class="gridData" widthHint="40"/></button>
+											</x:children>
+										</composite>
+									</x:children>
+								</composite>				
+							</x:children>
+						</composite>
+						<tabItem text="Annotation&amp;s" control="annotations"/>
+
+						<composite x:id="typing">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout"/>
+							<x:children>
+								<button selection="true" x:style="CHECK" text="S&amp;mart cursor positioning at line start and end"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<composite><layoutData x:class="gridData" heightHint="5"/></composite>
+								<group text="Select options for automatic text modifications">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout"/>
+									<x:children>
+										<button selection="true" x:style="CHECK" text="&amp;Wrap Java strings"/>
+										<button selection="true" x:style="CHECK" text="Pasting fo&amp;r correct indentation"/>
+										<button x:style="CHECK" text="Ins&amp;ert space for tabs (see Code Formatter preference page)"/>
+										<button selection="true" x:style="CHECK" text="Close strin&amp;gs"/>
+										<button selection="true" x:style="CHECK" text="Close &amp;brackets and parenthesis"/>
+										<button selection="true" x:style="CHECK" text="Cl&amp;ose braces"/>
+										<button selection="true" x:style="CHECK" text="Close Java&amp;docs and comments"/>
+										<button selection="true" x:style="CHECK" text="Add Javadoc &amp;tags"><layoutData x:class="gridData" horizontalIndent="20"/></button>
+									</x:children>
+								</group>	
+							</x:children>
+						</composite>
+						<tabItem text="T&amp;yping" control="typing"/>
+
+						<composite x:id="hovers">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="2"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>						
+								<label text="&amp;Hover key modifier preferencex:"><layoutData x:class="gridData" horizontalSpan="2"/></label>							
+								<list x:style="BORDER|SINGLE">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+									<add x:p0="Best Match"/>
+									<add x:p0="Javadoc"/>
+									<add x:p0="Problems"/>
+									<add x:p0="Source"/>
+									<add x:p0="Variable Values"/>
+								</list>							
+								<composite>							
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.BEGINNING"/>
+									<layout x:class="gridLayout" marginHeight="0" marginWidth="0" numColumns="2"/>
+									<x:children>
+										<button selection="true" x:style="CHECK" text="&amp;Enabled"><layoutData x:class="gridData" horizontalSpan="2"/></button>										
+										<label text="Key &amp;Modifier:"></label>
+										<text x:style="BORDER"><layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/></text>
+										<label text="Description:"><layoutData x:class="gridData" horizontalSpan="2"/></label>
+										<text x:style="BORDER|READ_ONLY" text=""><layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" heightHint="60" horizontalAlignment="GridData.FILL" horizontalSpan="2" verticalAlignment="GridData.FILL"/></text>
+									</x:children>
+								</composite>
+							</x:children>
+						</composite>		
+						<tabItem text="Ho&amp;vers" control="hovers"/>
+
+						<composite x:id="navigation">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<button selection="true" x:style="CHECK" text="S&amp;upport hyperlink style navigation for &quot;Open Declaration&quot;"><layoutData x:class="gridData" horizontalSpan="2"/></button>
+								<label text="Hyperlink style navigation key &amp;modifier:"/>
+								<text x:style="BORDER" text="Ctrl"><layoutData x:class="gridData" widthHint="100"/></text>
+							</x:children>
+						</composite>
+						<tabItem text="Nav&amp;igation" control="navigation"/>
+
+					</x:children>
+				</tabFolder>
+			</x:children>
+		</composite>
+	</x:children>
+</xswt>
+

@@ -1,0 +1,17 @@
+<#noparse>
+
+<#-- RUNNING AN EXTERNAL PROGRAM -->
+
+<#assign executable = "perl">
+<#assign argvector = StringUtils.split("-v", " ")>
+
+<#assign result = ProcessUtils.exec(executable, argvector)>
+Result of running ${executable} ${argvector}
+
+exit code: ${result.exitCode()}
+
+stderr: >>>${result.stderr()}<<<
+
+stdout: >>>${result.stdout()}<<<
+
+</#noparse>

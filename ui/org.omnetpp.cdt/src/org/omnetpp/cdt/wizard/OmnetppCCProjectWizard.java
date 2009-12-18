@@ -1,18 +1,10 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 package org.omnetpp.cdt.wizard;
 
-import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.ui.CUIPlugin;
@@ -20,58 +12,47 @@ import org.eclipse.cdt.ui.newui.UIMessages;
 import org.eclipse.cdt.ui.wizards.CDTCommonProjectWizard;
 import org.eclipse.cdt.ui.wizards.CDTMainWizardPage;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.ui.GenericTreeContentProvider;
-import org.omnetpp.common.ui.GenericTreeNode;
-import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.IContentTemplate;
+import org.omnetpp.common.wizard.ICustomWizardPage;
+import org.omnetpp.common.wizard.TemplateSelectionPage;
+import org.omnetpp.common.wizard.XSWTDataBinding;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
-
+import org.osgi.framework.Bundle;
 
 /**
- * Like OmnetppNewProjectWizard, but continues in a customized
- * "New CDT Project" Wizard.
+ * "New OMNeT++ Project" wizard, with C++ support. After the template pages
+ * (IContentTemplate), it continues in a customized "New CDT Project" Wizard.
  *
  * @author Andras
  */
 @SuppressWarnings("restriction")
-public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements INewWizard {
-    public static final Image ICON_CATEGORY = Activator.getCachedImage("icons/full/obj16/templatecategory.gif");
-
+public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
     private CCProjectWizard nestedWizard;
-    private TemplateSelectionPage templatePage;
 
     public class NewOmnetppCppProjectCreationPage extends NewOmnetppProjectCreationPage {
         private Button supportCppButton;
@@ -98,102 +79,10 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             });
         }
 
-        public boolean supportCpp() {
+        public boolean withCplusplusSupport() {
             return supportCppButton.getSelection();
         }
 
-        @Override
-        public IWizardPage getNextPage() {
-            // Note: when template page needs to be skipped, use this instead:
-            // return supportCpp() ? nestedWizard.getStartingPage() : null;
-            templatePage.updateTemplateList();  // obey supportsCpp() option
-            return templatePage;
-        }
-    }
-
-
-    public class TemplateSelectionPage extends WizardPage {
-        private TreeViewer treeViewer;
-
-        protected TemplateSelectionPage() {
-            super("OmnetppTemplateSelectionPage");
-            setTitle("Project Contents");
-            setDescription("Choose initial project contents");
-        }
-
-        public void createControl(Composite parent) {
-            Composite composite = new Composite(parent, SWT.NONE);
-            composite.setLayout(new GridLayout(1,false));
-            setControl(composite);
-
-            // create tree and label
-            Label label = new Label(composite, SWT.NONE);
-            label.setText("Select template:");
-            treeViewer = new TreeViewer(composite, SWT.BORDER);
-            treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-            treeViewer.setLabelProvider(new LabelProvider() {
-                @Override
-                public String getText(Object element) {
-                    element = ((GenericTreeNode)element).getPayload();
-                    return element instanceof IProjectTemplate ? ((IProjectTemplate)element).getName() : element.toString();
-                }
-                @Override
-                public Image getImage(Object element) {
-                    element = ((GenericTreeNode)element).getPayload();
-                    return element instanceof IProjectTemplate ? ((IProjectTemplate)element).getImage() : ICON_CATEGORY;
-                }
-            });
-            treeViewer.setContentProvider(new GenericTreeContentProvider());
-
-            // show the descriptions in a tooltip
-            new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
-                public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-                    Item item = treeViewer.getTree().getItem(new Point(x,y));
-                    Object element = item==null ? null : item.getData();
-                    element = (element instanceof GenericTreeNode) ? ((GenericTreeNode)element).getPayload() : null;
-                    if (element instanceof IProjectTemplate) {
-                        String description = ((IProjectTemplate)element).getDescription();
-                        if (description != null)
-                            return HoverSupport.addHTMLStyleSheet(description);
-                    }
-                    return null;
-                }
-            });
-
-            // always complete
-            setPageComplete(true);
-        }
-
-        public void updateTemplateList() {
-            // categorize and add templates into the tree
-            // NOTE: gets called from first page's getNextPage() method
-            ProjectTemplateStore templateStore = Activator.getProjectTemplateStore();
-            List<IProjectTemplate> templates = supportCpp() ? templateStore.getCppTemplates() : templateStore.getNoncppTemplates();
-            GenericTreeNode root = new GenericTreeNode("root");
-            Set<String> categories = new LinkedHashSet<String>();
-            for (IProjectTemplate template : templates)
-                categories.add(template.getCategory());
-            for (String category : categories) {
-                GenericTreeNode categoryNode = new GenericTreeNode(category);
-                root.addChild(categoryNode);
-                for (IProjectTemplate template : templates)
-                    if (category.equals(template.getCategory()))
-                        categoryNode.addChild(new GenericTreeNode(template));
-            }
-            treeViewer.setInput(root);
-            treeViewer.expandAll();
-        }
-
-        @Override
-        public IWizardPage getNextPage() {
-            return supportCpp() ? nestedWizard.getStartingPage() : null;
-        }
-
-        public IProjectTemplate getSelectedTemplate() {
-            Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-            element = element == null ? null : ((GenericTreeNode)element).getPayload();
-            return (element instanceof IProjectTemplate) ? (IProjectTemplate)element : null;
-        }
     }
 
     /**
@@ -235,29 +124,29 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             super.setVisible(visible);
 
             // copy project name and location from the project page
-            String projectName = projectPage.getProjectName();
-            boolean useDefaultLocation = projectPage.useDefaults();
-            IPath location = projectPage.getLocationPath();
+            String projectName = getProjectCreationPage().getProjectName();
+            boolean useDefaultLocation = getProjectCreationPage().useDefaults();
+            IPath location = getProjectCreationPage().getLocationPath();
             getProjectNameField().setText(projectName);
             ((Button)ReflectionUtils.getFieldValue(getLocationArea(), "useDefaultsButton")).setSelection(useDefaultLocation);
             if (!useDefaultLocation)
                 ((Text)ReflectionUtils.getFieldValue(getLocationArea(), "locationPathField")).setText(location.toString());
         }
 
-		public ProjectContentsLocationArea getLocationArea() {
-        	return (ProjectContentsLocationArea)ReflectionUtils.getFieldValue(this, "locationArea");
+        public ProjectContentsLocationArea getLocationArea() {
+            return (ProjectContentsLocationArea)ReflectionUtils.getFieldValue(this, "locationArea");
         }
 
         public Text getProjectNameField() {
-        	return (Text)ReflectionUtils.getFieldValue(this, "projectNameField");
+            return (Text)ReflectionUtils.getFieldValue(this, "projectNameField");
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         public List<EntryDescriptor> filterItems(List items) {
             ArrayList<EntryDescriptor> newItems = new ArrayList<EntryDescriptor>();
             for (Object o : items) {
-            	EntryDescriptor entry = (EntryDescriptor)o;
+                EntryDescriptor entry = (EntryDescriptor)o;
                 if (entry.getId().startsWith("org.omnetpp"))
                     newItems.add(entry);
             }
@@ -292,6 +181,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         }
     }
 
+    public OmnetppCCProjectWizard() {
+    }
+
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         nestedWizard = new CCProjectWizard();
@@ -302,66 +194,104 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     @Override
     public void addPages() {
-        addPage(projectPage = new NewOmnetppCppProjectCreationPage());
-        addPage(templatePage = new TemplateSelectionPage());
-        nestedWizard.addPages();
+        super.addPages();
+        nestedWizard.addPages();  // note: this actually adds pages to the *nested* wizard, not this one!
+    }
+
+    @Override
+    protected TemplateSelectionPage createTemplateSelectionPage() {
+        // we have a special template type and special template filtering, so 
+        // need to override a few methods in TemplateSelectionPage
+        return new TemplateSelectionPage(getWizardType(), true) {
+            @Override
+            protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
+                return new FileBasedProjectTemplate(folder);
+            }
+            
+            @Override
+            protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
+                return new FileBasedProjectTemplate(templateUrl, bundleOfTemplate);
+            }
+
+            @Override
+            protected boolean isSuitableTemplate(IContentTemplate template) {
+                if (!withCplusplusSupport()) {
+                    // for projects without C++, don't show templates that require C++
+                    String reqCppSetting = template.getTemplateProperty(FileBasedProjectTemplate.PROP_REQUIRESCPLUSPLUS);
+                    boolean requiresCPluspPlus = 
+                        (!StringUtils.isEmpty(reqCppSetting) && XSWTDataBinding.toBoolean(reqCppSetting)) ||
+                        !StringUtils.isEmpty(template.getTemplateProperty(FileBasedProjectTemplate.PROP_SOURCEFOLDERS)) ||
+                        !StringUtils.isEmpty(template.getTemplateProperty(FileBasedProjectTemplate.PROP_MAKEMAKEOPTIONS));
+                    if (requiresCPluspPlus)
+                        return false;
+                }
+                return super.isSuitableTemplate(template);
+            }
+        };
+    }
+    
+    @Override
+    protected WizardNewProjectCreationPage createProjectCreationPage() {
+        WizardNewProjectCreationPage page = new NewOmnetppCppProjectCreationPage(); // custom one, with the "[] support C++ development" checkbox
+        page.setTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
+        setWindowTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
+        return page;  
+    }
+
+    @Override
+    protected IWizardPage getFirstExtraPage() {
+        return withCplusplusSupport() ? nestedWizard.getStartingPage() : null;
+    }
+
+    @Override
+    protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
+        CreationContext context = super.createContext(selectedTemplate, folder);
+        context.getVariables().put("withCplusplusSupport", withCplusplusSupport());
+        return context;
+    }
+
+    public boolean withCplusplusSupport() {
+        return ((NewOmnetppCppProjectCreationPage)getProjectCreationPage()).withCplusplusSupport();
     }
 
     @Override
     public boolean performFinish() {
-        // if we are on the first page, the CDT wizard is not yet created and its perform finish
-        // will not be called, so we have to do it manually
-        final boolean withCPlusPlus = supportCpp();
-        if (getContainer().getCurrentPage() == projectPage || getContainer().getCurrentPage() == templatePage) {
-            if (withCPlusPlus) {
-                // show it manually (and create) and do it
-                getContainer().showPage(nestedWizard.getStartingPage());
-                nestedWizard.performFinish();
-            }
-            else {
-                // just call the plain OMNeT++ wizard
-                super.performFinish();
-            }
+        // Note: this is a small hack to enforce that the nested CC wizard gets invoked
+        // first (to create the project), and then us, regardless on which page the user
+        // clicked Finish. This code heavily relies on the particular implementation of
+        // WizardDialog.finishPressed(), and may need to be revised if that changes.
+        IWizardPage finishingPage = getContainer().getCurrentPage();
+        if (withCplusplusSupport() && finishingPage.getWizard() == this) {
+            if (finishingPage instanceof ICustomWizardPage)
+                ((ICustomWizardPage)finishingPage).extractPageContent(getContext()); // save page content first
+            getContainer().showPage(nestedWizard.getStartingPage());
+            return nestedWizard.performFinish();
         }
-
-        // define the operation for configuring the new project
-        final IProject project = projectPage.getProjectHandle();
-        final IProjectTemplate template = templatePage.getSelectedTemplate();
-        WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
-            protected void execute(IProgressMonitor monitor) throws CoreException {
-                // add OMNeT++ nature
-                ProjectUtils.addOmnetppNature(project, monitor);
-
-                // if C++ project, add a default .buildspec file (templates may overwrite it)
-                if (withCPlusPlus)
-                    BuildSpecification.createInitial(project).save();
-
-                // apply template: this may create files, set project properties, configure the CDT project, etc.
-                if (template != null)
-                    template.configure(project, null, monitor);
-            }
-        };
-
-        // run the operation
-        try {
-            getContainer().run(true, true, op);
-        }
-        catch (InterruptedException e) {
-            return false;
-        }
-        catch (InvocationTargetException e) {
-            Throwable t = e.getTargetException();
-            Activator.logError(t);
-            MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
-            return false;
-        }
-        return true;
+        return super.performFinish();
     }
 
-    public boolean supportCpp() {
-        return ((NewOmnetppCppProjectCreationPage)projectPage).supportCpp();
+    @Override
+    protected boolean createNewProject() {
+        if (!withCplusplusSupport()) {
+            // just delegate to the C++-less New OMNeT++ Project wizard
+            return super.createNewProject();
+        }
+        else {
+            // add omnetpp nature, initial buildspec, etc.
+            IProject project = getProjectCreationPage().getProjectHandle();
+            try {
+                // add the project nature after now, after project creation, so that builders
+                // get properly configured (Project.create() doesn't do it).
+                ProjectUtils.addOmnetppNature(project, null);
+
+                // create initial buildspec file. it may get overwritten by the template
+                BuildSpecification.createInitial(project).save();
+            }
+            catch (CoreException e) {
+                Activator.logError(e);
+            }
+            return true;
+        }
     }
 
 }
-
-

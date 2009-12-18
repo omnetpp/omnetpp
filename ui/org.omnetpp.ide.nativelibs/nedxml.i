@@ -16,6 +16,7 @@
 #include "nedparser.h"
 #include "ned2generator.h"
 #include "ned1generator.h"
+#include "xmlgenerator.h"
 #include "nedelements.h"
 
 #include "neddtdvalidator.h"
@@ -46,6 +47,7 @@ namespace std {
 %newobject NEDParser::parseNEDText(const char *);
 %newobject NEDParser::parseNEDFile(const char *);
 %newobject NEDParser::parseNEDExpression(const char *);
+%newobject createElementWithTag(int tagcode, NEDElement *parent);
 
 // These are only public for technical reasons, shouldn't be wrapped
 %ignore NEDParser::getSource();
@@ -60,6 +62,7 @@ namespace std {
 
 %ignore generateNED1(std::ostream&, NEDElement *, NEDErrorStore *);
 %ignore generateNED2(std::ostream&, NEDElement *, NEDErrorStore *);
+%ignore generateXML(std::ostream&, NEDElement *, bool, int);
 %ignore NEDInternalError;
 
 // XXX for some reason, SWIG doesn't give a s&%$# about the following ignores:
@@ -67,9 +70,9 @@ namespace std {
 %ignore NEDElementStore::add(NEDElement *, int, const char *, ...);
 %ignore NEDGenerator1::generate(std::ostream&, NEDElement *, const char *);
 %ignore NEDGenerator2::generate(std::ostream&, NEDElement *, const char *);
+%ignore NEDXMLGenerator::generate(std::ostream&, NEDElement *);
 
 %ignore ltstr;
-
 
 %ignore  FilesElement;
 %ignore  NedFileElement;
@@ -133,6 +136,7 @@ namespace std {
 %include "nedparser.h"
 %include "ned2generator.h"
 %include "ned1generator.h"
+%include "xmlgenerator.h"
 %include "nedelements.h"
 
 %include "nedvalidator.h"

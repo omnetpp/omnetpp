@@ -254,3 +254,4 @@ public class NullGraphics extends Graphics
 	public void setLineWidthFloat(float width) {
 	}
 }
+

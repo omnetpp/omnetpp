@@ -1,0 +1,17 @@
+<#if !makeSrcAndSimulationsFolders>
+  <#assign srcFolder=".">
+  <#assign simulationsFolder=".">
+</#if>
+
+<#if srcFolder=="">
+  <#assign srcFolder=".">
+</#if>
+
+<#if simulationsFolder=="">
+  <#assign simulationsFolder=".">
+</#if>
+
+<#if srcFolder==simulationsFolder>
+  <#assign simulationsPackage=srcPackage>
+</#if>
+

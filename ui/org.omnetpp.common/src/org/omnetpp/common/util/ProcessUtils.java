@@ -125,12 +125,12 @@ public class ProcessUtils {
                 continue;
             }
 
-            ProcessResult result = new ProcessResult(standardOutput.toString(), standardError.toString(), process.exitValue());
+            ProcessResult result = new ProcessResult(standardOutput.toString(), standardError.toString(), exitValue);
 
             if (exitValue == 0)
                 return result;
             else
-                throw new ExecException(result, "Process exec error for " + command + " : " + standardError.toString());
+                throw new ExecException(result, "Process exec error for " + command + " (exit code " + exitValue + ") : " + standardError.toString());
         }
 
         process.destroy();

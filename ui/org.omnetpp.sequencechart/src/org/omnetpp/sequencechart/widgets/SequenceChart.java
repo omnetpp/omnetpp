@@ -2173,7 +2173,7 @@ public class SequenceChart
 	    paintHasBeenFinished = false;
 
         if (internalErrorHappenedDuringPaint)
-            drawNotificationMessage(gc, "Internal error happend during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
+            drawNotificationMessage(gc, "Internal error happened during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
         else if (eventLogInput.isCanceled())
 	        drawNotificationMessage(gc,
                 "Processing of a long running eventlog operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +

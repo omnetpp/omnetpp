@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <httpLink x:style="WRAP" URL="http://pnml.org">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <text x:p0="This wizard creates a Petri Net model by importing its topology from a <a>Petri Net Markup Language</a> (PNML; ISO standard ISO/IEC-15909) file."/>
+    </httpLink>
+
+    <label x:style="WRAP">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <text x:p0="If you'd like to modify or extend this importer, make a copy
+(File -> New -> Wizard -> Clone Built-in Wizard), and edit it."/>
+    </label>
+
+  </x:children>
+
+</xswt>
+
+
+

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Freemarker Editor"
+            icon="icons/icon.gif"
+            extensions="ftl, fti"
+            contributorClass="freemarker.eclipse.editors.ActionContributor"
+            class="freemarker.eclipse.editors.FreemarkerEditor"
+            id="freemarker.eclipse.editors.FreemarkerEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            extensions="ftl, fti"
+            class="freemarker.eclipse.editors.SetupParticipant">
+      </participant>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="FreeMarker Editor"
+            class="freemarker.eclipse.preferences.OutlinePreferencePage"
+            id="freemarker.eclipse.preferences.OutlinePreferencePage">
+      </page>
+      <page
+            name="Highlighting"
+            category="freemarker.eclipse.preferences.OutlinePreferencePage"
+            class="freemarker.eclipse.preferences.EditorPreferencePage"
+            id="freemarker.eclipse.preferences.EditorPreferencePage">
+      </page>
+   </extension>
+   <extension point="org.eclipse.debug.ui.consoleLineTrackers">
+      <consoleLineTracker 
+            id="freemarker.eclipse.debug.FreemarkerConsoleLineTracker"
+            class="freemarker.eclipse.debug.FreemarkerConsoleLineTracker"
+            processType="java">
+      </consoleLineTracker>
+   </extension>
+
+</plugin>

@@ -1,0 +1,19 @@
+#!/bin/sh
+cd `dirname $0`/../.. 
+export OMNETPP_ROOT=`pwd` 
+export PATH=$OMNETPP_ROOT/bin:$PATH
+if [ "$BUILDID" = "" ]; then
+  # generate our own build identifier   
+  export BUILDID=`date +%y%m%d`-`git describe --tags --long --abbrev=6 --match 'omnetpp*' | awk -F '-g' '{print $2;}'`
+fi
+if [ "$VERSION" = "" ]; then
+  # generate our own build identifier   
+  export VERSION=unknown
+fi
+
+echo Exporting IDE version: $VERSION with buildID: $BUILDID
+
+cd ui/org.omnetpp.product
+ant $what || { echo --- error during compiling/packaging Java IDE parts ---; exit 1;}
+cd $OMNETPP_ROOT
+

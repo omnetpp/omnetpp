@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <httpLink x:text="This wizard will generate a new queueing network model. See <a>Kendall's notation</a> (A/B/C/K/N/D) for additional info about the parameters." x:style="WRAP" URL="http://en.wikipedia.org/wiki/Kendall's_notation">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </httpLink>
+
+    <group text="Basic Parameters ">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="3"/>
+      <x:children>
+
+    <!-- interArrivalTime -->
+    <label text="Interarrival time (A):"/>
+    <text x:id="interArrivalTime" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+	  <setFocus/>
+    </text>
+    <label/>
+
+    <!-- serviceTime -->
+    <label text="Service time (B):"/>
+    <text x:id="serviceTime" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+    <label/>
+
+    <!-- numServers -->
+    <label text="Number of servers (C):"/>
+    <text x:id="numServers" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+    <label text="(Leave empty for infinity)"/>
+
+      </x:children>
+    </group>
+
+    <group text="NED Topology Type">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+    <!-- Static/Dynamic -->
+    <composite>
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+      <layout x:class="GridLayout"/>
+      <x:children>
+        <button x:id="static" text="Static" x:style="RADIO"/>
+        <button x:id="parametric" text="Parametric" x:style="RADIO"/>
+      </x:children>
+    </composite>
+
+    <!-- } -->
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>

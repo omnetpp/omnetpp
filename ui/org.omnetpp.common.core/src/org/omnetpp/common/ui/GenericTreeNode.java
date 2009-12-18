@@ -191,6 +191,16 @@ public class GenericTreeNode {
 		parent = null;
 	}
 
+	public GenericTreeNode findPayload(Object payload) {
+	    if (this.payload==payload || this.payload.equals(payload))
+	        return this;
+	    GenericTreeNode result;
+	    for (GenericTreeNode child : children)
+	        if ((result=child.findPayload(payload)) != null)
+	            return result;
+	    return null;
+	}
+	
 	/**
 	 * Delegates to payload's toString().
 	 */
@@ -210,5 +220,10 @@ public class GenericTreeNode {
 			return true;
 		GenericTreeNode node = (GenericTreeNode)obj;
 		return node.payload==payload || node.payload.equals(payload);
+	}
+	
+	@Override
+	public int hashCode() {
+	    return payload==null ? super.hashCode() : payload.hashCode();
 	}
 }

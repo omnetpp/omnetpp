@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+  <x:children>
+  
+    <label x:style="WRAP" text="This wizard exports a network or a compound module into an XML file.">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+  
+    <label text="Network or compound module to export:"/>
+    <nedTypeChooser x:id="nedType" acceptedTypes="NedTypeChooser.MODULE">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <setFocus/>
+    </nedTypeChooser>
+  
+    <label text="File to export to:"/>
+    <saveAsChooser x:id="fileName">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </saveAsChooser>
+
+    <label x:style="WRAP" text="NOTE: The wizard will export items in the NED definition without any processing. In other words, it has the following limitations: it does not export modules from the potential base class(es); does not expand module vectors, connection 'for' loops and conditions; does not export parameter settings except those explicitly written in the NED declaration.">
+        <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+
+  </x:children>
+</xswt>

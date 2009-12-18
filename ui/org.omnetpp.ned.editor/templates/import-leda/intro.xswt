@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <httpLink x:style="MULTI|READ_ONLY|WRAP" URL="http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <text x:p0="This wizard creates a network by importing its topology from the <a>native file format of the LEDA graph package</a>, which is a simple line-oriented text format containing a node list and an edge list. This importer supports undirected graphs only, and ignores node and edge parameters in the file."/>
+    </httpLink>
+
+    <text x:style="MULTI|READ_ONLY|WRAP">
+        <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <text x:p0="If this importer does not suit your needs, you can make a copy
+(File -> New -> Wizard -> Clone Built-in Wizard) and modify it."/>
+    </text>
+
+  </x:children>
+
+</xswt>
+
+
+

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <group text="NED code">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" numColumns="1"/>
+       <x:children>
+         <button x:id="parametricNED" text="Parametric topology" x:style="RADIO"/>
+         <button x:id="staticNED" text="Static topology" x:style="RADIO"/>
+       </x:children>
+    </group>
+
+    <group text="Options">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+        <button x:id="generateCoordinates" x:style="CHECK" text="Generate coordinates (not available for all topologies)"/>
+      </x:children>
+    </group>
+
+    <group text="Gates">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" numColumns="1"/>
+       <x:children>
+         <button x:id="namedGates" text="Named scalar gates where possible" x:style="RADIO"/>
+         <button x:id="gateVectorWithIndices" text="Vector gates with indices (g[i])" x:style="RADIO"/>
+         <button x:id="gateVectorWithPlusPlus" text="Vector gates with autoexpand (g++)" x:style="RADIO"/>
+       </x:children>
+    </group>
+
+  </x:children>
+</xswt>

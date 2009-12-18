@@ -1,44 +1,49 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 package org.omnetpp.msg.editor.wizard;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkbench;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.IContentTemplate;
+import org.omnetpp.common.wizard.TemplateBasedNewFileWizard;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
- * Wizard for msg files. Its role is to create a new file
- * resource in the provided container. If the container resource
- * (a folder or a project) is selected in the workspace
- * when the wizard is opened, it will accept it as the target
- * container. The wizard creates one file with the extension
- * "msg".
+ * "New Msg File" wizard
+ *
+ * @author Andras
  */
-public class NewMsgFileWizard extends Wizard implements INewWizard {
-    private NewMsgFileWizardPage1 page1 = null;
-    private IStructuredSelection selection;
-    private IWorkbench workbench;
+public class NewMsgFileWizard extends TemplateBasedNewFileWizard {
+
+    public NewMsgFileWizard() {
+        setWizardType("msgfile");
+    }
 
     @Override
     public void addPages() {
-        page1 = new NewMsgFileWizardPage1(workbench, selection);
-        addPage(page1);
-    }
+        super.addPages();
+        setWindowTitle(isImporting() ? "Import Message File" : "New Message File");
 
-    public void init(IWorkbench aWorkbench, IStructuredSelection currentSelection) {
-        workbench = aWorkbench;
-        selection = currentSelection;
-        setWindowTitle("New Msg File");
+        WizardNewFileCreationPage firstPage = getFirstPage();
+
+        firstPage.setTitle(isImporting() ? "Import Message File" : "New Message File");
+        firstPage.setDescription("This wizard allows you to " + (isImporting() ? "import" : "create") + " a new OMNeT++ message definition file");
+        firstPage.setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newmsgfile_wiz.png"));
+
+        firstPage.setFileExtension("msg");
+        firstPage.setFileName("untitled.msg");
     }
 
     @Override
-    public boolean performFinish() {
-        return page1.finish();
+    protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
+        CreationContext context = super.createContext(selectedTemplate, folder);
+
+        // namespace
+        String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
+        context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
+
+        return context;
     }
 }

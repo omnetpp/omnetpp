@@ -32,6 +32,13 @@ NAMESPACE_BEGIN
 NEDXML_API void generateXML(std::ostream& out, NEDElement *tree, bool srcloc, int indentsize = 4);
 
 /**
+ * Simple front-end to NEDXMLGenerator.
+ *
+ * @ingroup XMLGenerator
+ */
+NEDXML_API std::string generateXML(NEDElement *tree, bool srcloc, int indentsize = 4);
+
+/**
  * Serializes a NED object tree in XML format.
  *
  * @ingroup XMLGenerator
@@ -70,13 +77,20 @@ class NEDXML_API NEDXMLGenerator
     virtual void setIndentSize(int indentsize);
 
     /**
-     * Serialize the object tree as XML. The XML declaration will be:
+     * Serialize the object tree as XML to the given output stream.
+     * The XML declaration will be:
      * <pre>
      * <?xml version="1.0"?>
      * </pre>
      * I.e. unspecified encoding, and no document type will be included.
      */
     virtual void generate(std::ostream& out, NEDElement *tree);
+
+    /**
+     * Serialize the object tree into XML, and return the result as string.
+     */
+    virtual std::string generate(NEDElement *tree);
+
 };
 
 NAMESPACE_END

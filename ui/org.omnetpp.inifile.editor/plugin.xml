@@ -22,7 +22,7 @@
             class="org.omnetpp.inifile.editor.wizards.NewInifileWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/newinifile.png"
-            id="org.omnetpp.inifile.editor.wizards.NewInifileWizard"
+            id="org.omnetpp.inifile.editor.wizards.NewIniFile"
             name="Initialization File (ini)"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
 
@@ -38,7 +38,7 @@
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.inifile.editor.wizards.NewInifileWizard">
+                 wizardId="org.omnetpp.inifile.editor.wizards.NewIniFile">
               <enablement></enablement>
            </commonWizard>
   </extension>
@@ -127,6 +127,12 @@
             name="Editing INI File"
             parentId="org.eclipse.ui.textEditorScope">
       </context>
+   </extension>
+   <extension
+         point="org.omnetpp.common.wizard.contenttemplates">
+      <plugin
+            pluginId="org.omnetpp.inifile.editor">
+      </plugin>
    </extension>
 
 </plugin>

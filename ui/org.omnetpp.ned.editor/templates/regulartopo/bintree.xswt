@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+    <group text="Tree">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        <layout x:class="GridLayout" numColumns="2"/>
+        <x:children>
+         <label text="Number of levels:"/>
+         <spinner x:id="treeLevels" minimum="2" maximum="10" x:style="BORDER"/>
+       </x:children>
+    </group>
+  </x:children>
+</xswt>

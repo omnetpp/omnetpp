@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+  <x:children>
+
+    <label text="Enter the names of toplevel folders that will contain NED files. The new wizard will mark them as NED Source Folders (see Project Properties dialog). Example: src, simulations" x:style="WRAP">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+    <label text="NED source folders (comma-separated list):"/>
+    <text x:id="wizardNedSourceFolders" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+    <label x:style="SEPARATOR|HORIZONTAL">
+      <layoutData x:class="GridData" heightHint="20" widthHint="300" horizontalSpan="2" horizontalAlignment="CENTER" grabExcessHorizontalSpace="true"/>
+    </label>
+
+    <label text="Enter the names of toplevel folders that will contain C++ files. The wizard will mark these folders as Source Locations in the C/C++ configuration of the project (see Project Properties dialog). It is recommended that you use the same folders as above (or a subset of them), because by convention simple module NED files are in the same directory tree as their corresponding C++ implementations. Example: src" x:style="WRAP">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </label>
+    <label text="C++ source folders (comma-separated list):"/>
+    <text x:id="wizardSourceFolders" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+
+  </x:children>
+</xswt>

@@ -30,13 +30,23 @@ public interface IConstants {
 	public static final String VECTORBROWSER_VIEW_ID = "org.omnetpp.scave.VectorBrowserView";
 	public static final String SEQUENCECHART_VIEW_ID = "org.omnetpp.sequencechart.editors.SequenceChartView";
 	public static final String EVENTLOG_VIEW_ID = "org.omnetpp.eventlogtable.editors.EventLogTableView";
-
 	public static final String PROJECT_EXPLORER_ID = "org.eclipse.ui.navigator.ProjectExplorer"; // ID missing from the Eclipse API
 
     // wizards
-    public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.simplemodule";
-    public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.compoundmodule";
-    public static final String NEW_NETWORK_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.network";
+	public static final String NEW_NEDFILE_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewNedFile";
+	public static final String NEW_MSGFILE_WIZARD_ID = "org.omnetpp.msg.editor.wizards.NewMsgFile";
+	public static final String NEW_INIFILE_WIZARD_ID = "org.omnetpp.inifile.editor.wizards.NewIniFile";
+    public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewSimpleModule";
+    public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewCompoundModule";
+    public static final String NEW_NETWORK_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewNetwork";
+    public static final String NEW_SIMULATION_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewSimulation";
+    public static final String NEW_WIZARD_WIZARD_ID = "org.omnetpp.common.wizards.NewWizard";
+    public static final String NEW_SCAVEFILE_WIZARD_ID = "org.omnetpp.scave.wizards.NewScaveFile";
+    public static final String OMNETPP_EXPORT_WIZARD_ID = "org.omnetpp.common.wizards.ExportWizard";
+    public static final String OMNETPP_IMPORT_WIZARD_ID = "org.omnetpp.common.wizards.ImportWizard";
+    public static final String NEW_OMNETPP_PROJECT_WIZARD_ID = "org.omnetpp.main.wizards.NewOmnetppProject"; // not actually registered, because we could not solve that it appears only when CDT is not present 
+    public static final String NEW_OMNETPP_CC_PROJECT_WIZARD_ID = "org.omnetpp.cdt.wizards.NewOmnetppCCProject";
+    public static final String NEW_OMNETPP_CLASS_WIZARD_ID = "org.omnetpp.cdt.wizards.NewOmnetppClass";
 
     // preference IDs
 	public static final String PREF_OMNETPP_ROOT = "omnetppRoot";

@@ -34,11 +34,11 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.omnetpp.wizards"
-            class="org.omnetpp.ned.editor.wizards.NewNEDFileWizard"
+            class="org.omnetpp.ned.editor.wizards.NedFileWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/newnedfile.gif"
-            id="org.omnetpp.ned.editor.wizard.new.file"
-            name="Network Description File (ned)"
+            id="org.omnetpp.ned.editor.wizards.NewNedFile"
+            name="Network Description File (NED)"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
             Create a file that contains network elements, like simple or compound modules, channels etc.
@@ -46,35 +46,47 @@
       </wizard>
       <wizard
             category="org.omnetpp.wizards"
-            class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewSimpleModuleWizard"
+            class="org.omnetpp.ned.editor.wizards.NewSimpleModuleWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewSimpleModule.png"
-            id="org.omnetpp.ned.editor.wizard.new.simplemodule"
+            id="org.omnetpp.ned.editor.wizards.NewSimpleModule"
             name="Simple Module"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
-            Create a new Simple module (NED and C++ files)
+            Create a new simple module (NED and C++ files)
          </description>
       </wizard>
       <wizard
             category="org.omnetpp.wizards"
-            class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewCompoundModuleWizard"
+            class="org.omnetpp.ned.editor.wizards.NewCompoundModuleWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewCompoundModule.png"
-            id="org.omnetpp.ned.editor.wizard.new.compoundmodule"
+            id="org.omnetpp.ned.editor.wizards.NewCompoundModule"
             name="Compound Module"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
-            Create a new Compound module
+            Create a new compound module
          </description>
       </wizard>
       <wizard
             category="org.omnetpp.wizards"
-            class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewNetworkWizard"
+            class="org.omnetpp.ned.editor.wizards.NewNetworkWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewNetwork.png"
-            id="org.omnetpp.ned.editor.wizard.new.network"
+            id="org.omnetpp.ned.editor.wizards.NewNetwork"
             name="Network"
+            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
+         <description>
+            Create a new simulation (NED and ini files)
+         </description>
+      </wizard>
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.ned.editor.wizards.NewSimulationWizard"
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
+            icon="icons/obj16/NewSimulation.png"
+            id="org.omnetpp.ned.editor.wizards.NewSimulation"
+            name="Simulation"
             preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
             Create a new Network
@@ -87,28 +99,42 @@
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.file">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewNedFile">
               <enablement></enablement>
            </commonWizard>
            <commonWizard
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.simplemodule">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewSimpleModule">
               <enablement></enablement>
            </commonWizard>
            <commonWizard
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.compoundmodule">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewCompoundModule">
               <enablement></enablement>
            </commonWizard>
            <commonWizard
                  associatedExtensionId="org.omnetpp.navigator.content"
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
-                 wizardId="org.omnetpp.ned.editor.wizard.new.network">
+                 wizardId="org.omnetpp.ned.editor.wizards.NewNetwork">
+              <enablement></enablement>
+           </commonWizard>
+           <commonWizard
+                 associatedExtensionId="org.omnetpp.navigator.content"
+                 menuGroupId="org.eclipse.cdt.ui"
+                 type="new"
+                 wizardId="org.omnetpp.ned.editor.wizards.NewSimulation">
+              <enablement></enablement>
+           </commonWizard>
+           <commonWizard
+                 associatedExtensionId="org.omnetpp.navigator.content"
+                 menuGroupId="org.eclipse.cdt.ui"
+                 type="new"
+                 wizardId="org.omnetpp.common.wizards.NewWizard">
               <enablement></enablement>
            </commonWizard>
    </extension>
@@ -258,6 +284,25 @@
       <initializer
             class="org.omnetpp.ned.editor.NedEditorPreferenceInitializer">
       </initializer>
+   </extension>
+   <extension
+         point="org.omnetpp.common.wizard.contenttemplates">
+      <plugin
+            pluginId="org.omnetpp.ned.editor">
+      </plugin>
+   </extension>
+   <extension
+         point="org.swtworkbench.xswt.classloaders">
+      <plugin
+            pluginId="org.omnetpp.ned.editor"
+            referenceClass="org.omnetpp.ned.editor.NedEditorPlugin">
+      </plugin>
+   </extension>
+   <extension
+         point="org.omnetpp.common.wizard.templatecontributors">
+      <contributor
+            class="org.omnetpp.ned.editor.wizards.NedContentTemplateContributor">
+      </contributor>
    </extension>
 
 </plugin>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="3"/>
+
+  <x:children>
+
+    <!-- systemCapacity -->
+    <label text="System capacity (K):"/>
+    <text x:id="systemCapacity" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+	  <setFocus/>
+    </text>
+    <label text="(Leave empty for infinity)"/>
+
+    <!-- population -->
+    <label text="Population (N):"/>
+    <text x:id="population" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+    <label text="(Leave empty for infinity)"/>
+
+    <!-- discipline:FIFO/LIFO -->
+    <label text="Queueing discipline (D):"/>
+    <combo x:id="discipline" x:style="BORDER|READ_ONLY">
+      <add x:p0="FIFO"/>
+      <add x:p0="LIFO"/>
+      <!--
+      <add x:p0="Priority"/>
+      -->
+    </combo>
+    <label/>
+  </x:children>
+</xswt>

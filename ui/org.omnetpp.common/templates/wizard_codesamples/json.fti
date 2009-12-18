@@ -1,0 +1,55 @@
+<#noparse>
+
+<#-- DATA STRUCTURES -->
+
+<#-- the variables 'apps' and 'layers' come from the template.properties file -->
+
+<#-- 'apps' was defined as a list (sequence) -->
+Apps:
+<#list apps as i>
+    ${i}
+</#list>
+
+<#-- 'layers' was defined as a hash (associative array) which contains both scalar and list values -->
+Layers:
+<#list layers?keys?sort as i>
+    ${i}:
+<#if layers[i]?is_sequence>
+        <#list layers[i] as j>${j} </#list>
+<#else>
+        ${layers[i]}
+</#if>
+</#list>
+
+<#-- the above data structures are immutable. For mutable collections, use Java classes. -->
+
+<#-- LangUtils.newList() creates a new ArrayList -->
+
+<#assign fruits = LangUtils.newList()>
+<@do fruits.add("cherries") !/>
+<@do fruits.add("bananas") !/>
+<@do fruits.add("apples") !/>
+
+fruits contains ${fruits.size()} items.
+First item: ${fruits.get(0)}, last item: ${fruits.get(fruits.size()-1)}.
+
+<@do fruits.set(0, "pineapples") !/>
+Contents: <#list fruits as i> ${i} </#list>
+
+<#assign moreFruits = [ "pears", "mangoes", "grapes" ] >
+<@do fruits.addAll(moreFruits) !/>
+Contents: <#list fruits as i> ${i} </#list>
+
+
+<#-- LangUtils.newList() creates a new HashMap -->
+
+<#assign nicks = LangUtils.newMap()>
+<@do nicks.put("Robert", "Dick") !/>
+<@do nicks.put("Peter",  "Pete") !/>
+<@do nicks.put("Joseph", "Joe") !/>
+
+<#list nicks.keySet().toArray()?sort as name>
+  ${name} ==> ${nicks.get(name)}
+</#list>
+
+</#noparse>

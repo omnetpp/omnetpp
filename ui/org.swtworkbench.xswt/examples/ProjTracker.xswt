@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+	<import xmlns="http://sweet_swt.sf.net/xswt">
+		<package name="java.lang"/>
+		<package name="org.eclipse.swt.widgets"/>
+		<package name="org.eclipse.swt.layout"/>
+		<package name="org.eclipse.swt.custom"/>
+	</import>
+	<x:children>
+		<menu x:style="DROP_DOWN" x:id="fileMenu">
+			<x:children>
+				<menuItem text="New"/>
+				<menuItem text="Open"/>
+				<menuItem text="Properties"/>
+				<menuItem x:style="SEPARATOR"/>
+				<menuItem text="Import..."/>
+				<menuItem text="Export..."/>
+				<menuItem x:style="SEPARATOR"/>
+				<menuItem text="Change password..."/>
+				<menuItem x:style="SEPARATOR"/>
+				<menuItem text="Exit"/>
+			</x:children>
+		</menu>
+		<menu x:style="DROP_DOWN" x:id="editMenu">
+			<x:children>
+				<menuItem text="Cut"/>
+				<menuItem text="Copy"/>
+				<menuItem text="Paste"/>
+				<menuItem x:style="SEPARATOR"/>
+				<menuItem text="Refresh outline"/>
+			</x:children>
+		</menu>
+		<menu x:style="BAR" x:id="menuBar">
+			<x:children>
+				<menuItem text="&amp;File" x:style="CASCADE" menu="fileMenu"/>
+				<menuItem text="&amp;Edit" x:style="CASCADE" menu="editMenu"/>
+			</x:children>
+		</menu>
+		<toolBar x:style="FLAT | WRAP">
+			<x:children>
+				<toolItem/>
+			</x:children>
+		</toolBar>
+		<sashForm x:style="VERTICAL">
+			<x:children>
+				<composite>
+					<layout x:class="rowLayout" x:style="VERTICAL"/>
+					<x:children>
+						<label x:style="CENTER" text="Task List"/>
+						<tabFolder>
+							<x:children>
+								<composite x:id="list">
+									<layout x:class="fillLayout"/>
+								</composite>
+								<tabItem text="&amp;List" control="list"/>
+								
+								<composite x:id="detail">
+									
+								</composite>
+								<tabItem text="&amp;Detail" control="detail"/>
+							</x:children>
+						</tabFolder>
+					</x:children>
+				</composite>
+				<composite>
+					<layout x:class="fillLayout"/>
+					<x:children>
+						<text x:style="MULTI" text="Hello, world"/>
+					</x:children>
+				</composite>
+			</x:children>
+		</sashForm>
+	</x:children>
+</xswt>
+

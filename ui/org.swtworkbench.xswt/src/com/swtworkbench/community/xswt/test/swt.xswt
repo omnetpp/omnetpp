@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+	<import xmlns="http://sweet_swt.sf.net/xswt">
+		<package name="java.lang"/>
+		<package name="org.eclipse.swt.widgets"/>
+		<package name="org.eclipse.swt.custom"/>
+		<package name="org.eclipse.swt.layout"/>
+	</import>
+	<x:children>
+		<composite>
+			<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+			<layout x:class="gridLayout" marginHeight="0" marginWidth="0"/>
+			<x:children>
+				<label text="SWT Controls:"/>
+				<tabFolder>
+					<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+					<x:children>
+					<!-- This is the template I copy to create a new tab folder page -->
+					<!--
+						<composite x:id="Next">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="2"/>
+									<x:children>
+									</x:children>
+								</composite>
+								<slider x:style="VERTICAL" x:id="buttonScroller">
+									<layoutData x:class="gridData" verticalAlignment="GridData.FILL"/>
+								</slider>
+							</x:children>
+						</composite>
+						<tabItem text="Next" control="Next"/>
+					-->
+						<composite x:id="Text">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" verticalAlignment="GridData.FILL" horizontalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="2"/>
+									<x:children>
+										<label text="Integer:"/><text x:style="BORDER" x:id="intText" text="1"/>
+										<label text="Float:"/><text x:style="BORDER" x:id="floatText" text="1.0"/>
+										<label text="String:"/><text x:style="BORDER" x:id="stringText" text="The quick brown fox jumped over the lazy dog."/>
+										<label text="RegexValidated String:"/><text x:style="BORDER" x:id="stringText"  text="The quick brown fox jumped over the lazy dog."/>
+										<label text="Masked String:"/><text x:style="BORDER" x:id="stringText" background="208 128 128"/>
+									</x:children>
+								</composite>
+								<slider x:style="VERTICAL" x:id="buttonScroller">
+									<layoutData x:class="gridData" verticalAlignment="GridData.FILL"/>
+								</slider>
+							</x:children>
+						</composite>
+						<tabItem text="Text" control="Text"/>
+
+						<composite x:id="Labels">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" verticalAlignment="GridData.FILL" horizontalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="1"/>
+									<x:children>
+										<label text="Label with text"/>
+										<label text="Label with image"/>
+										<label text="Label with text and image"/>
+										<label x:style="SEPARATOR | HORIZONTAL"><layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/></label>
+										<cLabel text="CLabel with text"/>
+										<cLabel text="CLabel with image"/>
+										<cLabel text="CLabel with text and image"/>
+									</x:children>
+								</composite>
+								<slider x:style="VERTICAL" x:id="textScroller"/>
+							</x:children>
+						</composite>
+						<tabItem text="Label / CLabel" control="Labels"/>
+					
+						<composite x:id="Button">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" verticalAlignment="GridData.FILL" horizontalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="2"/>
+									<x:children>
+										<label text="Push:"/><button x:id="pushButton" text="PushButton"/>
+										<label text="Arrow:"/><button x:id="arrowButton" x:style="ARROW" text="ArrowButton"/>
+										<label text="Toggle:"/><button x:id="toggleButton" x:style="TOGGLE" text="ToggleButton"/>
+										<label text="Check:"/><button x:style="CHECK" x:id="checkButton" text="CheckBox"/>
+										<label text="Radio Group 1:"/>
+										<composite x:style="BORDER" x:id="radioGroup1">
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL"/>
+											<layout x:class="gridLayout" numColumns="1"/>
+											<x:children>
+												<button x:style="RADIO" x:id="radioButton0.1" text="Radio"/>
+												<button x:style="RADIO" x:id="radioButton0.2" text="Radio2" selection="true"/>
+												<button x:style="RADIO" x:id="radioButton0.3" text="Radio3"/>
+											</x:children>
+										</composite>
+										<label text="Radio Group 2:"/>
+										<composite x:style="BORDER" x:id="radioGroup2">
+											<layoutData x:class="gridData" horizontalAlignment="GridData.FILL"/>
+											<layout x:class="gridLayout" numColumns="1"/>
+											<x:children>
+												<button x:style="RADIO" x:id="radioButton1.1" text="Radio"/>
+												<button x:style="RADIO" x:id="radioButton1.2" text="Radio2"/>
+												<button x:style="RADIO" x:id="radioButton1.3" text="Radio3"/>
+											</x:children>
+										</composite>
+									</x:children>
+								</composite>
+								<slider x:style="VERTICAL" x:id="buttonScroller">
+									<layoutData x:class="gridData" verticalAlignment="GridData.FILL"/>
+								</slider>
+							</x:children>
+						</composite>
+						<tabItem text="Button" control="Button"/>
+
+						<composite x:id="List">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="1"/>
+							<x:children>
+								<composite>
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" grabExcessVerticalSpace="true" verticalAlignment="GridData.FILL"/>
+						            <layout x:class="fillLayout" type="VERTICAL"/>
+									<x:children>
+										<list x:style="BORDER | V_SCROLL | MULTI">
+											<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" grabExcessVerticalSpace="true" verticalAlignment="GridData.FILL"/>
+										</list>
+										<list x:style="BORDER | V_SCROLL">
+											<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" grabExcessVerticalSpace="true" verticalAlignment="GridData.FILL"/>
+										</list>
+									</x:children>
+								</composite>
+							</x:children>
+						</composite>
+						<tabItem text="List" control="List"/>
+
+						<composite x:id="Combos">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" verticalAlignment="GridData.FILL" horizontalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="1"/>
+									<x:children>
+										<combo>
+											<add x:p0="item1"/>
+											<add x:p0="item2"/>
+											<add x:p0="item3"/>
+										</combo>
+										<combo x:style="SIMPLE">
+											<add x:p0="item1"/>
+											<add x:p0="item2"/>
+											<add x:p0="item3"/>
+										</combo>
+										<combo x:style="READ_ONLY">
+											<add x:p0="item1"/>
+											<add x:p0="item2"/>
+											<add x:p0="item3"/>
+										</combo>
+										<label x:style="SEPARATOR | HORIZONTAL"><layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/></label>
+										<cCombo>
+											<add x:p0="item1"/>
+											<add x:p0="item2"/>
+											<add x:p0="item3"/>
+										</cCombo>
+										<cCombo x:style="READ_ONLY" background="255 255 255">
+											<add x:p0="item1"/>
+											<add x:p0="item2"/>
+											<add x:p0="item3"/>
+										</cCombo>
+									</x:children>
+								</composite>
+								<slider x:style="VERTICAL" x:id="buttonScroller">
+									<layoutData x:class="gridData" verticalAlignment="GridData.FILL"/>
+								</slider>
+							</x:children>
+						</composite>
+						<tabItem text="Combo / CCombo" control="Combos"/>
+
+						<composite x:id="Table">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="1"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="2"/>
+									<x:children>
+										<table x:style="BORDER" linesVisible="true" headerVisible="true">
+											<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+											<x:children>
+												<tableColumn width="50" text="Done"/>
+												<tableColumn width="200" text="Description"/>
+												<tableColumn width="60" text="Planned"/>
+												<tableColumn width="60" text="Revised"/>
+												<tableColumn width="60" text="Actual"/>
+												<!--<tableItem/>-->
+											</x:children>
+										</table>
+									</x:children>
+								</composite>
+							</x:children>
+						</composite>
+						<tabItem text="Table" control="Table"/>
+
+						<composite x:id="Tree">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="1"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="2"/>
+									<x:children>
+										<tree x:style="BORDER">
+											<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+											<x:children>
+												<treeItem text="item">
+													<x:children>
+														<treeItem text="item"/>
+														<treeItem text="item"/>
+														<treeItem text="item">
+															<x:children>
+																<treeItem text="item"/>
+																<treeItem text="item"/>
+																<treeItem text="item"/>
+																<treeItem text="item"/>
+																<treeItem text="item"/>
+															</x:children>
+														</treeItem>
+														<treeItem text="item"/>
+													</x:children>
+												</treeItem>
+												<treeItem text="item with Image (or at least needs one)">
+													<x:children>
+														<treeItem text="item"/>
+														<treeItem text="item"/>
+													</x:children>
+												</treeItem>
+												<treeItem text="Another item">
+													<x:children>
+														<treeItem text="item"/>
+														<treeItem text="item"/>
+														<treeItem text="item"/>
+														<treeItem text="item"/>
+														<treeItem text="item"/>
+													</x:children>
+												</treeItem>
+											</x:children>
+										</tree>
+									</x:children>
+								</composite>
+							</x:children>
+						</composite>
+						<tabItem text="Tree" control="Tree"/>
+
+						<composite x:id="TableTree">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="1"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="2"/>
+									<x:children>
+										<tableTree x:style="BORDER">
+											<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+											<x:children>
+												<tableTreeItem text="item">
+													<x:children>
+														<tableTreeItem text="subitem"/>
+														<tableTreeItem text="subitem"/>
+													</x:children>
+												</tableTreeItem>
+												<tableTreeItem text="item">
+													<x:children>
+														<tableTreeItem text="subitem"/>
+														<tableTreeItem text="subitem"/>
+														<tableTreeItem text="subitem"/>
+														<tableTreeItem text="subitem"/>
+														<tableTreeItem text="subitem"/>
+													</x:children>
+												</tableTreeItem>
+												<tableTreeItem text="item">
+													<x:children>
+														<tableTreeItem text="item">
+															<x:children>
+																<tableTreeItem text="subitem"/>
+															</x:children>
+														</tableTreeItem>
+														<tableTreeItem text="item">
+															<x:children>
+																<tableTreeItem text="subitem"/>
+																<tableTreeItem text="subitem"/>
+																<tableTreeItem text="subitem"/>
+																<tableTreeItem text="subitem"/>
+																<tableTreeItem text="subitem"/>
+															</x:children>
+														</tableTreeItem>
+														<tableTreeItem text="item">
+															<x:children>
+																<tableTreeItem text="subitem"/>
+																<tableTreeItem text="subitem"/>
+																<tableTreeItem text="subitem"/>
+															</x:children>
+														</tableTreeItem>
+													</x:children>
+												</tableTreeItem>
+											</x:children>
+										</tableTree>
+									</x:children>
+								</composite>
+							</x:children>
+						</composite>
+						<tabItem text="TableTree" control="TableTree"/>
+
+						<composite x:id="Progress">
+							<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+							<layout x:class="gridLayout" numColumns="2"/>
+							<x:children>
+								<composite x:style="BORDER">
+									<layoutData x:class="gridData" grabExcessHorizontalSpace="true" verticalAlignment="GridData.FILL" horizontalAlignment="GridData.FILL"/>
+									<layout x:class="gridLayout" numColumns="1"/>
+									<x:children>
+										<progressBar x:style="INDETERMINATE"/>
+										<progressBar x:style="INDETERMINATE | SMOOTH"/>
+										<progressBar x:style="SMOOTH" minimum="0" maximum="100" selection="40"/>
+										<progressBar minimum="0" maximum="100" selection="60"/>
+									</x:children>
+								</composite>
+								<slider x:style="VERTICAL" x:id="textScroller"/>
+							</x:children>
+						</composite>
+						<tabItem text="ProgressBar" control="Progress"/>
+
+					</x:children>
+				</tabFolder>
+			</x:children>
+		</composite>
+	</x:children>
+</xswt>
+

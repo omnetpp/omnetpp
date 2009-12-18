@@ -1,0 +1,124 @@
+<#-- template include for network.ned.ftl -->
+
+<#if !nodeTypeExists>
+module ${nodeType} {
+    parameters:
+        @display("i=misc/node_vs");
+    gates:
+  <#if gateVectorWithIndices || gateVectorWithPlusPlus>
+        inout ${vectorGate}[];
+  <#else>
+    <#if ring || wheel>
+        inout ${wheelPrevGate};
+        inout ${wheelNextGate};
+    </#if>
+    <#if star || wheel>
+        inout ${wheelToHubGate};
+    </#if>
+  </#if>
+}
+</#if>
+
+<#if (star || wheel) && !hubTypeExists>
+module ${hubType} {
+    parameters:
+        @display("i=misc/node_vs");
+    gates:
+  <#if gateVectorWithIndices || gateVectorWithPlusPlus>
+        inout ${vectorGate}[];
+  <#else>
+        inout ${wheelHubOutGate}[];
+  </#if>
+}
+</#if>
+
+<#if channelTypeSupplied && !channelTypeExists>
+channel ${channelType} extends ned.DatarateChannel {
+    parameters:
+        int cost = default(0);
+}
+</#if>
+
+<#-- abbreviations used for the connections: -->
+<#if gateVectorWithIndices>
+  <#assign prev = vectorGate + iif(ring,"[1]","[2]")>
+  <#assign next = vectorGate + iif(ring,"[0]","[1]")>
+  <#assign inw = vectorGate + "[0]">
+  <#function outw i> <#return vectorGate + "[" + i + "]"> </#function>
+<#elseif gateVectorWithPlusPlus>
+  <#assign prev = vectorGate + "++">
+  <#assign next = vectorGate + "++">
+  <#assign inw = vectorGate + "++">
+  <#function outw i> <#return vectorGate + "++"> </#function>
+<#else>
+  <#assign prev = wheelPrevGate>
+  <#assign next = wheelNextGate>
+  <#assign inw = wheelToHubGate>
+  <#function outw i> <#return wheelHubOutGate + "[" + i + "]"> </#function>
+</#if>
+
+//
+// A generated ${networkKeyword} with ${iif(ring, "ring", iif(star, "star", "wheel"))} topology.
+//
+<#if parametricNED>
+${networkKeyword} ${targetTypeName}
+{
+    parameters:
+        int n = default(${nodes});
+    submodules:
+<#if star || wheel>
+        hub: ${hubType} {
+            <#if !gateVectorWithPlusPlus>gates: ${iif(namedGates,wheelHubOutGate,vectorGate)}[n];</#if>
+        }
+</#if>
+        node[n]: ${nodeType} {
+            <#if generateCoordinates>@display("p=,,ring,");</#if>
+            <#if gateVectorWithIndices>gates: ${vectorGate}[${iif(wheel,3,iif(ring,2,1))}];</#if>
+        }
+        
+    connections:
+<#if star || wheel>
+        for i=0..n-1 {
+            hub.${outw("i")} <-->${channelSpec} node[i].${inw};
+        }
+</#if>
+<#if ring || wheel>
+        for i=0..n-1 {
+            node[i].${next} <-->${channelSpec} node[(i+1)%n].${prev};
+        }
+</#if>
+}
+<#else>
+${networkKeyword} ${targetTypeName}
+{
+    submodules:
+<#if star || wheel>
+        hub: ${hubType} {
+            <#if generateCoordinates>@display("p=${centerX},${centerY}");</#if>
+            <#if !gateVectorWithPlusPlus>gates: ${iif(namedGates,wheelHubOutGate,vectorGate)}[${nodes}];</#if>
+        }
+</#if>
+<#list 0..nodes-1 as i>
+        node${i}: ${nodeType} {
+            <#assign x = centerX + Math.floor(radius*Math.sin(2*i*Math.PI/nodes))>
+            <#assign y = centerY - Math.floor(radius*Math.cos(2*i*Math.PI/nodes))>
+            <#if generateCoordinates>@display("p=${x},${y}");</#if>
+            <#if gateVectorWithIndices>gates: ${vectorGate}[${iif(wheel,3,iif(ring,2,1))}];</#if>
+        }
+</#list>
+    connections:
+<#if star || wheel>
+  <#list 0..nodes-1 as i>
+        hub.${outw(i)} <-->${channelSpec} node${i}.${inw};
+  </#list>
+</#if>
+<#if wheel>
+
+</#if>
+<#if ring || wheel>
+  <#list 0..nodes-1 as i>
+        node${i}.${next} <-->${channelSpec} node${(i+1)%nodes}.${prev};
+  </#list>
+</#if>
+}
+</#if>

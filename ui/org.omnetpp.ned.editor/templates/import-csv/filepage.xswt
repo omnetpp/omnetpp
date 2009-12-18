@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <group text="Links">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+        <label text="Links CSV file (columns: src, dest, speed [bps], cost):"/>
+        <fileChooser x:id="linksFile">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+          <setFocus/>
+        </fileChooser>
+        <button x:id="linksFileIgnoreFirstLine" text="Ignore first line, it is a header" x:style="CHECK">
+          <layoutData x:class="GridData" horizontalIndent="10" horizontalSpan="2"/>
+        </button>
+      </x:children>
+    </group>
+
+    <group text="Node coordinates">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+        <label text="Nodes CSV file (optional; columns: nodename, x, y):"/>
+        <fileChooser x:id="nodesFile">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </fileChooser>
+        <button x:id="nodesFileIgnoreFirstLine" text="Ignore first line, it is a header" x:style="CHECK">
+          <layoutData x:class="GridData" horizontalIndent="10" horizontalSpan="2"/>
+        </button>
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>

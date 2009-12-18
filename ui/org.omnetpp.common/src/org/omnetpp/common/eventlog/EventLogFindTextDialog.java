@@ -52,7 +52,7 @@ public class EventLogFindTextDialog extends Dialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText("Find raw text");
+        shell.setText("Find Raw Text");
     }
 
     @Override
@@ -82,7 +82,7 @@ public class EventLogFindTextDialog extends Dialog {
         forward.setSelection(!isBackward);
 
         backward = new Button(group, SWT.RADIO);
-        backward.setText("Bacward");
+        backward.setText("Backward");
         backward.setSelection(isBackward);
 
         group = new Group(composite, SWT.SHADOW_ETCHED_IN);

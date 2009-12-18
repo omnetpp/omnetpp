@@ -27,7 +27,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gmf.runtime.draw2d.ui.render.awt;resolution:=optional,
  org.apache.batik.svggen;resolution:=optional,
  org.apache.batik.ext.awt;resolution:=optional,
- org.apache.batik.util;resolution:=optional
+ org.apache.batik.util;resolution:=optional,
+ org.visigoths.freemarker;bundle-version="2.3.15",
+ org.swtworkbench.xswt
 Eclipse-LazyStart: true
 Bundle-Activator: org.omnetpp.ned.editor.NedEditorPlugin
 Export-Package: org.omnetpp.ned.editor,
