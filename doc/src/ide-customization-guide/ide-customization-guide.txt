@@ -322,50 +322,157 @@ goal:
 
   wizardType = project
 
-Project wizards can create -- as their name suggest -- new projects. All necessary files
-required by the new project can be included in the template. It is possible to adjust
-project properties to customize the new project. You can enable C++ code support, set
-source and NED folders. The files in the template folder will be directly copied to the
-new project folder. See the appendix for the variable names that are supported
-in project wizard templates.
+Project wizards create new projects, and let the user create files in them.
+It is possible to adjust project properties to customize the new project.
+You can add C++ support to the project, set source and NED folders, etc.
+
+The first two pages of the wizard are standard: they prompt the user for
+the name of the new project, and let the user choose a content template.
+These pages are followed by pages provided by the selected content template.
+If the user selected C++ support on the first page, custom pages are
+followed by the standard CDT New Project pages.
+
+When the user clicks 'Finish', the wizard creates the project, and configures
+it according to the selected options (C\++ support, source folders, etc). After that,
+template files are copied into the new project, performing template processing
+as necessary. Templated pages are responsible for creating the `package.ned`
+file according to the `nedPackageName` and `namespaceName` options, as well
+as creating source files in the NED, and C++ source folders.
+
+NOTE: NED and C\++ files are not automatically placed into the
+      NED and C++ source folders. Templated pages have to be written
+      (for example using `setoutput`) so that they explicitly create the files
+      at the proper places.
+
+There are a few useful variables that template files can make use of. The
+`rawProjectName` variable contains the project name. This variable cannot be
+directly used as C++ or NED package names, type names, etc, because it may
+contain spaces or other characters not allowed in identifiers. For convenience,
+the wizard provides sanitized versions of the project name that can be used
+as identifiers, they are in the variables `projectName`, `PROJECTNAME` and
+`projectname`, and differ in capitalization. The `targetFolder` variable
+is set to `/`'<project name>'. These variables cannot be edited in custom wizard
+pages.
+
+The variables `addProjectReference`, `makemakeOptions`, `sourceFolders` and
+`nedSourceFolders` affect the creation of the project before template files
+get processed. It is allowed to provide an initialization value for these
+variables in `template.properties`, and to let the user change them in
+custom pages.
+
+For conformance with other wizards, the project wizard initializes
+the following variables with different case versions of the project name:
+`targetTypeName`, `nedPackageName`, `namespaceName`. The `targetMainFile`
+variable is initialized to 'projectName'+`.ned`, but there is no requirement
+that the template actually creates this file. It is allowed to provide a
+different initialization value for these variables in `template.properties`,
+and to let the user change them in custom pages.
+
+NOTE: The `targetFileName` variable is not set, because the project wizard
+is not required to create a file.
+
+See the appendix for the variable names that are supported in project wizard
+templates.
+
 
 ==== New Simulation Wizards
 
   wizardType = simulation
 
-A new simulation is basically a new folder containing all files required to create a
-simulation. Usually contains NED files and an INI file, but may contain also CC, H and MSG
-files if the new simulation requires also additional behavior. For new simulations,
-the user selects a parent folder and a simulation name. The `targetFolder`, `targetMainFile`,
-`simulationName` and `simulationFolderName` variables are based on this selection.
+A new simulation is basically a new folder containing all files required to run a
+simulation. The simulation folder usually contains NED files and an INI file,
+and possibly also CC, H and MSG files.
 
-Other variables that are useful for these templates are:
+The first two pages of the wizard are standard: they prompt the user for
+the parent and name of the new folder, and let the user choose a content template.
+These pages are followed by pages provided by the selected content template.
+Simulations can only be created in new folders under existing projects or folders.
 
- * `namespaceName` can be used to refer to the current C++ namespace in CC, H files.
- * `nedPackageName` can be used to refer to the current NED package (based on the current folder
-    of the file)
+When the user clicks 'Finish', the wizard creates the folder. After that,
+template files are copied into the new folder, performing template processing
+as necessary.
+
+There are a few useful variables that template files can make use of. The
+`simulationFolderName` contains the name of the new folder (without path).
+This variable cannot be directly used as a C++ or NED identifier, because it may
+contain spaces or other characters not allowed in identifiers. For convenience,
+the wizard provides the `simulationName` variable which is a sanitized version
+of the folder name. The `targetFolder` variable is set to the workspace path of the new
+folder. These variables cannot be edited in custom wizard pages.
+
+For conformance with other wizards, the simulation wizard initializes
+the `targetTypeName` variable with the simulation name. The `targetMainFile`
+variable is initialized to 'simulationName'+`.ned`, but there is no requirement
+that the template actually creates this file. It is allowed to provide a
+different initialization value for these variables in `template.properties`,
+and to let the user change them in custom pages.
+
+NOTE: The `targetFileName` variable is not set, because the simulation wizard
+is not required to create a file.
+
+The `nedPackageName` and `namespaceName` variables are set by the wizard to the
+NED package name and C++ namespace expected for the given folder. These values
+are derived from the folder path, the toplevel `package.ned` file and the
+`@namespace` property in it, and cannot be overridden.
+
+See the appendix for the variable names that are supported in simulation wizard
+templates.
 
 
 ==== New INI, MSG or NED File Wizards
 
-  wizardType = simplemodule, compoundmodule, network, nedfile,
-               inifile or msgfile
+  wizardType = compoundmodule, network, nedfile, inifile, msgfile
 
-For these wizards the user selects a folder and a file name where the generated
-file should be placed.  The selected file name can be accessed as
-\${targetFileName} and the target folder as \${targetFolder}. \${targetTypeName} is also
-defined which is a sanitized and capitalized version of the `targetFileName` variable.
-It can be used as a NED or C++ type inside the templates.
-'New ... File Wizards' usually generate only a single file, but multiple files can be
-generated too if necessary (e.g. simple modules would generate NED, CC and H files).
-There are additional helper variables like:
+These wizard types generate a single file. The first two pages of the wizard
+are standard: they prompt the user for the parent folder and name of the new file,
+and let the user choose a content template. These pages are followed by pages
+provided by the selected content template.
 
- * `nedPackageName` for INI and NED files is defining the current NED package which is
-    calculated automatically based on the selected targetFolder
- * `namespaceName` is the current C++ namespace for NED and MSG file wizards
-    (those that usually generate code). It is calculated automatically from the
-    folder and from the information provided with the `@namespace`
-    property in the existing NED files.
+NOTE: Currently the wizard does not ensure that the created file will be under
+      a NED/C++ source folder. This may change in the future.
+
+When the user clicks 'Finish', template files are copied into the selected parent
+folder, performing template processing as necessary. The template files
+are expected to create a file with the name chosen by the user.
+
+The wizard passes the file name to the template files in the `targetFileName`
+variable.
+
+NOTE: The wizard does not prevent the templates from creating other files than
+      `targetFileName`. It is the responsibility of the template author to
+      ensure that only a single file is created.
+
+There are a few useful variables that template files can make use of. The
+`targetFolder` variable is set to the workspace path of the parent
+folder. This variable cannot be edited in custom wizard pages.
+
+For conformance with other wizards, the new wizard initializes the
+`targetTypeName` variable to a sanitized version of the file name (minus
+extension). This variable can be used as a NED or message type name
+in the generated file. The `targetMainFile` variable is the same as
+`targetFileName`.
+
+One can provide a different initialization value for the `targetTypeName`
+variable in `template.properties`, and let the user change it in custom pages.
+
+The `nedPackageName` and `namespaceName` variables are set by the wizard to the
+NED package name and C++ namespace expected for the given folder. These values
+are derived from the file path, the toplevel `package.ned` file and the
+`@namespace` property in it, and cannot be overridden.
+
+See the appendix for the variable names that are supported in new file wizard
+templates.
+
+
+==== New Simple Module Wizard
+
+  wizardType = simplemodule
+
+The simple module wizard creates a simple module, usually consisting of a
+NED file and C\++ implementation files. This wizard works in a similar way
+as the 'New NED File' or 'New Compound Module' wizard, but it is allowed to
+create other files (C++ sources) in addition to the NED file.
+
 
 ==== Import Wizards
 
@@ -376,15 +483,16 @@ Import wizard is not a standalone type, but rather a flag on other wizard types.
 It makes the wizard appear in the 'File|Import...' dialog in addition to the 'File|New ...'
 dialogs.
 
-NOTE: If an import wizard supports more than one wizard type (e.g. project, simulation, nedfile, import),
-the 'File|Import...' dialog will use only one of these types. The type is chosen in the following oder
-of preference: `network, nedfile, compoundmodule, simplemodule, msgfile, inifile, simulation, project`
+NOTE: If an import wizard supports more than one wizard types (e.g. `project`, `simulation`, `nedfile`, etc.),
+the 'File|Import...' dialog will use only one of those types. The type is chosen in the following order
+of preference: `network`, `nedfile`, `compoundmodule`, `simplemodule`, `msgfile`,
+`inifile`, `simulation`, `project`
 
 ==== Export Wizards
 
   wizardType = export
 
-Export wizards appear in the 'File|Export' dialog and their custom pages
+Export wizards appear in the 'File|Export...' dialog and their custom pages
 usually ask for an input (e.g NED file or type, a folder etc.) and possibly some other
 options, controlling the export algorithm (formatting, output file name etc).
 Exports are different than the rest of the templates, because their template
@@ -396,6 +504,12 @@ or the workspace (i.e. projects).
 WARNING: If a the template file attempts to output some content, an error will be
 generated by the wizard. You should generate files only using the methods of the
 FileUtils class.
+
+==== New Wizard Wizard
+
+  wizardType = wizard
+
+TODO Like ...
 
 === Configuration Keys
 
@@ -625,7 +739,7 @@ For example, text widgets (org.eclipse.swt.widgets.Text) provide a string value
 XSWT also allows filling up the widgets with default values
 (e.g. `<styledText text="some text"/>` ), but this feature
 should be used with care, because the defaults set in XSWT may not make it
-to the file templates. This is so because if the user clicks Finish early,
+to the file templates. This is so because if the user clicks 'Finish' early,
 the rest of the wizard pages (and their widgets) may not be created at all,
 so values set in the XSWT will take no effect.
 
