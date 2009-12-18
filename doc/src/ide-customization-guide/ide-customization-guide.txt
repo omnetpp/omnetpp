@@ -156,10 +156,11 @@ project, then create `template.properties` and add the following lines to it:
   supportedWizardTypes = simulation, network
 
 These lines specify the name, type and category for the wizard. Category is used to
-specify how the wizards will be visually grouped. Wizard type specifies in which
-'New ... Wizard'  your wizard will appear. You can specify: `project,
-simulation, network` etc. In our case, the wizard will be added both to
-the 'New Simulation Wizard' and to the 'New Network Wizard'.
+specify how the wizards will be grouped in the template selection page's tree control.
+Wizard type specifies in which 'New ... Wizard'  your wizard will appear.
+You can specify one or more of `project`, `simulation`, `network`, etc.; the list
+of all possible wizard types will be covered later in this document. In our case,
+the wizard will appear in the 'New Simulation' and 'New Network' wizard dialogs.
 
 We can now decide what data we would like to ask from the user.
 Template variables and their values can be defined as key-value pairs:
@@ -190,29 +191,29 @@ wizard page definition. We will add a 'spinner' control to specify the size of o
 and a 'text' control to specify the node type. Create a new file called `parameters.xswt`
 with the following content:
 
-	<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
-	  <x:import>
-	    <!-- Import all widgets and utility classes  -->
-	    <package name="java.lang"/>
-	    <package name="org.eclipse.swt.widgets" />
-	    <package name="org.eclipse.swt.graphics" />
-	    <package name="org.eclipse.swt.layout" />
-	    <package name="org.eclipse.swt.custom" />
-	    <package name="org.omnetpp.common.wizard.support" />
-	    <package name="org.omnetpp.ned.editor.wizards.support" />
-	    <package name="org.omnetpp.cdt.wizard.support" />
-	  </x:import>
-	  <!-- Create a two-column layout  -->
-	  <layout x:class="GridLayout" numColumns="2"/>
-	  <x:children>
-	    <!-- First row -->
-	    <label text="Number of nodes in the network:"/>
-	    <spinner x:id="networkSize" minimum="2" x:style="BORDER"/>
-	    <!-- Second row -->
-	    <label text="Type of nodes:"/>
-	    <text x:id="nodeType" x:style="BORDER"/>
-	  </x:children>
-	</xswt>
+    <xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+      <x:import>
+        <!-- Import all widgets and utility classes  -->
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets" />
+        <package name="org.eclipse.swt.graphics" />
+        <package name="org.eclipse.swt.layout" />
+        <package name="org.eclipse.swt.custom" />
+        <package name="org.omnetpp.common.wizard.support" />
+        <package name="org.omnetpp.ned.editor.wizards.support" />
+        <package name="org.omnetpp.cdt.wizard.support" />
+      </x:import>
+      <!-- Create a two-column layout  -->
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+        <!-- First row -->
+        <label text="Number of nodes in the network:"/>
+        <spinner x:id="networkSize" minimum="2" x:style="BORDER"/>
+        <!-- Second row -->
+        <label text="Type of nodes:"/>
+        <text x:id="nodeType" x:style="BORDER"/>
+      </x:children>
+    </xswt>
 
 The above defined wizard page will have two columns. The first column contains labels,
 and the second contains editable widgets.
@@ -272,15 +273,15 @@ everything from the current file into the file that is specified by the
 and `nedPackageName` variables are automatically filled out by the wizard, based
 on the filename and folder the user selected on the first wizard page.
 
-	<@setoutput path=targetFileName />
-	${bannerComment}
+    <@setoutput path=targetFileName />
+    ${bannerComment}
 
-	<#if nedPackageName!="">package ${nedPackageName};</#if>
+    <#if nedPackageName!="">package ${nedPackageName};</#if>
 
-	network ${targetTypeName}
-	{
-		node[${networkSize}] : ${nodeType}
-	}
+    network ${targetTypeName}
+    {
+        node[${networkSize}] : ${nodeType}
+    }
 
 The template variables will be substituted into the template automatically.
 
@@ -298,9 +299,9 @@ As a last step in our example, we create also an INI file template:
 
 Create a file called `omnetpp.ini.ftl`, and fill with:
 
-	<#if wizardType=="simulation">
-	network = ${targetTypeName}
-	</#if>
+    <#if wizardType=="simulation">
+    network = ${targetTypeName}
+    </#if>
 
 We need the INI file only if we are creating a simulation. If the
 current type is not `simulation`, the content will be empty, and the
@@ -656,14 +657,15 @@ TIP: If you get an error complaining about syntax errors in a JSON entry, the
 ==== Conditional Pages
 
 Now that basic XSWT usage was covered, we can revisit how one can use page
-conditions. Consider the following practical example:
+conditions. Consider the following practical example of creating a wizard
+for wireless networks.
 
-Suppose a wizard for wireless networks. On the first page of the wizard there
-is a "[] configure routing" checkbox with the ID "wantRouting". If this
-checkbox gets selected, you want to display a second page where the user can
-select a routing protocol, then further configuration pages depending on
-the particular routing protocol the user chose. To achieve this, you would
-add the following lines to template.properties:
+On the first page of the wizard you could have a '[] Configure routing' checkbox,
+with the ID `wantRouting`. If this checkbox gets selected, you want to display
+a second page where the user can select a routing protocol, then further
+configuration pages depending on the chosen routing protocol.
+
+To achieve this, you would add the following lines to `template.properties`:
 
   # page with the "wantRouting" checkbox
   page.1.title = General
@@ -676,7 +678,12 @@ add the following lines to template.properties:
   page.3.condition = wantRouting && protocol=="AODV"
   page.4.condition = wantRouting && protocol=="DSDV"
 
-You get the idea. This allows the creation of conditional pages.
+The `.condition` keys will make the wizard include only the pages where
+the condition evaluates to true. Conditions can be arbitrary FreeMarker
+expressions that evaluate to `true` (as boolean) or `"true"` (as string).
+Conditions are re-evaluated after every page, so you can depend on variables
+edited on earlier pages.
+
 
 ==== Conditional Widgets
 
@@ -852,18 +859,18 @@ You can implement custom SWT controls in Java, and use them in the
 wizard pages. The custom controls may even be packaged into jar files
 in the template's directory, i.e. you do not need to write a separate
 Eclipse plug-in or something. Have a look at the source files of the
-existing custom controls (`FileChooser, NedTypeChooser, InfoLink`, etc).
+existing custom controls (`FileChooser`, `NedTypeChooser`, `InfoLink`, etc).
 
 *How can I dynamically enable/disable controls on a page, depending on
  other controls (i.e. the state of a checkbox or a radio button)?*
 
 Currently you cannot. If you are desperate, you have the following options:
 (1) put the dependent controls onto a separate page, which you can make
-conditional; (2) write a custom CheckboxComposite control in Java
+conditional; (2) write a custom `CheckboxComposite` control in Java
 that features a checkbox, and enables/disables child controls
 when the checkbox selection changes; (3) write the full custom wizard
 page entirely in Java, and register it in `template.properties` with
-page.xx.class= instead of page.xx.file; (4) implement scripting support
+`page.xx.class=` instead of `page.xx.file=`; (4) implement scripting support
 for XSWT 1.x and contribute the patch to us.
 
 *In the Project wizard, how does it get decided which templates get
@@ -1034,8 +1041,8 @@ GateChooser::   A control for selecting a gate of a NED module type. If the modu
     gateFilter="GateChooser.INOUT|GateChooser.VECTOR"/>
 
 NedTypeChooser::
-				A control for selecting a NED module type. An existing type name can be selected
-				or a new one can be entered.
+                A control for selecting a NED module type. An existing type name can be selected
+                or a new one can be entered.
                 * W: accepts strings with a ned type name.
                 * R: returns the name of the selected ned type as a string.
                 * Other attributes:
@@ -1093,38 +1100,38 @@ TabFolder/TabItem:: Can be used to group the controls into separate pages.
 |==============
 |variable name | project | simul. | msgfile | inifile | nedfile | wizard | export
 |`addProjectReference`  | X |   |   |   |   |   |
-|`author`  				| X | X | X | X | X | X | X
+|`author`               | X | X | X | X | X | X | X
 |`date`                 | X | X | X | X | X | X | X
-|`licenseCode`    		| X | X | X | X | X | X | X
-|`licenseText`    		| X | X | X | X | X | X | X
-|`makemakeOptions`     	| X |   |   |   |   |   |
-|`namespaceName`       	|   | X | X |   | X |   |
+|`licenseCode`          | X | X | X | X | X | X | X
+|`licenseText`          | X | X | X | X | X | X | X
+|`makemakeOptions`      | X |   |   |   |   |   |
+|`namespaceName`        |   | X | X |   | X |   |
 |`nedPackageName`       | X | X |   | X | X |   |
-|`nedSourceFolders`    	| X |   |   |   |   |   |
-|`newWizardName`     	|   |   |   |   |   | X |
+|`nedSourceFolders`     | X |   |   |   |   |   |
+|`newWizardName`        |   |   |   |   |   | X |
 |`newWizardProject`     |   |   |   |   |   | X |
-|`projectName`    		| X | X | X | X | X | X |
-|`PROJECTNAME`    		| X | X | X | X | X | X |
-|`projectname`    		| X | X | X | X | X | X |
-|`rawProjectName`    	| X | X | X | X | X | X |
+|`projectName`          | X | X | X | X | X | X |
+|`PROJECTNAME`          | X | X | X | X | X | X |
+|`projectname`          | X | X | X | X | X | X |
+|`rawProjectName`       | X | X | X | X | X | X |
 |`requiresCPlusPlus`    | X |   |   |   |   |   |
 |`simulationFolderName` |   | X |   |   |   |   |
-|`simulationName`    	|   | X |   |   |   |   |
-|`sourceFolders`     	| X |   |   |   |   |   |
+|`simulationName`       |   | X |   |   |   |   |
+|`sourceFolders`        | X |   |   |   |   |   |
 |`targetFileName`       |   |   | X | X | X |   |
-|`targetFolder`    		| X | X | X | X | X | X |
+|`targetFolder`         | X | X | X | X | X | X |
 |`targetMainFile`       | X | X | X | X | X |   |
 |`targetTypeName`       | X | X | X | X | X |   |
-|`templateCategory`    	| X | X | X | X | X | X | X
+|`templateCategory`     | X | X | X | X | X | X | X
 |`templateDescription`  | X | X | X | X | X | X | X
 |`templateFolderName`   | X | X | X | X | X | X | X
 |`templateFolderPath`   | X | X | X | X | X | X | X
-|`templateName`    		| X | X | X | X | X | X | X
-|`templateProject`    	| X | X | X | X | X | X | X
-|`templateURL`    		| X | X | X | X | X | X | X
+|`templateName`         | X | X | X | X | X | X | X
+|`templateProject`      | X | X | X | X | X | X | X
+|`templateURL`          | X | X | X | X | X | X | X
 |`withCplusplusSupport` | X |   |   |   |   |   |
-|`wizardType`    		| X | X | X | X | X | X | X
-|`year` 				| X | X | X | X | X | X | X
+|`wizardType`           | X | X | X | X | X | X | X
+|`year`                 | X | X | X | X | X | X | X
 |==============
 
 ==== General
@@ -1154,9 +1161,9 @@ generally it does not make sense to change their values.
 
 ==== Template information
 
-`wizardType` (A,*):: the type of the wizard. Any of the following:
-                 `project, simulation, nedfile, inifile, msgfile,
-                 simplemodule, compoundmodule, network, wizard, export, import`
+`wizardType` (A,*):: the wizard type the template is invoked as. One of the
+                following: `project`, `simulation`, `nedfile`, `inifile`, `msgfile`,
+                `simplemodule`, `compoundmodule`, `network`, `wizard`, `export`
 `templateName` (A,*):: name of the template
 `templateDescription` (A,*):: template description
 `templateCategory` (A,*):: template category, used to visually group the

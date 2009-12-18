@@ -187,10 +187,11 @@ templateDescription = Generate an example
 templateCategory = Test Wizards
 supportedWizardTypes = simulation, network</literallayout>
 <simpara>These lines specify the name, type and category for the wizard. Category is used to
-specify how the wizards will be visually grouped. Wizard type specifies in which
-<emphasis>New &#8230; Wizard</emphasis>  your wizard will appear. You can specify: <literal>project,
-simulation, network</literal> etc. In our case, the wizard will be added both to
-the <emphasis>New Simulation Wizard</emphasis> and to the <emphasis>New Network Wizard</emphasis>.</simpara>
+specify how the wizards will be grouped in the template selection page&#8217;s tree control.
+Wizard type specifies in which <emphasis>New &#8230; Wizard</emphasis>  your wizard will appear.
+You can specify one or more of <literal>project</literal>, <literal>simulation</literal>, <literal>network</literal>, etc.; the list
+of all possible wizard types will be covered later in this document. In our case,
+the wizard will appear in the <emphasis>New Simulation</emphasis> and <emphasis>New Network</emphasis> wizard dialogs.</simpara>
 <simpara>We can now decide what data we would like to ask from the user.
 Template variables and their values can be defined as key-value pairs:</simpara>
 <literallayout class="monospaced">nodeType = Dummy
@@ -264,22 +265,22 @@ NED Source Folders by the <emphasis>New OMNeT++ Project</emphasis> wizard). Vari
 to generate output file names, can be used as input file names, and can serve
 as input and working variables for arbitrarily complex algorithms programmed
 in the template (<literal>*.ftl</literal>) files.</simpara>
-<simpara>Let us have a 1-minute look at the FreeMarker template language.
+<simpara>Let us have a one-minute look at the FreeMarker template language.
 Variables can be inserted into the output using the <literal>${varname}</literal> syntax. One can
-also write expressions inside <literal>${..}</literal>; for example, <literal>${numServers?number + 1}</literal>
+also write expressions inside <literal>${..}</literal>. For example, <literal>${numServers?number + 1}</literal>
 uses the <literal>number</literal> builtin operator to convert the <literal>numServers</literal> variable to a number,
 and adds one to it and inserts the result into the template output. FreeMarker
 exposes many other functions (conversion to string, upper-case version of a string,
-size of an array, etc.) as builtin operators as well.</simpara>
-<simpara>Programming facilities can be accessed via directives that have the <literal>&lt;#...&gt;</literal> syntax:
-use <literal>&lt;#if&gt;</literal> (<literal>&lt;#if&gt; cond&gt;..&lt;#elseif cond&gt;..&lt;#else&gt;..&lt;/#if&gt;</literal>) for conditionals;
+size of an array, etc.) as builtin operators.</simpara>
+<simpara>Programming facilities can be accessed via directives that have the <literal>&lt;#...&gt;</literal> syntax.
+Use <literal>&lt;#if&gt;</literal> (<literal>&lt;#if&gt; cond&gt;..&lt;#elseif cond&gt;..&lt;#else&gt;..&lt;/#if&gt;</literal>) for conditionals;
 <literal>&lt;#list&gt;</literal> for iterations and loops (e.g. <literal>&lt;#list words as w&gt;..&lt;/#list&gt;</literal>;
 <literal>&lt;#list 0..9 as i&gt;..&lt;/#list&gt;</literal>; <literal>&lt;#list 9..0 as i&gt;..&lt;/#list&gt;</literal>);
 <literal>&lt;#assign&gt;</literal> for assigning variables (<literal>&lt;#assign x=5&gt;</literal>; <literal>&lt;#assign x&gt;the number ${i}&lt;/#assign&gt;</literal>).
-One can define functions (<literal>&lt;#function&gt;</literal>) and macros (<literal>&lt;#macros&gt;</literal>), include
+One can define functions (<literal>&lt;#function&gt;</literal>) and macros (<literal>&lt;#macros&gt;</literal>), and include
 other templates (<literal>&lt;#include&gt;</literal>). Here we only covered a small fraction of FreeMarker&#8217;s
 possibilities; we recommend that you read the FreeMarker manual for more information.</simpara>
-<simpara>Let&#8217;s create a file with a filename with <literal>.ftl</literal> extension (e.g.<literal>untitled.ned.ftl</literal>).
+<simpara>Let us create a file with a filename with <literal>.ftl</literal> extension (e.g.<literal>untitled.ned.ftl</literal>).
 Because of the extension, this file will be processed by the templating engine.
 The actual name of the file does not matter, because the
 <literal>&lt;@setoutput .../&gt;</literal> directive instructs the templating engine to output
@@ -292,7 +293,7 @@ ${bannerComment}</literallayout>
 <literallayout class="monospaced">&lt;#if nedPackageName!=""&gt;package ${nedPackageName};&lt;/#if&gt;</literallayout>
 <literallayout class="monospaced">network ${targetTypeName}
 {
-        node[${networkSize}] : ${nodeType}
+    node[${networkSize}] : ${nodeType}
 }</literallayout>
 <simpara>The template variables will be substituted into the template automatically.</simpara>
 <simpara>Specific wizard dialog types will also define extra variables for use in the
@@ -761,13 +762,13 @@ layers = {"datalink":"ieee80211", "network":"ip", "transport":["tcp","udp"]}</li
 <section id="_conditional_pages">
 <title>Conditional Pages</title>
 <simpara>Now that basic XSWT usage was covered, we can revisit how one can use page
-conditions. Consider the following practical example:</simpara>
-<simpara>Suppose a wizard for wireless networks. On the first page of the wizard there
-is a "[] configure routing" checkbox with the ID "wantRouting". If this
-checkbox gets selected, you want to display a second page where the user can
-select a routing protocol, then further configuration pages depending on
-the particular routing protocol the user chose. To achieve this, you would
-add the following lines to template.properties:</simpara>
+conditions. Consider the following practical example of creating a wizard
+for wireless networks.</simpara>
+<simpara>On the first page of the wizard you could have a <emphasis>[] Configure routing</emphasis> checkbox,
+with the ID <literal>wantRouting</literal>. If this checkbox gets selected, you want to display
+a second page where the user can select a routing protocol, then further
+configuration pages depending on the chosen routing protocol.</simpara>
+<simpara>To achieve this, you would add the following lines to <literal>template.properties</literal>:</simpara>
 <literallayout class="monospaced"># page with the "wantRouting" checkbox
 page.1.title = General
 # page with the "protocol" combobox
@@ -777,7 +778,11 @@ page.4.title = DSDV Options</literallayout>
 <literallayout class="monospaced">page.2.condition = wantRouting
 page.3.condition = wantRouting &amp;&amp; protocol=="AODV"
 page.4.condition = wantRouting &amp;&amp; protocol=="DSDV"</literallayout>
-<simpara>You get the idea. This allows the creation of conditional pages.</simpara>
+<simpara>The <literal>.condition</literal> keys will make the wizard include only the pages where
+the condition evaluates to true. Conditions can be arbitrary FreeMarker
+expressions that evaluate to <literal>true</literal> (as boolean) or <literal>"true"</literal> (as string).
+Conditions are re-evaluated after every page, so you can depend on variables
+edited on earlier pages.</simpara>
 </section>
 <section id="_conditional_widgets">
 <title>Conditional Widgets</title>
@@ -965,16 +970,16 @@ directives, e.g. <literal>&lt;#list&gt;...&lt;/#list&gt;</literal></simpara>
 wizard pages. The custom controls may even be packaged into jar files
 in the template&#8217;s directory, i.e. you do not need to write a separate
 Eclipse plug-in or something. Have a look at the source files of the
-existing custom controls (<literal>FileChooser, NedTypeChooser, InfoLink</literal>, etc).</simpara>
+existing custom controls (<literal>FileChooser</literal>, <literal>NedTypeChooser</literal>, <literal>InfoLink</literal>, etc).</simpara>
 <simpara><emphasis role="strong">How can I dynamically enable/disable controls on a page, depending on
  other controls (i.e. the state of a checkbox or a radio button)?</emphasis></simpara>
 <simpara>Currently you cannot. If you are desperate, you have the following options:
 (1) put the dependent controls onto a separate page, which you can make
-conditional; (2) write a custom CheckboxComposite control in Java
+conditional; (2) write a custom <literal>CheckboxComposite</literal> control in Java
 that features a checkbox, and enables/disables child controls
 when the checkbox selection changes; (3) write the full custom wizard
 page entirely in Java, and register it in <literal>template.properties</literal> with
-page.xx.class= instead of page.xx.file; (4) implement scripting support
+<literal>page.xx.class=</literal> instead of <literal>page.xx.file=</literal>; (4) implement scripting support
 for XSWT 1.x and contribute the patch to us.</simpara>
 <simpara><emphasis role="strong">In the Project wizard, how does it get decided which templates get
 offered when the <emphasis>With C++ Support</emphasis> checkbox is selected and when
@@ -1542,8 +1547,8 @@ NedTypeChooser
 </term>
 <listitem>
 <simpara>
-                                A control for selecting a NED module type. An existing type name can be selected
-                                or a new one can be entered.
+                A control for selecting a NED module type. An existing type name can be selected
+                or a new one can be entered.
 </simpara>
 <itemizedlist>
 <listitem>
@@ -2118,9 +2123,9 @@ banner comment for source files; includes license text
 </term>
 <listitem>
 <simpara>
-the type of the wizard. Any of the following:
-                 <literal>project, simulation, nedfile, inifile, msgfile,
-                 simplemodule, compoundmodule, network, wizard, export, import</literal>
+the wizard type the template is invoked as. One of the
+                following: <literal>project</literal>, <literal>simulation</literal>, <literal>nedfile</literal>, <literal>inifile</literal>, <literal>msgfile</literal>,
+                <literal>simplemodule</literal>, <literal>compoundmodule</literal>, <literal>network</literal>, <literal>wizard</literal>, <literal>export</literal>
 </simpara>
 </listitem>
 </varlistentry>
@@ -2879,9 +2884,6 @@ list are optional.</simpara>
 <literallayout class="monospaced">String lookupExecutable(String name)</literallayout>
 <simpara>Finds the given executable in the path, and returns it with full path.
 If not found, it returns the original string.</simpara>
-<simpara>TODO show how to write templates that are suitable for more than one wizard.</simpara>
-<simpara>TODO also some minimal FreeMarker tutorial (variables are ${}, there is &lt;#if&gt;,
-  &lt;#list&gt;; and there&#8217;s lots more, see the manual and/or the provided examples</simpara>
 </section>
 </section>
 </section>
