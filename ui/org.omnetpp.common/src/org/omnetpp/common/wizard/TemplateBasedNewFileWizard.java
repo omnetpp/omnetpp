@@ -68,7 +68,7 @@ public abstract class TemplateBasedNewFileWizard extends TemplateBasedWizard imp
 
         String fileNameWithoutExt = fileName.replaceFirst("\\.[^.]*$", "");
         String targetTypeName = StringUtils.capitalize(StringUtils.makeValidIdentifier(fileNameWithoutExt));
-        context.getVariables().put("targetTypeName", targetTypeName);
+        context.setVariableIfMissing("targetTypeName", targetTypeName);
 
         // variables to help support project, simulation and file wizards with the same template code 
         context.getVariables().put("targetMainFile", "${targetFileName}"); 
