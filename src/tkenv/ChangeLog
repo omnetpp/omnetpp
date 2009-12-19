@@ -1,16 +1,18 @@
 2009-09-15 Rudolf Hornig
+
 	* fixed: New automatic anchor placement algorithm. Connection layouting
-	is much better now for long shaped modules. width>>height or height>>width
+	is much better now for elongated modules (where width>>height or height>>width)
 
 	* New feature: INOUT connections do not have arrows.
 
-	* New feature: Clicking on the graphical inspector or on the timeline brings up
-	the inspectors for ALL the modules, connections and messages under the mouse.
-	Previously only the topmost object was offered.
+	* New feature: Clicking on the graphical inspector or on the timeline
+	brings up the inspectors for ALL the modules, connections and messages
+	under the mouse. Previously only the topmost object was offered.
 
-	* New feature: An option was added to enable/disable whether connections attached
-	to a gate vector, connecting the same two modules should be drawn parallel to each
-	other (old behaviour) or just as a single connection line (new default)
+	* New feature: An option was added to enable/disable whether connections
+	attached to a gate vector, connecting the same two modules should be
+	drawn parallel to each other (old behaviour) or just as a single 
+	connection line (new default)
 
 2009-09-01  Andras Varga
 
@@ -31,8 +33,8 @@
         * fixed: display string for messages made consistent with module display
         strings: "o" tag removed, use b=width,height,shape,color,borderwidth instead.
 
-        * New feature: A special color name "kind" can be used in message display strings
-        (both in "i" and "b" tag)
+        * New feature: A special color name "kind" can be used in message 
+	display strings (both in "i" and "b" tags)
 
 2008-12-14  Andras Varga
 
