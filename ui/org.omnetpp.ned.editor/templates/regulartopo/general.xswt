@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <group text="Network">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+        <label text="Network name:"/>
+        <text x:id="targetTypeName" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+          <setFocus/>
+        </text>
+      </x:children>
+    </group>
+
+    <group text="Select network layout">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" numColumns="1"/>
+       <x:children>
+         <button x:id="star" text="Star" x:style="RADIO"/>
+         <button x:id="ring" text="Ring" x:style="RADIO"/>
+         <button x:id="wheel" text="Wheel (star+ring)" x:style="RADIO"/>
+         <button x:id="grid" text="Square grid" x:style="RADIO"/>
+         <button x:id="torus" text="Torus" x:style="RADIO"/>
+         <button x:id="bintree" text="Binary tree" x:style="RADIO"/>
+         <button x:id="ktree" text="k-ary tree" x:style="RADIO"/>
+         <button x:id="fullgraph" text="Full graph" x:style="RADIO"/>
+       </x:children>
+    </group>
+
+  </x:children>
+</xswt>

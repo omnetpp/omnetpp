@@ -1,0 +1,35 @@
+<#noparse>
+
+<#-- MACROS -->
+
+<#-- basic macro -->
+<#macro test foo bar baaz>
+  Test text, and the params: ${foo}, ${bar}, ${baaz}
+</#macro>
+
+<#-- call the macro: -->
+<@test foo="a" bar="b" baaz=5*5-2/>  
+
+
+<#-- more complex macro -->
+<#macro img src extra...>
+  <img src="/context${src?html}" 
+  <#list extra?keys as attr>
+    ${attr}="${extra[attr]?html}"
+  </#list>
+  >
+</#macro>
+<@img src="/images/test.png" width=100 height=50 alt="Test"/>  
+
+<#-- macro with nesting -->
+<#macro repeat count>
+  <#list 1..count as x>
+    <#nested x, x/2, x==count>
+  </#list>
+</#macro>
+
+<@repeat count=4 ; c, halfc, last>
+  ${c}. ${halfc}<#if last> Last!</#if>
+</@repeat>  		
+
+</#noparse>

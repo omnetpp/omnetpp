@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <label text="Select the widgets for the form page:"/>
+    <composite>
+      <layout x:class="RowLayout" type="VERTICAL"/>
+      <layoutData x:class="GridData" heightHint="200" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="true"/>
+      <x:children>
+        <button x:id="wantLabel" text="Label" x:style="CHECK"/>
+        <button x:id="wantWrappingLabel" text="Wrapping label" x:style="CHECK"/>
+        <button x:id="wantReadonlyText" text="Message (selectable multi-line label)" x:style="CHECK"/>
+        <label/>
+        <button x:id="wantText" text="Text edit field" x:style="CHECK"/>
+        <button x:id="wantMultilineText" text="Multi-line text editor" x:style="CHECK"/>
+        <button x:id="wantCombo" text="Combobox" x:style="CHECK"/>
+        <button x:id="wantList" text="Listbox" x:style="CHECK"/>
+        <label/>
+        <button x:id="wantCheckbox" text="Checkbox" x:style="CHECK"/>
+        <button x:id="wantRadioButtons" text="Radio Buttons" x:style="CHECK"/>
+        <label/>
+        <button x:id="wantGroup" text="Labelled group" x:style="CHECK"/>
+        <button x:id="wantComposite" text="Panel (composite)" x:style="CHECK"/>
+        <button x:id="wantHSep" text="Horizontal separator" x:style="CHECK"/>
+        <button x:id="wantVSep" text="Vertical separator" x:style="CHECK"/>
+        <button x:id="wantTabs" text="Tabbed panel" x:style="CHECK"/>
+        <label/>
+        <button x:id="wantScale" text="Scale" x:style="CHECK"/>
+        <button x:id="wantSlider" text="Slider (&quot;scrollbar&quot;)" x:style="CHECK"/>
+        <button x:id="wantSpinner" text="Spinner (numeric edit field)" x:style="CHECK"/>
+
+      </x:children>
+    </composite>
+
+  </x:children>
+</xswt>

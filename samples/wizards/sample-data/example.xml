@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<network>
+    <node name="LSR0" x="489" y="376"/>
+    <node name="LSR1" x="999" y="983"/>
+    <node name="LSR2" x="362" y="787"/>
+    <node name="LSR3" x="890" y="698"/>
+    <node name="LSR4" x="677" y="381"/>
+    <node name="LSR5" x="360" y="282"/>
+    <node name="LSR6" x="320" y="657"/>
+    <node name="LSR7" x="476" y="439"/>
+    <node name="LSR8" x="853" y="581"/>
+    <node name="LSR9" x="670" y="237"/>
+    <node name="LSR10" x="222" y="284"/>
+    <node name="LSR11" x="531" y="437"/>
+    <node name="LSR12" x="588" y="466"/>
+    <node name="LSR13" x="348" y="152"/>
+    <node name="LSR14" x="584" y="357"/>
+    <node name="LSR15" x="905" y="32"/>
+    <node name="LSR16" x="857" y="479"/>
+    <node name="LSR17" x="25"  y="866"/>
+    <node name="LSR18" x="373" y="394"/>
+    <node name="LSR19" x="488" y="651"/>
+    <node name="LSR20" x="185" y="838"/>
+    <node name="LSR21" x="453" y="748"/>
+    <node name="LSR22" x="595" y="662"/>
+    <node name="LSR23" x="647" y="542"/>
+    <node name="LSR24" x="643" y="58"/>
+    <node name="LSR25" x="686" y="999"/>
+    <node name="LSR26" x="413" y="502"/>
+    <node name="LSR27" x="766" y="518"/>
+    <node name="LSR28" x="696" y="837"/>
+    <node name="LSR29" x="104" y="950"/>
+    <node name="LSR30" x="995" y="778"/>
+    <node name="LSR31" x="763" y="109"/>
+    <node name="LSR32" x="544" y="535"/>
+    <node name="LSR33" x="757" y="563"/>
+    <node name="LSR34" x="884" y="379"/>
+    <node name="LSR35" x="767" y="675"/>
+    <node name="LSR36" x="544" y="603"/>
+
+    <link src="LSR7" dest="LSR0" bw="5e7" cost="259"/>
+    <link src="LSR8" dest="LSR3" bw="5e7" cost="474"/>
+    <link src="LSR9" dest="LSR4" bw="5e7" cost="540"/>
+    <link src="LSR11" dest="LSR7" bw="5e7" cost="264"/>
+    <link src="LSR12" dest="LSR11" bw="5e7" cost="275"/>
+    <link src="LSR13" dest="LSR0" bw="5e7" cost="1067"/>
+    <link src="LSR13" dest="LSR5" bw="5e7" cost="610"/>
+    <link src="LSR13" dest="LSR10" bw="5e7" cost="462"/>
+    <link src="LSR14" dest="LSR0" bw="5e7" cost="552"/>
+    <link src="LSR14" dest="LSR4" bw="5e7" cost="381"/>
+    <link src="LSR14" dest="LSR12" bw="5e7" cost="592"/>
+    <link src="LSR16" dest="LSR8" bw="5e7" cost="436"/>
+    <link src="LSR18" dest="LSR0" bw="5e7" cost="540"/>
+    <link src="LSR18" dest="LSR5" bw="5e7" cost="239"/>
+    <link src="LSR18" dest="LSR10" bw="5e7" cost="690"/>
+    <link src="LSR18" dest="LSR17" bw="5e7" cost="1977"/>
+    <link src="LSR20" dest="LSR2" bw="5e7" cost="760"/>
+    <link src="LSR20" dest="LSR6" bw="5e7" cost="834"/>
+    <link src="LSR20" dest="LSR17" bw="5e7" cost="751"/>
+    <link src="LSR21" dest="LSR2" bw="5e7" cost="508"/>
+    <link src="LSR21" dest="LSR6" bw="5e7" cost="756"/>
+    <link src="LSR21" dest="LSR19" bw="5e7" cost="411"/>
+    <link src="LSR23" dest="LSR4" bw="5e7" cost="757"/>
+    <link src="LSR23" dest="LSR12" bw="5e7" cost="456"/>
+    <link src="LSR23" dest="LSR22" bw="5e7" cost="522"/>
+    <link src="LSR24" dest="LSR9" bw="5e7" cost="722"/>
+    <link src="LSR24" dest="LSR15" bw="5e7" cost="1182"/>
+    <link src="LSR25" dest="LSR1" bw="5e7" cost="1363"/>
+    <link src="LSR26" dest="LSR6" bw="5e7" cost="747"/>
+    <link src="LSR26" dest="LSR7" bw="5e7" cost="393"/>
+    <link src="LSR26" dest="LSR18" bw="5e7" cost="514"/>
+    <link src="LSR26" dest="LSR19" bw="5e7" cost="594"/>
+    <link src="LSR27" dest="LSR4" bw="5e7" cost="420"/>
+    <link src="LSR27" dest="LSR8" bw="5e7" cost="668"/>
+    <link src="LSR28" dest="LSR21" bw="5e7" cost="907"/>
+    <link src="LSR28" dest="LSR22" bw="5e7" cost="720"/>
+    <link src="LSR28" dest="LSR25" bw="5e7" cost="638"/>
+    <link src="LSR29" dest="LSR2" bw="5e7" cost="1244"/>
+    <link src="LSR29" dest="LSR17" bw="5e7" cost="471"/>
+    <link src="LSR30" dest="LSR1" bw="5e7" cost="794"/>
+    <link src="LSR30" dest="LSR3" bw="5e7" cost="487"/>
+    <link src="LSR31" dest="LSR9" bw="5e7" cost="777"/>
+    <link src="LSR31" dest="LSR15" bw="5e7" cost="597"/>
+    <link src="LSR32" dest="LSR12" bw="5e7" cost="271"/>
+    <link src="LSR32" dest="LSR26" bw="5e7" cost="600"/>
+    <link src="LSR33" dest="LSR23" bw="5e7" cost="534"/>
+    <link src="LSR33" dest="LSR27" bw="5e7" cost="376"/>
+    <link src="LSR34" dest="LSR4" bw="5e7" cost="775"/>
+    <link src="LSR34" dest="LSR15" bw="5e7" cost="1370"/>
+    <link src="LSR34" dest="LSR16" bw="5e7" cost="383"/>
+    <link src="LSR35" dest="LSR1" bw="5e7" cost="1500"/>
+    <link src="LSR35" dest="LSR3" bw="5e7" cost="551"/>
+    <link src="LSR35" dest="LSR28" bw="5e7" cost="783"/>
+    <link src="LSR35" dest="LSR33" bw="5e7" cost="400"/>
+    <link src="LSR36" dest="LSR19" bw="5e7" cost="507"/>
+    <link src="LSR36" dest="LSR22" bw="5e7" cost="327"/>
+    <link src="LSR36" dest="LSR32" bw="5e7" cost="218"/>
+</network>
+

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2"/>
+
+  <x:children>
+
+    <!-- priority classes -->
+    <label text="Number of priority classes:"/>
+    <spinner x:id="priorities" minimum="2" x:style="BORDER">
+	<setFocus/>
+    </spinner>
+
+    <!-- job priority -->
+    <label text="Job priority or distribution of priorities:"/>
+    <text x:id="generatedJobPriority" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+    </text>
+    <label/>
+    <label text="E.g. intuniform(0,2)"/>
+
+  </x:children>
+</xswt>

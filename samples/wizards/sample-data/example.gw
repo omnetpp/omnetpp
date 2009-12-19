@@ -1,0 +1,27 @@
+# This is an example graph in the LEDA native format, see
+# http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
+# The graph consists of five nodes and seven edges. The nodes have a parameter 
+# of type string, and the edges have a parameter of type int.
+#
+#header section	  
+LEDA.GRAPH 
+string
+int
+-2
+#nodes section
+5 
+|{v1}| 
+|{v2}| 
+|{v3}| 
+|{v4}| 
+|{v5}| 
+
+#edges section
+7 
+1 2 0 |{4}| 
+1 3 0 |{3}| 
+2 3 0 |{2}| 
+3 4 0 |{3}| 
+3 5 0 |{7}| 
+4 5 0 |{6}| 
+5 1 0 |{1}|

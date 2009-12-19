@@ -124,6 +124,19 @@ public class ProjectUtils {
 		}
 	}
 
+    /**
+     * Add the given project as referenced project.
+     */
+	public static void addReferencedProject(IProject toProject, IProject project, IProgressMonitor monitor) throws CoreException {
+		IProjectDescription description = toProject.getDescription();
+		IProject[] referencedProjects = description.getReferencedProjects();
+		if (!ArrayUtils.contains(referencedProjects, project)) {
+			referencedProjects = (IProject[])ArrayUtils.add(referencedProjects, project);
+			description.setReferencedProjects(referencedProjects);
+			toProject.setDescription(description, monitor);
+		}
+	}
+	
 	public static boolean isNedFoldersFile(IResource resource) {
 		return (resource instanceof IFile &&
 				resource.getParent() instanceof IProject &&

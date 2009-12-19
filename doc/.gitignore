@@ -1,0 +1,17 @@
+*.pdf
+*.htm
+*.html
+tmp*.xml
+ide-overview/
+manual/
+migration/
+installguide/
+ide-customization-guide/
+userguide/
+api/
+nedxml-api/
+parsim-api/
+scave-engine/
+tictoc-tutorial/
+src/*/eclipse/
+src/*/tmp/

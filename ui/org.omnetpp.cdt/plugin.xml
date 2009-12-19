@@ -259,7 +259,7 @@
             class="org.omnetpp.cdt.wizard.OmnetppCCProjectWizard"
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/full/obj16/newoproject.gif"
-            id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard"
+            id="org.omnetpp.cdt.wizards.NewOmnetppCCProject"
             name="OMNeT++ Project..."
             preferredPerspectives="org.eclipse.cdt.ui.CPerspective, org.omnetpp.main.OmnetppPerspective"
             project="true">
@@ -273,13 +273,13 @@
      <commonWizard
            menuGroupId="org.eclipse.cdt.ui.newProject"
            type="new"
-           wizardId="org.omnetpp.cdt.wizard.omnetppCCProjectWizard">
+           wizardId="org.omnetpp.cdt.wizards.NewOmnetppCCProject">
         <enablement></enablement>
      </commonWizard>
      <commonWizard
            menuGroupId="org.eclipse.cdt.ui"
            type="new"
-           wizardId="org.omnetpp.cdt.wizards.NewClassCreationWizard">
+           wizardId="org.omnetpp.cdt.wizards.NewOmnetppClass">
         <enablement></enablement>
      </commonWizard>
   </extension>
@@ -332,13 +332,13 @@
                id="org.omnetpp.main.OmnetppPerspective">
          </perspectiveShortcut>
          <newWizardShortcut
-               id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard">
+               id="org.omnetpp.cdt.wizards.NewOmnetppCCProject">
          </newWizardShortcut>
          <newWizardShortcut
-               id="org.omnetpp.ned.editor.wizard.new.simplemodule">
+               id="org.omnetpp.ned.editor.wizards.NewSimpleModule">
          </newWizardShortcut>
          <newWizardShortcut
-               id="org.omnetpp.cdt.wizards.NewClassCreationWizard">
+               id="org.omnetpp.cdt.wizards.NewOmnetppClass">
          </newWizardShortcut>
       </perspectiveExtension>
       <perspectiveExtension
@@ -353,7 +353,7 @@
                id="org.eclipse.cdt.ui.CPerspective">
          </perspectiveShortcut>
          <newWizardShortcut
-               id="org.omnetpp.cdt.wizards.NewClassCreationWizard">
+               id="org.omnetpp.cdt.wizards.NewOmnetppClass">
          </newWizardShortcut>
       </perspectiveExtension>
    </extension>
@@ -403,7 +403,7 @@
             class="org.omnetpp.cdt.wizard.NewOmnetppClassCreationWizard"
             finalPerspective="org.eclipse.cdt.ui.CPerspective"
             icon="icons/full/etool16/newclass_wiz.gif"
-            id="org.omnetpp.cdt.wizards.NewClassCreationWizard"
+            id="org.omnetpp.cdt.wizards.NewOmnetppClass"
             name="Class (OMNeT++)">
          <class class="org.eclipse.cdt.internal.ui.wizards.NewClassCreationWizard">
             <parameter name="ctype" value="true"/>
@@ -414,5 +414,24 @@
          </description>
       </wizard>
    </extension>
-
+   <extension
+         point="org.omnetpp.common.wizard.contenttemplates">
+      <plugin
+            folder="template"
+            pluginId="org.omnetpp.cdt">
+      </plugin>
+   </extension>
+   <extension
+         point="org.swtworkbench.xswt.classloaders">
+      <plugin
+            pluginId="org.omnetpp.cdt"
+            referenceClass="org.omnetpp.cdt.Activator">
+      </plugin>
+   </extension>
+   <extension
+         point="org.omnetpp.common.wizard.templatecontributors">
+      <contributor
+            class="org.omnetpp.cdt.wizard.CDTContentTemplateContributor">
+      </contributor>
+   </extension>
 </plugin>

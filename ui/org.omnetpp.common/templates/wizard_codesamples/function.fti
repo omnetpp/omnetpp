@@ -1,0 +1,37 @@
+<#noparse>
+
+<#-- FUNCTIONS -->
+
+<#-- function -->
+<#function avg2 a b>
+  <#return (a + b)/2>
+</#function>
+
+<#assign foo=10/>
+<#assign bar=20/>
+The average of ${foo} and ${bar} is ${avg2(foo,bar)}.
+
+<#-- function with a variable number of args -->
+<#function avg numbers...>
+  <#local sum = 0>
+  <#list numbers as d>
+    <#local sum = sum + d>
+  </#list>
+  <#if numbers?size != 0>
+    <#return sum / numbers?size>
+  </#if>
+</#function>
+
+${avg(10, 20)}
+${avg(10, 20, 30, 40)}
+${avg()!"N/A"}  
+
+<#-- function with a default value -->
+<#function join str1 str2 separator=",">
+  <#return str1 + separator + str2>
+</#function>
+
+${join("foo", "bar", "-")}
+${join("foo", "bar")}
+
+</#noparse>

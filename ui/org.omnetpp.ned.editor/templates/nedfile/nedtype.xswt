@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  <layout x:class="GridLayout" x:numColumns="1"/>
+  <x:children>
+
+    <group text="NED Type">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" x:numColumns="2"/>
+      <x:children>
+        <label x:text="NED type name:"/>
+        <text x:id="targetTypeName" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+          <setFocus/>
+        </text>
+      </x:children>
+    </group>
+
+    <group text="Initial Content">
+       <layoutData x:class="GridData" horizontalAlignment="FILL" x:grabExcessHorizontalSpace="true"/>
+       <layout x:class="GridLayout" x:numColumns="1"/>
+       <x:children>
+         <button x:id="isSimple" text="Simple module" x:style="RADIO"/>
+         <button x:id="isModule" text="Compound module" x:style="RADIO"/>
+         <button x:id="isNetwork" text="Network" x:style="RADIO"/>
+         <button x:id="isChannel" text="Channel" x:style="RADIO"/>
+         <button x:id="isModuleinterface" text="Module interface" x:style="RADIO"/>
+         <button x:id="isChannelinterface" text="Channel interface" x:style="RADIO"/>
+       </x:children>
+    </group>
+
+  </x:children>
+</xswt>

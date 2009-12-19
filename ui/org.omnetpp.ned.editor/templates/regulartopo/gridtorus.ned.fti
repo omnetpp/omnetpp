@@ -1,0 +1,111 @@
+<#-- template include for network.ned.ftl -->
+
+<#if !nodeTypeExists>
+module ${nodeType} {
+    parameters:
+        @display("i=misc/node_vs");
+    gates:
+<#if gateVectorWithIndices || gateVectorWithPlusPlus>
+        inout ${vectorGate}[];
+<#else>
+        inout ${gridUpGate};
+        inout ${gridDownGate};
+        inout ${gridLeftGate};
+        inout ${gridRightGate};
+</#if>
+}
+</#if>
+
+<#if channelTypeSupplied && !channelTypeExists>
+channel ${channelType} extends ned.DatarateChannel {
+    parameters:
+        int cost = default(0);
+}
+</#if>
+
+<#-- abbreviations used for the connections: -->
+<#if gateVectorWithIndices>
+  <#assign up = vectorGate + "[0]">
+  <#assign down = vectorGate + "[1]">
+  <#assign left = vectorGate + "[2]">
+  <#assign right = vectorGate + "[3]">
+<#elseif gateVectorWithPlusPlus>
+  <#assign up = vectorGate + "++">
+  <#assign down = vectorGate + "++">
+  <#assign left = vectorGate + "++">
+  <#assign right = vectorGate + "++">
+<#else>
+  <#assign up = gridUpGate>
+  <#assign down = gridDownGate>
+  <#assign left = gridLeftGate>
+  <#assign right = gridRightGate>
+</#if>
+
+
+//
+// A generated ${networkKeyword} with ${iif(grid, "grid", "torus")} topology.
+//
+<#if parametricNED>
+${networkKeyword} ${targetTypeName}
+{
+    parameters:
+        int columns = default(${columns});
+        int rows = default(${rows});
+    submodules:
+        node[columns*rows]: ${nodeType} {
+            <#if generateCoordinates>@display("p=,,matrix,$columns");</#if>
+            <#if gateVectorWithIndices>gates: ${vectorGate}[4];</#if>
+        }
+<#if grid>
+    connections allowunconnected:
+        for i=0..rows-1, for j=0..columns-1 {
+            node[i*columns+j].${down} <-->${channelSpec} node[(i+1)*columns+j].${up} if i!=rows-1;
+            node[i*columns+j].${right} <-->${channelSpec} node[i*columns+j+1].${left} if j!=columns-1;
+        }
+<#elseif torus>
+    connections:
+        for i=0..rows-1, for j=0..columns-1 {
+            node[i*columns+j].${down} <-->${channelSpec} node[((i+1)%rows)*columns+j].${up};
+            node[i*columns+j].${right} <-->${channelSpec} node[(i*columns+(j+1)%columns].${left};
+        }
+<#else>
+   <#stop "one of torus and grid must be true">
+</#if>
+}
+
+
+<#else>
+${networkKeyword} ${targetTypeName}
+{
+    submodules:
+<#list 0..rows-1 as i>
+  <#list 0..columns-1 as j>
+        node_${i}_${j}: ${nodeType} {
+            <#if generateCoordinates>@display("p=${startX+i*dx},${startY+j*dy}");</#if>
+            <#if gateVectorWithIndices>gates: ${vectorGate}[4];</#if>
+        }
+  </#list>
+
+</#list>
+<#if grid>
+    connections allowunconnected:
+  <#list 0..rows-1 as i>
+    <#list 0..columns-1 as j>
+        <#if i!=rows-1   >node_${i}_${j}.${down} <-->${channelSpec} node_${i+1}_${j}.${up};</#if>
+        <#if j!=columns-1>node_${i}_${j}.${right} <-->${channelSpec} node_${i}_${j+1}.${left};</#if>
+    </#list>
+  </#list>
+<#elseif torus>
+    connections:
+  <#list 0..rows-1 as i>
+    <#list 0..columns-1 as j>
+        node_${i}_${j}.${down} <-->${channelSpec} node_${(i+1)%rows}_${j}.${up};
+        node_${i}_${j}.${right} <-->${channelSpec} node_${i}_${(j+1)%columns}.${left};
+    </#list>
+  </#list>
+<#else>
+   <#stop "one of torus and grid must be true">
+</#if>
+}
+</#if>
+

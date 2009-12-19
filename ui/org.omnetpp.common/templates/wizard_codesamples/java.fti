@@ -1,0 +1,63 @@
+<#noparse>
+
+<#-- INVOKING JAVA METHODS -->
+
+<#-- Accessing static methods and fields of Java classes -->
+Number of seconds since the Unix epoch: ${classes["java.lang.System"].currentTimeMillis() / 1000}
+The value of PI: ${classes["java.lang.Math"].PI}
+
+<#-- May also remember the classes[<classname>] part in a variable, for easier access -->
+<#assign System = classes["java.lang.System"]>
+Days since the Unix epoch: ${System.currentTimeMillis() / 1000 / 86400 }
+
+<#-- Args are accepted too (note: We have predefined java.lang.Math as Math since it's often needed) -->
+cos(0) = ${Math.cos(0)}
+PATH = ${System.getenv("PATH")} 
+
+<#-- Eclipse classes may also be accessed: -->
+<#assign SWT = classes["org.eclipse.swt.SWT"]>
+SWT version: ${SWT.getVersion()}
+
+<#-- for example, listing projects in the Eclipse workspace: -->
+<#assign ResourcesPlugin = classes["org.eclipse.core.resources.ResourcesPlugin"]>
+<#assign workspaceRoot = ResourcesPlugin.getWorkspace().getRoot()>
+
+Projects in the workspace:
+<#list workspaceRoot.getProjects() as project>
+    ${project.getName()}
+</#list>
+
+With a bit more detail:
+<#list workspaceRoot.getProjects() as project>
+    ${project.getName()} (<#if project.isOpen()>OPEN<#else>CLOSED</#if>)
+</#list>
+
+Project contents:
+<#function dirTree resource indent>
+  <#assign result = indent + resource.getName() + "\n">
+  <#if LangUtils.hasMethod(resource, "members")>
+    <#list resource.members() as child>
+      <#assign result = result + dirTree(child, indent+"  ")/>
+    </#list>
+  </#if>
+  <#return result>
+</#function>
+
+<#list workspaceRoot.getProjects() as project>
+  <#if project.isOpen()>
+${dirTree(project, "  ")}
+  </#if>
+</#list>
+
+<#-- OMNeT++ NED types can also be accessed, via NEDResourcesPlugin. -->
+<#assign nedResources = classes["org.omnetpp.ned.core.NEDResourcesPlugin"].getNEDResources()>
+All NED types:
+<#list nedResources.getNedTypesFromAllProjects() as nedTypeInfo>
+    ${nedTypeInfo.getName()} (${nedTypeInfo.getFullyQualifiedName()}), in ${nedTypeInfo.getNEDFile().getFullPath().toString()})  
+</#list>
+
+<#assign someType = nedResources.getNedTypesFromAllProjects()[0]>  <#-- Note: stops with error if there are no NED types -->
+The source of ${someType.getFullyQualifiedName()}:
+${someType.getNEDElement().getNEDSource()}
+
+</#noparse>

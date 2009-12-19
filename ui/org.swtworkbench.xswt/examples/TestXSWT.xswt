@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+	<import xmlns="http://sweet_swt.sf.net/xswt">
+		<package name="org.eclipse.swt.widgets"/>
+		<package name="org.eclipse.swt.layout"/>
+	</import>
+	<x:children>
+		<composite>
+			<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="gridData.FILL"/>
+			<layout x:class="gridLayout"/>
+			<x:children>
+				<button x:id="performBuild" x:style="CHECK" text="Perform &amp;build automatically on resource modification"/>
+				<button x:id="saveAll" x:style="CHECK" text="Save all &amp;modified resources automatically prior to manual build"/>
+				<button x:id="refreshWorkspace" x:style="CHECK" text="&amp;Refresh Workspace on startup"/>
+				<button x:id="confirmExit" x:style="CHECK" text="&amp;Confirm exit when closing last window"/>
+				<button x:id="showTasks" x:style="CHECK" text="Show &amp;Tasks view when build has errors or warnings"/>
+				<composite>
+					<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="gridData.FILL"/>	
+					<layout x:class="gridLayout" numColumns="2"/>
+					<x:children>
+						<label text="&amp;Workspace save interval (in minutes):"/>
+						<text x:id="saveInterval" x:style="BORDER">
+						    <layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="gridData.FILL"/></text> 
+					</x:children>
+				</composite>	
+				<group text="Open mode">
+					<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="gridData.FILL"/>
+					<layout x:class="gridLayout"/>
+					<x:children>
+						<button x:id="doubleClick" x:style="RADIO" text="D&amp;ouble click"/>
+						<button x:id="singleClick" x:style="RADIO" text="&amp;Single click"/>
+						<button x:id="selectOn" x:style="CHECK" text="Select on &amp;hover"><layoutData x:class="gridData" horizontalIndent="20"/></button>
+						<button x:id="openWhen" x:style="CHECK" text="Open when using arrow &amp;keys"><layoutData x:class="gridData" horizontalIndent="20"/></button>
+						<label text="Note: This preference may not take effect on all views"/>
+					</x:children>
+				</group>	
+			</x:children>
+		</composite>
+	</x:children>
+</xswt>

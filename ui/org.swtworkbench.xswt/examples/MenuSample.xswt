@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+	<import xmlns="http://sweet_swt.sf.net/xswt">
+		<package name="java.lang"/>
+		<package name="org.eclipse.swt.widgets"/>
+		<package name="org.eclipse.swt.layout"/>
+	</import>
+	<x:children>
+		<menu x:style="DROP_DOWN" x:id="fileMenu">
+			<x:children>
+				<menuItem text="New"/>
+				<menuItem text="Open"/>
+				<menuItem x:style="SEPARATOR"/>
+				<menuItem text="Exit"/>
+			</x:children>
+		</menu>
+		<menu x:style="DROP_DOWN" x:id="editMenu">
+			<x:children>
+				<menuItem text="Undo"/>
+				<menuItem x:style="SEPARATOR"/>
+				<menuItem text="Cut"/>
+				<menuItem text="Copy"/>
+				<menuItem text="Paste"/>
+			</x:children>
+		</menu>
+		<menu x:style="BAR" x:id="menuBar">
+			<x:children>
+				<menuItem text="&amp;File" x:style="CASCADE" menu="fileMenu"/>
+				<menuItem text="&amp;Edit" x:style="CASCADE" menu="editMenu"/>
+			</x:children>
+		</menu>
+		<label text="Java Editor settings:"/>
+		<tabFolder>
+			<layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+			<x:children>
+				<composite x:id="appearance">
+					<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL"/>
+					<layout x:class="gridLayout" numColumns="2"/>
+					<x:children>
+						<list selection="0" x:style="BORDER|SINGLE">
+							<layoutData x:class="gridData" heightHint="100" widthHint="220"/>
+							<!-- x:p0 specifies the 0th constructor argument for the String passed to add() (ie: the string's value). -->
+							<add x:p0="Line number foreground"/>
+							<add x:p0="Matching brackets highlight"/>
+							<add x:p0="Current line highlight"/>
+						</list>
+					</x:children>
+				</composite>
+				<tabItem text="Appeara&amp;nce" control="appearance"/>
+
+				<composite x:id="syntax">
+					<layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" horizontalSpan="2"/>
+					<layout x:class="gridLayout" numColumns="2"/>
+					<x:children>						
+						<label text="Fo&amp;reground:"><layoutData x:class="gridData" horizontalSpan="2"/></label>							
+					</x:children>
+				</composite>		
+				<tabItem text="Synta&amp;x" control="syntax"/>
+			</x:children>
+		</tabFolder>
+	</x:children>
+</xswt>
+

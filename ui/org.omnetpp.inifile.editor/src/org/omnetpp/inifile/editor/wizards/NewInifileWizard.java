@@ -1,44 +1,51 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 package org.omnetpp.inifile.editor.wizards;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkbench;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.wizard.CreationContext;
+import org.omnetpp.common.wizard.IContentTemplate;
+import org.omnetpp.common.wizard.TemplateBasedNewFileWizard;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 
 /**
- * Wizard for ini files. Its role is to create a new file
- * resource in the provided container. If the container resource
- * (a folder or a project) is selected in the workspace
- * when the wizard is opened, it will accept it as the target
- * container. The wizard creates one file with the extension
- * "ini".
+ * "New Inifile" wizard
+ *
+ * @author Andras
  */
-public class NewInifileWizard extends Wizard implements INewWizard {
-    private NewInifileWizardPage1 page1 = null;
-    private IStructuredSelection selection;
-    private IWorkbench workbench;
+public class NewInifileWizard extends TemplateBasedNewFileWizard {
+
+    public NewInifileWizard() {
+        setWizardType("inifile");
+    }
 
     @Override
     public void addPages() {
-        page1 = new NewInifileWizardPage1(workbench, selection);
-        addPage(page1);
-    }
+        super.addPages();
+        setWindowTitle(isImporting() ? "Import Ini File" : "New Ini File");
 
-    public void init(IWorkbench aWorkbench, IStructuredSelection currentSelection) {
-        workbench = aWorkbench;
-        selection = currentSelection;
-        setWindowTitle("New Ini File");
+        WizardNewFileCreationPage firstPage = getFirstPage();
+        firstPage.setTitle(isImporting() ? "Import Ini File" : "New Ini File");
+        firstPage.setDescription("This wizard allows you to " + (isImporting() ? "import" : "create") + " a new OMNeT++ simulation configuration file");
+        firstPage.setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/wizban/newinifile.png"));
+        firstPage.setFileExtension("ini");
+        firstPage.setFileName("omnetpp.ini");
     }
 
     @Override
-    public boolean performFinish() {
-        return page1.finish();
+    protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
+        CreationContext context = super.createContext(selectedTemplate, folder);
+
+        IPath filePath = getFirstPage().getContainerFullPath().append(getFirstPage().getFileName());
+        IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
+        String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
+        context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
+
+        return context;
     }
+
 }

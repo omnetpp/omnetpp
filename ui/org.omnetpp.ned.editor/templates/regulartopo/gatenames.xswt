@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <group text="Gates">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+        <label x:style="WRAP" text="Choose the gates to connect; only bidirectional gates are accepted. Choose a gate vector where indicated so; they must be of unbounded size, i.e. declared like this: inout g[];">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </label>
+
+<#if bintree || ktree>
+        <!-- binary or k-ary tree -->
+        <label text="Gate to parent:"/>
+        <gateChooser x:id="treeParentGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.SCALAR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+
+  <#if bintree>
+        <label text="Gate to left child:"/>
+        <gateChooser x:id="treeLeftChild" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.SCALAR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+        <label text="Gate to right child:"/>
+        <gateChooser x:id="treeRightChild" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.SCALAR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+  <#else>
+        <label text="Gate to children (vector):"/>
+        <gateChooser x:id="treeChildGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+  </#if>      
+</#if>
+
+<#if ring || wheel>
+        <!-- ring -->
+        <label text="Gate to previous node in ring:"/>
+        <gateChooser x:id="wheelPrevGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.SCALAR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+
+        <label text="Gate to next node in ring:"/>
+        <gateChooser x:id="wheelNextGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.SCALAR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+</#if>
+
+<#if star || wheel>
+        <!-- star -->
+        <label text="Gate to hub node:"/>
+        <gateChooser x:id="wheelToHubGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.SCALAR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+
+        <label text="Hub gate to nodes (vector):"/>
+        <gateChooser x:id="wheelHubOutGate" nedTypeName="${hubType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+</#if>
+
+<#if grid || torus>
+        <!-- grid/torus -->
+        <label text="Gate to upper neighbor:"/>
+        <gateChooser x:id="gridUpGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+
+        <label text="Gate to lower neighbor:"/>
+        <gateChooser x:id="gridDownGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+
+        <label text="Gate to left neighbor:"/>
+        <gateChooser x:id="gridLeftGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+
+        <label text="Gate to right neighbor:"/>
+        <gateChooser x:id="gridRightGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR"> 
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+</#if>
+
+<#if fullgraph>
+        <label text="Gate to connect:"/>
+        <gateChooser x:id="vectorGate" nedTypeName="${nodeType}" gateFilter="GateChooser.INOUT|GateChooser.VECTOR">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </gateChooser>
+</#if>
+
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>

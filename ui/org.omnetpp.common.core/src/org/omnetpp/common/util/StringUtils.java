@@ -88,6 +88,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	 * Removes spaces, assures it begins with letter or underscore, etc.
 	 */
 	public static String makeValidIdentifier(String name) {
+        name = name.replaceAll("\\s", "");
         name = name.replaceAll("[^A-Za-z0-9_]", "_");
         name = name.replaceAll("__+", "_");
         if (!name.matches("[a-zA-Z_].*"))
@@ -99,6 +100,8 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	 * Make the first noOfChars lower-case
 	 */
 	public static String uncapitalize(String value, int noOfChars) {
+	    if (value.length() < noOfChars)
+	        noOfChars = value.length();
 	    return value.substring(0,noOfChars).toLowerCase()+value.substring(noOfChars);
 
 	}
@@ -712,6 +715,13 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		}
 	}
 
+	/**
+	 * The returned list always begins with the text before the first separator
+	 * (may be empty string), then goes on with (separator, text) pairs until it
+	 * reaches the end of the text. The length of the output is always an odd number,
+	 * and the returned list of strings joined together should always exactly reproduce 
+	 * the original input.
+	 */
 	public static List<String> splitPreservingSeparators(String string, Pattern separator) {
 		List<String> result = new ArrayList<String>();
 		Matcher matcher = separator.matcher(string);

@@ -1,0 +1,65 @@
+<#-- template include for network.ned.ftl -->
+
+<#if !nodeTypeExists>
+module ${nodeType} {
+    parameters:
+        @display("i=misc/node_vs");
+    gates:
+        inout ${vectorGate}[];
+}
+</#if>
+
+<#if channelTypeSupplied && !channelTypeExists>
+channel ${channelType} extends ned.DatarateChannel {
+    parameters:
+        int cost = default(0);
+}
+</#if>
+
+<#-- abbreviations used for the connections: -->
+<#if gateVectorWithIndices>
+  <#function g i> <#return vectorGate + "[" + i + "]"> </#function>
+<#elseif gateVectorWithPlusPlus>
+  <#function g i> <#return vectorGate + "++"> </#function>
+<#else>
+  <#function g i> <#return vectorGate + "[" + i + "]"> </#function>
+</#if>
+
+//
+// A generated ${networkKeyword} with full graph topology.
+//
+<#if parametricNED>
+${networkKeyword} ${targetTypeName}
+{
+    parameters:
+        int n = default(${nodes});
+    submodules:
+        node[n]: ${nodeType} {
+            <#if generateCoordinates>@display("p=,,ring");</#if>
+            <#if !gateVectorWithPlusPlus>gates: ${vectorGate}[n];</#if>
+        }
+    connections:
+        for i=0..n-2, for j=i+1..n-1 {
+            node[i].${g("j")} <-->${channelSpec} node[j].${g("i")};
+        }
+}
+<#else>
+${networkKeyword} ${targetTypeName}
+{
+    submodules:
+  <#list 0..nodes-1 as i>
+        node${i}: ${nodeType} {
+            <#assign x = centerX + Math.floor(radius*Math.sin(2*i*Math.PI/nodes))>
+            <#assign y = centerY - Math.floor(radius*Math.cos(2*i*Math.PI/nodes))>
+            <#if generateCoordinates>@display("p=${x},${y}");</#if>
+            <#if !gateVectorWithPlusPlus>gates: ${vectorGate}[${nodes}];</#if>
+        }
+  </#list>
+    connections:
+  <#list 0..nodes-2 as i>
+    <#list i+1..nodes-1 as j>
+        node${i}.${g(j)} <-->${channelSpec} node${j}.${g(i)};
+    </#list>
+  </#list>
+}
+</#if>

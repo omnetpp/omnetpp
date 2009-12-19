@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <import xmlns="http://sweet_swt.sf.net/xswt">
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets"/>
+        <package name="org.eclipse.swt.layout"/>
+        <package name="org.eclipse.swt.graphics"/>
+    </import>
+    <x:children>
+        <composite>
+            <layoutData x:class="gridData" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.FILL"/>
+            <x:children>
+            	<composite x:style="BORDER">
+<!--            		<bounds x:p0="1" x:p1="1" x:p2="50" x:p3="50"/>-->
+            		<bounds x:class="Rectangle" x:p0="1" x:p1="1" x:p2="50" x:p3="90"/>
+            	</composite>
+            </x:children>
+        </composite>
+    </x:children>
+</xswt>

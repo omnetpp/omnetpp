@@ -18,12 +18,15 @@
    <topic label="IDE User Guide">
       <link toc="content/userguide/toc.xml"/>
    </topic>
+   <topic label="IDE Customization Guide">
+      <link toc="content/ide-customization-guide/toc.xml"/>
+   </topic>
    <topic href="content/api/main.html" label="OMNeT++ API Reference">
       <topic href="content/api/APIChanges.html" label="API Changes">
       </topic>
       <anchor id="api"/>
    </topic>
-   <topic href="content/WhatsNew.html" label="What&apos;s New in OMNeT++ 4.0">
+   <topic href="content/WhatsNew.html" label="What&apos;s New in OMNeT++ 4.1">
    </topic>
    <anchor id="omnetpp"/>
    <topic href="content/License.html" label="License">

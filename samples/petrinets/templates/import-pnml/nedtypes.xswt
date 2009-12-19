@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="1"/>
+  <x:children>
+
+    <group text="Network">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+        <label text="Petri Net name:"/>
+        <text x:id="targetTypeName" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+          <setFocus/>
+        </text>
+      </x:children>
+    </group>
+
+    <group text="NED types">
+      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+        <label text="Choose an existing type, or type a name (without package) to create it.">
+          <layoutData x:class="GridData" horizontalSpan="2"/>
+        </label>
+
+        <label text="Place:"/>
+        <nedTypeChooser x:id="placeType" acceptedTypes="NedTypeChooser.MODULE">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </nedTypeChooser>
+
+        <label text="Transition:"/>
+        <nedTypeChooser x:id="transitionType" acceptedTypes="NedTypeChooser.MODULE">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </nedTypeChooser>
+
+        <label text="Arc:"/>
+        <nedTypeChooser x:id="arcType" acceptedTypes="NedTypeChooser.CHANNEL">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </nedTypeChooser>
+
+<!-- PNML does not seem to support inhibitor arcs (?)
+        <label text="Inhibitor arc:"/>
+        <nedTypeChooser x:id="inhibitorArcType" acceptedTypes="NedTypeChooser.CHANNEL">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </nedTypeChooser>
+-->
+
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>

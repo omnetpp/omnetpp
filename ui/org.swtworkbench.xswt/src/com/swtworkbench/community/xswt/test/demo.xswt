@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+  </import>
+  
+  <layout x:class="fillLayout" marginHeight="5" marginWidth="5" spacing="5" />
+  <!-- In here, regular XSWT semantics apply -->
+  <text x:p0="New Title Text" />
+  <!-- new added parent reference feature -->
+  <getShell x:id="shell1" menuBar="menubar_id">
+  		<text x:p0="Again, New title text, Cool?" />
+  </getShell>
+  
+  <x:children>
+<!-- Define Menu Bar -->
+<menu x:style="SWT.BAR" x:id="menubar_id">
+   <x:children>
+      <menuItem text="File" x:style="SWT.CASCADE" menu="menu1">
+        <x:children>
+			<menu x:id="menu1" x:style="SWT.DROP_DOWN">
+			  <x:children>
+			   <menuItem x:style="SWT.PUSH" text="&amp;New\tAlt+Shift+N" accelerator="SWT.ALT | SWT.SHIFT | 'N'"/>
+			   <menuItem x:style="SEPARATOR"/>
+			   <menuItem x:id="exitItem" text="Exit\tControl+x"/>
+			  </x:children>
+			</menu>
+        </x:children>
+      </menuItem>
+  </x:children>
+ </menu>
+
+  	<!-- Two construction types work in Color attiribute: CSS constants and SWT.COLOR_XXX 
+    <label text="Hello World:" foreground="SWT.COLOR_BLUE">
+    -->
+    <label text="Hello World?" foreground="DarkGreen" font="Dialog, 12, SWT.BOLD|SWT.ITALIC">
+    	<background x:p0="null" x:p1="200" x:p2="200" x:p3="0xff" />
+    </label>
+    <tabFolder>
+      <layoutData x:class="gridData" grabExcessHorizontalSpace="true"
+          grabExcessVerticalSpace="true"
+          horizontalAlignment="GridData.FILL"
+          verticalAlignment="GridData.FILL"/>
+      <x:children>
+        <composite x:id="appearance">
+        
+          <layoutData x:class="gridData"
+              grabExcessHorizontalSpace="true"
+              horizontalAlignment="GridData.FILL"/>
+          <layout x:class="gridLayout" numColumns="2"/>
+          <x:children>
+            <list selection="0" x:style="BORDER|SINGLE">
+              <layoutData x:class="gridData" heightHint="100"
+                  widthHint="220"/>
+              <add x:p0="Line number foreground"/>
+              <add x:p0="Matching brackets highlight"/>
+              <add x:p0="Current line highlight"/>
+            </list>
+
+          </x:children>
+        </composite>
+        <tabItem text="Appearance" control="appearance"/>
+
+	  <composite x:id="test1">
+    		<bounds x:class="rectangle" x:p0="10" x:p1="10" x:p2="50" x:p3="50" />
+        </composite>
+        <tabItem text="test 1" control="test1"/>
+        
+      </x:children>
+    </tabFolder>
+    
+  </x:children>
+</xswt>

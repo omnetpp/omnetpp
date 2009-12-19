@@ -14,8 +14,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.draw2d,
  org.omnetpp.ide.nativelibs,
- org.omnetpp.common.core;visibility:=reexport
-Export-Package: org.apache.commons.collections,
+ org.omnetpp.common.core;visibility:=reexport,
+ org.visigoths.freemarker;bundle-version="2.3.15",
+ org.swtworkbench.xswt;bundle-version="1.1.2"
+Export-Package: au.com.bytecode.opencsv,
+ au.com.bytecode.opencsv.bean,
+ org.apache.commons.collections,
  org.apache.commons.collections.bag,
  org.apache.commons.collections.bidimap,
  org.apache.commons.collections.buffer,
@@ -27,6 +31,7 @@ Export-Package: org.apache.commons.collections,
  org.apache.commons.collections.list,
  org.apache.commons.collections.map,
  org.apache.commons.collections.set,
+ org.apache.commons.math,
  org.apache.commons.math.analysis,
  org.apache.commons.math.complex,
  org.apache.commons.math.distribution,
@@ -69,6 +74,7 @@ Export-Package: org.apache.commons.collections,
    org.eclipse.swt.widgets,
    org.omnetpp.common.virtualtable",
  org.omnetpp.common.image;uses:="org.eclipse.jface.resource,org.eclipse.swt.graphics",
+ org.omnetpp.common.json,
  org.omnetpp.common.markers,
  org.omnetpp.common.project,
  org.omnetpp.common.properties;
@@ -88,10 +94,14 @@ Export-Package: org.apache.commons.collections,
    org.eclipse.jface.viewers,
    org.eclipse.swt.graphics,
    org.eclipse.swt.widgets",
+ org.omnetpp.common.wizard,
+ org.omnetpp.common.wizard.support,
  org.omnetpp.common.xml;uses:="org.xml.sax.helpers,org.xml.sax"
-Bundle-ClassPath: lib/commons-collections-3.2.jar,
+Bundle-ClassPath: .,
+ lib/commons-collections-3.2.jar,
  lib/commons-math-1.1.jar,
- .
+ lib/freemarker.jar,
+ lib/opencsv-2.0.jar
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Activator: org.omnetpp.common.CommonPlugin
 Eclipse-LazyStart: true
