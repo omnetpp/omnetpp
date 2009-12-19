@@ -490,7 +490,7 @@ dialogs.
 
 To access the import wizards, choose 'OMNeT++', 'Networks, simulations and other items'
 as import source on the first page of the 'Import' dialog. The next page will be the
-the content template selection page. After choosing a template, the next page
+content template selection page. After choosing a template, the next page
 will be the file, folder or project name selection page of the 'New...' wizard,
 followed by the custom wizard pages.
 
@@ -662,12 +662,15 @@ each other's content, and it is undefined which one will win.
 
 Empty and blank files (ie. those containing only white space) will not be created,
 i.e. processing will skip writing it without any question, warning or error.
-This allows you to easily create conditional files. This also means that you
-cannot create empty files this way. However, this "limitation" is easy to overcome
-as most file formats (NED, C++, INI, XML, etc) have a comment syntax, so you
-can just write a file that contains only a comment ( `// file intentionally left blank` ).
-Alternatively, you can create an empty file using the `FileUtils` Java utility class
-(`<@do FileUtils.createFile("empty.txt", "")!/>`).
+This allows you to easily create files conditionally: you just have to surround
+the file body with `<#if>..</#if>`.
+
+NOTE: The above rule also means that one cannot even deliberately create empty files
+      with templates. However, this "limitation" is easy to overcome:
+      most file formats (NED, C++, INI, XML, etc) have a comment syntax, so you
+      can just write a file that contains only a comment ( `// file intentionally left blank` ).
+      Alternatively, you can create an empty file using the `FileUtils` Java utility class
+      (`<@do FileUtils.createFile("empty.txt", "")!/>`).
 
 NOTE: Although blank files are not created, the template engine will not delete an
       existing file that happens to be already there with the same name.

@@ -458,7 +458,7 @@ It makes the wizard appear in the <emphasis>File|Import&#8230;</emphasis> dialog
 dialogs.</simpara>
 <simpara>To access the import wizards, choose <emphasis>OMNeT++</emphasis>, <emphasis>Networks, simulations and other items</emphasis>
 as import source on the first page of the <emphasis>Import</emphasis> dialog. The next page will be the
-the content template selection page. After choosing a template, the next page
+content template selection page. After choosing a template, the next page
 will be the file, folder or project name selection page of the <emphasis>New&#8230;</emphasis> wizard,
 followed by the custom wizard pages.</simpara>
 <note><simpara>If an import wizard supports more than one wizard types (e.g. <literal>project</literal>, <literal>simulation</literal>,
@@ -696,12 +696,14 @@ each other&#8217;s content, and it is undefined which one will win.</simpara></n
 <title>Conditional file creation</title>
 <simpara>Empty and blank files (ie. those containing only white space) will not be created,
 i.e. processing will skip writing it without any question, warning or error.
-This allows you to easily create conditional files. This also means that you
-cannot create empty files this way. However, this "limitation" is easy to overcome
-as most file formats (NED, C++, INI, XML, etc) have a comment syntax, so you
-can just write a file that contains only a comment ( <literal>// file intentionally left blank</literal> ).
-Alternatively, you can create an empty file using the <literal>FileUtils</literal> Java utility class
-(<literal>&lt;@do FileUtils.createFile("empty.txt", "")!/&gt;</literal>).</simpara>
+This allows you to easily create files conditionally: you just have to surround
+the file body with <literal>&lt;#if&gt;..&lt;/#if&gt;</literal>.</simpara>
+<note><simpara>The above rule also means that one cannot even deliberately create empty files
+      with templates. However, this "limitation" is easy to overcome:
+      most file formats (NED, C++, INI, XML, etc) have a comment syntax, so you
+      can just write a file that contains only a comment ( <literal>// file intentionally left blank</literal> ).
+      Alternatively, you can create an empty file using the <literal>FileUtils</literal> Java utility class
+      (<literal>&lt;@do FileUtils.createFile("empty.txt", "")!/&gt;</literal>).</simpara></note>
 <note><simpara>Although blank files are not created, the template engine will not delete an
       existing file that happens to be already there with the same name.</simpara></note>
 </section>
