@@ -333,7 +333,10 @@ public class InifileAnalyzer {
 		// check key and if it occurs in the right section
 		ConfigOption e = ConfigRegistry.getOption(key);
 		if (e == null) {
-			addError(section, key, "Unknown configuration entry: "+key);
+		    if (!key.matches("[a-zA-Z0-9-_]+"))
+		        addError(section, key, "Syntax error in configuration key: "+key);
+		    else
+		        addError(section, key, "Unknown configuration key: "+key);
 			return;
 		}
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
@@ -760,13 +763,15 @@ public class InifileAnalyzer {
         }
 	}
 
-
 	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
 		Assert.isTrue(key.lastIndexOf('.') > 0);
 		String configName = key.substring(key.lastIndexOf('.')+1);
 		ConfigOption e = ConfigRegistry.getPerObjectEntry(configName);
 		if (e == null) {
-			addError(section, key, "Unknown per-object configuration: "+configName);
+            if (!configName.matches("[a-zA-Z0-9-_]+"))
+                addError(section, key, "Syntax error in per-object configuration key: "+configName);
+            else
+                addError(section, key, "Unknown per-object configuration key: "+configName);
 			return;
 		}
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
@@ -1126,8 +1131,8 @@ public class InifileAnalyzer {
 	 * Classify an inifile key, based on its syntax.
 	 */
 	public static KeyType getKeyType(String key) {
-		if (StringUtils.containsNone(key, ".?*{\\"))
-			return KeyType.CONFIG;  // contains no dot or wildcard
+		if (!key.contains("."))
+			return KeyType.CONFIG;  // contains no dot
 		else if (!key.contains("-"))
 			return KeyType.PARAM; // contains dot, but no hyphen
 		else
