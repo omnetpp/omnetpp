@@ -1,0 +1,4 @@
+instructions.configure = setProgramProperty(propName:osgi.instance.area.default, propValue:../samples);
+instructions.unconfigure = setProgramProperty(propName:osgi.instance.area.default, propValue:);
+instructions.configure = setProgramProperty(propName:eclipse.buildId, propValue:M20090917-0800);
+instructions.unconfigure = setProgramProperty(propName:eclipse.buildId, propValue:);

@@ -4,10 +4,6 @@
 <product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.1.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
-      <linux>/org.omnetpp.product/config.ini</linux>
-      <macosx>/org.omnetpp.product/config_macosx.ini</macosx>
-      <solaris>/org.omnetpp.product/config.ini</solaris>
-      <win32>/org.omnetpp.product/config.ini</win32>
    </configIni>
 
    <launcherArgs>
