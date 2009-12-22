@@ -17,16 +17,16 @@
          version="0.11.0"/>
 
    <requires>
-      <import feature="org.eclipse.cdt" version="6.0.0.200906161748"/>
+      <import feature="de.unikassel.imageexport" version="0.11.0"/>
+      <import feature="org.eclipse.cdt" version="6.0.0.200909110608"/>
       <import feature="org.eclipse.emf.common" version="2.5.0.v200906151043"/>
       <import feature="org.eclipse.emf.common.ui" version="2.5.0.v200906151043"/>
       <import feature="org.eclipse.emf.ecore" version="2.5.0.v200906151043"/>
       <import feature="org.eclipse.emf.ecore.edit" version="2.5.0.v200906151043"/>
       <import feature="org.eclipse.emf.edit" version="2.5.0.v200906151043"/>
       <import feature="org.eclipse.emf.edit.ui" version="2.5.0.v200906151043"/>
-      <import feature="org.eclipse.gef" version="3.5.0.v20090422-2346-7779-8192B6696L3ABD43733"/>
-      <import feature="org.eclipse.platform" version="3.5.0.v20090611a-9gEeG1HFtQcmRThO4O3aR_fqSMvJR2sJ"/>
-      <import feature="de.unikassel.imageexport" version="0.11.0"/>
+      <import feature="org.eclipse.gef" version="3.5.1.v20090724-1146-777908193B6696L3DA843563"/>
+      <import feature="org.eclipse.platform" version="3.5.1.R35x_v20090910-9gEeG1_FthkNDSP2odXdThaOu9GFDPn83DGB7"/>
    </requires>
 
    <plugin
