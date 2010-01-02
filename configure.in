@@ -723,7 +723,7 @@ if test -n "$NO_TCL"; then
 
 else  #matching "fi" is after BLT testing
 
-    if test -d /usr/include/tcl8.4; then
+   if test -d /usr/include/tcl8.4; then
         # this was reported to be the case on Debian 3.1 "sarge"
         TK_CFLAGS84=${TK_CFLAGS:-"-I/usr/include/tcl8.4"}
    fi
@@ -834,41 +834,14 @@ else  #matching "fi" is after BLT testing
 
 
     #----------------------
-    # Check for BLT. $TK_CFLAGS and $TK_LIBS plus $BLT_LIBS should be enough
+    # Check for BLT. NOTE: since plove and scalars are out, blt-devel is no longer needed
     #----------------------
-    # on FedoraCore 9 blt includes have their own directory
-    if test -d /usr/include/blt; then
-        TK_CFLAGS="$TK_CFLAGS -I/usr/include/blt"
-    fi
-
-    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
-    if test $blt_ok = no -a "$cygwin" = yes; then
-        bltlibs="-lBLT24 -mwindows -lwinspool"
-        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-    fi
-    if test $blt_ok = no; then
-        bltlibs="-lBLT24"
-        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-    fi
-    if test $blt_ok = no; then
-        bltlibs="-lBLT"
-        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-    fi
-    if test $blt_ok = no; then
-        bltlibs="-lBLT2.4"
-        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-    fi
-    if test $blt_ok = no; then
-        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
-        AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details.])
-        HAVE_BLT=no
-    fi
-    if test $blt_ok = yes; then
+    if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then
         HAVE_BLT=yes
-        if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-            OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
-            AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), probably BLT not installed correctly.])
-        fi
+    else
+        HAVE_BLT=no
+        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
+        AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), BLT not installed?])
     fi
 
     # if we got through until here, enable building of the following progs:
