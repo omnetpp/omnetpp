@@ -396,14 +396,13 @@ void NED2Generator::doChannel(ChannelElement *node, const char *indent, bool isl
 
 void NED2Generator::doParameters(ParametersElement *node, const char *indent, bool islast, const char *)
 {
-    // inside channel-spec, everything has to be on one line except it'd be too long
-    // (rule of thumb: if it contains a param group or "parameters:" keyword is explicit)
-    bool inlineParams = node->getParent()->getTagCode()==NED_CHANNEL_SPEC && node->getIsImplicit();
-
     OUT << getBannerComment(node, indent);
     if (!node->getIsImplicit())
         OUT << indent << "parameters:" << getRightComment(node);
 
+    // inside channel-spec, everything has to be on one line except it'd be too long
+    // (rule of thumb: if it contains a param group or "parameters:" keyword is explicit)
+    bool inlineParams = node->getIsImplicit() && node->getParent() && node->getParent()->getTagCode()==NED_CHANNEL_SPEC;
     generateChildren(node, inlineParams ? NULL : node->getIsImplicit() ? indent : increaseIndent(indent));
 }
 
