@@ -85,9 +85,10 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 	protected static final int SECT_GATES = 2;
 	protected static final int SECT_TYPES = 3;
 	protected static final int SECT_CONNECTIONS = 4;
-	protected static final int SECT_SUBMODULES = 5;
-	protected static final int SECT_SUBMODULE_PARAMETERS = 6;
-	protected static final int SECT_SUBMODULE_GATES = 7;
+    protected static final int SECT_CONNECTION_PARAMETERS = 5;
+	protected static final int SECT_SUBMODULES = 6;
+	protected static final int SECT_SUBMODULE_PARAMETERS = 7;
+	protected static final int SECT_SUBMODULE_GATES = 8;
 
 	protected static class CompletionInfo {
 		public String linePrefix; // relevant line (lines) just before the insertion point
@@ -96,6 +97,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 		public String nedTypeName;       // the type name
 		public int sectionType; // SECT_xxx
 		public String submoduleTypeName;
+        public String connectionTypeName;
 	}
 
 	protected IContextInformationValidator fValidator = new Validator();
@@ -231,8 +233,10 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 
             // detect what section we are in
 			int sectionType;
-			if (source.matches("(?s).*\\bconnections\\b.*"))
-				sectionType = SECT_CONNECTIONS;
+			if (source.matches("(?s).*\\bconnections\\b.*(-->|<--|<-->)[^;]*\\{.*"))
+				sectionType = SECT_CONNECTION_PARAMETERS;
+			else if (source.matches("(?s).*\\bconnections\\b.*"))
+                sectionType = SECT_CONNECTIONS;
 			else if (source.matches("(?s).*\\bsubmodules\\b.*\\bgates\\b.*"))
 				sectionType = SECT_SUBMODULE_GATES;
 			else if (source.matches("(?s).*\\bsubmodules\\b.*\\{.*"))
@@ -254,16 +258,12 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 			    nedTypeName = null;  // replace failed
 
 			// detect submodule type: last occurrence of "identifier {"
-			String submoduleTypeName = null;
-			if (sectionType == SECT_SUBMODULE_GATES || sectionType == SECT_SUBMODULE_PARAMETERS) {
-				String pat2 = "(?s).*[:\\s]([A-Za-z_][A-Za-z0-9_]+)\\s*\\{";
-				Matcher matcher2 = Pattern.compile(pat2).matcher(source);
-				if (matcher2.lookingAt())
-					submoduleTypeName = matcher2.group(1);
-			}
-
-			if (sectionType == SECT_GLOBAL)
-			    nedTypeName = enclosingNedTypeName = submoduleTypeName = null;
+			String lastTypeName = null;
+	        Matcher matcher = Pattern.compile("(?s).*[:\\s]([A-Za-z_][A-Za-z0-9_]+)\\s*\\{").matcher(source);
+	        if (matcher.lookingAt())
+	            lastTypeName = matcher.group(1);
+	        else
+	            lastTypeName = null;
 
 //			Debug.println(">>>"+source+"<<<");
 //			Debug.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
@@ -277,7 +277,8 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 			ret.nedTypeName = nedTypeName;
 			ret.enclosingNedTypeName = enclosingNedTypeName;
 			ret.sectionType = sectionType;
-			ret.submoduleTypeName = submoduleTypeName;
+			ret.submoduleTypeName = sectionType == SECT_SUBMODULE_GATES || sectionType == SECT_SUBMODULE_PARAMETERS ? lastTypeName : null;
+            ret.connectionTypeName = sectionType == SECT_CONNECTION_PARAMETERS ? lastTypeName : null;
 			return ret;
 
         } catch (BadLocationException e) {
@@ -285,7 +286,8 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         }
 	}
 
-	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
+	@Override
+    public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
 		//XXX what the heck is this?
 		//		IContextInformation[] result= new IContextInformation[5];
 		//		for (int i= 0; i < result.length; i++)
@@ -296,19 +298,23 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 		return null;
 	}
 
-	public char[] getCompletionProposalAutoActivationCharacters() {
+	@Override
+    public char[] getCompletionProposalAutoActivationCharacters() {
 		return new char[] { '.', '@' };
 	}
 
-	public char[] getContextInformationAutoActivationCharacters() {
+	@Override
+    public char[] getContextInformationAutoActivationCharacters() {
 		return new char[] { '(' };
 	}
 
-	public IContextInformationValidator getContextInformationValidator() {
+	@Override
+    public IContextInformationValidator getContextInformationValidator() {
 		return fValidator;
 	}
 
-	public String getErrorMessage() {
+	@Override
+    public String getErrorMessage() {
 		return null;
 	}
 }

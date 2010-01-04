@@ -75,9 +75,12 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		}
 
 		INEDTypeInfo submoduleType = null;
-		if (info.submoduleTypeName!=null) {
+		if (info.submoduleTypeName!=null)
 			submoduleType = res.lookupNedType(info.submoduleTypeName, context);
-		}
+
+		INEDTypeInfo connectionType = null;
+        if (info.connectionTypeName!=null)
+            connectionType = res.lookupNedType(info.connectionTypeName, context);
 
 		if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES)
 		{
@@ -121,6 +124,8 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 				addProposals(viewer, documentOffset, result, submoduleType.getParamDeclarations().keySet(), "parameter");
 			if (info.sectionType == SECT_SUBMODULE_GATES && submoduleType!=null)
 				addProposals(viewer, documentOffset, result, submoduleType.getGateDeclarations().keySet(), "gate");
+            if (info.sectionType == SECT_CONNECTION_PARAMETERS && connectionType!=null)
+                addProposals(viewer, documentOffset, result, connectionType.getParamDeclarations().keySet(), "parameter");
 
 			// offer param and gate type name keywords
 			if (info.sectionType == SECT_PARAMETERS)
@@ -294,6 +299,6 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		// long millis = System.currentTimeMillis()-startMillis;
 		// Debug.println("Proposal creation: "+millis+"ms");
 
-	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
+	    return result.toArray(new ICompletionProposal[result.size()]);
 	}
 }
