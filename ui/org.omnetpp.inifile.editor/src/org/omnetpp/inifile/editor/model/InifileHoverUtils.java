@@ -116,9 +116,8 @@ public class InifileHoverUtils {
 	 * @param section  null is accepted
 	 * @param key      null is accepted
 	 */
-	//XXX should tolerate analyzer==null
 	public static String getEntryHoverText(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
-		if (section == null || key == null || !doc.containsKey(section, key))
+		if (section == null || key == null)
 			return null;
 
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
@@ -127,18 +126,21 @@ public class InifileHoverUtils {
 			return getConfigHoverText(section, key, doc);
 		}
 		else if (keyType == KeyType.PARAM) {
-			// parameter assignment: display which parameters it matches
-			return getParamKeyHoverText(section, key, analyzer);
+		    if (analyzer == null)
+		        return null;
+		    else {
+    			// parameter assignment: display which parameters it matches
+    			return getParamKeyHoverText(section, key, analyzer);
+		    }
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
 		    // display option description etc
-            return getPerObjectConfigHoverText(section, key, analyzer);
+            return getPerObjectConfigHoverText(section, key, doc);
 		}
 		else {
 			return null; // should not happen (invalid key type)
 		}
 	}
-
 
     /**
 	 * Generates tooltip for a config entry.
@@ -155,8 +157,7 @@ public class InifileHoverUtils {
     /**
      * Generates tooltip for a per-object config entry.
      */
-	public static String getPerObjectConfigHoverText(String section, String key, InifileAnalyzer analyzer) {
-	    IInifileDocument doc = analyzer.getDocument();
+	public static String getPerObjectConfigHoverText(String section, String key, IInifileDocument doc) {
         IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
         String text = getProblemsHoverText(markers, false);
 
