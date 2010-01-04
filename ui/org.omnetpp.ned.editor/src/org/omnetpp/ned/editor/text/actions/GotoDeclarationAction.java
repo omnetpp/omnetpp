@@ -29,15 +29,11 @@ public class GotoDeclarationAction extends NedTextEditorAction {
     }
 
     @Override
-	public void update() {
-//        setEnabled(getTextEditor() != null);
-        if (getTextEditor() == null) {
-            setEnabled(false);
-            return;
-        }
-        Info info = getInfoForSelection();
-    	setEnabled(info != null && info.referredElement != null);
-	}
+    public void update() {
+        // NOTE: don't disable this action based on the current text selection (unless you properly implement selection changed)
+        //       because F3 (Goto definition) will break in the text editor
+        super.update();
+    }
 
     @Override
     public void run() {
