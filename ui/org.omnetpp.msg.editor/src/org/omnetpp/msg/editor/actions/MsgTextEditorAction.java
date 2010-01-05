@@ -34,7 +34,7 @@ public abstract class MsgTextEditorAction extends TextEditorAction {
             doRun();
         }
         catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
             MsgEditorPlugin.logError(e);
         }
     }

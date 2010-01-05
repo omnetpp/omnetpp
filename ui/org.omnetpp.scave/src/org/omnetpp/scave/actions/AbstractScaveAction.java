@@ -66,7 +66,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
     		}
 	    }
 	    catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
             ScavePlugin.logError(e);
 	    }
 	}

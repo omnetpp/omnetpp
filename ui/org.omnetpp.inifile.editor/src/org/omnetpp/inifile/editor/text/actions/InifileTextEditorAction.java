@@ -7,12 +7,14 @@
 
 package org.omnetpp.inifile.editor.text.actions;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
-
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.text.InifileEditorMessages;
 
-public class InifileTextEditorAction extends TextEditorAction {
+public abstract class InifileTextEditorAction extends TextEditorAction {
     public final static String ACTION_DEFINITION_PREFIX = "org.omnetpp.inifile.editor.text.";
 
     /**
@@ -25,4 +27,16 @@ public class InifileTextEditorAction extends TextEditorAction {
         setId(id);
         setActionDefinitionId(ACTION_DEFINITION_PREFIX+id);
     }
+    @Override
+    public void run() {
+        try {
+            doRun();
+        }
+        catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
+            InifileEditorPlugin.logError(e);
+        }
+    }
+
+    protected abstract void doRun();
 }
