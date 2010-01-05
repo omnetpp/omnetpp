@@ -35,7 +35,6 @@ public class ToggleCommentAction extends InifileTextEditorAction {
 				ITextSelection textSelection = (ITextSelection) selection;
 				int startLine = textSelection.getStartLine();
 				int endLine = textSelection.getEndLine();
-				doc = null;
 
 				boolean allLinesAreComments = true;
 				for (int i = startLine; i <= endLine; i++)
