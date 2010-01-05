@@ -1202,31 +1202,33 @@ echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
 
-# patch the ide/configuration/config.ini to point to the samples dir.
-# this is needed because relative URLs cannot be used because the working directory
-# is different on Mac OS X than on any other platform
-if test -f ide/configuration/config.ini ; then
-    echo patching the ide configuration file. default workspace is: $OMNETPP_SAMPLES_DIR
-    perl -i~ -pe 's!osgi.instance.area.default=.*$!osgi.instance.area.default='$OMNETPP_SAMPLES_DIR'!g' ide/configuration/config.ini
-    rm ide/configuration/config.ini~
+# Test it the IDE was already configured. If not, copy the platform specific 
+# files to the IDE root directory
+if test ! -d ide/configuration ; then
+    echo Configuring the IDE...
+    cp -r ide/linux/* ide
+    case $PLATFORM in
+    win32.x86)
+        cp -r ide/win32/* ide
+        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        ;;
+    linux.x86_64)
+        cp -r ide/linux64/* ide
+        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        ;;
+    linux.x86)
+        cp -r ide/linux/* ide
+        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        ;;
+    macosx)
+        cp -r ide/macosx/* ide
+        echo osgi.instance.area.default=../../../../samples >>ide/configuration/config.ini
+        ;;
+    *)
+        echo IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel. Not configured.
+        ;;
+    esac
 fi
-
-# patch the launcher.ini file to point to the platform specific configuration area
-patchIDEconfig () {
-  if test -f ide/$1/$2.ini ; then
-    perl -i~ -pe 'BEGIN{undef $/;} s!-configuration\n.*?\n!-configuration\n'$OMNETPP_ROOT'/ide/'$1'/configuration\n!smg' ide/$1/$2.ini
-    rm ide/$1/$2.ini~
-  fi
-}
-
-patchIDEconfig linux omnest
-patchIDEconfig linux64 omnest
-patchIDEconfig macosx omnest
-patchIDEconfig win32 omnest
-patchIDEconfig linux omnetpp
-patchIDEconfig linux64 omnetpp
-patchIDEconfig macosx omnetpp
-patchIDEconfig win32 omnetpp
 
 #----------------------
 # Check $OPP_PROBLEM_PACKAGES
