@@ -26,7 +26,6 @@
 		<copy todir="${srcDirectory}/features">
 			<fileset dir="../">
 				<include name="org.omnetpp.ide/**" />
-				<include name="org.omnetpp.ide.sdk/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
 				<include name="org.omnetpp.ide.academic/**" />
 			</fileset>
@@ -145,12 +144,6 @@
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnetpp" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnetpp" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnetpp.app/Contents/MacOS/omnetpp" perm="755" />
-<!--
-		<copy overwrite="true" file="${srcDirectory}/plugins/org.omnetpp.product/launcher_linux.ini" tofile="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnetpp.ini" />
-		<copy overwrite="true" file="${srcDirectory}/plugins/org.omnetpp.product/launcher_linux64.ini" tofile="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnetpp.ini" />
-		<copy overwrite="true" file="${srcDirectory}/plugins/org.omnetpp.product/launcher_macosx.ini" tofile="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnetpp.app/Contents/MacOS/omnetpp.ini" />
-		<copy overwrite="true" file="${srcDirectory}/plugins/org.omnetpp.product/launcher_win32.ini" tofile="${buildDirectory}/${buildLabel}/${archivePrefix}/win32/omnetpp.ini" />
--->		
 	</target>
 
 	<target name="omnest" depends="clean, init-omnest, pde-build, package">

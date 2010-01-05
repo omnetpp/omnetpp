@@ -15,6 +15,9 @@
    <includes
          id="de.unikassel.imageexport"
          version="0.11.0"/>
+   <includes
+         id="org.omnetpp.ide.source"
+         version="4.1.0.qualifier"/>
 
    <requires>
       <import feature="de.unikassel.imageexport" version="0.11.0"/>

@@ -119,9 +119,7 @@ END OF TERMS AND CONDITIONS
    </plugins>
 
    <features>
-      <feature id="org.omnetpp.ide" version="4.1.0.qualifier"/>
       <feature id="org.omnetpp.ide.academic" version="4.1.0.qualifier"/>
-      <feature id="org.omnetpp.ide.sdk" version="4.1.0.qualifier"/>
       <feature id="org.eclipse.platform" version="3.5.1.R35x_v20090910-9gEeG1_FthkNDSP2odXdThaOu9GFDPn83DGB7"/>
       <feature id="org.eclipse.cdt" version="6.0.0.200909110608"/>
       <feature id="org.eclipse.gef" version="3.5.1.v20090724-1146-777908193B6696L3DA843563"/>
@@ -131,7 +129,6 @@ END OF TERMS AND CONDITIONS
       <feature id="org.eclipse.emf.ecore.edit" version="2.5.0.v200906151043"/>
       <feature id="org.eclipse.emf.edit" version="2.5.0.v200906151043"/>
       <feature id="org.eclipse.emf.edit.ui" version="2.5.0.v200906151043"/>
-      <feature id="de.unikassel.imageexport" version="0.11.0"/>
       <feature id="org.eclipse.egit" version="0.5.0.200908282229"/>
       <feature id="org.eclipse.team.svn" version="0.7.8.I20090904-1300"/>
       <feature id="org.polarion.eclipse.team.svn.connector" version="2.2.0.I20090505-1500"/>
