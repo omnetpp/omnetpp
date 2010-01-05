@@ -12,7 +12,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.ITextEditor;
-
 import org.omnetpp.common.editor.text.TextEditorUtil;
 
 /**
@@ -28,7 +27,7 @@ public class ToggleCommentAction extends InifileTextEditorAction {
 	}
 
 	@Override
-	public void run() {
+	protected void doRun() {
 		ISelection selection = getTextEditor().getSelectionProvider().getSelection();
 		if (selection instanceof ITextSelection) {
 			try {

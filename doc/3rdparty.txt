@@ -50,8 +50,10 @@ A Windows port of gcc, and a minimal Unix-like environment in which typical
 makefiles can execute. License: GNU General Public License.
 
 GIT
+
 A Windows port of the GIT version control system.
 License: GNU General Public License.
 
 WinPcap
+
 Windows Packet Capture Library.

@@ -100,6 +100,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.ShowViewAction;
+import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -809,15 +810,18 @@ public class GraphicalNedEditor
 				typeComment = StringUtils.trimToEmpty(typeElement.getComment());
 		}
 
+		String htmlComment = "";
 		if (!StringUtils.isEmpty(comment)) {
-			hoverText += "<br/><br/>" + StringUtils.makeHtmlDocu(comment);
+			htmlComment += NedCommentFormatter.makeHtmlDocu(comment, false, null);
 		}
 
 		if (!StringUtils.isEmpty(typeComment)) {
 			//typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
-			hoverText += "<br/><br/>" + StringUtils.makeHtmlDocu(typeComment);
+		    htmlComment += NedCommentFormatter.makeHtmlDocu(typeComment, false, null);
 		}
 
+		hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source  
+		    
 		//debug code:
 		//hoverText += "<br/><br/>" + "SyntaxProblemMaxCumulatedSeverity:" + element.getSyntaxProblemMaxCumulatedSeverity() +
 		//			", ConsistencyProblemMaxCumulatedSeverity:" + element.getConsistencyProblemMaxCumulatedSeverity();
@@ -826,7 +830,7 @@ public class GraphicalNedEditor
 		//", ConsistencyProblemMaxCumulatedSeverity:" + fileElement.getConsistencyProblemMaxCumulatedSeverity();
 
 		String nedCode = StringUtils.stripLeadingCommentLines(element.getNEDSource().trim(), "//");
-		hoverText += "<br/><br/>" + "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
+		hoverText += "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
 
 		outPreferredSize.preferredWidth = Math.max(300, 7*(5+StringUtils.getMaximumLineLength(nedCode)));
 

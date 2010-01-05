@@ -132,7 +132,9 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected String getTooltipText() {
-		return InifileHoverUtils.getConfigHoverText(GENERAL, entry.getName(), inifile);
+	    String name = entry.getName();
+	    String key = entry.isPerObject() && !name.contains(".") ? "**." + name : name;
+		return InifileHoverUtils.getEntryHoverText(GENERAL, key, inifile, null);
 	}
 
 	protected Button createResetButton() {
@@ -140,7 +142,8 @@ public abstract class FieldEditor extends Composite {
 		resetButton.setText("Reset");
 		resetButton.setToolTipText("Reset value to default, by removing corresponding entry from the document");
 		resetButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				resetToDefault();
 			}
 		});
@@ -181,7 +184,8 @@ public abstract class FieldEditor extends Composite {
 	 */
 	protected static void addFocusTransfer(final Control widgetClicked, final Control widgetToFocus) {
 		widgetClicked.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent e) {
+			@Override
+            public void mouseDown(MouseEvent e) {
 				widgetToFocus.setFocus();
 			}
 		});

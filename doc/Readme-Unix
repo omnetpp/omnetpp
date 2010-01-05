@@ -24,7 +24,7 @@ Make sure that the packages needed to build OMNeT++ are installed on your system
 On debian the following packages are mandatory:
 
 sudo apt-get install build-essential gcc g++ bison flex perl tcl8.4 tcl8.4-dev \
-                     tk8.4 tk8.4-dev blt blt-dev libxml2 libxml2-dev \
+                     tk8.4 tk8.4-dev blt libxml2 libxml2-dev \
 		     zlib1g zlib1g-dev libx11-dev
 
 First you should check configure.user to make sure it contains the settings

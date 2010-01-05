@@ -33,7 +33,7 @@ public class OrganizeImportsAction extends NedTextEditorAction {
 	}
 
 	@Override
-    public void run() {
+	protected void doRun() {
         NedFileElementEx nedFileElement = getNedFileElement();
         if (nedFileElement.hasSyntaxError())
         	return; // don't mess with the source while it has syntax error

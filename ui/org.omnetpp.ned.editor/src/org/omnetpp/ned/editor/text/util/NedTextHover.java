@@ -18,6 +18,7 @@ import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.text.util.NedTextUtils.Info;
@@ -53,7 +54,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 		String comment = typeInfo.getNEDElement().getComment();
 		if (StringUtils.isNotEmpty(comment))
-			text += "<br/>" + StringUtils.makeHtmlDocu(comment);
+			text += "<br/>" + NedCommentFormatter.makeHtmlDocu(comment, false, null);
 
 		return HoverSupport.addHTMLStyleSheet(text);
 	}

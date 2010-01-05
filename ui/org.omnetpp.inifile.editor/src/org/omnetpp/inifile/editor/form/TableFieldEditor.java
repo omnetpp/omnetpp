@@ -94,20 +94,23 @@ public abstract class TableFieldEditor extends FieldEditor {
 		removeButton = createButton(buttonGroup, "Remove");
 
 		addButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				addNewEntry();
 			}
 		});
 
 		removeButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				removeSelected();
 			}
 		});
 
 		// set up hotkey support
 		tableViewer.getTable().addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
+			@Override
+            public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.DEL)
 					removeSelected();
 			}
@@ -118,7 +121,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey sectionKey = (SectionKey) (item==null ? null : item.getData());
-				return sectionKey==null ? null : InifileHoverUtils.getConfigHoverText(sectionKey.section, sectionKey.key, inifile);
+				return sectionKey==null ? null : InifileHoverUtils.getEntryHoverText(sectionKey.section, sectionKey.key, inifile, null);
 			}
 		});
 

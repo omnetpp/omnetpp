@@ -80,6 +80,7 @@ import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
@@ -87,6 +88,7 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
+import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
@@ -256,7 +258,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 this.originalParamDeclaration = originalParamInheritanceChain.get(size - 1);
                 ParamElementEx paramElement = originalParamInheritanceChain.get(0);
 
-                if (paramElement.getParent().getParent() == parameterProvider)
+                if (paramElement.getParent() == getFirstParametersChild())
                     this.originalParamLocal = paramElement;
                 else
                     this.originalParamLocal = null;
@@ -574,6 +576,26 @@ public class ParametersDialog extends TitleAreaDialog {
         }
     }
 
+    // BEGIN KLUDGE: TODO: work around the fact that ConnectionElementEx does not have its parameters directly
+    // but there is an extra node under it called ChannelSpecElement, we may want to get rid of that at some point
+    private INEDElement getRealParametersProvider() {
+        return parameterProvider instanceof ConnectionElementEx ? ((ConnectionElementEx)parameterProvider).getFirstChannelSpecChild() : parameterProvider;
+    }
+
+    private INEDElement getFirstParametersChild() {
+        if (parameterProvider instanceof ConnectionElementEx) {
+            ChannelSpecElement channelSpecElement = ((ConnectionElementEx)parameterProvider).getFirstChannelSpecChild();
+
+            if (channelSpecElement != null)
+                return channelSpecElement.getFirstParametersChild();
+            else
+                return null;
+        }
+        else
+            return parameterProvider.getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
+    }
+    // END KLUDGE:
+
     public ParamLine getParamLine(String name) {
         for (ParamLine paramLine : paramLines)
             if (name.equals(paramLine.name))
@@ -636,7 +658,7 @@ public class ParametersDialog extends TitleAreaDialog {
     protected Control createDialogArea(Composite parent) {
         setTitle(dialogTitle);
         String description = parameterProvider.getReadableTagName() + (parameterProvider instanceof IHasName ? " called " + ((IHasName)parameterProvider).getName() : "");
-        setMessage("Add, remove or modify parameter type, name and value of the " + description);
+        setMessage("Add, remove or modify parameter types, names and values for the " + description);
 
         // page group
         Composite dialogArea = (Composite)super.createDialogArea(parent);
@@ -727,7 +749,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
         // add button
         Button addButton = createButton(buttonComposite, BUTTON_ADD_ID, "Add", false);
-        addButton.setEnabled(!(parameterProvider instanceof SubmoduleElementEx));
+        addButton.setEnabled(!(parameterProvider instanceof SubmoduleElementEx) && !(parameterProvider instanceof ConnectionElementEx));
         addButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -933,9 +955,15 @@ public class ParametersDialog extends TitleAreaDialog {
 
     @Override
 	protected void okPressed() {
-       INEDElement parametersElement = parameterProvider.getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
-       ParametersElement newParametersElement = parametersElement != null ? (ParametersElement)parametersElement.deepDup() :
-           (ParametersElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PARAMETERS);
+       INEDElement parametersElement = getFirstParametersChild();
+       ParametersElement newParametersElement = null;
+       if (parametersElement != null)
+           newParametersElement = (ParametersElement)parametersElement.deepDup();
+       else {
+           newParametersElement = (ParametersElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PARAMETERS);
+           if (parameterProvider instanceof ConnectionElementEx)
+               newParametersElement.setIsImplicit(true);
+       }
 
        // remove old parameters from copy
        for (INEDElement element : newParametersElement)
@@ -953,7 +981,7 @@ public class ParametersDialog extends TitleAreaDialog {
            parameterReplaceCommand.add(new DeleteCommand(parametersElement));
 
        if (newParametersElement.getFirstChild() != null)
-           parameterReplaceCommand.add(new AddNEDElementCommand(parameterProvider, newParametersElement));
+           parameterReplaceCommand.add(new AddNEDElementCommand(getRealParametersProvider(), newParametersElement));
        else if (parametersElement != null)
            parameterReplaceCommand.add(new DeleteCommand(parametersElement));
 

@@ -108,10 +108,10 @@ void cPacketQueue::insertAfter(cPacket *where, cPacket *pkt)
 
 cPacket *cPacketQueue::remove(cPacket *pkt)
 {
-    cPacket *msg1 = (cPacket *)cQueue::remove(pkt);
-    if (pkt)
-        bitlength -= msg1->getBitLength();
-    return msg1;
+    cPacket *pkt1 = (cPacket *)cQueue::remove(pkt);
+    if (pkt1)
+        bitlength -= pkt1->getBitLength();
+    return pkt1;
 }
 
 cPacket *cPacketQueue::pop()

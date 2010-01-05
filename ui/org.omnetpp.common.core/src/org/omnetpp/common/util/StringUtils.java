@@ -262,149 +262,28 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	}
 
     /**
-     * Formats a NED comment as a one-line doc string. If it is longer than the
-     * given max length, it gets truncated. Only the first sentence or the first paragraph
-     * is returned.
+     * Interface for replaceMatches().
      */
-    public static String makeBriefDocu(String comment, int maxlen) {
-        if (comment==null)
-            return null;
-
-        // BEWARE: Java's multiline regexp mode "(?m)" seems to be broken:
-        // negative sets "[^...]", "\s" etc may consume newlines, so substitutions
-        // may change the number of lines in the string! This corresponds to the
-        // documentation, but is inconsistent with Perl!
-
-        comment = comment.replaceAll("(?m)^\\s*//#.*$", "");      // remove '//#' lines
-        comment = comment.replaceAll("(?m)^\\s*//", "");          // remove "//"'s
-        comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "");   // keep only first paragraph, or:
-        comment = comment.replaceFirst("(?s)\\.\\s.*", ".");      // extract the first sentence only (up to the first period)
-        comment = comment.replaceAll("<.*?>","");                 // throw out tags (including end tags)
-        comment = comment.replaceAll("(?s)\\s+", " ");            // make it one line, and normalize whitespace
-        if (comment.length() > maxlen)
-            comment = comment.substring(0, maxlen)+"...";
-        return comment.trim();
+    public static interface IRegexpReplacementProvider {
+        public String getReplacement(Matcher matcher);
     }
 
     /**
-     * Formats a NED comment as plain text. Basically, strips "//" from the lines,
-     * and removes explicit HTML formatting from the string.
+     * Performs regex substitution on the given string, where replacements are
+     * provided by the given IRegexpReplacementProvider instance.
      */
-    public static String makeTextDocu(String comment) {
-        if (comment == null)
-            return null;
+    public static String replaceMatches(String text, String regexp, IRegexpReplacementProvider provider) {
+        Matcher matcher = Pattern.compile(regexp).matcher(text);
+        StringBuffer buffer = new StringBuffer();
 
-        // BEWARE: Java's multiline mode "(?m)" seems to be broken, see above!
+        while (matcher.find())
+            matcher.appendReplacement(buffer, provider.getReplacement(matcher).replace("$", "\\$"));
 
-        comment = comment.replaceAll("(?m)^[ \t]*//#.*$", ""); // remove '//#' lines
-        comment = comment.replaceAll("(?m)^[ \t]*//+ ?", "");  // remove "//"'s
-        comment = comment.replaceAll("<.*?>","");              // throw out tags (including end tags)
-        comment = comment.replaceAll("(?s)[ \t]+\n","\n");     // remove whitespace from end of lines
-        comment = comment.replaceAll("(?s)\n\n\n+","\n\n");    // remove multiple blank lines
-        return comment.trim();
+        matcher.appendTail(buffer);
+
+        return buffer.toString();
     }
-
-    /**
-     * Converts documentation string to HTML format, and returns it.
-     */
-    // TODO <pre> and <nohtml> are not supported
-    public static String makeHtmlDocu(String comment) {
-        if (comment==null)
-            return null;
-
-        // BEWARE: Java's multiline mode "(?m)" seems to be broken, see above!
-
-        // add sentries to facilitate processing
-        comment = "\n\n"+comment+"\n\n";
-
-        // remove '//#' lines (those are comments to be ignored by documentation generation)
-        comment = comment.replaceAll("(?s)(?<=\n) *//#.*?\n", "");
-
-        // remove '// ', '/// ' and '//////...' from beginning of lines
-        comment = comment.replaceAll("(?s)\n[ \t]*//+ ?", "\n");
-
-        comment = comment.trim();
-
-        // TODO extract existing <pre> sections to prevent tampering inside them
-        // comment = comment.replaceAll("(?s)&lt;pre&gt;(.*?)&lt;/pre&gt;", "$pre{++$ctr}=$1;"<pre$ctr>"");e;
-
-        // a plain '-------' line outside <pre> is replaced by a divider (<hr> tag)
-        comment = comment.replaceAll("(?s)\n[ \t]*------+[ \t]*\n", "\n<hr/>\n");
-
-        // lines outside <pre> containing whitespace only count as blank
-        comment = comment.replaceAll("(?s)\n[ \t]+\n", "\n\n");
-
-        // insert blank line (for later processing) in front of lines beginning with '- ' or '-# '
-        comment = comment.replaceAll("(?s)\n( *-#? )", "\n\n$1");
-
-        // format @author, @date, @todo, @bug, @see, @since, @warning, @version
-        comment = comment.replaceAll("(?s)\\@author\\b", "\n\n<b>Author:</b>");
-        comment = comment.replaceAll("(?s)\\@date\\b", "\n\n<b>Date:</b>");
-        comment = comment.replaceAll("(?s)\\@todo\\b", "\n\n<b>TODO:</b>");
-        comment = comment.replaceAll("(?s)\\@bug\\b", "\n\n<b>BUG:</b>");
-        comment = comment.replaceAll("(?s)\\@see\\b", "\n\n<b>See also:</b>");
-        comment = comment.replaceAll("(?s)\\@since\\b", "\n\n<b>Since:</b>");
-        comment = comment.replaceAll("(?s)\\@warning\\b", "\n\n<b>WARNING:</b>");
-        comment = comment.replaceAll("(?s)\\@version\\b", "\n\n<b>Version:</b>");
-        comment = comment.replaceAll("(?s)\n\n\n+", "\n\n");
-
-        // wrap paragraphs NOT beginning with '-' into <p></p>.
-        // well, we should write "paragraphs not beginning with '- ' or '-# '", but
-        // how do you say that in a Perl regex?
-        // (note: (?=...) and (?<=...) constructs are lookahead and lookbehind assertions,
-        // see e.g. http://tlc.perlarchive.com/articles/perl/pm0001_perlretut.shtml).
-        // FIXME
-        comment = comment.replaceAll("(?s)(?<=\n\n)[ \t]*([^- \t\n].*?)(?=\n\n)", "<p>$1</p>");
-
-        // wrap paragraphs beginning with '-' into <li></li> and <ul></ul>
-        // every 3 spaces increase indent level by one.
-        comment = comment.replaceAll("(?s)(?<=\n\n)          *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><ul><li>$1</li></ul></ul></ul></ul>");;
-        comment = comment.replaceAll("(?s)(?<=\n\n)       *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><li>$1</li></ul></ul></ul>");;
-        comment = comment.replaceAll("(?s)(?<=\n\n)    *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><li>$1</li></ul></ul>");;
-        comment = comment.replaceAll("(?s)(?<=\n\n) *-[ \t]+(.*?)(?=\n\n)", "  <ul><li>$1</li></ul>");;
-        for (int i=0; i<4; i++) {
-             comment = comment.replaceAll("(?s)</ul>[ \t\n]*<ul>", "\n\n  ");;
-        }
-
-        // wrap paragraphs beginning with '-#' into <li></li> and <ol></ol>.
-        // every 3 spaces increase indent level by one.
-        comment = comment.replaceAll("(?s)(?<=\n\n)          *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><ol><li>$1</li></ol></ol></ol></ol>");;
-        comment = comment.replaceAll("(?s)(?<=\n\n)       *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><li>$1</li></ol></ol></ol>");;
-        comment = comment.replaceAll("(?s)(?<=\n\n)    *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><li>$1</li></ol></ol>");;
-        comment = comment.replaceAll("(?s)(?<=\n\n) *-#[ \t]+(.*?)(?=\n\n)", "  <ol><li>$1</li></ol>");;
-        for (int i=0; i<4; i++) {
-             comment = comment.replaceAll("(?s)</ol>[ \t\n]*<ol>", "\n\n  ");;
-        }
-
-        // TODO now we can put back <pre> regions
-        // comment = comment.replaceAll("(?s)<pre(\d+)>", "'<pre>'.$pre{$1}.'</pre>'");e;
-
-        // now we can trim excess blank lines
-        comment = comment.replaceAll("^\n+", "");
-        comment = comment.replaceAll("\n+$", "\n");
-
-        // restore " from &quot; (important for attrs of html tags, see below)
-        comment = comment.replaceAll("(?s)(?i)&quot;", "\"");
-
-        // TODO extract <nohtml> sections to prevent substituting inside them;
-        // also backslashed words to prevent putting hyperlinks on them
-        // comment = comment.replaceAll("(?s)&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;", "$nohtml{++$ctr}=$1;"<nohtml$ctr>"");ei;
-        // comment = comment.replaceAll("(?s)(\\[a-z_]+)", "$nohtml{++$ctr}=$1;"<nohtml$ctr>"");ei;
-
-        // decode certain HTML tags: <i>,<b>,<br>,...
-        String tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|font|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|span|strong|sub|sup|table|td|th|tr|tt|kbd|u|ul|var";
-        comment = comment.replaceAll("(?s)(?i)<(("+tags+")( [^\n]*?)?)>","<$1>");
-        comment = comment.replaceAll("(?s)(?i)<(/("+tags+"))>", "<$1>");
-
-        // TODO put back <nohtml> sections and backslashed words
-        // comment = comment.replaceAll("(?s)\<nohtml(\d+)\>", "$nohtml{$1}");e;
-
-        // remove backslashes; double backslashes become single ones
-        comment = comment.replaceAll("(?s)\\\\(.)", "$1");;
-
-    return comment;
-    }
-
+    
     /**
      * Prepares plain text for inclusion into HTML "pre" tag: replaces "<", ">"
      * with "&lt;", "&gt;", etc.

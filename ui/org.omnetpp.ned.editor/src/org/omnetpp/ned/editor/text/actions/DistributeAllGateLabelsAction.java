@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -60,7 +59,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
 	}
 
 	@Override
-	public void run() {
+	protected void doRun() {
 	    TextualNedEditor textEditor = (TextualNedEditor)getTextEditor();
         ISelection selection = textEditor.getSelectionProvider().getSelection();
 
@@ -85,6 +84,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
 
 	        CheckedTreeSelectionDialog dialog = new CheckedTreeSelectionDialog(null,
                 new LabelProvider() {
+                    @Override
                     public String getText(Object element) {
                         return getAddGateLabelsText((AddGateLabels)element);
                     }
@@ -123,6 +123,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
             dialog.setStatusLineAboveButtons(false);
             dialog.setInitialSelections(runnables.toArray());
             dialog.setComparator(new ViewerComparator() {
+                @Override
                 @SuppressWarnings("unchecked")
                 protected Comparator getComparator() {
                     return new Comparator() {

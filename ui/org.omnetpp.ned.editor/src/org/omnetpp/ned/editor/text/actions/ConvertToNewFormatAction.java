@@ -9,7 +9,6 @@ package org.omnetpp.ned.editor.text.actions;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
-
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
@@ -42,7 +41,7 @@ public class ConvertToNewFormatAction extends NedTextEditorAction {
     }
 
     @Override
-    public void run() {
+    protected void doRun() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
         RefactoringTools.cleanupTree(model);

@@ -8,6 +8,7 @@
 package org.omnetpp.ide.preferences;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +33,7 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.MultiLineTextFieldEditor;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.ProcessUtils;
+import org.omnetpp.common.util.ReflectionUtils;
 
 /**
  * The OMNeT++ preference page that is contributed to the Preferences dialog.
@@ -50,7 +52,22 @@ public class OmnetppPreferencePage
 		setPreferenceStore(CommonPlugin.getConfigurationPreferenceStore());
 	}
 
-	public void createFieldEditors() {
+	@SuppressWarnings("unchecked")
+    @Override
+	public String getErrorMessage() {
+        for (Object object : (List)ReflectionUtils.getFieldValue(this, "fields")) {
+            if (object instanceof StringFieldEditor) {
+                StringFieldEditor fieldEditor = (StringFieldEditor)object;
+                if (!fieldEditor.isValid() && fieldEditor.getErrorMessage() != null)
+                    return fieldEditor.getErrorMessage();
+            }
+        }
+
+        return null;
+	}
+
+	@Override
+    public void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
         final Group group = createGroup(parent, "OMNeT++", 3, 3, GridData.FILL_HORIZONTAL);
         Composite spacer = createComposite(group, 3, 3, GridData.FILL_HORIZONTAL);
@@ -92,9 +109,8 @@ public class OmnetppPreferencePage
 	}
 
 	protected void addAndFillIntoGrid(FieldEditor editor, Composite parent, int numColumns) {
-	    addField(editor);
-	    //editor.fillIntoGrid(parent, numColumns); -- apparently gets called the dialog or the page automatically
-	}
+        addField(editor);
+    }
 
 	// from SWTFactory
 	protected static Group createGroup(Composite parent, String text, int columns, int hspan, int fill) {
@@ -159,12 +175,8 @@ public class OmnetppPreferencePage
         protected boolean checkState() {
             String fileName = ProcessUtils.lookupExecutable(getStringValue());
             boolean state = StringUtils.isEmpty(fileName) || new File(fileName).exists();
-
-            if (!state)
-                showErrorMessage("Executable file not found: " + getStringValue());
-            else
-                clearErrorMessage();
-
+            setErrorMessage(state ? null : "Executable file not found: " + getStringValue());
+            showErrorMessage(getErrorMessage());
             return state;
         }
     }
@@ -172,7 +184,6 @@ public class OmnetppPreferencePage
     protected static class DirectoryListFieldEditor extends DirectoryFieldEditor {
         public DirectoryListFieldEditor(String name, String labelText, Composite parent) {
             super(name, labelText, parent);
-            setErrorMessage("Value contains nonexistent directory");
         }
 
         @Override
@@ -192,9 +203,13 @@ public class OmnetppPreferencePage
         @Override
         protected boolean doCheckState() {
             String dirNames = getTextControl().getText();
-            for (String dirName : dirNames.split(";"))
-                if (!StringUtils.isEmpty(dirName) && !new File(dirName.trim()).isDirectory())
+            for (String dirName : dirNames.split(";")) {
+                if (!StringUtils.isEmpty(dirName) && !new File(dirName.trim()).isDirectory()) {
+                    setErrorMessage("Nonexistent directory: " + dirName);
                     return false;
+                }
+            }
+            setErrorMessage(null);
             return true;
         }
     }

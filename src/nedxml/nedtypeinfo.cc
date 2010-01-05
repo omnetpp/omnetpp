@@ -322,7 +322,7 @@ ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
     if (param)
         return param;
     for (int i=0; i<numExtendsNames(); i++)
-        if ((param = getResolver()->lookup(extendsName(i))->findLocalParamDecl(name))!=NULL)
+        if ((param = getResolver()->lookup(extendsName(i))->findParamDecl(name))!=NULL)
             return param;
     return NULL;
 }
@@ -343,7 +343,7 @@ GateElement *NEDTypeInfo::findGateDecl(const char *name) const
     if (gate)
         return gate;
     for (int i=0; i<numExtendsNames(); i++)
-        if ((gate = getResolver()->lookup(extendsName(i))->findLocalGateDecl(name))!=NULL)
+        if ((gate = getResolver()->lookup(extendsName(i))->findGateDecl(name))!=NULL)
             return gate;
     return NULL;
 }

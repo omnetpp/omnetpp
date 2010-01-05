@@ -33,7 +33,7 @@ public class FormatSourceAction extends NedTextEditorAction {
 	}
 
     @Override
-    public void run() {
+    protected void doRun() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
         RefactoringTools.cleanupTree(model);

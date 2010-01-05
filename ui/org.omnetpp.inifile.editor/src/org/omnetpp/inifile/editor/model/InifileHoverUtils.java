@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
+import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
@@ -115,9 +116,8 @@ public class InifileHoverUtils {
 	 * @param section  null is accepted
 	 * @param key      null is accepted
 	 */
-	//XXX should tolerate analyzer==null
 	public static String getEntryHoverText(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
-		if (section == null || key == null || !doc.containsKey(section, key))
+		if (section == null || key == null)
 			return null;
 
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
@@ -126,18 +126,21 @@ public class InifileHoverUtils {
 			return getConfigHoverText(section, key, doc);
 		}
 		else if (keyType == KeyType.PARAM) {
-			// parameter assignment: display which parameters it matches
-			return getParamKeyHoverText(section, key, analyzer);
+		    if (analyzer == null)
+		        return null;
+		    else {
+    			// parameter assignment: display which parameters it matches
+    			return getParamKeyHoverText(section, key, analyzer);
+		    }
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
 		    // display option description etc
-            return getPerObjectConfigHoverText(section, key, analyzer);
+            return getPerObjectConfigHoverText(section, key, doc);
 		}
 		else {
 			return null; // should not happen (invalid key type)
 		}
 	}
-
 
     /**
 	 * Generates tooltip for a config entry.
@@ -154,8 +157,7 @@ public class InifileHoverUtils {
     /**
      * Generates tooltip for a per-object config entry.
      */
-	public static String getPerObjectConfigHoverText(String section, String key, InifileAnalyzer analyzer) {
-	    IInifileDocument doc = analyzer.getDocument();
+	public static String getPerObjectConfigHoverText(String section, String key, IInifileDocument doc) {
         IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
         String text = getProblemsHoverText(markers, false);
 
@@ -327,7 +329,7 @@ public class InifileHoverUtils {
         if (paramDeclNode.getIsVolatile())
             paramType = "volatile " + paramType;
         String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
-        String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 250);
+        String comment = NedCommentFormatter.makeBriefDocu(paramDeclNode.getComment(), 250);
         String optComment = comment==null ? "" : ("<br>&nbsp;&nbsp;&nbsp;<i>\"" + comment + "\"</i>");
 
         // print parameter declaration
@@ -360,7 +362,7 @@ public class InifileHoverUtils {
 
 		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeElement().getName();
-		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
+		String comment = NedCommentFormatter.makeBriefDocu(paramDeclNode.getComment(), 60);
 		String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 
 		String text = ""; //TODO

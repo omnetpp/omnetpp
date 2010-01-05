@@ -11,7 +11,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
-
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
@@ -28,7 +27,7 @@ public class ToggleCommentAction extends NedTextEditorAction {
 	}
 
 	@Override
-	public void run() {
+	protected void doRun() {
 		ISelection selection = getTextEditor().getSelectionProvider().getSelection();
 		if (selection instanceof ITextSelection) {
 			try {

@@ -29,7 +29,7 @@ public class CorrectIndentationAction extends NedTextEditorAction {
 	}
 
 	@Override
-	public void run() {
+	protected void doRun() {
 		ISelection selection = getTextEditor().getSelectionProvider().getSelection();
 		if (selection instanceof ITextSelection) {
 			try {
