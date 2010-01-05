@@ -24,7 +24,7 @@ public class InferAllGateLabelsAction extends NedTextEditorAction {
 	}
 
 	@Override
-	public void run() {
+	protected void doRun() {
 	    TextualNedEditor textEditor = (TextualNedEditor)getTextEditor();
         ISelection selection = textEditor.getSelectionProvider().getSelection();
 

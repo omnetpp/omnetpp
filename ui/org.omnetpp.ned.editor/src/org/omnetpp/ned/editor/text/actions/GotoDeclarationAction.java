@@ -36,7 +36,7 @@ public class GotoDeclarationAction extends NedTextEditorAction {
     }
 
     @Override
-    public void run() {
+    protected void doRun() {
         Info info = getInfoForSelection();
         if (info != null && info.referredElement != null)
             NEDResourcesPlugin.openNEDElementInEditor(info.referredElement, IGotoNedElement.Mode.TEXT);

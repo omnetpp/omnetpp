@@ -7,12 +7,14 @@
 
 package org.omnetpp.msg.editor.actions;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
-
 import org.omnetpp.msg.editor.MsgEditorMessages;
+import org.omnetpp.msg.editor.MsgEditorPlugin;
 
-public class MsgTextEditorAction extends TextEditorAction {
+public abstract class MsgTextEditorAction extends TextEditorAction {
     public final static String ACTION_DEFINITION_PREFIX = "org.omnetpp.msg.editor.";
 
     /**
@@ -25,4 +27,21 @@ public class MsgTextEditorAction extends TextEditorAction {
         setId(id);
         setActionDefinitionId(ACTION_DEFINITION_PREFIX+id);
     }
+
+    @Override
+    public void run() {
+        try {
+            doRun();
+        }
+        catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.getMessage());
+            MsgEditorPlugin.logError(e);
+        }
+    }
+
+    /**
+     * Gets invoked from run() if the editor is ScaveEditor and selection is
+     * an IStructuredSelection -- redefine it to do the real work.
+     */
+    protected abstract void doRun();
 }

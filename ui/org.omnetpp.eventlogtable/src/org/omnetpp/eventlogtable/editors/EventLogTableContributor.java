@@ -43,6 +43,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
@@ -232,7 +233,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(refreshAction);
 	}
 
-	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
+	@Override
+    public void contributeToStatusLine(IStatusLineManager statusLineManager) {
     	statusLineManager.add(filterStatus);
     }
 
@@ -461,7 +463,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private EventLogTableAction createGotoMessageOriginAction() {
 		return new EventLogTableAction("Goto Message Origin") {
 			@Override
-			public void run() {
+			protected void doRun() {
 			    gotoEventLogEntry(eventLogTable, getMessageOriginEventLogEntry(), this, false);
 			}
 
@@ -499,7 +501,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private EventLogTableAction createGotoMessageReuseAction() {
 		return new EventLogTableAction("Goto Message Reuse") {
 			@Override
-			public void run() {
+			protected void doRun() {
 			    gotoEventLogEntry(eventLogTable, getMessageReuseEventLogEntry(), this, true);
 			}
 
@@ -755,7 +757,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private EventLogTableAction createToggleBookmarkAction() {
 		return new EventLogTableAction("Toggle Bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
 			@Override
-			public void run() {
+			protected void doRun() {
 				try {
 					EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
@@ -804,7 +806,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             private AbstractMenuCreator menuCreator;
 
             @Override
-            public void run() {
+            protected void doRun() {
                 EventLogTable.TypeMode[] values = EventLogTable.TypeMode.values();
                 eventLogTable.setTypeMode(values[(getMenuIndex() + 1) % values.length]);
                 update();
@@ -827,6 +829,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
                         private void addSubMenuItem(final Menu menu, String text, final EventLogTable.TypeMode typeMode) {
                             addSubMenuItem(menu, text, new SelectionAdapter() {
+                                @Override
                                 public void widgetSelected(SelectionEvent e) {
                                     MenuItem menuItem = (MenuItem)e.widget;
 
@@ -856,7 +859,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             private AbstractMenuCreator menuCreator;
 
             @Override
-            public void run() {
+            protected void doRun() {
                 EventLogTable.NameMode[] values = EventLogTable.NameMode.values();
                 eventLogTable.setNameMode(values[(getMenuIndex() + 1) % values.length]);
                 eventLogTable.configureVerticalScrollBar();
@@ -881,6 +884,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
                         private void addSubMenuItem(final Menu menu, String text, final EventLogTable.NameMode nameMode) {
                             addSubMenuItem(menu, text, new SelectionAdapter() {
+                                @Override
                                 public void widgetSelected(SelectionEvent e) {
                                     MenuItem menuItem = (MenuItem)e.widget;
 
@@ -910,7 +914,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			private AbstractMenuCreator menuCreator;
 
 			@Override
-			public void run() {
+			protected void doRun() {
 			    EventLogTable.DisplayMode[] values = EventLogTable.DisplayMode.values();
 				eventLogTable.setDisplayMode(values[(getMenuIndex() + 1) % values.length]);
 				eventLogTable.redraw();
@@ -936,7 +940,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 							subMenuItem.setText(text);
 							subMenuItem.addSelectionListener( new SelectionAdapter() {
-								public void widgetSelected(SelectionEvent e) {
+								@Override
+                                public void widgetSelected(SelectionEvent e) {
 									MenuItem menuItem = (MenuItem)e.widget;
 
 									if (menuItem.getSelection()) {
@@ -960,7 +965,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			private AbstractMenuCreator menuCreator;
 
 			@Override
-			public void run() {
+			protected void doRun() {
 				eventLogTable.setLineFilterMode((eventLogTable.getLineFilterMode() + 1) % 5);
 				update();
 			}
@@ -981,7 +986,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 							addSubMenuItem(menu, "Events and log messages", 2);
 							addSubMenuItem(menu, "Events", 3);
 							addSubMenuItem(menu, "Custom filter...", new SelectionAdapter() {
-								public void widgetSelected(SelectionEvent e) {
+								@Override
+                                public void widgetSelected(SelectionEvent e) {
 									MenuItem menuItem = (MenuItem)e.widget;
 
 									if (menuItem.getSelection()) {
@@ -1025,7 +1031,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 						private void addSubMenuItem(final Menu menu, String text, final int lineFilterMode) {
 							addSubMenuItem(menu, text, new SelectionAdapter() {
-								public void widgetSelected(SelectionEvent e) {
+								@Override
+                                public void widgetSelected(SelectionEvent e) {
 									MenuItem menuItem = (MenuItem)e.widget;
 
 									if (menuItem.getSelection()) {
@@ -1052,7 +1059,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private EventLogTableAction createFilterAction() {
         return new EventLogTableMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
             @Override
-            public void run() {
+            protected void doRun() {
                 if (isFilteredEventLog())
                     removeFilter();
                 else
@@ -1092,6 +1099,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
                         subMenuItem.setText(text);
                         subMenuItem.addSelectionListener( new SelectionAdapter() {
+                            @Override
                             public void widgetSelected(SelectionEvent e) {
                                 MenuItem menuItem = (MenuItem)e.widget;
 
@@ -1139,7 +1147,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private EventLogTableAction createRefreshAction() {
         return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
             @Override
-            public void run() {
+            protected void doRun() {
                 eventLogTable.refresh();
             }
         };
@@ -1191,6 +1199,19 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 		public void update() {
 		}
+
+        @Override
+        public void run() {
+            try {
+                doRun();
+            }
+            catch (Exception e) {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.getMessage());
+                EventLogTablePlugin.logError(e);
+            }
+        }
+
+        protected abstract void doRun();
 	}
 
 	private abstract class EventLogTableMenuAction extends EventLogTableAction {

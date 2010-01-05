@@ -9,14 +9,17 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
@@ -52,14 +55,20 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	 */
 	@Override
 	public void run() {
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-		ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
-		if (editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection)) {
-			ScaveEditor scaveEditor = (ScaveEditor)editor;
-			IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-			doRun(scaveEditor, structuredSelection);
-		}
+	    try {
+    		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    		IEditorPart editor = page.getActiveEditor();
+    		ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
+    		if (editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection)) {
+    			ScaveEditor scaveEditor = (ScaveEditor)editor;
+    			IStructuredSelection structuredSelection = (IStructuredSelection)selection;
+    			doRun(scaveEditor, structuredSelection);
+    		}
+	    }
+	    catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.getMessage());
+            ScavePlugin.logError(e);
+	    }
 	}
 
 	/**
