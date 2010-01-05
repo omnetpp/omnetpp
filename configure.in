@@ -646,6 +646,14 @@ fi
 AC_ARG_VAR(SWIG, The Swig interface generator)
 AC_CHECK_PROG(SWIG, swig, swig, not found)
 
+# chcon is needed to make libraries SELinux-compatible
+AC_ARG_VAR(CHCON, Change file security context)
+AC_CHECK_PROG(CHCON, chcon, chcon, not found)
+if test "$CHCON" = "not found"; then
+   CHCON='\# chcon'
+fi
+
+
 #----------------------
 # Checks for standard libraries.
 #----------------------
@@ -1101,6 +1109,7 @@ AC_SUBST(DLLTOOL)
 AC_SUBST(STRIP)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
+AC_SUBST(CHCON)
 
 AC_SUBST(SHARED_LIBS)
 AC_SUBST(A_LIB_SUFFIX)
