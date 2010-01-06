@@ -247,14 +247,19 @@ install-desktop-icon: generate-desktop-file
 else ifeq ($(findstring macosx,$(PLATFORM)),macosx)
 
 install-menu-item:
-	-ln -s $(OMNETPP_ROOT)/ide/omnetpp.app '/Applications/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
-	-ln -s $(OMNETPP_ROOT)/ide/omnest.app '/Applications/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+ifeq ($(OMNETPP_PRODUCT),OMNEST)
+	-ln -s -f $(OMNETPP_ROOT)/ide/omnest.app /Applications/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+else
+	-ln -s -f $(OMNETPP_ROOT)/ide/omnetpp.app /Applications/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+endif 
 
 install-desktop-icon:
-	-ln -s $(OMNETPP_ROOT)/ide/omnetpp.app '~/Desktop/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
-	-ln -s $(OMNETPP_ROOT)/ide/omnest.app '~/Desktop/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+ifeq ($(OMNETPP_PRODUCT),OMNEST)
+	-ln -s -f $(OMNETPP_ROOT)/ide/omnest.app ~/Desktop/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+else
+	-ln -s -f $(OMNETPP_ROOT)/ide/omnetpp.app ~/Desktop/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+endif
 
 else ifeq ($(findstring win32,$(PLATFORM)),win32)
-
 
 endif
