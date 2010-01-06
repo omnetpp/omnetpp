@@ -230,3 +230,16 @@ copy-dlls:
 	cp msys/bin/libxml2.dll bin
 
 
+generate-desktop-file:
+	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=$(OMNETPP_BIN_DIR)/omnetpp\nIcon=$(OMNETPP_ROOT)/icon.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE\nCategories=Development;IDE;Debugger\n" >opensim-ide.desktop
+
+install-menu-item: generate-desktop-file
+	@xdg-desktop-menu uninstall opensim-ide.desktop
+	@xdg-desktop-menu install opensim-ide.desktop
+	@rm opensim-ide.desktop
+
+install-desktop-icon: generate-desktop-file
+	@xdg-desktop-icon uninstall opensim-ide.desktop
+	@xdg-desktop-icon install opensim-ide.desktop
+	@rm opensim-ide.desktop
+
