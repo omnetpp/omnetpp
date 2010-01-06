@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/opencsv-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-math-1.1.jar" sourcepath="misc/commons-math-1.1-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/org.omnetpp.common/misc/commons-math-1.1-javadoc.jar!/"/>
@@ -20,5 +19,6 @@
 			<accessrule kind="accessible" pattern="org/eclipse/ui/internal/texteditor/quickdiff/compare/rangedifferencer/**"/>
 		</accessrules>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/opencsv-2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
