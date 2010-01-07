@@ -1,3 +1,3 @@
 dir /s/b freemarker\*.java >$$$.tmp
-javac -classpath ..\freemarker.jar @$$$.tmp -d classes
+javac -target 1.5 -source 1.5 -classpath ..\freemarker.jar @$$$.tmp -d classes
 del $$$.tmp

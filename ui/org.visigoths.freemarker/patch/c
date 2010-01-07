@@ -1,0 +1,4 @@
+#!/bin/bash
+find freemarker -name *.java >xxx.tmp
+javac -target 1.5 -source 1.5 -classpath ../freemarker.jar @xxx.tmp -d classes
+rm xxx.tmp
