@@ -19,6 +19,6 @@
 			<accessrule kind="accessible" pattern="org/eclipse/ui/internal/texteditor/quickdiff/compare/rangedifferencer/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/opencsv-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/opencsv-2.0.jar" sourcepath="misc/opencsv-2.0.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
