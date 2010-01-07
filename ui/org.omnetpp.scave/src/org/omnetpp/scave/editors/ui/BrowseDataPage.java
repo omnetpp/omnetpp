@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.scave.actions.OrganizeTreeLevelsAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -127,11 +128,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 			contextMenuManager.add(setFilterAction);
 			if (panel.getDataControl() instanceof DataTable)
 			    contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
-	        if (panel.getDataControl() instanceof DataTree) {
-	            DataTree dataTree = (DataTree)panel.getDataControl();
-	            contextMenuManager.add(dataTree.createFlattenedModuleTreeAction());
-	            contextMenuManager.add(dataTree.createFlattenedLogicalTreeAction());
-	        }
+	        if (panel.getDataControl() instanceof DataTree)
+	            contextMenuManager.add(new OrganizeTreeLevelsAction((DataTree)panel.getDataControl()));
 			contextMenuManager.add(new Separator());
 			contextMenuManager.add(editorContributor.getShowOutputVectorViewAction());
 		}
