@@ -941,10 +941,11 @@ public class GraphicalNedEditor
 
             private void updateTextBounds() {
                 Dimension d = getCollapseToggle().getSize();
-                text.setSize(d.width - 3 * (ICON_WIDTH + ICON_SPACING), d.height - 2 * ICON_SPACING);
+                int bd = text.getBorderWidth();
+                text.setSize(d.width - 3 * (ICON_WIDTH + ICON_SPACING) + 2 * bd, d.height + 2 * bd - 2 * ICON_SPACING + 10);
                 Point location = getBounds().getLocation();
                 translateToAbsolute(location);
-                text.setLocation(location.x + ICON_WIDTH + ICON_SPACING * 2, location.y + ICON_SPACING);
+                text.setLocation(location.x + ICON_WIDTH + ICON_SPACING * 2 - bd, location.y + ICON_SPACING - 5 - bd);
             }
 
             private void updateFilterFigureBounds() {
