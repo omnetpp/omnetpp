@@ -3,27 +3,32 @@ package org.omnetpp.scave.editors.datatable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.util.CollectionUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.StringMap;
+import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
  * This class provides a customizable tree of various data from the result file manager.
@@ -33,17 +38,21 @@ import org.omnetpp.scave.engine.VectorResult;
  * @author levy
  */
 public class ResultFileManagerTreeContentProvider {
-    protected ResultFileManager manager;
+    private static boolean debug = true;
+
+    protected ResultFileManagerEx manager;
 
     protected IDList idList;
 
     protected Class<? extends Node>[] levels;
 
+    protected Node[] rootNodes;
+
     public ResultFileManagerTreeContentProvider() {
         setDefaultLevels();
     }
 
-    public void setResultFileManager(ResultFileManager manager) {
+    public void setResultFileManager(ResultFileManagerEx manager) {
         this.manager = manager;
     }
 
@@ -56,24 +65,76 @@ public class ResultFileManagerTreeContentProvider {
     }
 
     public void setLevels(Class<? extends Node>[] levels) {
+        if (Arrays.equals(levels, this.levels))
+            return;
+        if (debug)
+            System.out.println("setLevels(): " + levels);
         this.levels = levels;
+        rootNodes = null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public String getLevelsName() {
+        StringBuffer name = new StringBuffer();
+        for (int i = 0; i < levels.length; i++) {
+            Class level = levels[i];
+            try {
+                if (i != 0)
+                    name.append(" / ");
+                name.append(level.getMethod("getLevelName").invoke(null));
+            }
+            catch (Exception e) {
+                // void
+            }
+        }
+        return name.toString();
     }
 
     @SuppressWarnings("unchecked")
     public void setDefaultLevels() {
-        levels = new Class[4];
-        levels[0] = ExperimentMeasurementReplicationNode.class;
-        levels[1] = ModulePathNode.class;
-        levels[2] = ResultItemNode.class;
-        levels[3] = ResultItemAttributeNode.class;
+        setLevels(getPredefinedLevels1());
     }
 
-    public List<Node> getChildNodes(final List<Node> path) {
+    @SuppressWarnings("unchecked")
+    public Class[] getPredefinedLevels1() {
+        return new Class[] {
+            ExperimentMeasurementReplicationNode.class,
+            ModulePathNode.class,
+            ResultItemNode.class,
+            ResultItemAttributeNode.class
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class[] getPredefinedLevels2() {
+        return new Class[] {
+            ConfigRunNumberNode.class,
+            ModulePathNode.class,
+            ResultItemNode.class,
+            ResultItemAttributeNode.class
+        };
+    }
+
+    public Node[] getChildNodes(final List<Node> path) {
+        long startMillis = System.currentTimeMillis();
+        if (manager == null || idList == null)
+            return new Node[0];
+
         final Node firstNode = path.size() == 0 ? null : path.get(0);
 
-        return ResultFileManager.callWithReadLock(manager, new Callable<List<Node>>() {
+        // cache
+        if (firstNode == null) {
+            if (rootNodes != null)
+                return rootNodes;
+        }
+        else {
+            if (firstNode.children != null)
+                return firstNode.children;
+        }
+
+        Node[] nodes = ResultFileManager.callWithReadLock(manager, new Callable<Node[]>() {
             @SuppressWarnings("unchecked")
-            public List<Node> call() throws Exception {
+            public Node[] call() throws Exception {
                 MultiValueMap nodeIdsMap = new MultiValueMap();
                 int currentLevelIndex;
                 if (firstNode == null)
@@ -81,7 +142,7 @@ public class ResultFileManagerTreeContentProvider {
                 else {
                     currentLevelIndex = ArrayUtils.indexOf(levels, firstNode.getClass());
                     if (currentLevelIndex == -1)
-                        return new ArrayList<Node>();
+                        return new Node[0];
                 }
                 int nextLevelIndex;
                 if (firstNode instanceof ModuleNameNode) {
@@ -95,32 +156,30 @@ public class ResultFileManagerTreeContentProvider {
                     int idCount = firstNode == null ? idList.size() : firstNode.ids.length;
                     for (int i = 0; i < idCount; i++) {
                         long id = firstNode == null ? idList.get(i) : firstNode.ids[i];
-                        ResultItem resultItem = manager.getItem(id);
-                        FileRun fileRun = resultItem.getFileRun();
-                        Run run = fileRun.getRun();
-                        if (matchesPath(path, id, resultItem)) {
+                        MatchContext matchContext = new MatchContext(manager, id);
+                        if (matchesPath(path, id, matchContext)) {
                             if (nextLevelClass.equals(ExperimentNode.class))
-                                nodeIdsMap.put(new ExperimentNode(run.getAttribute(RunAttribute.EXPERIMENT)), id);
+                                nodeIdsMap.put(new ExperimentNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT)), id);
                             else if (nextLevelClass.equals(MeasurementNode.class))
-                                nodeIdsMap.put(new MeasurementNode(run.getAttribute(RunAttribute.MEASUREMENT)), id);
+                                nodeIdsMap.put(new MeasurementNode(matchContext.getRunAttribute(RunAttribute.MEASUREMENT)), id);
                             else if (nextLevelClass.equals(ReplicationNode.class))
-                                nodeIdsMap.put(new ReplicationNode(run.getAttribute(RunAttribute.REPLICATION)), id);
+                                nodeIdsMap.put(new ReplicationNode(matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
                             else if (nextLevelClass.equals(ExperimentMeasurementReplicationNode.class))
-                                nodeIdsMap.put(new ExperimentMeasurementReplicationNode(run.getAttribute(RunAttribute.EXPERIMENT), run.getAttribute(RunAttribute.MEASUREMENT), run.getAttribute(RunAttribute.REPLICATION)), id);
+                                nodeIdsMap.put(new ExperimentMeasurementReplicationNode(matchContext.getRunAttribute(RunAttribute.EXPERIMENT), matchContext.getRunAttribute(RunAttribute.MEASUREMENT), matchContext.getRunAttribute(RunAttribute.REPLICATION)), id);
                             else if (nextLevelClass.equals(ConfigNode.class))
-                                nodeIdsMap.put(new ConfigNode(run.getAttribute(RunAttribute.CONFIGNAME)), id);
+                                nodeIdsMap.put(new ConfigNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME)), id);
                             else if (nextLevelClass.equals(RunNumberNode.class))
-                                nodeIdsMap.put(new RunNumberNode(run.getRunNumber()), id);
+                                nodeIdsMap.put(new RunNumberNode(matchContext.getRun().getRunNumber()), id);
                             else if (nextLevelClass.equals(ConfigRunNumberNode.class))
-                                nodeIdsMap.put(new ConfigRunNumberNode(run.getAttribute(RunAttribute.CONFIGNAME), run.getRunNumber()), id);
+                                nodeIdsMap.put(new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), matchContext.getRun().getRunNumber()), id);
                             else if (nextLevelClass.equals(FileNameNode.class))
-                                nodeIdsMap.put(new FileNameNode(fileRun.getFile().getFileName()), id);
+                                nodeIdsMap.put(new FileNameNode(matchContext.getResultFile().getFileName()), id);
                             else if (nextLevelClass.equals(RunIdNode.class))
-                                nodeIdsMap.put(new RunIdNode(run.getRunName()), id);
+                                nodeIdsMap.put(new RunIdNode(matchContext.getRun().getRunName()), id);
                             else if (nextLevelClass.equals(FileNameRunIdNode.class))
-                                nodeIdsMap.put(new FileNameRunIdNode(fileRun.getFile().getFileName(), run.getRunName()), id);
+                                nodeIdsMap.put(new FileNameRunIdNode(matchContext.getResultFile().getFileName(), matchContext.getRun().getRunName()), id);
                             else if (nextLevelClass.equals(ModuleNameNode.class)) {
-                                String moduleName = resultItem.getModuleName();
+                                String moduleName = matchContext.getResultItem().getModuleName();
                                 String modulePrefix = getModulePrefix(path, null);
                                 if (moduleName.startsWith(modulePrefix)) {
                                     String remainingName = StringUtils.removeStart(StringUtils.removeStart(moduleName, modulePrefix), ".");
@@ -129,14 +188,21 @@ public class ResultFileManagerTreeContentProvider {
                                 }
                             }
                             else if (nextLevelClass.equals(ModulePathNode.class))
-                                nodeIdsMap.put(new ModulePathNode(resultItem.getModuleName()), id);
+                                nodeIdsMap.put(new ModulePathNode(matchContext.getResultItem().getModuleName()), id);
                             else if (nextLevelClass.equals(ResultItemNode.class))
-                                nodeIdsMap.put(new ResultItemNode(id), id);
+                                nodeIdsMap.put(new ResultItemNode(manager, id), id);
                             else if (nextLevelClass.equals(ResultItemNameNode.class))
-                                nodeIdsMap.put(new ResultItemNameNode(resultItem.getName()), id);
+                                nodeIdsMap.put(new ResultItemNameNode(matchContext.getResultItem().getName()), id);
                             else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
+                                ResultItem resultItem = matchContext.getResultItem();
                                 nodeIdsMap.put(new ResultItemAttributeNode("Module name", String.valueOf(resultItem.getModuleName())), id);
                                 nodeIdsMap.put(new ResultItemAttributeNode("Type", resultItem.getType().toString().replaceAll("TYPE_", "").toLowerCase()), id);
+                                StringMap attributes = resultItem.getAttributes();
+                                StringVector keys = attributes.keys();
+                                for (int j = 0; j < keys.size(); j++) {
+                                    String key = keys.get(j);
+                                    nodeIdsMap.put(new ResultItemAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
+                                }
 
                                 if (resultItem instanceof ScalarResult) {
                                     ScalarResult scalar = (ScalarResult)resultItem;
@@ -187,25 +253,37 @@ public class ResultFileManagerTreeContentProvider {
                         }
                     }
                 }
-                else if (firstNode instanceof Node) {
-                    Node node = firstNode;
-                    if (node.children != null)
-                        return Arrays.asList(node.children);
-                }
 
-                Set<Node> nodes = nodeIdsMap.keySet();
-                List<Node> result = CollectionUtils.toSorted(new ArrayList<Node>(nodes), new Comparator<Node>() {
+                Node[] nodes = (Node[])nodeIdsMap.keySet().toArray(new Node[0]);
+                Arrays.sort(nodes, new Comparator<Node>() {
                     public int compare(Node o1, Node o2) {
-                        return (o1).getColumnText(0).compareTo((o2).getColumnText(0));
+                        return StringUtils.dictionaryCompare((o1).getColumnText(0), (o2).getColumnText(0));
                     }
                 });
 
-                for (Node node : nodes)
-                    node.ids = (Long[])nodeIdsMap.getCollection(node).toArray(new Long[0]);
+                for (Node node : nodes) {
+                    Collection ids = nodeIdsMap.getCollection(node);
+                    node.ids = new long[ids.size()];
+                    Iterator it = ids.iterator();
+                    for (int i = 0; i < ids.size(); i++)
+                        node.ids[i] = (Long)it.next();
+                }
 
-                return result;
+                // update cache
+                if (firstNode == null)
+                    rootNodes = nodes;
+                else
+                    firstNode.children = nodes;
+
+                return nodes;
             }
         });
+
+        long totalMillis = System.currentTimeMillis() - startMillis;
+        if (debug)
+            Debug.println("getChildNodes() for path = " + path + ": " + totalMillis + "ms");
+
+        return nodes;
     }
 
     protected static String getModulePrefix(final List<Node> path, Node nodeLimit) {
@@ -231,9 +309,53 @@ public class ResultFileManagerTreeContentProvider {
         return modulePrefix.toString();
     }
 
-    protected boolean matchesPath(List<Node> path, long id, ResultItem resultItem) {
+    protected static class MatchContext {
+        private ResultFileManager manager;
+        private long id;
+        private ResultItem resultItem;
+        private FileRun fileRun;
+        private ResultFile resultFile;
+        private Run run;
+
+        public MatchContext(ResultFileManager manager, long id) {
+            this.manager = manager;
+            this.id = id;
+        }
+
+        public String getRunAttribute(String key) {
+            return manager.getRunAttribute(id, key);
+        }
+
+        public ResultItem getResultItem() {
+            if (resultItem == null)
+                resultItem = manager.getItem(id);
+
+            return resultItem;
+        }
+        public FileRun getFileRun() {
+            if (fileRun == null)
+                fileRun = getResultItem().getFileRun();
+
+            return fileRun;
+        }
+
+        public ResultFile getResultFile() {
+            if (resultFile == null)
+                resultFile = getFileRun().getFile();
+
+            return resultFile;
+        }
+        public Run getRun() {
+            if (run == null)
+                run = getFileRun().getRun();
+
+            return run;
+        }
+    }
+
+    protected boolean matchesPath(List<Node> path, long id, MatchContext matchContext) {
         for (Node node : path)
-            if (!node.matches(path, id, resultItem))
+            if (!node.matches(path, id, matchContext))
                 return false;
         return true;
     }
@@ -261,7 +383,7 @@ public class ResultFileManagerTreeContentProvider {
     }
 
     protected static abstract class Node {
-        public Long[] ids;
+        public long[] ids;
 
         public Node[] children;
 
@@ -275,10 +397,10 @@ public class ResultFileManagerTreeContentProvider {
 
         public abstract String getColumnText(int index);
 
-        public abstract boolean matches(List<Node> path, long id, ResultItem resultItem);
+        public abstract boolean matches(List<Node> path, long id, MatchContext matchContext);
     }
 
-    protected static class NameValueNode extends Node {
+    public static class NameValueNode extends Node {
         public String name;
         public String value;
 
@@ -287,13 +409,17 @@ public class ResultFileManagerTreeContentProvider {
             this.value = value;
         }
 
+        public static String getLevelName() {
+            return null;
+        }
+
         @Override
         public String getColumnText(int index) {
             return index == 0 ? name : value;
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             return true;
         }
 
@@ -336,11 +462,15 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class ExperimentNode extends Node {
+    public static class ExperimentNode extends Node {
         public String name;
 
         public ExperimentNode(String name) {
             this.name = name;
+        }
+
+        public static String getLevelName() {
+            return "Experiment";
         }
 
         @Override
@@ -349,9 +479,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            Run run = resultItem.getFileRun().getRun();
-            return name.equals(run.getAttribute(RunAttribute.EXPERIMENT));
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return name.equals(matchContext.getRunAttribute(RunAttribute.EXPERIMENT));
         }
 
         @Override
@@ -386,11 +515,15 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class MeasurementNode extends Node {
+    public static class MeasurementNode extends Node {
         public String name;
 
         public MeasurementNode(String name) {
             this.name = name;
+        }
+
+        public static String getLevelName() {
+            return "Measurement";
         }
 
         @Override
@@ -399,9 +532,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            Run run = resultItem.getFileRun().getRun();
-            return name.equals(run.getAttribute(RunAttribute.MEASUREMENT));
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return name.equals(matchContext.getRunAttribute(RunAttribute.MEASUREMENT));
         }
 
         @Override
@@ -436,11 +568,15 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class ReplicationNode extends Node {
+    public static class ReplicationNode extends Node {
         public String name;
 
         public ReplicationNode(String name) {
             this.name = name;
+        }
+
+        public static String getLevelName() {
+            return "Replication";
         }
 
         @Override
@@ -449,9 +585,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            Run run = resultItem.getFileRun().getRun();
-            return name.equals(run.getAttribute(RunAttribute.REPLICATION));
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return name.equals(matchContext.getRunAttribute(RunAttribute.REPLICATION));
         }
 
         @Override
@@ -481,7 +616,7 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class ExperimentMeasurementReplicationNode extends Node {
+    public static class ExperimentMeasurementReplicationNode extends Node {
         public String experiment;
 
         public String measurement;
@@ -494,15 +629,18 @@ public class ResultFileManagerTreeContentProvider {
             this.replication = replication;
         }
 
+        public static String getLevelName() {
+            return "Experiment + Measurement + Replication";
+        }
+
         @Override
         public String getColumnText(int index) {
             return index == 0 ? experiment + (StringUtils.isEmpty(measurement) ? "" : " : " + measurement) + " : " + replication : "";
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            Run run = resultItem.getFileRun().getRun();
-            return experiment.equals(run.getAttribute(RunAttribute.EXPERIMENT)) && measurement.equals(run.getAttribute(RunAttribute.MEASUREMENT)) && replication.equals(run.getAttribute(RunAttribute.REPLICATION));
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return experiment.equals(matchContext.getRunAttribute(RunAttribute.EXPERIMENT)) && measurement.equals(matchContext.getRunAttribute(RunAttribute.MEASUREMENT)) && replication.equals(matchContext.getRunAttribute(RunAttribute.REPLICATION));
         }
 
         @Override
@@ -546,11 +684,15 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class ConfigNode extends Node {
+    public static class ConfigNode extends Node {
         public String name;
 
         public ConfigNode(String name) {
             this.name = name;
+        }
+
+        public static String getLevelName() {
+            return "Config";
         }
 
         @Override
@@ -559,8 +701,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            return resultItem.getFileRun().getRun().getAttribute(RunAttribute.CONFIGNAME).equals(name);
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(name);
         }
 
         @Override
@@ -595,11 +737,15 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class RunNumberNode extends Node {
+    public static class RunNumberNode extends Node {
         public long value;
 
         public RunNumberNode(long value) {
             this.value = value;
+        }
+
+        public static String getLevelName() {
+            return "Run Number";
         }
 
         @Override
@@ -608,8 +754,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            return resultItem.getFileRun().getRun().getRunNumber() == value;
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return matchContext.getRun().getRunNumber() == value;
         }
 
         @Override
@@ -635,7 +781,7 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class ConfigRunNumberNode extends Node {
+    public static class ConfigRunNumberNode extends Node {
         public String config;
 
         public long runNumber;
@@ -645,15 +791,18 @@ public class ResultFileManagerTreeContentProvider {
             this.runNumber = runNumber;
         }
 
+        public static String getLevelName() {
+            return "Config + Run Number";
+        }
+
         @Override
         public String getColumnText(int index) {
             return index == 0 ? config + " : " + runNumber : "";
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            Run run = resultItem.getFileRun().getRun();
-            return run.getAttribute(RunAttribute.CONFIGNAME).equals(config) && run.getRunNumber() == runNumber;
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(config) && matchContext.getRun().getRunNumber() == runNumber;
         }
 
         @Override
@@ -686,11 +835,15 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class FileNameNode extends Node {
+    public static class FileNameNode extends Node {
         public String name;
 
         public FileNameNode(String name) {
             this.name = name;
+        }
+
+        public static String getLevelName() {
+            return "File Name";
         }
 
         @Override
@@ -699,8 +852,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            return resultItem.getFileRun().getFile().getFileName().equals(name);
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return matchContext.getResultFile().getFileName().equals(name);
         }
 
         @Override
@@ -730,11 +883,15 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class RunIdNode extends Node {
+    public static class RunIdNode extends Node {
         public String value;
 
         public RunIdNode(String value) {
             this.value = value;
+        }
+
+        public static String getLevelName() {
+            return "Run Id";
         }
 
         @Override
@@ -743,8 +900,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            return resultItem.getFileRun().getRun().getRunName().equals(value);
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return matchContext.getRun().getRunName().equals(value);
         }
 
         @Override
@@ -774,7 +931,7 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class FileNameRunIdNode extends Node {
+    public static class FileNameRunIdNode extends Node {
         public String fileName;
 
         public String runId;
@@ -784,15 +941,18 @@ public class ResultFileManagerTreeContentProvider {
             this.runId = runId;
         }
 
+        public static String getLevelName() {
+            return "File Name + Run Id";
+        }
+
         @Override
         public String getColumnText(int index) {
             return index == 0 ? fileName + " : " + runId : "";
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            FileRun fileRun = resultItem.getFileRun();
-            return fileRun.getFile().getFileName().equals(fileName) && fileRun.getRun().getRunName().equals(runId);
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return matchContext.getResultFile().getFileName().equals(fileName) && matchContext.getRun().getRunName().equals(runId);
         }
 
         @Override
@@ -829,11 +989,15 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class ModulePathNode extends Node {
+    public static class ModulePathNode extends Node {
         public String path;
 
         public ModulePathNode(String path) {
             this.path = path;
+        }
+
+        public static String getLevelName() {
+            return "Module Path";
         }
 
         @Override
@@ -842,8 +1006,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            return resultItem.getModuleName().equals(this.path);
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return matchContext.getResultItem().getModuleName().equals(this.path);
         }
 
         @Override
@@ -878,7 +1042,7 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class ModuleNameNode extends Node {
+    public static class ModuleNameNode extends Node {
         public String name;
 
         public boolean leaf;
@@ -888,16 +1052,20 @@ public class ResultFileManagerTreeContentProvider {
             this.leaf = leaf;
         }
 
+        public static String getLevelName() {
+            return "Module Name";
+        }
+
         @Override
         public String getColumnText(int index) {
             return index == 0 ? name : "";
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             String modulePrefix = getModulePrefix(path, this);
             modulePrefix = StringUtils.isEmpty(modulePrefix) ? name : modulePrefix + "." + name;
-            return resultItem.getModuleName().startsWith(modulePrefix);
+            return matchContext.getResultItem().getModuleName().startsWith(modulePrefix);
         }
 
         @Override
@@ -932,11 +1100,18 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected class ResultItemNode extends Node {
+    public static class ResultItemNode extends Node {
+        public ResultFileManager manager;
+
         public long id;
 
-        public ResultItemNode(long id) {
+        public ResultItemNode(ResultFileManager manager, long id) {
+            this.manager = manager;
             this.id = id;
+        }
+
+        public static String getLevelName() {
+            return "Result Item";
         }
 
         @Override
@@ -959,7 +1134,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             return this.id == id;
         }
 
@@ -980,7 +1155,6 @@ public class ResultFileManagerTreeContentProvider {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
             result = prime * result + (int) (id ^ (id >>> 32));
             return result;
         }
@@ -994,23 +1168,21 @@ public class ResultFileManagerTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             ResultItemNode other = (ResultItemNode) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
             if (id != other.id)
                 return false;
             return true;
         }
-
-        private ResultFileManagerTreeContentProvider getOuterType() {
-            return ResultFileManagerTreeContentProvider.this;
-        }
     }
 
-    protected static class ResultItemNameNode extends Node {
+    public static class ResultItemNameNode extends Node {
         public String name;
 
         public ResultItemNameNode(String name) {
             this.name = name;
+        }
+
+        public static String getLevelName() {
+            return "Result Item Name";
         }
 
         @Override
@@ -1019,8 +1191,8 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
-            return resultItem.getName().equals(name);
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
+            return matchContext.getResultItem().getName().equals(name);
         }
 
         @Override
@@ -1050,7 +1222,7 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    protected static class ResultItemAttributeNode extends NameValueNode {
+    public static class ResultItemAttributeNode extends NameValueNode {
         private String methodName;
 
         public ResultItemAttributeNode(String name, String value) {
@@ -1058,9 +1230,14 @@ public class ResultFileManagerTreeContentProvider {
             methodName = "get" + StringUtils.capitalize(name.toLowerCase());
         }
 
+        public static String getLevelName() {
+            return "Result Item Attribute";
+        }
+
         @Override
-        public boolean matches(List<Node> path, long id, ResultItem resultItem) {
+        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             try {
+                ResultItem resultItem = matchContext.getResultItem();
                 Method method = resultItem.getClass().getMethod(methodName);
                 return value.equals(String.valueOf(method.invoke(resultItem)));
             }

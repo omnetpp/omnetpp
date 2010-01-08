@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
@@ -73,7 +74,7 @@ public class FilteredDataPanel extends Composite {
 		return idlist;
 	}
 
-	public void setResultFileManager(ResultFileManager manager) {
+	public void setResultFileManager(ResultFileManagerEx manager) {
 		data.setResultFileManager(manager);
 	}
 
@@ -97,7 +98,8 @@ public class FilteredDataPanel extends Composite {
 		data.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		filterPanel.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				if (filterPanel.isShowingAdvancedFilter())
 					trySwitchToSimpleFilter();
 				else
@@ -108,7 +110,8 @@ public class FilteredDataPanel extends Composite {
 
 	protected void configureFilterPanel() {
 		SelectionListener selectionListener = new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				// check the filter string
 				if (!isFilterPatternValid()) {
 					MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Contents are not changed.");
@@ -116,7 +119,8 @@ public class FilteredDataPanel extends Composite {
 				}
 				runFilter();
 			}
-			public void widgetDefaultSelected(SelectionEvent e) {
+			@Override
+            public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);  //delegate
 			}
 		};
@@ -189,7 +193,7 @@ public class FilteredDataPanel extends Composite {
 		String moduleName = filterPanel.getModuleNameCombo().getText();
 		String name = filterPanel.getNameCombo().getText();
 		String filterPattern = new FilterUtil(runId, moduleName, name).getFilterPattern();
-        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text 
+        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
 	}
 
 	public void setFilterParams(Filter filter) {

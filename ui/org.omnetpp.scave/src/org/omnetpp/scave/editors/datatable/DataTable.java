@@ -55,6 +55,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 
 /**
@@ -93,15 +94,18 @@ public class DataTable extends Table implements IDataControl {
 			this.defaultVisible = defaultVisible;
 		}
 
-		public Column clone() {
+		@Override
+        public Column clone() {
 			return new Column(this.text, this.fieldName, this.defaultWidth, this.defaultVisible);
 		}
 
-		public boolean equals(Object other) {
+		@Override
+        public boolean equals(Object other) {
 			return other instanceof Column && this.text.equals(((Column)other).text);
 		}
 
-		public int hashCode() {
+		@Override
+        public int hashCode() {
 			return text.hashCode();
 		}
 	}
@@ -129,14 +133,14 @@ public class DataTable extends Table implements IDataControl {
 		COL_MAX_TIME = new Column("Max time", null, 60, false);
 
 	private static final Column[] allScalarColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, 
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
 		COL_MODULE, COL_DATA,
 		COL_VALUE
 	};
 
 	private static final Column[] allVectorColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, 
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
 		COL_MODULE, COL_DATA,
 		COL_VECTOR_ID,
@@ -144,14 +148,14 @@ public class DataTable extends Table implements IDataControl {
 	};
 
 	private static final Column[] allHistogramColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, 
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
 		COL_MODULE, COL_DATA,
 		COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX
 	};
 
 	private ResultType type;
-	private ResultFileManager manager;
+	private ResultFileManagerEx manager;
 	private IDList idList;
 	private ListenerList listeners;
 	private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
@@ -190,7 +194,8 @@ public class DataTable extends Table implements IDataControl {
 		setMenu(contextMenuManager.createContextMenu(this));
 
 		addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent event) {
+			@Override
+            public void mouseDown(MouseEvent event) {
 				handleMouseDown(event);
 			}
 		});
@@ -210,11 +215,11 @@ public class DataTable extends Table implements IDataControl {
 		return type;
 	}
 
-	public void setResultFileManager(ResultFileManager manager) {
+	public void setResultFileManager(ResultFileManagerEx manager) {
 		this.manager = manager;
 	}
 
-	public ResultFileManager getResultFileManager() {
+	public ResultFileManagerEx getResultFileManager() {
 		return manager;
 	}
 
@@ -308,7 +313,7 @@ public class DataTable extends Table implements IDataControl {
 	}
 
 	public void refresh() {
-		setItemCount((int)idList.size());
+		setItemCount(idList.size());
 		clearAll();
 	}
 
@@ -341,7 +346,8 @@ public class DataTable extends Table implements IDataControl {
 		tableColumn.setWidth(newColumn.defaultWidth);
 		tableColumn.setData(COLUMN_KEY, newColumn);
 		tableColumn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				TableColumn tableColumn = (TableColumn)e.widget;
 				if (!tableColumn.isDisposed()) {
 					Column column = (Column)tableColumn.getData(COLUMN_KEY);
@@ -424,7 +430,7 @@ public class DataTable extends Table implements IDataControl {
 			return;
 
 		long id = idList.get(lineNumber);
-		item.setData(ITEM_KEY, (Long)id);
+		item.setData(ITEM_KEY, id);
 
 		for (int i = 0; i < visibleColumns.size(); ++i) {
 			Column column = visibleColumns.get(i);

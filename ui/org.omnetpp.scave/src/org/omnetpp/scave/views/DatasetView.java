@@ -57,7 +57,6 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.scave.actions.CreateTempChartAction;
-import org.omnetpp.scave.actions.OrganizeTreeLevelsAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -71,6 +70,7 @@ import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Dataset;
@@ -209,7 +209,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		if (control instanceof DataTable)
 		    menuManager.add(new ChooseTableColumnsAction((DataTable)control));
 		if (control instanceof DataTree)
-		    menuManager.add(new OrganizeTreeLevelsAction((DataTree)control));
+		    menuManager.add(((DataTree)control).createContextMenu());
 		menuManager.add(setFilterAction);
 		control.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -376,7 +376,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			hookEditorListeners(activeScaveEditor);
 
 			if (activeScaveEditor != null) {
-				ResultFileManager manager = activeScaveEditor.getResultFileManager();
+				ResultFileManagerEx manager = activeScaveEditor.getResultFileManager();
 				tabFolder.setResultFileManager(manager);
 				labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(activeScaveEditor.getAdapterFactory()));
 				hideMessage();

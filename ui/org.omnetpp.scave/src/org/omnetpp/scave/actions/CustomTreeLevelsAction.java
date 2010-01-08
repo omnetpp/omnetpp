@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -14,22 +13,29 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.ResultFileManagerTreeContentProvider;
 
-public class OrganizeTreeLevelsAction extends Action {
+public class CustomTreeLevelsAction extends Action {
     private DataTree dataTree;
 
-    public OrganizeTreeLevelsAction(DataTree dataTree) {
+    public CustomTreeLevelsAction(DataTree dataTree, int style) {
+        super("Custom Tree Levels", style);
         this.dataTree = dataTree;
     }
 
     @Override
-    public String getText() {
-        return "Organize Tree Levels";
+    public boolean isChecked() {
+        boolean b1 = Arrays.equals(dataTree.getContentProvider().getLevels(), dataTree.getContentProvider().getPredefinedLevels1());
+        boolean b2 = Arrays.equals(dataTree.getContentProvider().getLevels(), dataTree.getContentProvider().getPredefinedLevels2());
+        setChecked(!b1 && !b2);
+        return super.isChecked();
     }
 
     @SuppressWarnings("unchecked")
@@ -39,19 +45,33 @@ public class OrganizeTreeLevelsAction extends Action {
             protected CheckboxTableViewer viewer;
 
             @Override
+            protected void configureShell(Shell shell) {
+                super.configureShell(shell);
+                shell.setText("Configure Tree Levels");
+            }
+
+            @Override
             protected Control createDialogArea(Composite parent) {
                 Composite container = (Composite)super.createDialogArea(parent);
                 setTitle("Select levels");
-                setMessage("Select tree levels to organize results");
-                viewer = CheckboxTableViewer.newCheckList(container, SWT.BORDER);
+                setMessage("Select and order tree levels");
+                Composite content = new Composite(container, SWT.NONE);
+                content.setLayoutData(new GridData(GridData.FILL_HORIZONTAL, GridData.FILL_VERTICAL, true, true, 1, 1));
+                content.setLayout(new GridLayout(2, false));
+                Label header = new Label(content, SWT.NONE);
+                header.setText("Available tree levels:");
+                header.setLayoutData(new GridData(GridData.FILL_HORIZONTAL, GridData.BEGINNING, true, false, 2, 1));
+                viewer = CheckboxTableViewer.newCheckList(content, SWT.BORDER);
                 viewer.setContentProvider(new ArrayContentProvider());
                 viewer.setLabelProvider(new LabelProvider() {
                     @Override
                     public String getText(Object element) {
-                        String className = ((Class)element).getName();
-                        String innerClassName = className.substring(className.indexOf("$") + 1);
-                        String label = StringUtils.join(org.omnetpp.common.util.StringUtils.splitCamelCaseString(StringUtils.removeEnd(innerClassName, "Node"), ' '), " ");
-                        return StringUtils.capitalize(label.toLowerCase());
+                        try {
+                            return (String)((Class)element).getMethod("getLevelName").invoke(null);
+                        }
+                        catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
                 final Class[] levels = dataTree.getContentProvider().getLevels();
@@ -63,14 +83,20 @@ public class OrganizeTreeLevelsAction extends Action {
                 });
                 viewer.setInput(levelClasses);
                 viewer.setCheckedElements(levels);
-                viewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
+                viewer.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL, GridData.FILL_VERTICAL, true, true, 1, 1));
+                Composite buttons = new Composite(content, SWT.NONE);
+                GridLayout layout = new GridLayout(1, false);
+                layout.marginWidth = layout.marginHeight = 0;
+                buttons.setLayout(layout);
+                buttons.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 1, 1));
+                createButton(buttons, IDialogConstants.CLIENT_ID, "Up", true);
+                createButton(buttons, IDialogConstants.CLIENT_ID + 1, "Down", true);
+                layout.numColumns = 1;
                 return container;
             }
 
             @Override
             protected void createButtonsForButtonBar(Composite parent) {
-                createButton(parent, IDialogConstants.CLIENT_ID, "Up", true);
-                createButton(parent, IDialogConstants.CLIENT_ID + 1, "Down", true);
                 super.createButtonsForButtonBar(parent);
             }
 
@@ -108,7 +134,6 @@ public class OrganizeTreeLevelsAction extends Action {
                 super.okPressed();
             }
         };
-        dialog.setTitle("Select levels");
         dialog.open();
     }
 }

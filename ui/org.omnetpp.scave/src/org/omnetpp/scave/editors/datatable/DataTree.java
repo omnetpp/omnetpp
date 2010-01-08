@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -19,10 +23,17 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.CsvWriter;
+import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.scave.actions.CustomTreeLevelsAction;
+import org.omnetpp.scave.actions.FlatModuleTreeAction;
+import org.omnetpp.scave.actions.PredefinedLevels1Action;
+import org.omnetpp.scave.actions.PredefinedLevels2Action;
 import org.omnetpp.scave.editors.datatable.ResultFileManagerTreeContentProvider.Node;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
  * This is a class that Levy didn't have time to document :)
@@ -32,9 +43,20 @@ import org.omnetpp.scave.engine.ResultItem;
 public class DataTree extends Tree implements IDataControl {
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
     protected ListenerList listeners;
-    protected ResultFileManager manager;
+    protected ResultFileManagerEx manager;
     protected IDList idList;
     protected ResultFileManagerTreeContentProvider contentProvider;
+    protected DelayedJob refreshJob = new DelayedJob(200) {
+        public void run() {
+            contentProvider = createContentProvider();
+            refresh();
+        }
+    };
+    protected IResultFilesChangeListener resultFilesChangeListener = new IResultFilesChangeListener() {
+        public void resultFileManagerChanged(ResultFileManager manager) {
+            refreshJob.restartTimer();
+        }
+    };
 
     public DataTree(Composite parent, int style) {
         super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
@@ -43,7 +65,7 @@ public class DataTree extends Tree implements IDataControl {
         setMenu(contextMenuManager.createContextMenu(this));
         addColumn("Name", 400);
         addColumn("Value", 200);
-        contentProvider = new ResultFileManagerTreeContentProvider();
+        contentProvider = createContentProvider();
 
         addListener(SWT.SetData, new Listener() {
             public void handleEvent(final Event e) {
@@ -59,17 +81,28 @@ public class DataTree extends Tree implements IDataControl {
         });
     }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (!manager.isDisposed())
+            manager.removeChangeListener(resultFilesChangeListener);
+        refreshJob.cancel();
+    }
+
     public ResultFileManagerTreeContentProvider getContentProvider() {
         return contentProvider;
     }
 
-    public ResultFileManager getResultFileManager() {
+    public ResultFileManagerEx getResultFileManager() {
         return manager;
     }
 
-    public void setResultFileManager(ResultFileManager manager) {
-        this.manager = manager;
-        contentProvider.setResultFileManager(manager);
+    public void setResultFileManager(ResultFileManagerEx newManager) {
+        if (manager != null && !manager.isDisposed())
+            newManager.removeChangeListener(resultFilesChangeListener);
+        manager = newManager;
+        contentProvider.setResultFileManager(newManager);
+        newManager.addChangeListener(resultFilesChangeListener);
     }
 
     public IDList getIDList() {
@@ -79,7 +112,7 @@ public class DataTree extends Tree implements IDataControl {
     public void setIDList(IDList idList) {
         this.idList = idList;
         contentProvider.setIDList(idList);
-        refresh();
+        refreshJob.restartTimer();
         fireContentChangedEvent();
     }
 
@@ -115,12 +148,10 @@ public class DataTree extends Tree implements IDataControl {
             public IDList call() throws Exception {
                 IDList resultIdList = new IDList();
                 TreeItem[] treeItems = getSelection();
-                for (int i = 0; i < idList.size(); i++) {
-                    long id = idList.get(i);
-                    ResultItem resultItem = manager.getItem(id);
-                    for (TreeItem treeItem : treeItems)
-                        if (contentProvider.matchesPath(getPath(treeItem), id, resultItem))
-                            resultIdList.add(id);
+                for (TreeItem treeItem : treeItems) {
+                    Node node = (Node)treeItem.getData();
+                    for (long id : node.ids)
+                        resultIdList.add(id);
                 }
                 return resultIdList;
             }
@@ -165,10 +196,37 @@ public class DataTree extends Tree implements IDataControl {
             listeners.remove(listener);
     }
 
+    public ResultFileManagerTreeContentProvider createContentProvider() {
+        ResultFileManagerTreeContentProvider contentProvider = new ResultFileManagerTreeContentProvider();
+        contentProvider.setResultFileManager(manager);
+        contentProvider.setIDList(idList);
+        if (this.contentProvider != null)
+            contentProvider.setLevels(this.contentProvider.getLevels());
+        return contentProvider;
+    }
+
     public void refresh() {
+        refreshJob.cancel();
         removeAll();
         clearAll(true);
-        setItemCount(contentProvider.getChildNodes(new ArrayList<Node>()).size());
+        setItemCount(contentProvider.getChildNodes(new ArrayList<Node>()).length);
+        getColumn(0).setText("Name (" + contentProvider.getLevelsName() + ")");
+    }
+
+    public IMenuManager createContextMenu() {
+        IMenuManager subMenuManager = new MenuManager("Organize Tree Levels");
+        subMenuManager.add(new FlatModuleTreeAction("Flat Module Tree", Action.AS_CHECK_BOX, this));
+        subMenuManager.add(new Separator());
+        subMenuManager.add(new PredefinedLevels1Action("Experiment + Measurement + Replication", Action.AS_RADIO_BUTTON, this));
+        subMenuManager.add(new PredefinedLevels2Action("Config + Run Number", Action.AS_RADIO_BUTTON, this));
+        subMenuManager.add(new CustomTreeLevelsAction(this, Action.AS_RADIO_BUTTON));
+        subMenuManager.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager manager) {
+                for (IContributionItem item : manager.getItems())
+                    item.update();
+            }
+        });
+        return subMenuManager;
     }
 
     /**
@@ -200,15 +258,17 @@ public class DataTree extends Tree implements IDataControl {
             return;
 
         List<Node> path = getPath(item.getParentItem());
-        Node node = contentProvider.getChildNodes(path).get(index);
+        Node node = contentProvider.getChildNodes(path)[index];
         path.add(0, node);
 
+        setRedraw(false);
         item.setText(0, node.getColumnText(0));
         item.setText(1, node.getColumnText(1));
         item.setData(node);
         item.setImage(node.getImage());
-        item.setItemCount(contentProvider.getChildNodes(path).size());
+        item.setItemCount(contentProvider.getChildNodes(path).length);
         item.setExpanded(node.isExpandedByDefault());
+        setRedraw(true);
     }
 
     private List<Node> getPath(TreeItem treeItem) {

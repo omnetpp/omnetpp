@@ -7,12 +7,13 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 
 /**
- * A TabFolder that contains All, Vectors, Scalars, Histograms tabs with 
+ * A TabFolder that contains All, Vectors, Scalars, Histograms tabs with
  * corresponding data trees/tables. This is a passive UI component.
- * 
+ *
  * @author Levy
  */
 public class FilteredDataTabFolder extends TabFolder {
@@ -174,7 +175,7 @@ public class FilteredDataTabFolder extends TabFolder {
         }
     }
 
-    public void setResultFileManager(ResultFileManager manager) {
+    public void setResultFileManager(ResultFileManagerEx manager) {
         allPanel.setResultFileManager(manager);
         scalarsPanel.setResultFileManager(manager);
         vectorsPanel.setResultFileManager(manager);

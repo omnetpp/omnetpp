@@ -1531,4 +1531,7 @@ bool ResultFileManager::hasStaleID(const IDList& ids) const
     return false;
 }
 
-
+const char *ResultFileManager::getRunAttribute(ID id, const char *attribute) const
+{
+    return getItem(id).fileRunRef->runRef->getAttribute(attribute);
+}

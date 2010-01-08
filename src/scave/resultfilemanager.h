@@ -441,6 +441,8 @@ class SCAVE_API ResultFileManager
     StringVector *getResultItemAttributeFilterHints(const IDList &idlist, const char *attrName) const;
     StringVector *getRunAttributeFilterHints(const RunList &runList, const char *attrName) const;
     StringVector *getModuleParamFilterHints(const RunList &runList, const char * paramName) const;
+
+    const char *getRunAttribute(ID id, const char *attribute) const;
 };
 
 inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const

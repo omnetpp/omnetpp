@@ -5,15 +5,15 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Event;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 public interface IDataControl {
     /* content */
 
-    public ResultFileManager getResultFileManager();
+    public ResultFileManagerEx getResultFileManager();
 
-    public void setResultFileManager(ResultFileManager manager);
+    public void setResultFileManager(ResultFileManagerEx manager);
 
     public IDList getIDList();
 
