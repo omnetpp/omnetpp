@@ -75,7 +75,7 @@ public class FilterCombo extends Combo {
     }
 
     protected void textChanged(ModifyEvent e) {
-        if (getText().length()==0 && !isFocusControl() && !alreadyNotifying) {
+        if (super.getText().length()==0 && !isFocusControl() && !alreadyNotifying) {
             alreadyNotifying = true;
             setText(message);
             alreadyNotifying = false;
