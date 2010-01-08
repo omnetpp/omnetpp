@@ -22,23 +22,27 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.ResultFileManagerTreeContentProvider;
 
+@SuppressWarnings("unchecked")
 public class CustomTreeLevelsAction extends Action {
     private DataTree dataTree;
 
-    public CustomTreeLevelsAction(DataTree dataTree, int style) {
-        super("Custom Tree Levels", style);
+    public CustomTreeLevelsAction(DataTree dataTree) {
+        super("Custom...", Action.AS_RADIO_BUTTON);
         this.dataTree = dataTree;
     }
 
     @Override
     public boolean isChecked() {
-        boolean b1 = Arrays.equals(dataTree.getContentProvider().getLevels(), dataTree.getContentProvider().getPredefinedLevels1());
-        boolean b2 = Arrays.equals(dataTree.getContentProvider().getLevels(), dataTree.getContentProvider().getPredefinedLevels2());
-        setChecked(!b1 && !b2);
+        ResultFileManagerTreeContentProvider contentProvider = dataTree.getContentProvider();
+        Class[] levels = contentProvider.getLevels();
+        boolean checked = true;
+        for (Class[] predefinedLevels : new Class[][] { ResultFileManagerTreeContentProvider.LEVELS1, ResultFileManagerTreeContentProvider.LEVELS2, ResultFileManagerTreeContentProvider.LEVELS3, ResultFileManagerTreeContentProvider.LEVELS4, ResultFileManagerTreeContentProvider.LEVELS5, ResultFileManagerTreeContentProvider.LEVELS6 })
+            if (PredefinedLevelsAction.isLevelsEqualsIgnoreModuleNameLevel(levels, predefinedLevels))
+                checked = false;
+        setChecked(checked);
         return super.isChecked();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void run() {
         TitleAreaDialog dialog = new TitleAreaDialog(Display.getCurrent().getActiveShell()) {

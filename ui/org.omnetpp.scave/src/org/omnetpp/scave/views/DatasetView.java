@@ -209,7 +209,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		if (control instanceof DataTable)
 		    menuManager.add(new ChooseTableColumnsAction((DataTable)control));
 		if (control instanceof DataTree)
-		    menuManager.add(((DataTree)control).createContextMenu());
+		    ((DataTree)control).contributeToContextMenu(menuManager);
 		menuManager.add(setFilterAction);
 		control.addSelectionListener(new SelectionAdapter() {
 			@Override

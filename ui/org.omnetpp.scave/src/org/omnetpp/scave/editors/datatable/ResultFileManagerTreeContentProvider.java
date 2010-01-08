@@ -37,7 +37,15 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  *
  * @author levy
  */
+@SuppressWarnings("unchecked")
 public class ResultFileManagerTreeContentProvider {
+    public final static Class[] LEVELS1 = new Class[] { ExperimentNode.class, MeasurementNode.class, ReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
+    public final static Class[] LEVELS2 = new Class[] { ExperimentMeasurementReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
+    public final static Class[] LEVELS3 = new Class[] { ConfigNode.class, RunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
+    public final static Class[] LEVELS4 = new Class[] { ConfigRunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
+    public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
+    public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
+
     private static boolean debug = true;
 
     protected ResultFileManagerEx manager;
@@ -65,15 +73,12 @@ public class ResultFileManagerTreeContentProvider {
     }
 
     public void setLevels(Class<? extends Node>[] levels) {
-        if (Arrays.equals(levels, this.levels))
-            return;
         if (debug)
             System.out.println("setLevels(): " + levels);
         this.levels = levels;
         rootNodes = null;
     }
 
-    @SuppressWarnings("unchecked")
     public String getLevelsName() {
         StringBuffer name = new StringBuffer();
         for (int i = 0; i < levels.length; i++) {
@@ -90,29 +95,8 @@ public class ResultFileManagerTreeContentProvider {
         return name.toString();
     }
 
-    @SuppressWarnings("unchecked")
     public void setDefaultLevels() {
-        setLevels(getPredefinedLevels1());
-    }
-
-    @SuppressWarnings("unchecked")
-    public Class[] getPredefinedLevels1() {
-        return new Class[] {
-            ExperimentMeasurementReplicationNode.class,
-            ModulePathNode.class,
-            ResultItemNode.class,
-            ResultItemAttributeNode.class
-        };
-    }
-
-    @SuppressWarnings("unchecked")
-    public Class[] getPredefinedLevels2() {
-        return new Class[] {
-            ConfigRunNumberNode.class,
-            ModulePathNode.class,
-            ResultItemNode.class,
-            ResultItemAttributeNode.class
-        };
+        setLevels(LEVELS2);
     }
 
     public Node[] getChildNodes(final List<Node> path) {
@@ -133,7 +117,6 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         Node[] nodes = ResultFileManager.callWithReadLock(manager, new Callable<Node[]>() {
-            @SuppressWarnings("unchecked")
             public Node[] call() throws Exception {
                 MultiValueMap nodeIdsMap = new MultiValueMap();
                 int currentLevelIndex;
@@ -362,7 +345,6 @@ public class ResultFileManagerTreeContentProvider {
 
     /* Various tree node types */
 
-    @SuppressWarnings("unchecked")
     public static Class[] getAvailableLevelClasses() {
         return new Class[] {
             ExperimentNode.class,

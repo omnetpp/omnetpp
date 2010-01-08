@@ -7,11 +7,11 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -26,8 +26,7 @@ import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.scave.actions.CustomTreeLevelsAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
-import org.omnetpp.scave.actions.PredefinedLevels1Action;
-import org.omnetpp.scave.actions.PredefinedLevels2Action;
+import org.omnetpp.scave.actions.PredefinedLevelsAction;
 import org.omnetpp.scave.editors.datatable.ResultFileManagerTreeContentProvider.Node;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -210,23 +209,31 @@ public class DataTree extends Tree implements IDataControl {
         removeAll();
         clearAll(true);
         setItemCount(contentProvider.getChildNodes(new ArrayList<Node>()).length);
-        getColumn(0).setText("Name (" + contentProvider.getLevelsName() + ")");
     }
 
-    public IMenuManager createContextMenu() {
-        IMenuManager subMenuManager = new MenuManager("Organize Tree Levels");
-        subMenuManager.add(new FlatModuleTreeAction("Flat Module Tree", Action.AS_CHECK_BOX, this));
-        subMenuManager.add(new Separator());
-        subMenuManager.add(new PredefinedLevels1Action("Experiment + Measurement + Replication", Action.AS_RADIO_BUTTON, this));
-        subMenuManager.add(new PredefinedLevels2Action("Config + Run Number", Action.AS_RADIO_BUTTON, this));
-        subMenuManager.add(new CustomTreeLevelsAction(this, Action.AS_RADIO_BUTTON));
+    public void contributeToContextMenu(IMenuManager menuManager) {
+        final ActionContributionItem item = new ActionContributionItem(new FlatModuleTreeAction("Flat Module Tree", Action.AS_CHECK_BOX, this));
+        menuManager.add(item);
+        menuManager.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager manager) {
+                item.update();
+            }
+        });
+        IMenuManager subMenuManager = new MenuManager("Tree Levels");
+        subMenuManager.add(new PredefinedLevelsAction("Experiment / Measurement / Replication", this, ResultFileManagerTreeContentProvider.LEVELS1));
+        subMenuManager.add(new PredefinedLevelsAction("Experiment + Measurement + Replication", this, ResultFileManagerTreeContentProvider.LEVELS2));
+        subMenuManager.add(new PredefinedLevelsAction("Config / Run Number", this, ResultFileManagerTreeContentProvider.LEVELS3));
+        subMenuManager.add(new PredefinedLevelsAction("Config + Run Number", this, ResultFileManagerTreeContentProvider.LEVELS4));
+        subMenuManager.add(new PredefinedLevelsAction("File", this, ResultFileManagerTreeContentProvider.LEVELS5));
+        subMenuManager.add(new PredefinedLevelsAction("Run Id", this, ResultFileManagerTreeContentProvider.LEVELS6));
+        subMenuManager.add(new CustomTreeLevelsAction(this));
         subMenuManager.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
                 for (IContributionItem item : manager.getItems())
                     item.update();
             }
         });
-        return subMenuManager;
+        menuManager.add(subMenuManager);
     }
 
     /**

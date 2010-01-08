@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.omnetpp.scave.actions;
 
@@ -25,12 +25,14 @@ public class FlatModuleTreeAction extends Action {
     @SuppressWarnings("unchecked")
     @Override
     public void run() {
-        Class[] levels = dataTree.getContentProvider().getLevels();
+        ResultFileManagerTreeContentProvider contentProvider = dataTree.getContentProvider();
+        Class[] levels = contentProvider.getLevels().clone();
         Class oldClass = isChecked() ? ResultFileManagerTreeContentProvider.ModulePathNode.class : ResultFileManagerTreeContentProvider.ModuleNameNode.class;
         Class newClass = !isChecked() ? ResultFileManagerTreeContentProvider.ModulePathNode.class : ResultFileManagerTreeContentProvider.ModuleNameNode.class;
         int index = ArrayUtils.indexOf(levels, oldClass);
         if (index != -1)
             levels[index] = newClass;
+        contentProvider.setLevels(levels);
         dataTree.refresh();
     }
 }
