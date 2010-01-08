@@ -48,23 +48,28 @@ public class CustomTreeLevelsAction extends Action {
         TitleAreaDialog dialog = new TitleAreaDialog(Display.getCurrent().getActiveShell()) {
             protected CheckboxTableViewer viewer;
 
+            // constructor
+            {
+                setShellStyle(getShellStyle() | SWT.RESIZE);
+            }
+            
             @Override
             protected void configureShell(Shell shell) {
                 super.configureShell(shell);
                 shell.setText("Configure Tree Levels");
             }
-
+            
             @Override
             protected Control createDialogArea(Composite parent) {
                 Composite container = (Composite)super.createDialogArea(parent);
                 setTitle("Select levels");
                 setMessage("Select and order tree levels");
-                Composite content = new Composite(container, SWT.NONE);
-                content.setLayoutData(new GridData(GridData.FILL_HORIZONTAL, GridData.FILL_VERTICAL, true, true, 1, 1));
+                Composite content = new Composite(container, SWT.BORDER);
+                content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
                 content.setLayout(new GridLayout(2, false));
                 Label header = new Label(content, SWT.NONE);
                 header.setText("Available tree levels:");
-                header.setLayoutData(new GridData(GridData.FILL_HORIZONTAL, GridData.BEGINNING, true, false, 2, 1));
+                header.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
                 viewer = CheckboxTableViewer.newCheckList(content, SWT.BORDER);
                 viewer.setContentProvider(new ArrayContentProvider());
                 viewer.setLabelProvider(new LabelProvider() {
@@ -82,17 +87,21 @@ public class CustomTreeLevelsAction extends Action {
                 Class[] levelClasses = ResultFileManagerTreeContentProvider.getAvailableLevelClasses();
                 Arrays.sort(levelClasses, new Comparator<Class>() {
                     public int compare(Class l1, Class l2) {
-                        return ArrayUtils.indexOf(levels, l1) - ArrayUtils.indexOf(levels, l2);
+                        return adjust(ArrayUtils.indexOf(levels, l1)) - adjust(ArrayUtils.indexOf(levels, l2));
+                    }
+
+                    private int adjust(int pos) {
+                        return pos == -1 ? Integer.MAX_VALUE : pos;
                     }
                 });
                 viewer.setInput(levelClasses);
                 viewer.setCheckedElements(levels);
-                viewer.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL, GridData.FILL_VERTICAL, true, true, 1, 1));
+                viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
                 Composite buttons = new Composite(content, SWT.NONE);
                 GridLayout layout = new GridLayout(1, false);
                 layout.marginWidth = layout.marginHeight = 0;
                 buttons.setLayout(layout);
-                buttons.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 1, 1));
+                buttons.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
                 createButton(buttons, IDialogConstants.CLIENT_ID, "Up", true);
                 createButton(buttons, IDialogConstants.CLIENT_ID + 1, "Down", true);
                 layout.numColumns = 1;
@@ -108,24 +117,28 @@ public class CustomTreeLevelsAction extends Action {
             protected void buttonPressed(int buttonId) {
                 if (buttonId == IDialogConstants.CLIENT_ID) {
                     Object element = ((IStructuredSelection)viewer.getSelection()).getFirstElement();
-                    Object[] elements = (Object[])viewer.getInput();
-                    int index = ArrayUtils.indexOf(elements, element);
-                    if (index > 0) {
-                        Object temp = elements[index - 1];
-                        elements[index - 1] = element;
-                        elements[index] = temp;
-                        viewer.refresh();
+                    if (element != null) {
+                        Object[] elements = (Object[])viewer.getInput();
+                        int index = ArrayUtils.indexOf(elements, element);
+                        if (index > 0) {
+                            Object temp = elements[index - 1];
+                            elements[index - 1] = element;
+                            elements[index] = temp;
+                            viewer.refresh();
+                        }
                     }
                 }
                 else if (buttonId == IDialogConstants.CLIENT_ID + 1) {
                     Object element = ((IStructuredSelection)viewer.getSelection()).getFirstElement();
-                    Object[] elements = (Object[])viewer.getInput();
-                    int index = ArrayUtils.indexOf(elements, element);
-                    if (index < elements.length - 1) {
-                        Object temp = elements[index + 1];
-                        elements[index + 1] = element;
-                        elements[index] = temp;
-                        viewer.refresh();
+                    if (element != null) {
+                        Object[] elements = (Object[])viewer.getInput();
+                        int index = ArrayUtils.indexOf(elements, element);
+                        if (index < elements.length - 1) {
+                            Object temp = elements[index + 1];
+                            elements[index + 1] = element;
+                            elements[index] = temp;
+                            viewer.refresh();
+                        }
                     }
                 }
                 super.buttonPressed(buttonId);
