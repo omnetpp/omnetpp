@@ -1,0 +1,158 @@
+= @OMNETPP@ IDE Developers Guide
+
+== Introduction
+
+TODO Eclipse is very extensible blah blah
+
+Java knowledge is required.
+
+== Installing the Plug-in Development Environment
+
+To develop plug-ins for the IDE, you need to install the Eclipse Plug-in Development
+Environment (PDE) into the IDE. This section describes how to install PDE.
+
+Start the IDE, and select 'Help -> Install New Sofware...' from the menu.
+This will bring up the 'Install' dialog.
+
+At the top of the dialog you can choose an Eclipse software repository to
+install software from. Select 'Galileo' from the list.
+
+If 'Galileo' is not present, add it: Click the 'Add...' button, then fill in
+the dialog that comes up:
+
+* Name: `Galileo`
+* Location: `http://download.eclipse.org/releases/galileo`
+
+Then click OK.
+
+After a while, the 'Install' dialog should show the list of available
+Eclipse packages. Select 'Eclipse Plug-in Development Environment'
+from the 'General Purpose Tools' group, then go thought the rest of the
+wizard to get PDE installed. This will install PDE's prerequisites,
+most notably JDT (Java Development Tooling) as well.
+
+When the download and the installation finished, restart the IDE.
+
+Now the IDE is ready for plug-in development.
+
+//-------------------------------------------------------------------
+
+== Creating The First Plug-in
+
+=== Creating the Plug-in
+
+Once PDE is installed, we can create a small example 'Hello World' plug-in.
+
+Choose 'File -> New -> Project...' from the menu. The 'New Project'
+wizard dialog comes up, with project type selection on the first page.
+Choose 'Plug-in Project' from the 'Plug-in Development' group and click
+'Next'.
+
+On the next page, enter `org.example.hello` for project name, then
+click 'Next'. On the following page ('Content'), you can just click
+'Next' as well. The following page allows you to choose the initial content
+for your project from among several code examples. Choose 'Hello, World',
+then click 'Finish'.
+
+A new project named `org.example.hello` will be created.
+
+The IDE will also ask you if you want to switch to the 'Plug-in Development'
+perspective; answer 'Yes'.
+
+=== The project
+
+TODO manifest editor, java files, plugin.xml, MANIFEST.MF...
+
+=== Testing the Plug-in
+
+On the 'Overview' tab click the 'Launch an Eclipse application' link
+
+A new instance of Eclipse will be started containing the generated plugin.
+If everything is OK you should see a 'Sample Menu' containing a 'Sample Action'.
+When clicked, it will bring up a message dialog.
+
+
+=== Exporting the plug-in
+
+Use the 'Export plugin' link on the 'Overview' page of the manifest editor.
+
+Choose 'Directory' radio button for 'Destination'
+Sepcify directory name.
+Click [Finish]
+
+The plugin will be generated as <dirname>/plugins/aaaa_1.0.0.201001061910.jar
+
+=== Deploying the plugin in a project
+
+Normally the into the plugins folder blah blah
+
+The OMNeT++ IDE can load plug-ins from the workspace (projects) as well.
+
+Open an existing OMNeT++ project (e.g. aloha). Create a folder named `plugins`.
+
+Copy the exported plugin file (jar) into the `plugins` folder.
+
+It should be activated automatically. If you delete it, it should disappear.
+If you replace it with a new version, TODO what will happen?
+
+Not all plug-ins behave nicely; it might be a good idea to restart the IDE etc.
+
+
+//-------------------------------------------------------------------
+
+== Eclipse Plug-in Development
+
+It is out of scope of this manual to teach the reader on how to write Eclipse
+plug-ins. There are excellent books and on-line resources on this
+topic.
+
+The most straightforward resource is the Eclipse manuals themselves.
+Open the Eclipse help system ('Help -> Help Contents'). If PDE is installed,
+you will find the following manuals in it:
+
+* 'Platform Plug-in Developer Guide'
+* 'Plug-in Development Environment Guide'
+
+Searching for 'developing Eclipse plug-ins' on the web will reveal
+many good tutorials, overviews and other articles.
+
+A more in-depth coverage of the topic is the book 'Eclipse Plug-ins', by
+Eric Clayberg and Dan Rubel. Former editions were titled
+'Eclipse: Building Commercial-Quality Plug-ins', which might be familiar
+to more people. The book has an associated web site:
+http://www.qualityeclipse.com.
+
+Another book that we found useful is 'The Official Eclipse 3.0 FAQs' by
+John Arthorne and Chris Laffra. The book is now available online:
+http://wiki.eclipse.org/index.php/The_Official_Eclipse_FAQs.
+
+One can find several more good books on amazon.com about Eclipse's
+architecture, services, developing plug-ins.
+
+The rest of this Manual assumes that you are familiar with
+Eclipse concepts and Eclipse plug-in development in general.
+
+//-------------------------------------------------------------------
+
+== OMNeT++ IDE Developer Guide
+
+=== Overview
+
+TODO You can do whatever you can do with Eclipse.
+
+=== Accessing NED Types
+
+TODO NedResources, INedTypeInfo
+
+=== Accessing message types
+
+TODO MsgResources
+
+=== Accessing Projects
+
+TODO buildspec, ned source folders, etc
+
+=== Extension Points
+
+==== Wizard
+
