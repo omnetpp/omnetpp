@@ -54,161 +54,6 @@ SIM_API extern cDefaultList defaultList; // also in globals.h
 
 
 /**
- * A callback interface for getting notified at various stages of
- * setting up, running, and tearing down simulations.
- * They can be hooked on cSimulation with its addListener()
- * method, and removed with removeListener().
- *
- * Simulation listeners are mainly intended for use by plug-in
- * objects extending the simulator's functionality: schedulers,
- * output vector/scalar managers, parallel simulation algorithms
- * and so on.
- *
- * Notifications always refer to the active simulation (see
- * cSimulation::getActiveSimulation()).
- *
- * Note that listeners will not be deleted automatically by cSimulation
- * when the program exits. To delete a listener on shutdown, add
- * the statements <tt>simulation.removeListener(this); delete this;</tt>
- * into the onShutdown() method.
- *
- * @ingroup SimCore
- * @ingroup Internals
- */
-class SIM_API cISimulationListener
-{
-  public:
-    virtual ~cISimulationListener() {}
-
-    /**
-     * Called on the startup of the simulation program, after global
-     * configuration has been applied, but before any simulation
-     * has been set up.
-     */
-    virtual void onStartup() = 0;
-
-    /**
-     * Called before the simulation program exits. At the time of the call,
-     * the simulated network has been torn down, but the simulation
-     * infrastructure (scheduler object, etc) is still in place.
-     */
-    virtual void onShutdown() = 0;
-
-    /**
-     * Called before network setup. At the time of the call, cSimulation's
-     * network type pointer (see getNetworkType()) already points to the type
-     * of the network that will be set up.
-     */
-    virtual void preNetworkSetup() = 0;
-
-    /**
-     * Called just before the network is initialized, i.e. before
-     * callInitialize() has been invoked on the system module. This method
-     * does not get invoked if there was an error during network setup.
-     * If network setup is successful, this method also serves as
-     * postNetworkSetup().
-     */
-    virtual void preNetworkInitialize() = 0;
-
-    /**
-     * Called just after the network was initialized, i.e. after
-     * callInitialize() was invoked on the system module. This method
-     * does not get invoked if there was an error during initialization.
-     */
-    virtual void postNetworkInitialize() = 0;
-
-    //FIXME TODO when the simulation starts to run. This != postNetworkInitialize
-    // because on the GUI, there might be a delay between the user setting up
-    // the network and actually hitting the Run button
-    //XXX this is NOT the same as old startRun()! that was rather postNetworkSetup() [which we don't have now!]
-    virtual void onSimulationStart() = 0;
-
-    //FIXME TODO called when the user suspends execution on the GUI
-    virtual void onExecutionPause() = 0;
-
-    //FIXME TODO when user resumes execution on the GUI, after a pause (see onExecutionPause()).
-    // This might be used e.g. by the real-time scheduler to resynchronize with
-    // wall clock time.
-    virtual void onExecutionResume() = 0;
-
-    /**
-     * Called just before the network is finalized, i.e. before callFinish()
-     * has been invoked on the system module. This only happens if the
-     * simulation completed successfully (did not terminate with an error).
-     */
-    virtual void preNetworkFinalize() = 0;
-
-    /**
-     * Called after the network got finalized, i.e. after callFinish()
-     * got invoked on the system module. This method does not get invoked
-     * if there was an error during finalization.
-     */
-    virtual void postNetworkFinalize() = 0;
-
-    //FIXME TODO after the simulation was terminated, either by calling finish()
-    // or because of an error. This is separate from preNetworkDelete(),
-    // because when using a GUI, there might be a delay between the simulation
-    // terminating and the user action that causes the network to be deleted.
-    // This method only gets invoked if onSimulationStart() was also invoked,
-    // that is, network setup and initialization was successful.
-    virtual void onSimulationEnd() = 0;
-
-    /**
-     * Called before the network gets deleted, i.e. before cSimulation's
-     * deleteNetwork() has been called. This method is called even if
-     * there was an error during network setup.
-     */
-    virtual void preNetworkDelete() = 0;
-
-    /**
-     * Called after the network got deleted, i.e. cSimulation's deleteNetwork()
-     * gets called. At the time of the call, the network type pointer
-     * in cSimulation (see getNetworkType()) is still valid.
-     * This method does not get called if an error occurs during
-     * deleteNetwork() (which is usually a fatal condition.)
-     */
-    virtual void postNetworkDelete() = 0;
-
-    /**
-     * Called after this listener was added to cSimulation, via addListener().
-     */
-    virtual void listenerAdded() = 0;
-
-    /**
-     * Called after this listener was removed from cSimulation, via
-     * removeListener(). It is OK for the listener to delete itself in the
-     * body of this method (<tt>delete this</tt>).
-     */
-    virtual void listenerRemoved() = 0;
-};
-
-/**
- * Default implementation of cISimulationListener, with empty method bodies.
- *
- * @ingroup SimCore
- * @ingroup Internals
- */
-class SIM_API cSimulationListener : public cISimulationListener
-{
-  public:
-    virtual void onStartup() {}
-    virtual void onShutdown() {}
-    virtual void preNetworkSetup() {}
-    virtual void preNetworkInitialize() {}
-    virtual void postNetworkInitialize() {}
-    virtual void onSimulationStart() {}
-    virtual void onExecutionPause() {}
-    virtual void onExecutionResume() {}
-    virtual void preNetworkFinalize() {}
-    virtual void postNetworkFinalize() {}
-    virtual void onSimulationEnd() {}
-    virtual void preNetworkDelete() {}
-    virtual void postNetworkDelete() {}
-    virtual void listenerAdded() {}
-    virtual void listenerRemoved() {}
-};
-
-/**
  * Simulation manager class.  cSimulation is the central class in \opp.
  * It stores the active simulation model, and provides methods for setting up,
  * running and finalizing simulations.
@@ -254,13 +99,10 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     cException *exception;    // helper variable to get exceptions back from activity()
 
     cHasher *hasherp;         // used for fingerprint calculation
-    std::vector<cISimulationListener*> listeners;
 
   private:
     // internal
     void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, eWRONGSIM);}
-    // internal
-    void notifyListeners(void (cISimulationListener::*method)());
 
   public:
     // internal: FES
@@ -684,18 +526,6 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Installs a new hasher object, used for fingerprint calculation.
      */
     void setHasher(cHasher *hasher);
-
-    /**
-     * Adds a listener that will be notified about simulation lifetime events.
-     * The listeners will NOT be deleted by cSimulation when the program
-     * exits.
-     */
-    void addListener(cISimulationListener *listener);
-
-    /**
-     * Removes the given listener.
-     */
-    void removeListener(cISimulationListener *listener);
     //@}
 };
 
