@@ -284,13 +284,12 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
 
         printf(" CHECKING PATTERNS ON: %s\n", parent->getFullPath().c_str());
 
+        // find NED declaration. Note that decl may be NULL (if parent was not defined via NED)
         const char *nedTypeName = parent->getNedTypeName();
         cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
 
-//FIXME will crash if decl is NULL!! (not defined via NED)
-
         // first, check patterns in the "submodules:" section
-        if (!prefix.empty())
+        if (decl && !prefix.empty())
         {
             const std::vector<PatternData>& submodPatterns = decl->getSubmoduleParamPatterns(child->getName());
             if (!submodPatterns.empty())
@@ -310,9 +309,12 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
         }
 
         // check patterns on the compound module itself
-        const std::vector<PatternData>& patterns = decl->getParamPatterns();
-        if (!patterns.empty())
-            doAssignParametersFromPatterns(component, prefix, patterns);
+        if (decl)
+        {
+            const std::vector<PatternData>& patterns = decl->getParamPatterns();
+            if (!patterns.empty())
+                doAssignParametersFromPatterns(component, prefix, patterns);
+        }
     }
 }
 
