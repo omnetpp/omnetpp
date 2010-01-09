@@ -11,9 +11,9 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.WeakHashMap;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -31,6 +31,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -49,6 +51,7 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.util.ActionExt;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -57,9 +60,12 @@ import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
+import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 
@@ -116,7 +122,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
 					switch (columnIndex) {
-						case 0: return res.moduleFullPath+"."+res.paramDeclNode.getName();
+						case 0: return res.fullPath + "." + res.paramDeclaration.getName();
 						case 1: return InifileAnalyzer.getParamValue(res, inifileDocument);
 						case 2: return InifileAnalyzer.getParamRemark(res, inifileDocument);
 					}
@@ -148,7 +154,7 @@ public class ModuleParametersView extends AbstractModuleView {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
 					else
-						return InifileHoverUtils.getParamHoverText(res.pathModules, res.paramDeclNode, res.paramValueNode);
+						return InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclaration, res.paramAssignment);
 				}
 				return null;
 			}
@@ -244,7 +250,7 @@ public class ModuleParametersView extends AbstractModuleView {
 					// experimental: disable "Open NED declaration" if it's the same as "Open NED value"
 					//return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
 					// experimental: disable "Open NED Value" if it's the same as the declaration
-					return gotoDecl ? res.paramDeclNode : (res.paramDeclNode==res.paramValueNode ? null : res.paramValueNode);
+					return gotoDecl ? res.paramDeclaration : (res.paramDeclaration == res.paramAssignment ? null : res.paramAssignment);
 				}
 				return null;
 			}
@@ -281,7 +287,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void sortTableInput(TableColumn column, int sortDirection) {
+	protected void sortTableInput(TableColumn column, final int sortDirection) {
 		Object[] input = (Object[]) tableViewer.getInput();
 
 		if (input != null) {
@@ -303,13 +309,9 @@ public class ModuleParametersView extends AbstractModuleView {
 					String label2 = labelProvider.getColumnText(o2, finalColumnNumber);
 					if (label1 == null) label1 = "";
 					if (label2 == null) label2 = "";
-					return label1.compareToIgnoreCase(label2);
+					return (sortDirection == SWT.DOWN ? -1 : 1) * StringUtils.dictionaryCompare(label1, label2);
 				}
 			});
-
-			// for decreasing order, reverse the array
-			if (sortDirection==SWT.DOWN)
-				ArrayUtils.reverse(input);
 
 			tableViewer.refresh();
 		}
@@ -344,33 +346,39 @@ public class ModuleParametersView extends AbstractModuleView {
 	@Override
 	public void buildContent(INEDElement element, InifileAnalyzer analyzer, String section, String key) {
 
-	    INEDElement module = findFirstModuleOrSubmoduleParent(element);
-        if (module == null) {
-            showMessage("No module element selected.");
+	    INEDElement elementWithParameters = findAncestorWithParameters(element);
+        if (elementWithParameters == null) {
+            showMessage("No element with parameters selected.");
             return;
         }
 
-		//XXX factor out common part of the two "if" branches
+        String text = null;
+
 		//XXX why not unconditionally store analyzer and doc references???
 		if (analyzer==null) {
-			ParamResolution[] pars = null;
-			if (module instanceof SubmoduleElementEx)
-				pars = InifileAnalyzer.collectParameters((SubmoduleElementEx)module).toArray(new ParamResolution[]{});
-			else if (module instanceof INedTypeElement)
-				pars = InifileAnalyzer.collectParameters(((INedTypeElement)module).getNEDTypeInfo()).toArray(new ParamResolution[]{});
-			if (pars == null) {
-				showMessage("NED element should be a module type or a submodule.");
+			List<ParamResolution> pars = null;
+
+			if (elementWithParameters instanceof SubmoduleElementEx) {
+			    SubmoduleElementEx submodule = (SubmoduleElementEx)elementWithParameters;
+			    text = "Submodule: " + submodule.getName() + " (" + submodule.getNEDTypeInfo().getName() + ")";
+				pars = InifileAnalyzer.collectParameters(submodule);
+			}
+            else if (elementWithParameters instanceof ConnectionElementEx) {
+                INEDTypeInfo typeInfo = ((ConnectionElementEx)elementWithParameters).getNEDTypeInfo();
+                text = "Connection: " + typeInfo.getName();
+                pars = InifileAnalyzer.collectParameters(typeInfo);
+            }
+			else if (elementWithParameters instanceof INedTypeElement) {
+			    INEDTypeInfo typeInfo = ((INedTypeElement)elementWithParameters).getNEDTypeInfo();
+			    text = StringUtils.capitalize(elementWithParameters.getReadableTagName()) + ": " + typeInfo.getName();
+				pars = InifileAnalyzer.collectParameters(typeInfo);
+			}
+			else {
+				showMessage("NED element should be a module type, a submodule or a connection.");
 				return;
 			}
 
-			tableViewer.setInput(pars);
-
-			// try to preserve selection
-			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
-			if (oldSelection != null)
-				tableViewer.setSelection(oldSelection, true);
-
-			//XXX set label
+			tableViewer.setInput(pars.toArray(new ParamResolution[0]));
 		}
 		else {
 			if (section==null)
@@ -383,18 +391,30 @@ public class ModuleParametersView extends AbstractModuleView {
 			ParamResolution[] pars = unassignedOnly ? analyzer.getUnassignedParams(section) : analyzer.getParamResolutions(section);
 			tableViewer.setInput(pars);
 
-			// try to preserve selection
-			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
-			if (oldSelection != null)
-				tableViewer.setSelection(oldSelection, true);
-
 			// update label
-			String text = "Section ["+section+"]";
-			if (getPinnedToEditor() != null)
-				text += " in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
-			text += ", " + (unassignedOnly ? "unassigned parameters" : "all parameters");
-			setContentDescription(text);
+			text = "Section ["+section+"]";
 		}
-	}
 
+        // try to preserve selection
+        ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
+        if (oldSelection != null)
+            tableViewer.setSelection(oldSelection, true);
+
+        // set label
+		if (getPinnedToEditor() != null)
+            text += " in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
+        text += ", " + (unassignedOnly ? "unassigned parameters" : "all parameters");
+        setContentDescription(text);
+
+        // set up filter
+        if (unassignedOnly)
+            tableViewer.setFilters(new ViewerFilter[] {new ViewerFilter() {
+                @Override
+                public boolean select(Viewer viewer, Object parentElement, Object element) {
+                    return ((ParamResolution)element).type == ParamResolutionType.UNASSIGNED;
+                }
+            }});
+        else
+            tableViewer.resetFilters();
+	}
 }

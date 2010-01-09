@@ -39,7 +39,6 @@ class ChannelInterfaceElement;
 class ChannelElement;
 class ParametersElement;
 class ParamElement;
-class PatternElement;
 class PropertyElement;
 class PropertyKeyElement;
 class GatesElement;
@@ -99,7 +98,6 @@ enum NEDElementCode {
     NED_CHANNEL,
     NED_PARAMETERS,
     NED_PARAM,
-    NED_PATTERN,
     NED_PROPERTY,
     NED_PROPERTY_KEY,
     NED_GATES,
@@ -800,7 +798,7 @@ class NEDXML_API ChannelElement : public NEDElement
  * GENERATED CLASS. Represents the \<parameters\> XML element in memory. DTD declaration:
  *
  * <pre>
- * \<!ELEMENT parameters (comment*, (property|param|pattern)*)\>
+ * \<!ELEMENT parameters (comment*, (property|param)*)\>
  * \<!ATTLIST parameters
  *     is-implicit         (true|false)  "false"\>
  * </pre>
@@ -842,7 +840,6 @@ class NEDXML_API ParametersElement : public NEDElement
     virtual CommentElement *getFirstCommentChild() const;
     virtual PropertyElement *getFirstPropertyChild() const;
     virtual ParamElement *getFirstParamChild() const;
-    virtual PatternElement *getFirstPatternChild() const;
     //@}
 };
 
@@ -854,8 +851,9 @@ class NEDXML_API ParametersElement : public NEDElement
  * \<!ATTLIST param
  *      type               (double|int|string|bool|xml) \#IMPLIED
  *      is-volatile        (true|false)  "false"
- *      name               NMTOKEN   \#REQUIRED
+ *      name               CDATA     \#REQUIRED
  *      value              CDATA     \#IMPLIED
+ *      is-pattern         (true|false)  "false"
  *      is-default         (true|false)  "false"\>
  * </pre>
  *
@@ -868,6 +866,7 @@ class NEDXML_API ParamElement : public NEDElement
     bool isVolatile;
     std::string name;
     std::string value;
+    bool isPattern;
     bool isDefault;
   public:
     /** @name Constructors, destructor */
@@ -901,67 +900,12 @@ class NEDXML_API ParamElement : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getValue() const  {return value.c_str();}
     void setValue(const char * val)  {value = val;}
+    bool getIsPattern() const  {return isPattern;}
+    void setIsPattern(bool val)  {isPattern = val;}
     bool getIsDefault() const  {return isDefault;}
     void setIsDefault(bool val)  {isDefault = val;}
 
     virtual ParamElement *getNextParamSibling() const;
-    virtual CommentElement *getFirstCommentChild() const;
-    virtual ExpressionElement *getFirstExpressionChild() const;
-    virtual PropertyElement *getFirstPropertyChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the \<pattern\> XML element in memory. DTD declaration:
- *
- * <pre>
- * \<!ELEMENT pattern (comment*, expression?, property*)\>
- * \<!ATTLIST pattern
- *      pattern            CDATA     \#REQUIRED
- *      value              CDATA     \#IMPLIED
- *      is-default         (true|false)  "false"\>
- * </pre>
- *
- * @ingroup Data
- */
-class NEDXML_API PatternElement : public NEDElement
-{
-  private:
-    std::string pattern;
-    std::string value;
-    bool isDefault;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    PatternElement();
-    PatternElement(NEDElement *parent);
-    virtual ~PatternElement() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "pattern";}
-    virtual int getTagCode() const {return NED_PATTERN;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
-    virtual void setAttribute(int k, const char *val);
-    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
-    virtual const char *getAttributeDefault(int k) const;
-    virtual PatternElement *dup() const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getPattern() const  {return pattern.c_str();}
-    void setPattern(const char * val)  {pattern = val;}
-    const char * getValue() const  {return value.c_str();}
-    void setValue(const char * val)  {value = val;}
-    bool getIsDefault() const  {return isDefault;}
-    void setIsDefault(bool val)  {isDefault = val;}
-
-    virtual PatternElement *getNextPatternSibling() const;
     virtual CommentElement *getFirstCommentChild() const;
     virtual ExpressionElement *getFirstExpressionChild() const;
     virtual PropertyElement *getFirstPropertyChild() const;

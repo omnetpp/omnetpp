@@ -18,11 +18,9 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
-import org.omnetpp.ned.model.interfaces.IHasDisplayString;
-import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
@@ -33,8 +31,9 @@ import org.omnetpp.ned.model.pojo.ParametersElement;
  *
  * @author rhornig
  */
-public class ConnectionElementEx extends ConnectionElement implements IHasType, IHasDisplayString, IHasParameters {
-
+public class ConnectionElementEx extends ConnectionElement
+    implements ISubmoduleOrConnection
+{
 	private DisplayString displayString = null;
 
     protected ConnectionElementEx() {
@@ -140,7 +139,7 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
 		return getGateNameWithIndex(getDestGate(), getDestGateSubg(), getDestGateIndex(), getDestGatePlusplus());
 	}
 
-	protected static String getGateNameWithIndex(String name, int subgate, String index, boolean isPlusPlus) {
+	public String getGateNameWithIndex(String name, int subgate, String index, boolean isPlusPlus) {
 		String gate = name;
 		if (subgate == NED_SUBGATE_I) gate += "$i";
 		if (subgate == NED_SUBGATE_O) gate += "$o";

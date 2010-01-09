@@ -176,26 +176,28 @@ bool PatternMatcher::parseNumRange(const char *&str, char closingchar, long& lo,
     return true;
 }
 
-void PatternMatcher::dump(int from)
+std::string PatternMatcher::debugStrFrom(int from)
 {
+    std::string result;
     for (int k=from; k<(int)pattern.size(); k++)
     {
         Elem& e = pattern[k];
         switch (e.type)
         {
-            case LITERALSTRING: printf("%s", opp_quotestr(e.literalstring.c_str()).c_str()); break;
-            case ANYCHAR: printf("?!"); break;
-            case COMMONCHAR: printf("?"); break;
-            case SET: printf("SET(%s)", e.setchars.c_str()); break;
-            case NEGSET: printf("NEGSET(%s)", e.setchars.c_str()); break;
-            case NUMRANGE: printf("%ld..%ld", e.fromnum, e.tonum); break;
-            case ANYSEQ: printf("**"); break;
-            case COMMONSEQ: printf("*"); break;
+            case LITERALSTRING: result += opp_quotestr(e.literalstring.c_str()); break;
+            case ANYCHAR: result += "?!"; break;
+            case COMMONCHAR: result += "?"; break;
+            case SET: result += opp_stringf("SET(%s)", e.setchars.c_str()); break;
+            case NEGSET: result += opp_stringf("NEGSET(%s)", e.setchars.c_str()); break;
+            case NUMRANGE: result += opp_stringf("%ld..%ld", e.fromnum, e.tonum); break;
+            case ANYSEQ: result += "**"; break;
+            case COMMONSEQ: result += "*"; break;
             case END: break;
             default: assert(0);
         }
-        printf(" ");
+        result += " ";
     }
+    return result;
 }
 
 bool PatternMatcher::isInSet(char c, const char *set)

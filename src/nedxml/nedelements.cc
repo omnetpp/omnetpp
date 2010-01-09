@@ -1114,11 +1114,6 @@ ParamElement *ParametersElement::getFirstParamChild() const
     return (ParamElement *)getFirstChildWithTag(NED_PARAM);
 }
 
-PatternElement *ParametersElement::getFirstPatternChild() const
-{
-    return (PatternElement *)getFirstChildWithTag(NED_PATTERN);
-}
-
 void ParamElement::setType(int val)
 {
     validateEnum(val, partype_vals, partype_nums, partype_n);
@@ -1129,6 +1124,7 @@ ParamElement::ParamElement()
 {
     type = 0;
     isVolatile = false;
+    isPattern = false;
     isDefault = false;
     applyDefaults();
 }
@@ -1137,13 +1133,14 @@ ParamElement::ParamElement(NEDElement *parent) : NEDElement(parent)
 {
     type = 0;
     isVolatile = false;
+    isPattern = false;
     isDefault = false;
     applyDefaults();
 }
 
 int ParamElement::getNumAttributes() const
 {
-    return 5;
+    return 6;
 }
 
 const char *ParamElement::getAttributeName(int k) const
@@ -1153,7 +1150,8 @@ const char *ParamElement::getAttributeName(int k) const
         case 1: return "is-volatile";
         case 2: return "name";
         case 3: return "value";
-        case 4: return "is-default";
+        case 4: return "is-pattern";
+        case 5: return "is-default";
         default: return 0;
     }
 }
@@ -1165,7 +1163,8 @@ const char *ParamElement::getAttribute(int k) const
         case 1: return boolToString(isVolatile);
         case 2: return name.c_str();
         case 3: return value.c_str();
-        case 4: return boolToString(isDefault);
+        case 4: return boolToString(isPattern);
+        case 5: return boolToString(isDefault);
         default: return 0;
     }
 }
@@ -1177,7 +1176,8 @@ void ParamElement::setAttribute(int k, const char *val)
         case 1: isVolatile = stringToBool(val); break;
         case 2: name = val; break;
         case 3: value = val; break;
-        case 4: isDefault = stringToBool(val); break;
+        case 4: isPattern = stringToBool(val); break;
+        case 5: isDefault = stringToBool(val); break;
         default: ;
     }
 }
@@ -1190,6 +1190,7 @@ const char *ParamElement::getAttributeDefault(int k) const
         case 2: return NULL;
         case 3: return "";
         case 4: return "false";
+        case 5: return "false";
         default: return 0;
     }
 }
@@ -1201,6 +1202,7 @@ ParamElement *ParamElement::dup() const
     element->isVolatile = this->isVolatile;
     element->name = this->name;
     element->value = this->value;
+    element->isPattern = this->isPattern;
     element->isDefault = this->isDefault;
     return element;
 }
@@ -1221,92 +1223,6 @@ ExpressionElement *ParamElement::getFirstExpressionChild() const
 }
 
 PropertyElement *ParamElement::getFirstPropertyChild() const
-{
-    return (PropertyElement *)getFirstChildWithTag(NED_PROPERTY);
-}
-
-PatternElement::PatternElement()
-{
-    isDefault = false;
-    applyDefaults();
-}
-
-PatternElement::PatternElement(NEDElement *parent) : NEDElement(parent)
-{
-    isDefault = false;
-    applyDefaults();
-}
-
-int PatternElement::getNumAttributes() const
-{
-    return 3;
-}
-
-const char *PatternElement::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "pattern";
-        case 1: return "value";
-        case 2: return "is-default";
-        default: return 0;
-    }
-}
-
-const char *PatternElement::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return pattern.c_str();
-        case 1: return value.c_str();
-        case 2: return boolToString(isDefault);
-        default: return 0;
-    }
-}
-
-void PatternElement::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: pattern = val; break;
-        case 1: value = val; break;
-        case 2: isDefault = stringToBool(val); break;
-        default: ;
-    }
-}
-
-const char *PatternElement::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return NULL;
-        case 1: return "";
-        case 2: return "false";
-        default: return 0;
-    }
-}
-
-PatternElement *PatternElement::dup() const
-{
-    PatternElement *element = new PatternElement();
-    element->pattern = this->pattern;
-    element->value = this->value;
-    element->isDefault = this->isDefault;
-    return element;
-}
-
-PatternElement *PatternElement::getNextPatternSibling() const
-{
-    return (PatternElement *)getNextSiblingWithTag(NED_PATTERN);
-}
-
-CommentElement *PatternElement::getFirstCommentChild() const
-{
-    return (CommentElement *)getFirstChildWithTag(NED_COMMENT);
-}
-
-ExpressionElement *PatternElement::getFirstExpressionChild() const
-{
-    return (ExpressionElement *)getFirstChildWithTag(NED_EXPRESSION);
-}
-
-PropertyElement *PatternElement::getFirstPropertyChild() const
 {
     return (PropertyElement *)getFirstChildWithTag(NED_PROPERTY);
 }
@@ -4189,7 +4105,6 @@ NEDElement *NEDElementFactory::createElementWithTag(const char *tagname)
     if (tagname[0]=='c' && !strcmp(tagname,"channel"))  return new ChannelElement();
     if (tagname[0]=='p' && !strcmp(tagname,"parameters"))  return new ParametersElement();
     if (tagname[0]=='p' && !strcmp(tagname,"param"))  return new ParamElement();
-    if (tagname[0]=='p' && !strcmp(tagname,"pattern"))  return new PatternElement();
     if (tagname[0]=='p' && !strcmp(tagname,"property"))  return new PropertyElement();
     if (tagname[0]=='p' && !strcmp(tagname,"property-key"))  return new PropertyKeyElement();
     if (tagname[0]=='g' && !strcmp(tagname,"gates"))  return new GatesElement();
@@ -4246,7 +4161,6 @@ NEDElement *NEDElementFactory::createElementWithTag(int tagcode)
         case NED_CHANNEL: return new ChannelElement();
         case NED_PARAMETERS: return new ParametersElement();
         case NED_PARAM: return new ParamElement();
-        case NED_PATTERN: return new PatternElement();
         case NED_PROPERTY: return new PropertyElement();
         case NED_PROPERTY_KEY: return new PropertyKeyElement();
         case NED_GATES: return new GatesElement();

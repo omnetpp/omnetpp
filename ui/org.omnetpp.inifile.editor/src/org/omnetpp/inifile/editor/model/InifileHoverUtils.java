@@ -25,8 +25,8 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Produces hover information for various Inifile parts.
@@ -104,7 +104,7 @@ public class InifileHoverUtils {
 			else {
 				text += "<br>\nThis section does not seem to assign the following NED parameters:\n<ul>";
 				for (ParamResolution res : resList)
-					text += " <li>" + res.moduleFullPath + "." +res.paramDeclNode.getName() + "</li>\n";
+					text += " <li>" + res.fullPath + "." +res.paramDeclaration.getName() + "</li>\n";
 				text += "</ul>";
 			}
 		}
@@ -255,10 +255,10 @@ public class InifileHoverUtils {
                     // and for each moduleFullPath, the list of sections. So we collect it first:
                     Map<String,Set<String>> fullpathToSections = new LinkedHashMap<String, Set<String>>();
                     for (ParamResolution res : resList) {
-                        if (res.paramDeclNode == paramDeclNode) {
-                            if (!fullpathToSections.containsKey(res.moduleFullPath))
-                                fullpathToSections.put(res.moduleFullPath, new HashSet<String>());
-                            fullpathToSections.get(res.moduleFullPath).add(res.activeSection);
+                        if (res.paramDeclaration == paramDeclNode) {
+                            if (!fullpathToSections.containsKey(res.fullPath))
+                                fullpathToSections.put(res.fullPath, new HashSet<String>());
+                            fullpathToSections.get(res.fullPath).add(res.activeSection);
                         }
                     }
 
@@ -299,7 +299,7 @@ public class InifileHoverUtils {
             String sectionName = res.activeSection;
             if (!sectionParamDecls.containsKey(sectionName))
                 sectionParamDecls.put(sectionName, new HashSet<ParamElementEx>());
-            sectionParamDecls.get(sectionName).add(res.paramDeclNode);
+            sectionParamDecls.get(sectionName).add(res.paramDeclaration);
         }
 
         // Now: it is typical that the config key matches the same parameter declarations
@@ -357,12 +357,12 @@ public class InifileHoverUtils {
 	/**
 	 * Generate tooltip for a NED parameter
 	 */
-	public static String getParamHoverText(SubmoduleElement[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode) {
-		String paramName = paramDeclNode.getName();
+	public static String getParamHoverText(ISubmoduleOrConnection[] elementPath, ParamElementEx paramDeclaration, ParamElementEx paramAssignment) {
+		String paramName = paramDeclaration.getName();
 
-		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
-		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeElement().getName();
-		String comment = NedCommentFormatter.makeBriefDocu(paramDeclNode.getComment(), 60);
+		String paramType = paramDeclaration.getAttribute(ParamElement.ATT_TYPE);
+		String paramDeclaredOn = paramDeclaration.getSelfOrEnclosingTypeElement().getName();
+		String comment = NedCommentFormatter.makeBriefDocu(paramDeclaration.getComment(), 60);
 		String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 
 		String text = ""; //TODO

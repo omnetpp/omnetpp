@@ -1,0 +1,185 @@
+%description:
+Test setting parameters using patterns.
+
+TODO: this test is too big! should better separate the test cases:
+ - matches from bottom up
+ - submod vs compoundmod patterns
+ - inheritance
+ - "=default"!
+
+
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Queue
+{
+    parameters:
+        int a = default(-1);
+        int b = default(-2);
+        int c = default(-3);
+}
+
+module Mac
+{
+    parameters:
+        int a = default(-1);
+        int b = default(-2);
+        int c = default(-3);
+}
+
+module Nic
+{
+    submodules:
+        queue: Queue;
+        mac: Mac;
+}
+
+module XCP
+{
+    parameters:
+        int a = default(-1);
+        int b = default(-2);
+        int c = default(-3);
+}
+
+module Host0
+{
+    submodules:
+        xcp: XCP;
+        nic[1]: Nic;
+}
+
+module Host1 extends Host0
+{
+    parameters:
+        *.a = 10;
+        xcp.b = 20;
+        nic[*].*.c = 30;
+}
+
+network Test
+{
+    parameters:
+        h1.*.* = 100;
+        h1.**.a = 200;
+        h*.*.* = 300;
+    submodules:
+        h1: Host0;
+        h2: Host0 {
+             **.b = 1111;
+        }
+        h3: Host1;
+        h4: Host1 {
+             **.b = 2222;
+        }
+        dump: Dump;
+}
+
+%contains: stdout
+
+TODO: update this test!
+
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.h1: Host0 {
+            submodules:
+                module Test.h1.xcp: XCP {
+                    parameters:
+                        a = 100
+                        b = 100
+                        c = 100
+                }
+                module Test.h1.nic[0]: Nic {
+                    submodules:
+                        module Test.h1.nic[0].queue: Queue {
+                            parameters:
+                                a = 200
+                                b = -2
+                                c = -3
+                        }
+                        module Test.h1.nic[0].mac: Mac {
+                            parameters:
+                                a = 200
+                                b = -2
+                                c = -3
+                        }
+                }
+        }
+        module Test.h2: Host0 {
+            submodules:
+                module Test.h2.xcp: XCP {
+                    parameters:
+                        a = 300
+                        b = 1111
+                        c = 300
+                }
+                module Test.h2.nic[0]: Nic {
+                    submodules:
+                        module Test.h2.nic[0].queue: Queue {
+                            parameters:
+                                a = -1
+                                b = 1111
+                                c = -3
+                        }
+                        module Test.h2.nic[0].mac: Mac {
+                            parameters:
+                                a = -1
+                                b = 1111
+                                c = -3
+                        }
+                }
+        }
+        module Test.h3: Host1 {
+            submodules:
+                module Test.h3.xcp: XCP {
+                    parameters:
+                        a = 10
+                        b = 20
+                        c = 300
+                }
+                module Test.h3.nic[0]: Nic {
+                    submodules:
+                        module Test.h3.nic[0].queue: Queue {
+                            parameters:
+                                a = -1
+                                b = -2
+                                c = 30
+                        }
+                        module Test.h3.nic[0].mac: Mac {
+                            parameters:
+                                a = -1
+                                b = -2
+                                c = 30
+                        }
+                }
+        }
+        module Test.h4: Host1 {
+            submodules:
+                module Test.h4.xcp: XCP {
+                    parameters:
+                        a = 10
+                        b = 20
+                        c = 300
+                }
+                module Test.h4.nic[0]: Nic {
+                    submodules:
+                        module Test.h4.nic[0].queue: Queue {
+                            parameters:
+                                a = -1
+                                b = 2222
+                                c = 30
+                        }
+                        module Test.h4.nic[0].mac: Mac {
+                            parameters:
+                                a = -1
+                                b = 2222
+                                c = 30
+                        }
+                }
+        }
+}
+

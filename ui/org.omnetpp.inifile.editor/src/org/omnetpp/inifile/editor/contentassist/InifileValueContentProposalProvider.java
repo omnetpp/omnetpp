@@ -238,7 +238,7 @@ s	 * before getting presented to the user.
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 		Set<ParamElement> paramSet = new HashSet<ParamElement>();
 		for (ParamResolution res : resList)
-			paramSet.add(res.paramDeclNode);
+			paramSet.add(res.paramDeclaration);
 
 		// determine param type (all params matched must have the same type)
 		int dataType = -1;
@@ -353,7 +353,7 @@ s	 * before getting presented to the user.
 	    // a subclass of this compound module ("StandardHostExt" not "StandardHost"),
 	    // so we miss submodules added in the subclass. However, I doubt that we can
 	    // find out the subclass from ParamResolution -- TODO add it
-        INedTypeLookupContext paramContext = param.paramDeclNode.getEnclosingLookupContext();
+        INedTypeLookupContext paramContext = param.paramDeclaration.getEnclosingLookupContext();
         if (!(paramContext instanceof CompoundModuleElementEx))
             return new HashSet<INEDTypeInfo>(); // not a compound module parameter
 
@@ -364,7 +364,7 @@ s	 * before getting presented to the user.
         // this parameter (since it's declared in a subclass)
         Set<INEDTypeInfo> result = new HashSet<INEDTypeInfo>();
         INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-        String paramName = param.paramDeclNode.getName();
+        String paramName = param.paramDeclaration.getName();
         for (SubmoduleElementEx submodule : module.getSubmodules()) {
             if (submodule.getLikeParam().equals(paramName)) {
                 // resolve interface, then add to the result

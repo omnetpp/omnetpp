@@ -125,7 +125,6 @@ class NEDXML_API NED2Generator
     void doChannel(ChannelElement *node, const char *indent, bool islast, const char *);
     void doParameters(ParametersElement *node, const char *indent, bool islast, const char *);
     void doParam(ParamElement *node, const char *indent, bool islast, const char *);
-    void doPattern(PatternElement *node, const char *indent, bool islast, const char *);
     void doProperty(PropertyElement *node, const char *indent, bool islast, const char *);
     void doPropertyKey(PropertyKeyElement *node, const char *indent, bool islast, const char *);
     void doGates(GatesElement *node, const char *indent, bool islast, const char *);
