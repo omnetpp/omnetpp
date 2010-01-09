@@ -57,6 +57,7 @@
 #include "fileglobber.h"
 #include "unitconversion.h"
 #include "commonutil.h"
+#include "patternmatcher.h"
 #include "../common/ver.h"
 
 
@@ -114,6 +115,8 @@ Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
+Register_PerObjectConfigOption(CFGID_ON_SIGNAL, "on-signal", CFG_STRING, NULL, "FIXME TODO XXX");
+Register_PerObjectConfigOption(CFGID_ON_SIGNAL_CUMULATIVE, "on-signal-cumulative", CFG_STRING, NULL, "FIXME TODO XXX");
 
 #define STRINGIZE0(x) #x
 #define STRINGIZE(x) STRINGIZE0(x)
@@ -395,6 +398,9 @@ bool EnvirBase::setup()
             }
         }
         simulation.doneLoadingNedFiles();
+
+        // notify listeners when global setup is complete
+        simulation.startupCompleted();
     }
     catch (std::exception& e)
     {
@@ -972,6 +978,12 @@ void EnvirBase::componentMethodEnd()
 
 void EnvirBase::moduleCreated(cModule *newmodule)
 {
+    //XXX add configured signal listeners
+    //FIXME a similar thing should be done for CHANNELS as well!
+    //FIXME this does NOT get called when ev.suppress_notifications==false!
+    // remove suppress_notifications altogether, or create separate callback for creating listeners? see also: ev.getRNGMappingFor(mod) which is also related!
+    addSignalListeners(newmodule);
+
     if (eventlogmgr)
         eventlogmgr->moduleCreated(newmodule);
 }
@@ -1160,6 +1172,94 @@ void EnvirBase::readPerRunOptions()
         eventlogmgr = new EventlogFileManager();
         eventlogmgr->setup();
     }
+}
+
+//-------------------------------------------------------------
+
+//FIXME call this, and RNGs, and cmdenv-ev-output etc from some configureComponent() callback!
+void EnvirBase::addSignalListeners(cComponent *component)
+{
+    // 1. process "on-signal" config keys.
+    // iterate over existing @signal attributes, and add configured listeners
+    std::string fullPath = component->getFullPath();
+    cProperties *props = component->getProperties();
+    std::vector<const char *> signalNames = props->getIndicesFor("signal");
+    for (int i = 0; i < (int)signalNames.size(); i++)
+    {
+        const char *signalName = signalNames[i];
+        const char *listenerSpec = getConfig()->getAsCustom((fullPath+"."+signalName).c_str(), CFGID_ON_SIGNAL);
+        if (listenerSpec)
+            addSignalListeners(component, signalName, listenerSpec);
+    }
+
+    // 2. find all "<fullpath>.<signalname>.on-signal-cumulative" keys
+    //TODO to speed up, pre-parse these entries and store them in a vector of (fullPathPattern, signalName, value) triplets
+    const char *optionName = CFGID_ON_SIGNAL_CUMULATIVE->getName();
+    std::vector<const char *> keys = getConfigEx()->getMatchingPerObjectConfigKeys("**", optionName);
+    for (int i = 0; i < (int)keys.size(); i++)
+    {
+        const char *key = keys[i];
+        ASSERT(opp_stringendswith(key, optionName));
+        std::string prefix = std::string(key, strlen(key)-strlen(optionName)-1);
+        int pos = prefix.rfind('.');
+        if (pos<0)
+            throw cRuntimeError("Wrong configuration key %s, should be <component-fullpath-pattern>.<signalname>.%s", key, optionName);
+        std::string signalName = prefix.substr(pos+1);
+        if (PatternMatcher::containsWildcards(signalName.c_str()))
+            throw cRuntimeError("Wrong configuration key %s: signal name may not contain wildcards", key);
+        std::string modulePath = prefix.substr(0, pos);
+        PatternMatcher modulePathMatcher(modulePath.c_str(), true, true, true);
+        if (modulePathMatcher.matches(fullPath.c_str())) {
+            const char *listenerSpec = getConfig()->getPerObjectConfigValue(prefix.c_str(), optionName);
+            if (listenerSpec)
+                addSignalListeners(component, signalName.c_str(), listenerSpec);
+        }
+    }
+}
+
+void EnvirBase::addSignalListeners(cComponent *component, const char *signalName, const char *listenerSpec)
+{
+    ::printf(" parsing listeners: component=%s, signal=%s, value=%s\n", component->getFullPath().c_str(), signalName, listenerSpec); //XXX debug
+
+    // parse spec and add listeners
+    const char *s = listenerSpec;
+    while (*s)
+    {
+        // parse name and args
+        while (opp_isspace(*s))
+            s++;
+        const char *nameStart = s;
+        while (*s && !opp_isspace(*s))
+            s++;
+        std::string listenerName = std::string(nameStart, s-nameStart);
+        while (opp_isspace(*s))
+            s++;
+        if (*s != '(')
+            throw cRuntimeError("Parse error in signal listener specification '%s': missing left parenthesis", listenerSpec);
+        const char *argsStart = s+1;
+        s = opp_findmatchingparen(s);
+        if (!s)
+            throw cRuntimeError("Parse error in signal listener specification '%s': missing close parenthesis", listenerSpec);
+        std::string listenerArgs = std::string(argsStart, s-argsStart-1);
+
+        // add listener
+        addSignalListener(component, signalName, listenerName.c_str(), listenerArgs.c_str());
+
+        // skip separator
+        while (opp_isspace(*s) || *s==',')
+            s++;
+    }
+}
+
+void EnvirBase::addSignalListener(cComponent *component, const char *signalName, const char *listenerName, const char *listenerArgs)
+{
+    ::printf("   adding listener: component=%s, signal=%s, name=%s, args='%s'\n",
+            component->getFullPath().c_str(), signalName, listenerName, listenerArgs); //XXX debug
+
+    cConfigurableListener *listener;
+    CREATE_BY_CLASSNAME(listener, listenerName, cConfigurableListener, "signal listener");
+    listener->setArguments(listenerArgs);  //FIXME was: initialize()
+    component->subscribe(signalName, listener);
 }
 
 //-------------------------------------------------------------

@@ -197,6 +197,11 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual std::ostream *getStreamForSnapshot();
     virtual void releaseStreamForSnapshot(std::ostream *os);
 
+    // hooking configured listeners on components
+    virtual void addSignalListeners(cComponent *component);
+    virtual void addSignalListeners(cComponent *component, const char *signalName, const char *listenerSpec);
+    virtual void addSignalListener(cComponent *component, const char *signalName, const char *listenerName, const char *listenerArgs);
+
     // misc
     virtual int getArgCount() const;
     virtual char **getArgVector() const;

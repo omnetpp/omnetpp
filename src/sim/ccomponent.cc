@@ -13,9 +13,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include "ccomponent.h"
 #include "ccomponenttype.h"
 #include "cmodule.h"
+#include "cchannel.h"
+#include "cmodelchange.h"
 #include "cproperties.h"
 #include "cproperty.h"
 #include "cpar.h"
@@ -33,6 +36,18 @@ USING_NAMESPACE
 
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
 
+//FIXME test binary search's performance!
+//FIXME in error messages, print signal NAME as well as number
+//FIXME remove all listeners before deleteNetwork()!!!
+
+std::map<std::string,simsignal_t> cComponent::signalIDs;
+std::map<simsignal_t,std::string> cComponent::signalNames;
+int cComponent::lastSignalID;
+
+static const int NOTIFICATION_STACK_SIZE = 64;
+cIListener **cComponent::notificationStack[NOTIFICATION_STACK_SIZE];
+int cComponent::notificationSP = 0;
+
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
@@ -45,10 +60,19 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
 
     dispstr = NULL;
     setEvEnabled(true);
+
+    signalTable = NULL;
+    signalHasLocalListeners = signalHasAncestorListeners = 0;
 }
 
 cComponent::~cComponent()
 {
+    // fire listenerRemoved() on listeners
+    if (signalTable)
+        for (int i=0; i<signalTable->size(); i++)
+            for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
+                (*lp)->listenerRemoved(this, (*signalTable)[i].signalID);
+
     delete [] rngmap;
     delete [] paramv;
     delete dispstr;
@@ -245,6 +269,377 @@ void cComponent::recordStatistic(cStatistic *stats, const char *unit)
 void cComponent::recordStatistic(const char *name, cStatistic *stats, const char *unit)
 {
     stats->recordAs(name, unit);
+}
+
+//----
+
+bool cComponent::SignalData::addListener(cIListener *l)
+{
+    if (findListener(l) != -1)
+        return false; // already subscribed
+    int n = countListeners();
+    cIListener **v = new cIListener*[n+2];
+    memcpy(v, listeners, n*sizeof(cIListener*));
+    v[n] = l;
+    v[n+1] = NULL;
+    delete [] listeners;
+    listeners = v;
+    return true;
+}
+
+bool cComponent::SignalData::removeListener(cIListener *l)
+{
+    int k = findListener(l);
+    if (k == -1)
+        return false; // not there
+
+    // remove listener. note: don't delete listeners[] even if empty,
+    // because fire() relies on it not being NULL
+    int n = countListeners();
+    listeners[k] = listeners[n-1];
+    listeners[n-1] = NULL;
+    return true;
+}
+
+int cComponent::SignalData::countListeners()
+{
+    if (!listeners)
+        return 0;
+    int k = 0;
+    while (listeners[k])
+        k++;
+    return k;
+}
+
+int cComponent::SignalData::findListener(cIListener *l)
+{
+    if (!listeners)
+        return -1;
+    for (int k = 0; listeners[k]; k++)
+        if (listeners[k] == l)
+            return k;
+    return -1;
+}
+
+simsignal_t cComponent::registerSignal(const char *name)
+{
+    if (signalIDs.find(name) == signalIDs.end()) {
+        simsignal_t signalID = ++lastSignalID;
+        signalIDs[name] = signalID;
+        signalNames[signalID] = name;
+    }
+    return signalIDs[name];
+}
+
+const char *cComponent::getSignalName(simsignal_t signalID)
+{
+    return signalNames.find(signalID)!=signalNames.end() ? signalNames[signalID].c_str() : NULL;
+}
+
+void cComponent::clearSignalState()
+{
+    // clear registered signals and the notification stack
+    signalIDs.clear();
+    signalNames.clear();
+    lastSignalID = -1;
+    notificationSP = 0;
+
+    // re-register predefined signals
+    simsignal_t preSignalID = registerSignal("omnetpp.pre-model-change");
+    simsignal_t postSignalID = registerSignal("omnetpp.post-model-change");
+    ASSERT(preSignalID==PRE_MODEL_CHANGE);
+    ASSERT(postSignalID==POST_MODEL_CHANGE);
+}
+
+cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
+{
+    if (signalTable)
+        for (int i=0; i<signalTable->size(); i++)   // FIXME use std::binary_search()!!!
+            if ((*signalTable)[i].signalID == signalID)
+                return &(*signalTable)[i];
+    return NULL;
+}
+
+cComponent::SignalData *cComponent::findOrCreateSignalData(simsignal_t signalID)
+{
+    SignalData *data = findSignalData(signalID);
+    if (!data) {
+        if (!signalTable)
+            signalTable = new SignalTable;
+
+        // add new entry
+        signalTable->push_back(SignalData());
+        data = &(*signalTable)[signalTable->size()-1];
+        data->signalID = signalID;
+
+        // sort signalTable[] so we can do binary search by signalID
+        std::sort(signalTable->begin(), signalTable->end(), SignalData::gt);
+        data = findSignalData(signalID); // must find it again because sort() moved it
+    }
+    return data;
+}
+
+void cComponent::checkNotFiring(simsignal_t signalID, cIListener **listenerList)
+{
+    // Check that the given listener list is not being notified.
+    // NOTE: we use the listener list and not SignalData* for a reason:
+    // SignalData may get moved as a result of new signals being subscribed
+    // (they are stored in an std::vector!), so checking for pointer equality
+    // would be no good. Move does not change the listener list pointer.
+    if (listenerList)
+        for (int i=0; i<notificationSP; i++)
+            if (notificationStack[i] == listenerList)
+                throw cRuntimeError(this, "subscribe()/unsubscribe() failed: cannot update listener list "
+                                          "while its listeners are being notified, signalID=%d", signalID);
+}
+
+void cComponent::removeSignalData(simsignal_t signalID)
+{
+    if (signalTable) {
+        // find in signal table
+        int i;
+        for (i=0; i<signalTable->size(); i++)
+            if ((*signalTable)[i].signalID == signalID)
+                break;
+
+        // if found, remove
+        if (i<signalTable->size()) {
+            ASSERT(!(*signalTable)[i].hasListener()); // must not have listeners
+            signalTable->erase(signalTable->begin()+i);
+        }
+        if (signalTable->empty()) {
+            delete signalTable;
+            signalTable = NULL;
+        }
+    }
+}
+
+template<typename T>
+void cComponent::fire(cComponent *source, simsignal_t signalID, T x)
+{
+    uint64 mask = (uint64)1 << signalID;
+    if ((~signalHasLocalListeners & mask)==0)  // always true for signalID > 63
+    {
+        // notify local listeners if there are any
+        SignalData *data = findSignalData(signalID);
+        if (data) {
+            cIListener **listeners = data->listeners;
+            if (notificationSP >= NOTIFICATION_STACK_SIZE)
+                throw cRuntimeError(this, "emit(): recursive notification stack overflow, signalID=%d", signalID);
+            notificationStack[notificationSP++] = listeners; // lock against modification
+            for (int i=0; listeners[i]; i++)
+                listeners[i]->receiveSignal(source, signalID, x);
+            notificationSP--;
+        }
+    }
+
+    if ((~signalHasAncestorListeners & mask)==0)  // always true for signalID > 63
+    {
+        // notify ancestors recursively
+        cModule *parent = getParentModule();
+        if (parent)
+            parent->fire(source, signalID, x);
+    }
+}
+
+void cComponent::fireFinish()
+{
+    if (signalTable)
+        for (int i=0; i<signalTable->size(); i++)
+            for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
+                (*lp)->finish(this);
+}
+
+inline void setBit(uint64& flags, int bitnum, bool value)
+{
+    uint64 mask = (uint64)1 << bitnum;
+    if (value)
+        flags |= mask;
+    else
+        flags &= ~mask;
+}
+
+inline bool getBit(const uint64& flags, int bitnum)
+{
+    uint64 mask = (uint64)1 << bitnum;
+    return flags & mask;
+}
+
+void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
+{
+    // add to local listeners
+    SignalData *data = findOrCreateSignalData(signalID);
+    checkNotFiring(signalID, data->listeners);
+    if (!data->addListener(listener))
+    	return; // was already there
+    setBit(signalHasLocalListeners, signalID, true);
+
+    // update hasAncestorListener flag in the whole subtree.
+    // Note: if it was true here, it is already true in the whole subtree,
+    // so no need to call signalListenerAdded()
+    if (!getBit(signalHasAncestorListeners, signalID)) {
+        signalListenerAdded(signalID);
+        setBit(signalHasAncestorListeners, signalID, false); // restore it after signalListenerAdded() set it to true
+    }
+
+    listener->listenerAdded(this, signalID);
+}
+
+void cComponent::signalListenerAdded(simsignal_t signalID)
+{
+    // set the flag recursively in the subtree. If it's already set,
+    // no need to recurse because all components must already have it
+    // set as well
+    if (!getBit(signalHasAncestorListeners, signalID)) {
+        setBit(signalHasAncestorListeners, signalID, true);
+        if (dynamic_cast<cModule *>(this)) {
+            // Note: because of the dynamic_cast, this part could be moved to cModule
+            for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
+                submod()->signalListenerAdded(signalID);
+            for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
+                chan()->signalListenerAdded(signalID);
+        }
+    }
+}
+
+void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
+{
+    // remove from local listeners list
+    SignalData *data = findSignalData(signalID);
+    if (!data)
+        return;
+    checkNotFiring(signalID, data->listeners);
+    if (!data->removeListener(listener))
+    	return; // was already removed
+
+    if (!data->hasListener()) {
+        // no local listeners left: remove entry and adjust flags
+        removeSignalData(signalID);
+        setBit(signalHasLocalListeners, signalID, false);
+
+        // clear "has ancestor listeners" flags in the whole submodule tree,
+        // unless there are still listeners above this module
+        if (!getBit(signalHasAncestorListeners, signalID))
+            signalListenerRemoved(signalID);
+    }
+    listener->listenerRemoved(this, signalID);
+}
+
+void cComponent::signalListenerRemoved(simsignal_t signalID)
+{
+    // clear the flag recursively in the subtree. If the signal
+    // has a listener at a module, leave its subtree alone.
+    setBit(signalHasAncestorListeners, signalID, false);
+    SignalData *data = findSignalData(signalID);
+    if (!data || !data->hasListener()) {
+        if (dynamic_cast<cModule *>(this)) {
+            // Note: because of the dynamic_cast, this part could be moved to cModule
+            for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
+                submod()->signalListenerRemoved(signalID);
+            for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
+                chan()->signalListenerRemoved(signalID);
+        }
+    }
+}
+
+bool cComponent::isSubscribed(simsignal_t signalID, cIListener *listener) const
+{
+    SignalData *data = findSignalData(signalID);
+    return data && data->findListener(listener) != -1;
+}
+
+void cComponent::repairSignalFlags()
+{
+    // adjusts hasAncestorListeners bits in the component's subtree;
+    // to be called when the component's ownership changes
+    cModule *p = getParentModule();
+    signalHasAncestorListeners = p ? (p->signalHasAncestorListeners | p->signalHasLocalListeners) : 0;
+
+    if (dynamic_cast<cModule *>(this)) {
+        // Note: because of the dynamic_cast, this part could be moved to cModule
+        for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
+            submod()->repairSignalFlags();
+        for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
+            chan()->repairSignalFlags();
+    }
+}
+
+void cComponent::subscribe(const char *signalName, cIListener *listener)
+{
+    subscribe(registerSignal(signalName), listener);
+}
+
+bool cComponent::isSubscribed(const char *signalName, cIListener *listener) const
+{
+    return isSubscribed(registerSignal(signalName), listener);
+}
+
+void cComponent::unsubscribe(const char *signalName, cIListener *listener)
+{
+    unsubscribe(registerSignal(signalName), listener);
+}
+
+std::vector<simsignal_t> cComponent::getLocalListenedSignals() const
+{
+    std::vector<simsignal_t> result;
+    if (signalTable)
+        for (int i=0; i<signalTable->size(); i++)
+            result.push_back((*signalTable)[i].signalID);
+    return result;
+}
+
+std::vector<cIListener*> cComponent::getLocalSignalListeners(simsignal_t signalID) const
+{
+    std::vector<cIListener*> result;
+    SignalData *data = findSignalData(signalID);
+    if (data && data->hasListener())
+        for (int i=0; data->listeners[i]; i++)
+            result.push_back(data->listeners[i]);
+    return result;
+}
+
+void cComponent::checkConsistency() const
+{
+    for (simsignal_t signalID=0; signalID<64; signalID++) {
+        SignalData *data = findSignalData(signalID);
+        bool hasLocalListeners = data && data->hasListener();
+
+        bool hasAncestorListeners = false;
+        for (cModule *mod = getParentModule(); mod; mod=mod->getParentModule()) {
+            SignalData *data = mod->findSignalData(signalID);
+            if (data && data->hasListener()) {
+                hasAncestorListeners = true;
+                break;
+            }
+        }
+
+        if (hasLocalListeners != getBit(signalHasLocalListeners, signalID))
+            throw cRuntimeError(this, "hasLocalListeners flag incorrect for signalID=%d", signalID);
+        if (hasAncestorListeners != getBit(signalHasAncestorListeners, signalID))
+            throw cRuntimeError(this, "signalHasAncestorListeners flag incorrect for signalID=%d", signalID);
+    }
+}
+
+void cComponent::checkConsistencyRec() const
+{
+    checkConsistency();
+    if (dynamic_cast<const cModule *>(this)) {
+        for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
+            submod()->checkConsistencyRec();
+        for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
+            chan()->checkConsistencyRec();
+    }
+}
+
+bool cComponent::computeHasListeners(simsignal_t signalID) const
+{
+    SignalData *data = findSignalData(signalID);
+    if (data && data->hasListener())
+        return true;
+    cModule *parent = getParentModule();
+    if (parent)
+        return parent->computeHasListeners(signalID);
+    return false;
 }
 
 

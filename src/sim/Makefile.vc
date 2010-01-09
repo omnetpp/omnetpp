@@ -31,7 +31,7 @@ OBJS_STD=\
     $O/ccompoundmodule.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cexception.obj $O/cfsm.obj $O/cmathfunction.obj $O/cgate.obj $O/chistogram.obj \
-    $O/cksplit.obj $O/clcg32.obj $O/clinkedlist.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
+    $O/cksplit.obj $O/clcg32.obj $O/clinkedlist.obj $O/clistener.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
     $O/cmessage.obj $O/cmsgpar.obj $O/cmodule.obj $O/cmessageheap.obj $O/chasher.obj \
     $O/cnedfunction.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj \
     $O/cpar.obj $O/cparimpl.obj $O/cownedobject.obj $O/cproperties.obj $O/cproperty.obj \

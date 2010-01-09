@@ -11,6 +11,11 @@
 
 2009-07-26  Andras Varga
 
+	* bugfix: cpar.cc: parse() and some other cPar methods did not cause
+	handleParameterChanged() to be invoked on the owner module [ViRe]
+
+2009-07-26  Andras Varga
+
 	* bugfix: opp_typename(): gcc demangling of pointer type names (Foo*)
 	were not handled (they are needed for correct error messages in
 	check_and_cast<>()).
