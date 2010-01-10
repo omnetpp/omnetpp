@@ -260,9 +260,9 @@ to any other type. Also, the method may be called several times (i.e.
 if the listener was subscribed to multiple signals).
 
 It is OK for the listener to delete itself in this method (\ttt{delete this}).
-However, since this method may be called more than once
-if the listener is subscribed multiple times (see above), one must be
-careful to prevent double deletion, e.g. by using reference counting.
+However, since this method may be called more than once if the listener
+is subscribed multiple times (see above), one must be careful to prevent
+double deletion, e.g. by using reference counting.
 
 Since \cclass{cIListener} has too many pure virtual methods, it is more
 convenient to subclass from \cclass{cListener}, a do-nothing implementation
@@ -275,11 +275,8 @@ types will result in an error instead of going unnoticed.
 
 TODO What happens at an emit() call.
 
-The order in which listeners will be notified is undefined, so
-it is not necessarily the same order in which listeners were subscribed.
-
-what if a listener throws an exception? --> nothing! it's a normal simulation error.
-
+The order in which listeners will be notified is undefined (it is not necessarily
+the same order in which listeners were subscribed.)
 
 
 \subsection{Design considerations and rationale}
@@ -329,7 +326,6 @@ The solution is, of course, signals. {\opp} has two built-in signals,
 are \ttt{simsignal_t} values, not names) that get emitted before and
 after each model change.
 
-
 Pre/post model change notifications are emitted with data objects that
 carry the details of the change. The data classes are:
 
@@ -349,10 +345,13 @@ carry the details of the change. The data classes are:
 \end{itemize}
 
 They all subclass from \cclass{cModelChangeNotification}, which is of course a
-\cclass{cObject}. For size limitations we won't discuss all classes in details --
-please see them in the API documentation. The API also describes when exactly
-those signals are emitted, and what one needs to be careful abut when writing
-a listener.
+\cclass{cObject}. Inside the listener, you can use \ttt{dynamic_cast<>} to figure
+out what notification arrived.
+
+\begin{note}
+  Please look up these classes in the API documentation to see their data fields,
+  when exactly they get fired, and what one needs to be careful about when using them.
+\end{note}
 
 An example listener that prints a message when a module gets deleted:
 
