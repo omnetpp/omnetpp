@@ -437,6 +437,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
             fire(this, signalID, obj);
     }
 
+    //FIXME make mayHaveListeners public too!!
+
     /**
      * If producing a value for a signal has a significant runtime cost, this
      * method can be used to check beforehand whether the given signal has
