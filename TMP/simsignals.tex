@@ -329,6 +329,7 @@ The solution is, of course, signals. {\opp} has two built-in signals,
 are \ttt{simsignal_t} values, not names) that get emitted before and
 after each model change.
 
+
 Pre/post model change notifications are emitted with data objects that
 carry the details of the change. The data classes are:
 
@@ -353,20 +354,40 @@ please see them in the API documentation. The API also describes when exactly
 those signals are emitted, and what one needs to be careful abut when writing
 a listener.
 
-subscribing to model changes
+An example listener that prints a message when a module gets deleted:
 
-XXX one example listener that reacts on, say, cPreModuleDeleteNotification
+\begin{cpp}
+class MyListener : public cListener
+{
+   ...
+};
 
+void MyListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+{
+    if (dynamic_cast<cPreModuleDeleteNotification *>(obj))
+    {
+        cPreModuleDeleteNotification *data = (cPreModuleDeleteNotification *)obj;
+        EV << "Module " << data->module->getFullPath() << " is about to be deleted\n";
+    }
+}
+\end{cpp}
 
-PRE_MODEL_CHANGE and POST_MODEL_CHANGE are fired on the module (or channel)
-affected by the change, and NOT on the module which executes the code that
-causes the change. That is, pre-moduleRemoved is fired on the module
-to be removed, and post-moduleRemoved is fired on its parent (because
-the original module no longer exists), and not on the module that contains
-the deleteModule() call.
+If you'd like to get notification about the deletion of any module, you need
+to install the listener on the system module:
 
+\begin{cpp}
+simulation.getSystemModule()->subscribe(PRE_MODEL_CHANGE, listener);
+\end{cpp}
 
-
+\begin{note}
+  \fmac{PRE_MODEL_CHANGE} and \fmac{POST_MODEL_CHANGE} are fired on the
+  module (or channel) affected by the change, and \textit{not} on the module
+  which executes the code that causes the change. For example,
+  \textit{pre-module-deleted} is fired on the module to be removed, and
+  \textit{post-module-deleted} is fired on its parent (because the original
+  module no longer exists), and not on the module that contains the
+  \ffunc{deleteModule()} call.
+\end{note}
 
 
 
