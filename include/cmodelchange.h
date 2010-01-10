@@ -21,31 +21,12 @@
 
 NAMESPACE_BEGIN
 
-//FIXME add this to omnetpp.h
-
-// FIXME todo document:
-//
-// XXX use dynamic_cast<> to figure out what notification arrived!
-//
-// PRE_MODEL_CHANGE and POST_MODEL_CHANGE are fired on the module (or channel)
-// affected by the change, and NOT on the module which executes the code that
-// causes the change. That is, pre-moduleRemoved is fired on the module
-// to be removed, and post-moduleRemoved is fired on its parent (because
-// the original module no longer exists), and not on the module that contains
-// the deleteModule() call.
-//
-
-//XXX should this whole thing be generated via a .msg file? then we'd have reflection!!! (NEEDED FOR EASY UNIT TESTING!)
-
-//XXX per-gate object create/delete notifications
-
-//XXX add cPre/PostComponentInitialize, cPre/PostComponentFinalize listeners
-
 /**
  * A signal which is fired before simulation model changes such as module
  * creation or connection creation. The signals carry data objects that
  * describe the type and details the change. The data objects are subclassed
- * from cModelChangeNotification, and begin with the prefix cPre...
+ * from cModelChangeNotification, and begin with the prefix "cPre".
+ *
  * These classes include:
  *    - cPreModuleAddNotification,
  *    - cPreModuleDeleteNotification,
@@ -58,7 +39,14 @@ NAMESPACE_BEGIN
  *    - cPrePathCreateNotification,
  *    - cPrePathCutNotification,
  *    - cPreParameterChangeNotification,
- *    - cPreDisplayStringChangeNotification,
+ *    - cPreDisplayStringChangeNotification
+ *
+ * In the listener, use dynamic_cast<> to figure out what notification arrived.
+ *
+ * This signal is fired on the module or channel affected by the change,
+ * and NOT on the module which executes the code that causes the change.
+ * For example, preModuleDeleted is fired on the module about to be removed,
+ * and not on the module that contains the deleteModule() call.
  *
  * See also: cComponent::emit(), cComponent::subscribe()
  */
@@ -68,7 +56,8 @@ NAMESPACE_BEGIN
  * A signal which is fired after simulation model changes such as module
  * creation or connection creation. The signals carry data objects that
  * describe the type and details the change. The data objects are subclassed
- * from cModelChangeNotification, and begin with the prefix cPost...
+ * from cModelChangeNotification, and begin with the prefix "cPost".
+ *
  * These classes include:
  *    - cPostModuleAddNotification,
  *    - cPostModuleDeleteNotification,
@@ -93,7 +82,15 @@ NAMESPACE_BEGIN
  *    - cPostPathCreateNotification,
  *    - cPostPathCutNotification,
  *    - cPostParameterChangeNotification,
- *    - cPostDisplayStringChangeNotification,
+ *    - cPostDisplayStringChangeNotification
+ *
+ * In the listener, use dynamic_cast<> to figure out what notification arrived.
+ *
+ * This signal is fired on the module or channel affected by the change,
+ * and NOT on the module which executes the code that causes the change.
+ * For example, postModuleDeleted is fired on the deleted module's parent
+ * module (because the original module no longer exists), and not on the
+ * module that contained the deleteModule() call.
  *
  * See also: cComponent::emit(), cComponent::subscribe()
  */
@@ -101,7 +98,7 @@ NAMESPACE_BEGIN
 
 
 /**
- * Common base class for data objects that acompany PRE_MODEL_CHANGE
+ * Common base class for data objects that accompany PRE_MODEL_CHANGE
  * and POST_MODEL_CHANGE notifications (signals).
  */
 class SIM_API cModelChangeNotification : public cObject, noncopyable
@@ -115,7 +112,7 @@ class SIM_API cModelChangeNotification : public cObject, noncopyable
 class SIM_API cPreModuleAddNotification : public cModelChangeNotification
 {
   public:
-    cModuleType *moduleType; //XXX + moduleid?
+    cModuleType *moduleType;
     const char *moduleName;
     cModule *parentModule;
     int vectorSize;
@@ -184,8 +181,6 @@ class SIM_API cPostModuleReparentNotification : public cModelChangeNotification
     cModule *module;
     cModule *oldParentModule;
 };
-
-//XXX TODO introduce GateObjectAdded/Removed signals as well?
 
 /**
  * This gets fired at the top of cModule::addGate(), that is, when a gate

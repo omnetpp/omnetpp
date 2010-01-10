@@ -108,12 +108,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void signalListenerRemoved(simsignal_t signalID);
     void repairSignalFlags();
     bool computeHasListeners(simsignal_t signalID) const;
-    bool mayHaveListeners(simsignal_t signalID) const {
-        // for fast signals (ID in 0..63) we use flags that cache the state;
-        // for other signals we return true. Note: no "if" for efficiency reasons
-        uint64 mask = (uint64)1 << signalID;
-        return (~signalHasLocalListeners & ~signalHasAncestorListeners & mask)==0; // always true for signalID > 63
-    }
 
   public:
     // internal: currently used by Cmdenv
@@ -437,7 +431,19 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
             fire(this, signalID, obj);
     }
 
-    //FIXME make mayHaveListeners public too!!
+    /**
+     * If producing a value for a signal has a significant runtime cost, this
+     * method can be used to check beforehand whether the given signal has
+     * any listeners at all -- if not, emitting the signal can be skipped.
+     *
+     * XXX docu: this is more efficient than hasListeners(), but may return "false positive".
+     */
+    bool mayHaveListeners(simsignal_t signalID) const {
+        // for fast signals (ID in 0..63) we use flags that cache the state;
+        // for other signals we return true. Note: no "if" for efficiency reasons
+        uint64 mask = (uint64)1 << signalID;
+        return (~signalHasLocalListeners & ~signalHasAncestorListeners & mask)==0; // always true for signalID > 63
+    }
 
     /**
      * If producing a value for a signal has a significant runtime cost, this
