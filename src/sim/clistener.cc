@@ -51,17 +51,3 @@ void cListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject 
     unsupportedType(signalID, "cObject *");
 }
 
-//----
-
-void cConfigurableListener::listenerAdded(cComponent *component, simsignal_t signalID)
-{
-    refcount++;
-}
-
-void cConfigurableListener::listenerRemoved(cComponent *component, simsignal_t signalID)
-{
-    if (--refcount==0)
-        delete this;
-}
-
-

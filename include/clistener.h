@@ -124,55 +124,6 @@ class SIM_API cListener : public cIListener
     virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
 };
 
-/**
- * A listener that can be created and hooked on a component using the
- * "on-signal" configuration option. Subclasses should override at least one
- * receiveSignal() method, and possibly also other methods like finish(),
- * listenerAdded(), listenerRemoved().
- *
- * If the listener object wants to listen on more signals than configured,
- * it is free to subscribe itself -- the most convenient place for this is
- * probably the listenerAdded() method.
- *
- * This class redefines listenerAdded()/listenerRemoved() to perform reference
- * counting, and the object deletes itself when it is removed from the last
- * listener list. To remove this behavior, redefine listenerRemoved().
- *
- * The class must be registered with the Register_Class(classname) macro,
- * so that configuration handling can instantiate the class by name.
- */
-class SIM_API cConfigurableListener : public cListener, public cObject
-{
-  private:
-    int refcount; // number of listener lists containing listener
-
-  protected:
-    /**
-     * Utility method that offers a built-in parsing method for use in
-     * initialize(). This method supports an arg string syntax similar to
-     * that of NED properties: "key1=value11,value12,...;key2=value21,
-     * value22..." or "value1,value2,value3..." (the latter is interpreted as
-     * "<empty-key>=value1,value2,value3...".
-     */
-    std::map<std::string,std::vector<std::string> > parseOptions(const char *args);
-
-  public:
-    cConfigurableListener() {refcount = 0;}
-
-    /** Redefined to perform reference counting */
-    virtual void listenerAdded(cComponent *component, simsignal_t signalID);
-
-    /** Redefined to perform reference counting */
-    virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
-
-    /**
-     * TODO document
-     * called BEFORE subscribing
-     * real initialization may only be possible in listenerAdded() when component and signalID are also known
-     */
-    virtual void initialize(const char *args) = 0;  //FIXME add corresponding cProperty* as well?
-};
-
 NAMESPACE_END
 
 #endif
