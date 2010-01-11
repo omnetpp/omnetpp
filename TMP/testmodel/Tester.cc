@@ -31,6 +31,7 @@ class Tester : public cSimpleModule, public cListener
     std::vector<cGate*> connections;
   public:
     Tester() : cSimpleModule(16384) {}
+    ~Tester();
     virtual void activity();
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
 };
@@ -45,6 +46,12 @@ inline void disconnectOutside(cGate *g) //XXX add this method into cGate!
         g->disconnect();
     else
         g->getPreviousGate()->disconnect();
+}
+
+Tester::~Tester()
+{
+    simulation.getSystemModule()->unsubscribe(PRE_MODEL_CHANGE, this);
+    simulation.getSystemModule()->unsubscribe(POST_MODEL_CHANGE, this);
 }
 
 void Tester::activity()
