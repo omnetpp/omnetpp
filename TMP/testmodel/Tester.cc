@@ -3,7 +3,6 @@
 #include <vector>
 #include <algorithm>
 #include <omnetpp.h>
-#include "C:\home\omnetpp40\gitrepo\modelchange.h"  //XXX
 
 
 #ifdef _WIN32

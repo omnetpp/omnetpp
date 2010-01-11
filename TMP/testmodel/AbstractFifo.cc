@@ -51,6 +51,9 @@ class DummyListener : public cIListener {
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t) {}
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) {}
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) {}
+    virtual void finish(cComponent *component) {}
+    virtual void listenerAdded(cComponent *component, simsignal_t signalID) {}
+    virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
 };
 
 AbstractFifo::AbstractFifo()
