@@ -238,6 +238,10 @@ unsubscribe("length", listener);
 subscribed, and similarly, \fname{unsubscribe()} does nothing
 if the listener is not subscribed.
 
+XXX if subscribed, MUST be unsubscribed!!! especially if subscribed
+at modules higher in the hierarchy. Module dtors release listeners,
+but this is not enough!
+
 It is possible to test whether a listener is subscribed to a signal,
 using the \fname{isSubscribed()} method which also takes the same
 parameter list.
@@ -281,9 +285,9 @@ class cIListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t) = 0;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *obj) = 0;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) = 0;
-    virtual void finish(cComponent *component) = 0;
-    virtual void listenerAdded(cComponent *component, simsignal_t signalID) = 0;
-    virtual void listenerRemoved(cComponent *component, simsignal_t signalID) = 0;
+    virtual void finish(cComponent *component) {}
+    virtual void listenerAdded(cComponent *component, simsignal_t signalID) {}
+    virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
 };
 \end{cpp}
 
@@ -325,6 +329,8 @@ methods with a bodies that throw a \ttt{"Data type not supported"} error.
 You can redefine the \fname{receiveSignal()} method(s) whose data type
 you want to support, and signals emitted with other (unexpected) data
 types will result in an error instead of going unnoticed.
+
+XXX cListener does reference counting!
 
 TODO What happens at an emit() call.
 
