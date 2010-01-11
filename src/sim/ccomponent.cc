@@ -345,8 +345,8 @@ void cComponent::clearSignalState()
     notificationSP = 0;
 
     // re-register predefined signals
-    simsignal_t preSignalID = registerSignal("omnetpp.pre-model-change");
-    simsignal_t postSignalID = registerSignal("omnetpp.post-model-change");
+    simsignal_t preSignalID = registerSignal("PRE_MODEL_CHANGE");
+    simsignal_t postSignalID = registerSignal("POST_MODEL_CHANGE");
     ASSERT(preSignalID==PRE_MODEL_CHANGE);
     ASSERT(postSignalID==POST_MODEL_CHANGE);
 }
@@ -428,7 +428,7 @@ void cComponent::fire(cComponent *source, simsignal_t signalID, T x)
                 throw cRuntimeError(this, "emit(): recursive notification stack overflow, signalID=%d", signalID);
             notificationStack[notificationSP++] = listeners; // lock against modification
             for (int i=0; listeners[i]; i++)
-                listeners[i]->receiveSignal(source, signalID, x);
+                listeners[i]->receiveSignal(source, signalID, x); // will crash if listener is already deleted
             notificationSP--;
         }
     }
@@ -641,5 +641,4 @@ bool cComponent::computeHasListeners(simsignal_t signalID) const
         return parent->computeHasListeners(signalID);
     return false;
 }
-
 
