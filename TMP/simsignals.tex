@@ -118,22 +118,74 @@ one of these types, or wrapped into an object subclassed from \ttt{cObject}.
 
 When there are no listeners, the runtime cost of \ttt{emit()} is usually minimal.
 However, if producing a value has a significant runtime cost, the
-\fname{hasListeners()} method can be used to check beforehand whether
-the given signal has any listeners at all -- if not, emitting the signal
-can be skipped. For example:
+\fname{mayHaveListeners()} or \fname{hasListeners()} method can be used
+to check beforehand whether the given signal has any listeners at all --
+if not, emitting the signal can be skipped. For some signals (the first 64
+in \{opp} 4.1), the information whether it has listeners is cached,
+and can be produced in constant time.
+
+The \fname{mayHaveListeners()} method is very efficient (a constant-time
+operation) because it only uses this cached information; if the state is
+not cached for the signal, it just returns \ttt{true}. In contrast,
+\fname{hasListeners()} computes the answer if it is not cached, so it can
+be slower. We recommend that you take into account the cost of producing
+notification information when deciding between \fname{mayHaveListeners()}
+and \fname{hasListeners()}.
+
+Example usage:
 
 \begin{cpp}
-if (hasListeners(distanceToTargetSignal))
+if (mayHaveListeners(distanceToTargetSignal))
 {
     double d = sqrt((x-targetX)*(x-targetX) + (y-targetY)*(y-targetY));
     emit(distanceToTargetSignal, d);
 }
 \end{cpp}
 
-FIXME document mayHaveListeners too!!
+\subsubsection{Signal data objects}
 
-XXX An example data class, and how one can use it to fire a notification
-XXX Hint: if you make data objects noncopyable, you don't need to worry about copy ctor, op=, dup() and so on
+When emitting a signal with a \ttt{cObject*} pointer, you can pass as data
+an object that you already have in the model, provided you have a suitable
+object at hand. However, it is often necessary to declare a custom class
+to hold all the details, and fill in an instance just for the purpose of
+emitting the signal.
+
+The custom notification class must be derived from \cclass{cObject}.
+We recommend that you also add \cclass{noncopyable} as base class, because
+then you don't need to write a copy constructor, assignment operator, and
+a \fname{dup()} function, sparing some work. When emitting the signal, you
+can create a temporary object, and pass its pointer to the \ffunc{emit()}
+function.
+
+An example of that is how model change notifications are fired (see
+\ref{sec:ch-simple-modules:model-change}). The data class that accompanies
+a signal that announces that a gate or gate vector is about to be created
+looks like this:
+
+\begin{cpp}
+class cPreGateAddNotification : public cObject, noncopyable
+{
+  public:
+    cModule *module;
+    const char *gateName;
+    cGate::Type gateType;
+    bool isVector;
+};
+\end{cpp}
+
+And the code that emits the signal:
+
+\begin{cpp}
+if (hasListeners(PRE_MODEL_CHANGE))
+{
+    cPreGateAddNotification tmp;
+    tmp.module = this;
+    tmp.gateName = gatename;
+    tmp.gateType = type;
+    tmp.isVector = isVector;
+    emit(PRE_MODEL_CHANGE, &tmp);
+}
+\end{cpp}
 
 
 \subsubsection{Subscribing to signals}
@@ -306,8 +358,8 @@ when there are no listeners on the ancestor chain, length of ancestor chain
 does not affect notification performance (for signals 0..63)
 
 
-
 \subsection{Listening for model changes}
+\label{sec:ch-simple-modules:model-change}
 
 In simulation models it is often useful to hold references to other
 modules, a connecting channel or other objects, or to cache information
