@@ -17,7 +17,7 @@
 #ifndef __CPATTERNMATCHER_H
 #define __CPATTERNMATCHER_H
 
-#include <stdio>
+#include <stdio.h>
 #include <string>
 #include <vector>
 #include "commondefs.h"
