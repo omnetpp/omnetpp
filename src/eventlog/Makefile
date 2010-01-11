@@ -60,7 +60,7 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
 	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
-	$(CHCON) -t textrel_shlib_t $O/$(LIBNAME)$(SO_LIB_SUFFIX)
+	@-$(CHCON) -t textrel_shlib_t $O/$(LIBNAME)$(SO_LIB_SUFFIX)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
