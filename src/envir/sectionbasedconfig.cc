@@ -35,7 +35,7 @@ USING_NAMESPACE
 
 //XXX error messages (exceptions) should contain file/line info!
 //XXX make sure quoting "$\{" works!
-//TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
+//TODO optimize storage (now keys with wildcard suffix are stored multiple times, in several suffix groups)
 
 
 Register_GlobalConfigOption(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "sectionbasedconfig-configreader-class", CFG_STRING, "", "When configuration-class=SectionBasedConfiguration: selects the configuration reader C++ class, which must subclass from cConfigurationReader.");
@@ -128,8 +128,8 @@ void SectionBasedConfiguration::clear()
     activeConfig = "";
     activeRunNumber = 0;
     config.clear();
-    groups.clear();
-    wildcardGroup.entries.clear();
+    suffixGroups.clear();
+    wildcardSuffixGroup.entries.clear();
     variables.clear();
 }
 
@@ -689,42 +689,42 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
 
         // analyze key and create appropriate entry
         std::string ownerName;
-        std::string groupName;
-        splitKey(key.c_str(), ownerName, groupName);
-        bool groupContainsWildcards = PatternMatcher::containsWildcards(groupName.c_str());
+        std::string suffix;
+        splitKey(key.c_str(), ownerName, suffix);
+        bool suffixContainsWildcards = PatternMatcher::containsWildcards(suffix.c_str());
 
         KeyValue2 entry2(entry);
         if (!ownerName.empty())
             entry2.ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
          else
             entry2.fullPathPattern = new PatternMatcher(key.c_str(), true, true, true);
-        entry2.groupPattern = groupContainsWildcards ? new PatternMatcher(groupName.c_str(), true, true, true) : NULL;
+        entry2.suffixPattern = suffixContainsWildcards ? new PatternMatcher(suffix.c_str(), true, true, true) : NULL;
 
         // find which group it should go into
-        if (!groupContainsWildcards)
+        if (!suffixContainsWildcards)
         {
-            // no wildcard in group name
-            if (groups.find(groupName)==groups.end()) {
-                // group not yet exists, create it
-                Group& group = groups[groupName];
+            // no wildcard in suffix (=group name)
+            if (suffixGroups.find(suffix)==suffixGroups.end()) {
+                // suffix group not yet exists, create it
+                SuffixGroup& group = suffixGroups[suffix];
 
                 // initialize group with matching wildcard keys seen so far
-                for (int k=0; k<(int)wildcardGroup.entries.size(); k++)
-                    if (wildcardGroup.entries[k].groupPattern->matches(groupName.c_str()))
-                        group.entries.push_back(wildcardGroup.entries[k]);
+                for (int k=0; k<(int)wildcardSuffixGroup.entries.size(); k++)
+                    if (wildcardSuffixGroup.entries[k].suffixPattern->matches(suffix.c_str()))
+                        group.entries.push_back(wildcardSuffixGroup.entries[k]);
             }
-            groups[groupName].entries.push_back(entry2);
+            suffixGroups[suffix].entries.push_back(entry2);
         }
         else
         {
-            // groupName contains wildcards: we need to add it to all existing groups it matches
-            // Note: if groupName also contains a hyphen, that's actually illegal (per-object
+            // suffix contains wildcards: we need to add it to all existing suffix groups it matches
+            // Note: if suffix also contains a hyphen, that's actually illegal (per-object
             // config entry names cannot be wildcarded, ie. "foo.bar.cmdenv-*" is illegal),
             // but causes no harm, because getPerObjectConfigEntry() won't look into the
             // wildcard group
-            wildcardGroup.entries.push_back(entry2);
-            for (std::map<std::string,Group>::iterator it = groups.begin(); it!=groups.end(); it++)
-                if (entry2.groupPattern->matches(it->first.c_str()))
+            wildcardSuffixGroup.entries.push_back(entry2);
+            for (std::map<std::string,SuffixGroup>::iterator it = suffixGroups.begin(); it!=suffixGroups.end(); it++)
+                if (entry2.suffixPattern->matches(it->first.c_str()))
                     (it->second).entries.push_back(entry2);
         }
     }
@@ -936,18 +936,18 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             {
                 // check for per-object configuration subkeys (".ev-enabled", ".record-interval")
                 std::string ownerName;
-                std::string groupName;
-                splitKey(key, ownerName, groupName);
-                bool containsHyphen = strchr(groupName.c_str(), '-')!=NULL;
+                std::string suffix;
+                splitKey(key, ownerName, suffix);
+                bool containsHyphen = strchr(suffix.c_str(), '-')!=NULL;
                 if (containsHyphen)
                 {
                     // this is a per-object config
-                    //XXX groupName (probably) should not contain wildcard; but surely not "**" !!!!
-                    cConfigOption *e = lookupConfigOption(groupName.c_str());
-                    if (!e && isIgnorableConfigKey(ignorableConfigKeys, groupName.c_str()))
+                    //XXX suffix (probably) should not contain wildcard; but surely not "**" !!!!
+                    cConfigOption *e = lookupConfigOption(suffix.c_str());
+                    if (!e && isIgnorableConfigKey(ignorableConfigKeys, suffix.c_str()))
                         continue;
                     if (!e || !e->isPerObject())
-                        throw cRuntimeError("Unknown per-object configuration key `%s' in %s", groupName.c_str(), key);
+                        throw cRuntimeError("Unknown per-object configuration key `%s' in %s", suffix.c_str(), key);
                 }
             }
         }
@@ -1020,9 +1020,9 @@ const char *SectionBasedConfiguration::getParameterValue(const char *moduleFullP
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
 {
-    // look up which group; paramName serves as group name
-    std::map<std::string,Group>::const_iterator it = groups.find(paramName);
-    const Group *group = it==groups.end() ? &wildcardGroup : &it->second;
+    // look up which group; paramName serves as suffix (ie. group name)
+    std::map<std::string,SuffixGroup>::const_iterator it = suffixGroups.find(paramName);
+    const SuffixGroup *group = it==suffixGroups.end() ? &wildcardSuffixGroup : &it->second;
 
     // find first match in the group
     for (int i=0; i<(int)group->entries.size(); i++)
@@ -1040,7 +1040,7 @@ bool SectionBasedConfiguration::entryMatches(const KeyValue2& entry, const char 
     if (!entry.fullPathPattern)
     {
         // typical
-        return entry.ownerPattern->matches(moduleFullPath) && (entry.groupPattern==NULL || entry.groupPattern->matches(paramName));
+        return entry.ownerPattern->matches(moduleFullPath) && (entry.suffixPattern==NULL || entry.suffixPattern->matches(paramName));
     }
     else
     {
@@ -1068,16 +1068,16 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
     // look up which group; keySuffix serves as group name
     // Note: we do not accept wildcards in the config key's name (ie. "**.record-*" is invalid),
     // so we ignore the wildcard group.
-    std::map<std::string,Group>::const_iterator it = groups.find(keySuffix);
-    if (it==groups.end())
+    std::map<std::string,SuffixGroup>::const_iterator it = suffixGroups.find(keySuffix);
+    if (it==suffixGroups.end())
         return nullEntry; // no such group
 
-    const Group *group = &it->second;
+    const SuffixGroup *suffixGroup = &it->second;
 
     // find first match in the group
-    for (int i=0; i<(int)group->entries.size(); i++)
+    for (int i=0; i<(int)suffixGroup->entries.size(); i++)
     {
-        const KeyValue2& entry = group->entries[i];
+        const KeyValue2& entry = suffixGroup->entries[i];
         if (entryMatches(entry, objectFullPath, keySuffix))
             return entry;  // found value
     }
@@ -1090,25 +1090,36 @@ static const char *partAfterLastDot(const char *s)
     return lastDotPos==NULL ? NULL : lastDotPos+1;
 }
 
-std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const
+std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeys(const char *objectFullPathPattern, const char *keySuffixPattern) const
 {
     std::vector<const char *> result;
 
-    // check all groups whose name matchs the pattern
-    PatternMatcher matcher(keySuffixPattern, true, true, true); //XXX check flags
-    for (std::map<std::string,Group>::const_iterator it = groups.begin(); it != groups.end(); ++it)
+    // only concrete objects or "**" is accepted, because we are not prepared
+    // to handle the "pattern matches pattern" case (see below as well).
+    bool anyObject = strcmp(objectFullPathPattern, "**")==0;
+    if (!anyObject && PatternMatcher::containsWildcards(objectFullPathPattern))
+    	throw cRuntimeError("getMatchingPerObjectConfigKeys: invalid objectFullPath parameter: the only wildcard pattern accepted is '**'");
+
+    // check all suffix groups whose name matches the pattern
+    PatternMatcher suffixMatcher(keySuffixPattern, true, true, true);
+    for (std::map<std::string,SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it)
     {
-        if (matcher.matches(it->first.c_str()))
+        const char *suffix = it->first.c_str();
+        if (suffixMatcher.matches(suffix))
         {
-            // find all matching entries from this group.
-            // We'll have a little problem where key ends in wildcard (i.e. entry.groupPattern!=NULL);
+            // find all matching entries from this suffix group.
+            // We'll have a little problem where key ends in wildcard (i.e. entry.suffixPattern!=NULL);
             // there we'd have to determine whether two *patterns* match. We resolve this
             // by checking whether one pattern matches the other one as string, and vica versa.
-            const Group& group = it->second;
+            const SuffixGroup& group = it->second;
             for (int i=0; i<(int)group.entries.size(); i++)
             {
                 const KeyValue2& entry = group.entries[i];
-                if (entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || matcher.matches(partAfterLastDot(entry.key.c_str())) || entry.groupPattern->matches(keySuffixPattern)))
+                if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
+                    &&
+                    (entry.suffixPattern==NULL ||
+                     suffixMatcher.matches(partAfterLastDot(entry.key.c_str())) ||
+                     entry.suffixPattern->matches(keySuffixPattern)))
                     result.push_back(entry.key.c_str());
             }
         }
@@ -1130,17 +1141,17 @@ void SectionBasedConfiguration::dump() const
     for (std::map<std::string,KeyValue1>::const_iterator it = config.begin(); it!=config.end(); it++)
         printf("  %s = %s\n", it->first.c_str(), it->second.value.c_str());
 
-    for (std::map<std::string,Group>::const_iterator it = groups.begin(); it!=groups.end(); it++)
+    for (std::map<std::string,SuffixGroup>::const_iterator it = suffixGroups.begin(); it!=suffixGroups.end(); it++)
     {
-        const std::string& groupName = it->first;
-        const Group& group = it->second;
-        printf("Group %s:\n", groupName.c_str());
+        const std::string& suffix = it->first;
+        const SuffixGroup& group = it->second;
+        printf("Suffix Group %s:\n", suffix.c_str());
         for (int i=0; i<(int)group.entries.size(); i++)
             printf("  %s = %s\n", group.entries[i].key.c_str(), group.entries[i].value.c_str());
     }
-    printf("Wildcard Group:\n");
-    for (int i=0; i<(int)wildcardGroup.entries.size(); i++)
-        printf("  %s = %s\n", wildcardGroup.entries[i].key.c_str(), wildcardGroup.entries[i].value.c_str());
+    printf("Wildcard Suffix Group:\n");
+    for (int i=0; i<(int)wildcardSuffixGroup.entries.size(); i++)
+        printf("  %s = %s\n", wildcardSuffixGroup.entries[i].key.c_str(), wildcardSuffixGroup.entries[i].value.c_str());
 }
 
 
