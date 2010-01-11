@@ -12,4 +12,5 @@
 <xi:include href="sequence-chart.xml" />
 <xi:include href="result-analysis.xml" />
 <xi:include href="neddoc.xml" />
+<xi:include href="ide-extensions.xml" />
 </book>
