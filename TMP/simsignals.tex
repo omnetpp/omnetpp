@@ -252,17 +252,18 @@ This class has a number of virtual methods:
     unsubscribed.
 
     FIXME TODO what is this good for.. e.g. reference counting.
+
+    The \fname{listenerRemoved()} method is also called from \cclass{cComponent}'s
+    destructor for all listeners, so at this point it is not safe to cast the
+    component pointer to any other type. Also, the method may be called several times
+    (i.e. if the listener was subscribed to multiple signals).
+
+    It is OK for the listener to delete itself in this method (\ttt{delete this}).
+    However, since this method may be called more than once if the listener
+    is subscribed multiple times (see above), one must be careful to prevent
+    double deletion, e.g. by using reference counting.
+
 \end{itemize}
-
-The \fname{listenerRemoved()} method is also called from cComponent's destructor for all
-listeners, so at this point it is not safe to cast the component pointer
-to any other type. Also, the method may be called several times (i.e.
-if the listener was subscribed to multiple signals).
-
-It is OK for the listener to delete itself in this method (\ttt{delete this}).
-However, since this method may be called more than once if the listener
-is subscribed multiple times (see above), one must be careful to prevent
-double deletion, e.g. by using reference counting.
 
 Since \cclass{cIListener} has too many pure virtual methods, it is more
 convenient to subclass from \cclass{cListener}, a do-nothing implementation
