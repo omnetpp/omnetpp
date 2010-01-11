@@ -55,7 +55,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
       FL_DISPSTR_NOTEMPTY = 64, // for hasDisplayString(): whether the display string is not empty
     };
 
-  private:  //XXX was: protected
+  private:
     cComponentType *componenttype;  // component type object
 
     short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
@@ -433,10 +433,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     /**
      * If producing a value for a signal has a significant runtime cost, this
-     * method can be used to check beforehand whether the given signal has
-     * any listeners at all -- if not, emitting the signal can be skipped.
-     *
-     * XXX docu: this is more efficient than hasListeners(), but may return "false positive".
+     * method can be used to check beforehand whether the given signal possibly
+     * has any listeners at all -- if not, emitting the signal can be skipped.
+     * This functions is significantly more efficient than hasListeners()
+     * (amortizes in constant time), but may return "false positive".
      */
     bool mayHaveListeners(simsignal_t signalID) const {
         // for fast signals (ID in 0..63) we use flags that cache the state;
@@ -446,9 +446,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     }
 
     /**
-     * If producing a value for a signal has a significant runtime cost, this
-     * method can be used to check beforehand whether the given signal has
-     * any listeners at all -- if not, emitting the signal can be skipped.
+     * Returns true if the given signal has any listeners. For some signals
+     * this method has a significant overhead (linear to the number of hierarchy
+     * levels in the network).
+     *
+     * @see mayHaveListeners()
      */
     bool hasListeners(simsignal_t signalID) const {
         uint64 mask = (uint64)1 << signalID;

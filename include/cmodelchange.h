@@ -133,9 +133,9 @@ class SIM_API cPostModuleAddNotification : public cModelChangeNotification
 
 /**
  * Fired at the top of cModule::deleteModule(). The module still exists
- * at this point.
+ * at this point. Note that this notification also gets fired when the
+ * network is being deleted after simulation completion.
  */
-//XXX called also on network teardown
 class SIM_API cPreModuleDeleteNotification : public cModelChangeNotification
 {
   public:
@@ -288,11 +288,13 @@ class SIM_API cPostGateVectorResizeNotification : public cModelChangeNotificatio
 };
 
 /**
- * XXX improve docu
+ * This notification is fired at the top of cGate::connectTo().
  * This notification is fired on the module that contains the source gate.
- * of the connection. Those who wish to listen on the target gate of the
- * connection being connected/disconnected should add the listener to the
+ * of the connection. If you wish to listen on the target gate of the
+ * connection being connected, you should add the listener to the
  * parent module (as notifications propagate up).
+ *
+ * @see cPrePathCreateNotification
  */
 class SIM_API cPreGateConnectNotification : public cModelChangeNotification
 {
@@ -303,12 +305,15 @@ class SIM_API cPreGateConnectNotification : public cModelChangeNotification
 };
 
 /**
- * XXX improve docu
- * This notification announces the connection is between gate and gate->getNextGate().
+ * This notification is fired at the end of cGate::connectTo(), to announce that
+ * a connection between the given gate and its peer (gate->getNextGate())
+ * has been created.
  * This notification is fired on the module that contains the source gate.
- * of the connection. Those who wish to listen on the target gate of the
- * connection being connected/disconnected should add the listener to the
+ * of the connection. If you wish to listen on the target gate of the
+ * connection being connected, you should add the listener to the
  * parent module (as notifications propagate up).
+ *
+ * @see cPostPathCreateNotification
  */
 class SIM_API cPostGateConnectNotification : public cModelChangeNotification
 {
@@ -317,13 +322,15 @@ class SIM_API cPostGateConnectNotification : public cModelChangeNotification
 };
 
 /**
- * XXX improve docu
- * This notification announces the deletion of the connection between gate
- * and gate->getNextGate().
+ * This notification is fired at the top of cGate::disconnect(), to announce
+ * that the connection between the given gate and its peer (gate->getNextGate())
+ * is about to be deleted.
  * This notification is fired on the module that contains the source gate.
- * of the connection. Those who wish to listen on the target gate of the
- * connection being connected/disconnected should add the listener to the
+ * of the connection. If you wish to listen on the target gate of the
+ * connection being disconnected, you should add the listener to the
  * parent module (as notifications propagate up).
+ *
+ * @see cPrePathCutNotification
  */
 class SIM_API cPreGateDisconnectNotification : public cModelChangeNotification
 {
@@ -332,13 +339,14 @@ class SIM_API cPreGateDisconnectNotification : public cModelChangeNotification
 };
 
 /**
- * XXX improve docu
- * This notification announces the deletion of the connection between gate
- * and gate->getNextGate().
+ * This notification is fired at the end of cGate::disconnect(), to announce
+ * that the connection between the given gates has been deleted.
  * This notification is fired on the module that contains the source gate.
- * of the connection. Those who wish to listen on the target gate of the
- * connection being connected/disconnected should add the listener to the
+ * of the connection. If you wish to listen on the target gate of the
+ * connection being disconnected, you should add the listener to the
  * parent module (as notifications propagate up).
+ *
+ * @see cPostPathCutNotification
  */
 class SIM_API cPostGateDisconnectNotification : public cModelChangeNotification
 {
@@ -349,16 +357,19 @@ class SIM_API cPostGateDisconnectNotification : public cModelChangeNotification
 };
 
 /**
- * Base class for path change notifications. Like xxx, they are fired when a gate
- * gets connected/disconnected; the difference is that path change notifications
- * are fired on the owner module of pathStartGate and pathEndGate, not on the
- * module of the gate being connected/disconnected.
+ * Base class for path change notifications. Like gate connect/disconnect
+ * notifications, they are fired when a gate gets connected/disconnected;
+ * the difference is that path change notifications are fired on the owner
+ * modules of the start AND end gates of the path that contains the connection
+ * (two notifications!), NOT on the module of the gate being connected or
+ * disconnected. See also cGate's getPathStartGate() and getPathEndGate()
+ * methods.
  *
- * Purpose: make it possible to get away with only local listeners
- * in simple modules. If this notification didn't exist, users would have
- * to listen for gate connect/disconnect notifications at the toplevel
- * module, which is not very efficient (as ALL pre/post model change
- * events from all module would then be propagated up to the top).
+ * The purpose of this notification is to make it possible to get away with
+ * only local listeners in simple modules. If this notification didn't exist,
+ * users would have to listen for gate connect/disconnect notifications at the
+ * top-level module, which is not very efficient (as ALL pre/post model change
+ * events from all modules would then have to be propagated up to the top).
  */
 class SIM_API cPathChangeNotification : public cModelChangeNotification
 {
@@ -369,22 +380,34 @@ class SIM_API cPathChangeNotification : public cModelChangeNotification
 };
 
 /**
- * XXX
+ * This notification is fired at the top of cGate::connectTo() on the owner
+ * modules of the start AND end gates of the future connection path that will
+ * be created when the gate gets connected.
+ * See cPathChangeNotification for more details.
  */
 class SIM_API cPrePathCreateNotification : public cPathChangeNotification { };
 
 /**
- * XXX
+ * This notification is fired at the end of cGate::connectTo() on the owner
+ * modules of the start AND end gates of the connection path that was formed
+ * when the gate was connected.
+ * See cPathChangeNotification for more details.
  */
 class SIM_API cPostPathCreateNotification : public cPathChangeNotification { };
 
 /**
- * XXX
+ * This notification is fired at the top of cGate::disconnect() on the owner
+ * modules of the start AND end gates of the connection path that is about to
+ * be cut when the gate gets connected.
+ * See cPathChangeNotification for more details.
  */
 class SIM_API cPrePathCutNotification : public cPathChangeNotification { };
 
 /**
- * XXX
+ * This notification is fired at the end of cGate::disconnect() on the owner
+ * modules of the start AND end gates of the connection path that was cut when
+ * the gate got disconnected.
+ * See cPathChangeNotification for more details.
  */
 class SIM_API cPostPathCutNotification : public cPathChangeNotification { };
 

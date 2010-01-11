@@ -502,7 +502,7 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
         {
             newGate = createGateObject(type);
             desc->setInputGate(newGate);
-            EVCB.gateCreated(newGate);   //FIXME model change???
+            EVCB.gateCreated(newGate);
         }
         if (type!=cGate::INPUT)
         {
