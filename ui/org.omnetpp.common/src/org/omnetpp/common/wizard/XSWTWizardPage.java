@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
 
 import com.swtworkbench.community.xswt.XSWT;
@@ -94,7 +95,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
 
     @SuppressWarnings("unchecked")
     protected void recreateForm(CreationContext context) {
-        System.out.println("recreating page " + getName());
+        Debug.println("recreating page " + getName());
 
         Assert.isNotNull(composite); // as ensured by populatePage()
 

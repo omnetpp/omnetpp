@@ -695,7 +695,7 @@ public class PaletteManager {
                 if (gateLabels.contains(label))
                     score += 1; // matching gate @labels
 
-        //System.out.println(typeInfo.getName() + ": " + score + " points");
+        //Debug.println(typeInfo.getName() + ": " + score + " points");
         return score;
     }
 

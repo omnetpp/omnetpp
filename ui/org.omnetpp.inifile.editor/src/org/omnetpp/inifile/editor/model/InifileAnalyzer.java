@@ -995,9 +995,9 @@ public class InifileAnalyzer {
                         }
 
                         if (!runtimeParamValue.equals(ideParamValue))
-                            System.out.println("*** Mismatch *** for name: " + paramName + ", runtime value: " + runtimeParamValue + ", ide value: " + ideParamValue + ", pattern: " + paramPattern);
+                            Debug.println("*** Mismatch *** for name: " + paramName + ", runtime value: " + runtimeParamValue + ", ide value: " + ideParamValue + ", pattern: " + paramPattern);
                         else
-                            System.out.println("Match for name: " + paramName + ", value: " + runtimeParamValue);
+                            Debug.println("Match for name: " + paramName + ", value: " + runtimeParamValue);
 
                         break;
                     }
