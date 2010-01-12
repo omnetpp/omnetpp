@@ -150,9 +150,5 @@
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnest" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnest" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnest.app/Contents/MacOS/omnest" perm="755" />
-		<copy overwrite="true" file="${srcDirectory}/plugins/org.omnetpp.product/launcher_linux.ini" tofile="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnest.ini" />
-		<copy overwrite="true" file="${srcDirectory}/plugins/org.omnetpp.product/launcher_linux64.ini" tofile="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnest.ini" />
-		<copy overwrite="true" file="${srcDirectory}/plugins/org.omnetpp.product/launcher_macosx.ini" tofile="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnest.app/Contents/MacOS/omnest.ini" />
-		<copy overwrite="true" file="${srcDirectory}/plugins/org.omnetpp.product/launcher_win32.ini" tofile="${buildDirectory}/${buildLabel}/${archivePrefix}/win32/omnest.ini" />
 	</target>
 </project>
