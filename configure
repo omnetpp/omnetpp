@@ -7467,7 +7467,8 @@ echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 
 # Test it the IDE was already configured. If not, copy the platform specific
 # files to the IDE root directory
-if test ! -d ide/configuration ; then
+if test -d ide ; then
+  if test ! -d ide/configuration ; then
     echo Configuring the IDE...
     cp -r ide/linux/* ide
     case $PLATFORM in
@@ -7491,6 +7492,7 @@ if test ! -d ide/configuration ; then
         echo IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel. Not configured.
         ;;
     esac
+  fi
 fi
 
 #----------------------
