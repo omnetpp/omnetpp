@@ -272,7 +272,7 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
 {
     // go up the parent chain, and apply the parameter pattern assignments
     // to matching, still-unset parameters
-    printf("TRYING TO ASSIGN PARAMS OF %s USING PATTERNS\n", component->getFullPath().c_str());
+    //XXX printf("TRYING TO ASSIGN PARAMS OF %s USING PATTERNS\n", component->getFullPath().c_str());
 
     std::string prefix;
 
@@ -282,7 +282,7 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
         if (!parent)
             break;
 
-        printf(" CHECKING PATTERNS ON: %s\n", parent->getFullPath().c_str());
+        //XXX printf(" CHECKING PATTERNS ON: %s\n", parent->getFullPath().c_str());
 
         // find NED declaration. Note that decl may be NULL (if parent was not defined via NED)
         const char *nedTypeName = parent->getNedTypeName();
@@ -321,8 +321,8 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
 void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns)
 {
     int numPatterns = patterns.size();
-    for (int i=0; i<numPatterns; i++)
-        printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getName(), patterns[i].patternNode->getSourceLocation());
+    //XXX for (int i=0; i<numPatterns; i++)
+    //XXX     printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getName(), patterns[i].patternNode->getSourceLocation());
 
     int numParams = component->getNumParams();
     for (int i=0; i<numParams; i++) {
@@ -330,10 +330,10 @@ void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, c
         if (!par.isSet()) {
             // first match
             std::string paramPath = prefix + par.getFullName();
-            printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
+            //XXX printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
             for (int j=0; j<numPatterns; j++) {
                 if (patterns[j].matcher->matches(paramPath.c_str())) {
-                    printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
+                    //XXX printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
                     doAssignParameterFromPattern(par, patterns[j].patternNode);
                     if (par.isSet())
                         break;
@@ -354,7 +354,7 @@ void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
         {
             //printf("   +++ assigning param %s\n", paramName);
             ASSERT(impl==par.impl() && !impl->isShared());
-            bool isSubcomponent = false; //FIXME is this OK???
+            bool isSubcomponent = false; //FIXME is this OK?
             cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
             cExpressionBuilder::setExpression(impl, dynamicExpr);
             impl->setIsSet(!patternNode->getIsDefault());
