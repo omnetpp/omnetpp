@@ -39,7 +39,7 @@ public class CommonCorePlugin extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 
-        ImageFactory.initialize(getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH).split(";"));
+        ImageFactory.initialize(getConfigurationPreferenceStore().getString(ICoreConstants.PREF_OMNETPP_IMAGE_PATH).split(";"));
 	}
 
 	/*
