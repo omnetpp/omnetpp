@@ -16,6 +16,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.FocusListener;
@@ -941,7 +942,7 @@ public class GraphicalNedEditor
 
             private void updateTextBounds() {
                 Dimension d = getCollapseToggle().getSize();
-                int bd = text.getBorderWidth();
+                int bd = Platform.getOS().equals(Platform.OS_MACOSX) ? text.getBorderWidth() : 0; 
                 text.setSize(d.width - 3 * (ICON_WIDTH + ICON_SPACING) + 2 * bd, d.height + 2 * bd - 2 * ICON_SPACING + 10);
                 Point location = getBounds().getLocation();
                 translateToAbsolute(location);
