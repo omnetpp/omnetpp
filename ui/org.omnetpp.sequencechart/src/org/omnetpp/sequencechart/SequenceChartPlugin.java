@@ -82,7 +82,13 @@ public class SequenceChartPlugin extends AbstractUIPlugin {
 	 * are responsible for disposal of the image.
 	 */
 	public static Image getImage(String path) {
-		return getImageDescriptor(path).createImage();
+		ImageDescriptor id = getImageDescriptor(path);
+		if (id == null) {
+			IllegalArgumentException e = new IllegalArgumentException("Cannot load image from: "+path);
+			logError(e);
+			throw e;
+		}
+		return id.createImage();
 	}
 
 	/**

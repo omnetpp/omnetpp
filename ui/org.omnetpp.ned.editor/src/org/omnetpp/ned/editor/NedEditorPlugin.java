@@ -9,8 +9,6 @@ package org.omnetpp.ned.editor;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -77,7 +75,13 @@ public class NedEditorPlugin extends AbstractUIPlugin {
      * are responsible for disposal of the image.
      */
     public static Image getImage(String path) {
-        return getImageDescriptor(path).createImage();
+		ImageDescriptor id = getImageDescriptor(path);
+		if (id == null) {
+			IllegalArgumentException e = new IllegalArgumentException("Cannot load image from: "+path);
+			logError(e);
+			throw e;
+		}
+		return id.createImage();
     }
 
     /**
