@@ -116,12 +116,13 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
 
     protected List<IResource> getPlugins(IProject project) throws CoreException {
         List<IResource> result = new ArrayList<IResource>();
-        IFolder plugins = project.getFolder(PLUGINS_FOLDER);
-
-        if (plugins != null)
-            for (IResource resource : plugins.members())
-                if (resource instanceof IFile && ((IFile)resource).getFileExtension().equals("jar"))
-                    result.add(resource);
+        if (project.isAccessible()) {
+        	IFolder plugins = project.getFolder(PLUGINS_FOLDER);
+        	if (plugins.exists())
+        		for (IResource resource : plugins.members())
+        			if (resource instanceof IFile && ((IFile)resource).getFileExtension().equals("jar"))
+        				result.add(resource);
+        }
 
         return result;
     }
