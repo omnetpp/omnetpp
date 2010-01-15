@@ -2,9 +2,34 @@
 
 == Introduction
 
-TODO Eclipse is very extensible blah blah
+The @OMNETPP@ IDE is based on the Eclipse platform which is an extensible, Java based framework.
+While it started as an IDE framework only, its main goal is to be a generic integration platform. 
+Extensions (called plugins) can be written in Java language. Plugins can be simply added to an existing Eclipse
+installation, extending it with new functionality by contributing various user interface elements
+into the platform user interface. 
 
-Java knowledge is required.
+The @OMNETPP@ IDE is in fact an Eclipse istallation with some additional - simulaton related - 
+tools pre-installed:
+
+* The @OMNETPP@ feature which contains all @OMNETPP@ specific tools you use: the NED, MSG and INI file editor, simulation
+  launcher, result analysis tools, sequence char view, documentation generator etc.
+
+* CDT (C/C++ Development Tooling - eclipse.org/cdt) - for C++ development and debugging. This feature integrates
+  with the standard `gcc` toolchain and the `gdb` debugger.
+* Version control integration plugins for GIT and SUBVERSION.
+
+To keep the size of @OMNETPP@ distribution 'small' the @OMNETPP@ IDE does not contain the tools 
+required for Java development. If you would like to develop your own plugins for the IDE you 
+will need to install some additional components manually:
+
+* JDT (Java Development Tools) - for generic Java development. JDT contains a java compiler and all the editors
+  debuggers and tools used during Java development.
+* PDE (Plugin Development Environment) - this component contains additional tools, API definitions and documentation
+  for developing plugins. PDE requires the presence of JDT.
+
+We recommend first learning the basics of Eclipse plugin development. The best place to start is the 
+'Platform Plugin Developer Guide' which can be accessed from the 'Help' menu after you have installed the PDE. 
+Of course, you will need some Java programming experience too.
 
 == Installing the Plug-in Development Environment
 
