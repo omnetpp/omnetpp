@@ -28,8 +28,8 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 # config file (i.e. other variables can simply refer to $(OPT_DIR)).
 # This is completely optional -- OPT_DIR is not referenced outside this file.
 #
-#OPT_DIR=$(OMNETPP_ROOT:\=/)/msys
-OPT_DIR=$(TOOLS_DIR:\=/)/msys
+OPT_DIR=$(OMNETPP_ROOT:\=/)/msys
+#OPT_DIR=$(TOOLS_DIR:\=/)/msys
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -88,10 +88,10 @@ DOXYGEN_DIR=$(TOOLS_DIR)/doxygen
 #
 # GNU Bison and Flex. Bison 2.0+ is required, 1.x versions will not work!
 #
-YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
-LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
-#YACC=$(OPT_DIR:\=/)/bin/bison.exe
-#LEX=$(OPT_DIR:\=/)/bin/flex.exe
+#YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
+#LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
+YACC=$(OPT_DIR:\=/)/bin/bison.exe
+LEX=$(OPT_DIR:\=/)/bin/flex.exe
 
 #
 # WinPCap. For INET framework SCTP module.
@@ -101,8 +101,8 @@ PCAP_DIR=$(TOOLS_DIR)/WpdPack
 #
 # If you want thread-safe libs, install pthreads and set its path.
 #
-PTHREADS_DIR=$(TOOLS_DIR)/pthreads-2.8.0
-USE_PTHREADS_STATIC_LIB=yes
+#PTHREADS_DIR=$(TOOLS_DIR)/pthreads-2.8.0
+#USE_PTHREADS_STATIC_LIB=yes
 
 #
 # If you want to build .lib files instead of .dlls, specify "no" below.
@@ -126,7 +126,7 @@ JNILIBS_IF_POSSIBLE=jnilibs
 # This option is available at present for Tkenv.
 # Set the following variable to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile Tkenv as a Windows GUI app (as opposed to
