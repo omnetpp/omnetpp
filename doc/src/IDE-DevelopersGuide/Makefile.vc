@@ -1,0 +1,37 @@
+FOP=$(TOOLS_DIR)\fop\fop.bat
+XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
+DOCBOOK=$(TOOLS_DIR)\docbook
+PERL=perl
+
+all: pdf html eclipse
+
+html: catalog
+	$(PERL) trans.pl <IDE-DevelopersGuide.xml >tmp0.xml
+	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl tmp0.xml
+	$(XSLTPROC) --nonet --output IDE-DevelopersGuide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
+	del tmp.xml tmp0.xml
+
+eclipse: catalog
+	$(PERL) trans.pl <IDE-DevelopersGuide.xml >tmp0.xml
+	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl tmp0.xml
+	-del /s /q eclipse 2>nul
+	-mkdir eclipse
+	cd eclipse && $(XSLTPROC) --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp0.xml
+	del tmp.xml tmp0.xml
+
+pdf: catalog
+	$(PERL) trans.pl <IDE-DevelopersGuide.xml >tmp0.xml
+	$(XSLTPROC) --nonet --xinclude --stringparam output pdf --output tmp.xml trans.xsl tmp0.xml
+	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
+	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
+	call $(FOP) -fo tmp.fo -c ..\fop.xconf -pdf IDE-DevelopersGuide.pdf
+	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml tmp0.xml
+
+clean:
+	-del IDE-DevelopersGuide.pdf IDE-DevelopersGuide.html 2>nul
+	-del /s /q eclipse 2>nul
+	-rmdir eclipse 2>nul
+
+catalog:
+	set XML_CATALOG_FILES=../docbook-dtd/catalog.xml
+
