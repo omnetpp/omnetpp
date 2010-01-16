@@ -259,7 +259,7 @@ From `org.omnetpp.common`:
   your templates. The plug-in must implement the `org.omnetpp.common.wizard.IContentTemplateContributor` interface
   to contribute to the template variables.
 
-==== Wizard
+==== Wizards
 
 New wizards can be added to IDE by implementing them directly in Java. For complicated wizards, this is the 
 recommended strategy. If your wizard just gathers some data from the user and then generates some file as 

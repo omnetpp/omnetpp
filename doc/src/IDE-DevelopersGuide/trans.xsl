@@ -64,6 +64,10 @@
    </guibutton>
 </xsl:template>
 
+<xsl:template match="guibutton|guiicon|guilabel|guimenu|guimenuitem|guisubmenu|interface">
+   <emphasis><xsl:apply-templates select="@*|node()"/></emphasis>
+</xsl:template>
+
 <xsl:template match="eventnumber">
    event #<xsl:apply-templates select="node()"/>
 </xsl:template>
