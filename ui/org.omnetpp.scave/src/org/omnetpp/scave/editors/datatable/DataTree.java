@@ -151,7 +151,7 @@ public class DataTree extends Tree implements IDataControl {
                 TreeItem[] treeItems = getSelection();
                 for (TreeItem treeItem : treeItems) {
                     Node node = (Node)treeItem.getData();
-                    if (node.ids != null)
+                    if (node != null && node.ids != null)
                         for (long id : node.ids)
                             resultIdList.add(id);
                 }

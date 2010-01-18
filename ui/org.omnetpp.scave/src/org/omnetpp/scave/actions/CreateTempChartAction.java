@@ -1,4 +1,5 @@
 /*--------------------------------------------------------------*
+
   Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
@@ -14,12 +15,10 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
@@ -43,35 +42,34 @@ public class CreateTempChartAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor editor, final IStructuredSelection selection) {
-		final String datasetName = "dataset";
-		final ResultFileManager manager = ((IDListSelection)selection).getResultFileManager(); // activePanel.getTable().getResultFileManager();
-		Dataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<Dataset>() {
+		IDListSelection idListSelection = (IDListSelection)selection;
+        ResultFileManager manager = idListSelection.getResultFileManager();
+        if (idListSelection.getScalarsCount() != 0) {
+            IDList idList = IDList.fromArray(idListSelection.getScalarIDs());
+            openChart(editor, manager, ResultType.SCALAR_LITERAL, idList);
+        }
+        if (idListSelection.getVectorsCount() != 0) {
+            IDList idList = IDList.fromArray(idListSelection.getVectorIDs());
+            openChart(editor, manager, ResultType.VECTOR_LITERAL, idList);
+        }
+        if (idListSelection.getHistogramsCount() != 0) {
+            IDList idList = IDList.fromArray(idListSelection.getHistogramIDs());
+            openChart(editor, manager, ResultType.HISTOGRAM_LITERAL, idList);
+        }
+	}
+
+    protected void openChart(ScaveEditor editor, final ResultFileManager manager, ResultType type, final IDList idList) {
+        Dataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<Dataset>() {
 			public Dataset call() {
-				return ScaveModelUtil.createTemporaryDataset(
-						datasetName,
-						((IDListSelection)selection).toIDList(), // activePanel.getTable().getSelectedIDs(),
-						null,
-						manager);
+                return ScaveModelUtil.createTemporaryDataset("dataset", idList, null, manager);
 			}
 		});
 
 		String chartName = "temp" + ++counter; //FIXME generate proper name
-		ResultType type = ((IDListSelection)selection).getResultType();//activePanel.getTable().getType();
-		if (type == null) {
-            MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
-            messageBox.setText("Cannot plot data.");
-            messageBox.setMessage("The selection contains no or more than one kind of scalar, vector and histogram data.");
-            messageBox.open();
-            return;
-		}
 		Chart chart = ScaveModelUtil.createChart(chartName, type);
 		dataset.getItems().add(chart);
 
-		Command command = AddCommand.create(
-							editor.getEditingDomain(),
-							editor.getTempAnalysis().getDatasets(),
-							ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
-							dataset);
+		Command command = AddCommand.create(editor.getEditingDomain(), editor.getTempAnalysis().getDatasets(), ScaveModelPackage.eINSTANCE.getDatasets_Datasets(), dataset);
 
 		// Do not use the CommandStack of the editor, because it would make it dirty
 		// and the Add command undoable from the UI.
@@ -82,7 +80,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
 		commandStack.flush();
 
 		editor.openChart(chart);
-	}
+    }
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
