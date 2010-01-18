@@ -10,6 +10,7 @@ package org.omnetpp.scave.actions;
 
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStack;
@@ -24,6 +25,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -58,26 +60,25 @@ public class CreateTempChartAction extends AbstractScaveAction {
         }
 	}
 
-    protected void openChart(ScaveEditor editor, final ResultFileManager manager, ResultType type, final IDList idList) {
-        Dataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<Dataset>() {
-			public Dataset call() {
-                return ScaveModelUtil.createTemporaryDataset("dataset", idList, null, manager);
+    protected void openChart(final ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
+        Chart chart = ResultFileManager.callWithReadLock(manager, new Callable<Chart>() {
+			public Chart call() {
+			    Dataset dataset = ScaveModelUtil.createTemporaryDataset("dataset", idList, null, manager);
+		        String chartTitle = StringUtils.defaultIfEmpty(DatasetManager.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), "temp" + ++counter);
+		        Chart chart = ScaveModelUtil.createChart(chartTitle, type);
+		        dataset.getItems().add(chart);
+		        Command command = AddCommand.create(editor.getEditingDomain(), editor.getTempAnalysis().getDatasets(), ScaveModelPackage.eINSTANCE.getDatasets_Datasets(), dataset);
+
+		        // Do not use the CommandStack of the editor, because it would make it dirty
+		        // and the Add command undoable from the UI.
+		        // It's safe to use a separate command stack, because the operations on the
+		        // temporary resource does not interfere with the operations on the persistent resource.
+		        CommandStack commandStack = new BasicCommandStack();
+		        commandStack.execute(command);
+		        commandStack.flush();
+                return chart;
 			}
 		});
-
-		String chartName = "temp" + ++counter; //FIXME generate proper name
-		Chart chart = ScaveModelUtil.createChart(chartName, type);
-		dataset.getItems().add(chart);
-
-		Command command = AddCommand.create(editor.getEditingDomain(), editor.getTempAnalysis().getDatasets(), ScaveModelPackage.eINSTANCE.getDatasets_Datasets(), dataset);
-
-		// Do not use the CommandStack of the editor, because it would make it dirty
-		// and the Add command undoable from the UI.
-		// It's safe to use a separate command stack, because the operations on the
-		// temporary resource does not interfere with the operations on the persistent resource.
-		CommandStack commandStack = new BasicCommandStack();
-		commandStack.execute(command);
-		commandStack.flush();
 
 		editor.openChart(chart);
     }
