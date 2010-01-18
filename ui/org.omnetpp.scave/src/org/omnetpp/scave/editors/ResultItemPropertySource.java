@@ -6,6 +6,8 @@ import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
+import java.util.concurrent.Callable;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
@@ -23,12 +25,12 @@ import org.omnetpp.scave.model2.ResultItemRef;
 
 /**
  * Property source for result items
- * 
+ *
  * @author Andras
  */
 //FIXME: what if "id" becomes invalid? do we need a lock to access ResultFileManager?
 public class ResultItemPropertySource implements IPropertySource {
-    
+
     static class ReadonlyPropertyDescriptor extends TextPropertyDescriptor implements INonsortablePropertyDescriptor {
         ReadonlyPropertyDescriptor(Object id, String displayName, String category) {
             super(id, displayName);
@@ -67,30 +69,30 @@ public class ResultItemPropertySource implements IPropertySource {
     public static final String PROP_START_TIME = "Start time";
     public static final String PROP_END_TIME = "End time";
 
-    public static final String[] BASE_PROPERTY_IDS = { 
-        PROP_KIND, PROP_MODULE, PROP_NAME, PROP_TYPE 
+    public static final String[] BASE_PROPERTY_IDS = {
+        PROP_KIND, PROP_MODULE, PROP_NAME, PROP_TYPE
     };
 
-    public static final String[] CONTAINER_PROPERTY_IDS = { 
+    public static final String[] CONTAINER_PROPERTY_IDS = {
         PROP_DIRECTORY, PROP_FILE, PROP_RUN_ID,
-        PROP_CONFIG, PROP_RUNNUMBER,  
+        PROP_CONFIG, PROP_RUNNUMBER,
         PROP_EXPERIMENT, PROP_MEASUREMENT, PROP_REPLICATION
     };
-    
-    public static final String[] SCALAR_PROPERTY_IDS = { 
-        PROP_VALUE 
+
+    public static final String[] SCALAR_PROPERTY_IDS = {
+        PROP_VALUE
     };
-    public static final String[] VECTOR_PROPERTY_IDS = { 
-        PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV, PROP_VARIANCE,  
+    public static final String[] VECTOR_PROPERTY_IDS = {
+        PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV, PROP_VARIANCE,
         PROP_START_EVENT_NUM, PROP_END_EVENT_NUM, PROP_START_TIME, PROP_END_TIME,
         PROP_VECTOR_ID
     };
-    public static final String[] HISTOGRAM_PROPERTY_IDS = { 
-        PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV, PROP_VARIANCE  
+    public static final String[] HISTOGRAM_PROPERTY_IDS = {
+        PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV, PROP_VARIANCE
     };
 
     protected static final IPropertyDescriptor[] BASE_PROPERTY_DESCS = makeDescriptors(BASE_PROPERTY_IDS, "", "General"); // not "Base" because we this to appear after "Fields" in the property sheet
-    protected static final IPropertyDescriptor[] CONTAINER_PROPERTY_DESCS = makeDescriptors(CONTAINER_PROPERTY_IDS, "", "Location"); // not "Container" because we want this group to appear at the bottom of the property sheet 
+    protected static final IPropertyDescriptor[] CONTAINER_PROPERTY_DESCS = makeDescriptors(CONTAINER_PROPERTY_IDS, "", "Location"); // not "Container" because we want this group to appear at the bottom of the property sheet
     protected static final IPropertyDescriptor[] SCALAR_PROPERTY_DESCS = makeDescriptors(SCALAR_PROPERTY_IDS, "", "Fields");
     protected static final IPropertyDescriptor[] VECTOR_PROPERTY_DESCS = makeDescriptors(VECTOR_PROPERTY_IDS, "", "Fields");
     protected static final IPropertyDescriptor[] HISTOGRAM_PROPERTY_DESCS = makeDescriptors(HISTOGRAM_PROPERTY_IDS, "", "Fields");
@@ -111,41 +113,45 @@ public class ResultItemPropertySource implements IPropertySource {
     }
 
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        ResultItem item = manager.getItem(id);
+        return ResultFileManager.callWithReadLock(manager, new Callable<IPropertyDescriptor[]>() {
+            public IPropertyDescriptor[] call() throws Exception {
+                ResultItem item = manager.getItem(id);
 
-        IPropertyDescriptor[] fields = 
-            (item instanceof VectorResult) ? VECTOR_PROPERTY_DESCS :
-                (item instanceof ScalarResult) ? SCALAR_PROPERTY_DESCS :
-                    (item instanceof HistogramResult) ? HISTOGRAM_PROPERTY_DESCS : 
-                        new IPropertyDescriptor[0];
-        
-        IPropertyDescriptor[] attrs = makeDescriptors(item.getAttributes().keys().toArray(), "@", "Attributes");
+                IPropertyDescriptor[] fields =
+                    (item instanceof VectorResult) ? VECTOR_PROPERTY_DESCS :
+                        (item instanceof ScalarResult) ? SCALAR_PROPERTY_DESCS :
+                            (item instanceof HistogramResult) ? HISTOGRAM_PROPERTY_DESCS :
+                                new IPropertyDescriptor[0];
 
-        IPropertyDescriptor[] bins = null;
-        if (item instanceof HistogramResult) {
-            HistogramResult histogram = (HistogramResult)item;
-            DoubleVector binBounds = histogram.getBins();
-            bins = new IPropertyDescriptor[(int)binBounds.size()];
-            for (int i = 0; i < binBounds.size(); i++) {
-                double bin1 = binBounds.get(i);
-                double bin2 = i < binBounds.size()-1 ? binBounds.get(i+1) : Double.POSITIVE_INFINITY;
-                bins[i] = new ReadonlyPropertyDescriptor("%"+i, String.valueOf(bin1) + " .. " + String.valueOf(bin2), "Bins");
+                IPropertyDescriptor[] attrs = makeDescriptors(item.getAttributes().keys().toArray(), "@", "Attributes");
+
+                IPropertyDescriptor[] bins = null;
+                if (item instanceof HistogramResult) {
+                    HistogramResult histogram = (HistogramResult)item;
+                    DoubleVector binBounds = histogram.getBins();
+                    bins = new IPropertyDescriptor[(int)binBounds.size()];
+                    for (int i = 0; i < binBounds.size(); i++) {
+                        double bin1 = binBounds.get(i);
+                        double bin2 = i < binBounds.size()-1 ? binBounds.get(i+1) : Double.POSITIVE_INFINITY;
+                        bins[i] = new ReadonlyPropertyDescriptor("%"+i, String.valueOf(bin1) + " .. " + String.valueOf(bin2), "Bins");
+                    }
+                }
+                return concat(BASE_PROPERTY_DESCS, CONTAINER_PROPERTY_DESCS, fields, attrs, bins);
             }
-        }
-        return concat(BASE_PROPERTY_DESCS, CONTAINER_PROPERTY_DESCS, fields, attrs, bins);
+        });
     }
 
     private IPropertyDescriptor[] concat(IPropertyDescriptor[] a1, IPropertyDescriptor[] a2, IPropertyDescriptor[] a3, IPropertyDescriptor[] a4, IPropertyDescriptor[] a5) {
         return (IPropertyDescriptor[])ArrayUtils.addAll(a1, ArrayUtils.addAll(a2, ArrayUtils.addAll(a3, ArrayUtils.addAll(a4, a5))));
     }
-    
+
     public Object getPropertyValue(Object propertyId) {
         ResultItem resultItem = manager.getItem(id);
-        
+
         // result attribute
-        if (propertyId instanceof String && propertyId.toString().charAt(0)=='@') 
+        if (propertyId instanceof String && propertyId.toString().charAt(0)=='@')
             return resultItem.getAttribute(propertyId.toString().substring(1));
-        
+
         // histogram bin
         if (resultItem instanceof HistogramResult && propertyId instanceof String && propertyId.toString().charAt(0)=='%') {
             int i = Integer.parseInt(propertyId.toString().substring(1));
@@ -153,7 +159,7 @@ public class ResultItemPropertySource implements IPropertySource {
             double valueFloor = Math.floor(value);
             return value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value);
         }
-        
+
         if (propertyId.equals(PROP_DIRECTORY)) return resultItem.getFileRun().getFile().getDirectory();
         if (propertyId.equals(PROP_FILE)) return resultItem.getFileRun().getFile().getFileName();
         if (propertyId.equals(PROP_CONFIG)) return StringUtils.nullToEmpty(resultItem.getFileRun().getRun().getAttribute(CONFIGNAME));
