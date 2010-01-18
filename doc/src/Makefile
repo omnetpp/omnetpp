@@ -6,7 +6,7 @@ DOXYGEN=doxygen
 #
 # Targets
 #
-all: apis do-tictoc-tutorial do-manual do-userguide do-migrationguide do-ide-overview do-ide-customization-guide
+all: apis do-tictoc-tutorial do-manual do-userguide do-migrationguide do-ide-overview do-ide-customization-guide do-ide-develpers-guide
 
 apis: api nedxml-api parsim-api
 
@@ -30,6 +30,9 @@ do-migrationguide:
 
 do-ide-customization-guide:
 	cd ide-customization-guide && $(MAKE)
+
+do-ide-developers-guide:
+	cd IDE-DevelopersGuide && $(MAKE)
 
 do-ide-overview:
 	cd ide-overview && $(MAKE)

@@ -39,7 +39,7 @@ Environment (PDE) into the IDE. This section describes how to install PDE.
 Start the IDE, and select 'Help -> Install New Sofware...' from the menu.
 This will bring up the 'Install' dialog.
 
-TODO screenshot installer
+image::images/installer.png[align="center",scaledwidth="75%"]
 
 At the top of the dialog you can choose an Eclipse software repository to
 install software from. Select 'Galileo' from the list.
@@ -58,7 +58,7 @@ from the 'General Purpose Tools' group, then go thought the rest of the
 wizard to get PDE installed. This will install PDE's prerequisites,
 most notably JDT (Java Development Tooling) as well.
 
-TODO screenshot installer-pde
+image::images/installer-pde.png[align="center",scaledwidth="75%"]
 
 When the download and the installation finished, restart the IDE.
 
@@ -77,7 +77,7 @@ wizard dialog comes up, with project type selection on the first page.
 Choose 'Plug-in Project' from the 'Plug-in Development' group and click
 'Next'.
 
-TODO screenshot new-plugin-project
+image::images/new-plugin-project.png[align="center",scaledwidth="75%"]
 
 On the next page, enter `org.example.hello` for project name, then
 click 'Next'. On the following page ('Content'), you can just click
@@ -113,13 +113,13 @@ code of course) or image resources for icons.
 
 On the 'Overview' tab click the 'Launch an Eclipse application' link
 
-TODO screenshot plugin-overview-page
+image::images/plugin-overview-page.png[align="center",scaledwidth="75%"]
 
 A new instance of Eclipse will be started containing the generated plugin.
 If everything is OK you should see a 'Sample Menu' containing a 'Sample Action'.
 When clicked, it will bring up a message dialog.
 
-TODO screnshot plugin-running
+image::images/plugin-running.png[align="center",scaledwidth="75%"]
 
 === Exporting the plug-in
 
@@ -129,7 +129,7 @@ Choose 'Directory' radio button for 'Destination'
 Sepcify directory name.
 Click [Finish]
 
-TODO screenshot plugin-export
+image::images/plugin-export.png[align="center",scaledwidth="75%"]
 
 The plugin will be generated as <dirname>/plugins/aaaa_1.0.0.201001061910.jar
 
@@ -148,13 +148,13 @@ Open an existing OMNeT++ project (e.g. aloha). Create a folder named `plugins`.
 
 Copy the exported plugin file (jar) into the `plugins` folder.
 
-TODO screenshot plugin-deployed
+image::images/plugin-deployed.png[align="center",scaledwidth="75%"]
 
 It should be activated automatically. If you delete it, or close the project 
 it should disappear. If you replace it with a new version, it will be updated. 
 (TODO check if this is true)
 
-TODO screenshot plugin-deployed-closed
+image::images/plugin-deployed-closed.png[align="center",scaledwidth="75%"]
 
 NOTE: Not all plug-ins behave nicely; (they have to support correctly the activation and deactivation themselves).
 If you experience problems, it might be a good idea to restart the IDE.
@@ -205,7 +205,7 @@ Double click on the `plugin.xml` file in your plug-in project and open the depen
 page. Add the `org.omnetpp.ned.model` and the `org.omnetpp.ned.core` plug-in as a dependency. 
 (Also add `org.eclipse.core.resources`. We will need it for our example later.)
 
-TODO screenshot ned-core-dependency
+image::images/ned-core-dependency.png[align="center",scaledwidth="75%"]
 
 === Accessing NED and Message Types
 
@@ -219,7 +219,8 @@ Open the `SampleAction.java` file and modify its content:
   public void run(IAction action) {
     MessageDialog.openInformation(
       window.getShell(), "Ned type counter",
-      "Number of NED types: "+NEDResources.getInstance().getNedTypesFromAllProjects().size());
+      "Number of NED types: "+NEDResources.getInstance().
+          getNedTypesFromAllProjects().size());
   }
 
 The parsed model of all NED files can be accessed via the `NEDResources.getInstance()` singleton object.
@@ -231,7 +232,7 @@ Check the documentation of the `NEDResources` and `INedTypeInfo` class.
 Similarily you can access information about message files using the `MsgResources.getInstance()` method. 
 Check the documentation of the `IMsgTypeResolver` and `IMsgTypeInfo` interfaces for further information.
 
-NOTE: you have to add the `org.omnetpp.ned.core` and `org.omnetpp.ned.model` plugins to the project dependecies
+NOTE: You have to add the `org.omnetpp.ned.core` and `org.omnetpp.ned.model` plugins to the project dependecies
 to access there classes.
 
 === Accessing Projects
