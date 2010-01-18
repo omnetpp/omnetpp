@@ -99,10 +99,11 @@ public class DataTree extends Tree implements IDataControl {
 
     public void setResultFileManager(ResultFileManagerEx newManager) {
         if (manager != null && !manager.isDisposed())
-            newManager.removeChangeListener(resultFilesChangeListener);
+            manager.removeChangeListener(resultFilesChangeListener);
         manager = newManager;
         contentProvider.setResultFileManager(newManager);
-        newManager.addChangeListener(resultFilesChangeListener);
+        if (newManager != null)
+            newManager.addChangeListener(resultFilesChangeListener);
     }
 
     public IDList getIDList() {
@@ -150,8 +151,9 @@ public class DataTree extends Tree implements IDataControl {
                 TreeItem[] treeItems = getSelection();
                 for (TreeItem treeItem : treeItems) {
                     Node node = (Node)treeItem.getData();
-                    for (long id : node.ids)
-                        resultIdList.add(id);
+                    if (node.ids != null)
+                        for (long id : node.ids)
+                            resultIdList.add(id);
                 }
                 return resultIdList;
             }

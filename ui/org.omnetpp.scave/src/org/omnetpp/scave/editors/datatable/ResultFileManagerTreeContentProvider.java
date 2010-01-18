@@ -11,6 +11,8 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.WordUtils;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.image.ImageFactory;
@@ -46,7 +48,7 @@ public class ResultFileManagerTreeContentProvider {
     public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
 
-    private static boolean debug = true;
+    private static boolean debug = false;
 
     protected ResultFileManagerEx manager;
 
@@ -103,9 +105,7 @@ public class ResultFileManagerTreeContentProvider {
         long startMillis = System.currentTimeMillis();
         if (manager == null || idList == null)
             return new Node[0];
-
         final Node firstNode = path.size() == 0 ? null : path.get(0);
-
         // cache
         if (firstNode == null) {
             if (rootNodes != null)
@@ -115,7 +115,6 @@ public class ResultFileManagerTreeContentProvider {
             if (firstNode.children != null)
                 return firstNode.children;
         }
-
         Node[] nodes = ResultFileManager.callWithReadLock(manager, new Callable<Node[]>() {
             public Node[] call() throws Exception {
                 MultiValueMap nodeIdsMap = new MultiValueMap();
@@ -134,6 +133,10 @@ public class ResultFileManagerTreeContentProvider {
                 }
                 else
                     nextLevelIndex = currentLevelIndex + 1;
+                boolean collector = false;
+                for (int j = nextLevelIndex + 1; j < levels.length; j++)
+                    if (!levels[j].equals(ResultItemAttributeNode.class))
+                        collector = true;
                 Class<? extends Node> nextLevelClass = nextLevelIndex < levels.length ? levels[nextLevelIndex] : null;
                 if (nextLevelClass != null) {
                     int idCount = firstNode == null ? idList.size() : firstNode.ids.length;
@@ -172,10 +175,12 @@ public class ResultFileManagerTreeContentProvider {
                             }
                             else if (nextLevelClass.equals(ModulePathNode.class))
                                 nodeIdsMap.put(new ModulePathNode(matchContext.getResultItem().getModuleName()), id);
-                            else if (nextLevelClass.equals(ResultItemNode.class))
-                                nodeIdsMap.put(new ResultItemNode(manager, id), id);
-                            else if (nextLevelClass.equals(ResultItemNameNode.class))
-                                nodeIdsMap.put(new ResultItemNameNode(matchContext.getResultItem().getName()), id);
+                            else if (nextLevelClass.equals(ResultItemNode.class)) {
+                                if (collector)
+                                    nodeIdsMap.put(new ResultItemNode(manager, -1, matchContext.getResultItem().getName()), id);
+                                else
+                                    nodeIdsMap.put(new ResultItemNode(manager, id, null), id);
+                            }
                             else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
                                 ResultItem resultItem = matchContext.getResultItem();
                                 nodeIdsMap.put(new ResultItemAttributeNode("Module name", String.valueOf(resultItem.getModuleName())), id);
@@ -236,28 +241,28 @@ public class ResultFileManagerTreeContentProvider {
                         }
                     }
                 }
-
                 Node[] nodes = (Node[])nodeIdsMap.keySet().toArray(new Node[0]);
                 Arrays.sort(nodes, new Comparator<Node>() {
                     public int compare(Node o1, Node o2) {
                         return StringUtils.dictionaryCompare((o1).getColumnText(0), (o2).getColumnText(0));
                     }
                 });
-
                 for (Node node : nodes) {
                     Collection ids = nodeIdsMap.getCollection(node);
                     node.ids = new long[ids.size()];
                     Iterator it = ids.iterator();
                     for (int i = 0; i < ids.size(); i++)
                         node.ids[i] = (Long)it.next();
+                    if (node.ids.length == 1 && !collector && StringUtils.isEmpty(node.value)) {
+                        ResultItem resultItem = manager.getItem(node.ids[0]);
+                        node.value = getResultItemShortDescription(resultItem);
+                    }
                 }
-
                 // update cache
                 if (firstNode == null)
                     rootNodes = nodes;
                 else
                     firstNode.children = nodes;
-
                 return nodes;
             }
         });
@@ -292,6 +297,27 @@ public class ResultFileManagerTreeContentProvider {
         return modulePrefix.toString();
     }
 
+    protected static String getResultItemShortDescription(ResultItem resultItem) {
+        if (resultItem instanceof ScalarResult) {
+            ScalarResult scalar = (ScalarResult)resultItem;
+            return String.valueOf(scalar.getValue());
+        }
+        else if (resultItem instanceof VectorResult) {
+            VectorResult vector = (VectorResult)resultItem;
+            return String.valueOf(vector.getMean()) + " (" + String.valueOf(vector.getCount()) + ")";
+        }
+        else if (resultItem instanceof HistogramResult) {
+            HistogramResult histogram = (HistogramResult)resultItem;
+            return String.valueOf(histogram.getMean()) + " (" + String.valueOf(histogram.getCount()) + ")";
+        }
+        else
+            throw new IllegalArgumentException();
+    }
+
+    protected static String getResultItemReadableClassName(ResultItem resultItem) {
+        return resultItem.getClass().getSimpleName().replaceAll("Result", "").toLowerCase();
+    }
+
     protected static class MatchContext {
         private ResultFileManager manager;
         private long id;
@@ -312,26 +338,22 @@ public class ResultFileManagerTreeContentProvider {
         public ResultItem getResultItem() {
             if (resultItem == null)
                 resultItem = manager.getItem(id);
-
             return resultItem;
         }
         public FileRun getFileRun() {
             if (fileRun == null)
                 fileRun = getResultItem().getFileRun();
-
             return fileRun;
         }
 
         public ResultFile getResultFile() {
             if (resultFile == null)
                 resultFile = getFileRun().getFile();
-
             return resultFile;
         }
         public Run getRun() {
             if (run == null)
                 run = getFileRun().getRun();
-
             return run;
         }
     }
@@ -360,7 +382,6 @@ public class ResultFileManagerTreeContentProvider {
             ModulePathNode.class,
             ModuleNameNode.class,
             ResultItemNode.class,
-            ResultItemNameNode.class,
             ResultItemAttributeNode.class};
     }
 
@@ -368,6 +389,8 @@ public class ResultFileManagerTreeContentProvider {
         public long[] ids;
 
         public Node[] children;
+
+        public String value = "";
 
         public boolean isExpandedByDefault() {
             return false;
@@ -384,7 +407,6 @@ public class ResultFileManagerTreeContentProvider {
 
     public static class NameValueNode extends Node {
         public String name;
-        public String value;
 
         public NameValueNode(String name, String value) {
             this.name = name;
@@ -457,7 +479,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? name + " (experiment)" : "";
+            return index == 0 ? name + " (experiment)" : value;
         }
 
         @Override
@@ -510,7 +532,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? StringUtils.defaultIfEmpty(name, "default")  + " (measurement)" : "";
+            return index == 0 ? StringUtils.defaultIfEmpty(name, "default")  + " (measurement)" : value;
         }
 
         @Override
@@ -563,7 +585,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? name + " (replication)" : "";
+            return index == 0 ? name + " (replication)" : value;
         }
 
         @Override
@@ -617,7 +639,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? experiment + (StringUtils.isEmpty(measurement) ? "" : " : " + measurement) + " : " + replication : "";
+            return index == 0 ? experiment + (StringUtils.isEmpty(measurement) ? "" : " : " + measurement) + " : " + replication : value;
         }
 
         @Override
@@ -679,7 +701,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? name + " (config)" : "";
+            return index == 0 ? name + " (config)" : value;
         }
 
         @Override
@@ -720,10 +742,10 @@ public class ResultFileManagerTreeContentProvider {
     }
 
     public static class RunNumberNode extends Node {
-        public long value;
+        public long runNumber;
 
-        public RunNumberNode(long value) {
-            this.value = value;
+        public RunNumberNode(long runNumber) {
+            this.runNumber = runNumber;
         }
 
         public static String getLevelName() {
@@ -732,19 +754,19 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? String.valueOf(value) + " (run number)" : "";
+            return index == 0 ? String.valueOf(runNumber) + " (run number)" : value;
         }
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRun().getRunNumber() == value;
+            return matchContext.getRun().getRunNumber() == runNumber;
         }
 
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + (int) (value ^ (value >>> 32));
+            result = prime * result + (int) (runNumber ^ (runNumber >>> 32));
             return result;
         }
 
@@ -757,7 +779,7 @@ public class ResultFileManagerTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             RunNumberNode other = (RunNumberNode) obj;
-            if (value != other.value)
+            if (runNumber != other.runNumber)
                 return false;
             return true;
         }
@@ -779,7 +801,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? config + " : " + runNumber : "";
+            return index == 0 ? config + " : " + runNumber : value;
         }
 
         @Override
@@ -818,10 +840,10 @@ public class ResultFileManagerTreeContentProvider {
     }
 
     public static class FileNameNode extends Node {
-        public String name;
+        public String fileName;
 
         public FileNameNode(String name) {
-            this.name = name;
+            this.fileName = name;
         }
 
         public static String getLevelName() {
@@ -830,19 +852,19 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? name + " (file name)" : "";
+            return index == 0 ? fileName + " (file name)" : value;
         }
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getResultFile().getFileName().equals(name);
+            return matchContext.getResultFile().getFileName().equals(fileName);
         }
 
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
+            result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
             return result;
         }
 
@@ -855,21 +877,21 @@ public class ResultFileManagerTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             FileNameNode other = (FileNameNode) obj;
-            if (name == null) {
-                if (other.name != null)
+            if (fileName == null) {
+                if (other.fileName != null)
                     return false;
             }
-            else if (!name.equals(other.name))
+            else if (!fileName.equals(other.fileName))
                 return false;
             return true;
         }
     }
 
     public static class RunIdNode extends Node {
-        public String value;
+        public String runId;
 
-        public RunIdNode(String value) {
-            this.value = value;
+        public RunIdNode(String runId) {
+            this.runId = runId;
         }
 
         public static String getLevelName() {
@@ -878,19 +900,19 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? value + " (run id)" : "";
+            return index == 0 ? runId + " (run id)" : value;
         }
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRun().getRunName().equals(value);
+            return matchContext.getRun().getRunName().equals(runId);
         }
 
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((value == null) ? 0 : value.hashCode());
+            result = prime * result + ((runId == null) ? 0 : runId.hashCode());
             return result;
         }
 
@@ -903,11 +925,11 @@ public class ResultFileManagerTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             RunIdNode other = (RunIdNode) obj;
-            if (value == null) {
-                if (other.value != null)
+            if (runId == null) {
+                if (other.runId != null)
                     return false;
             }
-            else if (!value.equals(other.value))
+            else if (!runId.equals(other.runId))
                 return false;
             return true;
         }
@@ -929,7 +951,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? fileName + " : " + runId : "";
+            return index == 0 ? fileName + " : " + runId : value;
         }
 
         @Override
@@ -984,7 +1006,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? path : "";
+            return index == 0 ? path : value;
         }
 
         @Override
@@ -1040,7 +1062,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? name : "";
+            return index == 0 ? name : value;
         }
 
         @Override
@@ -1087,9 +1109,13 @@ public class ResultFileManagerTreeContentProvider {
 
         public long id;
 
-        public ResultItemNode(ResultFileManager manager, long id) {
+        public String name;
+
+        public ResultItemNode(ResultFileManager manager, long id, String name) {
+            Assert.isTrue(id != -1 || name != null);
             this.manager = manager;
             this.id = id;
+            this.name = name;
         }
 
         public static String getLevelName() {
@@ -1098,39 +1124,54 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            ResultItem resultItem = manager.getItem(id);
-            String value = "";
-            if (resultItem instanceof ScalarResult) {
-                ScalarResult scalar = (ScalarResult)resultItem;
-                value = String.valueOf(scalar.getValue());
+            if (name != null) {
+                return index == 0 ? name : value;
             }
-            else if (resultItem instanceof VectorResult) {
-                VectorResult vector = (VectorResult)resultItem;
-                value = String.valueOf(vector.getMean()) + " (" + String.valueOf(vector.getCount()) + ")";
+            else {
+                ResultItem resultItem = manager.getItem(id);
+                return index == 0 ? resultItem.getName() + " (" + getResultItemReadableClassName(resultItem) + ")" : getResultItemShortDescription(resultItem);
             }
-            else if (resultItem instanceof HistogramResult) {
-                HistogramResult histogram = (HistogramResult)resultItem;
-                value = String.valueOf(histogram.getMean()) + " (" + String.valueOf(histogram.getCount()) + ")";
-            }
-            return index == 0 ? resultItem.getName() + " (" + resultItem.getClass().getSimpleName().replaceAll("Result", "").toLowerCase() + ")" : value;
         }
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return this.id == id;
+            if (name != null)
+                return matchContext.getResultItem().getName().equals(name);
+            else
+                return this.id == id;
         }
 
         @Override
         public Image getImage() {
-            ResultItem resultItem = manager.getItem(id);
-            if (resultItem instanceof ScalarResult)
-                return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
-            else if (resultItem instanceof VectorResult)
-                return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
-            else if (resultItem instanceof HistogramResult)
-                return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
-            else
-                return ImageFactory.getIconImage(ImageFactory.DEFAULT);
+            if (name != null) {
+                int allType = -1;
+                for (long id : ids) {
+                    int type = ResultFileManager.getTypeOf(id);
+                    if (allType == -1)
+                        allType = type;
+                    else if (allType != type)
+                        return ImageFactory.getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
+                }
+                if (allType == ResultFileManager.SCALAR)
+                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
+                else if (allType == ResultFileManager.VECTOR)
+                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
+                else if (allType == ResultFileManager.HISTOGRAM)
+                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                else
+                    return ImageFactory.getIconImage(ImageFactory.DEFAULT);
+            }
+            else {
+                ResultItem resultItem = manager.getItem(id);
+                if (resultItem instanceof ScalarResult)
+                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
+                else if (resultItem instanceof VectorResult)
+                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
+                else if (resultItem instanceof HistogramResult)
+                    return ImageFactory.getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                else
+                    return ImageFactory.getIconImage(ImageFactory.DEFAULT);
+            }
         }
 
         @Override
@@ -1138,6 +1179,7 @@ public class ResultFileManagerTreeContentProvider {
             final int prime = 31;
             int result = 1;
             result = prime * result + (int) (id ^ (id >>> 32));
+            result = prime * result + ((name == null) ? 0 : name.hashCode());
             return result;
         }
 
@@ -1152,48 +1194,6 @@ public class ResultFileManagerTreeContentProvider {
             ResultItemNode other = (ResultItemNode) obj;
             if (id != other.id)
                 return false;
-            return true;
-        }
-    }
-
-    public static class ResultItemNameNode extends Node {
-        public String name;
-
-        public ResultItemNameNode(String name) {
-            this.name = name;
-        }
-
-        public static String getLevelName() {
-            return "Result Item Name";
-        }
-
-        @Override
-        public String getColumnText(int index) {
-            return index == 0 ? name : "";
-        }
-
-        @Override
-        public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getResultItem().getName().equals(name);
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            ResultItemNameNode other = (ResultItemNameNode) obj;
             if (name == null) {
                 if (other.name != null)
                     return false;
@@ -1209,7 +1209,7 @@ public class ResultFileManagerTreeContentProvider {
 
         public ResultItemAttributeNode(String name, String value) {
             super(name, value);
-            methodName = "get" + StringUtils.capitalize(name.toLowerCase());
+            methodName = "get" + WordUtils.capitalize(name.toLowerCase()).replaceAll(" ", "");
         }
 
         public static String getLevelName() {
