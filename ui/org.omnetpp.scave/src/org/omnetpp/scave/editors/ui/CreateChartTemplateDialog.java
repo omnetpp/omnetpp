@@ -64,9 +64,17 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		return chartName;
 	}
 
+	public void setChartName(String chartName) {
+        this.chartName = chartName;
+    }
+
 	public String getDatasetName() {
 		return datasetName;
 	}
+
+	public void setDatasetName(String datasetName) {
+        this.datasetName = datasetName;
+    }
 
 	public String[] getFilterFields() {
 		return filterFields;
@@ -90,10 +98,14 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
         label.setText("Dataset name:");
 		datasetnameText = new Text(panel, SWT.BORDER);
 		datasetnameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		if (datasetName != null)
+		    datasetnameText.setText(datasetName);
 		label = new Label(panel, SWT.NONE);
 		label.setText("Chart name:");
 		chartnameText = new Text(panel, SWT.BORDER);
 		chartnameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		if (chartName != null)
+		    chartnameText.setText(chartName);
 
 		Group group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
