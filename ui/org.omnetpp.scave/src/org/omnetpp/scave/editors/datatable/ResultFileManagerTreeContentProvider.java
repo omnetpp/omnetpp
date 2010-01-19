@@ -64,10 +64,12 @@ public class ResultFileManagerTreeContentProvider {
 
     public void setResultFileManager(ResultFileManagerEx manager) {
         this.manager = manager;
+        rootNodes = null;
     }
 
     public void setIDList(IDList idList) {
         this.idList = idList;
+        rootNodes = null;
     }
 
     public Class<? extends Node>[] getLevels() {
@@ -253,6 +255,7 @@ public class ResultFileManagerTreeContentProvider {
                     Iterator it = ids.iterator();
                     for (int i = 0; i < ids.size(); i++)
                         node.ids[i] = (Long)it.next();
+                    // add quick value if applicable
                     if (node.ids.length == 1 && !collector && StringUtils.isEmpty(node.value)) {
                         ResultItem resultItem = manager.getItem(node.ids[0]);
                         node.value = getResultItemShortDescription(resultItem);

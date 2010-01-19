@@ -13,6 +13,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CustomTreeLevelsAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.PredefinedLevelsAction;
@@ -40,15 +42,17 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  *
  * @author Levy
  */
+@SuppressWarnings("unchecked")
 public class DataTree extends Tree implements IDataControl {
+    protected static final String DATA_TREE_LEVELS = "DataTree.Levels";
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
     protected ListenerList listeners;
     protected ResultFileManagerEx manager;
     protected IDList idList;
     protected ResultFileManagerTreeContentProvider contentProvider;
+    protected IPreferenceStore preferenceStore = ScavePlugin.getDefault().getPreferenceStore();
     protected DelayedJob refreshJob = new DelayedJob(200) {
         public void run() {
-            contentProvider = createContentProvider();
             refresh();
         }
     };
@@ -65,7 +69,8 @@ public class DataTree extends Tree implements IDataControl {
         setMenu(contextMenuManager.createContextMenu(this));
         addColumn("Name", 400);
         addColumn("Value", 200);
-        contentProvider = createContentProvider();
+        contentProvider = new ResultFileManagerTreeContentProvider();
+        loadPreferences();
 
         addListener(SWT.SetData, new Listener() {
             public void handleEvent(final Event e) {
@@ -91,6 +96,12 @@ public class DataTree extends Tree implements IDataControl {
 
     public ResultFileManagerTreeContentProvider getContentProvider() {
         return contentProvider;
+    }
+
+    public void setLevels(Class[] levels) {
+        contentProvider.setLevels(levels);
+        savePreferences();
+        refresh();
     }
 
     public ResultFileManagerEx getResultFileManager() {
@@ -198,15 +209,6 @@ public class DataTree extends Tree implements IDataControl {
             listeners.remove(listener);
     }
 
-    public ResultFileManagerTreeContentProvider createContentProvider() {
-        ResultFileManagerTreeContentProvider contentProvider = new ResultFileManagerTreeContentProvider();
-        contentProvider.setResultFileManager(manager);
-        contentProvider.setIDList(idList);
-        if (this.contentProvider != null)
-            contentProvider.setLevels(this.contentProvider.getLevels());
-        return contentProvider;
-    }
-
     public void refresh() {
         refreshJob.cancel();
         removeAll();
@@ -291,5 +293,33 @@ public class DataTree extends Tree implements IDataControl {
         }
 
         return path;
+    }
+
+    protected void loadPreferences() {
+        String[] levelClassNames = preferenceStore.getString(DATA_TREE_LEVELS).split(",");
+        if (levelClassNames != null) {
+            Class[] levels = new Class[levelClassNames.length];
+            for (int i = 0; i < levelClassNames.length; i++) {
+                try {
+                    levels[i] = Class.forName(levelClassNames[i]);
+                }
+                catch (ClassNotFoundException e) {
+                    return;
+                }
+            }
+            contentProvider.setLevels(levels);
+        }
+    }
+
+    protected void savePreferences() {
+        StringBuffer levelClassNames = new StringBuffer();
+        Class<? extends Node>[] levels = contentProvider.getLevels();
+        for (int i = 0; i < levels.length; i++) {
+            Class level = levels[i];
+            if (i != 0)
+                levelClassNames.append(',');
+            levelClassNames.append(level.getName());
+        }
+        preferenceStore.setValue(DATA_TREE_LEVELS, levelClassNames.toString());
     }
 }

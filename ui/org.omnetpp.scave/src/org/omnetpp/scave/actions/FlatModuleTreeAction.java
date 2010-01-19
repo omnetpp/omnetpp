@@ -32,7 +32,6 @@ public class FlatModuleTreeAction extends Action {
         int index = ArrayUtils.indexOf(levels, oldClass);
         if (index != -1)
             levels[index] = newClass;
-        contentProvider.setLevels(levels);
-        dataTree.refresh();
+        dataTree.setLevels(levels);
     }
 }

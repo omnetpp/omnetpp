@@ -33,15 +33,14 @@ public class PredefinedLevelsAction extends Action {
             Class[] currentLevels = contentProvider.getLevels();
             int index = ArrayUtils.indexOf(currentLevels, ResultFileManagerTreeContentProvider.ModuleNameNode.class);
             if (index == -1)
-                contentProvider.setLevels(levels);
+                dataTree.setLevels(levels);
             else {
                 Class[] clonedLevels = levels.clone();
                 index = ArrayUtils.indexOf(clonedLevels, ResultFileManagerTreeContentProvider.ModulePathNode.class);
                 if (index != -1)
                     clonedLevels[index] = ResultFileManagerTreeContentProvider.ModuleNameNode.class;
-                contentProvider.setLevels(clonedLevels);
+                dataTree.setLevels(clonedLevels);
             }
-            dataTree.refresh();
         }
     }
 

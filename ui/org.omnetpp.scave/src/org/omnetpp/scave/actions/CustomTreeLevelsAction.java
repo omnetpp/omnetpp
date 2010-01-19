@@ -52,13 +52,13 @@ public class CustomTreeLevelsAction extends Action {
             {
                 setShellStyle(getShellStyle() | SWT.RESIZE);
             }
-            
+
             @Override
             protected void configureShell(Shell shell) {
                 super.configureShell(shell);
                 shell.setText("Configure Tree Levels");
             }
-            
+
             @Override
             protected Control createDialogArea(Composite parent) {
                 Composite container = (Composite)super.createDialogArea(parent);
@@ -146,8 +146,7 @@ public class CustomTreeLevelsAction extends Action {
 
             @Override
             protected void okPressed() {
-                dataTree.getContentProvider().setLevels(Arrays.asList(viewer.getCheckedElements()).toArray(new Class[0]));
-                dataTree.refresh();
+                dataTree.setLevels(Arrays.asList(viewer.getCheckedElements()).toArray(new Class[0]));
                 super.okPressed();
             }
         };
