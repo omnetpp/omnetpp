@@ -129,8 +129,10 @@ public class BrowseDataPage extends ScaveEditorPage {
 			    contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
 	        if (panel.getDataControl() instanceof DataTree)
 	            ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
-			contextMenuManager.add(new Separator());
-			contextMenuManager.add(editorContributor.getShowOutputVectorViewAction());
+			if (ResultType.VECTOR_LITERAL.equals(panel.getType())) {
+	            contextMenuManager.add(new Separator());
+			    contextMenuManager.add(editorContributor.getShowOutputVectorViewAction());
+			}
 		}
 		// XXX call getSite().registerContexMenu() ?
 	}

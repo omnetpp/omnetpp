@@ -49,9 +49,11 @@ public class FilteredDataPanel extends Composite {
 	private FilteringPanel filterPanel;
 	private IDataControl data;
 	private IDList idlist; // the unfiltered data list
+    private ResultType type;
 
 	public FilteredDataPanel(Composite parent, int style, ResultType type) {
 		super(parent, style);
+		this.type = type;
 		initialize(type);
 		configureFilterPanel();
 	}
@@ -81,6 +83,10 @@ public class FilteredDataPanel extends Composite {
 	public ResultFileManager getResultFileManager() {
 		return data.getResultFileManager();
 	}
+
+	public ResultType getType() {
+        return type;
+    }
 
 	protected void initialize(ResultType type) {
 		GridLayout gridLayout = new GridLayout(1, false);

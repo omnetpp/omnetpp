@@ -60,6 +60,7 @@ import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.DataTree;
@@ -206,11 +207,16 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private void createContextMenu(final FilteredDataPanel panel) {
 		IDataControl control = panel.getDataControl();
 		IMenuManager menuManager = control.getContextMenuManager();
+        menuManager.add(setFilterAction);
 		if (control instanceof DataTable)
 		    menuManager.add(new ChooseTableColumnsAction((DataTable)control));
 		if (control instanceof DataTree)
 		    ((DataTree)control).contributeToContextMenu(menuManager);
-		menuManager.add(setFilterAction);
+        ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
+        if (ResultType.VECTOR_LITERAL.equals(panel.getType())) {
+            menuManager.add(new Separator());
+            menuManager.add(editorContributor.getShowOutputVectorViewAction());
+        }
 		control.addSelectionListener(new SelectionAdapter() {
 			@Override
             public void widgetSelected(SelectionEvent e) {
