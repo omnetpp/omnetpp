@@ -2328,6 +2328,7 @@ public class SequenceChart
 		graphics.setFont(font);
 		int width = getTextExtent(graphics, timeString).x;
 		int x = viewportWidth - width - 3;
+        int spacing = (GUTTER_HEIGHT - graphics.getFontMetrics().getHeight()) / 2;
 
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
@@ -2336,7 +2337,7 @@ public class SequenceChart
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawRectangle(x - 3, GUTTER_HEIGHT, width + 5, GUTTER_HEIGHT);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-		drawText(graphics, timeString, x, GUTTER_HEIGHT + 2);
+        drawText(graphics, timeString, x, GUTTER_HEIGHT + 1 - spacing);
 	}
 
 	/**
@@ -2357,7 +2358,7 @@ public class SequenceChart
 		graphics.drawRectangle(0, 0, width + 6, GUTTER_HEIGHT);
 
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-		drawText(graphics, timeString, 3, 2);
+		drawText(graphics, timeString, 3, (GUTTER_HEIGHT - graphics.getFontMetrics().getHeight()) / 2);
 		newFont.dispose();
 	}
 
@@ -2532,7 +2533,7 @@ public class SequenceChart
                 if (showMessageNames) {
                     graphics.setFont(font);
                     int dy = Math.abs(fromY - toY);
-                    int fontHeight = font.getFontData()[0].getHeight();
+                    int fontHeight = graphics.getFontMetrics().getHeight();
                     int numberOfRows = dy / fontHeight / 2;
 
                     if (numberOfRows == 0)
@@ -2589,7 +2590,7 @@ public class SequenceChart
 			        drawEvent(graphics, eventPtr);
 			    else {
 	                int x = (int)getEventXViewportCoordinate(eventPtr);
-	                int y = (int)getEventYViewportCoordinate(eventPtr);
+	                int y = getEventYViewportCoordinate(eventPtr);
 	                Integer lastX = axisYtoLastX.get(y);
 
     				// performance optimization: don't draw event if there's one already drawn exactly there
@@ -2787,8 +2788,9 @@ public class SequenceChart
 		// draw tick value
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(backgroundColor);
-		drawText(graphics, string, boxX + 3, 2);
-		drawText(graphics, string, boxX + 3, viewportHeight + GUTTER_HEIGHT + 1);
+		int spacing = (GUTTER_HEIGHT - graphics.getFontMetrics().getHeight()) / 2;
+		drawText(graphics, string, boxX + 3, spacing);
+		drawText(graphics, string, boxX + 3, viewportHeight + GUTTER_HEIGHT + 1 - spacing);
 
 		// draw hair line
 		graphics.setLineStyle(SWT.LINE_DOT);
@@ -2962,7 +2964,7 @@ public class SequenceChart
                 beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
                     getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
-        int fontHeight = font.getFontData()[0].getHeight();
+        int fontHeight = graphics.getFontMetrics().getHeight();
 
         // calculate horizontal coordinates based on timeline coordinate limit
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / getPixelPerTimelineUnit();
