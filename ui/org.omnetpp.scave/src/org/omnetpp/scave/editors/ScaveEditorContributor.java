@@ -387,7 +387,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		return redoRetargetAction;
 	}
 	public IMenuManager createExportMenu() {
-		IMenuManager exportMenu = new MenuManager("Export to File");
+		IMenuManager exportMenu = new MenuManager("Export Data");
 		if (exportActions != null) {
 			for (String format : ExportDataAction.FORMATS) {
 				IAction action = exportActions.get(format);
