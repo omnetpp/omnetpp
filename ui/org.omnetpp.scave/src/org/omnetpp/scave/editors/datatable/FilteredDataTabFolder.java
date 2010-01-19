@@ -54,7 +54,7 @@ public class FilteredDataTabFolder extends TabFolder {
         vectorsTab = addItem(vectorsPanel);
         scalarsTab = addItem(scalarsPanel);
         histogramsTab = addItem(histogramsPanel);
-
+        refreshPanelTitles();
         setActivePanel(allPanel);
     }
 
