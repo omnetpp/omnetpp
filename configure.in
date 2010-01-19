@@ -909,12 +909,19 @@ if test -n "$MPI_LIBS"; then
 else
     mpi_ok=no
     # LAM and OpenMPI support mpic++ -showme
+    # NOTE: on Fedora 12 (and maybe others), OpenMPI is not in the PATH by default
+    opp_save_PATH="$PATH"
+    PATH="$PATH:/usr/lib/openmpi/bin"
     AC_CHECK_PROG(MPICPP, mpic++, mpic++, not found)
     if test "$MPICPP" != "not found"; then
         MPI_CFLAGS=`mpic++ -showme:compile`
         MPI_LIBS=`mpic++ -showme:link`
         OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+        if test -d /usr/lib/openmpi/bin; then
+            AC_MSG_WARN([To use MPI, you may need to ensure that /usr/lib/openmpi/bin is in the PATH.])
+        fi
     fi
+    PATH="$opp_save_PATH"
 
     if test $mpi_ok = no; then
           # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
@@ -1184,7 +1191,7 @@ echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
 
-# Test it the IDE was already configured. If not, copy the platform specific 
+# Test it the IDE was already configured. If not, copy the platform specific
 # files to the IDE root directory
 if test -d ide ; then
   if test ! -d ide/configuration ; then
