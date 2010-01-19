@@ -256,7 +256,9 @@ public class ResultFileManagerTreeContentProvider {
                     for (int i = 0; i < ids.size(); i++)
                         node.ids[i] = (Long)it.next();
                     // add quick value if applicable
-                    if (node.ids.length == 1 && !collector && StringUtils.isEmpty(node.value)) {
+                    if (node.ids.length == 1 && !collector && StringUtils.isEmpty(node.value) &&
+                        (!(node instanceof ModuleNameNode) || ((ModuleNameNode)node).leaf))
+                    {
                         ResultItem resultItem = manager.getItem(node.ids[0]);
                         node.value = getResultItemShortDescription(resultItem);
                     }
