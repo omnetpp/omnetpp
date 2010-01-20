@@ -1,0 +1,293 @@
+== Mac OS X 10.5 and 10.6
+
+
+=== Installing the prerequisite packages
+
+Install Xcode 3.0 or later on your machine. Xcode is available free of charge from
+Apple Inc.
+
+Xcode can be downloaded from http://developer.apple.com/technology/xcode.html.
+
+Installing additional packages will enable more functionality in @OMNETPP@; see
+the 'Additional packages' section at the end of this chapter.
+
+
+=== Downloading and unpacking @OMNETPP@
+
+Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
+the generic archive, `@omnetpp@-@version@-src.tgz`.
+
+Copy the archive to the directory where you want to install it. This is usually
+your home directory, `/Users/<you>`. Open a terminal, and extract the archive
+using the following command:
+
+    $ tar zxvf @omnetpp@-@version@-src.tgz
+
+A subdirectory called `@omnetpp@-@version@` will be created, containing the simulator
+files.
+
+Alternatively, you can also unpack the archive using Finder.
+
+[NOTE]
+===============================================================
+The Terminal can be found in the Applications / Utilities
+folder.
+// do NOT make this a single line, or asciidoc goes berzerk!
+===============================================================
+
+
+=== Environment variables
+
+@OMNETPP@ needs its `bin/` directory to be in the path. To add `bin/` to
+`PATH` temporarily (in the current shell only), change into the @OMNETPP@
+directory and source the `setenv` script:
+
+  $ cd @omnetpp@-@version@
+  $ . setenv
+
+To set the environment variables permanently, edit `.bashrc` in your home
+directory. Use your favourite text editor to edit `.bashrc`, for example TextEdit:
+
+  $ touch ~/.bashrc
+  $ open -e ~/.bashrc
+
+[NOTE]
+===============================================================
+`touch` is needed because `open -e` only opens existing files. Alternatively,
+you can use the terminal-based 'pico' editor (`pico ~/.bashrc`)
+===============================================================
+
+Add the following line at the end of the file, then save it:
+
+  $ export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
+
+You need to close and re-open the terminal for the changes to take effect.
+
+Alternatively, you can put the above line into `~/.bash_profile`, but then
+you need to log out and log in again for the changes to take effect.
+
+[NOTE]
+===============================================================
+If you use a shell other than the default one, bash, consult the man page
+of that shell to find out which startup file to edit, and how to set and
+export variables.
+===============================================================
+
+
+=== Configuring and building @OMNETPP@
+
+Check `configure.user` to make sure it contains the settings you need.
+In most cases you don't need to change anything in it.
+
+[NOTE]
+===============================================================
+If you want to build 64-bit binaries, you should add the `-m64` option to
+the `CFLAGS_RELEASE`, `CFLAGS_DEBUG` and `LDFLAGS` variables in `configure.user`.
+Set `NO_TCL=1` in `configure.user` too, because Tcl/Tk does not have a 64-bit
+version. You will not be able to use Tkenv, the graphical simulation runtime;
+simulations will run using the command line environment, Cmdenv.
+===============================================================
+
+In the top-level @OMNETPP@ directory, type:
+
+  $ ./configure
+
+The `configure` script detects installed software and configuration of your
+system. It writes the results into the `Makefile.inc` file, which will be
+read by the makefiles during the build process.
+
+Normally, the `configure` script needs to be running under the graphical
+environment in order to test for `wish`, the Tcl/Tk shell. If you are
+logged in via an ssh session or you want to compile @OMNETPP@ without Tcl/Tk,
+use the command
+
+  $ NO_TCL=1 ./configure
+
+instead of plain `./configure`.
+
+[NOTE]
+===============================================================
+If there is an error during `configure`, the output may give hints about what
+went wrong. Scroll up to see the messages. (You may need to increase
+the scrollback buffer size of the terminal and re-run `./configure`.) The script
+also writes a very detailed log of its operation into `config.log` to help track
+down errors. Since `config.log` is very long, it is recommended that you open
+it in an editor and search for phrases like 'error' or the name of the package
+associated with the problem.
+===============================================================
+
+When `./configure` has finished, you can compile @OMNETPP@.
+Type in the terminal:
+
+  $ make
+
+[TIP]
+===============================================================
+To take advantage of multiple processor cores, add the `-j2` option to the
+`make` command line.
+===============================================================
+
+[NOTE]
+===============================================================
+The build process will not write anything outside its directory,
+so no special privileges are needed.
+===============================================================
+
+[TIP]
+===============================================================
+The make command will seemingly compile everything twice. This is because
+both debug and optimized versions of the libraries are built.
+If you only want to build one set of the libraries, specify
+`MODE=debug` or `MODE=release`:
+
+  $ make MODE=release
+===============================================================
+
+
+=== Verifying the installation
+
+You can now verify that the sample simulations run correctly. For example,
+the dyna simulation is started by entering the following commands:
+
+    $ cd samples/dyna
+    $ ./dyna
+
+By default the samples will run using the Tcl/Tk environment. You should see
+nice gui windows and dialogs.
+
+
+=== Starting the IDE
+
+@OMNETPP@ comes with an Eclipse-based Simulation IDE. Mac OS X already has
+Java installed, so you do not need to install it. You can start the IDE by typing:
+
+    $ @omnetpp@
+
+If you would like to be able to launch the IDE via Applications,
+the Dock or a desktop shortcut, do the following: open the `@omnetpp@-@version@`
+folder in Finder, go into the `ide` subfolder, create an alias for the @omnetpp@
+program there (right-click, 'Make Alias'), and drag the new alias into the
+Applications folder, onto the Dock, or onto the desktop.
+
+Alternatively, run one or both of the commands below:
+
+  $ make install-menu-item
+  $ make install-desktop-icon
+
+which will do roughly the same.
+
+
+=== Using the IDE
+
+When you try to build a project in the IDE, you may get the following warning message:
+
+[quote]
+_____________________________________________________________________
+Toolchain "..." is not supported on this platform or installation. Please go to the
+Project menu, and activate a different build configuration. (You may need to switch
+to the C/C++ perspective first, so that the required menu items appear in the Project menu.)
+_____________________________________________________________________
+
+So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
+
+
+=== Reconfiguring the libraries
+
+If you need to recompile the @OMNETPP@ components with different flags (e.g.
+different optimization), then change the top-level @OMNETPP@ directory, edit
+`configure.user` accordingly, then type:
+
+    $ ./configure
+    $ make clean
+    $ make
+
+NOTE: To take advantage of multiple processor cores, add the `-j2` option to the
+`make` command line.
+
+If you want to recompile just a single library, then change to the directory
+of the library (e.g. `cd src/sim`) and type:
+
+    $ make clean
+    $ make
+
+By default, libraries are compiled in both debug and release mode. If you want
+to make release or debug builds only, use:
+
+    $ make MODE=release
+
+or
+
+    $ make MODE=debug
+
+By default, shared libraries will be created. If you want to build static
+libraries, use:
+
+    $ make SHARED_LIBS=no
+
+[NOTE]
+===============================================================
+The built libraries and programs are immediately copied
+to the `lib/` and `bin/` subdirectories.
+===============================================================
+
+[NOTE]
+===============================================================
+The Tcl/Tk environment uses the native Aqua version of Tcl/Tk, so you
+will see native widgets. However, due to problems in the Tk/Aqua port,
+you may experience minor UI quirks. We are aware of these problems,
+and are working on the solution.
+===============================================================
+
+
+=== Additional packages
+
+Note that OpenMPI is already bundled with OS X, so you do not need to manually install MPI.
+
+==== GraphViz
+
+GraphViz is needed if you want to have diagrams in HTML documentation
+that you generate from NED files in the IDE ('Generate NED Documentation...'
+item in the project context menu).
+
+Download and install the GraphViz OS X binaries from http://www.pixelglow.com/graphviz/download/.
+(Download the latest, version 2.x package; at the time of writing,
+the link is at the top of the page.)
+
+After installation, make sure that the `dot` program is available
+from the command line. Open a terminal, and type
+
+  $ dot -V
+
+Note the capital 'V'. The command should normally work out of the box.
+If you get the '"command not found"' error, you need to put `dot` into the path.
+Find the `dot` program in the GraphViz installation directory, and
+soft link it into `/usr/local/bin` (`sudo ln -s <path>/dot /usr/local/bin`).
+
+==== Doxygen
+
+Doxygen is needed if you want to generate documentation for C++ code,
+as part of the HTML documentation that you generate from NED files in the IDE
+('Generate NED Documentation...' item in the project context menu).
+
+Download the Doxygen OS X binaries from the Doxygen web site's download page,
+http://www.stack.nl/~dimitri/doxygen/download.html, and install it.
+
+After installation, ensure that the `doxygen` program is available
+from the command line. Open a terminal, and type
+
+  $ doxygen
+
+If you get the '"command not found"' error, you need to put `doxygen` into the path.
+Enter into a terminal:
+
+  $ cd /Applications/Doxygen.app/Contents/Resources/
+  $ sudo ln -s doxygen doxytags /usr/local/bin
+
+==== Akaroa
+
+TODO
+
+==== SystemC
+
+TODO
+

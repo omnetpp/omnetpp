@@ -1,0 +1,44 @@
+== General information
+
+=== Introduction
+
+This document describes how to install @OMNETPP@ on various platforms.
+One chapter is dedicated to each operating system.
+
+=== Supported platforms
+
+@OMNETPP@ has been tested and is supported on the following operating systems:
+
+* Windows 7, Vista, XP
+* Mac OS X 10.5 and 10.6
+* Linux distributions covered in this Installation Guide
+
+ifdef::OMNEST[]
+Precompiled binaries are provided for the following platforms:
+
+* Windows 7, Vista and XP with Microsoft Visual C++ version 7 (2003 .NET), 8 (2005) and 9 (2008)
+* Windows 7, Vista and XP with the bundled MinGW GCC 4.x compiler
+
+On other platforms, @OMNETPP@ needs to be compiled from source.
+endif::OMNEST[]
+
+The Simulation IDE can be used on the following platforms:
+
+* Linux x86 (32-bit / 64-bit)
+* Windows 7, Vista, XP (32-bit)
+* Mac OS X 10.5 and 10.6 (32-bit)
+
+[NOTE]
+=====================================================================
+Simulations can be run practically on any unix-like environment with
+a decent and fairly up-to-date C++ compiler, for example gcc 4.x. Certain
+@OMNETPP@ features (Tkenv, parallel simulation, XML support, etc.) depend
+on the availability of external libraries (Tcl/Tk, MPI, LibXML or Expat,
+etc.)
+
+IDE platforms are restricted because the IDE relies on a native shared
+library, which we compile for the above platforms and distribute
+in binary form for convenience.
+=====================================================================
+
+

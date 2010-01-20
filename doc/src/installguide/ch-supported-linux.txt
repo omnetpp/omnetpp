@@ -1,0 +1,271 @@
+== Linux
+
+=== Supported Linux distributions
+
+This chapter provides instructions for installing @OMNETPP@ on selected Linux
+distributions:
+
+* Ubuntu 8.04 LTS and 9.10
+* Debian 5.0
+* Fedora Core 11 and 12
+* CentOS 5.4
+* OpenSUSE 12
+
+This chapter describes the overall process:
+distro-specific information, such as how to install the prerequisite
+packages, are covered by distro-specific chapters.
+
+If you have a Linux distribution not listed above, consult the 'Generic Unix'
+chapter of this Installation Guide.
+
+
+=== Installing the prerequisite packages
+
+@OMNETPP@ requires several packages to be installed on the computer. These packages
+include the C++ compiler (gcc), the Java runtime, and several other libraries and
+programs. These packages can be installed from the software repositories of your
+Linux distribution.
+
+*See the chapter specific to your Linux distribution for
+instructions on installing the packages needed by @OMNETPP@.*
+
+You may need superuser permissions to install packages.
+
+Not all packages are available from software repositories; some (optional)
+ones need to be downloaded separately from their web sites, and
+installed manually. See the section 'Additional Packages' later in this
+chapter.
+
+
+=== Downloading and unpacking
+
+Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
+the generic archive, `@omnetpp@-@version@-src.tgz`.
+
+Copy the archive to the directory where you want to install it. This is usually
+your home directory, `/home/<you>`. Open a terminal, and extract the archive
+using the following command:
+
+  $ tar xvfz @omnetpp@-@version@-src.tgz
+
+This will create an `@omnetpp@-@version@` subdirectory with the @OMNETPP@ files in it.
+
+[NOTE]
+===============================================================
+On how to open a terminal on your Linux installation, see the chapter
+specific to your Linux distribution.
+===============================================================
+
+
+=== Environment variables
+
+@OMNETPP@ needs its `bin/` directory to be in the path. To add `bin/` to
+`PATH` temporarily (in the current shell only), change into the @OMNETPP@
+directory and source the `setenv` script:
+
+  $ cd @omnetpp@-@version@
+  $ . setenv
+
+The script also adds the `lib/` subdirectory to `LD_LIBRARY_PATH`, which may be
+necessary on systems that don't support the rpath mechanism.
+
+To set the environment variables permanently, edit `.bashrc` in your home
+directory. Use your favourite text editor to edit `.bashrc`, for example gedit:
+
+  $ gedit ~/.bashrc
+
+Add the following line at the end of the file, then save it:
+
+  $ export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
+
+You need to close and re-open the terminal for the changes to take effect.
+
+Alternatively, you can put the above line into `~/.bash_profile`, but then
+you need to log out and log in again for the changes to take effect.
+
+[NOTE]
+===============================================================
+If you use a shell other than bash, consult the man page of that shell
+to find out which startup file to edit, and how to set and export variables.
+
+Note that all Linux distributions covered in this Installation Guide
+use bash, unless the user explicitly selects another shell.
+===============================================================
+
+
+=== Configuring and building @OMNETPP@
+
+In the top-level @OMNETPP@ directory, type:
+
+  $ ./configure
+
+The `configure` script detects installed software and configuration of your
+system. It writes the results into the `Makefile.inc` file, which will be
+read by the makefiles during the build process.
+
+Normally, the `configure` script needs to be running under the graphical
+environment (X11) in order to test for `wish`, the Tcl/Tk shell. If you are logged in
+via an ssh session, or there is some other reason why X is not running,
+the easiest way to work around the problem is to tell @OMNETPP@ to build
+without Tcl/Tk. To do that, use the command
+
+  $ NO_TCL=1 ./configure
+
+instead of plain `./configure`.
+
+[NOTE]
+===============================================================
+If there is an error during `configure`, the output may give hints about what
+went wrong. Scroll up to see the messages. (Use Shift+PgUp; you may need to increase
+the scrollback buffer size of the terminal and re-run `./configure`.) The script
+also writes a very detailed log of its operation into `config.log` to help track
+down errors. Since `config.log` is very long, it is recommended that you open
+it in an editor and search for phrases like 'error' or the name of the package
+associated with the problem.
+===============================================================
+
+When `./configure` has finished, you can compile @OMNETPP@.
+Type in the terminal:
+
+  $ make
+
+[TIP]
+===============================================================
+To take advantage of multiple processor cores, add the `-j2` option to the
+`make` command line.
+===============================================================
+
+[NOTE]
+===============================================================
+The build process will not write anything outside its directory,
+so no special privileges are needed.
+===============================================================
+
+[TIP]
+===============================================================
+The make command will seemingly compile everything twice. This is because
+both debug and optimized versions of the libraries are built.
+If you only want to build one set of the libraries, specify
+`MODE=debug` or `MODE=release`:
+
+  $ make MODE=release
+===============================================================
+
+
+=== Verifying the installation
+
+You can now verify that the sample simulations run correctly. For example,
+the dyna simulation is started by entering the following commands:
+
+    $ cd samples/dyna
+    $ ./dyna
+
+By default the samples will run using the Tcl/Tk environment. You should see
+nice gui windows and dialogs.
+
+
+=== Starting the IDE
+
+You can launch the @OMNETPP@ Simulation IDE by typing the following command
+in the terminal:
+
+  $ @omnetpp@
+
+If you would like to be able to access the IDE from the application launcher
+or via a desktop shortcut, run one or both of the commands below:
+
+  $ make install-menu-item
+  $ make install-desktop-icon
+
+Or add a shortcut that points to the `@omnetpp@` program in the `ide` subdirectory
+by other means, for example using the Linux desktop's context menu.
+
+=== Using the IDE
+
+When you try to build a project in the IDE, you may get the following warning message:
+
+[quote]
+_____________________________________________________________________
+Toolchain "..." is not supported on this platform or installation. Please go to the
+Project menu, and activate a different build configuration. (You may need to switch
+to the C/C++ perspective first, so that the required menu items appear in the Project menu.)
+_____________________________________________________________________
+
+So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
+
+
+=== Reconfiguring the libraries
+
+If you need to recompile the @OMNETPP@ components with different flags (e.g.
+different optimization), then change the top-level @OMNETPP@ directory, edit
+`configure.user` accordingly, then type:
+
+    $ ./configure
+    $ make cleanall
+    $ make
+
+If you want to recompile just a single library, then change to the directory
+of the library (e.g. `cd src/sim`) and type:
+
+    $ make clean
+    $ make
+
+By default, libraries are compiled in both debug and release mode. If you want
+to make release or debug builds only, use:
+
+    $ make MODE=release
+
+or
+
+    $ make MODE=debug
+
+By default, shared libraries will be created. If you want to build static
+libraries, use:
+
+    $ make SHARED_LIBS=no
+
+=== Moving the installation
+
+When you build @OMNETPP@ on your machine, several directory names are compiled
+into the binaries. This makes it easier to set up @OMNETPP@ in the first place,
+but if you rename the installation directory or move it to another location in
+the file system, the built-in paths become invalid and the correct paths have
+to be supplied via environment variables.
+
+The following environment variables are affected (in addition to `PATH`, which
+also needs to be adjusted):
+
+`LD_LIBRARY_PATH`:: This variable contains the list of additional directories
+where shared libraries are looked for. Initially, `LD_LIBRARY_PATH` is not needed
+because shared libraries are located via the 'rpath' mechanism. When you
+move the installation, you need to add the `lib/` subdirectory
+of your @OMNETPP@ installation to `LD_LIBRARY_PATH`.
+
+`OMNETPP_IMAGE_PATH`:: This variable contains the list of directories where
+Tkenv looks for icons. Set it to the `images/` subdirectory
+of your @OMNETPP@ installation.
+
+`OMNETPP_TKENV_DIR`:: This variable points to the directory that contains the
+script parts of Tkenv, which is by default the `src/tkenv/` subdirectory
+of your @OMNETPP@ installation. Normally you don't need to set this variable,
+because the Tkenv shared library contains all script files compiled in as
+string literals. However, if you compile @OMNETPP@ with the `EMBED_TCL_CODE=no`
+setting and then you move the installation, then you need to set
+`OMNETPP_TKENV_DIR`, otherwise Tkenv won't start.
+
+FIXME TODO this section applies to all operating system (except LD_LIBRARY_PATH
+is DYLD_LIBRARY_PATH on OS X). Should it go to some 'general' chapter?
+
+=== Additional packages
+
+Note that at this point, MPI, Doxygen and GraphViz have been installed as part of the prerequisites.
+
+==== Akaroa
+
+Akaroa: 
+Download from: http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/
+
+==== SystemC
+
+TODO
+

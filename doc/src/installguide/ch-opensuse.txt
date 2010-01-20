@@ -1,0 +1,21 @@
+== OpenSUSE 12
+
+=== Supported releases
+
+This chapter provides additional information for installing @OMNETPP@ on
+OpenSUSE installations. The overall installation procedure is described
+in the 'Linux' chapter.
+
+The following OpenSUSE release is covered:
+
+* OpenSUSE 12
+
+It was tested on the following architectures:
+
+* Intel 32-bit and 64-bit
+
+TODO
+
+TODO: make sure graphviz, doxygen and mpi covered
+
+
