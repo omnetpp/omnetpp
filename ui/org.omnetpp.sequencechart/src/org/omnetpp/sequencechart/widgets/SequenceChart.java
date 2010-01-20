@@ -8,7 +8,6 @@
 package org.omnetpp.sequencechart.widgets;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -28,7 +27,6 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -55,7 +53,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Transform;
@@ -66,7 +63,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RubberbandSupport;
@@ -80,6 +76,7 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
@@ -340,8 +337,8 @@ public class SequenceChart
     private void setupRubberbandSupport() {
     	rubberbandSupport = new RubberbandSupport(this, SWT.MOD1) {
 			@Override
-			public void rubberBandSelectionMade(org.eclipse.swt.graphics.Rectangle r) {
-				zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
+			public void rubberBandSelectionMade(Rectangle r) {
+				zoomToRectangle(r);
 			}
 		};
     }
@@ -362,7 +359,7 @@ public class SequenceChart
                 if (eventLogInput != null) {
                     if (eventLogInput != null) {
                         org.eclipse.swt.graphics.Rectangle r = getClientArea();
-                        setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
+                        setViewportRectangle(new Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
                         invalidateAxisSpacing();
                     }
                 }
@@ -2157,14 +2154,9 @@ public class SequenceChart
 		redraw();
 	}
 
-    /**
-     * Wraps the given GC with a configured SWTGraphics.
-     */
-    private Graphics createGraphics(GC gc) {
-        Graphics graphics = new SWTGraphics(gc);
+    private void initializeGraphics(Graphics graphics) {
         graphics.setAntialias(drawWithAntialias ? SWT.ON : SWT.OFF);
         graphics.setTextAntialias(SWT.ON);
-        return graphics;
     }
 
 
@@ -2205,9 +2197,9 @@ public class SequenceChart
 	}
 
 	@Override
-	protected void paintCachableLayer(GC gc) {
+	protected void paintCachableLayer(Graphics graphics) {
 		if (eventLogInput != null) {
-			Graphics graphics = createGraphics(gc);
+			initializeGraphics(graphics);
 			graphics.translate(0, GUTTER_HEIGHT);
 			drawSequenceChart(graphics);
 			graphics.translate(0, -GUTTER_HEIGHT);
@@ -2216,9 +2208,9 @@ public class SequenceChart
 	}
 
 	@Override
-	protected void paintNoncachableLayer(GC gc) {
+	protected void paintNoncachableLayer(Graphics graphics) {
 		if (eventLogInput != null) {
-			Graphics graphics = createGraphics(gc);
+			initializeGraphics(graphics);
 
 			graphics.translate(0, GUTTER_HEIGHT);
 			if (showAxisLabels)
@@ -2239,7 +2231,7 @@ public class SequenceChart
 	        }
 	        graphics.translate(0, -GUTTER_HEIGHT);
 
-	        rubberbandSupport.drawRubberband(gc);
+	        rubberbandSupport.drawRubberband(graphics);
 
 	        graphics.dispose();
 		}
@@ -2264,42 +2256,12 @@ public class SequenceChart
     }
 
 	/**
-	 * Measures the given string in pixels.
-	 */
-	private Point getTextExtent(Graphics graphics, String string) {
-		if (IConstants.IS_COMMERCIAL && graphics instanceof GraphicsSVG) {
-			java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
-			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(string, g);
-
-			return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
-		}
-		else if (graphics instanceof SWTGraphics) {
-			try {
-				SWTGraphics g = (SWTGraphics)graphics;
-				Class<SWTGraphics> cls = SWTGraphics.class;
-				Field field = cls.getDeclaredField("gc");
-				field.setAccessible(true);
-				GC gc = (GC)field.get(g);
-				// KLUDGE: what a hack to send the font down to GC?!
-				g.drawText("", 0, 0);
-				return gc.textExtent(string);
-			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-		else {
-		    FontMetrics fontMetrics = graphics.getFontMetrics();
-		    return new Point(fontMetrics.getAverageCharWidth() * string.length(), fontMetrics.getHeight());
-		}
-	}
-
-	/**
 	 * Draws a notification message to the center of the viewport.
 	 */
 	private void drawNotificationMessage(GC gc, String text) {
 	    String[] lines = text.split("\n");
-        Graphics graphics = createGraphics(gc);
+        Graphics graphics = new SWTGraphics(gc);
+        initializeGraphics(graphics);
 		graphics.setForegroundColor(ColorFactory.RED4);
 		graphics.setBackgroundColor(ColorFactory.WHITE);
 		graphics.setFont(font);
@@ -2309,7 +2271,7 @@ public class SequenceChart
 
         for (int i = 0; i < lines.length; i++) {
 		    String line = lines[i];
-    		Point p = getTextExtent(graphics, line);
+    		Point p = GraphicsUtils.getTextExtent(graphics, line);
     		graphics.fillString(line, x - p.x / 2, y - (lines.length / 2 - i) * p.y);
 		}
 
@@ -2326,7 +2288,7 @@ public class SequenceChart
 		BigDecimal simulationTimeRange = rightTick.subtract(leftTick);
 		String timeString = "Range: " + TimeUtils.secondsToTimeString(simulationTimeRange);
 		graphics.setFont(font);
-		int width = getTextExtent(graphics, timeString).x;
+		int width = GraphicsUtils.getTextExtent(graphics, timeString).x;
 		int x = viewportWidth - width - 3;
         int spacing = (GUTTER_HEIGHT - graphics.getFontMetrics().getHeight()) / 2;
 
@@ -2349,7 +2311,7 @@ public class SequenceChart
 		FontData fontData = font.getFontData()[0];
 		Font newFont = new Font(font.getDevice(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
 		graphics.setFont(newFont);
-		int width = getTextExtent(graphics, timeString).x;
+		int width = GraphicsUtils.getTextExtent(graphics, timeString).x;
 
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
 		graphics.fillRectangle(0, 0, width + 7, GUTTER_HEIGHT + 1);
@@ -2768,7 +2730,7 @@ public class SequenceChart
 			string = "+" + string;
 
 		graphics.setFont(font);
-		int stringWidth = getTextExtent(graphics, string).x;
+		int stringWidth = GraphicsUtils.getTextExtent(graphics, string).x;
 		int boxWidth = stringWidth + 6;
 		int boxX = mouseTick ? Math.min(getViewportWidth() - boxWidth, x) : x;
 

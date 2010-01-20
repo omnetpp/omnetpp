@@ -8,6 +8,8 @@
 package org.omnetpp.common.canvas;
 
 import org.eclipse.draw2d.Cursors;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -15,8 +17,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.omnetpp.common.ui.CustomCursors;
@@ -81,7 +81,8 @@ public class ZoomableCanvasMouseSupport {
 		this.canvas = canvas;
 		setupMouseHandling();
 		rubberBand = new RubberbandSupport(canvas, 0) {
-			public void rubberBandSelectionMade(Rectangle r) {
+			@Override
+            public void rubberBandSelectionMade(Rectangle r) {
 				canvas.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
 			}
 		};
@@ -229,7 +230,7 @@ public class ZoomableCanvasMouseSupport {
 		});
 	}
 
-	public void drawRubberband(GC gc) {
-		rubberBand.drawRubberband(gc);
+	public void drawRubberband(Graphics graphics) {
+		rubberBand.drawRubberband(graphics);
 	}
 }

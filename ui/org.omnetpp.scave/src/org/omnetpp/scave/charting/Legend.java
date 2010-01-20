@@ -11,15 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Region;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
@@ -46,29 +44,29 @@ public class Legend implements ILegend {
 			this.drawLine = drawLine;
 		}
 
-		public void calculateSize(GC gc) {
-			Point size = gc.textExtent(text);
+		public void calculateSize(Graphics graphics) {
+			Point size = GraphicsUtils.getTextExtent(graphics, text);
 			width = size.x + 17; // place for symbol
 			height = size.y;
 		}
 
-		public void draw(GC gc, int x, int y) {
-			gc.setAntialias(SWT.ON);
-			gc.setForeground(color);
-			gc.setBackground(color);
+		public void draw(Graphics graphics, int x, int y) {
+			graphics.setAntialias(SWT.ON);
+			graphics.setForegroundColor(color);
+			graphics.setBackgroundColor(color);
 
 			// draw line
 			if (drawLine) {
-				gc.setLineWidth(1);
-				gc.setLineStyle(SWT.LINE_SOLID);
-				gc.drawLine(x+1, y+height/2, x+15, y+height/2);
+				graphics.setLineWidth(1);
+				graphics.setLineStyle(SWT.LINE_SOLID);
+				graphics.drawLine(x+1, y+height/2, x+15, y+height/2);
 			}
 			// draw symbol
 			if (symbol != null) {
 				int size = symbol.getSizeHint();
 				try {
 					symbol.setSizeHint(6);
-					symbol.drawSymbol(gc, x+8, y+height/2);
+					symbol.drawSymbol(graphics, x+8, y+height/2);
 				}
 				finally {
 					symbol.setSizeHint(size);
@@ -76,9 +74,9 @@ public class Legend implements ILegend {
 			}
 
 			// draw text
-			if (font != null) gc.setFont(font);
-			gc.setForeground(ColorFactory.BLACK);
-			gc.drawText(text, x + 17, y, true);
+			if (font != null) graphics.setFont(font);
+			graphics.setForegroundColor(ColorFactory.BLACK);
+			graphics.drawText(text, x + 17, y);
 		}
 	}
 
@@ -165,18 +163,18 @@ public class Legend implements ILegend {
 	 * Returns the remaining space.
 	 * @param pass TODO
 	 */
-	public Rectangle layout(GC gc, Rectangle parent, int pass) {
+	public Rectangle layout(Graphics graphics, Rectangle parent, int pass) {
 		if (pass == 1) {
 			if (!visible)
 				return parent;
 
 			//Debug.println("Parent rect: " + parent);
 
-			gc.setFont(font);
+			graphics.setFont(font);
 
 			// measure items
 			for (int i = 0; i < items.size(); ++i)
-				items.get(i).calculateSize(gc);
+				items.get(i).calculateSize(graphics);
 
 			// position items and calculate size
 			boolean horizontal = position == LegendPosition.Above || position == LegendPosition.Below ||
@@ -395,10 +393,9 @@ public class Legend implements ILegend {
 	/**
 	 * Draws the legend to the canvas.
 	 */
-	public void draw(GC gc) {
+	public void draw(Graphics graphics) {
 		if (!visible)
 			return;
-		Graphics graphics = new SWTGraphics(gc);
 		graphics.pushState();
 		try {
 			// draw background and border
@@ -415,7 +412,7 @@ public class Legend implements ILegend {
 			int count = visibleItemCount == items.size() ? visibleItemCount : visibleItemCount - 1;
 			for (int i = 0; i < count; i++) {
 				Item item = items.get(i);
-				item.draw(gc, left+item.x, top + item.y);
+				item.draw(graphics, left+item.x, top + item.y);
 			}
 			// draw "... and X more" text in place of the last visible item
 			if (visibleItemCount < items.size()) {
@@ -429,7 +426,6 @@ public class Legend implements ILegend {
 			}
 		}
 		finally {
-			gc.setClipping((Region)null); // popState() does not restore clipping
 			graphics.popState();
 			graphics.dispose();
 		}

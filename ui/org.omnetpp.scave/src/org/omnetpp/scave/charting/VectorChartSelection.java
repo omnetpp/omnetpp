@@ -10,11 +10,12 @@
  */
 package org.omnetpp.scave.charting;
 
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.VectorChart.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
@@ -86,19 +87,19 @@ public class VectorChartSelection implements IChartSelection {
 		return y;
 	}
 
-	protected void draw(GC gc, ICoordsMapping coordsMapping) {
+	protected void draw(Graphics graphics, ICoordsMapping coordsMapping) {
 		LineProperties props = this.vectorChart.getLineProperties(series);
 		if (props != null && props.getDisplayLine()) {
 			int xx = coordsMapping.toCanvasX(this.vectorChart.transformX(x));
 			int yy = coordsMapping.toCanvasY(this.vectorChart.transformY(y));
-			Rectangle clipping = gc.getClipping();
+			Rectangle clipping = GraphicsUtils.getClip(graphics);
 			org.eclipse.draw2d.geometry.Rectangle plotArea = vectorChart.getPlotRectangle();
-			gc.setClipping(clipping.intersection(new Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height)));
-			gc.setForeground(ColorFactory.RED);
-			gc.setLineWidth(1);
-			gc.drawPoint(xx+5, yy);
-			gc.drawOval(xx-5, yy-5, 10, 10);
-			gc.setClipping(clipping);
+			graphics.setClip(clipping.intersect(new Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height)));
+			graphics.setForegroundColor(ColorFactory.RED);
+			graphics.setLineWidth(1);
+			graphics.drawPoint(xx+5, yy);
+			graphics.drawOval(xx-5, yy-5, 10, 10);
+			graphics.setClip(clipping);
 		}
 	}
 }

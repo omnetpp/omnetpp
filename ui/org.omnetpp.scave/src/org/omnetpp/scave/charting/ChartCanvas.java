@@ -11,7 +11,6 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_ANTIAL
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_CANVAS_CACHING;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_FOREGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_INSETS_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LEGEND_ANCHOR;
@@ -35,6 +34,8 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IAction;
@@ -46,9 +47,9 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
@@ -57,10 +58,12 @@ import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.dataset.IDataset;
+import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
@@ -116,7 +119,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
 
 		addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
+			@Override
+            public void controlResized(ControlEvent e) {
 				layoutChart();
 			}
 		});
@@ -167,15 +171,17 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 
 		layoutDepth++;
 		if (debug) Debug.println("layoutChart(), level "+layoutDepth);
-		GC gc = new GC(Display.getCurrent());
+        Image image = new Image(getDisplay(), 1, 1);
+        GC gc = new GC(image);
+		Graphics graphics = new SWTGraphics(gc);
 		try {
 			// preserve zoomed-out state while resizing
 			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
 			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
 
 			for (int pass = 1; pass <= 2; ++pass) {
-				Rectangle plotArea = doLayoutChart(gc, pass);
-				setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+				Rectangle plotArea = doLayoutChart(graphics, pass);
+				setViewportRectangle(plotArea);
 
 				if (shouldZoomOutX)
 					zoomToFitX();
@@ -189,7 +195,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		finally {
 			layoutDepth--;
+			graphics.dispose();
 			gc.dispose();
+			image.dispose();
 		}
 		// may trigger another layoutChart()
 		updateZoomedArea();
@@ -224,7 +232,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area.
 	 * @param pass TODO
 	 */
-	abstract protected Rectangle doLayoutChart(GC gc, int pass);
+	abstract protected Rectangle doLayoutChart(Graphics graphics, int pass);
 
 	/*-------------------------------------------------------------------------------------------
 	 *                                      Drawing
@@ -232,7 +240,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	private ICoordsMapping coordsMapping;
 
 	@Override
-	protected void paintCachableLayer(GC gc) {
+	protected void paintCachableLayer(Graphics graphics) {
 		if (debug) {
 			Debug.println("paintCachableLayer()");
 			Debug.println(String.format("area=%f, %f, %f, %f, zoom: %f, %f", getMinX(), getMaxX(), getMinY(), getMaxY(), getZoomX(), getZoomY()));
@@ -242,36 +250,36 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			return;
 
 		coordsMapping = getOptimizedCoordinateMapper();
-		resetDrawingStylesAndColors(gc);
-		doPaintCachableLayer(gc, coordsMapping);
+		resetDrawingStylesAndColors(graphics);
+		doPaintCachableLayer(graphics, coordsMapping);
 	}
 
 	@Override
-	protected void paintNoncachableLayer(GC gc) {
+	protected void paintNoncachableLayer(Graphics graphics) {
 		if (debug) Debug.println("paintNoncachableLayer()");
 		if (getClientArea().isEmpty())
 			return;
 
 		if (coordsMapping == null)
 			coordsMapping = getOptimizedCoordinateMapper();
-		resetDrawingStylesAndColors(gc);
+		resetDrawingStylesAndColors(graphics);
 
-		doPaintNoncachableLayer(gc, coordsMapping);
+		doPaintNoncachableLayer(graphics, coordsMapping);
 
 		if (coordsMapping.getNumCoordinateOverflows() > 0)
-			displayCoordinatesOverflowMessage(gc);
+			displayCoordinatesOverflowMessage(graphics);
 
 		coordsMapping = null;
 	}
 
-	abstract protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping);
-	abstract protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping);
+	abstract protected void doPaintCachableLayer(Graphics graphics, ICoordsMapping coordsMapping);
+	abstract protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping);
 
-	private void displayCoordinatesOverflowMessage(GC gc) {
-		resetDrawingStylesAndColors(gc);
-		gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
-				    "may not be accurate. Please decrease zoom level.",
-				    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
+	private void displayCoordinatesOverflowMessage(Graphics graphics) {
+		resetDrawingStylesAndColors(graphics);
+		graphics.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
+		                  "may not be accurate. Please decrease zoom level.",
+		                  getViewportRectangle().x+10, getViewportRectangle().y+10);
 	}
 
 	/**
@@ -537,25 +545,28 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 
 	/**
-	 * Resets all GC settings except clipping and transform.
+	 * Resets all graphics settings except clipping and transform.
 	 */
-	public void resetDrawingStylesAndColors(GC gc) {
-		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
-		gc.setAlpha(255);
-		gc.setBackground(backgroundColor);
-		gc.setBackgroundPattern(null);
-		//gc.setFillRule();
-		gc.setFont(null);
-		gc.setForeground(DEFAULT_FOREGROUND_COLOR);
-		gc.setForegroundPattern(null);
-		gc.setInterpolation(SWT.DEFAULT);
-		//gc.setLineCap();
-		gc.setLineDash(null);
-		//gc.setLineJoin();
-		gc.setLineStyle(SWT.LINE_SOLID);
-		gc.setLineWidth(1);
-		//gc.setXORMode(false);
-		gc.setTextAntialias(SWT.DEFAULT);
+	public void resetDrawingStylesAndColors(Graphics graphics) {
+		graphics.setAntialias(antialias ? SWT.ON : SWT.OFF);
+		graphics.setAlpha(255);
+	    graphics.setBackgroundColor(backgroundColor);
+        graphics.setForegroundColor(ChartDefaults.DEFAULT_FOREGROUND_COLOR);
+        graphics.setLineWidth(1);
+        graphics.setLineStyle(SWT.LINE_SOLID);
+        //graphics.setFillRule();
+        //graphics.setLineCap();
+        //graphics.setLineJoin();
+        //graphics.setXORMode(false);
+        //graphics.setFont(null);
+        // TODO: these operations are not supported by SVGGraphics yet
+        if (!GraphicsUtils.isSVGGraphics(graphics)) {
+            graphics.setBackgroundPattern(null);
+            graphics.setForegroundPattern(null);
+            graphics.setInterpolation(SWT.DEFAULT);
+            graphics.setLineDash((int[])null);
+            graphics.setTextAntialias(SWT.DEFAULT);
+        }
 	}
 
 	protected void chartChanged() {
@@ -563,30 +574,30 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		clearCanvasCacheAndRedraw();
 	}
 
-	protected void paintInsets(GC gc) {
+	protected void paintInsets(Graphics graphics) {
 		// draw insets border
 		Insets insets = getInsets();
 		Rectangle canvasRect = new Rectangle(getClientArea());
-		gc.setForeground(insetsBackgroundColor);
-		gc.setBackground(insetsBackgroundColor);
-		gc.fillRectangle(0, 0, canvasRect.width, insets.top); // top
-		gc.fillRectangle(0, canvasRect.bottom()-insets.bottom, canvasRect.width, insets.bottom); // bottom
-		gc.fillRectangle(0, 0, insets.left, canvasRect.height); // left
-		gc.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
-		gc.setForeground(insetsLineColor);
-		gc.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
+		graphics.setForegroundColor(insetsBackgroundColor);
+		graphics.setBackgroundColor(insetsBackgroundColor);
+		graphics.fillRectangle(0, 0, canvasRect.width, insets.top); // top
+		graphics.fillRectangle(0, canvasRect.bottom()-insets.bottom, canvasRect.width, insets.bottom); // bottom
+		graphics.fillRectangle(0, 0, insets.left, canvasRect.height); // left
+		graphics.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
+		graphics.setForegroundColor(insetsLineColor);
+		graphics.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
 	}
 
-	protected void drawStatusText(GC gc) {
+	protected void drawStatusText(Graphics graphics) {
 		if (getStatusText() != null) {
-			resetDrawingStylesAndColors(gc);
-			org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
-			gc.drawText(getStatusText(), rect.x+10, rect.y+10);
+			resetDrawingStylesAndColors(graphics);
+			Rectangle rect = getViewportRectangle();
+			graphics.drawText(getStatusText(), rect.x+10, rect.y+10);
 		}
 	}
 
-	protected void drawRubberband(GC gc) {
-		mouseSupport.drawRubberband(gc);
+	protected void drawRubberband(Graphics graphics) {
+		mouseSupport.drawRubberband(graphics);
 	}
 
 	protected String formatValue(double value, double halfInterval) {

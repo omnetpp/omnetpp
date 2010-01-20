@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.charting.plotter;
 
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.draw2d.Graphics;
 
 /**
  * Draws a triangle symbol.
@@ -36,18 +36,18 @@ public class TriangleSymbol extends ChartSymbol {
 		poly = new int[] {-halfside, (height-off), 0, -off, halfside, (height-off)};
 	}
 
-	public void drawSymbol(GC gc, int x, int y) {
+	public void drawSymbol(Graphics graphics, int x, int y) {
 		if (sizeHint<=0) {
 			// nothing
 		}
 		else if (sizeHint==1) {
-			gc.drawPoint(x, y);
+			graphics.drawPoint(x, y);
 		}
 		else if (sizeHint==2 || sizeHint==3) {
-			gc.drawPoint(x, y);
-			gc.drawPoint(x-1, y);
-			gc.drawPoint(x+1, y);
-			gc.drawPoint(x, y-1);
+			graphics.drawPoint(x, y);
+			graphics.drawPoint(x-1, y);
+			graphics.drawPoint(x+1, y);
+			graphics.drawPoint(x, y-1);
 		}
 		else {
 			// manual translation; XXX try gc.setTransform(), maybe it's faster?
@@ -57,8 +57,8 @@ public class TriangleSymbol extends ChartSymbol {
 			work[3] = y + poly[3];
 			work[4] = x + poly[4];
 			work[5] = y + poly[5];
-			gc.setBackground(gc.getForeground());
-			gc.fillPolygon(work);  //XXX make filled/unfilled version
+			graphics.setBackgroundColor(graphics.getForegroundColor());
+			graphics.fillPolygon(work);  //XXX make filled/unfilled version
 		}
 	}
 }

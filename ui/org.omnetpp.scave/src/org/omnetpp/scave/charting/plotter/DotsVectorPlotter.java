@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.charting.plotter;
 
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.draw2d.Graphics;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.ILinePlot;
 
@@ -18,7 +18,7 @@ import org.omnetpp.scave.charting.ILinePlot;
  */
 public class DotsVectorPlotter extends VectorPlotter {
 
-	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
-		plotSymbols(plot, series, gc, mapping, symbol);
+	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
+		plotSymbols(plot, series, graphics, mapping, symbol);
 	}
 }

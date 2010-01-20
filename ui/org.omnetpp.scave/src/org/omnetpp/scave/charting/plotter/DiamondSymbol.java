@@ -7,7 +7,8 @@
 
 package org.omnetpp.scave.charting.plotter;
 
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.draw2d.Graphics;
+
 
 /**
  * Draws a diamond symbol.
@@ -37,19 +38,19 @@ public class DiamondSymbol extends ChartSymbol {
 		//poly = new int[] {-d,0,0,-d,d,0,0,d}; XXX this will be asymmetric too, but WHY?
 	}
 
-	public void drawSymbol(GC gc, int x, int y) {
+	public void drawSymbol(Graphics graphics, int x, int y) {
 		if (size<=0) {
 			// nothing
 		}
 		else if (size==1) {
-			gc.drawPoint(x, y);
+			graphics.drawPoint(x, y);
 		}
 		else if (size==2 || size==3) {
-			gc.drawPoint(x, y);
-			gc.drawPoint(x-1, y);
-			gc.drawPoint(x+1, y);
-			gc.drawPoint(x, y-1);
-			gc.drawPoint(x, y+1);
+			graphics.drawPoint(x, y);
+			graphics.drawPoint(x-1, y);
+			graphics.drawPoint(x+1, y);
+			graphics.drawPoint(x, y-1);
+			graphics.drawPoint(x, y+1);
 		}
 		else {
 			// manual translation; XXX try gc.setTransform(), maybe it's faster?
@@ -61,8 +62,8 @@ public class DiamondSymbol extends ChartSymbol {
 			work[5] = y + poly[5];
 			work[6] = x + poly[6];
 			work[7] = y + poly[7];
-			gc.setBackground(gc.getForeground());
-			gc.fillPolygon(work); //XXX make filled/unfilled version
+			graphics.setBackgroundColor(graphics.getForegroundColor());
+			graphics.fillPolygon(work); //XXX make filled/unfilled version
 		}
 	}
 }

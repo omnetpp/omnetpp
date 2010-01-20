@@ -7,12 +7,15 @@
 
 package org.omnetpp.scave.charting;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 
 
@@ -57,11 +60,11 @@ public class Title {
 		this.font = font;
 	}
 
-	public Rectangle layout(GC gc, Rectangle parent) {
+	public Rectangle layout(Graphics graphics, Rectangle parent) {
 		if (!visible || text == null || text.length() == 0)
 			return parent;
 
-		TextLayout textLayout = new TextLayout(gc.getDevice());
+		TextLayout textLayout = new TextLayout(Display.getDefault());
 		textLayout.setFont(font);
 		textLayout.setText(text);
 		textLayout.setWidth(parent.width);
@@ -74,17 +77,22 @@ public class Title {
 				parent.width, Math.max(parent.height - bounds.height, 0));
 	}
 
-	public void draw(GC gc) {
+	public void draw(Graphics graphics) {
 		if (!visible || text == null || text.length() == 0 || bounds == null)
 			return;
 
-		TextLayout textLayout = new TextLayout(gc.getDevice());
+		TextLayout textLayout = new TextLayout(Display.getDefault());
 		textLayout.setFont(font);
 		textLayout.setText(text);
 		textLayout.setWidth(bounds.width);
 		textLayout.setAlignment(SWT.CENTER);
-		gc.setForeground(color);
+		graphics.setForegroundColor(color);
+        Image image = new Image(Display.getDefault(), bounds.x, bounds.y);
+        GC gc = new GC(image);
 		textLayout.draw(gc, bounds.x, bounds.y);
-		textLayout.dispose();
+		graphics.drawImage(image, 0, 0);
+        textLayout.dispose();
+		gc.dispose();
+		image.dispose();
 	}
 }

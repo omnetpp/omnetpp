@@ -82,6 +82,7 @@ public class ChartMenuManager extends MenuManager {
 			add(new EditAction("Legend...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_LEGEND)));
 			add(new Separator());
 			add(editorContributor.getCopyChartToClipboardAction());
+			add(editorContributor.getExportToSVGAction());
 			add(new Separator());
 			if (chart instanceof LineChart || chart instanceof ScatterChart) {
 				add(createProcessingSubmenu(true));  // "Apply" submenu

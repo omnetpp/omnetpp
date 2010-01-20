@@ -11,8 +11,8 @@ import static org.omnetpp.common.canvas.ICoordsMapping.NAN_PIX;
 
 import java.util.HashSet;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -24,7 +24,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  */
 public class LinesVectorPlotter extends VectorPlotter {
 
-	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
 		IXYDataset dataset = plot.getDataset();
 		int n = dataset.getItemCount(series);
 		if (n==0)
@@ -34,11 +34,11 @@ public class LinesVectorPlotter extends VectorPlotter {
 		// from the base class, but draw lines and symbols in a single loop instead
 
 		// dataset index range to iterate over
-		int[] range = indexRange(plot, series, gc, mapping);
+		int[] range = indexRange(plot, series, graphics, mapping);
 		int first = range[0], last = range[1];
 
 		// chart y range in canvas coordinates
-		int[] yrange = canvasYRange(gc, symbol);
+		int[] yrange = canvasYRange(graphics, symbol);
 		int top = yrange[0], bottom = yrange[1];  // top < bottom
 
 
@@ -52,7 +52,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int minY = prevY;
 
 		// turn off antialias for vertical lines
-		int origAntialias = gc.getAntialias();
+		int origAntialias = graphics.getAntialias();
 
 		// used for preventing painting the same symbol on the same pixels over and over.
 		HashSet<Integer> yset = new HashSet<Integer>();
@@ -70,19 +70,19 @@ public class LinesVectorPlotter extends VectorPlotter {
 			if (y != NAN_PIX) {
 				if (x != prevX) {
 					if (prevY != NAN_PIX)
-						gc.drawLine(prevX, prevY, x, y);
+						graphics.drawLine(prevX, prevY, x, y);
 					minY = maxY = y;
 				}
 				else if (y < minY) {
-					gc.setAntialias(SWT.OFF);
-					gc.drawLine(x, minY, x, y);
-					gc.setAntialias(origAntialias);
+					graphics.setAntialias(SWT.OFF);
+					graphics.drawLine(x, minY, x, y);
+					graphics.setAntialias(origAntialias);
 					minY = y;
 				}
 				else if (y > maxY) {
-					gc.setAntialias(SWT.OFF);
-					gc.drawLine(x, maxY, x, y);
-					gc.setAntialias(origAntialias);
+					graphics.setAntialias(SWT.OFF);
+					graphics.drawLine(x, maxY, x, y);
+					graphics.setAntialias(origAntialias);
 					maxY = y;
 				}
 				prevX = x;
@@ -97,11 +97,11 @@ public class LinesVectorPlotter extends VectorPlotter {
 			if (symbol != null && top <= y && y <= bottom) {
 				if (prevSymbolX != x) {
 					yset.clear();
-					symbol.drawSymbol(gc, x, y);
+					symbol.drawSymbol(graphics, x, y);
 					yset.add(y);
 				}
 				else if (!yset.contains(y)) {
-					symbol.drawSymbol(gc, x, y);
+					symbol.drawSymbol(graphics, x, y);
 					yset.add(y);
 				}
 				else {

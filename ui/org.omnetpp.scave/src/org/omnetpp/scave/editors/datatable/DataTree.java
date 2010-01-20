@@ -88,10 +88,10 @@ public class DataTree extends Tree implements IDataControl {
 
     @Override
     public void dispose() {
+        refreshJob.cancel();
         super.dispose();
         if (!manager.isDisposed())
             manager.removeChangeListener(resultFilesChangeListener);
-        refreshJob.cancel();
     }
 
     public ResultFileManagerTreeContentProvider getContentProvider() {
