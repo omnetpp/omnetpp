@@ -142,6 +142,7 @@ public class LinearAxis {
 		Rectangle rect = GraphicsUtils.getClip(graphics);
 		ITicks ticks = createTicks(rect, mapping);
 		if (ticks != null) {
+		    graphics.pushState();
 			graphics.setLineStyle(Graphics.LINE_DOT);
 			graphics.setForegroundColor(DEFAULT_GRID_COLOR);
 			for (BigDecimal tick : ticks) {
@@ -160,6 +161,7 @@ public class LinearAxis {
 					}
 				}
 			}
+			graphics.popState();
 		}
 	}
 
