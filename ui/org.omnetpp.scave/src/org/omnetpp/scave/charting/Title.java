@@ -15,6 +15,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 
@@ -26,7 +27,7 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
  */
 public class Title {
 
-    private boolean visible;
+    private boolean visible = true;
 	private String text;
 	private Font font;
 	private Color color = ChartDefaults.DEFAULT_TITLE_COLOR;
@@ -82,13 +83,14 @@ public class Title {
 			return;
 
 		TextLayout textLayout = new TextLayout(Display.getDefault());
-		textLayout.setFont(font);
 		textLayout.setText(text);
 		textLayout.setWidth(bounds.width);
 		textLayout.setAlignment(SWT.CENTER);
-		graphics.setForegroundColor(color);
-        Image image = new Image(Display.getDefault(), bounds.x, bounds.y);
+		textLayout.setStyle(new TextStyle(font, color, null), 0, Integer.MAX_VALUE);
+        Image image = new Image(Display.getDefault(), bounds.width, bounds.height);
         GC gc = new GC(image);
+        gc.setBackground(ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR);
+        gc.fillRectangle(0, 0, bounds.width, bounds.height);
 		textLayout.draw(gc, bounds.x, bounds.y);
 		graphics.drawImage(image, 0, 0);
         textLayout.dispose();

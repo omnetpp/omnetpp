@@ -399,10 +399,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 
 	private void updateTitle() {
-		String newTitle = DEFAULT_TITLE;
+        String newTitle = StringUtils.defaultString(titleText, DEFAULT_TITLE);
 		if (dataset != null)
-			newTitle = StringUtils.defaultString(dataset.getTitle(titleText), DEFAULT_TITLE);
-
+			newTitle = StringUtils.defaultString(dataset.getTitle(titleText), newTitle);
 		if (!ObjectUtils.equals(newTitle, title.getText())) {
 			title.setText(newTitle);
 			chartChanged();
