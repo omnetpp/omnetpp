@@ -6,3 +6,4 @@ emacs/         syntax highlight for GNU Emacs for OMNeT++ 3.x
 octave/        using Octave with OMNeT++ 3.x
 med/	       MED editor syntax higlight files for OMNeT++ 3.x
 gtk/           gtkrc file to make eclipse more compact (and usable) on GTK
+akaroa/        patch to compile akaroa-2.7.6 with gcc 4.4

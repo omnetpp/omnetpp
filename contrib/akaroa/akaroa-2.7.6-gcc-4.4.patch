@@ -1,0 +1,87 @@
+diff -cr akaroa-2.7.6/src/include/akaroa/engine/ak_observation.C akaroa-2.7.6-gcc4.4/src/include/akaroa/engine/ak_observation.C
+*** akaroa-2.7.6/src/include/akaroa/engine/ak_observation.C	2004-05-20 06:18:43.000000000 +0200
+--- akaroa-2.7.6-gcc4.4/src/include/akaroa/engine/ak_observation.C	2010-01-21 19:24:44.000000000 +0100
+***************
+*** 5,11 ****
+  
+  #include <stdio.h>
+  #include <stdlib.h>
+! #include <iostream.h>
+  #include "akaroa.H"
+  #include "debug.H"
+  #include "environment.H"
+--- 5,11 ----
+  
+  #include <stdio.h>
+  #include <stdlib.h>
+! #include <iostream>
+  #include "akaroa.H"
+  #include "debug.H"
+  #include "environment.H"
+diff -cr akaroa-2.7.6/src/include/akaroa/engine/ak_stream_reporter.C akaroa-2.7.6-gcc4.4/src/include/akaroa/engine/ak_stream_reporter.C
+*** akaroa-2.7.6/src/include/akaroa/engine/ak_stream_reporter.C	2002-06-05 06:31:57.000000000 +0200
+--- akaroa-2.7.6-gcc4.4/src/include/akaroa/engine/ak_stream_reporter.C	2010-01-21 19:39:27.000000000 +0100
+***************
+*** 3,9 ****
+   */
+  
+  #include <stdio.h>
+! #include <ostream.h>
+  #include "ak_stream_reporter.H"
+  #include "akaroa/result.H"
+  
+--- 3,9 ----
+   */
+  
+  #include <stdio.h>
+! #include <ostream>
+  #include "ak_stream_reporter.H"
+  #include "akaroa/result.H"
+  
+diff -cr akaroa-2.7.6/src/include/akaroa/engine/ak_stream_reporter.H akaroa-2.7.6-gcc4.4/src/include/akaroa/engine/ak_stream_reporter.H
+*** akaroa-2.7.6/src/include/akaroa/engine/ak_stream_reporter.H	2006-08-25 05:20:19.000000000 +0200
+--- akaroa-2.7.6-gcc4.4/src/include/akaroa/engine/ak_stream_reporter.H	2010-01-21 20:43:24.000000000 +0100
+***************
+*** 12,17 ****
+--- 12,19 ----
+  
+  #include "ak_reporter.H"
+  
++ using namespace std;
++ 
+  class AkStreamReporter: public AkReporter {
+  public:
+    // Construct an instance connected to the given stream
+diff -cr akaroa-2.7.6/src/Makefile.main akaroa-2.7.6-gcc4.4/src/Makefile.main
+*** akaroa-2.7.6/src/Makefile.main	2005-08-08 06:27:10.000000000 +0200
+--- akaroa-2.7.6-gcc4.4/src/Makefile.main	2010-01-21 20:42:50.000000000 +0100
+***************
+*** 354,360 ****
+  	@echo Linking $@
+  	@rm -f $@
+  	@ar rc $@ $(AKLIB_OBJ) 2>&1 | sed -e '/truncated/d' 1>&2
+- 	@$(RANLIB) $@
+  
+  #---------------------------------------------------------------------
+  #
+--- 354,359 ----
+diff -cr akaroa-2.7.6/src/test/mm1term.C akaroa-2.7.6-gcc4.4/src/test/mm1term.C
+*** akaroa-2.7.6/src/test/mm1term.C	2003-04-11 03:26:36.000000000 +0200
+--- akaroa-2.7.6-gcc4.4/src/test/mm1term.C	2010-01-21 20:06:29.000000000 +0100
+***************
+*** 10,16 ****
+  
+  #include <stdlib.h>
+  #include <unistd.h>
+! #include <iostream.h>
+  #include "args.H"
+  #include "akaroa.H"
+  #include "akaroa/distributions.H"
+--- 10,16 ----
+  
+  #include <stdlib.h>
+  #include <unistd.h>
+! #include <iostream>
+  #include "args.H"
+  #include "akaroa.H"
+  #include "akaroa/distributions.H"

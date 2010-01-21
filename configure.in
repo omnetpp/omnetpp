@@ -1032,14 +1032,17 @@ CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
-OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS_RELEASE $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
-if test $akaroa_ok = no; then
-    akaroalibs="-lakaroa -lfl"
-    OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS_RELEASE $AKAROA_CFLAGS, $akaroalibs, akaroa_ok, AKAROA_LIBS="$akaroalibs")
+if test -z "$AKAROA_CFLAGS"; then
+    AKAROA_CFLAGS="-I/usr/local/akaroa/include"
 fi
+if test -z "$AKAROA_LIBS"; then
+    AKAROA_LIBS="-L/usr/local/akaroa/lib -lakaroa -lfl"
+fi
+
+OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS_RELEASE $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
 if test $akaroa_ok = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_AKAROA"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_AKAROA"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG $AKAROA_CFLAGS -DWITH_AKAROA"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE $AKAROA_CFLAGS -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
 else
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"

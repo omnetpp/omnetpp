@@ -262,10 +262,36 @@ Note that at this point, MPI, Doxygen and GraphViz have been installed as part o
 
 ==== Akaroa
 
-Akaroa: 
-Download from: http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/
+Linux distributions do not contain the Akaroa package. It must be downloaded, compiled and installed
+manually before installing @OMNETPP@;
 
+* Download Akaroa 2.7.6 from: 
+  'http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/'
+* Extract into a temporary directory
+
+  $ tar xfz akaroa-2.7.6.tar.gz
+  
+* Unfortunately this version does not compile properly with gcc-4.4. A patch is available 
+  in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change 
+  to the Akaroa root directory and apply it to the sources.
+
+  $ cd akaroa-2.7.6
+  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch 
+  
+* Configure, build and install the Akaroa library. By default it will be installed into the 
+  `/usr/local/akaroa` directory.
+  
+  $ ./configure
+  $ make
+  $ sudo make install
+  
+* Go to the @OMNETPP@ directory and (re)run the `configure` script. Akaroa will be
+  automatically detected if you installed it to the default location.
+
+ifdef::OMNEST[]
 ==== SystemC
 
 TODO
+endif::OMNEST[]
+
 
