@@ -75,7 +75,7 @@ pdf: $(ALLTEX) $(DOTPICS:.dot=.svg) $(PDFPICS) figures/*.png
 	makeindex tmp/usman
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
-	copy usman.pdf ..\..\manual\manual.pdf
+	copy usman.pdf ..\..\manual\Manual.pdf
 
 .svg.pdf:
 	$(INKSCAPE) $(CWD)\$< -A $(CWD)\$@

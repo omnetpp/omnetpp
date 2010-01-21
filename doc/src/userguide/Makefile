@@ -41,12 +41,12 @@ pdf:  chart-properties.xml processing-operations.xml
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf userguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	cp userguide.pdf ../..
+	cp userguide.pdf ../../UserGuide.pdf
 
 clean:
 	rm -f userguide.pdf userguide.html tmp1.xml tmp.xml
 	rm -rf eclipse
-	rm -rf ../../userguide
+	rm -rf ../../userguide ../../UserGuide.pdf
 
 # the following target should be called manually because it depends on binary file (scavetool) which is
 # created only later durnig the run of the automatic build script.

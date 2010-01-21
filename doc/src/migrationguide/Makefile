@@ -34,10 +34,10 @@ pdf:
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf migration.pdf
 	rm -f tmp.fo tmp.xml tmp0.xml
 	rm -f custom-fo-docbook-tmp.xsl
-	cp migration.pdf ../..
+	cp migration.pdf ../../Migration.pdf
 
 clean:
 	rm -rf migration.pdf migration.html
 	rm -rf eclipse
-	rm -rf ../../migration
+	rm -rf ../../migration ../../Migration.pdf
 

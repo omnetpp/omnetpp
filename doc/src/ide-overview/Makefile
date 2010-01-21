@@ -35,7 +35,7 @@ pdf:
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf ide-overview.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	cp ide-overview.pdf ../..
+	cp ide-overview.pdf ../../IDE-Overview.pdf
 
 clean:
 	rm -f ide-overview.pdf ide-overview.html tmp1.xml tmp.xml
