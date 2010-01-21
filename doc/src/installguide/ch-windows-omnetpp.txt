@@ -183,16 +183,16 @@ After installing DeinoMPI, adjust the `MPI_DIR` setting in @OMNETPP@'s
 NOTE: In general, if you would like to run parallel simulations, we recommend
 that you use Linux, OS X, or another unix-like platform.
 
-TODO: its libs are compiled with MSVC. Can they be used with MinGW?
-
 ==== Akaroa
 
 TODO : how to do it
 
 Download from: http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/
 
+ifdef::OMNEST[]
 ==== SystemC
 
 TODO
+endif::OMNEST[]
 
 

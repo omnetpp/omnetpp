@@ -4,16 +4,16 @@ The OMNeT++ IDE
 
 Overview
 --------
-OMNeT++ 4.0 comes with a powerful integrated environment, based on Eclipse.
+OMNeT++ 4.1 comes with a powerful integrated environment, based on Eclipse.
 To get a quick overview of the IDE features, watch the screencast at:
 
     http://www.omnest.com/webdemo/ide
 
 or read
 
-    doc/ide-overview.pdf
+    doc/IDE-Overview.pdf
 
-in your OMNeT++ 4.0 installation.
+in your OMNeT++ 4.1 installation.
 
 
 Requirements and compilation
@@ -29,7 +29,7 @@ under src/.
 The IDE is supported on the following platforms:
  - Windows 32bit
  - Linux 32/64bit (i386)
- - Mac OS X 10.4/5 (i386/ppc)
+ - Mac OS X 10.5/6 (i386)
 
 
 Note: while the IDE does not need to be built, you'll still need "./configure"

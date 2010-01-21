@@ -287,7 +287,10 @@ Enter into a terminal:
 
 TODO
 
+ifdef::OMNEST[]
 ==== SystemC
 
 TODO
+endif::OMNEST[]
+
 
