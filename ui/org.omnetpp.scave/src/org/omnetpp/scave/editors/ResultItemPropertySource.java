@@ -9,11 +9,8 @@ import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.HistogramResult;
@@ -30,19 +27,6 @@ import org.omnetpp.scave.model2.ResultItemRef;
  */
 //FIXME: what if "id" becomes invalid? do we need a lock to access ResultFileManager?
 public class ResultItemPropertySource implements IPropertySource {
-
-    static class ReadonlyPropertyDescriptor extends TextPropertyDescriptor implements INonsortablePropertyDescriptor {
-        ReadonlyPropertyDescriptor(Object id, String displayName, String category) {
-            super(id, displayName);
-            setCategory(category);
-        }
-
-        @Override
-        public CellEditor createPropertyEditor(Composite parent) {
-            return null;
-        }
-    }
-
     // display labels as well as property IDs
     public static final String PROP_DIRECTORY = "Folder";
     public static final String PROP_FILE = "File";
