@@ -7,7 +7,7 @@
     <title>Introduction</title>
     <para>
       This chapter describes the Sequence Chart and the Eventlog Table tools. Both of them
-      display an eventlog file recorded by the &Omnetpp; 4.0 simulation kernel.
+      display an eventlog file recorded by the &Omnetpp; simulation kernel.
     </para>
     <para>
       An eventlog file contains a log of messages sent during the simulation,
@@ -19,7 +19,7 @@
       their interconnections.
     </para>
     <note>
-      Please refer to the &Omnetpp; 4.0 Manual for further details on what an eventlog file
+      Please refer to the &Omnetpp; Manual for further details on what an eventlog file
       is, and what is its exact format.
     </note>
     <para>
@@ -29,7 +29,7 @@
       behaviors. The Eventlog Table displays an eventlog file in a more detailed and
       direct way, in a tabular format, focusing on the exact data. Both tools can display
       filtered eventlogs created via the Eventlog Tool filter command as described in the
-      &Omnetpp; 4.0 Manual, by a third party custom filter tool, or by the IDE's in memory
+      &Omnetpp; Manual, by a third party custom filter tool, or by the IDE's in memory
       filtering.
     </para>
     <para>
@@ -70,7 +70,7 @@
       settings to get a reasonable tradeoff between performance and details.
     </para>
     <note>
-      Please refer to the &Omnetpp; 4.0 Manual for a complete description of eventlog
+      Please refer to the &Omnetpp; Manual for a complete description of eventlog
       recording settings.
     </note>
   </sect1>
@@ -545,7 +545,7 @@
 	You can also provide a custom filter pattern, referring to fields present in
 	``Raw'' mode, using a match expresssion. The following example is
 	a custom filter, which will show message sends where the message's class is
-	AirFrame. <screen>BS and c(AirFrame)</screen> Please refer to the &Omnetpp; 4.0
+	AirFrame. <screen>BS and c(AirFrame)</screen> Please refer to the &Omnetpp;
 	Manual for more details on match expressions.
       </para>
       <note>
@@ -664,7 +664,7 @@
       message, or trace filters, set the various filter parameters, and apply it. The
       result is another eventlog resident in memory, where some events are filtered out.
       <note>
-	Similarly to the command line [[Eventlog]] tool, described in the &Omnetpp; 4.0 Manual,
+	Similarly to the command line [[Eventlog]] tool, described in the &Omnetpp; Manual,
 	the in-memory filtering can only filter out whole events.
       </note>
     </para>

@@ -196,7 +196,7 @@
     <para>
       In previous versions of &Omnetpp;, to run a simulation several times with different
       parameters, you had to create an external script that created an Ini file for each
-      run and started the simulation with the specified file. In &Omnetpp; 4.0 it is no
+      run and started the simulation with the specified file. In &Omnetpp; 4.x it is no
       longer needed. The improved INI file syntax allows you to specify loops for
       specific parameters so you no longer need separate INI files for each run. In
       addition the IDE itself supports starting your simulation several times.

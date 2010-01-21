@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <article>
-  <title>A QUICK OVERVIEW OF THE &Omnetpp; 4.0 IDE</title>
+  <title>A QUICK OVERVIEW OF THE &Omnetpp; IDE</title>
   <sect1>
     <title>Introduction</title>
-    <para>The &Omnetpp; 4.0 Integrated Development Environment is based on the Eclipse platform, and extends
+    <para>The &Omnetpp; 4.x Integrated Development Environment is based on the Eclipse platform, and extends
       it with new editors, views, wizards and other functionality. &Omnetpp; adds functionality for creating and
       configuring models (NED and ini files), performing batch executions and analyzing the simulation
       results, while Eclipse provides C++ editing, CVS/SVN/GIT integration and optionally other features (UML
       modeling, bugtracker integration, database access, etc) via various open-source and commercial plug-ins.
     </para>
     <para>The following screenshots introduce the main components of the &Omnetpp; IDE.</para>
-    <picture file="pictures/img1.png">The &Omnetpp; 4.0 IDE, editing a NED file</picture>
+    <picture file="pictures/img1.png">The &Omnetpp; 4.x IDE, editing a NED file</picture>
   </sect1>
   <sect1>
     <title>The NED Editor</title>
@@ -135,8 +135,8 @@
       well.
     </para>
     <para>The dialog shows a standalone launch type for the QueueNet example simulation model. Batch
-      simulations can be launched by specifying more than one run number in the dialog. Ini files (enhanced in
-      the 4.0 release) allow the user define various scenarios that iterate over a list of values for certain
+      simulations can be launched by specifying more than one run number in the dialog. Ini files 
+       allow the user define various scenarios that iterate over a list of values for certain
       NED parameters, and/or do multiple runs with different seeds; the launch dialog helps the user select
       the desired run numbers by showing which runs correspond to which parameter and seed settings.</para>
     <para>Multi-processor or multi-core computers can be exploited by specifying that more than
@@ -164,7 +164,7 @@
   </sect1>
   <sect1>
     <title>Sequence Chart</title>
-    <para>The &Omnetpp; 4.0 simulation kernel is capable of logging various events during simulation:
+    <para>The &Omnetpp; simulation kernel is capable of logging various events during simulation:
       scheduling and canceling self-messages, sending messages, display changes, module and connection
       creation and deletion, user log messages, etc. The result is an event log file which contains detailed
       information of the simulation, and later can be used for various purposes, such as visualizing message
@@ -208,7 +208,7 @@
     </picture>
     <para>The first page displays the result files that serve as input to the analysis. The upper half
       specifies what files to select, by explicit filenames or by wildcards. The lower half shows what files
-      actually matched the input specification, and what runs they contain. Note that &Omnetpp; 4.0 result files
+      actually matched the input specification, and what runs they contain. Note that &Omnetpp; result files
       contain a unique run ID and several metadata annotations in addition to the actual recorded data.  The
       third tree organizes simulation runs according to their experiment—measurement—replication labels.
     </para>
@@ -217,9 +217,9 @@
       not necessarily) simulations done with the same model but with different parameter settings; that is,
       the user will explore the parameter space with several simulation runs. And, to gain statistical
       confidence in the results, each measurement will be possibly repeated several times, with different
-      random number seeds. It is easy to set up such scenarios with the improved ini files of &Omnetpp; 4.0, and
+      random number seeds. It is easy to set up such scenarios with the improved ini files of &Omnetpp; 4.x, and
       then the experiment-measurement-replication labels will be assigned more-or-less automatically – please
-      refer to the Inifile document (“Configuring Simulations in &Omnetpp; 4.0”) for more discussion.</para>
+      refer to the Inifile document (“Configuring Simulations in &Omnetpp; 4.x”) for more discussion.</para>
     <picture file="pictures/img19.png">Browsing vector and scalar data generated
       by the simulation</picture>
     <para>

@@ -9,7 +9,7 @@
     <para>
       In &Omnetpp;, simulation models are parameterized and configured for execution using
       configuration files with the [[.ini]] extension, called ini files. Ini files are text
-      files which can be edited using any text editor. However, &Omnetpp; 4.0 introduces a
+      files which can be edited using any text editor. However, &Omnetpp; 4.x introduces a
       tool expressly designed for editing ini files. The Inifile Editor is part of the
       &Omnetpp; IDE, and it can very efficiently assist the user in authoring ini files,
       because it has detailed knowledge of the simulation model, the ini file syntax, and
@@ -19,7 +19,7 @@
       <para>
       The syntax and features of ini files have changed since &Omnetpp; 3.x as well.
       These changes are summarized in the "Configuring Simulations" chapter of the
-       "&Omnetpp; 4.0. User Manual".
+       "&Omnetpp; 4.x. User Manual".
       </para>
     </note>
     <para>
