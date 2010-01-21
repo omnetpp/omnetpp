@@ -552,7 +552,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		graphics.setAlpha(255);
 	    graphics.setBackgroundColor(backgroundColor);
         graphics.setForegroundColor(ChartDefaults.DEFAULT_FOREGROUND_COLOR);
-        graphics.setLineWidth(1);
+        graphics.setLineWidth(0);
         graphics.setLineStyle(SWT.LINE_SOLID);
         //graphics.setFillRule();
         //graphics.setLineCap();
