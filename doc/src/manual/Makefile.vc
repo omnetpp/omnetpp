@@ -129,7 +129,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs
 	copy figures\*.png ..\..\manual
 
 clean:
-	-del usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
+	-del usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
 	-del /s /q ..\..\manual 2>nul
 	-rmdir ..\..\manual 2>nul
 	-del /s /q eclipse

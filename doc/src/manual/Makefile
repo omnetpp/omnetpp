@@ -108,7 +108,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs
 	cp figures/*.png ../../manual
 
 clean:
-	rm -f usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
+	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
 	rm -rf ../../manual
 	rm -rf eclipse
 	rm -f figures/*.pdf
