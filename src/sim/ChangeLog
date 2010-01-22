@@ -2,6 +2,10 @@
 
 	* componenttype.cc: fix: crash if module object ctor throws exception
 
+	* cdynamicexpression.cc: change: operands of the '%' (integer modulo)
+	NED operator must be dimensionless (otherwise the result of truncation
+	depends on the choice of the measurement units)
+
 2009-12-17  Andras Varga
 
 	* fixed bug #116: cPacketQueue::remove() incorrect behavior when called

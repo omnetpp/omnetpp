@@ -1134,7 +1134,7 @@ The following operators are supported (in order of decreasing precedence):
 %%
 \ttt{{\textasciicircum}}         & power-of \\\hline
 %%
-\ttt{*}, \ttt{/}, \ttt{\%}       & multiply, divide, modulus \\\hline
+\ttt{*}, \ttt{/}, \ttt{\%}       & multiply, divide, integer modulo \\\hline
 %%
 \ttt{+}, \ttt{-}                 & add, subtract, string concatenation \\\hline
 %%
@@ -1179,7 +1179,7 @@ Details:
   \item For bitwise operators, \ttt{double}s are converted to \ttt{unsigned long}
         using the C/C++ built-in conversion (type cast), the operation is performed,
         then the result is converted back to \ttt{double}.
-  \item For modulus (\%), the operands are converted to \ttt{long}.
+  \item For the modulo operator (\%), operands are converted to \ttt{long}.
 \end{itemize}
 \end{note}
 
@@ -1194,7 +1194,13 @@ is performed before the operation. Incompatible units cause an error.
 
 %%TODO example
 
-Power-of and bitwise operations require their arguments to be dimensionless.
+Modulo, power-of and the bitwise operations require their arguments to be
+dimensionless, otherwise the result would depend on the choice of the unit.
+
+\begin{note}
+If you need a floating-point modulo operator that handles units as well, use
+the \ttt{fmod()} function.
+\end{note}
 
 %%TODO example
 
