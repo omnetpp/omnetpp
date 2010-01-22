@@ -35,61 +35,61 @@ import org.eclipse.emf.common.util.EList;
  */
 public interface Chart extends DatasetItem {
 	/**
-	 * Returns the value of the '<em><b>Name</b></em>' attribute.
-	 * <!-- begin-user-doc -->
+     * Returns the value of the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Name</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Name</em>' attribute.
-	 * @see #setName(String)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Name()
-	 * @model
-	 * @generated
-	 */
+     * @return the value of the '<em>Name</em>' attribute.
+     * @see #setName(String)
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Name()
+     * @model
+     * @generated
+     */
 	String getName();
 
 	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.Chart#getName <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
+     * Sets the value of the '{@link org.omnetpp.scave.model.Chart#getName <em>Name</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Name</em>' attribute.
-	 * @see #getName()
-	 * @generated
-	 */
+     * @param value the new value of the '<em>Name</em>' attribute.
+     * @see #getName()
+     * @generated
+     */
 	void setName(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Filters</b></em>' containment reference list.
-	 * The list contents are of type {@link org.omnetpp.scave.model.SelectDeselectOp}.
-	 * <!-- begin-user-doc -->
+     * Returns the value of the '<em><b>Filters</b></em>' containment reference list.
+     * The list contents are of type {@link org.omnetpp.scave.model.SelectDeselectOp}.
+     * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Filters</em>' containment reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Filters</em>' containment reference list.
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Filters()
-	 * @model containment="true"
-	 * @generated
-	 */
+     * @return the value of the '<em>Filters</em>' containment reference list.
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Filters()
+     * @model containment="true"
+     * @generated
+     */
 	EList<SelectDeselectOp> getFilters();
 
 	/**
-	 * Returns the value of the '<em><b>Properties</b></em>' containment reference list.
-	 * The list contents are of type {@link org.omnetpp.scave.model.Property}.
-	 * <!-- begin-user-doc -->
+     * Returns the value of the '<em><b>Properties</b></em>' containment reference list.
+     * The list contents are of type {@link org.omnetpp.scave.model.Property}.
+     * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Properties</em>' containment reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Properties</em>' containment reference list.
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Properties()
-	 * @model containment="true"
-	 * @generated
-	 */
+     * @return the value of the '<em>Properties</em>' containment reference list.
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Properties()
+     * @model containment="true"
+     * @generated
+     */
 	EList<Property> getProperties();
 
 } // Chart

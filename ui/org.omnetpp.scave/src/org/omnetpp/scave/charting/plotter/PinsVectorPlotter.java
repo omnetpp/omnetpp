@@ -7,8 +7,8 @@
 
 package org.omnetpp.scave.charting.plotter;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -30,17 +30,17 @@ public class PinsVectorPlotter extends VectorPlotter {
 		this.referenceLevel = referenceLevel;
 	}
 
-	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
 		// dataset index range to iterate over
-		int[] range = indexRange(plot, series, gc, mapping);
+		int[] range = indexRange(plot, series, graphics, mapping);
 		int first = range[0], last = range[1];
 
 		// value range on the chart
-		double[] valueRange = valueRange(gc, mapping, symbol);
+		double[] valueRange = valueRange(graphics, mapping, symbol);
 		double lo = valueRange[0], hi = valueRange[1];
 
 		// chart y range in canvas coordinates
-		//int[] yrange = canvasYRange(gc, symbol);
+		//int[] yrange = canvasYRange(graphics, symbol);
 		//int top = yrange[0], bottom = yrange[1];  // top < bottom
 
 		//
@@ -63,8 +63,8 @@ public class PinsVectorPlotter extends VectorPlotter {
 
 		// We are drawing solid vertical lines, so antialiasing does not improve
 		// the plot much, but it slows down the plotting by a factor of 2.
-		int origAntialias = gc.getAntialias();
-		gc.setAntialias(SWT.OFF);
+		int origAntialias = graphics.getAntialias();
+		graphics.setAntialias(SWT.OFF);
 
 		// draw pins
 		IXYDataset dataset = plot.getDataset();
@@ -77,25 +77,25 @@ public class PinsVectorPlotter extends VectorPlotter {
 			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			if (prevX != x) {
-				gc.drawLine(x, refY, x, y);
+				graphics.drawLine(x, refY, x, y);
 				prevX = x;
 				minY = Math.min(y, refY);
 				maxY = Math.max(y, refY);
 			}
 			else if (y < minY) {
-				gc.drawLine(x, minY, x, y);
+				graphics.drawLine(x, minY, x, y);
 				minY = y;
 			}
 			else if (y > maxY) {
-				gc.drawLine(x, maxY, x, y);
+				graphics.drawLine(x, maxY, x, y);
 				maxY = y;
 			}
 		}
 
 		// restore original antialias mode
-		gc.setAntialias(origAntialias);
+		graphics.setAntialias(origAntialias);
 
 		// and draw symbols
-		plotSymbols(plot, series, gc, mapping, symbol);
+		plotSymbols(plot, series, graphics, mapping, symbol);
 	}
 }

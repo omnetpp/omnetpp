@@ -438,17 +438,20 @@ int IDList::getItemTypes() const
 
 bool IDList::areAllScalars() const
 {
-    return getItemTypes()==ResultFileManager::SCALAR;
+    int types = getItemTypes();
+    return !types || types==ResultFileManager::SCALAR;
 }
 
 bool IDList::areAllVectors() const
 {
-    return getItemTypes()==ResultFileManager::VECTOR;
+    int types = getItemTypes();
+    return !types || types==ResultFileManager::VECTOR;
 }
 
 bool IDList::areAllHistograms() const
 {
-    return getItemTypes()==ResultFileManager::HISTOGRAM;
+    int types = getItemTypes();
+    return !types || types==ResultFileManager::HISTOGRAM;
 }
 
 void IDList::toByteArray(char *array, int n) const

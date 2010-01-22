@@ -12,11 +12,9 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_OU
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_PLACEMENT;
 
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
@@ -49,15 +47,14 @@ class BarPlot {
 		return rect;
 	}
 
-	public Rectangle layout(GC gc, Rectangle rect) {
+	public Rectangle layout(Graphics graphics, Rectangle rect) {
 		this.rect = rect.getCopy();
 		return rect;
 	}
 
-	public void draw(GC gc, ICoordsMapping coordsMapping) {
+	public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
 
 		if (bars != null && bars.length > 0 && bars[0].length > 0) {
-			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
 
 			Rectangle clip = graphics.getClip(new Rectangle());
@@ -73,10 +70,9 @@ class BarPlot {
 		}
 	}
 
-	public void drawBaseline(GC gc, ICoordsMapping coordsMapping) {
+	public void drawBaseline(Graphics graphics, ICoordsMapping coordsMapping) {
 		double baseline = getTransformedBaseline();
 		if (!Double.isInfinite(baseline)) {
-			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
 
 			int y = coordsMapping.toCanvasY(baseline);

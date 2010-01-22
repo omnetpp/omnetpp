@@ -8,6 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import static org.omnetpp.common.image.ImageFactory.TOOLBAR_IMAGE_TEMPLATE;
+import static org.omnetpp.common.util.Pair.pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,8 +41,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
-import static org.omnetpp.common.util.Pair.pair;
-
 /**
  * Creates a dataset from a temporary chart.
  *
@@ -66,6 +65,8 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 				final Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 
 				final CreateChartTemplateDialog dialog = new CreateChartTemplateDialog(scaveEditor.getSite().getShell());
+                dialog.setChartName(chart.getName());
+				dialog.setDatasetName(chart.getName());
 
 				if (dialog.open() == Window.OK) {
 					EditingDomain domain = scaveEditor.getEditingDomain();

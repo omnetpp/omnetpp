@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
@@ -63,13 +63,22 @@ class LegendTooltip implements ILegend
 		});
 
 		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 					IInformationControl infoControl = hoverSupport.getInformationControl();
 					if (infoControl == null)
 						hoverSupport.makeHoverSticky();
 			}
 		});
 	}
+
+    public boolean isVisible() {
+        return button.isVisible();
+    }
+
+	public void setVisible(boolean visible) {
+	    button.setVisible(visible);
+    }
 
 	public void clearItems() {
 		items.clear();
@@ -79,12 +88,12 @@ class LegendTooltip implements ILegend
 		items.add(new Item(color, label, symbol, drawLine));
 	}
 
-	public Rectangle layout(GC gc, Rectangle rect) {
-		button.setLocation(rect.width - button.getSize().x - 2, rect.y + 2);
+	public Rectangle layout(Graphics graphics, Rectangle rect) {
+		button.setLocation(rect.getRight().x - button.getSize().x - 2, rect.y + 2);
 		return rect;
 	}
 
-	public void draw(GC gc) {
+	public void draw(Graphics graphics) {
 		// button is drawn as a child of the canvas
 	}
 

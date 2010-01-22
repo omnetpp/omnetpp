@@ -35,19 +35,19 @@ import org.eclipse.emf.ecore.EObject;
  */
 public interface Datasets extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Datasets</b></em>' containment reference list.
-	 * The list contents are of type {@link org.omnetpp.scave.model.Dataset}.
-	 * <!-- begin-user-doc -->
+     * Returns the value of the '<em><b>Datasets</b></em>' containment reference list.
+     * The list contents are of type {@link org.omnetpp.scave.model.Dataset}.
+     * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Datasets</em>' containment reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Datasets</em>' containment reference list.
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getDatasets_Datasets()
-	 * @model containment="true"
-	 * @generated
-	 */
+     * @return the value of the '<em>Datasets</em>' containment reference list.
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getDatasets_Datasets()
+     * @model containment="true"
+     * @generated
+     */
 	EList<Dataset> getDatasets();
 
 } // Datasets

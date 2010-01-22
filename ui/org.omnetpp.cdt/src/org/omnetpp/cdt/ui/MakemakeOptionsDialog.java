@@ -53,6 +53,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
+        setShellStyle(getShellStyle() | SWT.RESIZE);
         shell.setText("Makemake Options");
     }
 

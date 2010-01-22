@@ -89,7 +89,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 
 	protected Insets getInsets() {
 		org.eclipse.swt.graphics.Rectangle clientArea = getClientArea();
-		org.eclipse.swt.graphics.Rectangle viewport = getViewportRectangle();
+		Rectangle viewport = getViewportRectangle();
 		return new Insets(
 				viewport.y - clientArea.y,
 				viewport.x - clientArea.x,
@@ -416,7 +416,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		Assert.isTrue(toCanvasY(minY)==mapping.toCanvasY(minY) && toCanvasY(maxY)==mapping.toCanvasY(maxY));
 		Assert.isTrue(toCanvasDistX(maxX-minX)==mapping.toCanvasDistX(maxX-minX));
 		Assert.isTrue(toCanvasDistY(maxY-minY)==mapping.toCanvasDistY(maxY-minY));
-		org.eclipse.swt.graphics.Rectangle r = getViewportRectangle();
+		Rectangle r = getViewportRectangle();
 		Assert.isTrue(zoomX == 0.0 || (fromCanvasX(r.x)==mapping.fromCanvasX(r.x) && fromCanvasX(r.x+r.width)==mapping.fromCanvasX(r.x+r.width)));
 		Assert.isTrue(zoomY == 0.0 || (fromCanvasY(r.y)==mapping.fromCanvasY(r.y) && fromCanvasY(r.y+r.height)==mapping.fromCanvasY(r.y+r.height)));
 		Assert.isTrue(zoomX == 0.0 || fromCanvasDistX(r.width)==mapping.fromCanvasDistX(r.width));

@@ -52,203 +52,203 @@ public class BarChartItemProvider
         IItemLabelProvider,
         IItemPropertySource {
 	/**
-	 * This constructs an instance from a factory and a notifier.
-	 * <!-- begin-user-doc -->
+     * This constructs an instance from a factory and a notifier.
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
     public BarChartItemProvider(AdapterFactory adapterFactory) {
-		super(adapterFactory);
-	}
+        super(adapterFactory);
+    }
 
 	/**
-	 * This returns the property descriptors for the adapted class.
-	 * <!-- begin-user-doc -->
+     * This returns the property descriptors for the adapted class.
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
     @Override
 				public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
-		if (itemPropertyDescriptors == null) {
-			super.getPropertyDescriptors(object);
+        if (itemPropertyDescriptors == null) {
+            super.getPropertyDescriptors(object);
 
-			addGroupByFieldsPropertyDescriptor(object);
-			addGroupNameFormatPropertyDescriptor(object);
-			addBarNameFormatPropertyDescriptor(object);
-			addBarFieldsPropertyDescriptor(object);
-			addAveragedFieldsPropertyDescriptor(object);
-		}
-		return itemPropertyDescriptors;
-	}
+            addGroupByFieldsPropertyDescriptor(object);
+            addGroupNameFormatPropertyDescriptor(object);
+            addBarNameFormatPropertyDescriptor(object);
+            addBarFieldsPropertyDescriptor(object);
+            addAveragedFieldsPropertyDescriptor(object);
+        }
+        return itemPropertyDescriptors;
+    }
 
 	/**
-	 * This adds a property descriptor for the Group By Fields feature.
-	 * <!-- begin-user-doc -->
+     * This adds a property descriptor for the Group By Fields feature.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected void addGroupByFieldsPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_BarChart_groupByFields_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupByFields_feature", "_UI_BarChart_type"),
-				 ScaveModelPackage.Literals.BAR_CHART__GROUP_BY_FIELDS,
-				 true,
-				 false,
-				 false,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
+        itemPropertyDescriptors.add
+            (createItemPropertyDescriptor
+                (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+                 getResourceLocator(),
+                 getString("_UI_BarChart_groupByFields_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupByFields_feature", "_UI_BarChart_type"),
+                 ScaveModelPackage.Literals.BAR_CHART__GROUP_BY_FIELDS,
+                 true,
+                 false,
+                 false,
+                 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+                 null,
+                 null));
+    }
 
 	/**
-	 * This adds a property descriptor for the Group Name Format feature.
-	 * <!-- begin-user-doc -->
+     * This adds a property descriptor for the Group Name Format feature.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected void addGroupNameFormatPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_BarChart_groupNameFormat_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupNameFormat_feature", "_UI_BarChart_type"),
-				 ScaveModelPackage.Literals.BAR_CHART__GROUP_NAME_FORMAT,
-				 true,
-				 false,
-				 false,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
+        itemPropertyDescriptors.add
+            (createItemPropertyDescriptor
+                (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+                 getResourceLocator(),
+                 getString("_UI_BarChart_groupNameFormat_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupNameFormat_feature", "_UI_BarChart_type"),
+                 ScaveModelPackage.Literals.BAR_CHART__GROUP_NAME_FORMAT,
+                 true,
+                 false,
+                 false,
+                 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+                 null,
+                 null));
+    }
 
 	/**
-	 * This adds a property descriptor for the Bar Name Format feature.
-	 * <!-- begin-user-doc -->
+     * This adds a property descriptor for the Bar Name Format feature.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected void addBarNameFormatPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_BarChart_barNameFormat_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_barNameFormat_feature", "_UI_BarChart_type"),
-				 ScaveModelPackage.Literals.BAR_CHART__BAR_NAME_FORMAT,
-				 true,
-				 false,
-				 false,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
+        itemPropertyDescriptors.add
+            (createItemPropertyDescriptor
+                (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+                 getResourceLocator(),
+                 getString("_UI_BarChart_barNameFormat_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_barNameFormat_feature", "_UI_BarChart_type"),
+                 ScaveModelPackage.Literals.BAR_CHART__BAR_NAME_FORMAT,
+                 true,
+                 false,
+                 false,
+                 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+                 null,
+                 null));
+    }
 
 	/**
-	 * This adds a property descriptor for the Bar Fields feature.
-	 * <!-- begin-user-doc -->
+     * This adds a property descriptor for the Bar Fields feature.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected void addBarFieldsPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_BarChart_barFields_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_barFields_feature", "_UI_BarChart_type"),
-				 ScaveModelPackage.Literals.BAR_CHART__BAR_FIELDS,
-				 true,
-				 false,
-				 false,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
+        itemPropertyDescriptors.add
+            (createItemPropertyDescriptor
+                (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+                 getResourceLocator(),
+                 getString("_UI_BarChart_barFields_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_barFields_feature", "_UI_BarChart_type"),
+                 ScaveModelPackage.Literals.BAR_CHART__BAR_FIELDS,
+                 true,
+                 false,
+                 false,
+                 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+                 null,
+                 null));
+    }
 
 	/**
-	 * This adds a property descriptor for the Averaged Fields feature.
-	 * <!-- begin-user-doc -->
+     * This adds a property descriptor for the Averaged Fields feature.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected void addAveragedFieldsPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_BarChart_averagedFields_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_averagedFields_feature", "_UI_BarChart_type"),
-				 ScaveModelPackage.Literals.BAR_CHART__AVERAGED_FIELDS,
-				 true,
-				 false,
-				 false,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
+        itemPropertyDescriptors.add
+            (createItemPropertyDescriptor
+                (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+                 getResourceLocator(),
+                 getString("_UI_BarChart_averagedFields_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_averagedFields_feature", "_UI_BarChart_type"),
+                 ScaveModelPackage.Literals.BAR_CHART__AVERAGED_FIELDS,
+                 true,
+                 false,
+                 false,
+                 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+                 null,
+                 null));
+    }
 
 	/**
-	 * This returns BarChart.gif.
-	 * <!-- begin-user-doc -->
+     * This returns BarChart.gif.
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
     @Override
 				public Object getImage(Object object) {
-		return overlayImage(object, getResourceLocator().getImage("full/obj16/BarChart"));
-	}
+        return overlayImage(object, getResourceLocator().getImage("full/obj16/BarChart"));
+    }
 
 	/**
-	 * This returns the label text for the adapted class.
-	 * <!-- begin-user-doc -->
+     * This returns the label text for the adapted class.
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
     @Override
 				public String getText(Object object) {
-		String label = ((BarChart)object).getName();
-		return label == null || label.length() == 0 ?
-			getString("_UI_BarChart_type") :
-			getString("_UI_BarChart_type") + " " + label;
-	}
+        String label = ((BarChart)object).getName();
+        return label == null || label.length() == 0 ?
+            getString("_UI_BarChart_type") :
+            getString("_UI_BarChart_type") + " " + label;
+    }
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update any cached
-	 * children and by creating a viewer notification, which it passes to {@link #fireNotifyChanged}.
-	 * <!-- begin-user-doc -->
+     * This handles model notifications by calling {@link #updateChildren} to update any cached
+     * children and by creating a viewer notification, which it passes to {@link #fireNotifyChanged}.
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
     @Override
 				public void notifyChanged(Notification notification) {
-		updateChildren(notification);
+        updateChildren(notification);
 
-		switch (notification.getFeatureID(BarChart.class)) {
-			case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
-			case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
-			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
-			case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
-			case ScaveModelPackage.BAR_CHART__AVERAGED_FIELDS:
-				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
-				return;
-		}
-		super.notifyChanged(notification);
-	}
+        switch (notification.getFeatureID(BarChart.class)) {
+            case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
+            case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
+            case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
+            case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
+            case ScaveModelPackage.BAR_CHART__AVERAGED_FIELDS:
+                fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+                return;
+        }
+        super.notifyChanged(notification);
+    }
 
 	/**
-	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
-	 * that can be created under this object.
-	 * <!-- begin-user-doc -->
+     * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
+     * that can be created under this object.
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
     @Override
 				protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
-		super.collectNewChildDescriptors(newChildDescriptors, object);
-	}
+        super.collectNewChildDescriptors(newChildDescriptors, object);
+    }
 
 }

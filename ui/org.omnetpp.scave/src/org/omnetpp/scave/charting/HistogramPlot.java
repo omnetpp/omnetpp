@@ -13,10 +13,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
@@ -148,18 +148,18 @@ class HistogramPlot {
 		return baseline;
 	}
 
-	Rectangle layout(GC gc, Rectangle area) {
+	Rectangle layout(Graphics graphics, Rectangle area) {
 		Assert.isNotNull(area);
 		this.area = area.getCopy();
 		return area;
 	}
 
-	void draw(GC gc, ICoordsMapping coordsMapping) {
+	void draw(Graphics graphics, ICoordsMapping coordsMapping) {
 		switch (barType) {
 		case Solid:
-			gc.setForeground(ColorFactory.BLACK);
+			graphics.setForegroundColor(ColorFactory.BLACK);
 			for (int series = 0; series < bars.length; ++series) {
-				gc.setBackground(getHistogramColor(series));
+				graphics.setBackgroundColor(getHistogramColor(series));
 				for (int index = 0; index < bars[series].length; ++index) {
 					double xl = bars[series][index].minX;
 					double xr = bars[series][index].maxX;
@@ -171,18 +171,18 @@ class HistogramPlot {
 						int right = coordsMapping.toCanvasX(xr);
 						int bottom = Double.isInfinite(yb) ? (yb<0?area.bottom():area.y) : coordsMapping.toCanvasY(yb);
 						int top = Double.isInfinite(yt) ? (yt<0?area.bottom():area.y) : coordsMapping.toCanvasY(yt);
-						gc.fillRectangle(left, top, right-left, bottom-top);
-						gc.drawRectangle(left, top, right-left, bottom-top);
+						graphics.fillRectangle(left, top, right-left, bottom-top);
+						graphics.drawRectangle(left, top, right-left, bottom-top);
 					}
 				}
 			}
 			break;
 		case Outline:
-			gc.setLineWidth(4);
-			gc.setLineStyle(SWT.LINE_SOLID);
-			gc.setAlpha(128);
+			graphics.setLineWidth(4);
+			graphics.setLineStyle(SWT.LINE_SOLID);
+			graphics.setAlpha(128);
 			for (int series = 0; series < bars.length; ++series) {
-				gc.setForeground(getHistogramColor(series));
+				graphics.setForegroundColor(getHistogramColor(series));
 				int prevY = area.bottom();
 				int cellCount = bars[series].length;
 				int[] points = new int[6*cellCount]; // coordinates of 3*n points
@@ -204,7 +204,7 @@ class HistogramPlot {
 
 					prevY = yy;
 				}
-				gc.drawPolyline(points);
+				graphics.drawPolyline(points);
 			}
 			break;
 		}

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.keyvalue.MultiKey;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -77,7 +78,7 @@ public class SymbolImageFactory {
 			}
 			if (symbol != null) {
 				symbol.setSizeHint(6);
-				symbol.drawSymbol(gc, 7, 4);
+				symbol.drawSymbol(new SWTGraphics(gc), 7, 4);
 			}
 		}
 		finally {

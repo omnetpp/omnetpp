@@ -119,25 +119,29 @@ public class DatasetManager {
 			return idlist != null ? idlist : new IDList();
 		}
 
-		public Object caseAdd(Add add) {
+		@Override
+        public Object caseAdd(Add add) {
 			if (type == null || add.getType() == type) {
 				idlist.merge(select(null, add));
 			}
 			return this;
 		}
 
-		public Object caseDiscard(Discard discard) {
+		@Override
+        public Object caseDiscard(Discard discard) {
 			if (type == null || discard.getType() == type)
 				idlist.substract(select(idlist, discard));
 			return this;
 		}
 
-		public Object caseApply(Apply apply) {
+		@Override
+        public Object caseApply(Apply apply) {
 			caseProcessingOp(apply, true);
 			return this;
 		}
 
-		public Object caseCompute(Compute compute) {
+		@Override
+        public Object caseCompute(Compute compute) {
 			caseProcessingOp(compute, false);
 			return this;
 		}
@@ -158,7 +162,8 @@ public class DatasetManager {
 			return this;
 		}
 
-		public Object caseChart(Chart chart) {
+		@Override
+        public Object caseChart(Chart chart) {
 			if (chart == target)
 				idlist = select(idlist, chart.getFilters(), type);
 			return this;
@@ -248,7 +253,7 @@ public class DatasetManager {
 		if (progressMonitor != null && progressMonitor.isCanceled())
 			return null;
 
-		String title = defaultTitle(ScaveModelUtil.getResultItems(idlist, manager));
+		String title = idlist.size() <= 1 ? null : defaultTitle(ScaveModelUtil.getResultItems(idlist, manager));
 
 		return dataValues != null ?
 				new VectorDataset(title, idlist, dataValues, lineNameFormat, manager) :
@@ -515,10 +520,7 @@ public class DatasetManager {
 		FLD_NAME, FLD_MODULE, FLD_EXPERIMENT, FLD_MEASUREMENT, FLD_REPLICATION
 	};
 
-	private static String defaultTitle(ResultItem[] items) {
-		if (items.length <= 1)
-			return null;
-
+	public static String defaultTitle(ResultItem[] items) {
 		List<ResultItemField> fields = getCommonFields(items, titleFields);
 		// remove computed file name
 		if (fields.contains(FLD_NAME) || fields.contains(FLD_MODULE)) {
@@ -526,10 +528,7 @@ public class DatasetManager {
 			fields.remove(FLD_MEASUREMENT);
 			fields.remove(FLD_REPLICATION);
 		}
-
-		return fields.isEmpty() ?
-				null :
-				ResultItemFormatter.formatResultItem(nameFormatUsingFields(fields), items[0]);
+		return fields.isEmpty() ? null : ResultItemFormatter.formatResultItem(nameFormatUsingFields(fields), items[0]);
 	}
 
 	/**
@@ -592,10 +591,10 @@ public class DatasetManager {
 		for (SelectDeselectOp filter : filters) {
 			if (type == null || filter.getType()==type) {
 				if (filter instanceof Select) {
-					result.merge(select(source, (Select)filter, manager));
+					result.merge(select(source, filter, manager));
 				}
 				else if (filter instanceof Deselect) {
-					result.substract(select(source, (Deselect)filter, manager));
+					result.substract(select(source, filter, manager));
 				}
 			}
 		}

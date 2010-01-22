@@ -37,6 +37,7 @@
       <genFeatures property="None" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/computedFile"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/computationHash"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/groupBy"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Except">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Except/filterPattern"/>
@@ -63,6 +64,7 @@
     <genClasses ecoreClass="scave.ecore#//ChartSheet">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ChartSheet/name"/>
       <genFeatures children="true" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//ChartSheet/charts"/>
+      <genFeatures property="None" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//ChartSheet/properties"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Analysis">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/inputs"/>

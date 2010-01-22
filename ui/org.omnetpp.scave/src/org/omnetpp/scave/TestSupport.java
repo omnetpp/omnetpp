@@ -24,6 +24,7 @@ public class TestSupport {
 		CHARTSHEETS_TREE_ID = "ChartSheets",
 		DATASETS_PAGE_PALETTE_ID = "DatasetsPagePalette",
 		DATASET_VIEW_MAIN_PANEL_ID = "DatasetViewMainPanel",
+        DATASET_VIEW_ALL_PANEL_ID = "DatasetViewAllPanel",
 		DATASET_VIEW_SCALARS_PANEL_ID = "DatasetViewScalarsPanel",
 		DATASET_VIEW_VECTORS_PANEL_ID = "DatasetViewVectorsPanel",
 		DATASET_VIEW_HISTOGRAMS_PANEL_ID = "DatasetViewHistogramsPanel";

@@ -52,220 +52,220 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  */
 public abstract class ChartImpl extends DatasetItemImpl implements Chart {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
+     * The default value of the '{@link #getName() <em>Name</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getName()
+     * @generated
+     * @ordered
+     */
 	protected static final String NAME_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getName()
+     * @generated
+     * @ordered
+     */
 	protected String name = NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getFilters() <em>Filters</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getFilters() <em>Filters</em>}' containment reference list.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getFilters()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getFilters()
+     * @generated
+     * @ordered
+     */
 	protected EList<SelectDeselectOp> filters;
 
 	/**
-	 * The cached value of the '{@link #getProperties() <em>Properties</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getProperties() <em>Properties</em>}' containment reference list.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getProperties()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getProperties()
+     * @generated
+     * @ordered
+     */
 	protected EList<Property> properties;
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected ChartImpl() {
-		super();
-	}
+        super();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	protected EClass eStaticClass() {
-		return ScaveModelPackage.Literals.CHART;
-	}
+        return ScaveModelPackage.Literals.CHART;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public String getName() {
-		return name;
-	}
+        return name;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public void setName(String newName) {
-		String oldName = name;
-		name = newName;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__NAME, oldName, name));
-	}
+        String oldName = name;
+        name = newName;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__NAME, oldName, name));
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public EList<SelectDeselectOp> getFilters() {
-		if (filters == null) {
-			filters = new EObjectContainmentEList<SelectDeselectOp>(SelectDeselectOp.class, this, ScaveModelPackage.CHART__FILTERS);
-		}
-		return filters;
-	}
+        if (filters == null) {
+            filters = new EObjectContainmentEList<SelectDeselectOp>(SelectDeselectOp.class, this, ScaveModelPackage.CHART__FILTERS);
+        }
+        return filters;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public EList<Property> getProperties() {
-		if (properties == null) {
-			properties = new EObjectContainmentEList<Property>(Property.class, this, ScaveModelPackage.CHART__PROPERTIES);
-		}
-		return properties;
-	}
+        if (properties == null) {
+            properties = new EObjectContainmentEList<Property>(Property.class, this, ScaveModelPackage.CHART__PROPERTIES);
+        }
+        return properties;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case ScaveModelPackage.CHART__FILTERS:
-				return ((InternalEList<?>)getFilters()).basicRemove(otherEnd, msgs);
-			case ScaveModelPackage.CHART__PROPERTIES:
-				return ((InternalEList<?>)getProperties()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.CHART__FILTERS:
+                return ((InternalEList<?>)getFilters()).basicRemove(otherEnd, msgs);
+            case ScaveModelPackage.CHART__PROPERTIES:
+                return ((InternalEList<?>)getProperties()).basicRemove(otherEnd, msgs);
+        }
+        return super.eInverseRemove(otherEnd, featureID, msgs);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case ScaveModelPackage.CHART__NAME:
-				return getName();
-			case ScaveModelPackage.CHART__FILTERS:
-				return getFilters();
-			case ScaveModelPackage.CHART__PROPERTIES:
-				return getProperties();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.CHART__NAME:
+                return getName();
+            case ScaveModelPackage.CHART__FILTERS:
+                return getFilters();
+            case ScaveModelPackage.CHART__PROPERTIES:
+                return getProperties();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@SuppressWarnings("unchecked")
 		@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case ScaveModelPackage.CHART__NAME:
-				setName((String)newValue);
-				return;
-			case ScaveModelPackage.CHART__FILTERS:
-				getFilters().clear();
-				getFilters().addAll((Collection<? extends SelectDeselectOp>)newValue);
-				return;
-			case ScaveModelPackage.CHART__PROPERTIES:
-				getProperties().clear();
-				getProperties().addAll((Collection<? extends Property>)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.CHART__NAME:
+                setName((String)newValue);
+                return;
+            case ScaveModelPackage.CHART__FILTERS:
+                getFilters().clear();
+                getFilters().addAll((Collection<? extends SelectDeselectOp>)newValue);
+                return;
+            case ScaveModelPackage.CHART__PROPERTIES:
+                getProperties().clear();
+                getProperties().addAll((Collection<? extends Property>)newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.CHART__NAME:
-				setName(NAME_EDEFAULT);
-				return;
-			case ScaveModelPackage.CHART__FILTERS:
-				getFilters().clear();
-				return;
-			case ScaveModelPackage.CHART__PROPERTIES:
-				getProperties().clear();
-				return;
-		}
-		super.eUnset(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.CHART__NAME:
+                setName(NAME_EDEFAULT);
+                return;
+            case ScaveModelPackage.CHART__FILTERS:
+                getFilters().clear();
+                return;
+            case ScaveModelPackage.CHART__PROPERTIES:
+                getProperties().clear();
+                return;
+        }
+        super.eUnset(featureID);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.CHART__NAME:
-				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
-			case ScaveModelPackage.CHART__FILTERS:
-				return filters != null && !filters.isEmpty();
-			case ScaveModelPackage.CHART__PROPERTIES:
-				return properties != null && !properties.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.CHART__NAME:
+                return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+            case ScaveModelPackage.CHART__FILTERS:
+                return filters != null && !filters.isEmpty();
+            case ScaveModelPackage.CHART__PROPERTIES:
+                return properties != null && !properties.isEmpty();
+        }
+        return super.eIsSet(featureID);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+        if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (name: ");
-		result.append(name);
-		result.append(')');
-		return result.toString();
-	}
+        StringBuffer result = new StringBuffer(super.toString());
+        result.append(" (name: ");
+        result.append(name);
+        result.append(')');
+        return result.toString();
+    }
 
 } //ChartImpl

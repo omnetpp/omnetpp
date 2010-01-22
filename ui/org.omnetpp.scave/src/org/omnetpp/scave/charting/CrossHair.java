@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -27,16 +28,17 @@ import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.VectorChart.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
@@ -89,11 +91,13 @@ class CrossHair {
 		// add key listener to restore the cross cursor, after other cursor is turned off
 		// (by ZoomableCanvasMouseSupport for example)
 		chart.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
+			@Override
+            public void keyPressed(KeyEvent e) {
 				if (finalChart.getCursor() == null)
 					finalChart.setCursor(CROSS_CURSOR);
 			}
-			public void keyReleased(KeyEvent e) {
+			@Override
+            public void keyReleased(KeyEvent e) {
 				if (finalChart.getCursor() == null)
 					finalChart.setCursor(CROSS_CURSOR);
 			}
@@ -110,7 +114,7 @@ class CrossHair {
 				canvasY = e.y;
 				detailedTooltip = false;
 
-				finalChart.redraw();  //XXX this is killer if canvas is not cached. unfortunately, gc.setXORMode() cannot be used
+				finalChart.redraw();  //XXX this is killer if canvas is not cached. unfortunately, graphics.setXORMode() cannot be used
 
 				// set cursor
 				if (plotArea != null && plotArea.contains(canvasX,canvasY)) {
@@ -122,15 +126,18 @@ class CrossHair {
 			}
 		});
 		chart.addMouseTrackListener(new MouseTrackAdapter() {
-			public void mouseEnter(MouseEvent e) {
+			@Override
+            public void mouseEnter(MouseEvent e) {
 				invalidatePosition();
 				finalChart.redraw();
 			}
-			public void mouseExit(MouseEvent e) {
+			@Override
+            public void mouseExit(MouseEvent e) {
 				invalidatePosition();
 				finalChart.redraw();
 			}
-			public void mouseHover(MouseEvent e) {
+			@Override
+            public void mouseHover(MouseEvent e) {
 				detailedTooltip = true;
 				finalChart.redraw();
 			}
@@ -169,17 +176,14 @@ class CrossHair {
 		detailedTooltip = false;
 	}
 
-	public Rectangle layout(GC gc, Rectangle rect) {
+	public Rectangle layout(Graphics graphics, Rectangle rect) {
 		this.plotArea = rect;
 		return rect;
 	}
 
-	public void draw(GC gc, ICoordsMapping coordsMapping) {
+	public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
 		if (plotArea != null && plotArea.contains(canvasX, canvasY)) {
-			int[] saveLineDash = gc.getLineDash();
-			int saveLineWidth = gc.getLineWidth();
-			Color saveForeground = gc.getForeground();
-
+		    graphics.pushState();
 			// collect points close to cursor (x,y)
 			ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 			int totalFound = dataPointsNear(canvasX, canvasY, HALO, dataPoints, 1, coordsMapping);
@@ -195,41 +199,38 @@ class CrossHair {
 			}
 
 			// draw crosshair
-			gc.setLineDash(new int[] {3, 3});
-			gc.setLineWidth(1);
-			gc.setForeground(ColorFactory.RED);
-			gc.drawLine(plotArea.x, canvasY, plotArea.x + plotArea.width, canvasY);
-			gc.drawLine(canvasX, plotArea.y, canvasX, plotArea.y + plotArea.height);
+			graphics.setLineDash(new int[] {3, 3});
+			graphics.setLineWidth(1);
+			graphics.setForegroundColor(ColorFactory.RED);
+			graphics.drawLine(plotArea.x, canvasY, plotArea.x + plotArea.width, canvasY);
+			graphics.drawLine(canvasX, plotArea.y, canvasX, plotArea.y + plotArea.height);
 
 			// draw tooltip
-			drawTooltip(gc, dataPoints, totalFound, coordsMapping);
-
-			gc.setLineDash(saveLineDash);
-			gc.setLineWidth(saveLineWidth);
-			gc.setForeground(saveForeground);
+			drawTooltip(graphics, dataPoints, totalFound, coordsMapping);
+			graphics.popState();
 		}
 	}
 
-	private void drawTooltip(GC gc, ArrayList<DataPoint> dataPoints, int totalFound, ICoordsMapping coordsMapping) {
-		gc.setForeground(ColorFactory.BLACK);
-		gc.setBackground(TOOLTIP_COLOR);
-		gc.setLineStyle(SWT.LINE_SOLID);
-		gc.setFont(CROSSHAIR_NORMAL_FONT);
+	private void drawTooltip(Graphics graphics, ArrayList<DataPoint> dataPoints, int totalFound, ICoordsMapping coordsMapping) {
+		graphics.setForegroundColor(ColorFactory.BLACK);
+		graphics.setBackgroundColor(TOOLTIP_COLOR);
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		graphics.setFont(CROSSHAIR_NORMAL_FONT);
 
 		if (dataPoints.isEmpty() || !detailedTooltip) {
 			double x = chart.inverseTransformX(coordsMapping.fromCanvasX(canvasX));
 			double y = chart.inverseTransformY(coordsMapping.fromCanvasY(canvasY));
 			String coordinates = String.format("%g, %g", x, y); //FIXME precision: the x distance one pixel represents!
-			Point size = gc.textExtent(coordinates);
+			Point size = GraphicsUtils.getTextExtent(graphics, coordinates);
 			int left = canvasX + 3;
 			int top = canvasY - size.y - 4;
 			if (left + size.x + 3 > plotArea.x + plotArea.width)
 				left = canvasX - size.x - 6;
 			if (top < plotArea.y)
 				top = canvasY + 3;
-			gc.fillRectangle(left, top, size.x + 2, size.y + 2);
-			gc.drawRectangle(left, top, size.x + 2, size.y + 2);
-			gc.drawText(coordinates, left + 2, top + 1, false); // XXX set as tooltip, rather than draw it on the canvas!
+			graphics.fillRectangle(left, top, size.x + 2, size.y + 2);
+			graphics.drawRectangle(left, top, size.x + 2, size.y + 2);
+			graphics.drawText(coordinates, left + 2, top + 1); // XXX set as tooltip, rather than draw it on the canvas!
 		}
 	}
 

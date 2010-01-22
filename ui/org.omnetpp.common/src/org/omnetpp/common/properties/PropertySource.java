@@ -89,7 +89,7 @@ public abstract class PropertySource implements IPropertySource2 {
 			buildPropInfo();
 	}
 
-	private PropInfo getInfo(String id)
+	protected PropInfo getInfo(String id)
 	{
 		Entry entry = map.get(getClass());
 		if (entry != null)

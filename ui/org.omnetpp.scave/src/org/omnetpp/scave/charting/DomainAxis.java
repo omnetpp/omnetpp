@@ -20,18 +20,18 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GeomUtils;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 
 /**
@@ -43,6 +43,8 @@ class DomainAxis {
 	Rectangle rect; // strip below the plotArea where the axis text etc goes
 	Vector<LineData> lines = new Vector<LineData>();
 	String title = DEFAULT_X_AXIS_TITLE;
+    boolean drawLabels = true;
+    boolean drawTitle = true;
 	Font titleFont = DEFAULT_AXIS_TITLE_FONT;
 	Font labelsFont = DEFAULT_LABELS_FONT;
 	double rotation = DEFAULT_X_LABELS_ROTATED_BY;
@@ -84,6 +86,14 @@ class DomainAxis {
 		this.chart = chart;
 	}
 
+    public void setLabels(boolean drawLabels) {
+        this.drawLabels = drawLabels;
+    }
+
+    public void setDrawTitle(boolean drawTitle) {
+        this.drawTitle = drawTitle;
+    }
+
 	public void dispose() {
 		for (LineData line : lines)
 			for (LabelData label : line.labels)
@@ -95,12 +105,12 @@ class DomainAxis {
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience.
 	 */
-	public Insets layout(GC gc, Rectangle bounds, Insets insets, ICoordsMapping coordsMapping, int pass) {
+	public Insets layout(Graphics graphics, Rectangle bounds, Insets insets, ICoordsMapping coordsMapping, int pass) {
 		if (pass == 1) {
 			// measure title height and labels height
-			gc.setFont(titleFont);
-			int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
-			gc.setFont(labelsFont);
+			graphics.setFont(titleFont);
+			int titleHeight = !drawTitle || title.equals("") ? 0 : GraphicsUtils.getTextExtent(graphics, title).y;
+			graphics.setFont(labelsFont);
 			lines.add(new LineData());
 			IScalarDataset dataset = chart.getDataset();
 			BarPlot plot = chart.getPlot();
@@ -124,10 +134,10 @@ class DomainAxis {
 
 					if (wrapLabels) {
 						maxSize.width = rotation == 0.0 ? Math.max(right - left, 10) : -1;
-						label = layoutGroupLabel(row, labelsFont, rotation, gc, maxSize);
+						label = layoutGroupLabel(row, labelsFont, rotation, graphics, maxSize);
 					}
 					else {
-						label = layoutGroupLabel(row, labelsFont, rotation, gc, maxSize);
+						label = layoutGroupLabel(row, labelsFont, rotation, graphics, maxSize);
 
 						if ((left + right) / 2 - label.rotatedSize.width / 2 < line.right) {
 							line = new LineData();
@@ -143,12 +153,14 @@ class DomainAxis {
 
 			// position labels vertically
 			int labelsHeight = 0;
-			for (LineData line : lines) {
-				for (LabelData label : line.labels)
-					label.centerY = labelsHeight + line.height / 2;
-				labelsHeight += line.height;
+			if (drawLabels) {
+    			for (LineData line : lines) {
+    				for (LabelData label : line.labels)
+    					label.centerY = labelsHeight + line.height / 2;
+    				labelsHeight += line.height;
+    			}
+    			labelsHeight = Math.min(labelsHeight, maxSize.height);
 			}
-			labelsHeight = Math.min(labelsHeight, maxSize.height);
 
 			// modify insets with space required
 			insets.top = Math.max(insets.top, 10); // leave a few pixels at the top
@@ -167,11 +179,11 @@ class DomainAxis {
 		}
 	}
 
-	private LabelData layoutGroupLabel(int row, Font font, double rotation , GC gc, Dimension maxSize) {
+	private LabelData layoutGroupLabel(int row, Font font, double rotation , Graphics graphics, Dimension maxSize) {
 		LabelData data = new LabelData();
 		String label = chart.getDataset().getRowKey(row);
 		data.row = row;
-		data.textLayout = new TextLayout(gc.getDevice());
+		data.textLayout = new TextLayout(Display.getDefault());
 		data.textLayout.setText(label.replace(';', '\u00ad')); // hyphenate at ';'
 		data.textLayout.setFont(font);
 		data.textLayout.setAlignment(SWT.CENTER);
@@ -179,14 +191,12 @@ class DomainAxis {
 			data.textLayout.setWidth(maxSize.width);
 		//Debug.format("width=%s%n", maxWidth);
 		org.eclipse.swt.graphics.Rectangle bounds = data.textLayout.getBounds();
-		data.size = new Dimension(bounds.width, Math.min(bounds.height, maxSize.height)); //new Dimension(gc.textExtent(data.label));
+		data.size = new Dimension(bounds.width, Math.min(bounds.height, maxSize.height)); //new Dimension(graphics.textExtent(data.label));
 		data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);
 		return data;
 	}
 
-	public void draw(GC gc, ICoordsMapping coordsMapping) {
-		org.eclipse.swt.graphics.Rectangle oldClip = gc.getClipping(); // graphics.popState() doesn't restore it!
-		Graphics graphics = new SWTGraphics(gc);
+	public void draw(Graphics graphics, ICoordsMapping coordsMapping) {
 		graphics.pushState();
 
 		graphics.setClip(rect);
@@ -195,54 +205,57 @@ class DomainAxis {
 		graphics.setLineWidth(1);
 		graphics.setForegroundColor(ColorFactory.BLACK);
 
+        BarPlot plot = chart.getPlot();
+        Rectangle plotRect = plot.getRectangle();
 
 		// draw labels
-		IScalarDataset dataset = chart.getDataset();
-		BarPlot plot = chart.getPlot();
-		Rectangle plotRect = plot.getRectangle();
-		if (dataset != null) {
-			int cColumns = dataset.getColumnCount();
-			int cRows = dataset.getRowCount();
+		if (drawLabels) {
+    		IScalarDataset dataset = chart.getDataset();
+    		if (dataset != null) {
+    			int cColumns = dataset.getColumnCount();
+    			int cRows = dataset.getRowCount();
 
-			// draw lines
-			for (int row = 0; row < cRows; ++row) {
-				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
-				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
-				graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
-			}
+    			// draw lines
+    			for (int row = 0; row < cRows; ++row) {
+    				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
+    				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
+    				graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
+    			}
 
-			// draw labels
-			graphics.setFont(labelsFont);
-			graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
-			graphics.pushState(); // for restoring the transform
-			for (LineData line : lines) {
-				for (LabelData label : line.labels) {
-					graphics.restoreState();
-					int left = plot.getBarRectangle(label.row, 0, coordsMapping).x;
-					int right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
-					Dimension size = label.size;
-					Dimension rotatedSize = label.rotatedSize;
+    			// draw labels
+    			graphics.setFont(labelsFont);
+    			graphics.drawText("", 0, 0); // force Graphics push the font setting into graphics
+    			graphics.pushState(); // for restoring the transform
+    			for (LineData line : lines) {
+    				for (LabelData label : line.labels) {
+    					graphics.restoreState();
+    					int left = plot.getBarRectangle(label.row, 0, coordsMapping).x;
+    					int right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
+    					Dimension size = label.size;
+    					Dimension rotatedSize = label.rotatedSize;
 
-					if (isRectangularAngle(rotation)) // center into the cell
-						graphics.translate((left + right) / 2, rect.y + gap + 1 + label.centerY);
-					else // left at the bottom of the bar
-						graphics.translate((left + right) / 2 + rotatedSize.width / 2, rect.y + gap + 1 + label.centerY);
-					graphics.rotate((float)rotation);
-					graphics.drawTextLayout(label.textLayout, - size.width / 2, - size.height/2);
-				}
-			}
-			graphics.popState();
+    					if (isRectangularAngle(rotation)) // center into the cell
+    						graphics.translate((left + right) / 2, rect.y + gap + 1 + label.centerY);
+    					else // left at the bottom of the bar
+    						graphics.translate((left + right) / 2 + rotatedSize.width / 2, rect.y + gap + 1 + label.centerY);
+    					graphics.rotate((float)-rotation);
+    					graphics.drawTextLayout(label.textLayout, - size.width / 2, - size.height/2);
+    				}
+    			}
+    			graphics.popState();
+    		}
 		}
 
 		// draw axis title
-		graphics.setFont(titleFont);
-		graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
-		Point size = gc.textExtent(title);
-		graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.bottom() - size.y - 1);
+		if (drawTitle) {
+    		graphics.setFont(titleFont);
+    		graphics.drawText("", 0, 0); // force Graphics push the font setting into graphics
+    		Point size = GraphicsUtils.getTextExtent(graphics, title);
+    		graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.bottom() - size.y - 1);
+		}
 
 		graphics.popState();
 		graphics.dispose();
-		gc.setClipping(oldClip); // graphics.popState() doesn't restore it!
 	}
 
 	private static boolean isRectangularAngle(double degree) {

@@ -45,277 +45,277 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class AnalysisImpl extends EObjectImpl implements Analysis {
 	/**
-	 * The cached value of the '{@link #getInputs() <em>Inputs</em>}' containment reference.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getInputs() <em>Inputs</em>}' containment reference.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getInputs()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getInputs()
+     * @generated
+     * @ordered
+     */
 	protected Inputs inputs;
 
 	/**
-	 * The cached value of the '{@link #getDatasets() <em>Datasets</em>}' containment reference.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getDatasets() <em>Datasets</em>}' containment reference.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDatasets()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getDatasets()
+     * @generated
+     * @ordered
+     */
 	protected Datasets datasets;
 
 	/**
-	 * The cached value of the '{@link #getChartSheets() <em>Chart Sheets</em>}' containment reference.
-	 * <!-- begin-user-doc -->
+     * The cached value of the '{@link #getChartSheets() <em>Chart Sheets</em>}' containment reference.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getChartSheets()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getChartSheets()
+     * @generated
+     * @ordered
+     */
 	protected ChartSheets chartSheets;
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected AnalysisImpl() {
-		super();
-	}
+        super();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	protected EClass eStaticClass() {
-		return ScaveModelPackage.Literals.ANALYSIS;
-	}
+        return ScaveModelPackage.Literals.ANALYSIS;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Inputs getInputs() {
-		return inputs;
-	}
+        return inputs;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public NotificationChain basicSetInputs(Inputs newInputs, NotificationChain msgs) {
-		Inputs oldInputs = inputs;
-		inputs = newInputs;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__INPUTS, oldInputs, newInputs);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
+        Inputs oldInputs = inputs;
+        inputs = newInputs;
+        if (eNotificationRequired()) {
+            ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__INPUTS, oldInputs, newInputs);
+            if (msgs == null) msgs = notification; else msgs.add(notification);
+        }
+        return msgs;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public void setInputs(Inputs newInputs) {
-		if (newInputs != inputs) {
-			NotificationChain msgs = null;
-			if (inputs != null)
-				msgs = ((InternalEObject)inputs).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__INPUTS, null, msgs);
-			if (newInputs != null)
-				msgs = ((InternalEObject)newInputs).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__INPUTS, null, msgs);
-			msgs = basicSetInputs(newInputs, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__INPUTS, newInputs, newInputs));
-	}
+        if (newInputs != inputs) {
+            NotificationChain msgs = null;
+            if (inputs != null)
+                msgs = ((InternalEObject)inputs).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__INPUTS, null, msgs);
+            if (newInputs != null)
+                msgs = ((InternalEObject)newInputs).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__INPUTS, null, msgs);
+            msgs = basicSetInputs(newInputs, msgs);
+            if (msgs != null) msgs.dispatch();
+        }
+        else if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__INPUTS, newInputs, newInputs));
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Datasets getDatasets() {
-		return datasets;
-	}
+        return datasets;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public NotificationChain basicSetDatasets(Datasets newDatasets, NotificationChain msgs) {
-		Datasets oldDatasets = datasets;
-		datasets = newDatasets;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__DATASETS, oldDatasets, newDatasets);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
+        Datasets oldDatasets = datasets;
+        datasets = newDatasets;
+        if (eNotificationRequired()) {
+            ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__DATASETS, oldDatasets, newDatasets);
+            if (msgs == null) msgs = notification; else msgs.add(notification);
+        }
+        return msgs;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public void setDatasets(Datasets newDatasets) {
-		if (newDatasets != datasets) {
-			NotificationChain msgs = null;
-			if (datasets != null)
-				msgs = ((InternalEObject)datasets).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__DATASETS, null, msgs);
-			if (newDatasets != null)
-				msgs = ((InternalEObject)newDatasets).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__DATASETS, null, msgs);
-			msgs = basicSetDatasets(newDatasets, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__DATASETS, newDatasets, newDatasets));
-	}
+        if (newDatasets != datasets) {
+            NotificationChain msgs = null;
+            if (datasets != null)
+                msgs = ((InternalEObject)datasets).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__DATASETS, null, msgs);
+            if (newDatasets != null)
+                msgs = ((InternalEObject)newDatasets).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__DATASETS, null, msgs);
+            msgs = basicSetDatasets(newDatasets, msgs);
+            if (msgs != null) msgs.dispatch();
+        }
+        else if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__DATASETS, newDatasets, newDatasets));
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public ChartSheets getChartSheets() {
-		return chartSheets;
-	}
+        return chartSheets;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public NotificationChain basicSetChartSheets(ChartSheets newChartSheets, NotificationChain msgs) {
-		ChartSheets oldChartSheets = chartSheets;
-		chartSheets = newChartSheets;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__CHART_SHEETS, oldChartSheets, newChartSheets);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
+        ChartSheets oldChartSheets = chartSheets;
+        chartSheets = newChartSheets;
+        if (eNotificationRequired()) {
+            ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__CHART_SHEETS, oldChartSheets, newChartSheets);
+            if (msgs == null) msgs = notification; else msgs.add(notification);
+        }
+        return msgs;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public void setChartSheets(ChartSheets newChartSheets) {
-		if (newChartSheets != chartSheets) {
-			NotificationChain msgs = null;
-			if (chartSheets != null)
-				msgs = ((InternalEObject)chartSheets).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__CHART_SHEETS, null, msgs);
-			if (newChartSheets != null)
-				msgs = ((InternalEObject)newChartSheets).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__CHART_SHEETS, null, msgs);
-			msgs = basicSetChartSheets(newChartSheets, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__CHART_SHEETS, newChartSheets, newChartSheets));
-	}
+        if (newChartSheets != chartSheets) {
+            NotificationChain msgs = null;
+            if (chartSheets != null)
+                msgs = ((InternalEObject)chartSheets).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__CHART_SHEETS, null, msgs);
+            if (newChartSheets != null)
+                msgs = ((InternalEObject)newChartSheets).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__CHART_SHEETS, null, msgs);
+            msgs = basicSetChartSheets(newChartSheets, msgs);
+            if (msgs != null) msgs.dispatch();
+        }
+        else if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__CHART_SHEETS, newChartSheets, newChartSheets));
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case ScaveModelPackage.ANALYSIS__INPUTS:
-				return basicSetInputs(null, msgs);
-			case ScaveModelPackage.ANALYSIS__DATASETS:
-				return basicSetDatasets(null, msgs);
-			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
-				return basicSetChartSheets(null, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.ANALYSIS__INPUTS:
+                return basicSetInputs(null, msgs);
+            case ScaveModelPackage.ANALYSIS__DATASETS:
+                return basicSetDatasets(null, msgs);
+            case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+                return basicSetChartSheets(null, msgs);
+        }
+        return super.eInverseRemove(otherEnd, featureID, msgs);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case ScaveModelPackage.ANALYSIS__INPUTS:
-				return getInputs();
-			case ScaveModelPackage.ANALYSIS__DATASETS:
-				return getDatasets();
-			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
-				return getChartSheets();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.ANALYSIS__INPUTS:
+                return getInputs();
+            case ScaveModelPackage.ANALYSIS__DATASETS:
+                return getDatasets();
+            case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+                return getChartSheets();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case ScaveModelPackage.ANALYSIS__INPUTS:
-				setInputs((Inputs)newValue);
-				return;
-			case ScaveModelPackage.ANALYSIS__DATASETS:
-				setDatasets((Datasets)newValue);
-				return;
-			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
-				setChartSheets((ChartSheets)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.ANALYSIS__INPUTS:
+                setInputs((Inputs)newValue);
+                return;
+            case ScaveModelPackage.ANALYSIS__DATASETS:
+                setDatasets((Datasets)newValue);
+                return;
+            case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+                setChartSheets((ChartSheets)newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public void eUnset(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.ANALYSIS__INPUTS:
-				setInputs((Inputs)null);
-				return;
-			case ScaveModelPackage.ANALYSIS__DATASETS:
-				setDatasets((Datasets)null);
-				return;
-			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
-				setChartSheets((ChartSheets)null);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.ANALYSIS__INPUTS:
+                setInputs((Inputs)null);
+                return;
+            case ScaveModelPackage.ANALYSIS__DATASETS:
+                setDatasets((Datasets)null);
+                return;
+            case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+                setChartSheets((ChartSheets)null);
+                return;
+        }
+        super.eUnset(featureID);
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.ANALYSIS__INPUTS:
-				return inputs != null;
-			case ScaveModelPackage.ANALYSIS__DATASETS:
-				return datasets != null;
-			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
-				return chartSheets != null;
-		}
-		return super.eIsSet(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.ANALYSIS__INPUTS:
+                return inputs != null;
+            case ScaveModelPackage.ANALYSIS__DATASETS:
+                return datasets != null;
+            case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+                return chartSheets != null;
+        }
+        return super.eIsSet(featureID);
+    }
 
 } //AnalysisImpl

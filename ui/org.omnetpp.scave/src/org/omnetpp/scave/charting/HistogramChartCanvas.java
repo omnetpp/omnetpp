@@ -25,12 +25,12 @@ import static org.omnetpp.scave.charting.properties.HistogramProperties.PROP_HIS
 import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_BASELINE;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
@@ -39,6 +39,7 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
@@ -66,7 +67,8 @@ public class HistogramChartCanvas extends ChartCanvas {
 		new Tooltip(this);
 
 		this.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent e) {
+			@Override
+            public void mouseDown(MouseEvent e) {
 				setSelection(new IChartSelection() {
 				});
 			}
@@ -93,7 +95,8 @@ public class HistogramChartCanvas extends ChartCanvas {
 		return yAxis.inverseTransform(y);
 	}
 
-	public void setProperty(String name, String value) {
+	@Override
+    public void setProperty(String name, String value) {
 		Assert.isLegal(name != null);
 		if (debug) Debug.println("HistogramChartCanvas.setProperty: "+name+"='"+value+"'");
 
@@ -245,18 +248,18 @@ public class HistogramChartCanvas extends ChartCanvas {
 	Insets axesInsets; // space occupied by axes
 
 	@Override
-	protected Rectangle doLayoutChart(GC gc, int pass) {
+	protected Rectangle doLayoutChart(Graphics graphics, int pass) {
 		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
 		if (pass == 1) {
 			// Calculate space occupied by title and legend and set insets accordingly
 			Rectangle area = new Rectangle(getClientArea());
-			Rectangle remaining = legendTooltip.layout(gc, area);
-			remaining = title.layout(gc, area);
-			remaining = legend.layout(gc, remaining, pass);
+			Rectangle remaining = legendTooltip.layout(graphics, area);
+			remaining = title.layout(graphics, area);
+			remaining = legend.layout(graphics, remaining, pass);
 
 			mainArea = remaining.getCopy();
-			axesInsets = xAxis.layout(gc, mainArea, new Insets(), coordsMapping, pass);
-			axesInsets = yAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
+			axesInsets = xAxis.layout(graphics, mainArea, new Insets(), coordsMapping, pass);
+			axesInsets = yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
 
 			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
 			Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
@@ -265,11 +268,11 @@ public class HistogramChartCanvas extends ChartCanvas {
 		else if (pass == 2) {
 			// now the coordinate mapping is set up, so the y axis knows what tick labels
 			// will appear, and can calculate the occupied space from the longest tick label.
-			yAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
-			xAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
+			yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
+			xAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
 			Rectangle remaining = mainArea.getCopy().crop(axesInsets);
-			Rectangle plotArea = plot.layout(gc, remaining);
-			legend.layout(gc, plotArea, pass);
+			Rectangle plotArea = plot.layout(graphics, remaining);
+			legend.layout(graphics, plotArea, pass);
 			//FIXME how to handle it when plotArea.height/width comes out negative??
 			return plotArea;
 		}
@@ -277,21 +280,30 @@ public class HistogramChartCanvas extends ChartCanvas {
 	}
 
 	@Override
-	protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping) {
-		gc.fillRectangle(gc.getClipping());
-		yAxis.drawGrid(gc, coordsMapping);
-		plot.draw(gc, coordsMapping);
+	protected void doPaintCachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
+		graphics.fillRectangle(GraphicsUtils.getClip(graphics));
+		yAxis.drawGrid(graphics, coordsMapping);
+		plot.draw(graphics, coordsMapping);
 	}
 
 	@Override
-	protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping) {
-		paintInsets(gc);
-		title.draw(gc);
-		legend.draw(gc);
-		xAxis.drawAxis(gc, coordsMapping);
-		yAxis.drawAxis(gc, coordsMapping);
-		legendTooltip.draw(gc);
-		drawStatusText(gc);
-		drawRubberband(gc);
+	protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
+		paintInsets(graphics);
+		title.draw(graphics);
+		legend.draw(graphics);
+		xAxis.drawAxis(graphics, coordsMapping);
+		yAxis.drawAxis(graphics, coordsMapping);
+		legendTooltip.draw(graphics);
+		drawStatusText(graphics);
+		drawRubberband(graphics);
 	}
+
+    @Override
+    public void setDisplayAxesDetails(Boolean value) {
+        xAxis.setDrawTickLabels(value);
+        xAxis.setDrawTitle(value);
+        yAxis.setDrawTickLabels(value);
+        yAxis.setDrawTitle(value);
+        chartChanged();
+    }
 }

@@ -9,12 +9,12 @@ package org.omnetpp.common.canvas;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -61,12 +61,14 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		//
 
 		getHorizontalBar().addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				horizontalScrollBarChanged(e);
 			}
 		});
 		getVerticalBar().addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				verticalScrollBarChanged(e);
 			}
 		});
@@ -298,9 +300,9 @@ public abstract class LargeScrollableCanvas extends Canvas {
 				shift++;
 
 			int newMax = (int)(virtualSize>>shift);
-			int newThumb = (int)(widgetSize >> shift);
+			int newThumb = (widgetSize >> shift);
 			int newSel = (int)(virtualPos >> shift);
-			int newPageIncr = (int)((widgetSize>>shift > 0) ? widgetSize>>shift : 1);
+			int newPageIncr = ((widgetSize>>shift > 0) ? widgetSize>>shift : 1);
 
 			scrollBar.setMinimum(0);
 			scrollBar.setMaximum(newMax);

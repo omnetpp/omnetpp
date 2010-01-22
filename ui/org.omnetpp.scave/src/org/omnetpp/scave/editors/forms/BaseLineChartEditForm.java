@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -210,7 +212,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			displayLineCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 			displayLineCheckbox.setText("Display line");
 			displayLineCheckbox.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
+				@Override
+                public void widgetSelected(SelectionEvent e) {
 					updatePreview();
 				}
 			});
@@ -221,7 +224,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			for (LineType a : LineType.values())
 				lineTypeCombo.add(a.toString(), ScavePlugin.getCachedImage(a.getImageId()));
 			lineTypeCombo.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
+				@Override
+                public void widgetSelected(SelectionEvent e) {
 					updatePreview();
 				}
 			});
@@ -232,7 +236,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			for (SymbolType a : SymbolType.values())
 				symbolTypeCombo.add(a.toString(), ScavePlugin.getCachedImage(a.getImageId()));
 			symbolTypeCombo.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
+				@Override
+                public void widgetSelected(SelectionEvent e) {
 					updatePreview();
 				}
 			});
@@ -242,7 +247,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			symbolSizeCombo.add(AUTO, 1);
 			symbolSizeCombo.setVisibleItemCount(SYMBOL_SIZES.length);
 			symbolSizeCombo.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
+				@Override
+                public void widgetSelected(SelectionEvent e) {
 					updatePreview();
 				}
 			});
@@ -324,7 +330,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 
 		// copy original line properties from the Chart object
 		// Note: if a setting applies to all lines, remove line specific settings
-		List<Property> origProps = (List<Property>)chart.getProperties();
+		List<Property> origProps = chart.getProperties();
 		for (Property property : origProps) {
 			String name = property.getName();
 			String value = property.getValue();
@@ -541,6 +547,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		@SuppressWarnings("unchecked")
 		public void paintControl(PaintEvent e) {
 			GC gc = e.gc;
+			Graphics graphics = new SWTGraphics(gc);
 			drawBackground(gc, e.x, e.y, e.width, e.height);
 
 			IStructuredSelection selection = (IStructuredSelection)linesTableViewer.getSelection();
@@ -550,12 +557,12 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					IVectorPlotter plotter = getVectorPlotter(line);
 					IChartSymbol symbol = getChartSymbol(line);
 					Color color = getLineColor(line);
-					gc.setAntialias(SWT.ON);
-					gc.setForeground(color);
-					gc.setBackground(color);
+					graphics.setAntialias(SWT.ON);
+					graphics.setForegroundColor(color);
+					graphics.setBackgroundColor(color);
 
 					if (line.series >= 0);
-						plotter.plot(this, line.series, gc, coordsMapping, symbol);
+						plotter.plot(this, line.series, graphics, coordsMapping, symbol);
 				}
 			}
 		}

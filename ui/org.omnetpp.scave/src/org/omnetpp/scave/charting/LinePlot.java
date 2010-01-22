@@ -7,11 +7,11 @@
 
 package org.omnetpp.scave.charting;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
@@ -129,13 +129,13 @@ class LinePlot implements ILinePlot {
 		return area;
 	}
 
-	protected Rectangle layout(GC gc, Rectangle area) {
+	protected Rectangle layout(Graphics graphics, Rectangle area) {
 		this.rect = area.getCopy();
 		return area;
 	}
 
 
-	protected void draw(GC gc, ICoordsMapping coordsMapping) {
+	protected void draw(Graphics graphics, ICoordsMapping coordsMapping) {
 		if (getDataset() != null) {
 			IXYDataset dataset = getDataset();
 			long startTime = System.currentTimeMillis();
@@ -146,19 +146,19 @@ class LinePlot implements ILinePlot {
 					IVectorPlotter plotter = props.getPlotter();
 					IChartSymbol symbol = props.getSymbol();
 					Color color = props.getColor();
-					chart.resetDrawingStylesAndColors(gc);
-					gc.setAntialias(chart.antialias ? SWT.ON : SWT.OFF);
-					gc.setForeground(color);
-					gc.setBackground(color);
+					chart.resetDrawingStylesAndColors(graphics);
+					graphics.setAntialias(chart.antialias ? SWT.ON : SWT.OFF);
+					graphics.setForegroundColor(color);
+					graphics.setBackgroundColor(color);
 
-					if (smartMode && plotter.getNumPointsInXRange(this, series, gc, coordsMapping) >= smartModeLimit) {
+					if (smartMode && plotter.getNumPointsInXRange(this, series, graphics, coordsMapping) >= smartModeLimit) {
 						//XXX this may have unwanted effects when caching is on,
 						// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
 						if (debug) Debug.println("\"smart mode\": turning off symbols");
 						symbol = null;
 					}
 
-					plotter.plot(this, series, gc, coordsMapping, symbol);
+					plotter.plot(this, series, graphics, coordsMapping, symbol);
 
 					// if drawing is taking too long, display busy cursor
 					if (System.currentTimeMillis() - startTime > 1000) {
