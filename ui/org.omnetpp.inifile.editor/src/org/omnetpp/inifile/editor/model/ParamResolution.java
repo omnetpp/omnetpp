@@ -7,8 +7,10 @@
 
 package org.omnetpp.inifile.editor.model;
 
+import java.util.Vector;
+
 import org.omnetpp.ned.model.ex.ParamElementEx;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 /**
  * Value object, stores the result of a parameter resolution.
@@ -26,17 +28,17 @@ public class ParamResolution {
 		IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
 	}
 
-	// moduleFullPath and param name (from paramDeclNode or paramValueNode) identify the NED parameter.
-	// For vector submodules, moduleFullPath contains "[*]".
-	// pathModules[] relates moduleFullPath to NEDElements. The network is pathModules[1]'s
-	// parent CompoundModuleElement, or paramDeclNode's parent Compound/SimpleModuleElement if
-	// pathModules[] is empty. After that, the type of pathModules[i] is the parent
-	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclNode).
-	// pathModules[0] may be null.
-	public String moduleFullPath;
-	public SubmoduleElement[] pathModules;
-	public ParamElementEx paramDeclNode;  // node where param was declared; not null
-	public ParamElementEx paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
+	// fullPath and param name (from paramDeclaration or paramAssignment) identify the NED parameter.
+	// For vector elementPath, fullPath contains "[*]".
+	// elementPath[] relates fullPath to NEDElements. The network is elementPath[1]'s
+	// parent CompoundModuleElement, or paramDeclaration's parent Compound/SimpleModuleElement if
+	// elementPath[[] is empty. After that, the type of elementPath[[i] is the parent
+	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclaration).
+	// elementPath[[0] may be null.
+	public String fullPath;
+	public ISubmoduleOrConnection[] elementPath;
+	public ParamElementEx paramDeclaration;  // node where param was declared; not null
+	public ParamElementEx paramAssignment;  // node where param gets assigned (may be a module or submodule param, or may be null)
 
 	// how the parameter value gets resolved: from NED, from inifile, unassigned, etc
 	public ParamResolutionType type;
@@ -51,13 +53,13 @@ public class ParamResolution {
 	public String key;
 
 	// for convenience
-	public ParamResolution(String moduleFullPath, SubmoduleElement[] pathModules,
-			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type,
+	public ParamResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath,
+			               ParamElementEx paramDeclaration, ParamElementEx paramAssignment, ParamResolutionType type,
 			               String activeSection, String section, String key) {
-		this.moduleFullPath = moduleFullPath;
-		this.pathModules = pathModules;
-		this.paramDeclNode = paramDeclNode;
-		this.paramValueNode = paramValueNode;
+		this.fullPath = fullPath;
+		this.elementPath = elementPath.toArray(new ISubmoduleOrConnection[0]);
+		this.paramDeclaration = paramDeclaration;
+		this.paramAssignment = paramAssignment;
 		this.type = type;
 		this.activeSection = activeSection;
 		this.section = section;
@@ -88,23 +90,23 @@ public class ParamResolution {
 		}
 		else if (!key.equals(other.key))
 			return false;
-		if (moduleFullPath == null) {
-			if (other.moduleFullPath != null)
+		if (fullPath == null) {
+			if (other.fullPath != null)
 				return false;
 		}
-		else if (!moduleFullPath.equals(other.moduleFullPath))
+		else if (!fullPath.equals(other.fullPath))
 			return false;
-		if (paramDeclNode == null) {
-			if (other.paramDeclNode != null)
+		if (paramDeclaration == null) {
+			if (other.paramDeclaration != null)
 				return false;
 		}
-		else if (!paramDeclNode.equals(other.paramDeclNode))
+		else if (!paramDeclaration.equals(other.paramDeclaration))
 			return false;
-		if (paramValueNode == null) {
-			if (other.paramValueNode != null)
+		if (paramAssignment == null) {
+			if (other.paramAssignment != null)
 				return false;
 		}
-		else if (!paramValueNode.equals(other.paramValueNode))
+		else if (!paramAssignment.equals(other.paramAssignment))
 			return false;
 		if (section == null) {
 			if (other.section != null)
@@ -121,4 +123,3 @@ public class ParamResolution {
 		return true;
 	}
 }
-

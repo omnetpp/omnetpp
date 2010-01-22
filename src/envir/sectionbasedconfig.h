@@ -74,16 +74,16 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
     class KeyValue2 : public KeyValue1 {
       public:
-        PatternMatcher *ownerPattern; // key without the group name
-        PatternMatcher *groupPattern; // only filled in when this is a wildcard group
-        PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & groupPattern
+        PatternMatcher *ownerPattern; // key without the suffix
+        PatternMatcher *suffixPattern; // only filled in when this is a wildcard group
+        PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & suffixPattern
 
         KeyValue2(const KeyValue1& e) : KeyValue1(e) {
-            ownerPattern = groupPattern = fullPathPattern = NULL;
+            ownerPattern = suffixPattern = fullPathPattern = NULL;
         }
         KeyValue2(const KeyValue2& e) : KeyValue1(e) {
             ownerPattern = e.ownerPattern;
-            groupPattern = e.groupPattern;
+            suffixPattern = e.suffixPattern;
             fullPathPattern = e.fullPathPattern;
         }
         //FIXME patterns never get deleted?
@@ -99,29 +99,29 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     // against the group which contains the keys ending in ".power" (e.g.
     // "**.server.radio.power", "**.host[0].**.power", etc).
     // If there is an entry which contains a wildcard in the parameter name part,
-    // that unfortunately has to be added to all groups.
+    // that unfortunately has to be added to all suffix groups.
     //
     // Examples:
     // Parameter keys:
-    //   **.host[*].address  ==> goes into the "address" group; ownerPattern="**.host[*]"
-    //   **.host[*].addr*    ==> goes into the wildcard group; ownerPattern="**.host[*]", groupPattern="addr*"
-    //   **.address          ==> goes into the "address" group; ownerPattern="**"
-    //   **.addr*            ==> goes into the wildcard group; ownerPattern="**"
-    //   **                  ==> goes into the wildcard group as "*"; ownerPattern="**"
-    //   **.**               ==> goes into the wildcard group as "*"; ownerPattern="**"
-    //   **-*                ==> goes into the wildcard group as "*-*"; ownerPattern="**"
-    //   **-**               ==> goes into the wildcard group as "*-*"(?); ownerPattern="**"
+    //   **.host[*].address  ==> goes into the "address" suffix group; ownerPattern="**.host[*]"
+    //   **.host[*].addr*    ==> goes into the wildcard suffix group; ownerPattern="**.host[*]", suffixPattern="addr*"
+    //   **.address          ==> goes into the "address" suffix group; ownerPattern="**"
+    //   **.addr*            ==> goes into the wildcard suffix group; ownerPattern="**"
+    //   **                  ==> goes into the wildcard suffix group as "*"; ownerPattern="**"
+    //   **.**               ==> goes into the wildcard suffix group as "*"; ownerPattern="**"
+    //   **-*                ==> goes into the wildcard suffix group as "*-*"; ownerPattern="**"
+    //   **-**               ==> goes into the wildcard suffix group as "*-*"(?); ownerPattern="**"
     //
     // Per-object config keys:
-    //   **.tcp.eedVector.record-interval ==> goes into the "record-interval" group; ownerPattern="**.tcp.eedVector"
-    //   **.tcp.eedVector.record-*"       ==> goes into the wildcard group; ownerPattern="**.tcp.eedVector", groupPattern="record-*"
+    //   **.tcp.eedVector.record-interval ==> goes into the "record-interval" suffix group; ownerPattern="**.tcp.eedVector"
+    //   **.tcp.eedVector.record-*"       ==> goes into the wildcard suffix group; ownerPattern="**.tcp.eedVector", suffixPattern="record-*"
     //
-    struct Group {
+    struct SuffixGroup {
         std::vector<KeyValue2> entries;
     };
 
-    std::map<std::string,Group> groups;
-    Group wildcardGroup;
+    std::map<std::string,SuffixGroup> suffixGroups;
+    SuffixGroup wildcardSuffixGroup;
 
     // getConfigEntry() etc return a reference to nullEntry when the
     // requested key is not found

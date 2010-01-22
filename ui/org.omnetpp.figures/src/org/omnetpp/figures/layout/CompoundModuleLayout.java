@@ -202,7 +202,6 @@ public class CompoundModuleLayout extends AbstractLayout {
         }
         if (debug)
             Debug.println("CompoundModuleLayout: " + (System.currentTimeMillis()-startTime) + "ms");
-        System.out.println("layout()");
     }
 
 	/**

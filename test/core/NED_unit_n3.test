@@ -36,5 +36,5 @@ void Test::activity()
 %exitcode: 1
 
 %contains-regex: stdout
-<!> Error: Cannot convert unit 'unknown' to none, at .*test\.ned:7\.
+<!> Error.*: Cannot convert unit 'unknown' to none, at .*test\.ned:7\.
 

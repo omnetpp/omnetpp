@@ -54,7 +54,6 @@ class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase
     virtual void validateElement(ChannelElement *node);
     virtual void validateElement(ParametersElement *node);
     virtual void validateElement(ParamElement *node);
-    virtual void validateElement(PatternElement *node);
     virtual void validateElement(PropertyElement *node);
     virtual void validateElement(PropertyKeyElement *node);
     virtual void validateElement(GatesElement *node);

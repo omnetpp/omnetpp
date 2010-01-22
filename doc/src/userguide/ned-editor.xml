@@ -25,7 +25,7 @@
       3.x viewed NED files in isolation. In contrast, the &Omnetpp;
       IDE gathers information from all [[.ned]] files in all open &Omnetpp;
       projects, and makes this information available to the NED editor. This is necessary because in &Omnetpp;
-      4.0, modules may inherit parameters, visual appearance or even submodules and connections from other
+      4.x, modules may inherit parameters, visual appearance or even submodules and connections from other
       modules, so it is only possible to display a compound module correctly if all related NED definitions
       are available.
     </para>
@@ -353,7 +353,7 @@
         <title>Converting from old to new NED format</title>
         <para> If you have a NED file with older syntax, you still can open it. A context menu item allows you
           to convert it to the new syntax. If the NED file is already using the new syntax the ``Convert to
-          4.0 Format'' menu item is disabled.</para>
+          4.x Format'' menu item is disabled.</para>
       </sect3>
       <sect3>
         <title>Content assist</title>

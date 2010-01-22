@@ -1,0 +1,311 @@
+== Generic Unix
+
+This chapter provides additional information for installing @OMNETPP@
+on Unix-like operating systems not specifically covered by this
+Installation Guide. The list includes FreeBSD, Solaris, and Linux
+distributions not covered in other chapters.
+
+[NOTE]
+===============================================================
+In addition to Windows and OS X, the Simulation IDE will only work
+on Linux x86 32/64-bit platforms. Other operating systems (FreeBSD,
+Solaris, etc.) and architectures may still be used as simulation
+platforms, without the IDE.
+===============================================================
+
+
+=== Derivative Linux distributions
+
+Some Linux distributions are derived from other distros, which means you
+may be able to use distro-specific instructions in this Guide.
+
+Some Ubuntu derivatives (Ubuntu instructions may apply):
+
+* Kubuntu, Xubuntu, Edubuntu
+* Linux Mint
+* Linspire/Freespire
+
+Some Debian-based distros (Debian instructions may apply):
+
+* Ubuntu and derivatives
+* Knoppix and derivatives
+* Mepis
+
+Some Fedora-based distros (Fedora instructions may apply):
+
+* Simplis
+* Eeedora
+
+=== Dependencies
+
+The following packages are required for @OMNETPP@ to work:
+
+build-essential, GNU make, gcc, g\++, bison (2.x+), flex, perl::
+  These packages are needed for compiling @OMNETPP@ and simulation models,
+  and also for certain @OMNETPP@ tools to work. Some C++ compilers
+  other than g++, for example the Intel compiler, will also be accepted.
+
+The following packages are strongly recommended, because their absence
+results in severe feature loss:
+
+Tcl/Tk 8.4 or later::
+  Required by the Tkenv simulation runtime environment.
+  You need the 'devel' packages that include the C header files as well.
+  It is also possible to compile @OMNETPP@ without Tcl/Tk (and Tkenv),
+  by turning on the `NO_TCL` environment variable.
+BLT (2.4z)::
+  This is a Tk extension recommended for Tkenv. The normal (non-devel)
+  package suffices. This package is optional in the sense that if it is
+  missing, Tkenv will be still fully functional, albeit it will have
+  a less sophisticated user interface.
+LibXML2 or Expat::
+  Either one of these XML parsers are needed for @OMNETPP@ to be able
+  to read XML files. The 'devel' packages (that include the header files)
+  are needed. LibXML2 is the preferred one.
+SUN JRE or OpenJDK, version 5.0 or later::
+  The Java runtime is required to run the Eclipse-based Simulation IDE.
+  Other implementations, for example Kaffe, have been found to have problems
+  running the IDE. You do not need this package if you do not plan
+  to use the Simulation IDE. 
+xulrunner::
+  This package is part of Firefox, and is needed by the IDE to display
+  documentation, styled tooltips and other items.
+
+The following packages are required if you want to take advantage of some advanced
+@OMNETPP@ features:
+
+GraphViz, Doxygen::
+  These packages are used by the NED documentation generation feature
+  of the IDE. When they are missing, documentation will have less content.
+
+MPI:: openmpi or some other MPI implementation is required to support 
+      parallel simulation execution.
+
+akaroa::  
+  Multiple Replications In Parallel (MRIP). Should be downloaded from the
+  project's website.
+
+The exact names of these packages may differ across distributions.
+
+=== Determining package names
+
+If you have a distro unrelated to the ones covered in this Installation Guide,
+you need to figure out what is the established way of installing packages
+on your system, and what are the names of the packages you need.
+
+==== Tcl/Tk
+
+Tcl/Tk may be present as separate packages (`tcl` and `tk`), or in one
+package (`tcltk`). The version number (e.g. 8.5) is usually part of the name
+in some form (`85`, `8.5`, etc). You will need the development packages, which
+are usually denoted with the `-dev` or `-devel` name suffix.
+
+Troubleshooting:
+
+If your platform does not have suitable Tcl/Tk packages, you may still use @OMNETPP@
+to run simulations from the command line. To disable the graphical runtime environment
+use:
+
+  $ NO_TCL=yes ./configure
+
+This will prevent the build system to link with Tcl/Tk libraries. This is required also
+if you are installing @OMNETPP@ from a remote terminal session.
+
+By default, the `configure` script expects to find the Tcl/Tk libraries
+in the standard linker path (without any `-Ldirectory` linker option)
+and under the standard names (i.e. with the `-ltcl8.4` or `-ltcl84`
+linker option). If you have them in different places or under different
+names, you have to edit `configure.user` and explicitly set `TK_LIBS` there (see
+the Build Options chapter for further details).
+
+If you get the error 'no display and DISPLAY environment variable not set',
+then you're either not running X (the `wish` command, and thus `./configure` won't
+work just in the console) or you really need to set the `DISPLAY` variable
+(`export DISPLAY=:0.0` usually does it).
+
+If you get the error: 'Tcl_Init failed: Can't find a usable init.tcl...'
+
+The `TCL_LIBRARY` environment variable should point to the directory which 
+contains `init.tcl`. That is, you probably want to put a line like
+
+  export TCL_LIBRARY=/usr/lib/tcl8.4
+
+into your `~/.bash_profile`. 
+
+  
+If you still have problems installing Tcl/Tk, we recommend visiting the @OMNETPP@ site's 
+wiki packages for further troubleshooting tips.
+Visit: 'http://www.omnetpp.org/pmwiki/index.php?n=Main.TclTkRelatedProblems'
+
+==== BLT
+
+BLT is not a supported package in all Unix distributions. If your
+distro does not have it, then your can either use Tkenv without BLT
+(not a big problem), or download and build BLT yourself.
+
+You can get the source tarball, `BLT2.4z.tar.gz` from the Sourceforge
+BLT project page, 'http://sourceforge.net/projects/blt'.
+
+Unpack the source tgz, change into its directory, then type `./configure`,
+then `make` and `make install`. (For the last step you'll need root privileges --
+you may need to contact your sysadmin). If there's any problem, refer to the
+`INSTALL` file in the package.
+
+You can try your installation by running `bltwish`, or `wish`
+and typing 
+
+  `% package require BLT` 
+  
+in it.
+
+If you don't have root privileges or you get an error during the build,
+please check the following page:
+'http://www.omnetpp.org/pmwiki/index.php?n=Main.TclTkRelatedProblems'
+
+==== The Java Runtime
+
+You need to install the Sun JRE or OpenJDK. 
+On Unix platforms other than Linux the IDE is not supported so JRE is not required
+either. We have tested various other Java runtimes ('gcj', 'kaffe', etc.), and 
+the IDE does not work well with them.
+
+Java version 5.0 (i.e. JRE 1.5) or later is required.
+
+==== MPI
+
+@OMNETPP@ is not sensitive to the particular MPI implementation. You may use
+OpenMPI, or any other standards-compliant MPI package.
+
+=== Downloading and unpacking
+
+Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
+the generic archive, `@omnetpp@-@version@-src.tgz`.
+
+Copy the archive to the directory where you want to install it. This is usually
+your home directory, `/home/<you>`. Open a terminal, and extract the archive
+using the following command:
+
+  $ tar xvfz @omnetpp@-@version@-src.tgz
+
+This will create an `@omnetpp@-@version@` subdirectory with the @OMNETPP@ files in it.
+
+=== Environment variables
+
+In general @OMNETPP@ requires that its bin directory should be in the PATH. You should
+add a line something like this to your `.bashrc` or `.bashprofile`
+
+  $ export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
+
+You may also have to specify the path where shared libraries are loaded from. Use:
+
+  $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/@omnetpp@-@version@/lib
+
+If `configure` complains about not finding the Tcl library directory, you may specify it
+by setting the `TCL_LIBRARY` environment variable.
+
+[NOTE]
+===============================================================
+If you use a shell other than bash, consult the man page of that shell
+to find out which startup file to edit, and how to set and export variables.
+===============================================================
+
+=== Configuring and building @OMNETPP@
+
+In the top-level @OMNETPP@ directory, type:
+
+  $ ./configure
+
+The `configure` script detects installed software and configuration of your
+system. It writes the results into the `Makefile.inc` file, which will be
+read by the makefiles during the build process.
+
+Normally, the `configure` script needs to be running under the graphical
+environment (X11) in order to test for `wish`, the Tcl/Tk shell. If you are logged in
+via an ssh session, or there is some other reason why X is not running,
+the easiest way to work around the problem is to tell @OMNETPP@ to build
+without Tcl/Tk. To do that, use the command
+
+  $ NO_TCL=1 ./configure
+
+instead of plain `./configure`.
+
+[NOTE]
+===============================================================
+If there is an error during `configure`, the output may give hints about what
+went wrong. Scroll up to see the messages. (Use Shift+PgUp; you may need to increase
+the scrollback buffer size of the terminal and re-run `./configure`.) The script
+also writes a very detailed log of its operation into `config.log` to help track
+down errors. Since `config.log` is very long, it is recommended that you open
+it in an editor and search for phrases like 'error' or the name of the package
+associated with the problem.
+
+The `configure` script tries to build and run small test programs that are using
+specific libraries or features of the system. You can check the `config.log` file
+to see which test program has failed and why. In most cases the problem is that the
+script cannot figure out the location of a specific library. Specifying the include file 
+or library location in the `configure.user` file and then re-running the `configure` script 
+usually solves the problem.
+===============================================================
+
+When `./configure` has finished, you can compile @OMNETPP@.
+Type in the terminal:
+
+  $ make
+
+[TIP]
+===============================================================
+To take advantage of multiple processor cores, add the `-j2` option to the
+`make` command line. 
+===============================================================
+
+[NOTE]
+===============================================================
+The build process will not write anything outside its directory,
+so no special privileges are needed.
+===============================================================
+
+[TIP]
+===============================================================
+The make command will seemingly compile everything twice. This is because
+both debug and optimized versions of the libraries are built.
+If you only want to build one set of the libraries, specify
+`MODE=debug` or `MODE=release`:
+
+  $ make MODE=release
+===============================================================
+
+
+=== Verifying the installation
+
+You can now verify that the sample simulations run correctly. For example,
+the dyna simulation is started by entering the following commands:
+
+    $ cd samples/dyna
+    $ ./dyna
+
+By default the samples will run using the Tcl/Tk environment. You should see
+nice gui windows and dialogs.
+
+
+=== Starting the IDE
+
+[NOTE]
+===============================================================
+The IDE is supported only on Windows, Mac OS X (x86) and Linux (x86,x64).
+===============================================================
+
+You can run the IDE. Type in the terminal:
+
+  $ @omnetpp@
+  
+If you would like to be able to access the IDE from the application launcher or via
+a desktop shortcut, run one or both of the commands below:
+
+  $ make install-menu-item
+  $ make install-desktop-icon
+
+[NOTE]
+===============================================================
+The above commands assume that your system has the `xdg` commands, 
+which most modern distributions do.
+===============================================================

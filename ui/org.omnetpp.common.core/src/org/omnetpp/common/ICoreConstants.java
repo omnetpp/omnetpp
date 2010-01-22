@@ -8,15 +8,10 @@
 package org.omnetpp.common;
 
 /**
- * View IDs, builder IDs and other UI constants.
+ * View IDs used in common core plugin.
  *
  * @author Andras
  */
-public interface IConstants {
-    // whether this version is a COMMERCIAL build or not
-    public static final boolean IS_COMMERCIAL = true;
-
-    // preference IDs
-	public static final String PREF_OMNETPP_ROOT = "omnetppRoot";
+public interface ICoreConstants {
 	public static final String PREF_OMNETPP_IMAGE_PATH = "omnetppImagePath";
 }

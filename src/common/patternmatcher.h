@@ -17,6 +17,7 @@
 #ifndef __CPATTERNMATCHER_H
 #define __CPATTERNMATCHER_H
 
+#include <stdio.h>
 #include <string>
 #include <vector>
 #include "commondefs.h"
@@ -101,7 +102,7 @@ class COMMON_API PatternMatcher
     void parseNumRange(const char *&s, Elem& e);
     void parseLiteralString(const char *&s, Elem& e);
     bool parseNumRange(const char *&str, char closingchar, long& lo, long& up);
-    void dump(int from);
+    std::string debugStrFrom(int from);
     bool isInSet(char c, const char *set);
     // match line from pattern[patternpos]; with last string literal, ignore last suffixlen of pattern
     bool doMatch(const char *line, int patternpos, int suffixlen);
@@ -158,10 +159,16 @@ class COMMON_API PatternMatcher
     const char *patternPrefixMatches(const char *line, int suffixoffset);
 
     /**
+     * Returns the internal representation of the pattern as a string.
+     * May be useful for debugging purposes.
+     */
+    std::string debugStr()  {return debugStrFrom(0);}
+
+    /**
      * Prints the internal representation of the pattern on the standard output.
      * May be useful for debugging purposes.
      */
-    void dump()  {dump(0);}
+    void dump()  {printf("%s", debugStr().c_str());}
 
     /**
      * Utility function to determine whether a given string contains wildcards.

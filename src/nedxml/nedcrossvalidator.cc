@@ -151,11 +151,6 @@ void NEDCrossValidator::validateElement(ParamElement *node)
     // TBD compile-time check for type mismatch
 }
 
-void NEDCrossValidator::validateElement(PatternElement *node)
-{
-    // FIXME revise
-}
-
 void NEDCrossValidator::validateElement(PropertyElement *node)
 {
     // FIXME revise

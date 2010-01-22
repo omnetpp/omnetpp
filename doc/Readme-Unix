@@ -1,6 +1,9 @@
 Installing OMNeT++ on Linux/Unix
 ================================
 
+For detailed, platform specific installation instructions please
+read the InstallGuide.pdf file under the 'doc' directory.
+
 1. Installing OMNeT++
 
 Download the omnetpp source code and documentation from the omnetpp site.
@@ -57,7 +60,7 @@ You should be able to start the IDE by typing:
 NOTE: The IDE is supported ONLY on the following platforms:
  - Windows 32bit
  - Linux 32/64bit (i386)
- - Mac OS X 10.4/5 (i386/ppc)
+ - Mac OS X 10.5/6 (i386)
 
 3. Reconfiguring the libraries
 

@@ -1,3 +1,9 @@
+2009-xx-xx Andras Varga
+
+	* INCOMPATIBLE NED SEMANTICS CHANGE 4.0:
+            fixed parameter values CANNOT be overwritten from subclasses or submodule sections
+                 (this is for consistency with pattern assignments)
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-02-27  ------ omnetpp-4.0rc2 released ------

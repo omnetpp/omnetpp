@@ -24,13 +24,14 @@
 #include "cpar.h"
 #include "nedelements.h"
 #include "nedresourcecache.h"
+#include "cneddeclaration.h"
 
 NAMESPACE_BEGIN
 
 class cModule;
 class cGate;
 class cChannel;
-class cNEDDeclaration;
+class PatternMatcher;
 
 #define MAX_LOOP_NESTING 32
 
@@ -49,6 +50,8 @@ class SIM_API cNEDNetworkBuilder
         virtual int size() const  {return componentTypes.getInstance()->size();}
         virtual const char *get(int k) const  {return componentTypes.getInstance()->get(k)->getFullName();}
     };
+
+    typedef cNEDDeclaration::PatternData PatternData;  // abbreviation
 
   protected:
     // the current NED declaration we're working with. Stored here to
@@ -77,6 +80,10 @@ class SIM_API cNEDNetworkBuilder
 
     std::string getSubmoduleTypeName(cModule *modp, SubmoduleElement *submod, int index = -1);
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
+    void doAddParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl);
+    void assignParametersFromPatterns(cComponent *component);
+    void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns);
+    void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
     void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);

@@ -17,10 +17,8 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -31,12 +29,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.engine.Common;
-import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
+import org.omnetpp.ned.core.ParamUtil;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
@@ -61,6 +60,7 @@ public class InifileUtils {
 
 	// for getKeyImage()
     public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
+    public static final Image ICON_INFO = InifileEditorPlugin.getCachedImage("icons/full/obj16/Info.gif");
     public static final Image ICON_PAR_UNASSIGNED = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_unassigned.png");
     public static final Image ICON_PAR_NED = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ned.png");
     public static final Image ICON_PAR_INIDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_neddefault.png");
@@ -69,22 +69,12 @@ public class InifileUtils {
     public static final Image ICON_PAR_INIOVERRIDE = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inioverride.png");
     public static final Image ICON_PAR_ININEDDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
     public static final Image ICON_PAR_IMPLICITDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_implicitdefault.png");
+    public static final Image ICON_PAR_GROUP = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_group.png");
 
     public static final Image ICON_KEY_EQUALS_DEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_default.png");
     public static final Image ICON_KEY_EQUALS_ASK = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_ask.png");
 
     public static final Image ICON_INIPARMISC = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inimisc.png");
-
-	/**
-	 * Stores a cached pattern matcher created from an inifile key; used during inifile analysis
-	 */
-	private static class KeyMatcher {
-        String key;
-	    String generalizedKey; // key, with indices ("[0]", "[5..]" etc) replaced with "[*]"
-        boolean keyEqualsGeneralizedKey;  // if key.equals(generalizedKey)
-	    PatternMatcher matcher;  // pattern is generalizedKey
-	}
-    private static Map<String,KeyMatcher> keyMatcherCache = new HashMap<String, KeyMatcher>();
 
 	/**
 	 * Looks up a configuration value in the given section or its fallback sections.
@@ -107,7 +97,7 @@ public class InifileUtils {
 
 	/**
 	 * Given a parameter's fullPath, returns the key of the matching
-	 * inifile entry, or null the parameter matches nothing. If hasNedDefault
+	 * inifile entry, or null if the parameter matches nothing. If hasNedDefault
 	 * is set, "=default" entries are also considered, otherwise they are ignored
 	 */
 	public static List<SectionKey> lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
@@ -119,7 +109,7 @@ public class InifileUtils {
 	    List<SectionKey> result = new ArrayList<SectionKey>();
 		for (String section : sectionChain) {
 			for (String key : doc.getKeys(section)) {
-			    KeyMatcher keyMatcher = getOrCreateKeyMatcher(key);
+			    ParamUtil.KeyMatcher keyMatcher = ParamUtil.getOrCreateKeyMatcher(key);
 				if (keyMatcher.matcher.matches(paramFullPath)) {
 				    String value = doc.getValue(section, key);
 				    if (hasNedDefault || !value.equals(DEFAULT)) {
@@ -133,34 +123,6 @@ public class InifileUtils {
 		return result;
 	}
 
-    private static KeyMatcher getOrCreateKeyMatcher(String key) {
-        KeyMatcher keyMatcher = keyMatcherCache.get(key);
-        if (keyMatcher == null) {
-            keyMatcher = new KeyMatcher();
-            keyMatcher.key = key;
-            keyMatcher.generalizedKey = key.replaceAll("\\[[^]]+\\]", "[*]");  // replace "[anything]" with "[*]"
-            keyMatcher.keyEqualsGeneralizedKey = key.equals(keyMatcher.generalizedKey);
-            try {
-                keyMatcher.matcher = new PatternMatcher(keyMatcher.generalizedKey, true, true, true);
-            } catch (RuntimeException e) {
-                // bogus key (contains unmatched "{" or something); create matcher that does not match anything
-                keyMatcher.matcher = new PatternMatcher("", true, true, true);
-            }
-            keyMatcherCache.put(key, keyMatcher);
-        }
-        return keyMatcher;
-    }
-
-	/**
-	 * Returns the submodule name. If vector, appends [*].
-	 */
-	public static String getSubmoduleFullName(SubmoduleElement submodule) {
-		String submoduleName = submodule.getName();
-		if (!StringUtils.isEmpty(submodule.getVectorSize()))
-			submoduleName += "[*]";
-		return submoduleName;
-	}
-
 	/**
 	 * Chops off potential "Config " prefix from a section name.
 	 */
@@ -172,14 +134,14 @@ public class InifileUtils {
 	 * Resolves the run-time NED type of a "like" submodule, using the parameter
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
 	 */
-	public static String resolveLikeParam(String moduleFullPath, SubmoduleElement submodule, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {
+	public static String resolveLikeParam(String moduleFullPath, ISubmoduleOrConnection element, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {
 		// get like parameter name
-		String likeParamName = submodule.getLikeParam();
+		String likeParamName = element.getLikeParam();
 		if (!likeParamName.matches("[A-Za-z0-9_]+"))
 			return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
 		// look up parameter value
-		ParamResolution res = analyzer.getResolutionForModuleParam(moduleFullPath, likeParamName, activeSection);
+		ParamResolution res = analyzer.getParamResolutionForModuleParam(moduleFullPath, likeParamName, activeSection);
 		if (res == null)
 			return null; // likely no such parameter
 		String value = InifileAnalyzer.getParamValue(res, doc);

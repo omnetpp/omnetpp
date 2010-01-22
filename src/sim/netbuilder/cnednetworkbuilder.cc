@@ -44,7 +44,6 @@
 #include "nedsyntaxvalidator.h"
 #include "xmlgenerator.h"  // for debugging
 
-#include "cneddeclaration.h"
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
@@ -85,6 +84,31 @@ static void updateOrRethrowException(std::exception& e, NEDElement *context)
 
 void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl)
 {
+    cContextSwitcher __ctx(component); // params need to be evaluated in the module's context FIXME needed???
+    doAddParametersAndGatesTo(component, decl);
+
+    // assign submodule/connection parameters using parent module NED declaration as well
+    cModule *parentModule = component->getParentModule();
+    if (parentModule)
+    {
+        const char *parentNedTypeName = parentModule->getNedTypeName();
+        cNEDDeclaration *parentDecl = cNEDLoader::getInstance()->getDecl(parentNedTypeName);
+        if (parentDecl)  // i.e. parent was created via NED-based componentType
+        {
+            const char *name = component->getName();
+            NEDElement *subcomponentNode = component->isModule() ?
+                parentDecl->getSubmoduleElement(component->getName()) :
+                parentDecl->getConnectionElement(((cChannel*)component)->getConnectionId());
+            if (subcomponentNode)
+                assignSubcomponentParams(component, subcomponentNode);
+        }
+    }
+
+    assignParametersFromPatterns(component);
+}
+
+void cNEDNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl)
+{
     //TRACE("addParametersAndGatesTo(%s), decl=%s", component->getFullPath().c_str(), decl->getName()); //XXX
 
     //TODO for performance: component->reallocParamv(decl->getParameterDeclarations().size());
@@ -94,7 +118,7 @@ void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDecl
     {
         const char *superName = decl->extendsName(0);
         cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
-        addParametersAndGatesTo(component, superDecl);
+        doAddParametersAndGatesTo(component, superDecl);
     }
 
     // add this decl parameters / assignments
@@ -135,37 +159,43 @@ cGate::Type cNEDNetworkBuilder::translateGateType(int t)
 void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent)
 {
     ASSERT(paramsNode!=NULL);
-    for (NEDElement *child=paramsNode->getFirstChildWithTag(NED_PARAM); child; child=child->getNextSiblingWithTag(NED_PARAM))
-        doParam(component, (ParamElement *)child, isSubcomponent);
+    for (ParamElement *paramNode=paramsNode->getFirstParamChild(); paramNode; paramNode=paramNode->getNextParamSibling())
+        if (!paramNode->getIsPattern())
+            doParam(component, paramNode, isSubcomponent);
 }
 
 void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent)
 {
-    const char *paramName = paramNode->getName();
-
-    // isSubComponent==false: we are called from cModuleType::addParametersAndGatesTo();
-    // isSubComponent==true: we are called from assignSubcomponentParams().
-    // if type==NONE, this is an inherited parameter (must have been added already)
-    bool isNewParam = !isSubcomponent && paramNode->getType()!=NED_PARTYPE_NONE;
-
-    cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
-    if (impl)
-    {
-        //printf("   +++ reusing param impl for %s\n", paramName);
-
-        // we've already been at this point in the NED files sometime,
-        // so we can reuse what we produced then
-        ASSERT(impl->isName(paramName));
-        if (isNewParam)
-            component->addPar(impl);
-        else {
-            cPar& par = component->par(paramName); // must exist already
-            par.setImpl(impl);
-        }
-        return;
-    }
+    ASSERT(!paramNode->getIsPattern()); // we only deal with non-pattern assignments
 
     try {
+        const char *paramName = paramNode->getName();
+
+        // isSubComponent==false: we are called from cModuleType::addParametersAndGatesTo();
+        // isSubComponent==true: we are called from assignSubcomponentParams().
+        // if type==NONE, this is an inherited parameter (must have been added already)
+        bool isNewParam = !isSubcomponent && paramNode->getType()!=NED_PARTYPE_NONE;
+
+        // try to find an impl object with this value; we'll reuse it to optimize memory consumption
+        cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
+        if (impl)
+        {
+            //printf("   +++ reusing param impl for %s\n", paramName);
+
+            // we've already been at this point in the NED files sometime,
+            // so we can reuse what we produced then
+            ASSERT(impl->isName(paramName));
+            if (isNewParam)
+                component->addPar(impl);
+            else {
+                cPar& par = component->par(paramName); // must exist already
+                if (par.isSet())
+                    throw cRuntimeError(component, "Cannot overwrite non-default value of parameter `%s'", paramName);
+                par.setImpl(impl);
+            }
+            return;
+        }
+
         ASSERT(impl==NULL);
         if (isNewParam) {
             //printf("   +++ adding param %s\n", paramName);
@@ -182,9 +212,15 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             impl->setUnit(declUnit);
         }
         else {
-            impl = component->par(paramName).copyIfShared();
+            cPar& par = component->par(paramName); // must exist already
+            if (par.isSet())
+                throw cRuntimeError(component, "Cannot overwrite non-default value of parameter `%s'", paramName);
+            impl = par.copyIfShared();
         }
 
+        ASSERT(!impl->isSet());  // we do not overwrite assigned values
+
+        // put new value into impl
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
         if (exprNode)
         {
@@ -229,6 +265,117 @@ void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isS
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, gateNode); throw;
+    }
+}
+
+void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
+{
+    // go up the parent chain, and apply the parameter pattern assignments
+    // to matching, still-unset parameters
+    //XXX printf("TRYING TO ASSIGN PARAMS OF %s USING PATTERNS\n", component->getFullPath().c_str());
+
+    std::string prefix;
+
+    for (cComponent *child = component; true; child = child->getParentModule())
+    {
+        cModule *parent = child->getParentModule();
+        if (!parent)
+            break;
+
+        //XXX printf(" CHECKING PATTERNS ON: %s\n", parent->getFullPath().c_str());
+
+        // find NED declaration. Note that decl may be NULL (if parent was not defined via NED)
+        const char *nedTypeName = parent->getNedTypeName();
+        cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
+
+        // first, check patterns in the "submodules:" section
+        if (decl && !prefix.empty())
+        {
+            const std::vector<PatternData>& submodPatterns = decl->getSubmoduleParamPatterns(child->getName());
+            if (!submodPatterns.empty())
+                doAssignParametersFromPatterns(component, prefix, submodPatterns);
+        }
+
+        // for checking the patterns on the compound module, prefix with submodule name
+        if (child->isModule())
+            prefix = std::string(child->getFullName()) + "." + prefix;
+        else {
+            // channel: its path includes the connection source gate's name
+            cObject *srcGate = child->getOwner();
+            ASSERT(srcGate == ((cChannel*)child)->getSourceGate());
+            prefix = std::string(srcGate->getFullName()) + "."  + child->getFullName() + "." + prefix; // prepend with "<srcgate>.channel."
+            if (srcGate->getOwner() != parent)
+                prefix = std::string(srcGate->getOwner()->getFullName()) + "."  + prefix; // also prepend with "<submod>."
+        }
+
+        // check patterns on the compound module itself
+        if (decl)
+        {
+            const std::vector<PatternData>& patterns = decl->getParamPatterns();
+            if (!patterns.empty())
+                doAssignParametersFromPatterns(component, prefix, patterns);
+        }
+    }
+}
+
+void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns)
+{
+    int numPatterns = patterns.size();
+    //XXX for (int i=0; i<numPatterns; i++)
+    //XXX     printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getName(), patterns[i].patternNode->getSourceLocation());
+
+    int numParams = component->getNumParams();
+    for (int i=0; i<numParams; i++) {
+        cPar& par = component->par(i);
+        if (!par.isSet()) {
+            // first match
+            std::string paramPath = prefix + par.getFullName();
+            //XXX printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
+            for (int j=0; j<numPatterns; j++) {
+                if (patterns[j].matcher->matches(paramPath.c_str())) {
+                    //XXX printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
+                    doAssignParameterFromPattern(par, patterns[j].patternNode);
+                    if (par.isSet())
+                        break;
+                }
+            }
+        }
+    }
+}
+
+void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode)
+{
+    // note: this code should look similar to relevant part of doParam()
+    try {
+        ASSERT(patternNode->getIsPattern());
+        cParImpl *impl = par.copyIfShared();
+        ExpressionElement *exprNode = patternNode->getFirstExpressionChild();
+        if (exprNode)
+        {
+            //printf("   +++ assigning param %s\n", paramName);
+            ASSERT(impl==par.impl() && !impl->isShared());
+            bool isSubcomponent = false; //FIXME is this OK?
+            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
+            cExpressionBuilder::setExpression(impl, dynamicExpr);
+            impl->setIsSet(!patternNode->getIsDefault());
+        }
+        else if (patternNode->getIsDefault())
+        {
+            // Note: this branch ("=default" in NED files) is currently not supported,
+            // because it would be complicated to implement in the Inifile Editor.
+
+            //FIXME is this so??? ^^^
+
+            //printf("   +++ setting param %s to default\n", patternNode);
+            if (!impl->containsValue())
+                throw cRuntimeError(par.getOwner(), "Cannot apply default value to parameter `%s': it has no default value", par.getName());
+            impl->setIsSet(true);
+        }
+        //XXX impl->setIsShared(true);
+        //XXX currentDecl->putSharedParImplFor(patternNode, impl);
+    }
+    catch (std::exception& e) {
+        updateOrRethrowException(e, patternNode); throw;
     }
 }
 
@@ -536,7 +683,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
         v.push_back(submodp);
 
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
-        assignSubcomponentParams(submodp, submod);
         submodp->finalizeParameters(); // also sets up gate sizes declared inside the type
         setupSubmoduleGateVectors(submodp, submod);
     }
@@ -562,7 +708,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
-            assignSubcomponentParams(submodp, submod);
             submodp->finalizeParameters(); // also sets up gate sizes declared inside the type
             setupSubmoduleGateVectors(submodp, submod);
         }

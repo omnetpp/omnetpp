@@ -80,7 +80,7 @@
         </listitem>
         <listitem>
           On Linux: The default GCC toolchain can be used. &Omnetpp;
-          4.0 was tested on GCC 4.2.3 although other version should work too. You have to install the gcc
+          4.1 was tested on GCC 4.4 although other version should work too. You have to install the gcc
           toolchain on your distribution before trying to compile a simulation with &Omnetpp;.
         </listitem>
         <listitem>

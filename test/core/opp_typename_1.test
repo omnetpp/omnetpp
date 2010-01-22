@@ -30,18 +30,41 @@ PRINT(unsigned char)
 PRINT(char *)
 PRINT(const char *)
 
-PRINT(int*)
-PRINT(int**)
-PRINT(const int*)
-PRINT(const int**)
+PRINT(int *)
+PRINT(int * *)
+PRINT(const int *)
+PRINT(const int * *)
 
 PRINT(Alma)
-PRINT(Alma*)
-PRINT(const Alma*)
+PRINT(Alma *)
+PRINT(const Alma *)
 PRINT(@TESTNAME@::Korte)
-PRINT(@TESTNAME@::Korte*)
-PRINT(const @TESTNAME@::Korte*)
+PRINT(@TESTNAME@::Korte *)
+PRINT(const @TESTNAME@::Korte *)
 
 %contains: stdout
-XXX
-
+void * = void *
+bool = bool
+short = short
+unsigned short = unsigned short
+int = int
+unsigned int = unsigned int
+long = long
+unsigned long = unsigned long
+float = float
+double = double
+char = char
+signed char = signed char
+unsigned char = unsigned char
+char * = char *
+const char * = const char *
+int * = int *
+int * * = int * *
+const int * = const int *
+const int * * = int * * const
+Alma = Alma
+Alma * = Alma *
+const Alma * = const Alma *
+opp_typename_1::Korte = opp_typename_1::Korte
+opp_typename_1::Korte * = opp_typename_1::Korte *
+const opp_typename_1::Korte * = const opp_typename_1::Korte *

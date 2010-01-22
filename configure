@@ -5527,6 +5527,9 @@ rm -f core conftest.err conftest.$ac_objext \
 else
     mpi_ok=no
     # LAM and OpenMPI support mpic++ -showme
+    # NOTE: on Fedora 12 (and maybe others), OpenMPI is not in the PATH by default
+    opp_save_PATH="$PATH"
+    PATH="$PATH:/usr/lib/openmpi/bin"
     # Extract the first word of "mpic++", so it can be a program name with args.
 set dummy mpic++; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -5602,7 +5605,12 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+        if test -d /usr/lib/openmpi/bin; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: To use MPI, you may need to ensure that /usr/lib/openmpi/bin is in the PATH." >&5
+$as_echo "$as_me: WARNING: To use MPI, you may need to ensure that /usr/lib/openmpi/bin is in the PATH." >&2;}
+        fi
     fi
+    PATH="$opp_save_PATH"
 
     if test $mpi_ok = no; then
           # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
@@ -6108,6 +6116,13 @@ CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
+if test -z "$AKAROA_CFLAGS"; then
+    AKAROA_CFLAGS="-I/usr/local/akaroa/include"
+fi
+if test -z "$AKAROA_LIBS"; then
+    AKAROA_LIBS="-L/usr/local/akaroa/lib -lakaroa -lfl"
+fi
+
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -6142,46 +6157,9 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-if test $akaroa_ok = no; then
-    akaroalibs="-lakaroa -lfl"
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS_RELEASE $AKAROA_CFLAGS"
-   LIBS="$akaroalibs"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Akaroa with CFLAGS=\"$CFLAGS_RELEASE $AKAROA_CFLAGS\" LIBS=\"$akaroalibs\"" >&5
-$as_echo_n "checking for Akaroa with CFLAGS=\"$CFLAGS_RELEASE $AKAROA_CFLAGS\" LIBS=\"$akaroalibs\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <akaroa.H>
-int
-main ()
-{
-AkObservation(0.0);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; akaroa_ok=yes; AKAROA_LIBS="$akaroalibs"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; akaroa_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-fi
 if test $akaroa_ok = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_AKAROA"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_AKAROA"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG $AKAROA_CFLAGS -DWITH_AKAROA"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE $AKAROA_CFLAGS -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
 else
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
@@ -7465,31 +7443,35 @@ echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
 
-# patch the ide/configuration/config.ini to point to the samples dir.
-# this is needed because relative URLs cannot be used because the working directory
-# is different on Mac OS X than on any other platform
-if test -f ide/configuration/config.ini ; then
-    echo patching the ide configuration file. default workspace is: $OMNETPP_SAMPLES_DIR
-    perl -i~ -pe 's!osgi.instance.area.default=.*$!osgi.instance.area.default='$OMNETPP_SAMPLES_DIR'!g' ide/configuration/config.ini
-    rm ide/configuration/config.ini~
-fi
-
-# patch the launcher.ini file to point to the platform specific configuration area
-patchIDEconfig () {
-  if test -f ide/$1/$2.ini ; then
-    perl -i~ -pe 'BEGIN{undef $/;} s!-configuration\n.*?\n!-configuration\n'$OMNETPP_ROOT'/ide/'$1'/configuration\n!smg' ide/$1/$2.ini
-    rm ide/$1/$2.ini~
+# Test it the IDE was already configured. If not, copy the platform specific
+# files to the IDE root directory
+if test -d ide ; then
+  if test ! -d ide/configuration ; then
+    echo Configuring the IDE...
+    cp -r ide/linux/* ide
+    case $PLATFORM in
+    win32.x86)
+        cp -r ide/win32/* ide
+        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        ;;
+    linux.x86_64)
+        cp -r ide/linux64/* ide
+        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        ;;
+    linux.x86)
+        cp -r ide/linux/* ide
+        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        ;;
+    macosx)
+        cp -r ide/macosx/* ide
+        echo osgi.instance.area.default=../../../../samples >>ide/configuration/config.ini
+        ;;
+    *)
+        echo IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel. Not configured.
+        ;;
+    esac
   fi
-}
-
-patchIDEconfig linux omnest
-patchIDEconfig linux64 omnest
-patchIDEconfig macosx omnest
-patchIDEconfig win32 omnest
-patchIDEconfig linux omnetpp
-patchIDEconfig linux64 omnetpp
-patchIDEconfig macosx omnetpp
-patchIDEconfig win32 omnetpp
+fi
 
 #----------------------
 # Check $OPP_PROBLEM_PACKAGES

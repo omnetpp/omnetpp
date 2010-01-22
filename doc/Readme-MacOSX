@@ -1,6 +1,9 @@
 Installing OMNeT++ on Mac OS X
 ==============================
 
+For detailed, platform specific installation instructions please
+read the InstallGuide.pdf file under the 'doc' directory.
+
 1. Installing OMNeT++
 
 Download the OMNeT++ source code and documentation from http://omnetpp.org.
@@ -30,7 +33,7 @@ Set NO_TCL=yes in configure.user too, because Tcl/Tk does not have a 64-bit
 version. You will not be able to use Tkenv, the graphical simulation runtime; 
 simulations will run using the command line environment, Cmdenv.
       
-For Mac OS X 10.5:
+For Mac OS X 10.5/10.6:
  
     1. Install XCode 3 on your machine 
     2. ./configure 
@@ -68,7 +71,7 @@ installed so you should be ok. You should be able to start the IDE by typing:
 NOTE: The IDE is supported ONLY on the following platforms:
  - Windows 32bit
  - Linux 32/64bit (i386)
- - Mac OS X 10.4/5 (i386/ppc)
+ - Mac OS X 10.5/6 (i386)
 
 
 3. Reconfiguring the libraries

@@ -419,7 +419,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      */
     public static final Comparator<String> dictionaryComparator = new DictionaryComparator();
 
-    private static final class DictionaryComparator implements Comparator<String> {
+    public static final class DictionaryComparator implements Comparator<String> {
 		public int compare(String first, String second) {
 			return dictionaryCompare(first, second);
 		}

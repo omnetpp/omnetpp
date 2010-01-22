@@ -28,6 +28,7 @@ import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
+import org.eclipse.jface.action.ContributionManager;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -39,6 +40,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.keys.IBindingService;
+import org.eclipse.ui.menus.IMenuService;
+import org.eclipse.ui.services.IServiceLocator;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.image.ImageFactory;
 /**
@@ -50,9 +53,12 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
     private ActionRegistry actionRegistry;
 
-    public GNEDContextMenuProvider(EditPartViewer viewer, ActionRegistry registry) {
+    private IServiceLocator serviceLocator;
+
+    public GNEDContextMenuProvider(EditPartViewer viewer, ActionRegistry registry, IServiceLocator serviceLocator) {
         super(viewer);
         setActionRegistry(registry);
+        this.serviceLocator = serviceLocator;
     }
 
     /*
@@ -160,6 +166,8 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(IPageLayout.ID_PROP_SHEET);
         if (action.isEnabled()) manager.appendToGroup(GROUP_VIEW, action);
 
+        IMenuService menuService = (IMenuService)serviceLocator.getService(IMenuService.class);
+        menuService.populateContributionManager((ContributionManager)manager, "popup:org.omnetpp.ned.editor.graphical");
     }
 
     private String getShowInMenuLabel() {

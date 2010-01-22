@@ -633,7 +633,6 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	public void paint(Graphics graphics) {
 	    graphics.setAlpha(alpha);
 		super.paint(graphics);
-//		System.out.println(this+": paint(): centerLoc==" + centerLoc);
 		Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
 
 		// draw shape

@@ -1,0 +1,27 @@
+Parameter resolution test
+=========================
+
+1. Generate test network
+
+This test contains a perl script which generates a Network and
+the corresponding 'omnetpp.ini' with a number of different parameter
+declarations and assignments. Each parameter covers a particular use
+case with optional initial values, default values and overrides in
+both NED and INI files.
+
+Run the command 'perl param.pl' to generate the output files called
+'param.ned' and 'omnetpp.ini'.
+
+2. Generate runtime parameter assignments
+
+To prepare for testing build the executable with opp_makemake and make.
+Then run 'param < param.in > param.out' and remove the irrelevant output
+lines from the resulting file around the '=====================' sections.
+
+The output file contains the parameter values as seen by the runtime.
+Now you can compare these values to those presented in the OMNeT++ IDE
+for the very same 'omnetpp.ini' and 'param.ned' files.
+
+3. Compare runtime parameter assignments with the IDE
+
+The comparison is implemented in 'InifileAnalyzer.testParamAssignments'.

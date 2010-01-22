@@ -14,9 +14,6 @@ module Base
         int p2a = default(2);
         int p2b = default(2);
         int p2c = default(2);
-        int p3a = 3;
-        int p3b = 3;
-        int p3c = 3;
 }
 
 module Derived extends Base
@@ -24,16 +21,8 @@ module Derived extends Base
     parameters:
         p1a;
         p1b = default(1);
-        p1c = 1;
         p2a;
         p2b = default(2);
-        p2c = 2;
-        p3a;
-        p3b = default(3);
-        p3c = 3;
-        double p4a;
-        double p4b = default(4);
-        double p4c = 4;
 }
 
 network Test
@@ -49,9 +38,6 @@ network Test
             p2a;
             p2b = default(20);
             p2c = 20;
-            p3a;
-            p3b = default(30);
-            p3c = 30;
         }
         derived2: Derived {
             p1a;
@@ -60,9 +46,6 @@ network Test
             p2a;
             p2b = default(20);
             p2c = 20;
-            p3a;
-            p3b = default(30);
-            p3c = 30;
         }
         dump: Dump;
 }
@@ -75,9 +58,7 @@ cmdenv-event-banners = false
 **.p1a = 1000
 **.base.p1b = 1001
 **.base.p1c = 1002
-**.derived.p4a = 4000
-**.derived2.p4a = 4100
-
+**.derived.p1c = 1
 
 %contains: stdout
 module Test: Test {
@@ -92,9 +73,6 @@ module Test: Test {
                 p2a = 2
                 p2b = 2
                 p2c = 2
-                p3a = 3
-                p3b = 3
-                p3c = 3
         }
         module Test.derived: Derived {
             parameters:
@@ -104,12 +82,6 @@ module Test: Test {
                 p2a = 2
                 p2b = 2
                 p2c = 2
-                p3a = 3
-                p3b = 3
-                p3c = 3
-                p4a = 4000
-                p4b = 4
-                p4c = 4
         }
         module Test.base2: Base {
             parameters:
@@ -119,9 +91,6 @@ module Test: Test {
                 p2a = 2
                 p2b = 20
                 p2c = 20
-                p3a = 3
-                p3b = 30
-                p3c = 30
         }
         module Test.derived2: Derived {
             parameters:
@@ -131,12 +100,6 @@ module Test: Test {
                 p2a = 2
                 p2b = 20
                 p2c = 20
-                p3a = 3
-                p3b = 30
-                p3c = 30
-                p4a = 4100
-                p4b = 4
-                p4c = 4
         }
 }
 

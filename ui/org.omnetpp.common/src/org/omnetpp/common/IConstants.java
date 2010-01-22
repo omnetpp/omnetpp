@@ -12,7 +12,7 @@ package org.omnetpp.common;
  *
  * @author Andras
  */
-public interface IConstants {
+public interface IConstants extends ICoreConstants {
     // whether this version is a COMMERCIAL build or not
     public static final boolean IS_COMMERCIAL = true;
 

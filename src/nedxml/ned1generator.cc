@@ -417,8 +417,6 @@ void NED1Generator::doModuleParameters(ParametersElement *node, const char *inde
             doProperty((PropertyElement *)child, increaseIndent(indent), false, NULL);
         else if (childTag==NED_PARAM)
             doModuleParam((ParamElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
-        else if (childTag==NED_PATTERN)
-            errors->addWarning(node, NED2FEATURE "assigment by pattern matching");
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -439,8 +437,6 @@ void NED1Generator::doSubstParameters(ParametersElement *node, const char *inden
             doProperty((PropertyElement *)child, increaseIndent(indent), false, NULL);
         else if (childTag==NED_PARAM)
             doSubstParam((ParamElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
-        else if (childTag==NED_PATTERN)
-            errors->addWarning(node, NED2FEATURE "assignment by pattern matching");
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -458,8 +454,6 @@ void NED1Generator::doChannelParameters(ParametersElement *node, const char *ind
             doProperty((PropertyElement *)child, indent, false, NULL);
         else if (childTag==NED_PARAM)
             doChannelParam((ParamElement *)child, indent);
-        else if (childTag==NED_PATTERN)
-            errors->addWarning(node, NED2FEATURE "assignment by pattern matching");
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -477,8 +471,6 @@ void NED1Generator::doConnectionAttributes(ParametersElement *node, const char *
             doProperty((PropertyElement *)child, indent, false, NULL);
         else if (childTag==NED_PARAM)
             doChannelParam((ParamElement *)child, NULL);
-        else if (childTag==NED_PATTERN)
-            errors->addWarning(node, NED2FEATURE "patterns");
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -531,6 +523,9 @@ void NED1Generator::doModuleParam(ParamElement *node, const char *indent, bool i
     if (parType!=NULL)
         OUT << ": " << parType;
 
+    if (node->getIsPattern())
+        errors->addWarning(node, NED2FEATURE "assignment by pattern matching");
+
     if (hasExpression(node,"value"))
         errors->addWarning(node, NED2FEATURE "assignment in parameter declaration");
 
@@ -562,6 +557,9 @@ void NED1Generator::doSubstParam(ParamElement *node, const char *indent, bool is
     OUT << getBannerComment(node, indent);
     OUT << indent << node->getName() << " = ";
 
+    if (node->getIsPattern())
+        errors->addWarning(node, NED2FEATURE "assignment by pattern matching");
+
     if (!hasExpression(node, "value"))
     {
         if (node->getIsDefault())
@@ -585,11 +583,6 @@ void NED1Generator::doSubstParam(ParamElement *node, const char *indent, bool is
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
 
     OUT << (islast ? ";" : ",") << getRightComment(node);
-}
-
-void NED1Generator::doPattern(PatternElement *node, const char *indent, bool islast, const char *)
-{
-    errors->addWarning(node, NED2FEATURE "assignment by pattern matching");
 }
 
 void NED1Generator::doProperty(PropertyElement *node, const char *indent, bool islast, const char *sep)
@@ -1147,8 +1140,6 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doParameters((ParametersElement *)node, indent, islast, arg); break;
         case NED_PARAM:
             doParam((ParamElement *)node, indent, islast, arg); break;
-        case NED_PATTERN:
-            doPattern((PatternElement *)node, indent, islast, arg); break;
         case NED_PROPERTY:
             doProperty((PropertyElement *)node, indent, islast, arg); break;
         case NED_PROPERTY_KEY:

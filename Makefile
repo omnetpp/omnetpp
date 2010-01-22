@@ -229,4 +229,37 @@ copy-dlls:
 	cp msys/bin/zlib1.dll bin
 	cp msys/bin/libxml2.dll bin
 
+ifeq ($(findstring linux,$(PLATFORM)),linux)
 
+generate-desktop-file:
+	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=$(OMNETPP_BIN_DIR)/omnetpp\nIcon=$(OMNETPP_ROOT)/icon.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE\nCategories=Development;IDE;Debugger\n" >opensim-ide.desktop
+
+install-menu-item: generate-desktop-file
+	@xdg-desktop-menu uninstall opensim-ide.desktop
+	@xdg-desktop-menu install opensim-ide.desktop
+	@rm opensim-ide.desktop
+
+install-desktop-icon: generate-desktop-file
+	@xdg-desktop-icon uninstall opensim-ide.desktop
+	@xdg-desktop-icon install opensim-ide.desktop
+	@rm opensim-ide.desktop
+
+else ifeq ($(findstring macosx,$(PLATFORM)),macosx)
+
+install-menu-item:
+ifeq ($(OMNETPP_PRODUCT),OMNEST)
+	-ln -s -f $(OMNETPP_ROOT)/ide/omnest.app /Applications/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+else
+	-ln -s -f $(OMNETPP_ROOT)/ide/omnetpp.app /Applications/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+endif 
+
+install-desktop-icon:
+ifeq ($(OMNETPP_PRODUCT),OMNEST)
+	-ln -s -f $(OMNETPP_ROOT)/ide/omnest.app ~/Desktop/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+else
+	-ln -s -f $(OMNETPP_ROOT)/ide/omnetpp.app ~/Desktop/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
+endif
+
+else ifeq ($(findstring win32,$(PLATFORM)),win32)
+
+endif

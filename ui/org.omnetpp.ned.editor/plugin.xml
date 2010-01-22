@@ -235,9 +235,9 @@
       </command>
       <command
             categoryId="org.eclipse.ui.category.textEditor"
-            description="Convert the NED source to the OMNeT++ 4.0 format"
+            description="Convert the NED source to the OMNeT++ 4.x format"
             id="org.omnetpp.ned.editor.text.ConvertToNewFormat"
-            name="Convert to 4.0 Format">
+            name="Convert to 4.x Format">
       </command>
       <command
             categoryId="org.eclipse.ui.category.textEditor"

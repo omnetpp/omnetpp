@@ -16,6 +16,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.FocusListener;
@@ -372,7 +373,7 @@ public class GraphicalNedEditor
         viewer.setRootEditPart(root);
 
         viewer.setEditPartFactory(new NedEditPartFactory());
-        ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry());
+        ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry(), getSite());
         viewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, NedEditorPlugin.getDefault().getPreferenceStore().getBoolean(NedEditorPreferenceInitializer.SNAP_TO_GEOMETRY));
         viewer.setContextMenu(provider);
         // register the menu so we can contribute to it from other plugins BUT do not include the
@@ -941,10 +942,11 @@ public class GraphicalNedEditor
 
             private void updateTextBounds() {
                 Dimension d = getCollapseToggle().getSize();
-                text.setSize(d.width - 3 * (ICON_WIDTH + ICON_SPACING), d.height - 2 * ICON_SPACING);
+                int bd = Platform.getOS().equals(Platform.OS_MACOSX) ? text.getBorderWidth() : 0; 
+                text.setSize(d.width - 3 * (ICON_WIDTH + ICON_SPACING) + 2 * bd, d.height + 2 * bd - 2 * ICON_SPACING + 10);
                 Point location = getBounds().getLocation();
                 translateToAbsolute(location);
-                text.setLocation(location.x + ICON_WIDTH + ICON_SPACING * 2, location.y + ICON_SPACING);
+                text.setLocation(location.x + ICON_WIDTH + ICON_SPACING * 2 - bd, location.y + ICON_SPACING - 5 - bd);
             }
 
             private void updateFilterFigureBounds() {

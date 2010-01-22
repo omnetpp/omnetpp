@@ -1,0 +1,27 @@
+%description:
+Test that one cannot redefine a non-defult valued parameter in a subtype.
+
+%file: test.ned
+
+module Super
+{
+    parameters:
+        int p1 = 23;
+}
+
+module Sub extends Super
+{
+    parameters:
+        p1 = 42;  // ==> should be error
+}
+
+network Test
+{
+    submodules:
+        sub: Sub;
+}
+
+%exitcode: 1
+
+%contains: stdout
+Cannot overwrite non-default value of parameter `p1'

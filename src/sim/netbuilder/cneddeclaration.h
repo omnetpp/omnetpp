@@ -33,6 +33,7 @@
 
 NAMESPACE_BEGIN
 
+class PatternMatcher;
 
 /**
  * Extends NEDTypeInfo with property and cached expression storage,
@@ -54,6 +55,8 @@ NAMESPACE_BEGIN
  */
 class SIM_API cNEDDeclaration : public NEDTypeInfo
 {
+  public:
+    struct PatternData {PatternMatcher *matcher; ParamElement *patternNode;};
   protected:
     // properties
     typedef std::map<std::string, cProperties *> StringPropsMap;
@@ -68,11 +71,16 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     typedef std::map<long, cParImpl *> SharedParImplMap;
     SharedParImplMap parimplMap;
 
+    // wildcard-based parameter assignments
+    std::vector<PatternData> patterns;  // contains patterns defined in super types as well
+    bool patternsValid;  // whether patterns[] was already filled in
+    typedef std::map<std::string, std::vector<PatternData> > StringPatternDataMap;
+    StringPatternDataMap submodulePatterns;  // contains patterns defined in the "submodules" section
+
   protected:
     void putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const;
     cProperties *getFromPropsMap(const StringPropsMap& propsMap, const std::string& name) const;
     void appendPropsMap(StringPropsMap& toPropsMap, const StringPropsMap& fromPropsMap);
-    virtual cNEDDeclaration *getSuperDecl() const; // covariant return value
 
     void clearPropsMap(StringPropsMap& propsMap);
     void clearSharedParImplMap(SharedParImplMap& parimplMap);
@@ -86,6 +94,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     cProperties *doGateProperties(const char *gateName) const;
     cProperties *doSubmoduleProperties(const char *submoduleName, const char *submoduleType) const;
     cProperties *doConnectionProperties(int connectionId, const char *channelType) const;
+    void collectPatternsFrom(ParametersElement *paramsNode, std::vector<PatternData>& v);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -99,6 +108,28 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
      * Destructor.
      */
     virtual ~cNEDDeclaration();
+    //@}
+
+    /** @name Misc */
+    //@{
+    /**
+     * Redefined to change return type (covariant return type)
+     */
+    virtual cNEDDeclaration *getSuperDecl() const;
+
+    /**
+     * Returns the pattern-based parameter assignments on the type (i.e. the
+     * compound module) and in super types as well.
+     */
+    virtual const std::vector<PatternData>& getParamPatterns();
+
+    /**
+     * Returns the pattern-based parameter assignments on the given submodule;
+     * searches the super types as well (due to inherited submodules).
+     */
+    virtual const std::vector<PatternData>& getSubmoduleParamPatterns(const char *submoduleName);
+
+    // NOTE: connections have no submodules or sub-channels, so they cannot contain pattern-based param assignments either
     //@}
 
     /** @name Properties of this type, its parameters, gates etc. */

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <book>
-  <title>Migrating &Omnetpp; Simulations From Version 3.x To 4.0</title>
+  <title>Migrating &Omnetpp; Simulations From Version 3.x To 4.x</title>
 
   <chapter>
     <title>What has changed since 3.x?</title>
@@ -11,9 +11,9 @@
 
       <para>Simulation models written for &Omnetpp; 3.x cannot be used directly with
       &Omnetpp; 4.0 or later, due to changes in the C++ API, NED, ini and msg files. This
-      document describes how to convert a 3.x model to run under &Omnetpp; 4.0.</para>
-      <para>You should be already familiar with the &Omnetpp; 3.x and 4.0 before doing the
-      migration. We recommend to take a closer look at the 4.0 sample simulations before
+      document describes how to convert a 3.x model to run under &Omnetpp; 4.x.</para>
+      <para>You should be already familiar with the &Omnetpp; 3.x and 4.x before doing the
+      migration. We recommend to take a closer look at the 4.x sample simulations before
       proceeding.</para>
     </sect1>
 
@@ -45,7 +45,7 @@
         <listitem>
           <para>The ``const'' keyword has been removed, and a new keyword
           ``volatile'' has been introduced. In 3.x an unqualified parameter was
-          ``volatile''; in 4.0 it is ``const''.0.</para>
+          ``volatile''; in 4.x it is ``const''.0.</para>
         </listitem>
         <listitem>
           <para>The display string has been turned into a property with the
@@ -152,7 +152,7 @@
           from stdin.</para>
         </listitem>
         <listitem>
-          <para>The ``preload-ned-files'' option has been removed, because in 4.0,
+          <para>The ``preload-ned-files'' option has been removed, because in 4.x,
           NED files are loaded from directories in the NED path. (The NED path is a
           string that contains a list of directories, and it it may come from the
           ``NEDPATH'' environment variable, from a command-line option, or from
@@ -161,7 +161,7 @@
         </listitem>
         <listitem>
           <para>In 3.0 the ``network'' option was referring to a NED type loaded from one of
-          the files specified in the ``preload-ned-files'' option. In 4.0, it specifies a
+          the files specified in the ``preload-ned-files'' option. In 4.x, it specifies a
           qualified name referring to a NED type, which must be available under the
           directories specified in the ``ned-path'' option. In most cases,
           the ``network'' option will work unmodified.</para>
@@ -344,7 +344,7 @@
 
     <para>There are steps during the migration that can be easily automated. &Omnetpp; 4
     provides several command line tools that may help during the migration process. These
-    tools are available under the migrate directory in the &Omnetpp; 4.0
+    tools are available under the migrate directory in the &Omnetpp; 4.x
     installation.</para>
 
     <sect1>
@@ -454,7 +454,7 @@
     <para>We recommend to port your simulation model in several stages:
     <orderedlist>
       <listitem>
-        <para>Get it working with 4.0 as fast as possible</para>
+        <para>Get it working with 4.x as fast as possible</para>
         <orderedlist>
           <listitem>
             <para>Run the automatic migration scripts.</para>
@@ -479,7 +479,7 @@
 
       <orderedlist>
         <listitem>
-          <para>PREREQUISITES: Have &Omnetpp; 4.0 installed and working, and familiarize
+          <para>PREREQUISITES: Have &Omnetpp; 4.x installed and working, and familiarize
           yourself with the IDE.</para>
         </listitem>
         <listitem>
@@ -491,12 +491,12 @@
           in the ``&lt;omnetpp&gt;/migrate'' subdirectory from there.</para>
 
 <screen>$ cd MyModel
-$ ../omnetpp-4.0/migrate/migratened
-$ ../omnetpp-4.0/migrate/migrateini
-$ ../omnetpp-4.0/migrate/migratemsg
-$ ../omnetpp-4.0/migrate/migratecpp | tee migratecpp.out</screen>
+$ ../omnetpp-4.1/migrate/migratened
+$ ../omnetpp-4.1/migrate/migrateini
+$ ../omnetpp-4.1/migrate/migratemsg
+$ ../omnetpp-4.1/migrate/migratecpp | tee migratecpp.out</screen>
 
-          <para>The scripts convert NED, ini, msg and C++ files to 4.0 format. The result
+          <para>The scripts convert NED, ini, msg and C++ files to 4.x format. The result
           will need some manual post-processing, because not everything can be converted
           automatically. The scripts will print some hints on what you'll need to do
           manually -- please make note of these printouts. Especially, ``migratecpp'' is
@@ -542,7 +542,7 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out</screen>
           C/C++ Build / Makemake page.</para>
         </listitem>
         <listitem>
-          <para>NED in 4.0 has a package system, similar to Java. If your model contains
+          <para>NED in 4.x has a package system, similar to Java. If your model contains
           NED files in several subdirectories, these subdirectories now mean packages,
           and the NED files will need package declarations and imports to be added. This
           can be done automatically in the IDE. Have your project created and open in the
@@ -585,7 +585,7 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out</screen>
             <listitem>
               <para>remove superfluous network declarations</para>
               <para>A 3.x-style network declaration denotes a compound module as network.
-              In 4.0, a compound module may be directly declared to be a network, so the
+              In 4.x, a compound module may be directly declared to be a network, so the
               extra step is not needed. Example: the 3.x network declaration
 
 <screen>network cqn : CQN
@@ -956,7 +956,7 @@ extends = SlottedAloha
             <para>In wireless models, the handling of transmission duration needs to be
             refactored.</para>
             <para>In 3.x, the receiver side usually calculated the frame duration
-            independent of the sender. In 4.0, the duration calculated by the sender
+            independent of the sender. In 4.x, the duration calculated by the sender
             should be specified in the ``sendDirect()'' call, which writes
             it into the packet (``setDuration()''). The receiver module should
             have the input gate configured to deliver packets at the start of the

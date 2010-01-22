@@ -12,7 +12,7 @@
       simulations have to be re-run for some reason.</para>
     <para>
       In &Omnetpp;
-      4.0 the statistical analysis tool is integrated into the Eclipse environment. Your settings -- your
+      4.x the statistical analysis tool is integrated into the Eclipse environment. Your settings -- your
       recipe for finding results from the raw data -- will be recorded in analysis files (.anf) and become
       instantly reproducible. This means that all processing and charts are stored as datasets; for example,
       if simulations need to be re-run due to a model bug or misconfiguration, existing charts need not be
@@ -75,7 +75,7 @@
         <para>
           The lower half shows what files actually matched the input specification, and what runs they
           contain. Note that &Omnetpp;
-          4.0 result files contain a unique run ID and several metadata annotations in addition to the actual
+          4.x result files contain a unique run ID and several metadata annotations in addition to the actual
           recorded data. The third tree organizes simulation runs according to their
           experiment-measurement-replication labels.
         </para>
@@ -89,7 +89,7 @@
           And, to gain statistical confidence in the results, each measurement will be possibly repeated
           several times, with different random number seeds. It is easy to set up such scenarios with the
           improved ini files of &Omnetpp;
-          4.0, and then the experiment-measurement-replication labels will be assigned automatically -- please
+          4.x, and then the experiment-measurement-replication labels will be assigned automatically -- please
           refer to the chapter "Configuring and Running Simulations" in the manual for more discussion.
         </para>
       </sect3>
@@ -458,7 +458,7 @@
         <title>Overview</title>
         <para>
           You typically want to display the recorded data on charts. In &Omnetpp;
-          4.0 you can open charts for scalar, vector or histogram data with one click. Charts can be saved
+          4.x you can open charts for scalar, vector or histogram data with one click. Charts can be saved
           into the analysis file too. The Analysis Editor supports bar charts, line charts, histogram charts
           and scatter charts. Charts are interactive, they can be zoomed, scrolled, and a tooltip gives
           information about the data items.

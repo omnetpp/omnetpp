@@ -6,8 +6,8 @@ all: pdf html eclipse
 
 html:
 	perl trans.pl <ide-customization-guide.xml >tmp0.xml
-	xsltproc --xinclude --output tmp.xml trans.xsl tmp0.xml
-	xsltproc --output ide-customization-guide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
+	xsltproc --nonet --xinclude --output tmp.xml trans.xsl tmp0.xml
+	xsltproc --nonet --output ide-customization-guide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
 	rm -f tmp.xml tmp0.xml
 	rm -rf ../../ide-customization-guide
 	mkdir ../../ide-customization-guide
@@ -18,23 +18,23 @@ html:
 .PHONY : eclipse
 eclipse:
 	perl trans.pl <ide-customization-guide.xml >tmp0.xml
-	xsltproc --xinclude --output tmp.xml trans.xsl tmp0.xml
+	xsltproc --nonet --xinclude --output tmp.xml trans.xsl tmp0.xml
 	rm -rf eclipse
 	mkdir eclipse
 	mkdir eclipse/images
-	cd eclipse && xsltproc $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
+	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	cp images/* eclipse/images
 	rm tmp.xml tmp0.xml
 
 pdf:
 	perl trans.pl <ide-customization-guide.xml >tmp0.xml
-	xsltproc --xinclude --output tmp.xml --stringparam output pdf trans.xsl tmp0.xml
+	xsltproc --nonet --xinclude --output tmp.xml --stringparam output pdf trans.xsl tmp0.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
-	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
+	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf ide-customization-guide.pdf
 	rm -f tmp.fo tmp.xml tmp0.xml
 	rm -f custom-fo-docbook-tmp.xsl
-	cp ide-customization-guide.pdf ../..
+	cp ide-customization-guide.pdf ../../IDE-CustomizationGuide.pdf
 
 clean:
 	rm -rf ide-customization-guide.pdf ide-customization-guide.html

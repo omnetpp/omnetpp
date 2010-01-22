@@ -1,0 +1,55 @@
+== Fedora Core  11 and 12
+
+=== Supported releases
+
+This chapter provides additional information for installing @OMNETPP@ on
+Fedora Core installations. The overall installation procedure is described
+in the 'Linux' chapter.
+
+The following Fedora releases are covered:
+
+* Fedora Core 11
+* Fedora Core 12
+
+They were tested on the following architectures:
+
+* Intel 32-bit and 64-bit
+
+=== Opening a terminal
+
+Choose 'Applications -> System Tools -> Terminal' from the menu.
+
+=== Installing the prerequisite packages
+
+You can perform the installation using the graphical user interface or
+from the terminal, whichever you prefer.
+
+==== Command-line installation
+
+To install the required packages, type in the terminal:
+
+  $ su -c 'yum install gcc gcc-c++ bison flex perl tcl-devel \
+      tk-devel blt libxml2-devel zlib-devel xulrunner make \
+      java-1.6.0-openjdk doxygen graphviz openmpi-devel'
+
+then follow the instruction on the console.
+
+==== Graphical installation
+
+The graphical installer can be launched by choosing
+'System -> Administration -> Add/Remove Software' from the menu.
+
+Search for the following packages in the list. Select the checkboxes
+in front of the names, and pick the latest version of each package.
+
+The packages:
+
+* bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, blt, libxml2-devel,
+zlib-devel, xulrunner, make, java-1.6.0-openjdk,
+doxygen, graphviz, openmpi-devel
+
+Click 'Apply', then follow the instructions.
+
+
+
+

@@ -1,0 +1,198 @@
+== Windows
+
+=== Installing the prerequisites
+
+The only software that you need to download and install beforehand is the
+Java runtime (JRE). All other software, including a C++ compiler, is
+included in the @OMNETPP@ Windows package.
+
+Download Java 5.0 or later from http://www.java.com and install it before
+proceeding. Java is needed for the Eclipse-based Simulation IDE.
+
+
+=== Installing @OMNETPP@
+
+Download the @OMNETPP@ source code from http://omnetpp.org. Make sure
+you select the Windows-specific archive, named
+`@omnetpp@-@version@-src-windows.zip`.
+
+The package is nearly self-contained: in addition to @OMNETPP@ files
+it includes a C++ compiler, a command-line build environment, and all
+libraries and programs required by @OMNETPP@.
+
+Copy the @OMNETPP@ archive to the directory where you want to install it.
+Choose a directory whose full path *does not contain any space*; for example,
+do *not* put @OMNETPP@ under 'Program Files'.
+
+Extract the zip file. To do so, right-click the zip file in Windows Explorer,
+and select 'Extract All' from the menu. You can also use external programs
+like Winzip or 7zip. Rename the resulting directory to `@omnetpp@-@version@`.
+
+When you look into the new `@omnetpp@-@version@` directory, should see
+directories named `doc`, `images`, `include`, `msys`, etc., and files named
+`mingwenv.cmd`, `configure`, `Makefile`, and others.
+
+
+=== Configuring and building @OMNETPP@
+
+Start `mingwenv.cmd` in the `@omnetpp@-@version@` directory by double-clicking
+it in Windows Explorer. It will bring up a console with the MSYS 'bash' shell,
+where the path is already set to include the `@omnetpp@-@version@/bin` directory.
+
+NOTE: If you want to start simulations from outside the shell as well
+(for example from Exlorer), you need to add @OMNETPP@'s `bin` directory
+to the path; instructions are provided later.
+
+First, check the `configure.user` file to make sure it contains the settings
+you need. In most cases you don't need to change anything:
+
+    notepad configure.user
+
+Then the usual GNU-like stuff:
+
+    $ ./configure
+    $ make
+
+This will create both debug and release binaries.
+
+
+=== Verifying the installation
+
+You should now test all samples and check they run correctly. As an example,
+the dyna example is started by entering the following commands:
+
+    $ cd samples/dyna
+    $ ./dyna
+
+By default the samples will run using the Tcl/Tk environment. You should see
+nice gui windows and dialogs.
+
+
+=== Starting the IDE
+
+@OMNETPP@ comes with an Eclipse-based Simulation IDE. You will need at least
+Java Runtime Environment 5.0 installed on your machine.  You should be able
+to start the IDE by typing:
+
+    $ @omnetpp@
+
+We recommend that you create a shortcut for starting the IDE. To do so, locate
+the `omnetpp.exe` program in the `@omnetpp@-@version@/ide` directory in Windows
+Explorer, right-click it, and choose 'Send To -> Desktop (create shortcut)' from
+the menu. On Windows 7, you can right-click the taskbar icon while the IDE is running,
+and select 'Pin this program to taskbar' from the context menu.
+
+When you try to build a project in the IDE, you may get the following warning message:
+
+[quote]
+_____________________________________________________________________
+Toolchain "..." is not supported on this platform or installation. Please go to the
+Project menu, and activate a different build configuration. (You may need to switch
+to the C/C++ perspective first, so that the required menu items appear in the Project menu.)
+_____________________________________________________________________
+
+So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
+
+
+=== Environment variables
+
+If you want to start @OMNETPP@ simulations outside the shell as well
+(for example from Exlorer), you need to add @OMNETPP@'s `bin` directory
+to the path.
+
+First, open the 'Environment Variables' dialog.
+
+* On Windows XP: TODO
+
+* On Windows Vista: TODO
+
+* On Windows 7: Click the Start button, then start typing `environment variables`
+into the search box. Choose 'Edit environment variables for your account' when it
+appears in the list. The  dialog comes up.
+
+In the dialog, select `path` or `PATH` in the list, click 'Edit'. Append
+"`;<omnetpp-dir>\bin`" to the value (without quotes), where `<omnetpp-dir>`
+is the name of the @OMNETPP@ root directory (for example `C:\@omnetpp@-@version@`).
+Hit Enter to accept.
+
+You need to close and re-open any Command windows for the changes to take effect in them.
+
+
+=== Reconfiguring the libraries
+
+If you need to recompile the @OMNETPP@ components with different flags (e.g.
+different optimization), then change the top-level @OMNETPP@ directory, edit
+`configure.user` accordingly, then type:
+
+    $ ./configure
+    $ make clean
+    $ make
+
+If you want to recompile just a single library, then change to the directory
+of the library (e.g. `cd src/sim`) and type:
+
+    $ make clean
+    $ make
+
+By default, libraries are compiled in both debug and release mode. If you want
+to make release or debug builds only, use:
+
+    $ make MODE=release
+
+or
+
+    $ make MODE=debug
+
+By default, shared libraries will be created. If you want to build static
+libraries, use:
+
+    $ make SHARED_LIBS=no
+
+NOTE: The built libraries and programs are immediately copied
+to the `lib/` and `bin/` subdirs.
+
+
+=== Portability issues
+
+@OMNETPP@ has been tested with the MinGW gcc compiler. The current distribution
+contains gcc 4.4 version.
+
+Microsoft Visual C++ is not supported in the Academic Edition.
+
+
+=== Additional packages
+
+Note that Doxygen and GraphViz are already included in the @OMNETPP@ package,
+and do not need to be downloaded.
+
+==== MPI
+
+MPI is only needed if you would like to run parallel simulations.
+
+There are several MPI implementations for Windows, and @OMNETPP@ does not
+mandate any specific one. We recommend DeinoMPI, which can be downloaded
+from http://mpi.deino.net.
+
+After installing DeinoMPI, adjust the `MPI_DIR` setting in @OMNETPP@'s
+`configure.user`, and reconfigure and recompile @OMNETPP@:
+
+    $ ./configure
+    $ make cleanall
+    $ make
+
+NOTE: In general, if you would like to run parallel simulations, we recommend
+that you use Linux, OS X, or another unix-like platform.
+
+==== Akaroa
+
+TODO : how to do it
+
+Download from: http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/
+
+ifdef::OMNEST[]
+==== SystemC
+
+TODO
+endif::OMNEST[]
+
+

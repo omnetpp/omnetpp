@@ -47,7 +47,6 @@ MEAN_AND_VARIANCE(binomial(10,0,rng));    // m=0 (always fail)
 MEAN_AND_VARIANCE(binomial(10,1.0,rng));  // m=10 (always success)
 ev << endl;
 
-MEAN_AND_VARIANCE(geometric(1.0,rng));    // m=0 (1st is always success)
 MEAN_AND_VARIANCE(geometric(0.5,rng));    // m=1
 MEAN_AND_VARIANCE(geometric(0.9,rng));
 MEAN_AND_VARIANCE(geometric(0.1,rng));
@@ -56,8 +55,8 @@ ev << endl;
 // negbinomial(n,p)
 // if (n==1) --> geometric(p)
 // if (p==1.0) --> always 0
-MEAN_AND_VARIANCE(negbinomial(0,1.0,rng));   // m=0, v=0 (because p=1)
-MEAN_AND_VARIANCE(negbinomial(10,1.0,rng));  // m=0, v=0 (because p=1)
+MEAN_AND_VARIANCE(negbinomial(0,0.9,rng));
+MEAN_AND_VARIANCE(negbinomial(10,0.9,rng));
 MEAN_AND_VARIANCE(negbinomial(1,0.5,rng));   // same as geom()
 MEAN_AND_VARIANCE(negbinomial(1,0.1,rng));   // same as geom()
 MEAN_AND_VARIANCE(negbinomial(5,0.1,rng));
