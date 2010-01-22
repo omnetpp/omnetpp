@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.IMenuManager;
@@ -31,6 +32,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -52,6 +55,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 
 /**
@@ -68,7 +72,7 @@ import org.omnetpp.scave.model.ResultType;
  *
  * @author andras
  */
-public class DataTable extends Table {
+public class DataTable extends Table implements IDataControl {
 
 	/**
 	 * Keys used in getData(),setData()
@@ -80,72 +84,79 @@ public class DataTable extends Table {
 
 		private String text;
 		private String fieldName;
-		private int weight;
+		private int defaultWidth;
 		private boolean defaultVisible;
 
-		public Column(String text, String fieldName, int weight, boolean visible) {
+		public Column(String text, String fieldName, int defaultWidth, boolean defaultVisible) {
 			this.text = text;
 			this.fieldName = fieldName;
-			this.weight = weight;
-			this.defaultVisible = visible;
+			this.defaultWidth = defaultWidth;
+			this.defaultVisible = defaultVisible;
 		}
 
-		public Column clone() {
-			return new Column(this.text, this.fieldName, this.weight, this.defaultVisible);
+		@Override
+        public Column clone() {
+			return new Column(this.text, this.fieldName, this.defaultWidth, this.defaultVisible);
 		}
 
-		public boolean equals(Object other) {
+		@Override
+        public boolean equals(Object other) {
 			return other instanceof Column && this.text.equals(((Column)other).text);
 		}
 
-		public int hashCode() {
+		@Override
+        public int hashCode() {
 			return text.hashCode();
 		}
 	}
 
 	private static final Column
-		COL_DIRECTORY = new Column("Directory", null, 60, true),
+		COL_DIRECTORY = new Column("Folder", null, 60, true),
 		COL_FILE = new Column("File name", FILE,100, true),
-		COL_CONFIG = new Column("Config name", CONFIGNAME, 100, true),
+		COL_CONFIG = new Column("Config name", CONFIGNAME, 80, true),
 		COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 20, true),
 		COL_RUN_ID = new Column("Run id", RUN, 100, true),
+		COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 80, false),
+		COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 120, false),
+		COL_REPLICATION = new Column("Replication", REPLICATION, 60, false),
 		COL_MODULE = new Column("Module", MODULE, 160, true),
 		COL_DATA = new Column("Name", NAME, 100, true),
 		COL_VALUE = new Column("Value", null, 80, true),
 		COL_COUNT = new Column("Count", null, 50, true),
 		COL_MEAN = new Column("Mean", null, 60, true),
 		COL_STDDEV = new Column("StdDev", null, 60, true),
+        COL_VARIANCE = new Column("Variance", null, 60, true),
 		COL_MIN = new Column("Min", null, 60, false),
 		COL_MAX = new Column("Max", null, 60, false),
-		COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 60, false),
-		COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 60, false),
-		COL_REPLICATION = new Column("Replication", REPLICATION, 60, false),
-		COL_VECTOR_ID = new Column("Vector id", null, 60, false),
+		COL_VECTOR_ID = new Column("Vector id", null, 40, false),
 		COL_MIN_TIME = new Column("Min time", null, 60, false),
 		COL_MAX_TIME = new Column("Max time", null, 60, false);
 
 	private static final Column[] allScalarColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+		COL_MODULE, COL_DATA,
 		COL_VALUE
 	};
 
 	private static final Column[] allVectorColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
-		COL_VECTOR_ID,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX, COL_MIN_TIME, COL_MAX_TIME
+		COL_MODULE, COL_DATA,
+		COL_VECTOR_ID,
+		COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX, COL_MIN_TIME, COL_MAX_TIME
 	};
 
 	private static final Column[] allHistogramColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX
+		COL_MODULE, COL_DATA,
+		COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX
 	};
 
 	private ResultType type;
-	private ResultFileManager manager;
-	private IDList idlist;
+	private ResultFileManagerEx manager;
+	private IDList idList;
 	private ListenerList listeners;
 	private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
 	private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
@@ -183,7 +194,8 @@ public class DataTable extends Table {
 		setMenu(contextMenuManager.createContextMenu(this));
 
 		addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent event) {
+			@Override
+            public void mouseDown(MouseEvent event) {
 				handleMouseDown(event);
 			}
 		});
@@ -203,23 +215,23 @@ public class DataTable extends Table {
 		return type;
 	}
 
-	public void setResultFileManager(ResultFileManager manager) {
+	public void setResultFileManager(ResultFileManagerEx manager) {
 		this.manager = manager;
 	}
 
-	public ResultFileManager getResultFileManager() {
+	public ResultFileManagerEx getResultFileManager() {
 		return manager;
 	}
 
 	public void setIDList(IDList idlist) {
-		this.idlist = idlist;
+		this.idList = idlist;
 		restoreSortOrder();
 		refresh();
 		fireContentChangedEvent();
 	}
 
 	public IDList getIDList() {
-		return idlist;
+		return idList;
 	}
 
 	public IMenuManager getContextMenuManager() {
@@ -251,19 +263,28 @@ public class DataTable extends Table {
 	}
 
 	public void setVisibleColumns(String[] columnTexts) {
-		List<String> visibleColumnTexts = Arrays.asList(columnTexts);
-
-		visibleColumns.clear();
-		for (TableColumn column : getColumns())
-			column.dispose();
-
 		for (Column column : getAllColumns()) {
-			boolean visible = visibleColumnTexts.indexOf(column.text) >= 0;
-			if (visible)
+            TableColumn tableColumn = getTableColumn(column);
+            boolean currentlyVisible = tableColumn != null;
+		    boolean requestedVisible = ArrayUtils.indexOf(columnTexts, column.text) != -1;
+
+			if (requestedVisible && !currentlyVisible)
 				addColumn(column);
+			else if (!requestedVisible && currentlyVisible){
+                visibleColumns.remove(column);
+                tableColumn.dispose();
+			}
 		}
+
+		int position = 0;
+		int[] columnOrder = new int[getColumns().length];
+        for (Column column : getAllColumns())
+            if (visibleColumns.indexOf(column) != -1)
+                columnOrder[position++] = getTableColumnIndex(column);
+
+        setColumnOrder(columnOrder);
+
 		saveState();
-		layoutColumns();
 		refresh();
 	}
 
@@ -272,7 +293,7 @@ public class DataTable extends Table {
 		IDList items = new IDList();
 
 		for (int i = 0; i < selectionIndices.length; ++i)
-			items.add(idlist.get(selectionIndices[i]));
+			items.add(idList.get(selectionIndices[i]));
 
 		return items;
 	}
@@ -285,14 +306,14 @@ public class DataTable extends Table {
 		ResultItem[] items = new ResultItem[selectionIndices.length];
 
 		for (int i = 0; i < items.length; ++i) {
-			items[i] = manager.getItem(idlist.get(selectionIndices[i]));
+			items[i] = manager.getItem(idList.get(selectionIndices[i]));
 		}
 
 		return items;
 	}
 
 	public void refresh() {
-		setItemCount((int)idlist.size());
+		setItemCount(idList.size());
 		clearAll();
 	}
 
@@ -302,22 +323,31 @@ public class DataTable extends Table {
 	}
 
 	protected TableColumn getTableColumn(Column column) {
-		for (TableColumn tableColumn : getColumns()) {
-			if (tableColumn.getData(COLUMN_KEY).equals(column)) {
+		for (TableColumn tableColumn : getColumns())
+			if (tableColumn.getData(COLUMN_KEY).equals(column))
 				return tableColumn;
-			}
-		}
 		return null;
 	}
 
-	protected void addColumn(Column newColumn) {
+    protected int getTableColumnIndex(Column column) {
+        TableColumn[] columns = getColumns();
+        for (int index = 0; index < columns.length; index++) {
+            TableColumn tableColumn = columns[index];
+            if (tableColumn.getData(COLUMN_KEY).equals(column))
+                return index;
+        }
+        return -1;
+    }
+
+	protected TableColumn addColumn(Column newColumn) {
 		visibleColumns.add(newColumn);
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
 		tableColumn.setText(newColumn.text);
-		tableColumn.setWidth(newColumn.weight);
+		tableColumn.setWidth(newColumn.defaultWidth);
 		tableColumn.setData(COLUMN_KEY, newColumn);
 		tableColumn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				TableColumn tableColumn = (TableColumn)e.widget;
 				if (!tableColumn.isDisposed()) {
 					Column column = (Column)tableColumn.getData(COLUMN_KEY);
@@ -330,6 +360,14 @@ public class DataTable extends Table {
 				}
 			}
 		});
+		tableColumn.addControlListener(new ControlAdapter() {
+		    @Override
+		    public void controlResized(ControlEvent e) {
+		        saveState();
+		    }
+		});
+
+        return tableColumn;
 	}
 
 	private void restoreSortOrder() {
@@ -348,69 +386,51 @@ public class DataTable extends Table {
 
 		boolean ascending = direction == SWT.UP;
 		if (COL_DIRECTORY.equals(column))
-			idlist.sortByDirectory(manager, ascending);
+			idList.sortByDirectory(manager, ascending);
 		else if (COL_FILE.equals(column))
-			idlist.sortByFileName(manager, ascending);
+			idList.sortByFileName(manager, ascending);
 		else if (COL_CONFIG.equals(column))
-			idlist.sortByRunAttribute(manager, CONFIGNAME, ascending);
+			idList.sortByRunAttribute(manager, CONFIGNAME, ascending);
 		else if (COL_RUNNUMBER.equals(column))
-			idlist.sortByRunAttribute(manager, RUNNUMBER, ascending);
+			idList.sortByRunAttribute(manager, RUNNUMBER, ascending);
 		else if (COL_RUN_ID.equals(column))
-			idlist.sortByRun(manager, ascending);
+			idList.sortByRun(manager, ascending);
 		else if (COL_MODULE.equals(column))
-			idlist.sortByModule(manager, ascending);
+			idList.sortByModule(manager, ascending);
 		else if (COL_DATA.equals(column))
-			idlist.sortByName(manager, ascending);
+			idList.sortByName(manager, ascending);
 		else if (COL_VALUE.equals(column))
-			idlist.sortScalarsByValue(manager, ascending);
+			idList.sortScalarsByValue(manager, ascending);
 		else if (COL_VECTOR_ID.equals(column))
-			idlist.sortVectorsByVectorId(manager, ascending);
+			idList.sortVectorsByVectorId(manager, ascending);
 		else if (COL_COUNT.equals(column))
-			idlist.sortVectorsByLength(manager, ascending);
+			idList.sortVectorsByLength(manager, ascending);
 		else if (COL_MEAN.equals(column))
-			idlist.sortVectorsByMean(manager, ascending);
+			idList.sortVectorsByMean(manager, ascending);
 		else if (COL_STDDEV.equals(column))
-			idlist.sortVectorsByStdDev(manager, ascending);
+			idList.sortVectorsByStdDev(manager, ascending);
 		else if (COL_MIN.equals(column))
-			idlist.sortVectorsByMin(manager, ascending);
+			idList.sortVectorsByMin(manager, ascending);
 		else if (COL_MAX.equals(column))
-			idlist.sortVectorsByMax(manager, ascending);
+			idList.sortVectorsByMax(manager, ascending);
 		else if (COL_EXPERIMENT.equals(column))
-			idlist.sortByRunAttribute(manager, EXPERIMENT, ascending);
+			idList.sortByRunAttribute(manager, EXPERIMENT, ascending);
 		else if (COL_MEASUREMENT.equals(column))
-			idlist.sortByRunAttribute(manager, MEASUREMENT, ascending);
+			idList.sortByRunAttribute(manager, MEASUREMENT, ascending);
 		else if (COL_REPLICATION.equals(column))
-			idlist.sortByRunAttribute(manager, REPLICATION, ascending);
+			idList.sortByRunAttribute(manager, REPLICATION, ascending);
 		else if (COL_MIN_TIME.equals(column))
-			idlist.sortVectorsByStartTime(manager, ascending);
+			idList.sortVectorsByStartTime(manager, ascending);
 		else if (COL_MAX_TIME.equals(column))
-			idlist.sortVectorsByEndTime(manager, ascending);
-	}
-
-	protected void layoutColumns() {
-		double unit = getWidthUnit();
-		for (int i = 0; i < visibleColumns.size(); ++i) {
-			Column column = visibleColumns.get(i);
-			TableColumn tableColumn = getTableColumn(column);
-			if (tableColumn != null)
-				tableColumn.setWidth((int)(column.weight * unit));
-		}
-	}
-
-	private double getWidthUnit() {
-		int sumOfWeights = 0;
-		for (Column column : visibleColumns)
-			sumOfWeights += (column.weight);
-
-		return (double)getSize().x / sumOfWeights;
+			idList.sortVectorsByEndTime(manager, ascending);
 	}
 
 	protected void fillTableLine(TableItem item, int lineNumber) {
 		if (manager == null)
 			return;
 
-		long id = idlist.get(lineNumber);
-		item.setData(ITEM_KEY, (Long)id);
+		long id = idList.get(lineNumber);
+		item.setData(ITEM_KEY, id);
 
 		for (int i = 0; i < visibleColumns.size(); ++i) {
 			Column column = visibleColumns.get(i);
@@ -436,8 +456,8 @@ public class DataTable extends Table {
 			return "";
 
 		try {
-
-			long id = idlist.get(row);
+		    //TODO: code very similar to ResultItemPropertySource -- make them common?
+			long id = idList.get(row);
 			ResultItem result = manager.getItem(id);
 
 			if (COL_DIRECTORY.equals(column))
@@ -494,6 +514,14 @@ public class DataTable extends Table {
 					double stddev = vector.getStddev();
 					return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 				}
+                else if (COL_STDDEV.equals(column)) {
+                    double variance = vector.getVariance();
+                    return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
+                }
+                else if (COL_VARIANCE.equals(column)) {
+                    double variance = vector.getVariance();
+                    return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
+                }
 				else if (COL_MIN.equals(column)) {
 					double min = vector.getMin();
 					return Double.isNaN(min) ? "n.a." : String.valueOf(min);
@@ -525,6 +553,10 @@ public class DataTable extends Table {
 					double stddev = histogram.getStddev();
 					return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 				}
+                else if (COL_VARIANCE.equals(column)) {
+                    double variance = histogram.getVariance();
+                    return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
+                }
 				else if (COL_MIN.equals(column)) {
 					double min = histogram.getMin();
 					return Double.isNaN(min) ? "n.a." : String.valueOf(min);
@@ -559,13 +591,13 @@ public class DataTable extends Table {
 		clipboard.dispose();
 	}
 
-	public void addDataTableListener(IDataTableListener listener) {
+	public void addDataListener(IDataListener listener) {
 		if (listeners == null)
 			listeners = new ListenerList();
 		listeners.add(listener);
 	}
 
-	public void removeDataTableListener(IDataTableListener listener) {
+	public void removeDataListener(IDataListener listener) {
 		if (listeners != null)
 			listeners.remove(listener);
 	}
@@ -573,7 +605,7 @@ public class DataTable extends Table {
 	protected void fireContentChangedEvent() {
 		if (listeners != null) {
 			for (Object listener : new ArrayList<Object>(Arrays.asList(this.listeners.getListeners())))
-				((IDataTableListener)listener).contentChanged(this);
+				((IDataListener)listener).contentChanged(this);
 		}
 	}
 
@@ -589,6 +621,7 @@ public class DataTable extends Table {
 		if (preferences != null) {
 			for (Column column : getAllColumns()) {
 				preferences.setDefault(getPreferenceStoreKey(column, "visible"), column.defaultVisible);
+                preferences.setDefault(getPreferenceStoreKey(column, "width"), column.defaultWidth);
 			}
 		}
 	}
@@ -598,8 +631,11 @@ public class DataTable extends Table {
 			visibleColumns.clear();
 			for (Column column : getAllColumns()) {
 				boolean visible = preferences.getBoolean(getPreferenceStoreKey(column, "visible"));
-				if (visible)
-					addColumn(column.clone());
+				if (visible) {
+                    Column clone = column.clone();
+                    clone.defaultWidth = preferences.getInt(getPreferenceStoreKey(column, "width"));
+					addColumn(clone);
+				}
 			}
 		}
 	}
@@ -609,6 +645,8 @@ public class DataTable extends Table {
 			for (Column column : getAllColumns()) {
 				boolean visible = visibleColumns.indexOf(column) >= 0;
 				preferences.setValue(getPreferenceStoreKey(column, "visible"), visible);
+				if (visible)
+                    preferences.setValue(getPreferenceStoreKey(column, "width"), getTableColumn(column).getWidth());
 			}
 		}
 	}
@@ -682,7 +720,7 @@ public class DataTable extends Table {
 	}
 
 	public void setSelectionByID(long id) {
-		int index = idlist.indexOf(id);
+		int index = idList.indexOf(id);
 		if (index >= 0)
 			setSelection(index);
 	}

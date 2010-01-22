@@ -44,6 +44,7 @@ import org.omnetpp.scave.actions.CreateChartTemplateAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.ExportDataAction;
+import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.GroupAction;
 import org.omnetpp.scave.actions.IScaveAction;
@@ -108,6 +109,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction addFilterToDatasetAction;
 	private IAction addSelectedToDatasetAction;
 	private IAction copyToClipboardAction;
+	private IAction exportToSVGAction;
 	private IAction createTempChartAction;
 	private IAction showOutputVectorViewAction;
 	private Map<String,IAction> exportActions;
@@ -170,6 +172,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 			exportActions.put(format, action);
 		}
     	copyToClipboardAction = registerAction(page, new CopyToClipboardAction());
+    	exportToSVGAction = registerAction(page, new ExportToSVGAction());
     	createTempChartAction = registerAction(page, new CreateTempChartAction());
         showOutputVectorViewAction = registerAction(page, new ShowOutputVectorViewAction());
 
@@ -374,6 +377,9 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public IAction getCopyToClipboardAction() {
 		return copyToClipboardAction;
 	}
+    public IAction getExportToSVGAction() {
+        return exportToSVGAction;
+    }
 	public IAction getCreateTempChartAction() {
 		return createTempChartAction;
 	}
@@ -387,7 +393,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		return redoRetargetAction;
 	}
 	public IMenuManager createExportMenu() {
-		IMenuManager exportMenu = new MenuManager("Export to File");
+		IMenuManager exportMenu = new MenuManager("Export Data");
 		if (exportActions != null) {
 			for (String format : ExportDataAction.FORMATS) {
 				IAction action = exportActions.get(format);

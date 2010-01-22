@@ -7,8 +7,8 @@
 
 package org.omnetpp.scave.charting.plotter;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -26,14 +26,14 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		this.backward = backward;
 	}
 
-	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
 		IXYDataset dataset = plot.getDataset();
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
 
 		// dataset index range to iterate over
-		int[] range = indexRange(plot, series, gc, mapping);
+		int[] range = indexRange(plot, series, graphics, mapping);
 		int first = range[0], last = range[1];
 
 		//
@@ -51,14 +51,14 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		int minY = prevY;
 
 		// We are drawing vertical/horizontal lines, so turn off antialias (it is slow).
-		int origAntialias = gc.getAntialias();
-		gc.setAntialias(SWT.OFF);
+		int origAntialias = graphics.getAntialias();
+		graphics.setAntialias(SWT.OFF);
 
 		int[] dots = new int[] {1,2};
-		gc.setLineDash(dots);
+		graphics.setLineDash(dots);
 
 		if (!prevIsNaN && backward)
-			gc.drawPoint(prevX, prevY);
+			graphics.drawPoint(prevX, prevY);
 
 		for (int i = first+1; i <= last; i++) {
 			double value = plot.transformY(dataset.getY(series, i));
@@ -76,21 +76,21 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 
 			if (x != prevX) {
 				if (!isNaN && backward) {
-					gc.setLineStyle(SWT.LINE_SOLID);
-					gc.drawLine(prevX, y, x, y); // horizontal
+					graphics.setLineStyle(SWT.LINE_SOLID);
+					graphics.drawLine(prevX, y, x, y); // horizontal
 
-					gc.setLineDash(dots);
+					graphics.setLineDash(dots);
 					if (!prevIsNaN) {
-						gc.drawLine(prevX, prevY, prevX, y); // vertical
+						graphics.drawLine(prevX, prevY, prevX, y); // vertical
 					}
 				}
 				else if (!prevIsNaN && !backward) { // forward
-					gc.setLineStyle(SWT.LINE_SOLID);
-					gc.drawLine(prevX, prevY, x, prevY); // horizontal
+					graphics.setLineStyle(SWT.LINE_SOLID);
+					graphics.drawLine(prevX, prevY, x, prevY); // horizontal
 
-					gc.setLineDash(dots);
+					graphics.setLineDash(dots);
 					if (!isNaN) {
-						gc.drawLine(x, prevY, x, y); // vertical
+						graphics.drawLine(x, prevY, x, y); // vertical
 					}
 				}
 
@@ -99,11 +99,11 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			else if (!isNaN) {
 				// same x coord, only vertical line needs to be drawn
 				if (y < minY) {
-					gc.drawLine(x, minY, x, y);  // in lineDash(dots) mode
+					graphics.drawLine(x, minY, x, y);  // in lineDash(dots) mode
 					minY = y;
 				}
 				else if (y > maxY) {
-					gc.drawLine(x, maxY, x, y);  // in lineDash(dots) mode
+					graphics.drawLine(x, maxY, x, y);  // in lineDash(dots) mode
 					maxY = y;
 				}
 			}
@@ -116,11 +116,11 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		}
 
 		if (!prevIsNaN && !backward)
-			gc.drawPoint(prevX, prevY);
+			graphics.drawPoint(prevX, prevY);
 
 		// draw symbols
-		gc.setAntialias(origAntialias);
-		gc.setLineStyle(SWT.LINE_SOLID);
-		plotSymbols(plot, series, gc, mapping, symbol);
+		graphics.setAntialias(origAntialias);
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		plotSymbols(plot, series, graphics, mapping, symbol);
 	}
 }

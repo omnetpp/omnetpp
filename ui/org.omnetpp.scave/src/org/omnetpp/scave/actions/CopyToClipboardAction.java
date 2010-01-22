@@ -29,7 +29,7 @@ public class CopyToClipboardAction extends AbstractScaveAction {
 		if (activePanel != null) {
 			ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {
 				public Object call() throws Exception {
-					activePanel.getTable().copySelectionToClipboard();
+					activePanel.getDataControl().copySelectionToClipboard();
 					return null;
 				}
 			});

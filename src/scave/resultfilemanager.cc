@@ -345,51 +345,55 @@ const HistogramResult& ResultFileManager::getHistogram(ID id) const
 }
 
 template <class T>
-void ResultFileManager::collectIDs(IDList &out, std::vector<T> ResultFile::* vec, int type) const
+void ResultFileManager::collectIDs(IDList &out, std::vector<T> ResultFile::* vec, int type, bool includeComputed, bool includeFields) const
 {
     for (int k=0; k<(int)fileList.size(); k++)
     {
         if (fileList[k]!=NULL)
         {
             std::vector<T>& v = fileList[k]->*vec;
-            for (int i=0; i<(int)v.size(); i++)
-                if (!v[i].isComputed())
-                    out.uncheckedAdd(_mkID(false,type,k,i));
+            for (int i=0; i<(int)v.size(); i++) {
+            	bool isComputed = v[i].isComputed();
+				bool isField = type == SCALAR ? ((ScalarResult&)v[i]).isField : false;
+
+				if ((!isField || includeFields) && (!isComputed || includeComputed))
+					out.uncheckedAdd(_mkID(false, isField, type, k, i));
+            }
         }
     }
 }
 
-IDList ResultFileManager::getAllItems() const
+IDList ResultFileManager::getAllItems(bool includeComputed, bool includeFields) const
 {
 	READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::scalarResults, SCALAR);
-    collectIDs(out, &ResultFile::vectorResults, VECTOR);
-    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM);
+    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeComputed, includeFields);
+    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeComputed, includeFields);
+    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeComputed, includeFields);
     return out;
 }
 
-IDList ResultFileManager::getAllScalars() const
+IDList ResultFileManager::getAllScalars(bool includeComputed, bool includeFields) const
 {
 	READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::scalarResults, SCALAR);
+    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeComputed, includeFields);
     return out;
 }
 
-IDList ResultFileManager::getAllVectors() const
+IDList ResultFileManager::getAllVectors(bool includeComputed) const
 {
 	READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::vectorResults, VECTOR);
+    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeComputed);
     return out;
 }
 
-IDList ResultFileManager::getAllHistograms() const
+IDList ResultFileManager::getAllHistograms(bool includeComputed) const
 {
 	READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM);
+    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeComputed);
     return out;
 }
 
@@ -401,7 +405,7 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     ScalarResults& v = fileRun->fileRef->scalarResults;
     for (int i=0; i<(int)v.size(); i++)
         if (v[i].fileRunRef==fileRun && !v[i].isComputed())
-            out.uncheckedAdd(_mkID(false,SCALAR,fileId,i));
+            out.uncheckedAdd(_mkID(false,v[i].isField,SCALAR,fileId,i));
     return out;
 }
 
@@ -413,7 +417,7 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     VectorResults& v = fileRun->fileRef->vectorResults;
     for (int i=0; i<(int)v.size(); i++)
         if (v[i].fileRunRef==fileRun && !v[i].isComputed())
-            out.uncheckedAdd(_mkID(false,VECTOR,fileId,i));
+            out.uncheckedAdd(_mkID(false,false,VECTOR,fileId,i));
     return out;
 }
 
@@ -425,7 +429,7 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
     HistogramResults& v = fileRun->fileRef->histogramResults;
     for (int i=0; i<(int)v.size(); i++)
         if (v[i].fileRunRef==fileRun && !v[i].isComputed())
-            out.uncheckedAdd(_mkID(false,HISTOGRAM,fileId,i));
+            out.uncheckedAdd(_mkID(false,false,HISTOGRAM,fileId,i));
     return out;
 }
 
@@ -488,7 +492,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = scalarResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(d.isComputed(), SCALAR, fileRunRef->fileRef->id, i);
+            return _mkID(d.isComputed(), scalarResults[i].isField, SCALAR, fileRunRef->fileRef->id, i);
     }
 
     VectorResults& vectorResults = fileRunRef->fileRef->vectorResults;
@@ -496,7 +500,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = vectorResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(d.isComputed(), VECTOR, fileRunRef->fileRef->id, i);
+            return _mkID(d.isComputed(), false, VECTOR, fileRunRef->fileRef->id, i);
     }
 
     HistogramResults& histogramResults = fileRunRef->fileRef->histogramResults;
@@ -504,7 +508,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = histogramResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(d.isComputed(), HISTOGRAM, fileRunRef->fileRef->id, i);
+            return _mkID(d.isComputed(), false, HISTOGRAM, fileRunRef->fileRef->id, i);
     }
     return 0;
 }
@@ -768,7 +772,7 @@ FileRun *ResultFileManager::addFileRun(ResultFile *file, Run *run)
 }
 
 int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
-                                  const char *scalarName, double value)
+                                  const char *scalarName, double value, bool isField)
 {
     ScalarResult scalar;
     scalar.fileRunRef = fileRunRef;
@@ -776,6 +780,7 @@ int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
     scalar.moduleNameRef = moduleNames.insert(moduleName);
     scalar.nameRef = names.insert(scalarName);
     scalar.value = value;
+    scalar.isField = isField;
 
     ScalarResults &scalars = fileRunRef->fileRef->scalarResults;
     scalars.push_back(scalar);
@@ -839,7 +844,7 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
     newVector.attributes = attributes;
     newVector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
     fileRef->vectorResults.push_back(newVector);
-    ID id = _mkID(true, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
+    ID id = _mkID(true, false, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
     std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
     computedIDCache[key] = id;
     return id;
@@ -976,7 +981,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         CHECK(parseDouble(vec[3],value), "invalid scalar file syntax: invalid value column");
 
         ctx.lastResultItemType = SCALAR;
-        ctx.lastResultItemIndex = addScalar(ctx.fileRunRef, vec[1], vec[2], value);
+        ctx.lastResultItemIndex = addScalar(ctx.fileRunRef, vec[1], vec[2], value, false);
         ctx.clearHistogram();
     }
     else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
@@ -1017,9 +1022,9 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         CHECK(!ctx.moduleName.empty() && !ctx.statisticName.empty(),
                 "invalid scalar file: missing statistics declaration");
         std::string scalarName = ctx.statisticName + ":" + fieldName;
-        addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), scalarName.c_str(), value);
 
         // set statistics field in the current histogram
+        bool isField = true;
         if (fieldName == "count")
             ctx.count = (long)value;
         else if (fieldName == "min")
@@ -1030,6 +1035,10 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
             ctx.sum = value;
         else if (fieldName == "sqrsum")
             ctx.sumSqr = value;
+        else if (fieldName != "mean" && fieldName != "stddev")
+        	isField = false;
+
+        addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), scalarName.c_str(), value, isField);
     }
     else if (vec[0][0]=='b' && !strcmp(vec[0],"bin"))
     {
@@ -1522,4 +1531,7 @@ bool ResultFileManager::hasStaleID(const IDList& ids) const
     return false;
 }
 
-
+const char *ResultFileManager::getRunAttribute(ID id, const char *attribute) const
+{
+    return getItem(id).fileRunRef->runRef->getAttribute(attribute);
+}

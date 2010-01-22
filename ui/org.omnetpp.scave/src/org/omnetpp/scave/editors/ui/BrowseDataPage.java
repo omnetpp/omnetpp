@@ -18,18 +18,18 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
+import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave.editors.datatable.IDataTableListener;
+import org.omnetpp.scave.editors.datatable.FilteredDataTabFolder;
+import org.omnetpp.scave.editors.datatable.IDataControl;
+import org.omnetpp.scave.editors.datatable.IDataListener;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
@@ -43,14 +43,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 
 	// UI elements
 	private Label label;
-	private TabFolder tabfolder;
-
-	private TabItem vectorsTab;
-	private TabItem scalarsTab;
-	private TabItem histogramsTab;
-	private FilteredDataPanel vectorsPanel;
-	private FilteredDataPanel scalarsPanel;
-	private FilteredDataPanel histogramsPanel;
+	private FilteredDataTabFolder tabFolder;
 
 	private IResultFilesChangeListener fileChangeListener;
 	private Runnable scheduledUpdate;
@@ -70,47 +63,23 @@ public class BrowseDataPage extends ScaveEditorPage {
 	}
 
 	public FilteredDataPanel getScalarsPanel() {
-		return scalarsPanel;
+		return tabFolder.getScalarsPanel();
 	}
 
 	public FilteredDataPanel getVectorsPanel() {
-		return vectorsPanel;
+		return tabFolder.getVectorsPanel();
 	}
 
 	public FilteredDataPanel getHistogramsPanel() {
-		return histogramsPanel;
+		return tabFolder.getHistogramsPanel();
 	}
 
-	public FilteredDataPanel getActivePanel() {
-		if (tabfolder != null) {
-			int index = tabfolder.getSelectionIndex();
-			if (index >= 0)
-				return (FilteredDataPanel)tabfolder.getItem(index).getControl();
-		}
-		return null;
-	}
-
-	public void setActivePanel(FilteredDataPanel panel) {
-		if (tabfolder != null) {
-			TabItem[] items = tabfolder.getItems();
-			for (int i = 0; i < items.length; ++i)
-				if (items[i].getControl() == panel) {
-					tabfolder.setSelection(i);
-					return;
-				}
-		}
-	}
+    public FilteredDataPanel getActivePanel() {
+        return tabFolder.getActivePanel();
+    }
 
 	public ResultType getActivePanelType() {
-		FilteredDataPanel activePanel = getActivePanel();
-		if (activePanel == vectorsPanel)
-			return ResultType.VECTOR_LITERAL;
-		else if (activePanel == scalarsPanel)
-			return ResultType.SCALAR_LITERAL;
-		else if (activePanel == histogramsPanel)
-			return ResultType.HISTOGRAM_LITERAL;
-		else
-			throw new IllegalStateException();
+	    return tabFolder.getActivePanelType();
 	}
 
 	private void initialize() {
@@ -124,54 +93,27 @@ public class BrowseDataPage extends ScaveEditorPage {
 		label = new Label(getBody(), SWT.WRAP);
 		label.setText("Here you can see all data that come from the files specified in the Inputs page.");
 		label.setBackground(this.getBackground());
-		createTabFolder();
 
-		configureContextMenu(scalarsPanel);
-		configureContextMenu(vectorsPanel);
-		configureContextMenu(histogramsPanel);
+		tabFolder = new FilteredDataTabFolder(getBody(), SWT.NONE);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        configureFilteredDataPanel(tabFolder.getAllPanel());
+        configureFilteredDataPanel(tabFolder.getVectorsPanel());
+        configureFilteredDataPanel(tabFolder.getScalarsPanel());
+        configureFilteredDataPanel(tabFolder.getHistogramsPanel());
+        configureContextMenu(tabFolder.getAllPanel());
+		configureContextMenu(tabFolder.getScalarsPanel());
+		configureContextMenu(tabFolder.getVectorsPanel());
+		configureContextMenu(tabFolder.getHistogramsPanel());
 
 		// set up contents
-		ResultFileManager manager = scaveEditor.getResultFileManager();
-		scalarsPanel.setResultFileManager(manager);
-		vectorsPanel.setResultFileManager(manager);
-		histogramsPanel.setResultFileManager(manager);
-
-		//refreshPage(manager);
-	}
-
-	private void createTabFolder() {
-		tabfolder = new TabFolder(getBody(), SWT.TOP);
-		//tabfolder.setBackground(new Color(null,255,255,255));
-		tabfolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
-											  GridData.GRAB_VERTICAL |
-											  GridData.FILL_BOTH));
-
-		// create pages
-		vectorsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, ResultType.VECTOR_LITERAL);
-		configureFilteredDataPanel(vectorsPanel);
-		scalarsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, ResultType.SCALAR_LITERAL);
-		configureFilteredDataPanel(scalarsPanel);
-		histogramsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, ResultType.HISTOGRAM_LITERAL);
-		configureFilteredDataPanel(histogramsPanel);
-
-		// create tabs (note: tab labels will be refreshed from initialize())
-		vectorsTab = addItem("Vectors", vectorsPanel);
-		scalarsTab = addItem("Scalars", scalarsPanel);
-		histogramsTab = addItem("Histograms", histogramsPanel);
-
-		tabfolder.setSelection(0);
-	}
-
-	private TabItem addItem(String text, Control control) {
-		TabItem item = new TabItem(tabfolder, SWT.NONE);
-		item.setText(text);
-		item.setControl(control);
-		return item;
+		ResultFileManagerEx manager = scaveEditor.getResultFileManager();
+		tabFolder.setResultFileManager(manager);
 	}
 
 	private void configureContextMenu(FilteredDataPanel panel) {
 		// populate the popup menu of the panel
-		IMenuManager contextMenuManager = panel.getTable().getContextMenuManager();
+		IMenuManager contextMenuManager = panel.getDataControl().getContextMenuManager();
 		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
 		if (editorContributor != null) {
 			contextMenuManager.add(editorContributor.getCreateTempChartAction());
@@ -183,9 +125,14 @@ public class BrowseDataPage extends ScaveEditorPage {
 			contextMenuManager.add(editorContributor.getCopyToClipboardAction());
 			contextMenuManager.add(new Separator());
 			contextMenuManager.add(setFilterAction);
-			contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
-			contextMenuManager.add(new Separator());
-			contextMenuManager.add(editorContributor.getShowOutputVectorViewAction());
+			if (panel.getDataControl() instanceof DataTable)
+			    contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
+	        if (panel.getDataControl() instanceof DataTree)
+	            ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
+			if (ResultType.VECTOR_LITERAL.equals(panel.getType())) {
+	            contextMenuManager.add(new Separator());
+			    contextMenuManager.add(editorContributor.getShowOutputVectorViewAction());
+			}
 		}
 		// XXX call getSite().registerContexMenu() ?
 	}
@@ -194,17 +141,16 @@ public class BrowseDataPage extends ScaveEditorPage {
 	 * Utility function configure data panel to display selection count in the status bar.
 	 */
 	private void configureFilteredDataPanel(FilteredDataPanel panel) {
-		final DataTable table = panel.getTable();
-		table.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				showStatusMessage(String.format("Selected %d out of %d rows",
-						table.getSelectionCount(), table.getItemCount()));
+		final IDataControl control = panel.getDataControl();
+		control.addSelectionListener(new SelectionAdapter() {
+			@Override
+            public void widgetSelected(SelectionEvent event) {
+				showStatusMessage(String.format("Selected %d out of %d rows", control.getSelectionCount(), control.getItemCount()));
 			}
 		});
-		table.addDataTableListener(new IDataTableListener() {
-			public void contentChanged(DataTable table) {
-				showStatusMessage(String.format("Selected %d out of %d rows",
-						table.getSelectionCount(), table.getItemCount()));
+		control.addDataListener(new IDataListener() {
+			public void contentChanged(IDataControl control) {
+				showStatusMessage(String.format("Selected %d out of %d rows", control.getSelectionCount(), control.getItemCount()));
 			}
 		});
 	}
@@ -239,10 +185,10 @@ public class BrowseDataPage extends ScaveEditorPage {
 		SelectionListener selectionChangeListener = new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FilteredDataPanel panel = getActivePanel();
+				FilteredDataPanel panel = tabFolder.getActivePanel();
 				if (panel != null) {
 					Object source = e.getSource();
-					if (source == panel.getTable() || source == tabfolder) {
+					if (source == panel.getDataControl() || source == tabFolder) {
 						ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
 							public Object call() throws Exception {
 								updateSelection();
@@ -260,10 +206,12 @@ public class BrowseDataPage extends ScaveEditorPage {
 					editorContributor.getCreateTempChartAction().run();
 			}
 		};
-		vectorsPanel.getTable().addSelectionListener(selectionChangeListener);
-		scalarsPanel.getTable().addSelectionListener(selectionChangeListener);
-		histogramsPanel.getTable().addSelectionListener(selectionChangeListener);
-		tabfolder.addSelectionListener(selectionChangeListener);
+
+		tabFolder.getAllPanel().getDataControl().addSelectionListener(selectionChangeListener);
+		tabFolder.getVectorsPanel().getDataControl().addSelectionListener(selectionChangeListener);
+		tabFolder.getScalarsPanel().getDataControl().addSelectionListener(selectionChangeListener);
+		tabFolder.getHistogramsPanel().getDataControl().addSelectionListener(selectionChangeListener);
+		tabFolder.addSelectionListener(selectionChangeListener);
 	}
 
 	private void unhookListeners() {
@@ -274,50 +222,32 @@ public class BrowseDataPage extends ScaveEditorPage {
 		}
 	}
 
-	@Override
-	public void pageActivated() {
-		// when the user switches to this page, try to show a tab that actually
-		// contains some data
-		if (getActivePanel().getTable().getItemCount() == 0) {
-			FilteredDataPanel panelToActivate = null;
-			if (vectorsPanel.getTable().getItemCount() > 0)
-				panelToActivate = vectorsPanel;
-			else if (scalarsPanel.getTable().getItemCount() > 0)
-				panelToActivate = scalarsPanel;
-			else if (histogramsPanel.getTable().getItemCount() > 0)
-				panelToActivate = histogramsPanel;
-			if (panelToActivate != null)
-				this.setActivePanel(panelToActivate);
-		}
-	}
-
 	/**
 	 * Updates the page: retrieves the list of vectors, scalars, etc from
-	 * ResultFileManager, updates the data tables with them, and updates
+	 * ResultFileManager, updates the data controls with them, and updates
 	 * the tab labels as well.
 	 */
 	protected void refreshPage(final ResultFileManager manager) {
-		IDList vectors = manager.getAllVectors();
-		IDList scalars = manager.getAllScalars();
-		IDList histograms = manager.getAllHistograms();
+	    IDList items = manager.getAllItems(false, false);
+		IDList vectors = manager.getAllVectors(false);
+		IDList scalars = manager.getAllScalars(false, true);
+		IDList histograms = manager.getAllHistograms(false);
 
-		vectorsTab.setText("Vectors ("+vectors.size()+")");
-		scalarsTab.setText("Scalars ("+scalars.size()+")");
-		histogramsTab.setText("Histograms ("+histograms.size()+")");
-
-		scalarsPanel.setIDList(scalars);
-		vectorsPanel.setIDList(vectors);
-		histogramsPanel.setIDList(histograms);
+        tabFolder.getAllPanel().setIDList(items);
+		tabFolder.getScalarsPanel().setIDList(scalars);
+		tabFolder.getVectorsPanel().setIDList(vectors);
+		tabFolder.getHistogramsPanel().setIDList(histograms);
+		tabFolder.refreshPanelTitles();
 	}
 
 	/**
-	 * Sets the editor selection to the selection of table of the active panel.
+	 * Sets the editor selection to the selection of control of the active panel.
 	 */
 	protected void updateSelection() {
-		FilteredDataPanel panel = getActivePanel();
+		FilteredDataPanel panel = tabFolder.getActivePanel();
 		if (panel != null) {
-			DataTable table = panel.getTable();
-			scaveEditor.setSelection(new IDListSelection(table.getSelectedIDs(), table.getResultFileManager()));
+			IDataControl control = panel.getDataControl();
+			scaveEditor.setSelection(new IDListSelection(control.getSelectedIDs(), control.getResultFileManager()));
 			setFilterAction.update(panel);
 		}
 	}

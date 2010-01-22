@@ -762,7 +762,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
             try {
                 IWorkbenchPage workbenchPage = getSite().getPage();
                 if (workbenchPage.getPerspective() != null)
-                    workbenchPage.showView(viewID);
+                    workbenchPage.showView(viewID, null, IWorkbenchPage.VIEW_VISIBLE);
             }
             catch (PartInitException e) {
                 // unimportant

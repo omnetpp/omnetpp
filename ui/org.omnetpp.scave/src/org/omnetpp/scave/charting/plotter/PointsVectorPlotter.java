@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.charting.plotter;
 
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.draw2d.Graphics;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.ILinePlot;
 
@@ -20,15 +20,15 @@ import org.omnetpp.scave.charting.ILinePlot;
  */
 public class PointsVectorPlotter extends VectorPlotter {
 
-	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
 		//
 		// Note: profiling shows that substituting the gc.drawPoint() call
 		// into the plotSymbols() would make no measurable difference in
 		// performance, so we just invoke the stock drawSymbol() here.
 		//
-		plotSymbols(plot, series, gc, mapping, new ChartSymbol() {
-			public void drawSymbol(GC gc, int x, int y) {
-				gc.drawPoint(x, y);
+		plotSymbols(plot, series, graphics, mapping, new ChartSymbol() {
+			public void drawSymbol(Graphics graphics, int x, int y) {
+			    graphics.drawPoint(x, y);
 			}
 		});
 

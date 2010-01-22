@@ -127,7 +127,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		// set up UI
 		Section chartSheetsSection = getFormToolkit().createSection(sashform, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		chartSheetsSection.setText("Chart sheets and charts");
-		chartSheetsSection.setDescription("Here you can browse the charts you have created for the datasets.");
+		chartSheetsSection.setDescription("Here you can browse the charts you have created from the datasets.");
 		//chartSheetsSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
 		chartSheetsTreeViewer = new TreeViewer(formToolkit.createTree(chartSheetsSection, SWT.BORDER | SWT.MULTI));
 		chartSheetsSection.setClient(chartSheetsTreeViewer.getTree());

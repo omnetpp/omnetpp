@@ -209,9 +209,9 @@ public class ScalarDataset implements IAveragedScalarDataset {
 
     private static void applyDefaults(List<String> rowFields, List<String> columnFields, List<String> unusedFields) {
     	for (String field : unusedFields) {
-    		if (field.equals(MODULE))
+    		if (field.equals(MODULE) || field.equals(EXPERIMENT))
     			rowFields.add(field);
-    		else if (field.equals(NAME))
+    		else if (field.equals(NAME) || field.equals(MEASUREMENT))
     			columnFields.add(field);
     		// other fields are averaged
     	}
@@ -225,12 +225,21 @@ public class ScalarDataset implements IAveragedScalarDataset {
     private static final char separator = ';';
 
     private static List<String> computeRowKeys(XYDataset data, ResultItemFields rowFields) {
-    	List<String> keys = new ArrayList<String>(data.getRowCount());
-    	for (int i = 0; i < data.getRowCount(); ++i) {
+    	int count = data.getRowCount();
+        List<String> keys = new ArrayList<String>(count);
+    	for (int i = 0; i < count; ++i) {
         	StringBuffer sb = new StringBuffer();
         	for (ResultItemField field : allFields) {
-        		if (rowFields.hasField(field))
-        			sb.append(data.getRowField(i, field)).append(separator);
+        		if (rowFields.hasField(field)) {
+        		    String value = data.getRowField(i, field);
+        		    // don't append if all rows have the same value
+        	        for (int j = 0; j < count; ++j) {
+        	            if (!value.equals(data.getRowField(j, field))) {
+                            sb.append(value).append(separator);
+                            break;
+        	            }
+        	        }
+        		}
         	}
         	if (sb.length() > 0)  // delete last separator
         		sb.deleteCharAt(sb.length()-1);
@@ -245,8 +254,16 @@ public class ScalarDataset implements IAveragedScalarDataset {
     	for (int i = 0; i < count; ++i) {
         	StringBuffer sb = new StringBuffer();
         	for (ResultItemField field : allFields) {
-        		if (columnFields.hasField(field))
-        			sb.append(data.getColumnField(i, field)).append(separator);
+        		if (columnFields.hasField(field)) {
+                    String value = data.getColumnField(i, field);
+                    // don't append if all columns have the same value
+                    for (int j = 0; j < count; ++j) {
+                        if (!value.equals(data.getColumnField(j, field))) {
+                            sb.append(value).append(separator);
+                            break;
+                        }
+                    }
+        		}
         	}
         	if (sb.length() > 0)  // delete last separator
         		sb.deleteCharAt(sb.length()-1);

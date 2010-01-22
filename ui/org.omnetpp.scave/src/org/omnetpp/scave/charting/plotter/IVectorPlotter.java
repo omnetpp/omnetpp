@@ -7,13 +7,13 @@
 
 package org.omnetpp.scave.charting.plotter;
 
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.draw2d.Graphics;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.ILinePlot;
 
 public interface IVectorPlotter {
 
-	public int getNumPointsInXRange(ILinePlot plot, int series, GC gc, ICoordsMapping mapping);
+	public int getNumPointsInXRange(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping);
 
-	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol);
+	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol);
 }

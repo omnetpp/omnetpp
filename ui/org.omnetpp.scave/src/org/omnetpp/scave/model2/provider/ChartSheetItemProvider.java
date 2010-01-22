@@ -33,9 +33,10 @@ public class ChartSheetItemProvider extends
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(ChartSheet.class)) {
-			case ScaveModelPackage.CHART_SHEET__NAME:
-				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
-				return;
+            case ScaveModelPackage.CHART_SHEET__NAME:
+            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
+                fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+                return;
 			case ScaveModelPackage.CHART_SHEET__CHARTS:
 				// Set labelUpdate to true, because the number of the charts is
 				// displayed in the label of the ChartSheet

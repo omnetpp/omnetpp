@@ -57,7 +57,6 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
 import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
 import org.eclipse.emf.edit.ui.action.EditingDomainActionBarContributor;
-//import org.eclipse.emf.edit.ui.celleditor.AdapterFactoryTreeEditor;
 import org.eclipse.emf.edit.ui.dnd.EditingDomainViewerDropAdapter;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
@@ -105,15 +104,20 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySheetEntry;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.eclipse.ui.views.properties.PropertySheetSorter;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
+import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelDecorator;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
+import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
 
 
@@ -658,7 +662,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	}
 
 	/**
-	 * Returns a dignostic describing the errors and warnings listed in the resource
+	 * Returns a diagnostic describing the errors and warnings listed in the resource
 	 * and the specified exception (if any).
 	 */
 	public Diagnostic analyzeResourceProblems(Resource resource, Exception exception) {
@@ -826,14 +830,45 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		if (propertySheetPage == null) {
 			propertySheetPage =
 				new ExtendedPropertySheetPage(editingDomain) {
+			    
 					public void setSelectionToViewer(List<?> selection) {
 						AbstractEMFModelEditor.this.setSelectionToViewer(selection);
 						AbstractEMFModelEditor.this.setFocus();
 					}
-
+					
+					// this is a constructor fragment --Andras 
+					{
+					    // turn off sorting for our INonsortablePropertyDescriptors
+					    setSorter(new PropertySheetSorter() {
+					        public int compare(IPropertySheetEntry entryA, IPropertySheetEntry entryB) {
+					            IPropertyDescriptor descriptorA = (IPropertyDescriptor) ReflectionUtils.getFieldValue(entryA, "descriptor"); // it's f***ing private --Andras
+					            if (descriptorA instanceof INonsortablePropertyDescriptor)
+					                return 0;
+					            else 
+					                return super.compare(entryA, entryB);
+					        }
+					    }); 
+					}
+					
 					public void setActionBars(IActionBars actionBars) {
 						super.setActionBars(actionBars);
 						getActionBarContributor().shareGlobalActions(this, actionBars);
+					}
+					
+					@Override
+					public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+					    if (selection instanceof IDListSelection) {
+					        // re-package element into ResultItemRef, otherwise property sheet
+					        // only gets a Long due to sel.toArray() in base class. We only want
+					        // to show properties if there's only one item in the selection.
+				            IDListSelection idList = (IDListSelection)selection;
+				            if (idList.size() == 1) {
+				                long id = (Long)idList.getFirstElement();
+                                ResultItemRef resultItemRef = new ResultItemRef(id, idList.getResultFileManager());
+                                selection = new StructuredSelection(resultItemRef);
+				            }   
+					    }
+					    super.selectionChanged(part, selection);
 					}
 				};
 		}

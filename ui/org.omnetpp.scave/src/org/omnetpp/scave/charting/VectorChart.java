@@ -37,13 +37,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
@@ -52,6 +52,7 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -241,7 +242,8 @@ public class VectorChart extends ChartCanvas {
 		defaultProperties = new LineProperties();
 		plot = new LinePlot(this);
 		this.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent e) {
+			@Override
+            public void mouseDown(MouseEvent e) {
 				List<CrossHair.DataPoint> points = new ArrayList<CrossHair.DataPoint>();
 				int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1, getOptimizedCoordinateMapper());
 				if (count > 0) {
@@ -254,7 +256,8 @@ public class VectorChart extends ChartCanvas {
 		});
 	}
 
-	public VectorChartSelection getSelection() {
+	@Override
+    public VectorChartSelection getSelection() {
 		return (VectorChartSelection)selection;
 	}
 
@@ -385,7 +388,8 @@ public class VectorChart extends ChartCanvas {
 	/*==================================
 	 *          Properties
 	 *==================================*/
-	public void setProperty(String name, String value) {
+	@Override
+    public void setProperty(String name, String value) {
 		Assert.isLegal(name != null);
 		if (debug) Debug.println("VectorChart.setProperty: "+name+"='"+value+"'");
 		// Titles
@@ -499,7 +503,8 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 
-	protected RectangularArea calculatePlotArea() {
+	@Override
+    protected RectangularArea calculatePlotArea() {
 		return plot.calculatePlotArea();
 	}
 
@@ -507,19 +512,19 @@ public class VectorChart extends ChartCanvas {
 	Insets axesInsets; // space occupied by axes
 
 	@Override
-	protected Rectangle doLayoutChart(GC gc, int pass) {
+	protected Rectangle doLayoutChart(Graphics graphics, int pass) {
 		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
 
 		if (pass == 1) {
 			// Calculate space occupied by title and legend and set insets accordingly
 			Rectangle area = new Rectangle(getClientArea());
-			Rectangle remaining = legendTooltip.layout(gc, area);
-			remaining = title.layout(gc, area);
-			remaining = legend.layout(gc, remaining, pass);
+			Rectangle remaining = legendTooltip.layout(graphics, area);
+			remaining = title.layout(graphics, area);
+			remaining = legend.layout(graphics, remaining, pass);
 
 			mainArea = remaining.getCopy();
-			axesInsets = xAxis.layout(gc, mainArea, new Insets(), coordsMapping, pass);
-			axesInsets = yAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
+			axesInsets = xAxis.layout(graphics, mainArea, new Insets(), coordsMapping, pass);
+			axesInsets = yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
 
 			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
 			Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
@@ -528,11 +533,11 @@ public class VectorChart extends ChartCanvas {
 		else if (pass == 2) {
 			// now the coordinate mapping is set up, so the y axis knows what tick labels
 			// will appear, and can calculate the occupied space from the longest tick label.
-			yAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
-			xAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
-			Rectangle plotArea = plot.layout(gc, mainArea.getCopy().crop(axesInsets));
-			crosshair.layout(gc, plotArea);
-			legend.layout(gc, plotArea, pass);
+			yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
+			xAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
+			Rectangle plotArea = plot.layout(graphics, mainArea.getCopy().crop(axesInsets));
+			crosshair.layout(graphics, plotArea);
+			legend.layout(graphics, plotArea, pass);
 			//FIXME how to handle it when plotArea.height/width comes out negative??
 			return plotArea;
 		}
@@ -541,30 +546,39 @@ public class VectorChart extends ChartCanvas {
 	}
 
 	@Override
-	protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping) {
-		gc.fillRectangle(gc.getClipping());
-		xAxis.drawGrid(gc, coordsMapping);
-		yAxis.drawGrid(gc, coordsMapping);
-		plot.draw(gc, coordsMapping);
+	protected void doPaintCachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
+		graphics.fillRectangle(GraphicsUtils.getClip(graphics));
+		xAxis.drawGrid(graphics, coordsMapping);
+		yAxis.drawGrid(graphics, coordsMapping);
+		plot.draw(graphics, coordsMapping);
 	}
 
 	@Override
-	protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping) {
-		paintInsets(gc);
-		title.draw(gc);
-		legend.draw(gc);
-		xAxis.drawAxis(gc, coordsMapping);
-		yAxis.drawAxis(gc, coordsMapping);
-		legendTooltip.draw(gc);
-		drawStatusText(gc);
+	protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
+		paintInsets(graphics);
+		title.draw(graphics);
+		legend.draw(graphics);
+		xAxis.drawAxis(graphics, coordsMapping);
+		yAxis.drawAxis(graphics, coordsMapping);
+		legendTooltip.draw(graphics);
+		drawStatusText(graphics);
 		if (getSelection() != null)
-			getSelection().draw(gc, coordsMapping);
-		drawRubberband(gc);
-		crosshair.draw(gc, coordsMapping);
+			getSelection().draw(graphics, coordsMapping);
+		drawRubberband(graphics);
+		crosshair.draw(graphics, coordsMapping);
 	}
 
 	@Override
 	String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint) {
 		return null;
 	}
+
+    @Override
+    public void setDisplayAxesDetails(Boolean value) {
+        xAxis.setDrawTickLabels(value);
+        xAxis.setDrawTitle(value);
+        yAxis.setDrawTickLabels(value);
+        yAxis.setDrawTitle(value);
+        chartChanged();
+    }
 }

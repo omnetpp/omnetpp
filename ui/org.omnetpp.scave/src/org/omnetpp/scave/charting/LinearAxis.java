@@ -22,10 +22,9 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Transform;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 
 /**
@@ -73,26 +72,26 @@ public class LinearAxis {
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience.
 	 */
-	public Insets layout(GC gc, Rectangle bounds, Insets insets, ICoordsMapping mapping, int pass) {
+	public Insets layout(Graphics graphics, Rectangle bounds, Insets insets, ICoordsMapping mapping, int pass) {
 		if (pass == 1) {
 			if (vertical) {
 				// postpone layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
-				insets.left = 50;
-				insets.right = 30;
+				insets.left = 0;
+				insets.right = 0;
 			}
 			else {
-				gc.setFont(tickFont);
-				int labelHeight = calculateTickLabelHeight(gc);
-				int titleHeight = calculateTitleSize(gc).y;
+				graphics.setFont(tickFont);
+				int labelHeight = calculateTickLabelHeight(graphics);
+				int titleHeight = calculateTitleSize(graphics).y;
 				insets.top = Math.max(insets.top, gap + majorTickLength + labelHeight + 4);
 				insets.bottom = Math.max(insets.bottom, gap + majorTickLength + labelHeight + titleHeight + 4);
 			}
 		}
 		else if (pass == 2) {
 			if (vertical) {
-				gc.setFont(tickFont);
-				int labelWidth = calculateTickLabelLength(gc, bounds, mapping);
-				int titleHeight = calculateTitleSize(gc).y;  // but will be drawn 90 deg rotated
+				graphics.setFont(tickFont);
+				int labelWidth = calculateTickLabelLength(graphics, bounds, mapping);
+				int titleHeight = calculateTitleSize(graphics).y;  // but will be drawn 90 deg rotated
 				insets.left = Math.max(insets.left, gap + majorTickLength + labelWidth + titleHeight + 4);
 				insets.right = Math.max(insets.right, gap + majorTickLength + labelWidth + 4);
 			}
@@ -104,128 +103,133 @@ public class LinearAxis {
 		return insets;
 	}
 
-	private Point calculateTitleSize(GC gc) {
-		gc.setFont(titleFont);
-		return (!drawTitle || title.equals("")) ? new Point(0,0) : gc.textExtent(title);
+	private Point calculateTitleSize(Graphics graphics) {
+		graphics.setFont(titleFont);
+		return (!drawTitle || title.equals("")) ? new Point(0,0) : GraphicsUtils.getTextExtent(graphics, title);
 	}
 
-	private int calculateTickLabelHeight(GC gc) {
+	private int calculateTickLabelHeight(Graphics graphics) {
 		if (!drawTickLabels)
 			return 0;
-		gc.setFont(tickFont);
-		int labelHeight = gc.textExtent("999").y;
+		graphics.setFont(tickFont);
+		int labelHeight = GraphicsUtils.getTextExtent(graphics, "999").y;
 		return labelHeight;
 	}
 
-	private int calculateTickLabelLength(GC gc, Rectangle bounds, ICoordsMapping mapping) {
+	private int calculateTickLabelLength(Graphics graphics, Rectangle bounds, ICoordsMapping mapping) {
 		// calculate longest tick label length
 		if (!drawTickLabels)
 			return 0;
 		ITicks ticks = createTicks(bounds, mapping);
 		int labelWidth = 0;
 		if (ticks != null) {
-			gc.setFont(tickFont);
+			graphics.setFont(tickFont);
 			for (BigDecimal tick : ticks) {
 				if (ticks.isMajorTick(tick)) {
-					labelWidth = Math.max(labelWidth, gc.textExtent(tick.toPlainString()).x);
+					labelWidth = Math.max(labelWidth, GraphicsUtils.getTextExtent(graphics, tick.toPlainString()).x);
 				}
 			}
 		}
 		return labelWidth;
 	}
 
-	public void drawGrid(GC gc, ICoordsMapping mapping) {
+	public void drawGrid(Graphics graphics, ICoordsMapping mapping) {
 		if (showGrid == ShowGrid.None)
 			return;
 
-		// Note: when canvas caching is on, gc is the cached image, so the grid must be drawn
+		// Note: when canvas caching is on, graphics is the cached image, so the grid must be drawn
 		// to the whole clipping region (cached image area) not just the plot area
-		Rectangle rect = new Rectangle(gc.getClipping());
+		Rectangle rect = GraphicsUtils.getClip(graphics);
 		ITicks ticks = createTicks(rect, mapping);
 		if (ticks != null) {
-			gc.setLineStyle(Graphics.LINE_DOT);
-			gc.setForeground(DEFAULT_GRID_COLOR);
+		    graphics.pushState();
+			graphics.setLineStyle(Graphics.LINE_DOT);
+			graphics.setForegroundColor(DEFAULT_GRID_COLOR);
 			for (BigDecimal tick : ticks) {
 				if (showGrid == ShowGrid.All || ticks.isMajorTick(tick)) {
 					if (vertical) {
 						int y = mapping.toCanvasY(transform(tick.doubleValue()));
 						if (y >= rect.y && y <= rect.bottom()) {
-							gc.drawLine(rect.x, y, rect.right(), y);
+							graphics.drawLine(rect.x, y, rect.right(), y);
 						}
 					}
 					else {
 						int x = mapping.toCanvasX(transform(tick.doubleValue()));
 						if (x >= rect.x && x <= rect.right()) {
-							gc.drawLine(x, rect.y, x, rect.bottom());
+							graphics.drawLine(x, rect.y, x, rect.bottom());
 						}
 					}
 				}
 			}
+			graphics.popState();
 		}
 	}
 
-	public void drawAxis(GC gc, ICoordsMapping mapping) {
+	public void drawAxis(Graphics graphics, ICoordsMapping mapping) {
 		Rectangle plotArea = bounds.getCopy().crop(insets);
 
 		// draw axis line and title
-		gc.setLineWidth(1);
-		gc.setLineStyle(SWT.LINE_SOLID);
-		gc.setForeground(DEFAULT_AXIS_COLOR);
-		gc.setFont(titleFont);
+		graphics.setLineWidth(1);
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
+		graphics.setFont(titleFont);
 
-		Point titleSize = gc.textExtent(title);
+		Point titleSize = GraphicsUtils.getTextExtent(graphics, title);
 		if (vertical) {
 			if (drawAxisToPlot && !logarithmic &&
 					mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
-				gc.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
-			gc.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
-			gc.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
+				graphics.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
+			graphics.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
+			graphics.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
 			if (drawTitle) {
-				Transform transform = new Transform(gc.getDevice());
-				transform.rotate(-90);
-				gc.setTransform(transform);
-				gc.drawText(title, -(plotArea.y + plotArea.height / 2 + titleSize.x / 2), bounds.x, true);
-				gc.setTransform(null);
-				transform.dispose();
+			    // TODO: SVGGraphics does not support rotation yet
+			    boolean isSVGGraphics = GraphicsUtils.isSVGGraphics(graphics);
+                if (!isSVGGraphics) {
+                    graphics.pushState();
+			        graphics.rotate(-90);
+                }
+				graphics.drawText(title, -(plotArea.y + plotArea.height / 2 + titleSize.x / 2), bounds.x);
+                if (!isSVGGraphics)
+                    graphics.popState();
 			}
 		}
 		else {
 			if (drawAxisToPlot && !logarithmic &&
 					mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
-				gc.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
-			gc.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
-			gc.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
+				graphics.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
+			graphics.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
+			graphics.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
 			if (drawTitle)
-				gc.drawText(title, plotArea.x + plotArea.width / 2 - titleSize.x / 2, bounds.bottom() - titleSize.y, true);
+				graphics.drawText(title, plotArea.x + plotArea.width / 2 - titleSize.x / 2, bounds.bottom() - titleSize.y);
 		}
 
 		// draw ticks and labels
 		ITicks ticks = createTicks(plotArea, mapping);
 		if (ticks != null) {
-			gc.setFont(tickFont);
+			graphics.setFont(tickFont);
 			for (BigDecimal tick : ticks) {
 				String label = tick.toPlainString();
-				Point size = gc.textExtent(label);
+				Point size = GraphicsUtils.getTextExtent(graphics, label);
 				int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength;
 				if (vertical) {
 					int y = mapping.toCanvasY(transform(tick.doubleValue()));
 					if (y >= plotArea.y && y <= plotArea.bottom()) {
-						gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
-						gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
+						graphics.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
+						graphics.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
 						if (drawTickLabels && ticks.isMajorTick(tick)) {
-							gc.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2, true);
-							gc.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2, true);
+							graphics.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2);
+							graphics.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
 						}
 					}
 				}
 				else {
 					int x = mapping.toCanvasX(transform(tick.doubleValue()));
 					if (x >= plotArea.x && x <= plotArea.right()) {
-						gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
-						gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
+						graphics.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
+						graphics.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
 						if (drawTickLabels && ticks.isMajorTick(tick)) {
-							gc.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1, true);
-							gc.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1, true);
+							graphics.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1);
+							graphics.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
 						}
 					}
 				}

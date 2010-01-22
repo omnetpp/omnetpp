@@ -7,12 +7,16 @@
 
 package org.omnetpp.scave.charting;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.graphics.TextStyle;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 
 
@@ -23,6 +27,7 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
  */
 public class Title {
 
+    private boolean visible = true;
 	private String text;
 	private Font font;
 	private Color color = ChartDefaults.DEFAULT_TITLE_COLOR;
@@ -35,6 +40,10 @@ public class Title {
 		this.text = text;
 		this.font = font;
 	}
+
+    public void setVisible(boolean value) {
+        visible = value;
+    }
 
 	public String getText() {
 		return text;
@@ -52,11 +61,11 @@ public class Title {
 		this.font = font;
 	}
 
-	public Rectangle layout(GC gc, Rectangle parent) {
-		if (text == null || text.length() == 0)
+	public Rectangle layout(Graphics graphics, Rectangle parent) {
+		if (!visible || text == null || text.length() == 0)
 			return parent;
 
-		TextLayout textLayout = new TextLayout(gc.getDevice());
+		TextLayout textLayout = new TextLayout(Display.getDefault());
 		textLayout.setFont(font);
 		textLayout.setText(text);
 		textLayout.setWidth(parent.width);
@@ -69,17 +78,23 @@ public class Title {
 				parent.width, Math.max(parent.height - bounds.height, 0));
 	}
 
-	public void draw(GC gc) {
-		if (text == null || text.length() == 0 || bounds == null)
+	public void draw(Graphics graphics) {
+		if (!visible || text == null || text.length() == 0 || bounds == null)
 			return;
 
-		TextLayout textLayout = new TextLayout(gc.getDevice());
-		textLayout.setFont(font);
+		TextLayout textLayout = new TextLayout(Display.getDefault());
 		textLayout.setText(text);
 		textLayout.setWidth(bounds.width);
 		textLayout.setAlignment(SWT.CENTER);
-		gc.setForeground(color);
+		textLayout.setStyle(new TextStyle(font, color, null), 0, Integer.MAX_VALUE);
+        Image image = new Image(Display.getDefault(), bounds.width, bounds.height);
+        GC gc = new GC(image);
+        gc.setBackground(ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR);
+        gc.fillRectangle(0, 0, bounds.width, bounds.height);
 		textLayout.draw(gc, bounds.x, bounds.y);
-		textLayout.dispose();
+		graphics.drawImage(image, 0, 0);
+        textLayout.dispose();
+		gc.dispose();
+		image.dispose();
 	}
 }

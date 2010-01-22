@@ -7,7 +7,7 @@
 
 package org.omnetpp.scave.charting.plotter;
 
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.draw2d.Graphics;
 
 /**
  * Interface for chart symbol drawing classes
@@ -19,9 +19,9 @@ public interface IChartSymbol {
 //XXX implementation note: fillOval(), fillPolygon() etc are more efficient than bltting images of the same size. see test code below.
 //	graphics.setBackgroundColor(new Color(null,100,0,0));
 //	Image img = new Image(Display.getCurrent(), 11, 11);
-//	GC gc = new GC(img);
-//	gc.setBackground(new Color(null,100,0,0));
-//	gc.fillOval(0, 0, 4, 4);
+//	Graphics graphics = new Graphics(img);
+//	graphics.setBackground(new Color(null,100,0,0));
+//	graphics.fillOval(0, 0, 4, 4);
 //
 //	long start = System.currentTimeMillis();
 //	for (int i=0; i<100000; i++)
@@ -36,5 +36,5 @@ public interface IChartSymbol {
 
 	public int getSizeHint();
 	public void setSizeHint(int size);
-	public void drawSymbol(GC gc, int x, int y);
+	public void drawSymbol(Graphics graphics, int x, int y);
 }

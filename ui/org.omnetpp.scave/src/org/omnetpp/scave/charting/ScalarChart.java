@@ -29,12 +29,12 @@ import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_B
 import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_WRAP_LABELS;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -43,6 +43,7 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IAveragedScalarDataset;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
@@ -81,7 +82,8 @@ public class ScalarChart extends ChartCanvas {
 		new Tooltip(this);
 
 		this.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent e) {
+			@Override
+            public void mouseDown(MouseEvent e) {
 				setSelection(new BarSelection());
 			}
 		});
@@ -146,7 +148,8 @@ public class ScalarChart extends ChartCanvas {
 	/*=============================================
 	 *               Properties
 	 *=============================================*/
-	public void setProperty(String name, String value) {
+	@Override
+    public void setProperty(String name, String value) {
 		// Titles
 		if (PROP_X_AXIS_TITLE.equals(name))
 			setXAxisTitle(value);
@@ -311,19 +314,19 @@ public class ScalarChart extends ChartCanvas {
 	Insets axesInsets; // space occupied by axes
 
 	@Override
-	protected Rectangle doLayoutChart(GC gc, int pass) {
+	protected Rectangle doLayoutChart(Graphics graphics, int pass) {
 		ICoordsMapping mapping = getOptimizedCoordinateMapper();
 
 		if (pass == 1) {
 			// Calculate space occupied by title and legend and set insets accordingly
 			Rectangle area = new Rectangle(getClientArea());
-			Rectangle remaining = legendTooltip.layout(gc, area);
-			remaining = title.layout(gc, area);
-			remaining = legend.layout(gc, remaining, 1);
+			Rectangle remaining = legendTooltip.layout(graphics, area);
+			remaining = title.layout(graphics, area);
+			remaining = legend.layout(graphics, remaining, 1);
 
 			mainArea = remaining.getCopy();
-			axesInsets = domainAxis.layout(gc, mainArea, new Insets(), mapping, pass);
-			axesInsets = valueAxis.layout(gc, mainArea, axesInsets, mapping, pass);
+			axesInsets = domainAxis.layout(graphics, mainArea, new Insets(), mapping, pass);
+			axesInsets = valueAxis.layout(graphics, mainArea, axesInsets, mapping, pass);
 
 			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
 			Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
@@ -332,12 +335,12 @@ public class ScalarChart extends ChartCanvas {
 		else if (pass == 2) {
 			// now the coordinate mapping is set up, so the y axis knows what tick labels
 			// will appear, and can calculate the occupied space from the longest tick label.
-			valueAxis.layout(gc, mainArea, axesInsets, mapping, pass);
-			domainAxis.layout(gc, mainArea, axesInsets, mapping, pass);
+			valueAxis.layout(graphics, mainArea, axesInsets, mapping, pass);
+			domainAxis.layout(graphics, mainArea, axesInsets, mapping, pass);
 			Rectangle remaining = mainArea.getCopy().crop(axesInsets);
-			remaining = legend.layout(gc, remaining, pass);
+			remaining = legend.layout(graphics, remaining, pass);
 			//FIXME how to handle it when plotArea.height/width comes out negative??
-			Rectangle plotArea = plot.layout(gc, remaining);
+			Rectangle plotArea = plot.layout(graphics, remaining);
 			return plotArea;
 		}
 		else
@@ -345,23 +348,23 @@ public class ScalarChart extends ChartCanvas {
 	}
 
 	@Override
-	protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping) {
-		gc.fillRectangle(gc.getClipping());
-		valueAxis.drawGrid(gc, coordsMapping);
-		plot.draw(gc, coordsMapping);
+	protected void doPaintCachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
+		graphics.fillRectangle(GraphicsUtils.getClip(graphics));
+		valueAxis.drawGrid(graphics, coordsMapping);
+		plot.draw(graphics, coordsMapping);
 	}
 
 	@Override
-	protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping) {
-		paintInsets(gc);
-		plot.drawBaseline(gc, coordsMapping);
-		title.draw(gc);
-		legend.draw(gc);
-		valueAxis.drawAxis(gc, coordsMapping);
-		domainAxis.draw(gc, coordsMapping);
-		drawRubberband(gc);
-		legendTooltip.draw(gc);
-		drawStatusText(gc);
+	protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping) {
+		paintInsets(graphics);
+		plot.drawBaseline(graphics, coordsMapping);
+		title.draw(graphics);
+		legend.draw(graphics);
+		valueAxis.drawAxis(graphics, coordsMapping);
+		domainAxis.draw(graphics, coordsMapping);
+		drawRubberband(graphics);
+		legendTooltip.draw(graphics);
+		drawStatusText(graphics);
 	}
 
 	@Override
@@ -383,7 +386,7 @@ public class ScalarChart extends ChartCanvas {
 			int numColumns = dataset.getColumnCount();
 			int row = rowColumn / numColumns;
 			int column = rowColumn % numColumns;
-			String key = (String) dataset.getColumnKey(column);
+			String key = dataset.getColumnKey(column);
 			String valueStr = null;
 			if (dataset instanceof IStringValueScalarDataset) {
 				valueStr = ((IStringValueScalarDataset)dataset).getValueAsString(row, column);
@@ -413,4 +416,13 @@ public class ScalarChart extends ChartCanvas {
 		}
 		return null;
 	}
+
+    @Override
+    public void setDisplayAxesDetails(Boolean value) {
+        valueAxis.setDrawTickLabels(value);
+        valueAxis.setDrawTitle(value);
+        domainAxis.setLabels(value);
+        domainAxis.setDrawTitle(value);
+        chartChanged();
+    }
 }

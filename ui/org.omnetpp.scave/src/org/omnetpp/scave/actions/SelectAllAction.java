@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -18,9 +19,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.datatable.IDataControl;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 
 /**
@@ -31,7 +33,8 @@ import org.omnetpp.scave.editors.ui.BrowseDataPage;
  * @author tomi
  */
 public class SelectAllAction extends AbstractScaveAction {
-
+    protected int limit = 10000;
+    
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		Composite activePage = scaveEditor.getActiveEditorPage();
@@ -39,13 +42,29 @@ public class SelectAllAction extends AbstractScaveAction {
 			return;
 
 		Control focusControl = Display.getDefault().getFocusControl();
-		if ((focusControl instanceof Table || focusControl instanceof Tree ||
+		if ((focusControl instanceof IDataControl || 
+		     focusControl instanceof Table || focusControl instanceof Tree ||
 			 focusControl instanceof Text || focusControl instanceof Combo)
 				&& hasAncestor(focusControl, activePage)) {
-			if (focusControl instanceof Table)
-				((Table)focusControl).selectAll();
-			else if (focusControl instanceof Tree)
-				((Tree)focusControl).selectAll();
+		    if (focusControl instanceof IDataControl) {
+		        IDataControl control = (IDataControl)focusControl;
+		        // note: getItemCount() is not good for a tree: it tells the number of root items.
+		        if (control.getIDList().size() <= limit || confirm(focusControl.getShell(), "table")) {
+		            control.setFocus();
+		            control.selectAll();
+		            control.notifyListeners(SWT.Selection, null);
+		        }
+		    }
+		    else if (focusControl instanceof Table) {
+				Table table = (Table)focusControl;
+				if (table.getItemCount() <= limit || confirm(table.getShell(), "table"))
+				    table.selectAll();
+			}
+			else if (focusControl instanceof Tree) {
+				Tree tree = (Tree)focusControl;
+                if (tree.getItemCount() <= limit || confirm(tree.getShell(), "tree")) // note: 
+                    tree.selectAll();
+			}
 			else if (focusControl instanceof Text)
 				((Text)focusControl).selectAll();
 			else if (focusControl instanceof Combo) {
@@ -57,19 +76,26 @@ public class SelectAllAction extends AbstractScaveAction {
 		else if (activePage == scaveEditor.getBrowseDataPage()) {
 			FilteredDataPanel panel = ((BrowseDataPage)activePage).getActivePanel();
 			if (panel != null) {
-				DataTable table = panel.getTable();
-				if (table != null) {
-					table.setFocus();
-					table.selectAll();
-					table.notifyListeners(SWT.Selection, null);
+				IDataControl control = panel.getDataControl();
+				if (control != null) {
+				    // note: getItemCount() is not good for a tree: it tells the number of root items.
+				    if (control.getIDList().size() <= limit || confirm(panel.getShell(), "table")) {
+				        control.setFocus();
+				        control.selectAll();
+				        control.notifyListeners(SWT.Selection, null);
+	                }
 				}
 			}
 		}
 	}
 
+	protected boolean confirm(Shell shell, String controlName) {
+	    String message = StringUtils.capitalize(controlName) + " contains more than " + limit + " items, and selection may take a long time. Do you want to continue?";
+        return MessageDialog.openConfirm(shell, "Confirm", message);
+	}
+	
 	@Override
-	protected boolean isApplicable(ScaveEditor editor,
-			IStructuredSelection selection) {
+	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		Control focusControl = Display.getDefault().getFocusControl();
 		Composite activePage = editor.getActiveEditorPage();
 		return activePage != null &&

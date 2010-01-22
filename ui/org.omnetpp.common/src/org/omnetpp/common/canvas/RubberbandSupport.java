@@ -13,12 +13,14 @@ import static org.eclipse.draw2d.PositionConstants.SOUTH;
 import static org.eclipse.draw2d.PositionConstants.WEST;
 
 import org.eclipse.draw2d.Cursors;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
@@ -97,8 +99,8 @@ public abstract class RubberbandSupport {
 					// start selection
 					rubberBand = new Rectangle(e.x, e.y, 0, 0);
 					if (drawRubberBand) {
-						GC gc = new GC(canvas);
-						drawRubberBand(gc, rubberBand);
+					    Graphics graphics = new SWTGraphics(new GC(canvas));
+						drawRubberBand(graphics, rubberBand);
 					}
 					else
 						canvas.redraw();
@@ -133,7 +135,7 @@ public abstract class RubberbandSupport {
 					Rectangle origRect = new Rectangle(rubberBand.x, rubberBand.y, rubberBand.width, rubberBand.height);
 					rubberBand.width = e.x - rubberBand.x;
 					rubberBand.height = e.y - rubberBand.y;
-					clipToBounds(rubberBand, rubberBandBounds==null ? canvas.getClientArea() : rubberBandBounds);
+					clipToBounds(rubberBand, rubberBandBounds == null ? new Rectangle(canvas.getClientArea()) : rubberBandBounds);
 
 					if ((e.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
 						int direction = (rubberBand.width >= 0 ? EAST : WEST) |
@@ -143,10 +145,10 @@ public abstract class RubberbandSupport {
 
 					// erase, then draw new with updated coordinates
 					if (drawRubberBand) {
-						GC gc = new GC(canvas);
-						gc.setForeground(canvas.getDisplay().getSystemColor(SWT.COLOR_RED));
-						drawRubberBand(gc, origRect); // XXX how does it erase the old rect ???
-						drawRubberBand(gc, rubberBand);
+					    Graphics graphics = new SWTGraphics(new GC(canvas));
+						graphics.setForegroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_RED));
+						drawRubberBand(graphics, origRect); // XXX how does it erase the old rect ???
+						drawRubberBand(graphics, rubberBand);
 					}
 					else
 						canvas.redraw();
@@ -155,10 +157,10 @@ public abstract class RubberbandSupport {
 	    });
 	}
 
-	private void drawRubberBand(GC gc, Rectangle rect) {
+	private void drawRubberBand(Graphics graphics, Rectangle rect) {
 		// Debug.println("rubberBand="+rect);
 		Rectangle r = new Rectangle(rect.x, rect.y, rect.width, rect.height);
-		// needed because gc.drawFocus() doesn't accept negative width/height
+		// needed because graphics.drawFocus() doesn't accept negative width/height
 		fixNegativeSizes(r);
 
 
@@ -170,27 +172,27 @@ public abstract class RubberbandSupport {
 
 //					GCData data = gc.getGCData();
 //					data.uiState &= (~OS.UISF_HIDEFOCUS);
-			gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));	// used if drawFocus() is not supported by the OS
-			gc.drawFocus(r.x, r.y, r.width, r.height);
+			graphics.setForegroundColor(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));	// used if drawFocus() is not supported by the OS
+			graphics.drawFocus(r.x, r.y, r.width, r.height);
 		}
 		else {
-			gc.setForeground(ColorFactory.GREY8);
-			int antialias = gc.getAntialias();
-			gc.setAntialias(SWT.OFF);
-			gc.setLineStyle(SWT.LINE_DOT);
-			gc.drawRectangle(r);
-			gc.setAntialias(antialias);
+			graphics.setForegroundColor(ColorFactory.GREY8);
+			int antialias = graphics.getAntialias();
+			graphics.setAntialias(SWT.OFF);
+			graphics.setLineStyle(SWT.LINE_DOT);
+			graphics.drawRectangle(r);
+			graphics.setAntialias(antialias);
 		}
 	}
 
 	/**
 	 * To be called from the Paint handler of the canvas if draw == false.
 	 */
-	public void drawRubberband(GC gc) {
+	public void drawRubberband(Graphics graphics) {
 		//Debug.format("Focus: %s %x%n", canvas.getDisplay().getFocusControl(), canvas.getDisplay().getFocusControl().hashCode());
 		//Debug.format("UIState: "+OS.SendMessage (canvas.handle, OS.WM_QUERYUISTATE, 0, 0));
 		if (rubberBand != null)
-			drawRubberBand(gc, rubberBand);
+			drawRubberBand(graphics, rubberBand);
 	}
 
 	private static void fixNegativeSizes(Rectangle r) {

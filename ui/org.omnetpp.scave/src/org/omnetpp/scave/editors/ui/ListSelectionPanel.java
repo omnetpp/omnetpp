@@ -93,6 +93,7 @@ public class ListSelectionPanel extends Composite {
 
 		Button addAllButton = new Button(buttonPanel, SWT.NONE);
 		addAllButton.setText(">>");
+		addAllButton.setToolTipText("Add All");
 		GridData gridData3 = new GridData();
 		gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		addAllButton.setLayoutData(gridData3);
@@ -104,6 +105,7 @@ public class ListSelectionPanel extends Composite {
 
 		Button addButton = new Button(buttonPanel, SWT.NONE);
 		addButton.setText(">");
+        addButton.setToolTipText("Add");
 		GridData gridData4 = new GridData();
 		gridData4.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		addButton.setLayoutData(gridData4);
@@ -115,6 +117,7 @@ public class ListSelectionPanel extends Composite {
 
 		Button removeButton = new Button(buttonPanel, SWT.NONE);
 		removeButton.setText("<");
+		removeButton.setToolTipText("Remove");
 		GridData gridData5 = new GridData();
 		gridData5.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		removeButton.setLayoutData(gridData5);
@@ -124,9 +127,9 @@ public class ListSelectionPanel extends Composite {
 			}
 		});
 
-
 		Button removeAllButton = new Button(buttonPanel, SWT.NONE);
 		removeAllButton.setText("<<");
+        removeAllButton.setToolTipText("Remove All");
 		GridData gridData6 = new GridData();
 		gridData6.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		removeAllButton.setLayoutData(gridData6);

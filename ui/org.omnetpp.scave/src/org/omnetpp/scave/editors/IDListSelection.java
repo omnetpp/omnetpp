@@ -66,6 +66,10 @@ public class IDListSelection implements IStructuredSelection {
 		return manager;
 	}
 
+	public ResultType getResultType() {
+        return type;
+    }
+
 	public VectorResult getFirstAsVector() {
 		if (elements.length > 0) {
 			ResultItem item = manager.getItem(elements[0]);

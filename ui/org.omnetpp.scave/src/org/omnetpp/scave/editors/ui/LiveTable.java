@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Holds a several controls that can be selected and
+ * Holds several controls that can be selected and
  * reordered with the mouse. Typically the user wants to
  * set a GridLayout on the control, but this is not mandatory.
  *

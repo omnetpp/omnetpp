@@ -77,7 +77,7 @@ public class SectionDialog extends TitleAreaDialog {
 	 */
     public SectionDialog(Shell parentShell, String dialogTitle, String dialogMessage, IInifileDocument doc, String sectionName) {
 		super(parentShell);
-        setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
+        setShellStyle(getShellStyle() | SWT.RESIZE);
 		this.doc = doc;
 		this.dialogTitle = dialogTitle;
 		this.dialogMessage = dialogMessage;

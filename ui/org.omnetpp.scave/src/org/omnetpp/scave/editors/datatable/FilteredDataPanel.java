@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
@@ -29,7 +30,7 @@ import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Displays a data table of vectors/scalars/histograms with filter
+ * Displays a data control of vectors/scalars/histograms with filter
  * combo boxes.
  *
  * This class is reusable, which means it only knows that it has to
@@ -46,11 +47,13 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class FilteredDataPanel extends Composite {
 
 	private FilteringPanel filterPanel;
-	private DataTable table;
+	private IDataControl data;
 	private IDList idlist; // the unfiltered data list
+    private ResultType type;
 
 	public FilteredDataPanel(Composite parent, int style, ResultType type) {
 		super(parent, style);
+		this.type = type;
 		initialize(type);
 		configureFilterPanel();
 	}
@@ -59,8 +62,8 @@ public class FilteredDataPanel extends Composite {
 		return filterPanel;
 	}
 
-	public DataTable getTable() {
-		return table;
+	public IDataControl getDataControl() {
+		return data;
 	}
 
 	public void setIDList(IDList idlist) {
@@ -73,25 +76,36 @@ public class FilteredDataPanel extends Composite {
 		return idlist;
 	}
 
-	public void setResultFileManager(ResultFileManager manager) {
-		table.setResultFileManager(manager);
+	public void setResultFileManager(ResultFileManagerEx manager) {
+		data.setResultFileManager(manager);
 	}
 
 	public ResultFileManager getResultFileManager() {
-		return table.getResultFileManager();
+		return data.getResultFileManager();
 	}
+
+	public ResultType getType() {
+        return type;
+    }
 
 	protected void initialize(ResultType type) {
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginHeight = 0;
+        gridLayout.marginWidth = 0;
 		setLayout(gridLayout);
 		filterPanel = new FilteringPanel(this, SWT.NONE);
 		filterPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		table = new DataTable(this, SWT.MULTI, type);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		if (type == null)
+		    data = new DataTree(this, SWT.MULTI);
+		else
+		    data = new DataTable(this, SWT.MULTI, type);
+
+		data.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		filterPanel.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				if (filterPanel.isShowingAdvancedFilter())
 					trySwitchToSimpleFilter();
 				else
@@ -102,20 +116,22 @@ public class FilteredDataPanel extends Composite {
 
 	protected void configureFilterPanel() {
 		SelectionListener selectionListener = new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				// check the filter string
 				if (!isFilterPatternValid()) {
-					MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Table contents not changed.");
+					MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Contents are not changed.");
 					return;
 				}
 				runFilter();
 			}
-			public void widgetDefaultSelected(SelectionEvent e) {
+			@Override
+            public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);  //delegate
 			}
 		};
 
-		// when the filter button gets pressed, update the table
+		// when the filter button gets pressed, update the content
 		filterPanel.getFilterButton().addSelectionListener(selectionListener);
 		filterPanel.getAdvancedFilterText().addSelectionListener(selectionListener);
 		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
@@ -129,8 +145,8 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	public FilterHints getFilterHints() {
-		if (table.getResultFileManager() != null)
-			return new FilterHints(table.getResultFileManager(), idlist);
+		if (data.getResultFileManager() != null)
+			return new FilterHints(data.getResultFileManager(), idlist);
 		else
 			return new FilterHints();
 	}
@@ -138,23 +154,26 @@ public class FilteredDataPanel extends Composite {
 	protected void runFilter() {
 		Assert.isTrue(idlist!=null);
 
-		if (table.getResultFileManager() == null) {
-			// no result file manager, show empty table
-			table.setIDList(new IDList());
+		if (data.getResultFileManager() == null) {
+			// no result file manager, show empty content
+			data.setIDList(new IDList());
 		}
 		else if (isFilterPatternValid()) {
-			// run the filter on the unfiltered IDList, and set the result to the table
+			// run the filter on the unfiltered IDList, and set the result to the control
 			Filter filter = getFilter();
-			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, table.getResultFileManager());
-			table.setIDList(filteredIDList);
+			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, data.getResultFileManager());
+			data.setIDList(filteredIDList);
 		}
 		else {
 			// fallback: if filter is not valid, just show an unfiltered list. This should be
 			// done because we get invoked indirectly as well, like when files get added/removed
 			// on the Inputs page. For the same reason, this function should not bring up an
 			// error dialog (but the Filter button itself may do so).
-			table.setIDList(idlist);
+			data.setIDList(idlist);
 		}
+
+		if (getParent() instanceof FilteredDataTabFolder)
+		    ((FilteredDataTabFolder)getParent()).refreshPanelTitles();
 	}
 
 	public boolean isFilterPatternValid() {
@@ -179,7 +198,8 @@ public class FilteredDataPanel extends Composite {
 		String runId = filterPanel.getRunNameCombo().getText();
 		String moduleName = filterPanel.getModuleNameCombo().getText();
 		String name = filterPanel.getNameCombo().getText();
-		return new FilterUtil(runId, moduleName, name).getFilterPattern();
+		String filterPattern = new FilterUtil(runId, moduleName, name).getFilterPattern();
+        return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
 	}
 
 	public void setFilterParams(Filter filter) {

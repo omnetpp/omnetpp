@@ -32,346 +32,346 @@ import org.omnetpp.scave.model.*;
  */
 public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFactory {
 	/**
-	 * Creates the default factory implementation.
-	 * <!-- begin-user-doc -->
+     * Creates the default factory implementation.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public static ScaveModelFactory init() {
-		try {
-			ScaveModelFactory theScaveModelFactory = (ScaveModelFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.omnetpp.org/omnetpp/scave");
-			if (theScaveModelFactory != null) {
-				return theScaveModelFactory;
-			}
-		}
-		catch (Exception exception) {
-			EcorePlugin.INSTANCE.log(exception);
-		}
-		return new ScaveModelFactoryImpl();
-	}
+        try {
+            ScaveModelFactory theScaveModelFactory = (ScaveModelFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.omnetpp.org/omnetpp/scave");
+            if (theScaveModelFactory != null) {
+                return theScaveModelFactory;
+            }
+        }
+        catch (Exception exception) {
+            EcorePlugin.INSTANCE.log(exception);
+        }
+        return new ScaveModelFactoryImpl();
+    }
 
 	/**
-	 * Creates an instance of the factory.
-	 * <!-- begin-user-doc -->
+     * Creates an instance of the factory.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public ScaveModelFactoryImpl() {
-		super();
-	}
+        super();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public EObject create(EClass eClass) {
-		switch (eClass.getClassifierID()) {
-			case ScaveModelPackage.DATASET: return createDataset();
-			case ScaveModelPackage.ADD: return createAdd();
-			case ScaveModelPackage.DISCARD: return createDiscard();
-			case ScaveModelPackage.EXCEPT: return createExcept();
-			case ScaveModelPackage.GROUP: return createGroup();
-			case ScaveModelPackage.PROPERTY: return createProperty();
-			case ScaveModelPackage.PARAM: return createParam();
-			case ScaveModelPackage.CHART_SHEET: return createChartSheet();
-			case ScaveModelPackage.ANALYSIS: return createAnalysis();
-			case ScaveModelPackage.SELECT: return createSelect();
-			case ScaveModelPackage.DESELECT: return createDeselect();
-			case ScaveModelPackage.INPUTS: return createInputs();
-			case ScaveModelPackage.INPUT_FILE: return createInputFile();
-			case ScaveModelPackage.CHART_SHEETS: return createChartSheets();
-			case ScaveModelPackage.DATASETS: return createDatasets();
-			case ScaveModelPackage.APPLY: return createApply();
-			case ScaveModelPackage.COMPUTE: return createCompute();
-			case ScaveModelPackage.BAR_CHART: return createBarChart();
-			case ScaveModelPackage.LINE_CHART: return createLineChart();
-			case ScaveModelPackage.HISTOGRAM_CHART: return createHistogramChart();
-			case ScaveModelPackage.SCATTER_CHART: return createScatterChart();
-			default:
-				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
-		}
-	}
+        switch (eClass.getClassifierID()) {
+            case ScaveModelPackage.DATASET: return createDataset();
+            case ScaveModelPackage.ADD: return createAdd();
+            case ScaveModelPackage.DISCARD: return createDiscard();
+            case ScaveModelPackage.EXCEPT: return createExcept();
+            case ScaveModelPackage.GROUP: return createGroup();
+            case ScaveModelPackage.PROPERTY: return createProperty();
+            case ScaveModelPackage.PARAM: return createParam();
+            case ScaveModelPackage.CHART_SHEET: return createChartSheet();
+            case ScaveModelPackage.ANALYSIS: return createAnalysis();
+            case ScaveModelPackage.SELECT: return createSelect();
+            case ScaveModelPackage.DESELECT: return createDeselect();
+            case ScaveModelPackage.INPUTS: return createInputs();
+            case ScaveModelPackage.INPUT_FILE: return createInputFile();
+            case ScaveModelPackage.CHART_SHEETS: return createChartSheets();
+            case ScaveModelPackage.DATASETS: return createDatasets();
+            case ScaveModelPackage.APPLY: return createApply();
+            case ScaveModelPackage.COMPUTE: return createCompute();
+            case ScaveModelPackage.BAR_CHART: return createBarChart();
+            case ScaveModelPackage.LINE_CHART: return createLineChart();
+            case ScaveModelPackage.HISTOGRAM_CHART: return createHistogramChart();
+            case ScaveModelPackage.SCATTER_CHART: return createScatterChart();
+            default:
+                throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+        }
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public Object createFromString(EDataType eDataType, String initialValue) {
-		switch (eDataType.getClassifierID()) {
-			case ScaveModelPackage.RESULT_TYPE:
-				return createResultTypeFromString(eDataType, initialValue);
-			default:
-				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
-		}
-	}
+        switch (eDataType.getClassifierID()) {
+            case ScaveModelPackage.RESULT_TYPE:
+                return createResultTypeFromString(eDataType, initialValue);
+            default:
+                throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+        }
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	@Override
 	public String convertToString(EDataType eDataType, Object instanceValue) {
-		switch (eDataType.getClassifierID()) {
-			case ScaveModelPackage.RESULT_TYPE:
-				return convertResultTypeToString(eDataType, instanceValue);
-			default:
-				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
-		}
-	}
+        switch (eDataType.getClassifierID()) {
+            case ScaveModelPackage.RESULT_TYPE:
+                return convertResultTypeToString(eDataType, instanceValue);
+            default:
+                throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+        }
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Dataset createDataset() {
-		DatasetImpl dataset = new DatasetImpl();
-		return dataset;
-	}
+        DatasetImpl dataset = new DatasetImpl();
+        return dataset;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Add createAdd() {
-		AddImpl add = new AddImpl();
-		return add;
-	}
+        AddImpl add = new AddImpl();
+        return add;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Apply createApply() {
-		ApplyImpl apply = new ApplyImpl();
-		return apply;
-	}
+        ApplyImpl apply = new ApplyImpl();
+        return apply;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Except createExcept() {
-		ExceptImpl except = new ExceptImpl();
-		return except;
-	}
+        ExceptImpl except = new ExceptImpl();
+        return except;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Property createProperty() {
-		PropertyImpl property = new PropertyImpl();
-		return property;
-	}
+        PropertyImpl property = new PropertyImpl();
+        return property;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Group createGroup() {
-		GroupImpl group = new GroupImpl();
-		return group;
-	}
+        GroupImpl group = new GroupImpl();
+        return group;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Discard createDiscard() {
-		DiscardImpl discard = new DiscardImpl();
-		return discard;
-	}
+        DiscardImpl discard = new DiscardImpl();
+        return discard;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Param createParam() {
-		ParamImpl param = new ParamImpl();
-		return param;
-	}
+        ParamImpl param = new ParamImpl();
+        return param;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public ChartSheet createChartSheet() {
-		ChartSheetImpl chartSheet = new ChartSheetImpl();
-		return chartSheet;
-	}
+        ChartSheetImpl chartSheet = new ChartSheetImpl();
+        return chartSheet;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Analysis createAnalysis() {
-		AnalysisImpl analysis = new AnalysisImpl();
-		return analysis;
-	}
+        AnalysisImpl analysis = new AnalysisImpl();
+        return analysis;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Select createSelect() {
-		SelectImpl select = new SelectImpl();
-		return select;
-	}
+        SelectImpl select = new SelectImpl();
+        return select;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Deselect createDeselect() {
-		DeselectImpl deselect = new DeselectImpl();
-		return deselect;
-	}
+        DeselectImpl deselect = new DeselectImpl();
+        return deselect;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Inputs createInputs() {
-		InputsImpl inputs = new InputsImpl();
-		return inputs;
-	}
+        InputsImpl inputs = new InputsImpl();
+        return inputs;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public ChartSheets createChartSheets() {
-		ChartSheetsImpl chartSheets = new ChartSheetsImpl();
-		return chartSheets;
-	}
+        ChartSheetsImpl chartSheets = new ChartSheetsImpl();
+        return chartSheets;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Datasets createDatasets() {
-		DatasetsImpl datasets = new DatasetsImpl();
-		return datasets;
-	}
+        DatasetsImpl datasets = new DatasetsImpl();
+        return datasets;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public InputFile createInputFile() {
-		InputFileImpl inputFile = new InputFileImpl();
-		return inputFile;
-	}
+        InputFileImpl inputFile = new InputFileImpl();
+        return inputFile;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Compute createCompute() {
-		ComputeImpl compute = new ComputeImpl();
-		return compute;
-	}
+        ComputeImpl compute = new ComputeImpl();
+        return compute;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public BarChart createBarChart() {
-		BarChartImpl barChart = new BarChartImpl();
-		return barChart;
-	}
+        BarChartImpl barChart = new BarChartImpl();
+        return barChart;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public LineChart createLineChart() {
-		LineChartImpl lineChart = new LineChartImpl();
-		return lineChart;
-	}
+        LineChartImpl lineChart = new LineChartImpl();
+        return lineChart;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public HistogramChart createHistogramChart() {
-		HistogramChartImpl histogramChart = new HistogramChartImpl();
-		return histogramChart;
-	}
+        HistogramChartImpl histogramChart = new HistogramChartImpl();
+        return histogramChart;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public ScatterChart createScatterChart() {
-		ScatterChartImpl scatterChart = new ScatterChartImpl();
-		return scatterChart;
-	}
+        ScatterChartImpl scatterChart = new ScatterChartImpl();
+        return scatterChart;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public ResultType createResultTypeFromString(EDataType eDataType, String initialValue) {
-		ResultType result = ResultType.get(initialValue);
-		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
-		return result;
-	}
+        ResultType result = ResultType.get(initialValue);
+        if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+        return result;
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public String convertResultTypeToString(EDataType eDataType, Object instanceValue) {
-		return instanceValue == null ? null : instanceValue.toString();
-	}
+        return instanceValue == null ? null : instanceValue.toString();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public ScaveModelPackage getScaveModelPackage() {
-		return (ScaveModelPackage)getEPackage();
-	}
+        return (ScaveModelPackage)getEPackage();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @deprecated
-	 * @generated
-	 */
+     * @deprecated
+     * @generated
+     */
 	@Deprecated
 	public static ScaveModelPackage getPackage() {
-		return ScaveModelPackage.eINSTANCE;
-	}
+        return ScaveModelPackage.eINSTANCE;
+    }
 
 } //ScaveModelFactoryImpl

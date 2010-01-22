@@ -102,13 +102,15 @@ public class BarChartEditForm extends ChartEditForm {
 		super(chart, parent, formParameters, manager);
 	}
 
-	public void populateTabFolder(TabFolder tabfolder) {
+	@Override
+    public void populateTabFolder(TabFolder tabfolder) {
 		super.populateTabFolder(tabfolder);
 		createTab(TAB_CONTENT, tabfolder, 1);
 		createTab(TAB_BARS, tabfolder, 2);
 	}
 
-	public void populateTabItem(TabItem item) {
+	@Override
+    public void populateTabItem(TabItem item) {
 		super.populateTabItem(item);
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
@@ -117,9 +119,9 @@ public class BarChartEditForm extends ChartEditForm {
 			wrapLabelsCheckbox.setSelection(ChartDefaults.DEFAULT_WRAP_LABELS);
 		}
 		else if (TAB_CONTENT.equals(name)) {
-			Label label = new Label(panel, SWT.WRAP);
-			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			label.setText("You can move fields by dragging.");
+		    Label label = new Label(panel, SWT.WRAP);
+            label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+            label.setText("Automatic fields (Module and Experiment are displayed as Groups, Name and Measurement are displayed as Bars, all the other fields are averaged):");
 
 			CustomSashForm sashForm = new CustomSashForm(panel, SWT.VERTICAL);
 			sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -128,11 +130,15 @@ public class BarChartEditForm extends ChartEditForm {
 			unusedFieldsList.setInput(Arrays.asList(fieldNames));
 
 			SashForm sashForm2 = new SashForm(sashForm, SWT.HORIZONTAL);
-			groupFieldsList = createFieldsList(sashForm2, "Groups", false);
-			barFieldsList = createFieldsList(sashForm2, "Bars", false);
-			averagedFieldsList = createFieldsList(sashForm2, "Averaged", true);
+			groupFieldsList = createFieldsList(sashForm2, "Groups:", false);
+			barFieldsList = createFieldsList(sashForm2, "Bars:", false);
+			averagedFieldsList = createFieldsList(sashForm2, "Averaged:", true);
 
 			sashForm.setWeights(new int[] {1,2});
+            label = new Label(panel, SWT.WRAP);
+            label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+            label.setText("You can move fields by dragging.");
+
 		}
 		else if (TAB_BARS.equals(name)) {
 			if (chart instanceof BarChart) {
@@ -223,7 +229,8 @@ public class BarChartEditForm extends ChartEditForm {
 					super.dragOver(event);
 				}
 
-				@SuppressWarnings("unchecked")
+				@Override
+                @SuppressWarnings("unchecked")
 				public void drop(DropTargetEvent event) {
 					if (transfer.isSupportedType(event.currentDataType) && (event.data instanceof List)) {
 						dropTarget[0] = control;
@@ -233,7 +240,7 @@ public class BarChartEditForm extends ChartEditForm {
 
 						if (sorted) {
 							items.addAll(data);
-							viewer.setInput(sortFields((Set<String>)items));
+							viewer.setInput(sortFields(items));
 						}
 						else {
 							int index = getInsertionIndex(event);
@@ -278,11 +285,13 @@ public class BarChartEditForm extends ChartEditForm {
 		return result;
 	}
 
-	public EStructuralFeature[] getFeatures() {
+	@Override
+    public EStructuralFeature[] getFeatures() {
 		return features;
 	}
 
-	public Object getValue(EStructuralFeature feature) {
+	@Override
+    public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
 			return getInput(groupFieldsList);
@@ -294,7 +303,8 @@ public class BarChartEditForm extends ChartEditForm {
 		return super.getValue(feature);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
