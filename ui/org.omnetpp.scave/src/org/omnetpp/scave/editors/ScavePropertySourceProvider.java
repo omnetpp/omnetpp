@@ -9,15 +9,11 @@ package org.omnetpp.scave.editors;
 
 import java.util.concurrent.Callable;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
-import org.eclipse.ui.views.properties.ResourcePropertySource;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.charting.properties.ChartProperties;
@@ -76,13 +72,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 		}
 		else if (object instanceof ResultItemRef)
 		    return new ResultItemPropertySource((ResultItemRef)object);
-		else if (object instanceof ResultFilePayload) {
-            String filePath = ((ResultFilePayload)object).getFilePath();
-            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
-
-            // TODO: merge with ResultFile property source
-            return new ResourcePropertySource(file);
-		}
+		else if (object instanceof ResultFilePayload)
+            return new ResultFilePropertySource(manager.getFile(((ResultFilePayload)object).getFilePath()));
 		else if (object instanceof RunPayload)
 		    return ResultFileManager.callWithReadLock(manager, new Callable<RunPropertySource>() {
                 public RunPropertySource call() throws Exception {
