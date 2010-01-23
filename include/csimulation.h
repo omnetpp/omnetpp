@@ -173,14 +173,6 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Returns the environment object associated with this simulation object.
      */
     cEnvir *getEnvir() const  {return ownEvPtr;}
-
-    /**
-     * Called after starting and configuring the simulation program. Fires
-     * onStartup() notifications.
-     * FIXME refine documentation
-     * FIXME rethink how it interferes with embedding API (update docu etc)
-     */
-    void startupCompleted();
     //@}
 
     /** @name Accessing modules. */

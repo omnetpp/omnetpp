@@ -36,10 +36,6 @@ USING_NAMESPACE
 
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
 
-//FIXME test binary search's performance!
-//FIXME in error messages, print signal NAME as well as number
-//FIXME remove all listeners before deleteNetwork()!!!
-
 std::map<std::string,simsignal_t> cComponent::signalIDs;
 std::map<simsignal_t,std::string> cComponent::signalNames;
 int cComponent::lastSignalID;
@@ -353,8 +349,11 @@ void cComponent::clearSignalState()
 
 cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
 {
+    // note: we could use std::binary_search() instead of linear search here,
+    // but the number of signals that have listeners is likely to be small (<10),
+    // so linear search is probably faster.
     if (signalTable)
-        for (int i=0; i<signalTable->size(); i++)   // FIXME use std::binary_search()!!!
+        for (int i=0; i<signalTable->size(); i++)
             if ((*signalTable)[i].signalID == signalID)
                 return &(*signalTable)[i];
     return NULL;

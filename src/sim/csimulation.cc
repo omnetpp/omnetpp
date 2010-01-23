@@ -268,10 +268,6 @@ void cSimulation::clearLoadedNedFiles()
 #endif
 }
 
-void cSimulation::startupCompleted()
-{
-}
-
 int cSimulation::registerModule(cModule *mod)
 {
     // Insert module into the vector.
