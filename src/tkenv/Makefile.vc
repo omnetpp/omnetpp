@@ -159,6 +159,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cownedobject.h \
   ../../include/compat.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/cdetect.h \
   ../../include/random.h \
   ../../include/cproperty.h \
@@ -205,6 +206,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
@@ -257,6 +259,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cownedobject.h \
   ../../include/compat.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/cdetect.h \
   ../../include/random.h \
   ../../include/cproperty.h \
@@ -304,6 +307,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
@@ -336,6 +340,7 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/cqueue.h \
   ../../include/ccomponent.h \
@@ -378,6 +383,7 @@ $O/logbuffer.obj: logbuffer.cc \
   tkdefs.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
@@ -423,6 +429,7 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/cdisplaystring.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cqueue.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
@@ -498,6 +505,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cownedobject.h \
   ../../include/compat.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/cdetect.h \
   ../../include/random.h \
   ../../include/cproperty.h \
@@ -545,6 +553,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
@@ -575,6 +584,7 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
@@ -626,6 +636,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  ../../include/clistener.h \
   ../../include/cqueue.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
@@ -682,6 +693,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
   ../common/ver.h \
+  ../../include/clistener.h \
   ../../include/cproperty.h \
   ../../include/cqueue.h \
   ../../include/cchannel.h \
@@ -729,6 +741,7 @@ $O/tklib.obj: tklib.cc \
   tkdefs.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
@@ -767,6 +780,7 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../common/ver.h \
+  ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   visitor.h \
@@ -810,6 +824,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/cqueue.h \
   ../../include/ccomponent.h \

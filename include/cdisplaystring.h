@@ -80,25 +80,32 @@ class SIM_API cDisplayString
     mutable char *dispstr; // cached copy of assembled display string
     mutable bool needsassemble; // if dispstr is up-to-date
 
-    // needed to notify Envir
-    cComponent *object;     // a cModule or cChannel pointer
+    // needed for notifications
+    cComponent *ownercomponent;
 
   private:
     // helper functions
-    void parse();
+    void doParse(const char *s);
+    void doUpdateWith(const cDisplayString& ds);
+    bool doSetTagArg(int tagindex, int index, const char *value);
+    bool doSetTagArg(const char *tagname, int index, const char *value);
+    int doInsertTag(const char *tagname, int atindex=0);
+    bool doRemoveTag(int tagindex);
+
+    void doParse();
     void assemble() const;
-    int gettagindex(const char *tagname) const;
-    void cleartags();
-    bool isinbuffer(char *s) const {return s>=buffer && s<=bufferend;}
+    void clearTags();
+    bool pointsIntoBuffer(char *s) const {return s>=buffer && s<=bufferend;}
     static void strcatescaped(char *d, const char *s);
 
-  private:
+    // internal: called before the stored display string changes
+    void beforeChange();
     // internal: called when the stored display string changes, and notifies Envir in turn.
-    void notify();
+    void afterChange();
 
   public:
     // internal:
-    void setHostObject(cComponent *o) {object=o;}
+    void setHostObject(cComponent *o) {ownercomponent=o;}
     void dump() const;
 
   public:
@@ -239,6 +246,12 @@ class SIM_API cDisplayString
      * If the tag index is out of range, NULL is returned.
      */
     const char *getTagName(int tagindex) const;
+
+    /**
+     * Returns the tag index for the given tag, or -1 if the display string
+     * does not contain the given tag.
+     */
+    int getTagIndex(const char *tagname) const;
 
     /**
      * Returns the number of arguments a tag actually has in the display

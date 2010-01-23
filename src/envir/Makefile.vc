@@ -175,6 +175,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   runattributes.h \
@@ -281,6 +282,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cownedobject.h \
   ../common/ver.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -335,6 +337,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
   eventlogwriter.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
@@ -370,6 +373,7 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   eventlogwriter.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -414,6 +418,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   runattributes.h \
@@ -457,6 +462,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   runattributes.h \
@@ -554,6 +560,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   runattributes.h \
@@ -694,6 +701,7 @@ $O/objectprinter.obj: objectprinter.cc \
   matchableobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   objectprinter.h \
@@ -828,9 +836,10 @@ $O/startup.obj: startup.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   matchableobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cexpression.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   filesnapshotmgr.h \

@@ -26,6 +26,7 @@
 #include "csimulation.h"
 #include "commonutil.h"
 #include "cenvir.h"
+#include "cmodelchange.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -222,6 +223,7 @@ cExpression *cPar::getExpression() const
 
 cPar& cPar::setBoolValue(bool b)
 {
+    beforeChange();
     copyIfShared();
     p->setBoolValue(b);
     afterChange();
@@ -230,6 +232,7 @@ cPar& cPar::setBoolValue(bool b)
 
 cPar& cPar::setLongValue(long l)
 {
+    beforeChange();
     copyIfShared();
     p->setLongValue(l);
     afterChange();
@@ -238,6 +241,7 @@ cPar& cPar::setLongValue(long l)
 
 cPar& cPar::setDoubleValue(double d)
 {
+    beforeChange();
     copyIfShared();
     p->setDoubleValue(d);
     afterChange();
@@ -246,6 +250,7 @@ cPar& cPar::setDoubleValue(double d)
 
 cPar& cPar::setStringValue(const char *s)
 {
+    beforeChange();
     copyIfShared();
     p->setStringValue(s);
     afterChange();
@@ -254,6 +259,7 @@ cPar& cPar::setStringValue(const char *s)
 
 cPar& cPar::setXMLValue(cXMLElement *node)
 {
+    beforeChange();
     copyIfShared();
     p->setXMLValue(node);
     afterChange();
@@ -262,20 +268,40 @@ cPar& cPar::setXMLValue(cXMLElement *node)
 
 cPar& cPar::setExpression(cExpression *e)
 {
+    beforeChange();
     copyIfShared();
     p->setExpression(e);
     afterChange();
     return *this;
 }
 
+void cPar::beforeChange()
+{
+    // notify pre-change listeners
+    if (ownercomponent->hasListeners(PRE_MODEL_CHANGE)) {
+        cPreParameterChangeNotification tmp;
+        tmp.par = this;
+        ownercomponent->emit(PRE_MODEL_CHANGE, &tmp);
+    }
+}
+
 void cPar::afterChange()
 {
+    // call owner's component's handleParameterChange() method
     if (simulation.getContextType()==CTX_EVENT) // don't call during build, initialize or finish
     {
         ASSERT(ownercomponent);
         cContextSwitcher tmp(ownercomponent);
         ownercomponent->handleParameterChange(getFullName());
     }
+
+    // notify post-change listeners
+    if (ownercomponent->hasListeners(POST_MODEL_CHANGE)) {
+        cPostParameterChangeNotification tmp;
+        tmp.par = this;
+        ownercomponent->emit(POST_MODEL_CHANGE, &tmp);
+    }
+
 }
 
 void cPar::read()
@@ -293,8 +319,10 @@ void cPar::read()
     // convert CONST subexpressions into constants
     if (p->isExpression() && p->containsConstSubexpressions())
     {
+        beforeChange();
         copyIfShared();
         p->evaluateConstSubexpressions(ownercomponent); //XXX sharing?
+        afterChange();
     }
 }
 
@@ -304,6 +332,8 @@ void cPar::acceptDefault()
         throw cRuntimeError(this, "acceptDefault(): Parameter is already set");
     if (!p->containsValue())
         throw cRuntimeError(this, "acceptDefault(): Parameter contains no default value");
+
+    beforeChange();
 
     // basically we only need to set the isSet flag to true, but only
     // for ourselves, without affecting the shared parameter prototype.
@@ -323,10 +353,12 @@ void cPar::acceptDefault()
         p->setIsSet(true);
         componentType->putSharedParImpl(p);
     }
+    afterChange();
 }
 
 void cPar::convertToConst()
 {
+    beforeChange();
     copyIfShared();
     try {
         p->convertToConst(ownercomponent);
@@ -342,6 +374,7 @@ void cPar::convertToConst()
         setImpl(cachedValue);
     else
         componentType->putSharedParImpl(p);
+    afterChange();
 }
 
 void cPar::parse(const char *text)
@@ -359,6 +392,7 @@ void cPar::parse(const char *text)
     // Note: text may not contain "ask" or "default"! This is ensured by
     // cParImpl::parse() which throws an error on them.
     //
+    beforeChange();
     cComponentType *componentType = ownercomponent->getComponentType();
     std::string key = std::string(componentType->getName()) + ":" + getName() + ":" + text;
     cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
@@ -383,5 +417,6 @@ void cPar::parse(const char *text)
         componentType->putSharedParImpl(key.c_str(), tmp);
         setImpl(tmp);
     }
+    afterChange();
 }
 

@@ -36,6 +36,7 @@
 #include "stringutil.h"
 #include "stringpool.h"
 #include "simutil.h"
+#include "cmodelchange.h"
 
 USING_NAMESPACE
 
@@ -231,6 +232,28 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     if (g->prevgatep)
         throw cRuntimeError(this, "connectTo(): destination gate already connected");
 
+    // notify pre-change listeners
+    cModule *mod = getOwnerModule();
+    if (mod->hasListeners(PRE_MODEL_CHANGE)) {
+        cPreGateConnectNotification tmp;
+        tmp.gate = this;
+        tmp.targetGate = g;
+        tmp.channel = chan;
+        mod->emit(PRE_MODEL_CHANGE, &tmp);
+    }
+    cGate *pathStartGate = getPathStartGate();
+    cGate *pathEndGate = g->getPathEndGate();
+    cModule *pathStartModule = pathStartGate->getOwnerModule();
+    cModule *pathEndModule = pathEndGate->getOwnerModule();
+    if (pathStartModule->hasListeners(PRE_MODEL_CHANGE) || pathEndModule->hasListeners(PRE_MODEL_CHANGE)) {
+        cPrePathCreateNotification tmp;
+        tmp.pathStartGate = pathStartGate;
+        tmp.pathEndGate = pathEndGate;
+        tmp.changedGate = this;
+        pathStartModule->emit(PRE_MODEL_CHANGE, &tmp);
+        pathEndModule->emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
     // build new connection
     nextgatep = g;
     nextgatep->prevgatep = this;
@@ -248,6 +271,21 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     if (chan && !leaveUninitialized && (!chan->getParentModule() || chan->getParentModule()->initialized()))
         chan->callInitialize();
 
+    // notify post-change listeners
+    if (mod->hasListeners(POST_MODEL_CHANGE)) {
+        cPostGateConnectNotification tmp;
+        tmp.gate = this;
+        mod->emit(POST_MODEL_CHANGE, &tmp);
+    }
+    if (pathStartModule->hasListeners(POST_MODEL_CHANGE) || pathEndModule->hasListeners(POST_MODEL_CHANGE)) {
+        cPostPathCreateNotification tmp;
+        tmp.pathStartGate = pathStartGate;
+        tmp.pathEndGate = pathEndGate;
+        tmp.changedGate = this;
+        pathStartModule->emit(POST_MODEL_CHANGE, &tmp);
+        pathEndModule->emit(POST_MODEL_CHANGE, &tmp);
+    }
+
     return chan;
 }
 
@@ -257,22 +295,66 @@ void cGate::installChannel(cChannel *chan)
     channelp = chan;
     channelp->setSourceGate(this);
     take(channelp);
+
+    // update cached signal state
+    channelp->repairSignalFlags();
 }
 
 void cGate::disconnect()
 {
-    if (!nextgatep) return;
+    if (!nextgatep)
+        return;
+
+    // notify pre-change listeners
+    cModule *mod = getOwnerModule();
+    if (mod->hasListeners(PRE_MODEL_CHANGE)) {
+        cPreGateDisconnectNotification tmp;
+        tmp.gate = this;
+        mod->emit(PRE_MODEL_CHANGE, &tmp);
+    }
+    cGate *pathStartGate = getPathStartGate();
+    cGate *pathEndGate = nextgatep->getPathEndGate();
+    cModule *pathStartModule = pathStartGate->getOwnerModule();
+    cModule *pathEndModule = pathEndGate->getOwnerModule();
+    if (pathStartModule->hasListeners(PRE_MODEL_CHANGE) || pathEndModule->hasListeners(PRE_MODEL_CHANGE)) {
+        cPrePathCutNotification tmp;
+        tmp.pathStartGate = pathStartGate;
+        tmp.pathEndGate = pathEndGate;
+        tmp.changedGate = this;
+        pathStartModule->emit(PRE_MODEL_CHANGE, &tmp);
+        pathEndModule->emit(PRE_MODEL_CHANGE, &tmp);
+    }
 
     // notify envir that old conn gets removed
     EVCB.connectionDeleted(this);
 
-    // remove connection
+    // remove connection (but preserve channel object for the notification)
+    cGate *oldnextgatep = nextgatep;
     nextgatep->prevgatep = NULL;
     nextgatep = NULL;
 
-    // and channel object
-    dropAndDelete(channelp);
+    cChannel *oldchannelp = channelp;
     channelp = NULL;
+
+    // notify post-change listeners
+    if (mod->hasListeners(POST_MODEL_CHANGE)) {
+        cPostGateDisconnectNotification tmp;
+        tmp.gate = this;
+        tmp.targetGate = oldnextgatep;
+        tmp.channel = oldchannelp;
+        mod->emit(POST_MODEL_CHANGE, &tmp);
+    }
+    if (pathStartModule->hasListeners(POST_MODEL_CHANGE) || pathEndModule->hasListeners(POST_MODEL_CHANGE)) {
+        cPostPathCutNotification tmp;
+        tmp.pathStartGate = pathStartGate;
+        tmp.pathEndGate = pathEndGate;
+        tmp.changedGate = this;
+        pathStartModule->emit(POST_MODEL_CHANGE, &tmp);
+        pathEndModule->emit(POST_MODEL_CHANGE, &tmp);
+    }
+
+    // delete channel object
+    dropAndDelete(oldchannelp);
 }
 
 void cGate::checkChannels() const

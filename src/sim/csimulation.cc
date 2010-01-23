@@ -24,6 +24,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <algorithm>
 #include "stringutil.h"
 #include "cmodule.h"
 #include "csimplemodule.h"
@@ -364,6 +365,7 @@ void cSimulation::setupNetwork(cModuleType *network)
 
     // just to be sure
     msgQueue.clear();
+    cComponent::clearSignalState();
 
     try
     {
@@ -633,17 +635,17 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     catch (cDeleteModuleException& e)
     {
         setGlobalContext();
-        delete mod;
+        mod->deleteModule();
     }
     catch (cException&)
     {
-        // restore global context before throwing exception further
+        // restore global context before throwing the exception further
         setGlobalContext();
         throw;
     }
     catch (std::exception& e)
     {
-        // restore global context before throwing exception further
+        // restore global context before throwing the exception further
         // but wrap into a cRuntimeError which captures the module before that
         cRuntimeError e2("%s: %s", opp_typename(typeid(e)), e.what());
         setGlobalContext();

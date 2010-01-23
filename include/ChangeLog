@@ -1,4 +1,16 @@
-2009-09-14 Rudolf Hornig
+2010-01-23  Andras Varga
+
+	* implemented signals mechanism. See new classes cIListener and
+	cListener; new cComponent methods registerSignal(), getSignalName(),
+	emit(), mayHaveListeners(), hasListeners(), subscribe(), unsubscribe(),
+	isSubscribed(), getLocalListenedSignals(), getLocalSignalListeners();
+	constants PRE_MODEL_CHANGE and POST_MODEL_CHANGE; new class
+	cModelChangeNotification and subclasses; and new "Signals" section
+	in the Manual.
+
+
+2009-09-14  Rudolf Hornig
+
 	* cGate: added getNameSuffix() method.
 
 2009-08-06  Andras Varga

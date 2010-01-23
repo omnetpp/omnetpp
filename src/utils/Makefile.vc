@@ -71,5 +71,6 @@ abspath.obj: abspath.cc \
   ../common/ver.h
 opp_lcg32_seedtool.obj: opp_lcg32_seedtool.cc \
   ../common/ver.h
+opp_pefileversion.obj: opp_pefileversion.cc
 ln.obj: ln.c
 opp_replace.obj: opp_replace.c

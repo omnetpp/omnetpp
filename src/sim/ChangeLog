@@ -1,3 +1,7 @@
+2010-01-23  Andras Varga
+
+	* implemented signals mechanism. See include/ChangeLog for details
+
 2009-12-17  Andras Varga
 
 	* fixed bug #116: cPacketQueue::remove() incorrect behavior when called
@@ -8,6 +12,11 @@
 	* dynamic network builder: cComponentType::create() sets NED parameters
 	as well from the similarly named submodule section of the parent 
 	compound module's NED file
+
+2009-07-26  Andras Varga
+
+	* bugfix: cpar.cc: parse() and some other cPar methods did not cause
+	handleParameterChanged() to be invoked on the owner module [ViRe]
 
 2009-07-26  Andras Varga
 

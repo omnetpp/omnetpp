@@ -294,7 +294,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     void clearGates();
 
   public:
-    // internal
+    // internal: may only be called between simulations, when no modules exist
     static void clearNamePools();
 
     // internal utility function. Takes O(n) time as it iterates on the gates

@@ -71,7 +71,6 @@ SIM_API extern cDefaultList defaultList; // also in globals.h
 class SIM_API cSimulation : public cNoncopyableOwnedObject
 {
     friend class cSimpleModule;
-
   private:
     // global variables
     static cSimulation *simPtr; // the active cSimulation instance
@@ -173,7 +172,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     /**
      * Returns the environment object associated with this simulation object.
      */
-    virtual cEnvir *getEnvir() const  {return ownEvPtr;}
+    cEnvir *getEnvir() const  {return ownEvPtr;}
     //@}
 
     /** @name Accessing modules. */

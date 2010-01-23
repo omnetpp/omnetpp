@@ -23,6 +23,7 @@
 #include "cgate.h"
 #include "cdisplaystring.h"
 #include "stringutil.h"
+#include "cmodelchange.h"
 
 USING_NAMESPACE
 
@@ -36,7 +37,7 @@ cDisplayString::cDisplayString()
     numtags = 0;
     needsassemble = false;
 
-    object = NULL;
+    ownercomponent = NULL;
 }
 
 
@@ -49,10 +50,10 @@ cDisplayString::cDisplayString(const char *displaystr)
     numtags = 0;
     needsassemble = false;
 
-    object = NULL;
+    ownercomponent = NULL;
 
-    // parse() should be the last one, as it may throw an error
-    parse();
+    // doParse() should be the last one, as it may throw an error
+    doParse();
 }
 
 cDisplayString::cDisplayString(const cDisplayString& ds)
@@ -64,7 +65,7 @@ cDisplayString::cDisplayString(const cDisplayString& ds)
     numtags = 0;
     needsassemble = false;
 
-    object = NULL;
+    ownercomponent = NULL;
 
     operator=(ds);
 }
@@ -72,13 +73,30 @@ cDisplayString::cDisplayString(const cDisplayString& ds)
 cDisplayString::~cDisplayString()
 {
     delete [] dispstr;
-    cleartags();
+    clearTags();
 }
 
-void cDisplayString::notify()
+void cDisplayString::beforeChange()
+{
+    // notify pre-change listeners
+    if (ownercomponent && ownercomponent->hasListeners(PRE_MODEL_CHANGE)) {
+        cPreDisplayStringChangeNotification tmp;
+        tmp.displayString = this;
+        ownercomponent->emit(PRE_MODEL_CHANGE, &tmp);
+    }
+}
+
+void cDisplayString::afterChange()
 {
     needsassemble = true;
-    EVCB.displayStringChanged(object);
+    EVCB.displayStringChanged(ownercomponent);
+
+    // notify post-change listeners
+    if (ownercomponent && ownercomponent->hasListeners(POST_MODEL_CHANGE)) {
+        cPostDisplayStringChangeNotification tmp;
+        tmp.displayString = this;
+        ownercomponent->emit(POST_MODEL_CHANGE, &tmp);
+    }
 }
 
 const char *cDisplayString::str() const
@@ -88,8 +106,14 @@ const char *cDisplayString::str() const
     return dispstr ? dispstr : "";
 }
 
-
 void cDisplayString::parse(const char *displaystr)
+{
+    beforeChange();
+    doParse(displaystr);
+    afterChange();
+}
+
+void cDisplayString::doParse(const char *displaystr)
 {
     // if it's the same, nothing to do
     if (needsassemble)
@@ -99,14 +123,25 @@ void cDisplayString::parse(const char *displaystr)
 
     // parse and store new string
     delete [] dispstr;
-    cleartags();
+    clearTags();
     dispstr = opp_strdup(displaystr);
-    parse();
+    doParse();
+}
 
-    notify();
+void cDisplayString::updateWith(const char *s)
+{
+    cDisplayString ds(s);
+    updateWith(ds);
 }
 
 void cDisplayString::updateWith(const cDisplayString& ds)
+{
+    beforeChange();
+    doUpdateWith(ds);
+    afterChange();
+}
+
+void cDisplayString::doUpdateWith(const cDisplayString& ds)
 {
     // elements in "ds" take precedence
     int n = ds.getNumTags();
@@ -117,49 +152,30 @@ void cDisplayString::updateWith(const cDisplayString& ds)
         {
             const char *arg = ds.getTagArg(i,j);
             if (arg[0]=='-' && !arg[1])  // "-" is the "antivalue"
-                setTagArg(ds.getTagName(i), j, "");
+                doSetTagArg(ds.getTagName(i), j, "");
             else if (arg[0])
-                setTagArg(ds.getTagName(i), j, arg);
+                doSetTagArg(ds.getTagName(i), j, arg);
         }
     }
 
-    // optimize storage; parse() also calls notify()
-    parse(str());
-}
-
-
-void cDisplayString::updateWith(const char *s)
-{
-    cDisplayString ds(s);
-    updateWith(ds);
+    // optimize storage
+    doParse(str());
 }
 
 bool cDisplayString::containsTag(const char *tagname) const
 {
-    int t = gettagindex(tagname);
+    int t = getTagIndex(tagname);
     return t!=-1;
 }
 
-
 int cDisplayString::getNumArgs(const char *tagname) const
 {
-    return getNumArgs(gettagindex(tagname));
+    return getNumArgs(getTagIndex(tagname));
 }
-
 
 const char *cDisplayString::getTagArg(const char *tagname, int index) const
 {
-    return getTagArg(gettagindex(tagname), index);
-}
-
-
-bool cDisplayString::setTagArg(const char *tagname, int index, const char *value)
-{
-    // may notify() twice (for insert.. and set..), but it's OK
-    int t = gettagindex(tagname);
-    if (t==-1)
-        t = insertTag(tagname);
-    return setTagArg(t, index, value);
+    return getTagArg(getTagIndex(tagname), index);
 }
 
 bool cDisplayString::setTagArg(const char *tagname, int index, long value)
@@ -169,17 +185,31 @@ bool cDisplayString::setTagArg(const char *tagname, int index, long value)
     return setTagArg(tagname, index, buf);
 }
 
-bool cDisplayString::removeTag(const char *tagname)
+bool cDisplayString::setTagArg(const char *tagname, int index, const char *value)
 {
-    return removeTag(gettagindex(tagname));
+    beforeChange();
+    bool result = doSetTagArg(tagname, index, value);
+    afterChange();
+    return result;
 }
 
+bool cDisplayString::doSetTagArg(const char *tagname, int index, const char *value)
+{
+    int t = getTagIndex(tagname);
+    if (t==-1)
+        t = doInsertTag(tagname);
+    return doSetTagArg(t, index, value);
+}
+
+bool cDisplayString::removeTag(const char *tagname)
+{
+    return removeTag(getTagIndex(tagname));
+}
 
 int cDisplayString::getNumTags() const
 {
     return numtags;
 }
-
 
 const char *cDisplayString::getTagName(int tagindex) const
 {
@@ -187,13 +217,11 @@ const char *cDisplayString::getTagName(int tagindex) const
     return tags[tagindex].name;
 }
 
-
 int cDisplayString::getNumArgs(int tagindex) const
 {
     if (tagindex<0 || tagindex>=numtags) return -1;
     return tags[tagindex].numargs;
 }
-
 
 const char *cDisplayString::getTagArg(int tagindex, int index) const
 {
@@ -202,8 +230,15 @@ const char *cDisplayString::getTagArg(int tagindex, int index) const
     return opp_nulltoempty(tags[tagindex].args[index]);
 }
 
-
 bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
+{
+    beforeChange();
+    bool result = doSetTagArg(tagindex, index, value);
+    afterChange();
+    return result;
+}
+
+bool cDisplayString::doSetTagArg(int tagindex, int index, const char *value)
 {
     // check indices
     if (tagindex<0 || tagindex>=numtags) return false;
@@ -220,7 +255,7 @@ bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
         return true;
 
     // set value
-    if (slot && !isinbuffer(slot))
+    if (slot && !pointsIntoBuffer(slot))
         delete [] slot;
     slot = opp_strdup(value);
 
@@ -228,14 +263,20 @@ bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
     while (tag.numargs>0 && tag.args[tag.numargs-1]==NULL)
         tag.numargs--;
     if (tag.numargs==0)
-        removeTag(tagindex);
-
-    notify();
+        doRemoveTag(tagindex);
     return true;
 }
 
 
 int cDisplayString::insertTag(const char *tagname, int atindex)
+{
+    beforeChange();
+    int result = doInsertTag(tagname, atindex);
+    afterChange();
+    return result;
+}
+
+int cDisplayString::doInsertTag(const char *tagname, int atindex)
 {
     // check name validity
     if (!tagname || !tagname[0])
@@ -246,7 +287,7 @@ int cDisplayString::insertTag(const char *tagname, int atindex)
                                 "contains invalid character", tagname);
 
     // check uniqueness
-    int t = gettagindex(tagname);
+    int t = getTagIndex(tagname);
     if (t!=-1)
         return t;
 
@@ -271,20 +312,27 @@ int cDisplayString::insertTag(const char *tagname, int atindex)
     for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = NULL;
 
     // success
-    notify();
     return atindex;
 }
 
 
 bool cDisplayString::removeTag(int tagindex)
 {
+    beforeChange();
+    bool result = doRemoveTag(tagindex);
+    afterChange();
+    return result;
+}
+
+bool cDisplayString::doRemoveTag(int tagindex)
+{
     if (tagindex<0 || tagindex>=numtags) return false;
 
     // dealloc strings in tag
-    if (!isinbuffer(tags[tagindex].name))
+    if (!pointsIntoBuffer(tags[tagindex].name))
         delete [] tags[tagindex].name;
     for (int i=0; i<tags[tagindex].numargs; i++)
-        if (!isinbuffer(tags[tagindex].args[i]))
+        if (!pointsIntoBuffer(tags[tagindex].args[i]))
             delete [] tags[tagindex].args[i];
 
     // eliminate hole in tags[] array
@@ -293,12 +341,11 @@ bool cDisplayString::removeTag(int tagindex)
     numtags--;
 
     // success
-    notify();
     return true;
 }
 
 
-int cDisplayString::gettagindex(const char *tagname) const
+int cDisplayString::getTagIndex(const char *tagname) const
 {
     for (int t=0; t<numtags; t++)
         if (!strcmp(tagname,tags[t].name))
@@ -306,31 +353,31 @@ int cDisplayString::gettagindex(const char *tagname) const
     return -1;
 }
 
-void cDisplayString::cleartags()
+void cDisplayString::clearTags()
 {
     // delete tags array. string pointers that do not point inside the
     // buffer were allocated individually via new char[] and have to be
     // deleted.
     for (int t=0; t<numtags; t++)
     {
-        if (!isinbuffer(tags[t].name))
+        if (!pointsIntoBuffer(tags[t].name))
             delete [] tags[t].name;
         for (int i=0; i<tags[t].numargs; i++)
-            if (!isinbuffer(tags[t].args[i]))
+            if (!pointsIntoBuffer(tags[t].args[i]))
                 delete [] tags[t].args[i];
     }
     delete [] tags;
     tags = NULL;
     numtags = 0;
 
-    // must be done after deleting tags[] because of isinbuffer()
+    // must be done after deleting tags[] because of pointsIntoBuffer()
     delete [] buffer;
     buffer = bufferend = NULL;
 }
 
-void cDisplayString::parse()
+void cDisplayString::doParse()
 {
-    cleartags();
+    clearTags();
     if (dispstr==NULL)
         return;
 
