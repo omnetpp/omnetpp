@@ -3682,20 +3682,26 @@ The implementation of signals is based on the following assumptions:
     as low as possible
 \end{itemize}
 
-These goals are achieved with the following implementation. First, the data
-structure that used to store listeners in components is
-dynamically allocated, so if there are no listeners, the per-component
-overhead is only the size of the pointer (which will be \ttt{NULL} then).
+These goals have been achieved in the 4.1 version with the following
+implementation. First, the data structure that used to store listeners in
+components is dynamically allocated, so if there are no listeners, the
+per-component overhead is only the size of the pointer (which will be
+\ttt{NULL} then).
 
 Second, additionally there are two bitfields in every component that store
 which one of the first 64 signals (IDs 0..63) have local listeners and
 listeners in ancestor modules.\footnote{It is assumed that there will be
-typically less than 64 signals used at a time in a simulation.}
-Using these bitfields, it is possible to determine in constant time
-for the first 64 signals whether the signal has listeners, so \ffunc{emit()} can
-return immediately if there are no listeners, does not need to go up
-the ancestor chain of there only local listeners, and otherwise only needs
-to go up the ancestor chain as high as needed.
+typically less than 64 signals used at a time in a simulation.} Using these
+bitfields, it is possible to determine in constant time for the first 64
+signals whether the signal has listeners, so \ffunc{emit()} can return
+immediately if there are no listeners, does not need to go up the ancestor
+chain of there only local listeners, and otherwise only needs to go up the
+ancestor chain as high as needed. For other signals, \ffunc{emit()} needs
+to examine the listener lists every time. Even if a simulation uses more
+than 64 signals, in performance-critical situations it is possible to
+arrange that frequently emitted signals (e.g. \ttt{"tx-begin"}) get the
+``fast'' signal IDs, while infrequent signals (like e.g.
+\ttt{"router-down"}) get the rest.
 
 
 \subsection{The signals mechanism}
@@ -3957,7 +3963,7 @@ types will result in an error instead of going unnoticed.
 The order in which listeners will be notified is undefined (it is not necessarily
 the same order in which listeners were subscribed.)
 
-\subsection{Listener life cycle}
+\subsubsection{Listener life cycle}
 \label{sec:simple-modules:signals:life-cycle}
 
 When a component (module or channel) is deleted, it automatically
