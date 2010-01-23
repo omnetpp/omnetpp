@@ -58,9 +58,10 @@ cListener::cListener()
 
 cListener::~cListener()
 {
+    ASSERT(subscribecount >= 0);
     if (subscribecount)
     {
-        // note: throwing an exception would is risky here, it would typically
+        // note: throwing an exception would is risky here: it would typically
         // cause other exceptions, and eventually crash
         ev.printfmsg("cListener destructor: listener at address %p is still on "
                 "%d listener list(s). This will likely result in a crash: "
@@ -68,6 +69,7 @@ cListener::~cListener()
                 "Trying to determine components where this listener is subscribed...",
                 this, subscribecount);
 
+        // print components and signals where this listener is subscribed
         std::stringstream out;
         SubscriptionList list;
         findListenerOccurences(simulation.getSystemModule(), this, list);
@@ -114,11 +116,13 @@ void cListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject 
 
 void cListener::listenerAdded(cComponent *component, simsignal_t signalID)
 {
+    ASSERT(subscribecount >= 0);
     subscribecount++;
 }
 
 void cListener::listenerRemoved(cComponent *component, simsignal_t signalID)
 {
+    ASSERT(subscribecount > 0);
     subscribecount--;
 }
 

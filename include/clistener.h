@@ -65,17 +65,17 @@ class SIM_API cIListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t) = 0;
 
     /** Receive an emitted string value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *obj) = 0;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) = 0;
 
     /** Receive an emitted cObject value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) = 0;
 
     /**
-     * Called after the component's finish() method got called. This method
-     * can be used to record statistics. This method does not get called if
-     * the simulation has terminated with an error. Also, the method may get
-     * invoked several times (i.e. if the listener is subscribed to multiple
-     * signals).
+     * Called by a component on its local listeners after the component's
+     * finish() method was called. If the listener is subscribed to multiple
+     * signals or at multiple components, the method will be called multiple times.
+     * Note that finish() methods in general are not invoked if the simulation
+     * terminates with an error.
      */
     virtual void finish(cComponent *component) {}
 
