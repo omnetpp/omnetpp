@@ -3596,6 +3596,456 @@ the channel object associated with the connection, if one has been set.
 srcGate->disconnect();
 \end{cpp}
 
+\section{Signals}
+\label{sec:simple-modules:signals}
+
+This section describes \textit{simulation signals}, or signals for short.
+Signals are a versatile concept that first appeared in {\opp} 4.1.
+
+Simulation signal can be used for:
+
+\begin{itemize}
+  \item{exposing statistical properties of the model, without specifying
+        whether and how to record them}
+  \item{getting notified about simulation model changes at runtime, and
+        acting upon them}
+  \item{implementing a publish-subscribe style communication among modules;
+        this is advantageous when the producer and consumer of the information
+        do not know about each other, and possibly there is many-to-one or
+        many-to-many relationship among them}
+  \item{emitting information for other purposes, for example as input for
+        custom animation effects}
+\end{itemize}
+
+Signals are emitted by components (modules and channels). Signals propagate
+on the module hierarchy up to the root. At any level, one can register
+listeners (callback objects); these listeners will get notified (called
+back) whenever a signal value is emitted. The result of upwards propagation
+is that listeners registered at a compound module can receive signals from
+all components in that submodule tree. A listener registered at the system
+module can receive signals from the whole simulation.
+
+\begin{note}
+    A channel's parent is the (compound) module that contains the connection,
+    not the owner of either gate the channel is connected to.
+\end{note}
+
+Signals are identified by signal names (i.e. strings), but for efficiency reasons
+at runtime we use dynamically assigned numeric identifiers (signal IDs,
+typedef'd as \ttt{simsignal\_t}). The mapping of signal names to signal IDs is
+global, so all modules and channels asking to resolve a particular signal name
+will get back the same numeric signal ID.
+
+Listeners can subscribe for signal names or IDs, regardless of their
+source. For example, if two different and unrelated module types, say
+\ttt{Queue} and \ttt{Buffer}, both emit a signal named \ttt{"length"}, then
+a listener that subscribes to \ttt{"length"} at some higher compound module
+will get notifications from both \ttt{Queue} and \ttt{Buffer} module
+instances. The listener can still look at the source of the signal if it
+wants to distinguish the two (it is available as a parameter to the
+callback function), but the signals framework itself does not have such a
+feature.
+
+\begin{note}
+  Because the component type that emits the signal is not part of the signal's
+  identity, it is advised to choose signal names carefully. A good naming scheme
+  facilitates "merging" of signals that arrive from different sources but
+  mean the same thing, and reduces the chance of collisions between signals that
+  accidentally have the same name but represent different things.
+\end{note}
+
+When a signal is emitted, it can carry a value with it. This is realized via
+overloaded \ffunc{emit()} methods in components, and overloaded \ffunc{receiveSignal()}
+methods in listeners. The signal value can be of selected primitive types, or an
+object pointer; anything that is not feasible to emit as a primitive type may be
+wrapped into an object, and emitted as such.
+
+\begin{note}
+  The number of supported signal value types was intentially kept low, in order
+  to minimize the number of overloaded methods that authors of listeners have
+  to provide.
+\end{note}
+
+
+\subsection{The signals machinery}
+\label{sec:simple-modules:signals-api}
+
+Signal-related methods are declared on \cclass{cComponent}, so they are available
+for both \cclass{cModule} and \cclass{cChannel}.
+
+\subsubsection{Signal IDs}
+
+Signals are identified by names, but internally numeric signal IDs are used
+for efficiency. The \ffunc{registerSignal()} method takes a signal name as
+parameter, and returns the corresponding \ttt{simsignal\_t} value.
+The method is static, illustrating the fact that signal names are global.
+An example:
+
+\begin{cpp}
+simsignal_t lengthSignalId = registerSignal("length");
+\end{cpp}
+
+The \ffunc{getSignalName()} method (also static) does the reverse:
+it accepts a \ttt{simsignal\_t}, and returns the name of the signal as
+\ttt{const char *} (or \ttt{NULL} for invalid signal handles):
+
+\begin{cpp}
+const char *signalName = getSignalName(lengthSignalId); // --> "length"
+\end{cpp}
+
+\begin{note}
+  There is some significance to the order of \ffunc{registerSignal()} calls: the
+  first 64 signal names registered have somewhat better notification
+  performance characteristics than later signals, so it is advised to
+  register frequently emitted signals first.
+\end{note}
+
+\subsubsection{Emitting signals}
+
+The \ffunc{emit()} family of functions emit a signal from the module or
+channel. They take two parameters, the signal ID (\ttt{simsignal\_t}) and
+the value:
+
+\begin{cpp}
+emit(lengthSignalId, queue.length());
+\end{cpp}
+
+The value can be of type \ttt{long}, \ttt{double}, \ttt{simtime\_t},
+\ttt{const char *}, or \ttt{cObject *}. Other types can be cast into
+one of these types, or wrapped into an object subclassed from \ttt{cObject}.
+
+When there are no listeners, the runtime cost of \ttt{emit()} is usually minimal.
+However, if producing a value has a significant runtime cost, then the
+\ffunc{mayHaveListeners()} or \ffunc{hasListeners()} method can be used
+to check beforehand whether the given signal has any listeners at all --
+if not, emitting the signal can be skipped. For some signals (the first 64
+in {\opp} 4.1), the information whether it has listeners is cached per
+component, and can be produced in constant time.
+
+Example usage:
+
+\begin{cpp}
+if (mayHaveListeners(distanceToTargetSignal))
+{
+    double d = sqrt((x-targetX)*(x-targetX) + (y-targetY)*(y-targetY));
+    emit(distanceToTargetSignal, d);
+}
+\end{cpp}
+
+The \ffunc{mayHaveListeners()} method is very efficient (a constant-time
+operation) because it only uses this cached information; if the state is
+not cached for the signal, it just returns \ttt{true}. In contrast,
+\ffunc{hasListeners()} will search up to the top of the module tree if
+the answer is not cached, so it is generally slower. We recommend that
+you take into account the cost of producing notification information when
+deciding between \ffunc{mayHaveListeners()} and \ffunc{hasListeners()}.
+
+
+\subsubsection{Signal data objects}
+
+When emitting a signal with a \ttt{cObject*} pointer, you can pass as data
+an object that you already have in the model, provided you have a suitable
+object at hand. However, it is often necessary to declare a custom class
+to hold all the details, and fill in an instance just for the purpose of
+emitting the signal.
+
+The custom notification class must be derived from \cclass{cObject}.
+We recommend that you also add \cclass{noncopyable} as a base class, because
+then you don't need to write a copy constructor, assignment operator, and
+\ffunc{dup()} function, sparing some work. When emitting the signal, you
+can create a temporary object, and pass its pointer to the \ffunc{emit()}
+function.
+
+An example of custom notification classes is how model change notifications
+are fired (see \ref{sec:ch-simple-modules:model-change}). The data class
+that accompanies a signal that announces that a gate or gate vector is
+about to be created looks like this:
+
+\begin{cpp}
+class cPreGateAddNotification : public cObject, noncopyable
+{
+  public:
+    cModule *module;
+    const char *gateName;
+    cGate::Type gateType;
+    bool isVector;
+};
+\end{cpp}
+
+And the code that emits the signal:
+
+\begin{cpp}
+if (hasListeners(PRE_MODEL_CHANGE))
+{
+    cPreGateAddNotification tmp;
+    tmp.module = this;
+    tmp.gateName = gatename;
+    tmp.gateType = type;
+    tmp.isVector = isVector;
+    emit(PRE_MODEL_CHANGE, &tmp);
+}
+\end{cpp}
+
+
+\subsubsection{Subscribing to signals}
+
+The \ffunc{subscribe()} method registers a listener for a signal.
+Listeners are objects that extend the \cclass{cIListener} class.
+The same listener object can be subscribed to multiple signals.
+\ffunc{subscribe()} has two arguments: the signal and a pointer to
+the listener object:
+
+\begin{cpp}
+cIListener *listener = ...;
+simsignal_t lengthSignalId = registerSignal("length");
+subscribe(lengthSignalId, listener);
+\end{cpp}
+
+For convenience, the \ffunc{subscribe()} method has a variant
+that takes the signal name directly, so the \ffunc{registerSignal()}
+call can be spared:
+
+\begin{cpp}
+cIListener *listener = ...;
+subscribe("length", listener);
+\end{cpp}
+
+One can also subscribe at other modules, not only the local one.
+For example, in order to get signals from all parts of the model,
+one can subscribe at the system module:
+
+\begin{cpp}
+cIListener *listener = ...;
+simulation.getSystemModule()->subscribe("length", listener);
+\end{cpp}
+
+The \ffunc{unsubscribe()} method has the same parameter list
+as \ffunc{subscribe()}, and unregisters the given listener
+from the signal:
+
+\begin{cpp}
+unsubscribe(lengthSignalId, listener);
+\end{cpp}
+
+or
+
+\begin{cpp}
+unsubscribe("length", listener);
+\end{cpp}
+
+\ffunc{subscribe()} has no effect if the same listener is already
+subscribed, and similarly, \ffunc{unsubscribe()} does nothing
+if the listener is not subscribed.
+
+XXX if subscribed, MUST be unsubscribed!!! especially if subscribed
+at modules higher in the hierarchy. Module dtors release listeners,
+but this is not enough!
+
+It is possible to test whether a listener is subscribed to a signal,
+using the \ffunc{isSubscribed()} method which also takes the same
+parameter list.
+
+\begin{cpp}
+if (isSubscribed(lengthSignalId, listener))
+{
+    ...
+}
+\end{cpp}
+
+For completeness, there are methods for getting the list of signals
+that the component has subscribed to (\ffunc{getLocalListenedSignals()}),
+and the list of listeners for a given signal (\ffunc{getLocalSignalListeners()}).
+The former returns \ttt{std::vector<simsignal\_t>}, the latter takes
+a signal ID (\ttt{simsignal\_t}) and returns \ttt{std::vector<cIListener*>}.
+
+The following example prints the number of listeners for each signal:
+
+\begin{cpp}
+EV << "Signal listeners:\n";
+std::vector<simsignal_t> signals = getLocalListenedSignals();
+for (unsigned int i = 0; i < signals.size(); i++) {
+    simsignal_t signalID = signals[i];
+    std::vector<cIListener*> listeners = getLocalSignalListeners(signalID);
+    EV << getSignalName(signalID) << ": " << listeners.size() << " signals\n";
+}
+\end{cpp}
+
+\subsubsection{Listeners}
+
+Listeners are objects that subclass from the \cclass{cIListener} class:
+
+\begin{cpp}
+class cIListener
+{
+  public:
+    virtual ~cIListener() {}
+    virtual void receiveSignal(cComponent *src, simsignal_t id, long l) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id, double d) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id, simtime_t t) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id, const char *s) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id, cObject *obj) = 0;
+    virtual void finish(cComponent *component) {}
+    virtual void listenerAdded(cComponent *component, simsignal_t id) {}
+    virtual void listenerRemoved(cComponent *component, simsignal_t id) {}
+};
+\end{cpp}
+
+This class has a number of virtual methods:
+
+\begin{itemize}
+  \item Several overloaded \ffunc{receiveSignal()} methods, one for each
+    data type. Whenever a signal is emitted (via \ffunc{emit()}),
+    the matching \ffunc{receiveSignal()} methods of subscribed listeners
+    are invoked.
+  \item \ffunc{finish()}: Method gets called when XXX FIXME TODO WHICH COMPONENT's
+    \ffunc{finish} method gets called. This method can be used to record
+    statistics. It does not get called if the simulation has terminated
+    with an error. Also, the method may get invoked several times (i.e.
+    if the listener is subscribed to multiple signals).
+  \item \ffunc{listenerAdded()}, \ffunc{listenerRemoved()}. They are called
+    when this listener object is subscribed to a signal, and when it is
+    unsubscribed.
+
+    FIXME TODO what is this good for.. e.g. reference counting.
+
+    The \ffunc{listenerRemoved()} method is also called from \cclass{cComponent}'s
+    destructor for all listeners, so at this point it is not safe to cast the
+    component pointer to any other type. Also, the method may be called several times
+    (i.e. if the listener was subscribed to multiple signals).
+
+    It is OK for the listener to delete itself in this method (\ttt{delete this}).
+    However, since this method may be called more than once if the listener
+    is subscribed multiple times (see above), one must be careful to prevent
+    double deletion, e.g. by using reference counting.
+
+\end{itemize}
+
+Since \cclass{cIListener} has too many pure virtual methods, it is more
+convenient to subclass from \cclass{cListener}, a do-nothing implementation
+instead. It defines \ffunc{finish()}, \ffunc{listenerAdded()} and
+\ffunc{listenerRemoved()} with an empty body, and the \ffunc{receiveSignal()}
+methods with a bodies that throw a \ttt{"Data type not supported"} error.
+You can redefine the \ffunc{receiveSignal()} method(s) whose data type
+you want to support, and signals emitted with other (unexpected) data
+types will result in an error instead of going unnoticed.
+
+XXX cListener does reference counting!
+
+TODO What happens at an emit() call.
+
+The order in which listeners will be notified is undefined (it is not necessarily
+the same order in which listeners were subscribed.)
+
+
+\subsection{Design considerations and rationale}
+
+The design was based on the following assumptions:
+
+1. subscribe/unsubscribe operations are quite rare,
+and memory usage and efficiency of notification matter a lot more;
+
+there are relatively few (<10) subscribers per module
+
+2. there should be no memory and minimal CPU overhead for signals emitted but not listened on
+
+emitting signals is virtually free if they are unused (i.e. there are
+no listeners). The only memory overhead is the signal handle you need
+to keep, and runtime cost is very small as well, because emit()
+returns immediately if there are no listeners. (This is true for the
+first 64 signals; signals above 64 are slightly less efficient if there
+are no listeners, because it has to check the listeners lists at
+the modules up to the root).
+
+signals 0..63 are more efficient (emit() has near zero runtime cost if there
+are no listeners)
+
+when there are no listeners on the ancestor chain, length of ancestor chain
+does not affect notification performance (for signals 0..63)
+
+
+\subsection{Listening for model changes}
+\label{sec:ch-simple-modules:model-change}
+
+In simulation models it is often useful to hold references to other
+modules, a connecting channel or other objects, or to cache information
+derived from the model topology. However, such pointer s or data may
+become invalid when the model changes at runtime, and need to be updated
+or recalculated. The problem is how to get notified that something has
+changed in the model.
+
+\begin{note}
+  Whenever you see a \ttt{cModule*}, \ttt{cChannel*}, \ttt{cGate*} or
+  similar pointer kept as state in a simple module, you should think about
+  how it will be kept up-to-date if the model changes at runtime.
+\end{note}
+
+The solution is, of course, signals. {\opp} has two built-in signals,
+\fmac{PRE\_MODEL\_CHANGE} and \fmac{POST\_MODEL\_CHANGE} (these macros
+are \ttt{simsignal\_t} values, not names) that get emitted before and
+after each model change.
+
+Pre/post model change notifications are emitted with data objects that
+carry the details of the change. The data classes are:
+
+\begin{itemize}
+  \item \cclass{cPreModuleAddNotification} / \cclass{cPostModuleAddNotification}
+  \item \cclass{cPreModuleDeleteNotification} / \cclass{cPostModuleDeleteNotification}
+  \item \cclass{cPreModuleReparentNotification} / \cclass{cPostModuleReparentNotification}
+  \item \cclass{cPreGateAddNotification} / \cclass{cPostGateAddNotification}
+  \item \cclass{cPreGateDeleteNotification} / \cclass{cPostGateDeleteNotification}
+  \item \cclass{cPreGateVectorResizeNotification} / \cclass{cPostGateVectorResizeNotification}
+  \item \cclass{cPreGateConnectNotification} / \cclass{cPostGateConnectNotification}
+  \item \cclass{cPreGateDisconnectNotification} / \cclass{cPostGateDisconnectNotification}
+  \item \cclass{cPrePathCreateNotification} / \cclass{cPostPathCreateNotification}
+  \item \cclass{cPrePathCutNotification} / \cclass{cPostPathCutNotification}
+  \item \cclass{cPreParameterChangeNotification} / \cclass{cPostParameterChangeNotification}
+  \item \cclass{cPreDisplayStringChangeNotification} / \cclass{cPostDisplayStringChangeNotification}
+\end{itemize}
+
+They all subclass from \cclass{cModelChangeNotification}, which is of course a
+\cclass{cObject}. Inside the listener, you can use \ttt{dynamic\_cast<>} to figure
+out what notification arrived.
+
+\begin{note}
+  Please look up these classes in the API documentation to see their data fields,
+  when exactly they get fired, and what one needs to be careful about when using them.
+\end{note}
+
+An example listener that prints a message when a module gets deleted:
+
+\begin{cpp}
+class MyListener : public cListener
+{
+   ...
+};
+
+void MyListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+{
+    if (dynamic_cast<cPreModuleDeleteNotification *>(obj))
+    {
+        cPreModuleDeleteNotification *data = (cPreModuleDeleteNotification *)obj;
+        EV << "Module " << data->module->getFullPath() << " is about to be deleted\n";
+    }
+}
+\end{cpp}
+
+If you'd like to get notification about the deletion of any module, you need
+to install the listener on the system module:
+
+\begin{cpp}
+simulation.getSystemModule()->subscribe(PRE\_MODEL\_CHANGE, listener);
+\end{cpp}
+
+\begin{note}
+  \fmac{PRE\_MODEL\_CHANGE} and \fmac{POST\_MODEL\_CHANGE} are fired on the
+  module (or channel) affected by the change, and \textit{not} on the module
+  which executes the code that causes the change. For example,
+  \textit{pre-module-deleted} is fired on the module to be removed, and
+  \textit{post-module-deleted} is fired on its parent (because the original
+  module no longer exists), and not on the module that contains the
+  \ffunc{deleteModule()} call.
+\end{note}
+
 
 %%% Local Variables:
 %%% mode: latex
