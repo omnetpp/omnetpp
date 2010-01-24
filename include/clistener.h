@@ -77,7 +77,7 @@ class SIM_API cIListener
      * Note that finish() methods in general are not invoked if the simulation
      * terminates with an error.
      */
-    virtual void finish(cComponent *component) {}
+    virtual void finish(cComponent *component, simsignal_t signalID) {}
 
     /**
      * Called when this object was added to the given component's given signal
@@ -109,6 +109,11 @@ class SIM_API cIListener
  * for other listeners. The user needs to redefine one or more of the
  * overloaded receiveSignal() methods; the rest will throw a "Data type
  * not supported" error.
+ *
+ * This class performs subscription counting, in order to make sure that
+ * when the destructor runs, the object is no longer subscribed anywhere.
+ * When redefining listenerAdded() or listenerRemoved(), be sure to call
+ * the same method in the base class.
  */
 class SIM_API cListener : public cIListener
 {
@@ -125,7 +130,7 @@ class SIM_API cListener : public cIListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
-    virtual void finish(cComponent *component) {}
+    virtual void finish(cComponent *component, simsignal_t signalID) {}
     virtual void listenerAdded(cComponent *component, simsignal_t signalID);
     virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
 };

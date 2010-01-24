@@ -446,7 +446,7 @@ void cComponent::fireFinish()
     if (signalTable)
         for (int i=0; i<signalTable->size(); i++)
             for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
-                (*lp)->finish(this);
+                (*lp)->finish(this, (*signalTable)[i].signalID);
 }
 
 inline void setBit(uint64& flags, int bitnum, bool value)

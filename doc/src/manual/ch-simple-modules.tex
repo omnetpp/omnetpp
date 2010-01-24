@@ -3923,7 +3923,7 @@ class cIListener
     virtual void receiveSignal(cComponent *src, simsignal_t id, simtime_t t) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id, const char *s) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id, cObject *obj) = 0;
-    virtual void finish(cComponent *component) {}
+    virtual void finish(cComponent *component, simsignal_t id) {}
     virtual void listenerAdded(cComponent *component, simsignal_t id) {}
     virtual void listenerRemoved(cComponent *component, simsignal_t id) {}
 };

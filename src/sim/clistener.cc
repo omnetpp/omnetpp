@@ -63,7 +63,7 @@ cListener::~cListener()
     {
         // note: throwing an exception would is risky here: it would typically
         // cause other exceptions, and eventually crash
-        ev.printfmsg("cListener destructor: listener at address %p is still on "
+        ev.printfmsg("cListener destructor: listener at address %p is still added to "
                 "%d listener list(s). This will likely result in a crash: "
                 "Listeners must be fully unsubscribed before deletion. "
                 "Trying to determine components where this listener is subscribed...",
