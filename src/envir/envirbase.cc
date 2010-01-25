@@ -754,6 +754,30 @@ void EnvirBase::endRun()
 }
 
 //-------------------------------------------------------------
+extern cConfigOption *CFGID_SCALAR_RECORDING; //XXX better place
+extern cConfigOption *CFGID_VECTOR_RECORDING; //XXX better place
+
+void EnvirBase::configure(cComponent *component)
+{
+    std::vector<const char *> signalNames = component->getProperties()->getIndicesFor("signal");
+    std::string componentFullPath;
+    for (int i = 0; i < (int)signalNames.size(); i++)
+    {
+        const char *signalName = signalNames[i];
+        if (componentFullPath.empty())
+            componentFullPath = component->getFullPath();
+        std::string signalFullPath = componentFullPath + "." + signalName;
+        if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_SCALAR_RECORDING))
+        {
+            // add listener to record as output scalar
+        }
+
+        if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
+        {
+            // add listener to record as output vector
+        }
+    }
+}
 
 void EnvirBase::readParameter(cPar *par)
 {
