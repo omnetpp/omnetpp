@@ -166,6 +166,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void undisposedObject(cObject *obj);
 
     // configuration, model parameters
+    virtual void configure(cComponent *component);
     virtual void readParameter(cPar *parameter);
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);

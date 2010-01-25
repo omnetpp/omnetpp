@@ -161,7 +161,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     // put the object members of the new module to their place
     mod->takeAllObjectsFrom(tmplist);
 
-    // restore defaultowner
+    // restore defaultowner (must precede parameters)
     cOwnedObject::setDefaultOwner(oldlist);
 
     // register with cSimulation
@@ -176,6 +176,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     addParametersAndGatesTo(mod);
 
     // notify envir
+    ev.configure(mod);
     EVCB.moduleCreated(mod);
 
     // notify post-change listeners
