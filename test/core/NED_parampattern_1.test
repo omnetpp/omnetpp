@@ -78,9 +78,6 @@ network Test
 }
 
 %contains: stdout
-
-TODO: update this test!
-
 module Test: Test {
     parameters:
         @isNetwork

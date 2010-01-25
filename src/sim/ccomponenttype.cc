@@ -129,14 +129,21 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     cDefaultList tmplist;
     cDefaultList *oldlist = cOwnedObject::getDefaultOwner();
     cOwnedObject::setDefaultOwner(&tmplist);
-
-    // create the new module object
-    bool isLocal = ev.isModuleLocal(parentmod,modname,index);
+    cModule *mod;
+    try {
+        // create the new module object
 #ifdef WITH_PARSIM
-    cModule *mod = isLocal ? createModuleObject() : new cPlaceholderModule();
+        bool isLocal = ev.isModuleLocal(parentmod, modname, index);
+        mod = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
-    cModule *mod = createModuleObject();
+        mod = createModuleObject();
 #endif
+    }
+    catch (std::exception& e) {
+        // restore defaultowner, otherwise it'll remain pointing to a dead object
+        cOwnedObject::setDefaultOwner(oldlist);
+        throw;
+    }
 
     // set up module: set name, module type, vector size, parent
     mod->setName(modname);
@@ -266,7 +273,15 @@ cChannel *cChannelType::create(const char *name)
     cOwnedObject::setDefaultOwner(&tmplist);
 
     // create channel object
-    cChannel *channel = createChannelObject();
+    cChannel *channel;
+    try {
+        channel = createChannelObject();
+    }
+    catch (std::exception& e) {
+        // restore defaultowner, otherwise it'll remain pointing to a dead object
+        cOwnedObject::setDefaultOwner(oldlist);
+        throw;
+    }
 
     // set up channel: set name, channel type, etc
     channel->setName(name);

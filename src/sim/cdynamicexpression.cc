@@ -487,7 +487,8 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                    case MOD:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw cRuntimeError(eEBADARGS,"%");
-                       stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
+                       if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
+                           throw cRuntimeError(eDIMLESS,"%");
                        stk[tos-1].dbl = fmod(trunc(stk[tos-1].dbl), trunc(stk[tos].dbl));
                        tos--;
                        break;

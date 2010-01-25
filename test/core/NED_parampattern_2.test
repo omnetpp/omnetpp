@@ -1,0 +1,48 @@
+%description:
+Assign expressions to parameters using wildcards
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Base
+{
+    parameters:
+        int a;
+        int b = default(-2);
+        int c = -3;
+}
+
+network Test
+{
+    parameters:
+        int par = 9;
+        **.a = 100;
+        h2.b = 200 + par;
+    submodules:
+        h1: Base;
+        h2: Base {
+             a = 50 + par;
+        }
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        par = 9
+    submodules:
+        module Test.h1: Base {
+            parameters:
+                a = 100
+                b = -2
+                c = -3
+        }
+        module Test.h2: Base {
+            parameters:
+                a = 59
+                b = 209
+                c = -3
+        }
+}
