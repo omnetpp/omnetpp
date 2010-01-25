@@ -285,7 +285,8 @@ Enter into a terminal:
 
 ==== Akaroa
 
-TODO
+NOTE: The Akaroa 2.6.7 distribution is not supported on Windows. You may try to port it using
+the porting guide from the akaroa distribution.
 
 ifdef::OMNEST[]
 ==== SystemC
