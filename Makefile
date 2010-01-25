@@ -232,7 +232,7 @@ copy-dlls:
 ifeq ($(findstring linux,$(PLATFORM)),linux)
 
 generate-desktop-file:
-	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=$(OMNETPP_BIN_DIR)/omnetpp\nIcon=$(OMNETPP_ROOT)/icon.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE\nCategories=Development;IDE;Debugger\n" >opensim-ide.desktop
+	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=$(OMNETPP_BIN_DIR)/omnetpp\nIcon=$(OMNETPP_ROOT)/ide/icon.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE\nCategories=Development;IDE;Debugger\n" >opensim-ide.desktop
 
 install-menu-item: generate-desktop-file
 	@xdg-desktop-menu uninstall opensim-ide.desktop
