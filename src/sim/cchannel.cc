@@ -46,6 +46,7 @@ cChannel::cChannel(const char *name) : cComponent(name)
 
 cChannel::~cChannel()
 {
+    releaseLocalListeners();
 }
 
 std::string cChannel::info() const

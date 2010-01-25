@@ -42,8 +42,8 @@ class cStatistic;
 class SIM_API cComponent : public cDefaultList //implies noncopyable
 {
     friend class cPar; // needs to call handleParameterChange()
-    friend class cChannel; // allow it to access FL_INITIALIZED
-    friend class cModule; // allow it to access FL_INITIALIZED and repairSignalFlags()
+    friend class cChannel; // allow it to access FL_INITIALIZED and releaseLocalListeners()
+    friend class cModule; // allow it to access FL_INITIALIZED, releaseLocalListeners() and repairSignalFlags()
     friend class cGate;   // because of repairSignalFlags()
 
   private:
@@ -108,6 +108,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void signalListenerRemoved(simsignal_t signalID);
     void repairSignalFlags();
     bool computeHasListeners(simsignal_t signalID) const;
+    void releaseLocalListeners();
 
   public:
     // internal: currently used by Cmdenv
@@ -141,8 +142,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     bool hasDisplayString();
 
     // internal: checks consistency of signal listener flags
-    void checkConsistency() const;
-    void checkConsistencyRec() const;
+    void checkLocalSignalConsistency() const;
+    void checkSignalConsistency() const;
 
     // internal: clears signal-related static data structures; to be invoked before each simulation run
     static void clearSignalState();

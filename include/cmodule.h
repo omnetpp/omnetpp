@@ -236,6 +236,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     bool isRecordEvents() const  {return flags&FL_RECORD_EVENTS;}
 
   protected:
+    // internal: called from destructor, recursively unsubscribes all listeners
+    void releaseListeners();
+
     // internal: has initialize() been called?
     bool buildInsideCalled() const {return flags&FL_BUILDINSIDE_CALLED;}
 

@@ -65,6 +65,10 @@ cModule::cModule()
 
 cModule::~cModule()
 {
+    // release listeners in the whole subtree first. This mostly eliminates
+    // the need for explicit unsubscribe() calls in module destructors.
+    releaseListeners();
+
     // notify envir while module object still exists (more or less)
     EVCB.moduleDeleted(this);
 
@@ -108,6 +112,15 @@ cModule::~cModule()
         getParentModule()->removeSubmodule(this);
 
     delete [] fullname;
+}
+
+void cModule::releaseListeners()
+{
+    releaseLocalListeners();
+    for (ChannelIterator chan(this); !chan.end(); chan++)
+        chan()->releaseLocalListeners();
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
+        submod()->releaseListeners();
 }
 
 void cModule::forEachChild(cVisitor *v)

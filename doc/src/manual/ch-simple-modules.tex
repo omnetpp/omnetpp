@@ -3967,7 +3967,10 @@ the same order in which listeners were subscribed.)
 \label{sec:simple-modules:signals:life-cycle}
 
 When a component (module or channel) is deleted, it automatically
-unsubscribes (but does not delete) the listeners it has.
+unsubscribes (but does not delete) the listeners it has. When a
+module gets deleted, it first unsubscribes all listeners from all
+modules and channels in its submodule tree before starting
+to recursively delete the modules and channels themselves.
 
 If a listener gets deleted, it must already be unsubscribed from all
 components at that point. If it is not unsubscribed, pointers to the dead
@@ -4075,6 +4078,13 @@ simulation.getSystemModule()->subscribe(PRE_MODEL_CHANGE, listener);
   \ffunc{deleteModule()} call.
 \end{note}
 
+\begin{note}
+  A listener will \textit{not} receive \textit{pre/post-module-deleted}
+  notifications if the whole submodule tree that contains the subscription
+  point is deleted. This is because compound module destructors begin
+  by unsubscribing all modules/channels in the subtree before starting
+  recursive deletion.
+\end{note}
 
 %%% Local Variables:
 %%% mode: latex

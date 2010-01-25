@@ -56,7 +56,6 @@ class Tester : public cSimpleModule, public NoisyListener
 {
   public:
     Tester() : cSimpleModule(16384) { }
-    ~Tester();
     virtual void activity();
 };
 
@@ -74,13 +73,6 @@ void Tester::activity()
     EV << "\nDELETING:\n";
     node->deleteModule();
     EV << "\nDONE\n";
-}
-
-Tester::~Tester()
-{
-    cModule *root = simulation.getSystemModule();
-    root->unsubscribe(PRE_MODEL_CHANGE, this);
-    root->unsubscribe(POST_MODEL_CHANGE, this);
 }
 
 }; //namespace
@@ -169,9 +161,8 @@ Calling finish() at end of Run #0...
 FINISH on module "Test", signal "POST_MODEL_CHANGE" (id=1)
 FINISH on module "Test", signal "PRE_MODEL_CHANGE" (id=0)
 SIGNAL from module "Test", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleDeleteNotification, info:
-SIGNAL from module "Test.tester", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleDeleteNotification, info:
-UNSUBSCRIBED from module "Test", signal "PRE_MODEL_CHANGE" (id=0)
 UNSUBSCRIBED from module "Test", signal "POST_MODEL_CHANGE" (id=1)
+UNSUBSCRIBED from module "Test", signal "PRE_MODEL_CHANGE" (id=0)
 NOISYLISTENER DESTRUCTOR
 
 End.

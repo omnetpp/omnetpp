@@ -63,12 +63,7 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
 
 cComponent::~cComponent()
 {
-    // fire listenerRemoved() on listeners
-    if (signalTable)
-        for (int i=0; i<signalTable->size(); i++)
-            for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
-                (*lp)->listenerRemoved(this, (*signalTable)[i].signalID);
-
+    ASSERT(signalTable==NULL); // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
     delete [] rngmap;
     delete [] paramv;
     delete dispstr;
@@ -470,7 +465,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     SignalData *data = findOrCreateSignalData(signalID);
     checkNotFiring(signalID, data->listeners);
     if (!data->addListener(listener))
-    	return; // was already there
+        return; // was already there
     setBit(signalHasLocalListeners, signalID, true);
 
     // update hasAncestorListener flag in the whole subtree.
@@ -509,7 +504,7 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
         return;
     checkNotFiring(signalID, data->listeners);
     if (!data->removeListener(listener))
-    	return; // was already removed
+        return; // was already removed
 
     if (!data->hasListener()) {
         // no local listeners left: remove entry and adjust flags
@@ -597,7 +592,7 @@ std::vector<cIListener*> cComponent::getLocalSignalListeners(simsignal_t signalI
     return result;
 }
 
-void cComponent::checkConsistency() const
+void cComponent::checkLocalSignalConsistency() const
 {
     for (simsignal_t signalID=0; signalID<64; signalID++) {
         SignalData *data = findSignalData(signalID);
@@ -619,14 +614,14 @@ void cComponent::checkConsistency() const
     }
 }
 
-void cComponent::checkConsistencyRec() const
+void cComponent::checkSignalConsistency() const
 {
-    checkConsistency();
+    checkLocalSignalConsistency();
     if (dynamic_cast<const cModule *>(this)) {
         for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
-            submod()->checkConsistencyRec();
+            submod()->checkSignalConsistency();
         for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
-            chan()->checkConsistencyRec();
+            chan()->checkSignalConsistency();
     }
 }
 
@@ -639,5 +634,42 @@ bool cComponent::computeHasListeners(simsignal_t signalID) const
     if (parent)
         return parent->computeHasListeners(signalID);
     return false;
+}
+
+void cComponent::releaseLocalListeners()
+{
+    // note: this may NOT be called from our destructor (only subclasses' destructor),
+    // because it would result in a 'pure virtual method called'
+    if (signalTable)
+    {
+        while (signalTable && !signalTable->empty())
+        {
+            SignalData& signalData = signalTable->front();
+            simsignal_t signalID = signalData.signalID;
+            int n = signalData.countListeners();
+            for (int i = 0; i < n; i++)
+                unsubscribe(signalID, signalData.listeners[0]);
+        }
+        delete signalTable;
+        signalTable = NULL;
+    }
+
+/*
+    // this is a faster version, but since listener lists and flags are only
+    // updated at the end, hasListeners(), isSubscribed() etc. may give
+    // strange results when invoked within from listenerRemoved().
+    if (signalTable)
+    {
+        // fire listenerRemoved() on listeners
+        for (int i = 0; i < (int)signalTable->size(); i++)
+            for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
+                (*lp)->listenerRemoved(this, (*signalTable)[i].signalID);
+        signalHasLocalListeners = 0;
+        delete signalTable;
+        signalTable = NULL;
+    }
+    cModule *parent = getParentModule();
+    signalHasAncestorListeners = parent ? (parent->signalHasLocalListeners | parent->signalHasAncestorListeners) : 0; // this only works if releaseLocalListeners() is called top-down
+*/
 }
 
