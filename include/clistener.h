@@ -110,6 +110,11 @@ class SIM_API cIListener
      * careful to prevent double deletion, e.g. by reference counting.
      */
     virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
+
+    /**
+     * Returns the number of listener lists containing this listener.
+     */
+    int getSubscribeCount() const  { return subscribecount; }
 };
 
 /**
@@ -129,9 +134,6 @@ class SIM_API cListener : public cIListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
-    virtual void finish(cComponent *component, simsignal_t signalID) {}
-    virtual void listenerAdded(cComponent *component, simsignal_t signalID) {}
-    virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
 };
 
 NAMESPACE_END
