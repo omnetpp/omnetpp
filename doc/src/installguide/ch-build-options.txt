@@ -93,6 +93,39 @@ compiler command line using the `-DSYMBOLNAME` syntax. You can add these options
   `cPacket` (derived from cMessage). If you want get back the old behavior (i.e. having a single
   `cMessage` class only), define the `WITHOUT_CPACKET` symbol. 
 
+=== Moving the installation
+
+When you build @OMNETPP@ on your machine, several directory names are compiled
+into the binaries. This makes it easier to set up @OMNETPP@ in the first place,
+but if you rename the installation directory or move it to another location in
+the file system, the built-in paths become invalid and the correct paths have
+to be supplied via environment variables.
+
+The following environment variables are affected (in addition to `PATH`, which
+also needs to be adjusted):
+
+`OMNETPP_IMAGE_PATH`:: This variable contains the list of directories where
+Tkenv looks for icons. Set it to the `images/` subdirectory
+of your @OMNETPP@ installation.
+
+`OMNETPP_TKENV_DIR`:: This variable points to the directory that contains the
+script parts of Tkenv, which is by default the `src/tkenv/` subdirectory
+of your @OMNETPP@ installation. Normally you don't need to set this variable,
+because the Tkenv shared library contains all script files compiled in as
+string literals. However, if you compile @OMNETPP@ with the `EMBED_TCL_CODE=no`
+setting and then you move the installation, then you need to set
+`OMNETPP_TKENV_DIR`, otherwise Tkenv won't start.
+
+`LD_LIBRARY_PATH`:: This variable contains the list of additional directories
+where shared libraries are looked for. Initially, `LD_LIBRARY_PATH` is not needed
+because shared libraries are located via the 'rpath' mechanism. When you
+move the installation, you need to add the `lib/` subdirectory
+of your @OMNETPP@ installation to `LD_LIBRARY_PATH`.
+
+NOTE: On Mac OS X `DYLD_LIBRARY_PATH` variable is used instead of `LD_LIBRARY_PATH`.
+On Windows the `PATH` variable must contain the directory where shared libraries (DLL files)
+are present.   
+
 === Using different compilers
 
 By default the configure script detects the following compilers automatically in the path:

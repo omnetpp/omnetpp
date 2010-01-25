@@ -102,9 +102,7 @@ to the path.
 
 First, open the 'Environment Variables' dialog.
 
-* On Windows XP: TODO
-
-* On Windows Vista: TODO
+* On Windows XP and Vista: Right click on My Computer. Choose 'Properties | Advanced | Environment variables'.
 
 * On Windows 7: Click the Start button, then start typing `environment variables`
 into the search box. Choose 'Edit environment variables for your account' when it
@@ -185,9 +183,8 @@ that you use Linux, OS X, or another unix-like platform.
 
 ==== Akaroa
 
-TODO : how to do it
-
-Download from: http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/
+NOTE: The Akaroa 2.6.7 distribution is not supported on Windows. You may try to port it using
+the porting guide from the akaroa distribution. 
 
 ifdef::OMNEST[]
 ==== SystemC
