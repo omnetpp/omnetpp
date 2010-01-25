@@ -37,12 +37,20 @@ typedef int simsignal_t;
 
 /**
  * Interface for listeners in a simulation model.
+ *
+ * This class performs subscription counting, in order to make sure that
+ * when the destructor runs, the object is no longer subscribed anywhere.
+ *
  * @see cComponent::subscribe(), cComponent::unsubscribe()
  */
 class SIM_API cIListener
 {
+    friend class cComponent; // for subscribecount
+  private:
+    int subscribecount;
   public:
-    virtual ~cIListener() {}
+    cIListener();
+    virtual ~cIListener();
 
     /**
      * Receive an emitted long value. The "source" argument is the channel
@@ -109,30 +117,21 @@ class SIM_API cIListener
  * for other listeners. The user needs to redefine one or more of the
  * overloaded receiveSignal() methods; the rest will throw a "Data type
  * not supported" error.
- *
- * This class performs subscription counting, in order to make sure that
- * when the destructor runs, the object is no longer subscribed anywhere.
- * When redefining listenerAdded() or listenerRemoved(), be sure to call
- * the same method in the base class.
  */
 class SIM_API cListener : public cIListener
 {
   protected:
-    int subscribecount;
-  protected:
     /** Utility function, throws a "data type not supported" error. */
     virtual void unsupportedType(simsignal_t signalID, const char *dataType);
   public:
-    cListener();
-    virtual ~cListener();
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
     virtual void finish(cComponent *component, simsignal_t signalID) {}
-    virtual void listenerAdded(cComponent *component, simsignal_t signalID);
-    virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
+    virtual void listenerAdded(cComponent *component, simsignal_t signalID) {}
+    virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
 };
 
 NAMESPACE_END

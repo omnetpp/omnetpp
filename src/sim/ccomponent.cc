@@ -476,6 +476,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
         setBit(signalHasAncestorListeners, signalID, false); // restore it after signalListenerAdded() set it to true
     }
 
+    listener->subscribecount++;
     listener->listenerAdded(this, signalID);
 }
 
@@ -516,6 +517,8 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
         if (!getBit(signalHasAncestorListeners, signalID))
             signalListenerRemoved(signalID);
     }
+
+    listener->subscribecount--;
     listener->listenerRemoved(this, signalID);
 }
 
@@ -661,9 +664,12 @@ void cComponent::releaseLocalListeners()
     if (signalTable)
     {
         // fire listenerRemoved() on listeners
-        for (int i = 0; i < (int)signalTable->size(); i++)
-            for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
+        for (int i = 0; i < (int)signalTable->size(); i++) {
+            for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp) {
+                (*lp)->subscribecount--;
                 (*lp)->listenerRemoved(this, (*signalTable)[i].signalID);
+            }
+        }
         signalHasLocalListeners = 0;
         delete signalTable;
         signalTable = NULL;

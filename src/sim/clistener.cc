@@ -51,18 +51,25 @@ static void findListenerOccurences(cComponent *component, cIListener *listener, 
 
 //---
 
-cListener::cListener()
+cIListener::cIListener()
 {
     subscribecount = 0;
 }
 
-cListener::~cListener()
+cIListener::~cIListener()
 {
-    ASSERT(subscribecount >= 0);
     if (subscribecount)
     {
         // note: throwing an exception would is risky here: it would typically
         // cause other exceptions, and eventually crash
+        if (subscribecount < 0)
+        {
+            ev.printfmsg("cListener destructor: internal error: negative subscription "
+                         "count (%d) in listener at address %p", subscribecount, this);
+            return;
+        }
+
+        // subscribecount > 0:
         ev.printfmsg("cListener destructor: listener at address %p is still added to "
                 "%d listener list(s). This will likely result in a crash: "
                 "Listeners must be fully unsubscribed before deletion. "
@@ -81,6 +88,7 @@ cListener::~cListener()
     }
 }
 
+//---
 
 void cListener::unsupportedType(simsignal_t signalID, const char *dataType)
 {
@@ -114,15 +122,4 @@ void cListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject 
     unsupportedType(signalID, "cObject *");
 }
 
-void cListener::listenerAdded(cComponent *component, simsignal_t signalID)
-{
-    ASSERT(subscribecount >= 0);
-    subscribecount++;
-}
-
-void cListener::listenerRemoved(cComponent *component, simsignal_t signalID)
-{
-    ASSERT(subscribecount > 0);
-    subscribecount--;
-}
 

@@ -3911,7 +3911,8 @@ for (unsigned int i = 0; i < signals.size(); i++) {
 
 \subsubsection{Listeners}
 
-Listeners are objects that subclass from the \cclass{cIListener} class:
+Listeners are objects that subclass from the \cclass{cIListener} class, which
+declares the following methods:
 
 \begin{cpp}
 class cIListener
@@ -3977,7 +3978,8 @@ components at that point. If it is not unsubscribed, pointers to the dead
 listener object will be left in the components' listener lists, and the
 components will crash inside an \ffunc{emit()} call, or latest when they
 try to invoke \ffunc{listenerRemoved()} on the dead listener from their
-destructors.
+destructors. The \cclass{cIListener} class contains a subscription count,
+and prints a warning message when it is not zero in the destructor.
 
 \begin{note}
   If your module has added listeners to other modules (e.g. the toplevel
@@ -3987,20 +3989,13 @@ destructors.
   of your module in the module tree.
 \end{note}
 
-The \cclass{cListener} class maintains a reference count (increments it in
-every \ffunc{listenerAdded()} call and decrements it in
-\ffunc{listenerRemoved()}). When a \cclass{cListener} object is deleted,
-its destructor checks that the reference count is zero, and if not, it
-informs the user with an error message. This is one more reason to
-use \cclass{cListener} as a base class for your listeners.
-
 
 \subsection{Listening for model changes}
 \label{sec:ch-simple-modules:model-change}
 
 In simulation models it is often useful to hold references to other
 modules, a connecting channel or other objects, or to cache information
-derived from the model topology. However, such pointer s or data may
+derived from the model topology. However, such pointers or data may
 become invalid when the model changes at runtime, and need to be updated
 or recalculated. The problem is how to get notified that something has
 changed in the model.
