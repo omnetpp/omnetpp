@@ -408,6 +408,36 @@ void cComponent::removeSignalData(simsignal_t signalID)
     }
 }
 
+void cComponent::emit(simsignal_t signalID, long l)
+{
+    if (mayHaveListeners(signalID))
+        fire(this, signalID, l);
+}
+
+void cComponent::emit(simsignal_t signalID, double d)
+{
+    if (mayHaveListeners(signalID))
+        fire(this, signalID, d);
+}
+
+void cComponent::emit(simsignal_t signalID, simtime_t t)
+{
+    if (mayHaveListeners(signalID))
+        fire(this, signalID, t);
+}
+
+void cComponent::emit(simsignal_t signalID, const char *s)
+{
+    if (mayHaveListeners(signalID))
+        fire(this, signalID, s);
+}
+
+void cComponent::emit(simsignal_t signalID, cObject *obj)
+{
+    if (mayHaveListeners(signalID))
+        fire(this, signalID, obj);
+}
+
 template<typename T>
 void cComponent::fire(cComponent *source, simsignal_t signalID, T x)
 {

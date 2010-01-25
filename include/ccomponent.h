@@ -387,50 +387,35 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * component or in ancestor components, their appropriate receiveSignal() methods
      * get called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, long l) {
-        if (mayHaveListeners(signalID))
-            fire(this, signalID, l);
-    }
+    void emit(simsignal_t signalID, long l);
 
     /**
      * Emits the double value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * get called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, double d) {
-        if (mayHaveListeners(signalID))
-            fire(this, signalID, d);
-    }
+    void emit(simsignal_t signalID, double d);
 
     /**
      * Emits the simtime_t value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * get called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, simtime_t t) {
-        if (mayHaveListeners(signalID))
-            fire(this, signalID, t);
-    }
+    void emit(simsignal_t signalID, simtime_t t);
 
     /**
      * Emits the given string as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * get called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, const char *s) {
-        if (mayHaveListeners(signalID))
-            fire(this, signalID, s);
-    }
+    void emit(simsignal_t signalID, const char *s);
 
     /**
      * Emits the given object as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * get called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, cObject *obj) {
-        if (mayHaveListeners(signalID))
-            fire(this, signalID, obj);
-    }
+    void emit(simsignal_t signalID, cObject *obj);
 
     /**
      * If producing a value for a signal has a significant runtime cost, this
