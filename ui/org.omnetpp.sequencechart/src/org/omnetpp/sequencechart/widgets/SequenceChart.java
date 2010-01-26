@@ -2926,7 +2926,7 @@ public class SequenceChart
                 beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
                     getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
-        int fontHeight = graphics.getFontMetrics().getHeight();
+        int fontHeight = graphics != null ? graphics.getFontMetrics().getHeight() : font.getFontData()[0].getHeight();
 
         // calculate horizontal coordinates based on timeline coordinate limit
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / getPixelPerTimelineUnit();
