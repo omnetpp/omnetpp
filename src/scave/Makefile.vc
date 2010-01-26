@@ -210,6 +210,7 @@ $O/enumtype.obj: enumtype.cc \
   ../common/exception.h \
   ../common/bigdecimal.h \
   scaveutils.h \
+  ../common/commonutil.h \
   scavedefs.h \
   enumtype.h
 $O/export.obj: export.cc \
@@ -514,7 +515,8 @@ $O/scaveutils.obj: scaveutils.cc \
   ../common/bigdecimal.h \
   scavedefs.h \
   ../common/exception.h \
-  scaveutils.h
+  scaveutils.h \
+  ../common/commonutil.h
 $O/slidingwinavg.obj: slidingwinavg.cc \
   ../common/commondefs.h \
   dataflowmanager.h \

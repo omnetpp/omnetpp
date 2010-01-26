@@ -110,50 +110,50 @@ Port *MergerNodeType::getPort(Node *node, const char *portname) const
 // ---- Aggregator ------
 
 AggregatorNode::AggregatorNode(const std::string &function)
-	: out(this)
+    : out(this)
 {
-	if (function == "sum") fn = Sum;
-	else if (function == "average") fn = Average;
-	else if (function == "count") fn = Count;
-	else if (function == "minimum") fn = Minimum;
-	else if (function == "maximum") fn = Maximum;
-	else fn = Average;
+    if (function == "sum") fn = Sum;
+    else if (function == "average") fn = Average;
+    else if (function == "count") fn = Count;
+    else if (function == "minimum") fn = Minimum;
+    else if (function == "maximum") fn = Maximum;
+    else fn = Average;
 }
 
 void AggregatorNode::init()
 {
-	switch (fn)
-	{
-		case Sum: acc = 0.0; break;
-		case Average: acc = 0.0; count = 0; break;
-		case Count:   count = 0; break;
-		case Minimum: acc = dblPositiveInfinity; break;
-		case Maximum: acc = dblNegativeInfinity; break;
-	}
+    switch (fn)
+    {
+        case Sum: acc = 0.0; break;
+        case Average: acc = 0.0; count = 0; break;
+        case Count:   count = 0; break;
+        case Minimum: acc = POSITIVE_INFINITY; break;
+        case Maximum: acc = NEGATIVE_INFINITY; break;
+    }
 }
 
 void AggregatorNode::collect(double value)
 {
-	switch (fn)
-	{
-		case Sum: acc += value; break;
-		case Average: acc += value; count++; break;
-		case Count:   count++; break;
-		case Minimum: acc = std::min(value, acc); break;
-		case Maximum: acc = std::max(value, acc); break;
-	}
+    switch (fn)
+    {
+        case Sum: acc += value; break;
+        case Average: acc += value; count++; break;
+        case Count:   count++; break;
+        case Minimum: acc = std::min(value, acc); break;
+        case Maximum: acc = std::max(value, acc); break;
+    }
 }
 
 double AggregatorNode::result()
 {
-	switch (fn)
-	{
-		case Sum: return acc;
-		case Average: return acc/count;
-		case Count:   return count;
-		case Minimum:
-		case Maximum: return acc;
-	}
+    switch (fn)
+    {
+        case Sum: return acc;
+        case Average: return acc/count;
+        case Count:   return count;
+        case Minimum:
+        case Maximum: return acc;
+    }
 }
 
 Port *AggregatorNode::addPort()
@@ -185,19 +185,19 @@ void AggregatorNode::process()
     // if we couldn't get any data, all input ports must be at EOF (see isReady())
     if (minDatum)
     {
-    	Datum d;
-    	d.x = minDatum->x;
+        Datum d;
+        d.x = minDatum->x;
 
-    	init();
+        init();
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
         {
             Channel *chan = (*it)();
             const Datum *dp = chan->peek();
             if (dp && dp->x == d.x)
             {
-            	Datum d2;
-            	chan->read(&d2,1);
-            	collect(d2.y);
+                Datum d2;
+                chan->read(&d2,1);
+                collect(d2.y);
             }
         }
 
@@ -220,28 +220,28 @@ bool AggregatorNode::isFinished() const
 const char *AggregatorNodeType::getDescription() const
 {
     return "Aggregates several vectors into a single one, aggregating the\n"
-    		"y values at the same time coordinate with the specified function.";
+            "y values at the same time coordinate with the specified function.";
 }
 
 void AggregatorNodeType::getAttributes(StringMap& attrs) const
 {
-	attrs["function"] = "the aggregator function; one of sum,average,count,maximum,minimum";
+    attrs["function"] = "the aggregator function; one of sum,average,count,maximum,minimum";
 }
 
 void AggregatorNodeType::getAttrDefaults(StringMap& attrs) const
 {
-	attrs["function"] = "average";
+    attrs["function"] = "average";
 }
 
 void AggregatorNodeType::validateAttrValues(const StringMap& attrs) const
 {
-	StringMap::const_iterator it = attrs.find("function");
-	if (it != attrs.end())
-	{
-		const std::string& fn = it->second;
-		if (fn != "average" && fn != "count" && fn != "minimum" && fn != "maximum")
-			throw opp_runtime_error("Unknown aggregator function: %s.", fn.c_str());
-	}
+    StringMap::const_iterator it = attrs.find("function");
+    if (it != attrs.end())
+    {
+        const std::string& fn = it->second;
+        if (fn != "average" && fn != "count" && fn != "minimum" && fn != "maximum")
+            throw opp_runtime_error("Unknown aggregator function: %s.", fn.c_str());
+    }
 }
 
 Node *AggregatorNodeType::create(DataflowManager *mgr, StringMap& attrs) const
@@ -259,7 +259,7 @@ Node *AggregatorNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 
 Port *AggregatorNodeType::getPort(Node *node, const char *portname) const
 {
-	AggregatorNode *node1 = dynamic_cast<AggregatorNode*>(node);
+    AggregatorNode *node1 = dynamic_cast<AggregatorNode*>(node);
     if (!strcmp(portname,"next-in"))
         return node1->addPort();
     else if (!strcmp(portname,"out"))

@@ -795,7 +795,7 @@ int ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *
     vector.moduleNameRef = moduleNames.insert(moduleName);
     vector.nameRef = names.insert(vectorName);
     vector.columns = columns;
-    vector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
+    vector.stat = Statistics(-1, NaN, NaN, NaN, NaN);
     VectorResults &vectors = fileRunRef->fileRef->vectorResults;
     vectors.push_back(vector);
     return vectors.size() - 1;
@@ -842,7 +842,7 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
     newVector.nameRef = names.insert(name);
     newVector.fileRunRef = fileRunRef;
     newVector.attributes = attributes;
-    newVector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
+    newVector.stat = Statistics(-1, NaN, NaN, NaN, NaN);
     fileRef->vectorResults.push_back(newVector);
     ID id = _mkID(true, false, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
     std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
@@ -852,7 +852,7 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
 
 ID ResultFileManager::getComputedID(ComputationID computationID, ID input) const
 {
-	READER_MUTEX
+    READER_MUTEX
     std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
     ComputedIDCache::const_iterator it = computedIDCache.find(key);
     if (it != computedIDCache.end())

@@ -62,7 +62,7 @@ ExpressionFilterNode::ExpressionFilterNode(const char *text)
     expr = new Expression();
     Resolver resolver(this);
     expr->parse(text, &resolver);
-    prevDatum.x = prevDatum.y = dblNaN;
+    prevDatum.x = prevDatum.y = NaN;
 }
 
 ExpressionFilterNode::~ExpressionFilterNode()
