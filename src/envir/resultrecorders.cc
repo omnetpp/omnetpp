@@ -1,5 +1,5 @@
 //==========================================================================
-//  RESULTLISTENERS.CC - part of
+//  RESULTRECORDERS.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -17,7 +17,7 @@
 
 #include "cproperties.h"
 #include "cproperty.h"
-#include "resultlisteners.h"
+#include "resultrecorders.h"
 
 void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
 {

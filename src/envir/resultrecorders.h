@@ -1,5 +1,5 @@
 //==========================================================================
-//  RESULTLISTENERS.H - part of
+//  RESULTRECORDERS.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENVIR_RESULTLISTENERS_H
-#define __ENVIR_RESULTLISTENERS_H
+#ifndef __ENVIR_RESULTRECORDERS_H
+#define __ENVIR_RESULTRECORDERS_H
 
 #include "envirdefs.h"
 #include "clistener.h"

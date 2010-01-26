@@ -44,7 +44,7 @@
 #include "stringutil.h"
 #include "enumstr.h"
 #include "simtime.h"
-#include "resultlisteners.h"
+#include "resultrecorders.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
