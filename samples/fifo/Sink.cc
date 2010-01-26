@@ -17,8 +17,9 @@ namespace fifo {
 class Sink : public cSimpleModule
 {
   private:
-    cStdDev qstats;
-    cOutVector qtime;
+    simsignal_t qtimeSignal;
+//    cStdDev qstats;
+//    cOutVector qtime;
 
   protected:
     virtual void initialize();
@@ -30,25 +31,27 @@ Define_Module( Sink );
 
 void Sink::initialize()
 {
-    qstats.setName("queueing time stats");
-    qtime.setName("queueing time vector");
+    qtimeSignal = registerSignal("qtime");
+//    qstats.setName("queueing time stats");
+//    qtime.setName("queueing time vector");
 }
 
 void Sink::handleMessage(cMessage *msg)
 {
     simtime_t d = simTime()-msg->getCreationTime();
     EV << "Received " << msg->getName() << ", queueing time: " << d << "sec" << endl;
-    qstats.collect( d );
-    qtime.record( d );
+//    qstats.collect( d );
+//    qtime.record( d );
+    emit(qtimeSignal, d);
     delete msg;
 }
 
 void Sink::finish()
 {
-    EV << "Total jobs processed: " << qstats.getCount() << endl;
-    EV << "Avg queueing time:    " << qstats.getMean() << endl;
-    EV << "Max queueing time:    " << qstats.getMax() << endl;
-    EV << "Standard deviation:   " << qstats.getStddev() << endl;
+//    EV << "Total jobs processed: " << qstats.getCount() << endl;
+//    EV << "Avg queueing time:    " << qstats.getMean() << endl;
+//    EV << "Max queueing time:    " << qstats.getMax() << endl;
+//    EV << "Standard deviation:   " << qstats.getStddev() << endl;
 }
 
 }; //namespace

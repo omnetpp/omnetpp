@@ -15,6 +15,7 @@ simple Sink
 {
     parameters:
         @display("i=block/sink");
+        @signal[qtime](unit="s");
     gates:
         input in;
 }
