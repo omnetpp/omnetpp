@@ -21,6 +21,7 @@
 #include "envirdefs.h"
 #include "clistener.h"
 #include "cstatistic.h"
+#include "ccomponent.h"
 
 //FIXME into sim/!
 class ENVIR_API /*SIM_API*/ TimeValue : public cObject, noncopyable
@@ -40,26 +41,6 @@ class ENVIR_API ResultRecorder : public cIListener
         virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
 };
 
-void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
-{
-    ASSERT(getSubscribeCount() == 1);  // may only be subscribed once (otherwise results get mixed)
-}
-
-void ResultRecorder::listenerRemoved(cComponent *component, simsignal_t signalID)
-{
-    if (getSubscribeCount() == 0)
-        delete this;
-}
-
-void ResultRecorder::unsupportedType(cComponent *component, simsignal_t signalID, const char *dataType)
-{
-    const char *signalName = cComponent::getSignalName(signalID);
-    throw cRuntimeError("%s: Unsupported signal data type %s for signal %s (id=%d)",
-                        opp_typename(typeid(*this)), dataType, signalName, (int)signalID);
-}
-
-//---
-
 class ENVIR_API NumericResultRecorder : public ResultRecorder
 {
     protected:
@@ -72,46 +53,6 @@ class ENVIR_API NumericResultRecorder : public ResultRecorder
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
 };
 
-//FIXME warmup period! delegate to common record(d) and record(t,d) methods!!!
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, long l)
-{
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        collect(t, l);
-}
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, double d)
-{
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        collect(t, d);
-}
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t d)
-{
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        collect(t, SIMTIME_DBL(d));
-}
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
-{
-    const char *signalName = cComponent::getSignalName(signalID);
-    throw cRuntimeError("%s: unsupported signal data type 'const char *' for signal %s (id=%d)",
-                        opp_typename(typeid(*this)), signalName, (int)signalID);
-}
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
-{
-    TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (!d)
-        throw cRuntimeError(source, "Wrong object!!!!! must be TimeValue!!!!!FIXME");  //XXX print signalName!
-    if (d->time >= getEndWarmupPeriod())
-        collect(d->time, d->value);
-}
-
-
 /**
  * Listener for recording a signal to an output vector
  */
@@ -119,39 +60,13 @@ class ENVIR_API VectorRecorder : public NumericResultRecorder
 {
     protected:
         void *handle;        // identifies output vector for the output vector manager
-        simtime_t lastTime;  // last timestamp written, needed to ensure increasing timestamp order (TODO move into manager)
+        simtime_t lastTime;  // to ensure increasing timestamp order (TODO move into manager)
     protected:
         void collect(simtime_t t, double value);
     public:
         VectorRecorder(const char *componentFullPath, const char *signalName); //TODO take signal_t instead? accept vector attributes somehow: unit, data type, interpolation mode, enum etc
         void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
 };
-
-VectorRecorder::VectorRecorder(const char *componentFullPath, const char *signalName)
-{
-    handle = ev.registerOutputVector(componentFullPath, signalName);
-    ASSERT(handle!=NULL);
-}
-
-void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
-{
-    // copied from base class to add monotonicity check
-    TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (!d)
-        throw cRuntimeError(source, "Wrong object!!!!! must be TimeValue!!!!!FIXME");  //XXX print signalName!
-    if (d->time < lastTime)
-        throw cRuntimeError("Cannot record data with an earlier timestamp (t=%s) than the previously recorded value", SIMTIME_STR(d->time));  //XXX print signalName!
-    if (d->time >= getEndWarmupPeriod())
-        collect(d->time, d->value);
-}
-
-void VectorRecorder::collect(simtime_t t, double value)
-{
-    lastTime = t;
-    ev.recordInOutputVector(handle, t, value);
-}
-
-//---
 
 /**
  * Listener for recording the count of signal values. Signal values do not need
@@ -162,21 +77,12 @@ class ENVIR_API CountRecorder : public NumericResultRecorder
     protected:
         long count;
     protected:
-        void collect(simtime_t t, double value) {
-            count++;
-        }
+        void collect(simtime_t t, double value) {count++;}
     public:
         CountRecorder() {count = 0;}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s)  {
-            NumericResultRecorder::receiveSignal(source, signalID, (long)0);
-        }
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)  {
-            NumericResultRecorder::receiveSignal(source, signalID, (long)0); //FIXME cast to TimeValue and check wamup time here !!!
-        }
-        virtual void finish(cComponent *component, simsignal_t signalID) {
-            const char *signalName = cComponent::getSignalName(signalID); //TODO modify name? like "count(signalName)" or "signalName.count"?
-            ev.recordScalar(component, signalName, count, NULL); //FIXME attributes too!!
-        }
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s); // count strings too
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj); // and all objects
+        virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
 /**
@@ -190,10 +96,7 @@ class ENVIR_API SumRecorder : public NumericResultRecorder
         void collect(simtime_t t, double value) {sum += value;}
     public:
         SumRecorder() {sum = 0;}
-        virtual void finish(cComponent *component, simsignal_t signalID) {
-            const char *signalName = cComponent::getSignalName(signalID);
-            ev.recordScalar(component, signalName, sum, NULL); //FIXME attributes; "signal.sum"?
-        }
+        virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
 /**
@@ -208,10 +111,7 @@ class ENVIR_API MeanRecorder : public NumericResultRecorder
         void collect(simtime_t t, double value) {count++; sum += value;}
     public:
         MeanRecorder() {count = 0; sum = 0;}
-        virtual void finish(cComponent *component, simsignal_t signalID) {
-            const char *signalName = cComponent::getSignalName(signalID);
-            ev.recordScalar(component, signalName, sum/count, NULL); //FIXME attributes; "signal.mean"?
-        }
+        virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
 /**
@@ -225,10 +125,7 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
         void collect(simtime_t t, double value) {if (value < min) min = value;}
     public:
         MinRecorder() {min = 1e300; /*FIXME positive infinity!*/}
-        virtual void finish(cComponent *component, simsignal_t signalID) {
-            const char *signalName = cComponent::getSignalName(signalID);
-            ev.recordScalar(component, signalName, min, NULL); //FIXME attributes; "signal.mean"?
-        }
+        virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
 //FIXME do not record anything (or record nan?) if there was no value
@@ -244,10 +141,7 @@ class ENVIR_API MaxRecorder : public NumericResultRecorder
         void collect(simtime_t t, double value) {if (value > max) max = value;}
     public:
         MaxRecorder() {max = -1e300; /*FIXME negative infinity!*/}
-        virtual void finish(cComponent *component, simsignal_t signalID) {
-            const char *signalName = cComponent::getSignalName(signalID);
-            ev.recordScalar(component, signalName, max, NULL); //FIXME attributes; "signal.mean"?
-        }
+        virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
 /**
@@ -261,43 +155,26 @@ class ENVIR_API TimeAverageRecorder : public NumericResultRecorder
         double lastValue;
         double weightedSum;
     protected:
-        void collect(simtime_t t, double value) {
-            if (startTime==-1)
-                startTime = t;
-            else
-                weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
-            lastTime = t;
-            lastValue = value;
-        }
+        void collect(simtime_t t, double value);
     public:
         TimeAverageRecorder() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
-        virtual void finish(cComponent *component, simsignal_t signalID) {
-            simtime_t t = simulation.getSimTime();
-            collect(t, 0.0); // to get the last interval counted in; value 0.0 is just a dummy
-            const char *signalName = cComponent::getSignalName(signalID);
-            double interval = SIMTIME_DBL(t - startTime);
-            ev.recordScalar(component, signalName, weightedSum / interval, NULL); //FIXME attributes; "signal.mean"?
-        }
+        virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
 /**
  * Listener for recording signal values via a cStatistic
  */
-class ENVIR_API StatisticsRecorder : public NumericResultRecorder
+//FIXME ownership?
+class ENVIR_API StatisticsRecorder : public NumericResultRecorder, private cObject /*so it can own the statistic object*/
 {
     protected:
         cStatistic *statistic;
     protected:
-        void collect(simtime_t t, double value) {
-            statistic->collect(value);
-        }
+        void collect(simtime_t t, double value) {statistic->collect(value);}
     public:
-        StatisticsRecorder(cStatistic *stat) {statistic = stat;}  //FIXME ownership?
-        ~StatisticsRecorder() {delete statistic;}
-        virtual void finish(cComponent *component, simsignal_t signalID) {
-            const char *signalName = cComponent::getSignalName(signalID);
-            ev.recordStatistic(component, signalName, statistic, NULL); //FIXME attributes; "signal.mean"?
-        }
+        StatisticsRecorder(cStatistic *stat) {statistic = stat; take(statistic);}
+        ~StatisticsRecorder() {drop(statistic); delete statistic;}
+        virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
 #endif

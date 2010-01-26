@@ -30,7 +30,7 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/main.obj $O/envirbase.obj $O/f
       $O/indexedfileoutvectormgr.obj $O/akoutvectormgr.obj \
       $O/speedometer.obj $O/matchableobject.obj $O/matchablefield.obj \
       $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj \
-      $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj
+      $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj $O/resultlisteners.obj
 
 
 !if "$(LIB_SUFFIX)"==".dll"
@@ -273,6 +273,7 @@ $O/envirbase.obj: envirbase.cc \
   resultlisteners.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
+  ../../include/cstatistic.h \
   ../../include/envirext.h \
   ../../include/ccomponenttype.h \
   ../../include/cexception.h \
@@ -709,6 +710,27 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/opp_run.obj: opp_run.cc
+$O/resultlisteners.obj: resultlisteners.cc \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  envirdefs.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  resultlisteners.h \
+  ../../include/opp_string.h \
+  ../../include/cstatistic.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/clistener.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/regmacros.h
 $O/runattributes.obj: runattributes.cc \
   eventlogfilemgr.h \
   envirbase.h \
