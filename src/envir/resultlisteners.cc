@@ -140,12 +140,21 @@ void VectorRecorder::collect(simtime_t t, double value)
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
-    NumericResultRecorder::receiveSignal(source, signalID, (long)0);
+    simtime_t t = simulation.getSimTime();
+    if (t >= getEndWarmupPeriod())
+        collect(t, (long)0); // dummy value
 }
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    NumericResultRecorder::receiveSignal(source, signalID, (long)0); //FIXME cast to TimeValue and check warmup time here !!!
+    // if it is a TimeValue, we should use its time for checking warm-up period
+    TimeValue *d = dynamic_cast<TimeValue *>(obj);
+    if (!d)
+        collect(simulation.getSimTime(), (long)0);  // dummy value
+    else {
+        if (d->time >= getEndWarmupPeriod())
+            collect(d->time, (long)0); // dummy value
+    }
 }
 
 void CountRecorder::finish(cComponent *component, simsignal_t signalID)
@@ -157,8 +166,6 @@ void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 }
 
 //---
-
-//FIXME do not record anything (or record nan?) if there was no value
 
 void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 {
@@ -175,7 +182,7 @@ void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "mean");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes);
+    ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes); //FIXME nan if no value!
 }
 
 //---
@@ -185,7 +192,7 @@ void MinRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "min");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), min, &attributes);
+    ev.recordScalar(component, scalarName.c_str(), min, &attributes);  //FIXME nan if +inf!
 }
 
 //---
@@ -195,7 +202,7 @@ void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "max");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), max, &attributes);
+    ev.recordScalar(component, scalarName.c_str(), max, &attributes); //FIXME nan if -inf!
 }
 
 //---
@@ -220,7 +227,7 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "timeavg");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), weightedSum / interval, &attributes);
+    ev.recordScalar(component, scalarName.c_str(), weightedSum / interval, &attributes); //FIXME nan if no value!
 }
 
 //---

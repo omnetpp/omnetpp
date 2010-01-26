@@ -23,6 +23,9 @@
 #include "cstatistic.h"
 #include "ccomponent.h"
 
+/**
+ * TODO
+ */
 class ENVIR_API ResultRecorder : public cIListener
 {
     protected:
@@ -34,6 +37,9 @@ class ENVIR_API ResultRecorder : public cIListener
         virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
 };
 
+/**
+ * TODO
+ */
 class ENVIR_API NumericResultRecorder : public ResultRecorder
 {
     protected:
