@@ -38,7 +38,7 @@ std::string ResultRecorder::makeName(simsignal_t signalID, const char *opname)
     const char *signalName = cComponent::getSignalName(signalID);
     if (!signalName)
         signalName = "<unnamed>";
-    return std::string(signalName) + "." + opname;
+    return std::string(signalName) + ":" + opname;
 }
 
 void ResultRecorder::extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result)
