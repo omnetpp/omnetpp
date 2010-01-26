@@ -35,6 +35,7 @@
 #include "ccomponenttype.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
+#include "chistogram.h"
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
 #include "cconfigoption.h"
@@ -115,6 +116,7 @@ Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
+Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING_MODE, "scalar-recording-mode", CFG_STRING, "histogram", "FIXME TODO: Example values: count, sum, mean, min, max, timeavg, stddev, histogram");
 
 #define STRINGIZE0(x) #x
 #define STRINGIZE(x) STRINGIZE0(x)
@@ -773,7 +775,27 @@ void EnvirBase::configure(cComponent *component)
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_SCALAR_RECORDING))
         {
             // add listener to record as output scalar
-            cIListener *listener = new MeanRecorder();
+            //XXX this should be extensible instead of hardcoded "if"-ladder
+            std::string mode = ev.getConfig()->getAsString(signalFullPath.c_str(), CFGID_SCALAR_RECORDING_MODE, "");
+            cIListener *listener;
+            if (mode == "count")
+                listener = new MeanRecorder();
+            else if (mode == "sum")
+                listener = new MeanRecorder();
+            else if (mode == "mean")
+                listener = new MeanRecorder();
+            else if (mode == "min")
+                listener = new MinRecorder();
+            else if (mode == "max")
+                listener = new MaxRecorder();
+            else if (mode == "timeavg")
+                listener = new TimeAverageRecorder();
+            else if (mode == "stddev")
+                listener = new StatisticsRecorder(new cStdDev());
+            else if (mode == "histogram")
+                listener = new StatisticsRecorder(new cDoubleHistogram()); //XXX or cLongHistogram, we should probably decide from @signal property
+            else
+                throw cRuntimeError("Unknown scalar recording mode specified in the configuration: \"%s\"", mode); //XXX print file/line or key too
             component->subscribe(signalName, listener);
         }
 
