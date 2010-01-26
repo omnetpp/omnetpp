@@ -777,7 +777,7 @@ void EnvirBase::configure(cComponent *component)
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
         {
             // add listener to record as output vector
-            cIListener *listener = new VectorRecordingListener(componentFullPath.c_str(), signalName);
+            cIListener *listener = new VectorRecorder(componentFullPath.c_str(), signalName);
             component->subscribe(signalName, listener);  //FIXME TODO vector attributes from signal properties!
         }
     }
