@@ -1,0 +1,52 @@
+%description:
+Test simple parameter assignment from parent parameter to submodule parameter
+when the parent is a derived module.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    parameters:
+        int p;
+}
+
+network TestBase
+{
+    parameters:
+        int p;
+    submodules:
+        n: Node {
+            parameters:
+                p = p;
+        }
+        dump: Dump;
+    connections allowunconnected:
+}
+
+network Test extends TestBase 
+{
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+Test.p = 4
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        p = 4
+    submodules:
+        module Test.n: Node {
+            parameters:
+                p = 4
+        }
+}
