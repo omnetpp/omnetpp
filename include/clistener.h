@@ -16,8 +16,6 @@
 #ifndef __CLISTENER_H
 #define __CLISTENER_H
 
-#include <vector>
-#include <map>
 #include "simtime_t.h"
 #include "cobject.h"
 
@@ -34,6 +32,19 @@ class cComponent;
 typedef int simsignal_t;
 
 #define SIMSIGNAL_NULL   ((simsignal_t)-1)
+
+/**
+ * A (simtime_t, double) pair, for emitting a signal value to be recorded
+ * into an output vector with a timestamp different from the current simulation
+ * time.
+ */
+class SIM_API TimeValue : public cObject, noncopyable
+{
+    public:
+        simtime_t time;
+        double value;
+};
+
 
 /**
  * Interface for listeners in a simulation model.

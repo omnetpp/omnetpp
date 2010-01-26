@@ -23,14 +23,6 @@
 #include "cstatistic.h"
 #include "ccomponent.h"
 
-//FIXME into sim/!
-class ENVIR_API /*SIM_API*/ TimeValue : public cObject, noncopyable
-{
-    public:
-        simtime_t time;
-        double value;
-};
-
 class ENVIR_API ResultRecorder : public cIListener
 {
     protected:
