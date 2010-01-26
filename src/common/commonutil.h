@@ -33,6 +33,16 @@
 #  define DBG(x)
 #endif
 
+
+COMMON_API extern double dblNaN;
+COMMON_API extern double dblPositiveInfinity;
+COMMON_API extern double dblNegativeInfinity;
+
+inline bool isNaN(double d) { return d != d;}
+inline bool isPositiveInfinity(double d) { return d==dblPositiveInfinity; }
+inline bool isNegativeInfinity(double d) { return d==dblNegativeInfinity; }
+
+
 #ifdef _MSC_VER
 #ifndef vsnprintf
 #define vsnprintf _vsnprintf

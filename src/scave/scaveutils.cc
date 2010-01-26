@@ -1,5 +1,5 @@
 //=========================================================================
-//  INDEXFILE.CC - part of
+//  SCAVEUTILS.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -23,11 +23,6 @@
 
 
 NAMESPACE_BEGIN
-
-static double dblZero = 0.0;
-double dblNaN = dblZero / dblZero;
-double dblPositiveInfinity = 1 / dblZero;
-double dblNegativeInfinity = -1 / dblZero;
 
 bool parseInt(const char *s, int &dest)
 {

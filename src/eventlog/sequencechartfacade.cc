@@ -27,12 +27,6 @@
 
 USING_NAMESPACE
 
-static double zero = 0;
-
-static double NaN = zero / zero;
-
-inline bool isNaN(double x) { return x != x; }
-
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
     timelineMode = NONLINEAR;
@@ -186,13 +180,13 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
                             timelineCoordinate = previousTimelineCoordinate + timelineCoordinateDelta;
 
                             if (timelineCoordinate > upperTimelineCoordinateCalculationLimit)
-                                return NaN;
+                                return dblNaN;
                         }
                         else {
                             timelineCoordinate = previousTimelineCoordinate - timelineCoordinateDelta;
 
                             if (timelineCoordinate < lowerTimelineCoordinateCalculationLimit)
-                                return NaN;
+                                return dblNaN;
                         }
 
                         currentEvent->cachedTimelineCoordinate = timelineCoordinate;

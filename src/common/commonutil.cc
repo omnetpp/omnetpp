@@ -22,6 +22,13 @@
 USING_NAMESPACE
 
 
+static double dblZero = 0.0;
+double dblNaN = dblZero / dblZero;
+double dblPositiveInfinity = 1 / dblZero;
+double dblNegativeInfinity = -1 / dblZero;
+
+//----
+
 void setPosixLocale()
 {
     setlocale(LC_ALL, "C");

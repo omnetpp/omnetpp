@@ -22,6 +22,7 @@
 #include "clistener.h"
 #include "cstatistic.h"
 #include "ccomponent.h"
+#include "commonutil.h"
 
 /**
  * TODO
@@ -123,7 +124,7 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
     protected:
         void collect(simtime_t t, double value) {if (value < min) min = value;}
     public:
-        MinRecorder() {min = 1e300; /*FIXME positive infinity!*/}
+        MinRecorder() {min = dblPositiveInfinity;}
         virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
@@ -139,7 +140,7 @@ class ENVIR_API MaxRecorder : public NumericResultRecorder
     protected:
         void collect(simtime_t t, double value) {if (value > max) max = value;}
     public:
-        MaxRecorder() {max = -1e300; /*FIXME negative infinity!*/}
+        MaxRecorder() {max = dblNegativeInfinity;}
         virtual void finish(cComponent *component, simsignal_t signalID);
 };
 

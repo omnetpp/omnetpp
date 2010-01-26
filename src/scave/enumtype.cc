@@ -1,5 +1,5 @@
 //=========================================================================
-//  ENUM.CC - part of
+//  ENUMTYPE.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //

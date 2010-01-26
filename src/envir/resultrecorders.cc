@@ -19,6 +19,7 @@
 #include "cproperty.h"
 #include "resultrecorders.h"
 
+
 void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
 {
     ASSERT(getSubscribeCount() == 1);  // may only be subscribed once (otherwise results get mixed)
@@ -182,7 +183,7 @@ void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "mean");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes); //FIXME nan if no value!
+    ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes); // note: this is NaN if count==0
 }
 
 //---
@@ -192,7 +193,7 @@ void MinRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "min");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), min, &attributes);  //FIXME nan if +inf!
+    ev.recordScalar(component, scalarName.c_str(), isPositiveInfinity(min) ? dblNaN : min, &attributes);
 }
 
 //---
@@ -202,7 +203,7 @@ void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "max");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), max, &attributes); //FIXME nan if -inf!
+    ev.recordScalar(component, scalarName.c_str(), isNegativeInfinity(max) ? dblNaN : max, &attributes);
 }
 
 //---
@@ -219,15 +220,15 @@ void TimeAverageRecorder::collect(simtime_t t, double value)
 
 void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
 {
+    bool empty = (startTime == -1);
     simtime_t t = simulation.getSimTime();
     collect(t, 0.0); // to get the last interval counted in; value 0.0 is just a dummy
-    const char *signalName = cComponent::getSignalName(signalID);
     double interval = SIMTIME_DBL(t - startTime);
 
     std::string scalarName = makeName(signalID, "timeavg");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), weightedSum / interval, &attributes); //FIXME nan if no value!
+    ev.recordScalar(component, scalarName.c_str(), empty ? dblNaN : (weightedSum / interval), &attributes);
 }
 
 //---
