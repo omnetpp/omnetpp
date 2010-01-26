@@ -30,6 +30,14 @@ void ResultRecorder::listenerRemoved(cComponent *component, simsignal_t signalID
         delete this;
 }
 
+std::string ResultRecorder::makeName(simsignal_t signalID, const char *opname)
+{
+    const char *signalName = cComponent::getSignalName(signalID);
+    if (!signalName)
+        signalName = "<unnamed>";
+    return std::string(signalName) + "." + opname;
+}
+
 void ResultRecorder::extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result)
 {
     const char *signalName = cComponent::getSignalName(signalID);
@@ -137,57 +145,57 @@ void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cons
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    NumericResultRecorder::receiveSignal(source, signalID, (long)0); //FIXME cast to TimeValue and check wamup time here !!!
+    NumericResultRecorder::receiveSignal(source, signalID, (long)0); //FIXME cast to TimeValue and check warmup time here !!!
 }
 
 void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    const char *signalName = cComponent::getSignalName(signalID); //TODO modify name? like "count(signalName)" or "signalName.count"?
+    std::string scalarName = makeName(signalID, "count");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, signalName, count, &attributes);
-}
-
-//---
-
-void SumRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    const char *signalName = cComponent::getSignalName(signalID);
-    opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, signalName, sum, &attributes); //FIXME attributes; "signal.sum"?
-}
-
-//---
-
-void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    const char *signalName = cComponent::getSignalName(signalID);
-    opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, signalName, sum/count, &attributes); //FIXME attributes; "signal.mean"?
-}
-
-//---
-
-void MinRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    const char *signalName = cComponent::getSignalName(signalID);
-    opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, signalName, min, &attributes); //FIXME attributes; "signal.mean"?
+    ev.recordScalar(component, scalarName.c_str(), count, &attributes);
 }
 
 //---
 
 //FIXME do not record anything (or record nan?) if there was no value
 
-void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
+void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    const char *signalName = cComponent::getSignalName(signalID);
+    std::string scalarName = makeName(signalID, "sum");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, signalName, max, &attributes); //FIXME attributes; "signal.mean"?
+    ev.recordScalar(component, scalarName.c_str(), sum, &attributes);
+}
+
+//---
+
+void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
+{
+    std::string scalarName = makeName(signalID, "mean");
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes);
+}
+
+//---
+
+void MinRecorder::finish(cComponent *component, simsignal_t signalID)
+{
+    std::string scalarName = makeName(signalID, "min");
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, scalarName.c_str(), min, &attributes);
+}
+
+//---
+
+void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
+{
+    std::string scalarName = makeName(signalID, "max");
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, scalarName.c_str(), max, &attributes);
 }
 
 //---
@@ -208,9 +216,11 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
     collect(t, 0.0); // to get the last interval counted in; value 0.0 is just a dummy
     const char *signalName = cComponent::getSignalName(signalID);
     double interval = SIMTIME_DBL(t - startTime);
+
+    std::string scalarName = makeName(signalID, "timeavg");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, signalName, weightedSum / interval, &attributes); //FIXME attributes; "signal.mean"?
+    ev.recordScalar(component, scalarName.c_str(), weightedSum / interval, &attributes);
 }
 
 //---

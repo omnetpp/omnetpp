@@ -35,6 +35,7 @@ class ENVIR_API ResultRecorder : public cIListener
 {
     protected:
         simtime_t getEndWarmupPeriod() { return 1.0; /*FIXME*/ }
+        std::string makeName(simsignal_t signalID, const char *opname);
         void extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result);
     public:
         virtual void listenerAdded(cComponent *component, simsignal_t signalID);
