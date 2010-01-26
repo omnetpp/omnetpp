@@ -270,6 +270,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/platdep/platmisc.h \
   ../../include/chasher.h \
   ../../include/errmsg.h \
+  resultlisteners.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/envirext.h \

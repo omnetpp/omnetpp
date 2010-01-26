@@ -44,6 +44,7 @@
 #include "stringutil.h"
 #include "enumstr.h"
 #include "simtime.h"
+#include "resultlisteners.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -767,6 +768,7 @@ void EnvirBase::configure(cComponent *component)
         if (componentFullPath.empty())
             componentFullPath = component->getFullPath();
         std::string signalFullPath = componentFullPath + "." + signalName;
+
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_SCALAR_RECORDING))
         {
             // add listener to record as output scalar
@@ -775,6 +777,8 @@ void EnvirBase::configure(cComponent *component)
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
         {
             // add listener to record as output vector
+            cIListener *listener = new VectorRecordingListener(componentFullPath.c_str(), signalName);
+            component->subscribe(signalName, listener);  //FIXME TODO vector attributes from signal properties!
         }
     }
 }
