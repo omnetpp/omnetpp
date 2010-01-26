@@ -35,7 +35,7 @@ class ENVIR_API ResultRecorder : public cIListener
 {
     protected:
         simtime_t getEndWarmupPeriod() { return 1.0; /*FIXME*/ }
-        virtual void unsupportedType(cComponent *component, simsignal_t signalID, const char *dataType);
+        void extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result);
     public:
         virtual void listenerAdded(cComponent *component, simsignal_t signalID);
         virtual void listenerRemoved(cComponent *component, simsignal_t signalID);

@@ -15,6 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "cproperties.h"
+#include "cproperty.h"
 #include "resultlisteners.h"
 
 void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
@@ -28,11 +30,34 @@ void ResultRecorder::listenerRemoved(cComponent *component, simsignal_t signalID
         delete this;
 }
 
-void ResultRecorder::unsupportedType(cComponent *component, simsignal_t signalID, const char *dataType)
+void ResultRecorder::extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result)
 {
     const char *signalName = cComponent::getSignalName(signalID);
-    throw cRuntimeError("%s: Unsupported signal data type %s for signal %s (id=%d)",
-                        opp_typename(typeid(*this)), dataType, signalName, (int)signalID);
+    if (!signalName)
+        return;
+    cProperty *property = component->getProperties()->get("signal", signalName);
+    if (!property)
+        return;
+
+    // fill result[] from the properties
+    const std::vector<const char *>& keys = property->getKeys();
+    for (int i = 0; i < (int)keys.size(); i++)
+    {
+        const char *key = keys[i];
+        int numValues = property->getNumValues(key);
+        if (numValues == 0)
+            result[key] = "";
+        else if (numValues == 1)
+            result[key] = property->getValue(key, 0);
+        else {
+            std::string buf;
+            for (int j = 0; j < numValues; j++) {
+                if (j > 0) buf += ",";
+                buf += property->getValue(key, j);
+            }
+            result[key] = buf;
+        }
+    }
 }
 
 //---
@@ -78,7 +103,10 @@ void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signal
 
 VectorRecorder::VectorRecorder(const char *componentFullPath, const char *signalName)
 {
+    //XXX opp_string_map attributes;
+    //XXX extractSignalAttributes(component, signalID, attributes);
     handle = ev.registerOutputVector(componentFullPath, signalName);
+    //FIXME TODO ev.setVectorAttribute(...)
     ASSERT(handle!=NULL);
 }
 
@@ -115,7 +143,9 @@ void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObj
 void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     const char *signalName = cComponent::getSignalName(signalID); //TODO modify name? like "count(signalName)" or "signalName.count"?
-    ev.recordScalar(component, signalName, count, NULL); //FIXME attributes too!!
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, signalName, count, &attributes);
 }
 
 //---
@@ -123,7 +153,9 @@ void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     const char *signalName = cComponent::getSignalName(signalID);
-    ev.recordScalar(component, signalName, sum, NULL); //FIXME attributes; "signal.sum"?
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, signalName, sum, &attributes); //FIXME attributes; "signal.sum"?
 }
 
 //---
@@ -131,7 +163,9 @@ void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     const char *signalName = cComponent::getSignalName(signalID);
-    ev.recordScalar(component, signalName, sum/count, NULL); //FIXME attributes; "signal.mean"?
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, signalName, sum/count, &attributes); //FIXME attributes; "signal.mean"?
 }
 
 //---
@@ -139,7 +173,9 @@ void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
 void MinRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     const char *signalName = cComponent::getSignalName(signalID);
-    ev.recordScalar(component, signalName, min, NULL); //FIXME attributes; "signal.mean"?
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, signalName, min, &attributes); //FIXME attributes; "signal.mean"?
 }
 
 //---
@@ -149,7 +185,9 @@ void MinRecorder::finish(cComponent *component, simsignal_t signalID)
 void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     const char *signalName = cComponent::getSignalName(signalID);
-    ev.recordScalar(component, signalName, max, NULL); //FIXME attributes; "signal.mean"?
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, signalName, max, &attributes); //FIXME attributes; "signal.mean"?
 }
 
 //---
@@ -170,7 +208,9 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
     collect(t, 0.0); // to get the last interval counted in; value 0.0 is just a dummy
     const char *signalName = cComponent::getSignalName(signalID);
     double interval = SIMTIME_DBL(t - startTime);
-    ev.recordScalar(component, signalName, weightedSum / interval, NULL); //FIXME attributes; "signal.mean"?
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, signalName, weightedSum / interval, &attributes); //FIXME attributes; "signal.mean"?
 }
 
 //---
@@ -178,6 +218,8 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
 void StatisticsRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     const char *signalName = cComponent::getSignalName(signalID);
-    ev.recordStatistic(component, signalName, statistic, NULL); //FIXME attributes; "signal.mean"?
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordStatistic(component, signalName, statistic, &attributes);
 }
 
