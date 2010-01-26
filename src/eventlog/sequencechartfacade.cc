@@ -180,13 +180,13 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
                             timelineCoordinate = previousTimelineCoordinate + timelineCoordinateDelta;
 
                             if (timelineCoordinate > upperTimelineCoordinateCalculationLimit)
-                                return dblNaN;
+                                return NaN;
                         }
                         else {
                             timelineCoordinate = previousTimelineCoordinate - timelineCoordinateDelta;
 
                             if (timelineCoordinate < lowerTimelineCoordinateCalculationLimit)
-                                return dblNaN;
+                                return NaN;
                         }
 
                         currentEvent->cachedTimelineCoordinate = timelineCoordinate;

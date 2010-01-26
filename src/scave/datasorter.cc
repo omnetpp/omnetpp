@@ -483,7 +483,7 @@ IDList IsoGroupingFn::init(const IDList &idlist, const StringVector &moduleNames
             RunIsoValueMap::iterator it2 = isoMap.find(run);
             if (it2 == isoMap.end())
             {
-                it2 = isoMap.insert(make_pair(run, vector<double>(numOfIsoValues, dblNaN))).first;
+                it2 = isoMap.insert(make_pair(run, vector<double>(numOfIsoValues, NaN))).first;
             }
             it2->second[index] = scalar.value;
         }

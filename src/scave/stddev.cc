@@ -24,7 +24,7 @@ USING_NAMESPACE
 
 
 StddevNode::StddevNode()
-	: num_vals(0), min_vals(dblNaN), max_vals(dblNaN), sum_vals(0.0), sqrsum_vals(0.0)
+    : num_vals(0), min_vals(NaN), max_vals(NaN), sum_vals(0.0), sqrsum_vals(0.0)
 {
 }
 

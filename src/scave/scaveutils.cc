@@ -55,15 +55,15 @@ bool parseDouble(const char *s, double& dest)
         return true;
     }
     if (strncasecmp(s, "inf", 3) == 0 ||
-    		(*s && strncasecmp(s+1, "inf", 3) == 0))
+                (*s && strncasecmp(s+1, "inf", 3) == 0))
     {
-        dest = dblPositiveInfinity;  // +INF or -INF
+        dest = POSITIVE_INFINITY;  // +INF or -INF
         if (*s=='-') dest = -dest;
         return true;
     }
     if (strstr(s, "IND") || strcasecmp(s,"nan")==0)
     {
-        dest = dblNaN;
+        dest = NaN;
         return true;
     }
 
@@ -117,21 +117,21 @@ std::string unquoteString(const char *str)
 
 const std::string *StringPool::insert(const std::string& str)
 {
-	if (!lastInsertedPtr || *lastInsertedPtr!=str)
-	{
-		std::pair<std::set<std::string>::iterator,bool> p = pool.insert(str);
-		lastInsertedPtr = &(*p.first);
-	}
+        if (!lastInsertedPtr || *lastInsertedPtr!=str)
+        {
+                std::pair<std::set<std::string>::iterator,bool> p = pool.insert(str);
+                lastInsertedPtr = &(*p.first);
+        }
     return lastInsertedPtr;
 }
 
 const std::string *StringPool::find(const std::string& str) const
 {
-	if (lastInsertedPtr && *lastInsertedPtr==str)
-		return lastInsertedPtr;
+        if (lastInsertedPtr && *lastInsertedPtr==str)
+                return lastInsertedPtr;
 
-	std::set<std::string>::const_iterator it = pool.find(str);
-	return it != pool.end() ? &(*it) : NULL;
+        std::set<std::string>::const_iterator it = pool.find(str);
+        return it != pool.end() ? &(*it) : NULL;
 }
 
 NAMESPACE_END

@@ -20,21 +20,15 @@
 #include "opp_ctype.h"
 #include "platmisc.h"
 #include "bigdecimal.h"
+#include "commonutil.h"  //NaN & friends
 
 USING_NAMESPACE
 
 // helpers
-static double zero = 0.0;
-static double dblNaN = zero / zero;
-static double dblPositiveInfinity = 1 / zero;
-static double dblNegativeInfinity = -1 / zero;
 static inline int64 max(int64 x, int64 y) { return x > y ? x : y; }
 static inline int64 min(int64 x, int64 y) { return x < y ? x : y; }
 static inline int64 abs(int64 x) { return x >= 0 ? x : -x; }
 static inline int sgn(int64 x) { return (x > 0 ? 1 : (x < 0 ? -1 : 0)); }
-static inline bool isNaN(double d) { return d!=d; }
-static inline bool isPositiveInfinity(double d) { return d==dblPositiveInfinity; }
-static inline bool isNegativeInfinity(double d) { return d==dblNegativeInfinity; }
 
 BigDecimal BigDecimal::Zero(0, 0);
 BigDecimal BigDecimal::One(1, 0);
@@ -317,11 +311,11 @@ double BigDecimal::dbl() const
     if (isSpecial())
     {
         if (isNaN())
-            return dblNaN;
+            return ::NaN;
         else if (*this == PositiveInfinity)
-            return dblPositiveInfinity;
+            return POSITIVE_INFINITY;
         else if (*this == NegativeInfinity)
-            return dblNegativeInfinity;
+            return NEGATIVE_INFINITY;
         else // Nil
             throw opp_runtime_error("BigDecimal::dbl(): received Nil."); // XXX should return NaN?
     }

@@ -22,10 +22,10 @@
 USING_NAMESPACE
 
 
-static double dblZero = 0.0;
-double dblNaN = dblZero / dblZero;
-double dblPositiveInfinity = 1 / dblZero;
-double dblNegativeInfinity = -1 / dblZero;
+static double zero = 0.0;
+double const NaN = zero / zero;
+double const POSITIVE_INFINITY = 1.0 / zero;
+double const NEGATIVE_INFINITY = -1.0 / zero;
 
 //----
 

@@ -216,7 +216,7 @@ void MinRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "min");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), isPositiveInfinity(min) ? dblNaN : min, &attributes);
+    ev.recordScalar(component, scalarName.c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
 }
 
 //---
@@ -226,7 +226,7 @@ void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "max");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), isNegativeInfinity(max) ? dblNaN : max, &attributes);
+    ev.recordScalar(component, scalarName.c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
 }
 
 //---
@@ -251,7 +251,7 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
     std::string scalarName = makeName(signalID, "timeavg");
     opp_string_map attributes;
     extractSignalAttributes(component, signalID, attributes);
-    ev.recordScalar(component, scalarName.c_str(), empty ? dblNaN : (weightedSum / interval), &attributes);
+    ev.recordScalar(component, scalarName.c_str(), empty ? NaN : (weightedSum / interval), &attributes);
 }
 
 //---

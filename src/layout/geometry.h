@@ -26,11 +26,6 @@
 NAMESPACE_BEGIN
 
 
-extern LAYOUT_API double NaN;
-extern LAYOUT_API double POSITIVE_INFINITY;
-
-inline bool isNaN(double x) { return x != x; }
-
 /**
  * A three dimensional point. Base plane means z = 0.
  */

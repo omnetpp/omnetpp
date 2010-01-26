@@ -128,7 +128,7 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
     protected:
         void collect(simtime_t t, double value) {if (value < min) min = value;}
     public:
-        MinRecorder() {min = dblPositiveInfinity;}
+        MinRecorder() {min = POSITIVE_INFINITY;}
         virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
@@ -142,7 +142,7 @@ class ENVIR_API MaxRecorder : public NumericResultRecorder
     protected:
         void collect(simtime_t t, double value) {if (value > max) max = value;}
     public:
-        MaxRecorder() {max = dblNegativeInfinity;}
+        MaxRecorder() {max = NEGATIVE_INFINITY;}
         virtual void finish(cComponent *component, simsignal_t signalID);
 };
 

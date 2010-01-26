@@ -18,8 +18,4 @@
 
 USING_NAMESPACE
 
-static double zero = 0;
 
-double NaN = zero / zero;
-
-double POSITIVE_INFINITY = 1 / zero;
