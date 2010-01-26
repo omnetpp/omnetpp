@@ -20,6 +20,8 @@
 #include "resultrecorders.h"
 
 
+simtime_t ResultRecorder::warmupEndTime;
+
 void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
 {
     ASSERT(getSubscribeCount() == 1);  // may only be subscribed once (otherwise results get mixed)
@@ -42,8 +44,12 @@ std::string ResultRecorder::makeName(simsignal_t signalID, const char *opname)
 void ResultRecorder::extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result)
 {
     const char *signalName = cComponent::getSignalName(signalID);
-    if (!signalName)
-        return;
+    if (signalName)
+        extractSignalAttributes(component, signalName, result);
+}
+
+void ResultRecorder::extractSignalAttributes(cComponent *component, const char *signalName, opp_string_map& result)
+{
     cProperty *property = component->getProperties()->get("signal", signalName);
     if (!property)
         return;
@@ -95,38 +101,55 @@ void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signal
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
     const char *signalName = cComponent::getSignalName(signalID);
-    throw cRuntimeError("%s: unsupported signal data type 'const char *' for signal %s (id=%d)",
-                        opp_typename(typeid(*this)), signalName, (int)signalID);
+    throw cRuntimeError(
+            "%s: unsupported signal data type 'const char *' for signal %s (id=%d)",
+            opp_typename(typeid(*this)), signalName, (int)signalID);
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
     TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (!d)
-        throw cRuntimeError(source, "Wrong object!!!!! must be TimeValue!!!!!FIXME");  //XXX print signalName!
+    if (!d) {
+        const char *signalName = cComponent::getSignalName(signalID);
+        throw cRuntimeError(
+                "%s: unsupported signal data type '%s *' for signal %s (id=%d)",
+                opp_typename(typeid(*this)), obj->getClassName(), signalName, (int)signalID);
+    }
     if (d->time >= getEndWarmupPeriod())
         collect(d->time, d->value);
 }
 
 //---
 
-VectorRecorder::VectorRecorder(const char *componentFullPath, const char *signalName)
+//TODO use arg-less ctor!!! we could call registerOutputVector() in listenerAdded(), or just remember component ptr there, and register vector later when 1st signal gets fired
+
+VectorRecorder::VectorRecorder(cComponent *component, const char *signalName)
 {
-    //XXX opp_string_map attributes;
-    //XXX extractSignalAttributes(component, signalID, attributes);
-    handle = ev.registerOutputVector(componentFullPath, signalName);
-    //FIXME TODO ev.setVectorAttribute(...)
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalName, attributes);
+    handle = ev.registerOutputVector(component->getFullPath().c_str(), signalName);
     ASSERT(handle!=NULL);
+    for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
+        ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
 }
 
 void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
     // copied from base class to add monotonicity check
     TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (!d)
-        throw cRuntimeError(source, "Wrong object!!!!! must be TimeValue!!!!!FIXME");  //XXX print signalName!
-    if (d->time < lastTime)
-        throw cRuntimeError("Cannot record data with an earlier timestamp (t=%s) than the previously recorded value", SIMTIME_STR(d->time));  //XXX print signalName!
+    if (!d) {
+        const char *signalName = cComponent::getSignalName(signalID);
+        throw cRuntimeError(
+                "%s: unsupported signal data type '%s *' for signal %s (id=%d)",
+                opp_typename(typeid(*this)), obj->getClassName(), signalName, (int)signalID);
+    }
+    if (d->time < lastTime) {
+        const char *signalName = cComponent::getSignalName(signalID);
+        throw cRuntimeError(
+                "%s: cannot record data with an earlier timestamp (t=%s) than "
+                "the previously recorded value, for signal %s (id=%d)",
+                opp_typename(typeid(*this)), SIMTIME_STR(d->time), signalName, (int)signalID);
+    }
     if (d->time >= getEndWarmupPeriod())
         collect(d->time, d->value);
 }

@@ -25,21 +25,25 @@
 #include "commonutil.h"
 
 /**
- * TODO
+ * Abstract base class for result recording listeners
  */
 class ENVIR_API ResultRecorder : public cIListener
 {
+    private:
+        static simtime_t warmupEndTime;
     protected:
-        simtime_t getEndWarmupPeriod() { return 1.0; /*FIXME*/ }
+        simtime_t getEndWarmupPeriod() {return warmupEndTime;}
         std::string makeName(simsignal_t signalID, const char *opname);
         void extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result);
+        void extractSignalAttributes(cComponent *component, const char *signalName, opp_string_map& result);
     public:
+        static void setEndWarmupPeriod(simtime_t t) {warmupEndTime = t;}
         virtual void listenerAdded(cComponent *component, simsignal_t signalID);
         virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
 };
 
 /**
- * TODO
+ * Abstract base class for result recording listeners
  */
 class ENVIR_API NumericResultRecorder : public ResultRecorder
 {
@@ -60,11 +64,11 @@ class ENVIR_API VectorRecorder : public NumericResultRecorder
 {
     protected:
         void *handle;        // identifies output vector for the output vector manager
-        simtime_t lastTime;  // to ensure increasing timestamp order (TODO move into manager)
+        simtime_t lastTime;  // to ensure increasing timestamp order
     protected:
         void collect(simtime_t t, double value);
     public:
-        VectorRecorder(const char *componentFullPath, const char *signalName); //TODO take signal_t instead? accept vector attributes somehow: unit, data type, interpolation mode, enum etc
+        VectorRecorder(cComponent *component, const char *signalName);
         void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
 };
 
@@ -128,8 +132,6 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
         virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
-//FIXME do not record anything (or record nan?) if there was no value
-
 /**
  * Listener for recording the maximum of signal values
  */
@@ -164,7 +166,6 @@ class ENVIR_API TimeAverageRecorder : public NumericResultRecorder
 /**
  * Listener for recording signal values via a cStatistic
  */
-//FIXME ownership?
 class ENVIR_API StatisticsRecorder : public NumericResultRecorder, private cObject /*so it can own the statistic object*/
 {
     protected:

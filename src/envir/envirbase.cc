@@ -760,6 +760,7 @@ extern cConfigOption *CFGID_VECTOR_RECORDING; //XXX better place
 
 void EnvirBase::configure(cComponent *component)
 {
+//FIXME set endWarmupTime in readoptions!!!!
     std::vector<const char *> signalNames = component->getProperties()->getIndicesFor("signal");
     std::string componentFullPath;
     for (int i = 0; i < (int)signalNames.size(); i++)
@@ -772,13 +773,15 @@ void EnvirBase::configure(cComponent *component)
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_SCALAR_RECORDING))
         {
             // add listener to record as output scalar
+            cIListener *listener = new MeanRecorder();
+            component->subscribe(signalName, listener);
         }
 
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
         {
             // add listener to record as output vector
-            cIListener *listener = new VectorRecorder(componentFullPath.c_str(), signalName);
-            component->subscribe(signalName, listener);  //FIXME TODO vector attributes from signal properties!
+            cIListener *listener = new VectorRecorder(component, signalName);
+            component->subscribe(signalName, listener);
         }
     }
 }
