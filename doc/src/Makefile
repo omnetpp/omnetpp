@@ -6,7 +6,7 @@ DOXYGEN=doxygen
 #
 # Targets
 #
-all: apis do-tictoc-tutorial do-manual do-userguide do-migrationguide do-ide-overview do-ide-customization-guide do-installguide do-ide-develpers-guide
+all: apis do-tictoc-tutorial do-manual do-userguide do-migrationguide do-ide-overview do-ide-customization-guide do-installguide do-ide-developers-guide
 
 apis: api nedxml-api parsim-api
 
