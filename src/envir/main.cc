@@ -32,7 +32,7 @@ ENVIR_API int main(int argc, char *argv[])
 {
     cStaticFlag dummy;
 
-    printf(OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2008 Andras Varga, OpenSim Ltd.\n");
+    printf(OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2010 Andras Varga, OpenSim Ltd.\n");
     printf("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
