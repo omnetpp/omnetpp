@@ -36,7 +36,7 @@ do-ide-customization-guide:
 	cd ide-customization-guide && $(MAKE)
 
 do-ide-developers-guide:
-	cd IDE-DevelopersGuide && $(MAKE)
+	cd ide-developersguide && $(MAKE)
 
 do-ide-overview:
 	cd ide-overview && $(MAKE)
@@ -53,6 +53,7 @@ clean:
 	cd userguide && $(MAKE) -f Makefile.vc clean
 	cd migrationguide && $(MAKE) -f Makefile.vc clean
 	cd ide-customization-guide && $(MAKE) -f Makefile.vc clean
+	cd ide-developers-guide && $(MAKE) -f Makefile.vc clean
 	cd ide-overview && $(MAKE) -f Makefile.vc clean
 	cd tictoc-tutorial && $(MAKE) -f Makefile.vc clean
 

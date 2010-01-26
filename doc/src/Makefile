@@ -32,7 +32,7 @@ do-ide-customization-guide:
 	cd ide-customization-guide && $(MAKE)
 
 do-ide-developers-guide:
-	cd IDE-DevelopersGuide && $(MAKE)
+	cd ide-developersguide && $(MAKE)
 
 do-ide-overview:
 	cd ide-overview && $(MAKE)
@@ -49,5 +49,6 @@ clean:
 	cd userguide && $(MAKE) clean
 	cd migrationguide && $(MAKE) clean
 	cd ide-customization-guide && $(MAKE) clean
+	cd ide-developers-guide && $(MAKE) clean
 	cd ide-overview && $(MAKE) clean
 	cd tictoc-tutorial && $(MAKE) clean
