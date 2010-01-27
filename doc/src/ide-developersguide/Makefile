@@ -19,7 +19,7 @@ else
   VERSION_REPL = 4.X
 endif
 
-all: pdf
+all: pdf html eclipse
 
 docbook:
 	asciidoc -b docbook -d book -f asciidoc.conf $(DEFINE_OMNEST) ide-developersguide.txt
