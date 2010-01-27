@@ -670,7 +670,7 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
 
     // check if this is a two way connection (an other connection is pointing back
     // to the this gate's pair from the next gate's pair)
-    bool twoWayConnection = true;
+    bool twoWayConnection = false;
     // check if this gate is really part of an in/out gate pair
     // gate      o-------------------->o dest_gate
     // gate_pair o<--------------------o dest_gate_pair
