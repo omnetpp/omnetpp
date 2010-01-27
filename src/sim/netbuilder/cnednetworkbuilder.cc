@@ -96,8 +96,8 @@ void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDecl
         if (parentDecl)  // i.e. parent was created via NED-based componentType
         {
             NEDElement *subcomponentNode = component->isModule() ?
-                parentDecl->getSubmoduleElement(component->getName()) :
-                parentDecl->getConnectionElement(((cChannel*)component)->getConnectionId());
+                (NEDElement *)parentDecl->getSubmoduleElement(component->getName()) :
+                (NEDElement *)parentDecl->getConnectionElement(((cChannel*)component)->getConnectionId());
             if (subcomponentNode)
                 assignSubcomponentParams(component, subcomponentNode);
         }

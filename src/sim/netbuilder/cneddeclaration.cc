@@ -222,7 +222,7 @@ cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const cha
         props = cNEDLoader::getInstance()->getDecl(channelType)->getProperties();
 
     // update with local properties
-    NEDElement *connectionNode = getLocalConnectionElement(connectionId);
+    ConnectionElement *connectionNode = getLocalConnectionElement(connectionId);
     if (!connectionNode && !props)
         return NULL; // error: no such connection
 
