@@ -74,18 +74,13 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu?after=edit">
-         <menu
-               id="source"
-               label="Source"
-               mnemonic="S">
+            locationURI="menu:project?after=build.ext">
             <command
                   commandId="org.omnetpp.ned.cleanupNedFiles"
                   id="cleanupNedFiles"
-                  mnemonic="N"
+                  mnemonic="C"
                   style="push">
             </command>
-         </menu>
       </menuContribution>
       <menuContribution
             locationURI="menu:navigate?after=open.ext2">
