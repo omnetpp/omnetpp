@@ -161,10 +161,9 @@ proc draw_module_gate {c modptr gateptr modname gatename k xsiz dir highlight} {
 
 }
 
-proc draw_conn {c srcgateptr destgateptr chanstr dispstr} {
+proc draw_conn {c srcgateptr destgateptr chanptr chanstr dispstr} {
 
-    #split_dispstr $dispstr tags [winfo toplevel $c] {} 0
-    get_parsed_display_string $dispstr tags [winfo toplevel $c] {} 0
+    opp_displaystring $dispstr parse tags $chanptr 0
 
     if {![info exists tags(s)]} {set tags(s) {auto}}
     if {![info exists tags(d)]} {set tags(d) {auto}}

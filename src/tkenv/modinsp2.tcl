@@ -22,38 +22,6 @@
 # $help_tips(helptip_proc). This is currently get_help_tip.
 #
 
-# get_parsed_display_string --
-#
-# Return parsed display string in an array.
-#    str:     display string
-#    array:   dest array name
-#    w:       inspector window name
-#    modptr:  pointer of module whose parameters should be used for "$x" style
-#             parameters in the display string
-#    parent:  if nonzero, parameter is searched in the parent module too;
-#             otherwise, only that very module is considered
-# Example:
-#   with "p=50,$y_pos;i=cloud", and if "y_pos" module parameter is 99, the result:
-#      $a(p) = {50 99}
-#      $a(i) = {cloud}
-#
-proc get_parsed_display_string {str array w modptr parent} {
-   upvar $array arr
-
-   opp_displaystring $str parse arr
-
-   foreach key [array names arr] {
-      set i 0
-      foreach v $arr($key) {
-         if {[string range $v 0 0]=={$}} {
-            if {$modptr==""} {error "Cannot substitute parameters into this display string"}
-            set v [opp_inspectorcommand $w dispstrpar $modptr [string range $v 1 end] $parent]
-            set arr($key) [lreplace $arr($key) $i $i $v]
-         }
-         incr i
-      }
-   }
-}
 
 proc lookup_image {imgname {imgsize ""}} {
     global bitmaps icons
@@ -173,7 +141,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
    set imagesizefactor $inspectordata($c:imagesizefactor)
 
    if [catch {
-       get_parsed_display_string $dispstr tags [winfo toplevel $c] $submodptr 1
+       opp_displaystring $dispstr parse tags $submodptr 1
 
        # scale (x,y)
        if {$scaling != ""} {
@@ -367,7 +335,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
        # parse display string. note: we need "1" as last parameter (search
        # for $params in parent module too), because all tags get resolved
        # not only bg* ones.
-       get_parsed_display_string $dispstr tags [winfo toplevel $c] $ptr 1
+       opp_displaystring $dispstr parse tags $ptr 1
 
        # determine top-left origin
        if {![info exists tags(bgp)]} {set tags(bgp) {}}
@@ -601,7 +569,7 @@ proc resizeimage {img sx sy} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n two_way} {
+proc draw_connection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
     global inspectordata
 
     # puts "DEBUG: draw_connection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
@@ -616,7 +584,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
     if [catch {
 
-       get_parsed_display_string $dispstr tags [winfo toplevel $c] {} 0
+       opp_displaystring $dispstr parse tags $chanptr 1
 
        if {![info exists tags(m)]} {set tags(m) {a}}
 
@@ -747,7 +715,7 @@ proc draw_message {c msgptr x y} {
         # supports "b","i" and "o" tags, they work just as with submodules only default
         # is different (small red ball), plus special color "kind" is supported which
         # gives the original, message kind dependent colors
-        get_parsed_display_string $dispstr tags [winfo toplevel $c] {} 1
+        opp_displaystring $dispstr parse tags [opp_null] 1
 
         # set sx and sy
         if ![info exists tags(is)] {
@@ -1169,7 +1137,7 @@ proc graphmodwin_update_submod {c modptr} {
     # currently the only thing to be updated is the number of elements in queue
     set win [winfo toplevel $c]
     set dispstr [opp_getobjectfield $modptr displayString]
-    set qname [opp_displaystring $dispstr getTagArg "q" 0]
+    set qname [opp_displaystring $dispstr getTagArg "q" 0 $modptr 1]
     if {$qname!=""} {
         #set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
         #set qlen [opp_getobjectfield $qptr length]
@@ -1199,7 +1167,7 @@ proc graphmodwin_qlen_getqptr_current {c} {
 proc graphmodwin_qlen_getqptr {c modptr} {
    set win [winfo toplevel $c]
    set dispstr [opp_getobjectfield $modptr displayString]
-   set qname [opp_displaystring $dispstr getTagArg "q" 0]
+   set qname [opp_displaystring $dispstr getTagArg "q" 0 $modptr 1]
    if {$qname!=""} {
        set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
        return $qptr

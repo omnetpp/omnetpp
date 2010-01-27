@@ -41,53 +41,54 @@ USING_NAMESPACE
 
 void _dummy_for_modinsp() {}
 
-static cPar *displayStringPar(const char *parname, cModule *mod, bool searchparent)
+cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent)
 {
    cPar *par = NULL;
-   int k = mod->findPar(parname);
+   int k = component->findPar(parname);
    if (k>=0)
-      par = &(mod->par(k));
+      par = &(component->par(k));
 
-   if (!par && searchparent && mod->getParentModule())
+   if (!par && searchparent && component->getParentModule())
    {
-      k = mod->getParentModule()->findPar( parname );
+      k = component->getParentModule()->findPar( parname );
       if (k>=0)
-         par = &(mod->getParentModule()->par(k));
+         par = &(component->getParentModule()->par(k));
    }
    if (!par)
    {
+      const char *what = component->isModule() ? "module" : "channel";
       if (!searchparent)
-          throw cRuntimeError("module `%s' has no parameter `%s'", mod->getFullPath().c_str(), parname);
+          throw cRuntimeError("%s `%s' has no parameter `%s'", what, component->getFullPath().c_str(), parname);
       else
-          throw cRuntimeError("module `%s' and its parent have no parameter `%s'", mod->getFullPath().c_str(), parname);
+          throw cRuntimeError("%s `%s' and its parent have no parameter `%s'", what, component->getFullPath().c_str(), parname);
    }
    return par;
 }
 
-bool resolveBoolDispStrArg(const char *s, cModule *mod, bool defaultValue)
+bool resolveBoolDispStrArg(const char *s, cComponent *component, bool defaultValue)
 {
    if (!s || !*s)
        return defaultValue;
    if (*s=='$')
-       return displayStringPar(s+1, mod, true)->boolValue();
+       return displayStringPar(s+1, component, true)->boolValue();
    return !strcmp("1", s) || !strcmp("true", s);
 }
 
-long resolveLongDispStrArg(const char *s, cModule *mod, int defaultValue)
+long resolveLongDispStrArg(const char *s, cComponent *component, int defaultValue)
 {
    if (!s || !*s)
        return defaultValue;
    if (*s=='$')
-       return displayStringPar(s+1, mod, true)->longValue();
+       return displayStringPar(s+1, component, true)->longValue();
    return (long) atol(s);
 }
 
-double resolveDoubleDispStrArg(const char *s, cModule *mod, double defaultValue)
+double resolveDoubleDispStrArg(const char *s, cComponent *component, double defaultValue)
 {
    if (!s || !*s)
        return defaultValue;
    if (*s=='$')
-       return displayStringPar(s+1, mod, true)->doubleValue();
+       return displayStringPar(s+1, component, true)->doubleValue();
    return atof(s);
 }
 
@@ -644,7 +645,7 @@ void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, int
                     ptrToStr(submod), " ",
                     coords,
                     "{", submod->getFullName(), "} ",
-                    "{", dispstr, "} ",
+                    TclQuotedString(dispstr).get(), " ",
                     "{", scaling, "} ",
                     NULL));
 }
@@ -656,7 +657,7 @@ void TGraphicalModWindow::drawEnclosingModule(Tcl_Interp *interp, cModule *paren
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
                        "{", parentmodule->getFullPath().c_str(), "} ",
-                       "{", dispstr, "} ",
+                       TclQuotedString(dispstr).get(), " ",
                        "{", scaling, "} ",
                        NULL ));
 }
@@ -666,7 +667,7 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
     cModule *mod = gate->getOwnerModule();
     cGate *dest_gate = gate->getNextGate();
 
-    char gateptr[32], srcptr[32], destptr[32], indices[32];
+    char gateptr[32], srcptr[32], destptr[32], chanptr[32], indices[32];
 
     // check if this is a two way connection (an other connection is pointing back
     // to the this gate's pair from the next gate's pair)
@@ -695,14 +696,16 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
             gate->getIndex(), gate->size(),
             dest_gate->getIndex(), dest_gate->size());
     cChannel *chan = gate->getChannel();
+    ptrToStr(chan, chanptr);
     const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
 
     CHK(Tcl_VarEval(interp, "draw_connection ",
             canvas, " ",
             gateptr, " ",
-            "{", dispstr, "} ",
+            TclQuotedString(dispstr).get(), " ",
             srcptr, " ",
             destptr, " ",
+            chanptr, " ",
             indices, " ",
             twoWayConnection ? "1" : "0",
             NULL
@@ -888,6 +891,7 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
    return TCL_ERROR;
 }
 
+// method not used any more
 int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <module ptr> <parname> <searchparent>
@@ -1264,18 +1268,19 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    // draw connections
    for (g = gate->getPathStartGate(); g->getNextGate()!=NULL; g=g->getNextGate())
    {
-        cChannel *channel = g->getChannel();
-        char srcgateptr[32], destgateptr[32];
+        char srcgateptr[32], destgateptr[32], chanptr[32];
         ptrToStr(g,srcgateptr);
         ptrToStr(g->getNextGate(),destgateptr);
         cChannel *chan = g->getChannel();
+        ptrToStr(chan,chanptr);
         const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
         CHK(Tcl_VarEval(interp, "draw_conn ",
                       canvas, " ",
                       srcgateptr, " ",
                       destgateptr, " ",
-                      "{", (channel?channel->info().c_str():""), "} ",
-                      "{", dispstr,"} ",
+                      chanptr, " ",
+                      TclQuotedString(chan?chan->info().c_str():"").get(), " ",
+                      TclQuotedString(dispstr).get(), " ",
                       NULL ));
    }
 

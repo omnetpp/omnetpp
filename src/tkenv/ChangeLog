@@ -1,3 +1,16 @@
+2010-01-28  Andras Varga
+
+	* improvement: module or channel parameter references may now occur 
+	as substrings in the middle of display string tags, for example: 
+	    @display("t=my address is $address!").
+	Before, they were only accepted if a whole display string tag was a 
+	single parameter reference.
+
+	* improvement: parameter references in display strings may now be
+	delimited with braces as well (${par}), if needed to separate it 
+	from subsequent text. For example: 
+	    @display("t=bw:${datarate}bps");
+
 2009-09-15 Rudolf Hornig
 
 	* fixed: New automatic anchor placement algorithm. Connection layouting
