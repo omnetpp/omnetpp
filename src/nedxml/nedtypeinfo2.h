@@ -107,8 +107,8 @@ class NEDXML_API NEDTypeInfo2
     void mergeProperty(PropertyElement *baseprop, const PropertyElement *prop) const;
     void mergePropertyKey(PropertyKeyElement *basekey, const PropertyKeyElement *key) const;
 
-    NEDElement *getSubmoduleElement(const char *submoduleName) const;
-    NEDElement *getConnectionElement(long id) const;
+    NEDElement *getLocalSubmoduleElement(const char *submoduleName) const;
+    NEDElement *getLocalConnectionElement(long id) const;
 
     void checkComplianceToInterface(NEDTypeInfo2 *interfaceDecl);
 

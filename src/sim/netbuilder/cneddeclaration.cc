@@ -190,7 +190,7 @@ cProperties *cNEDDeclaration::doSubmoduleProperties(const char *submoduleName, c
         props = cNEDLoader::getInstance()->getDecl(submoduleType)->getProperties();
 
     // update with local properties
-    NEDElement *subcomponentNode = getSubmoduleElement(submoduleName);
+    NEDElement *subcomponentNode = getLocalSubmoduleElement(submoduleName);
     if (!subcomponentNode && !props)
         return NULL; // error: no such submodule FIXME must not return NULL!
     NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
@@ -222,7 +222,7 @@ cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const cha
         props = cNEDLoader::getInstance()->getDecl(channelType)->getProperties();
 
     // update with local properties
-    NEDElement *connectionNode = getConnectionElement(connectionId);
+    NEDElement *connectionNode = getLocalConnectionElement(connectionId);
     if (!connectionNode && !props)
         return NULL; // error: no such connection
 

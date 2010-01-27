@@ -220,7 +220,7 @@ NEDTypeInfo2 *NEDTypeInfo2::getSuperDecl() const
 }
 
 /*
-NEDElement *NEDTypeInfo2::getConnectionElement(long id) const
+NEDElement *NEDTypeInfo2::getLocalConnectionElement(long id) const
 {
     ConnectionsElement *connectionsNode = getConnectionsElement();
     if (connectionsNode)

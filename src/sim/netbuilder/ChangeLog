@@ -1,3 +1,8 @@
+2009-01-27 Andras Varga
+
+	* fix: when subclassing from a compound module, parameter assignments
+	in the super type's "submodules" block did not take effect
+
 2009-xx-xx Andras Varga
 
 	* INCOMPATIBLE NED SEMANTICS CHANGE 4.0:

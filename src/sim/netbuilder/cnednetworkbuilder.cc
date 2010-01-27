@@ -95,7 +95,6 @@ void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDecl
         cNEDDeclaration *parentDecl = cNEDLoader::getInstance()->getDecl(parentNedTypeName);
         if (parentDecl)  // i.e. parent was created via NED-based componentType
         {
-            const char *name = component->getName();
             NEDElement *subcomponentNode = component->isModule() ?
                 parentDecl->getSubmoduleElement(component->getName()) :
                 parentDecl->getConnectionElement(((cChannel*)component)->getConnectionId());
