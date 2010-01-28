@@ -117,7 +117,7 @@ Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
-Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING_MODE, "scalar-recording-mode", CFG_STRING, "histogram", "FIXME TODO: Example values: count, sum, mean, min, max, timeavg, stddev, histogram");
+Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING_MODE, "scalar-recording-mode", CFG_STRING, "auto", "Defines how to calculate scalar results from the given signal. Example values: count, lastval, sum, mean, min, max, timeavg, stddev, histogram, auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
 
 #define STRINGIZE0(x) #x
 #define STRINGIZE(x) STRINGIZE0(x)
@@ -763,6 +763,11 @@ extern cConfigOption *CFGID_VECTOR_RECORDING; //XXX better place
 
 void EnvirBase::configure(cComponent *component)
 {
+    addResultRecorders(component);
+}
+
+void EnvirBase::addResultRecorders(cComponent *component)
+{
 //FIXME set endWarmupTime in readoptions!!!!
     std::vector<const char *> signalNames = component->getProperties()->getIndicesFor("signal");
     std::string componentFullPath;
@@ -773,44 +778,50 @@ void EnvirBase::configure(cComponent *component)
             componentFullPath = component->getFullPath();
         std::string signalFullPath = componentFullPath + "." + signalName;
 
+        // add scalar result recorders
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_SCALAR_RECORDING))
         {
             // add listener to record as output scalar
-            //XXX this should be extensible instead of hardcoded "if"-ladder
             std::string modeList = ev.getConfig()->getAsString(signalFullPath.c_str(), CFGID_SCALAR_RECORDING_MODE, "");
-            StringTokenizer tokenizer(modeList.c_str(), ",");
-            while (tokenizer.hasMoreTokens())
+            if (modeList == "auto")
             {
-                std::string mode = opp_trim(tokenizer.nextToken());
-                cIListener *listener;
-                if (mode == "auto") { //FIXME make this the result
-                    //XXX use "mode-hint" key in property
-                    mode = "histogram";
+                // obey mode-hint in @signal; example: @signal[queueLen](modeHint=timeavg,max);
+                cProperty *prop = component->getProperties()->get("signal", signalName);
+                ASSERT(prop!=NULL);
+                int numModeHints = prop->getNumValues("modeHint");
+                if (numModeHints == 0)
+                {
+                    cIListener *listener = createScalarResultRecorder("auto");
+                    component->subscribe(signalName, listener);
                 }
-                if (mode == "count")
-                    listener = new MeanRecorder();
-                else if (mode == "lastval")
-                    listener = new LastValueRecorder();
-                else if (mode == "sum")
-                    listener = new MeanRecorder();
-                else if (mode == "mean")
-                    listener = new MeanRecorder();
-                else if (mode == "min")
-                    listener = new MinRecorder();
-                else if (mode == "max")
-                    listener = new MaxRecorder();
-                else if (mode == "timeavg")
-                    listener = new TimeAverageRecorder();
-                else if (mode == "stddev")
-                    listener = new StatisticsRecorder(new cStdDev());
-                else if (mode == "histogram")
-                    listener = new StatisticsRecorder(new cDoubleHistogram()); //XXX or cLongHistogram, we should probably decide from @signal property
                 else
-                    throw cRuntimeError("Unknown scalar recording mode specified in the configuration: \"%s\"", mode); //XXX print file/line or key too
+                {
+                    for (int j = 0; j < numModeHints; j++)
+                    {
+                        const char *modeHint = prop->getValue("modeHint",j);
+                        cIListener *listener = createScalarResultRecorder(modeHint);
+                        component->subscribe(signalName, listener);
+                    }
+                }
+            }
+            else if (!strchr(modeList.c_str(), ','))
+            {
+                cIListener *listener = createScalarResultRecorder(modeList.c_str());
                 component->subscribe(signalName, listener);
+            }
+            else
+            {
+                StringTokenizer tokenizer(modeList.c_str(), ",");
+                while (tokenizer.hasMoreTokens())
+                {
+                    std::string mode = opp_trim(tokenizer.nextToken());
+                    cIListener *listener = createScalarResultRecorder(mode.c_str());
+                    component->subscribe(signalName, listener);
+                }
             }
         }
 
+        // add vector result recorders
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
         {
             // add listener to record as output vector
@@ -818,6 +829,36 @@ void EnvirBase::configure(cComponent *component)
             component->subscribe(signalName, listener);
         }
     }
+}
+
+cIListener *EnvirBase::createScalarResultRecorder(const char *mode)
+{
+    if (!strcmp(mode, "auto"))
+        mode = "histogram";
+
+    //XXX this should be extensible instead of hardcoded "if"-ladder
+    cIListener *listener;
+    if (!strcmp(mode, "histogram"))
+        listener = new StatisticsRecorder(new cDoubleHistogram()); //XXX or cLongHistogram, we should probably decide from @signal property
+    else if (!strcmp(mode, "count"))
+        listener = new MeanRecorder();
+    else if (!strcmp(mode, "lastval"))
+        listener = new LastValueRecorder();
+    else if (!strcmp(mode, "sum"))
+        listener = new MeanRecorder();
+    else if (!strcmp(mode, "mean"))
+        listener = new MeanRecorder();
+    else if (!strcmp(mode, "min"))
+        listener = new MinRecorder();
+    else if (!strcmp(mode, "max"))
+        listener = new MaxRecorder();
+    else if (!strcmp(mode, "timeavg"))
+        listener = new TimeAverageRecorder();
+    else if (!strcmp(mode, "stddev"))
+        listener = new StatisticsRecorder(new cStdDev());
+    else
+        throw cRuntimeError("Unknown scalar recording mode specified in the configuration: \"%s\"", mode); //XXX print file/line or key too
+    return listener;
 }
 
 void EnvirBase::readParameter(cPar *par)

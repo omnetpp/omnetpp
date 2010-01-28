@@ -39,6 +39,7 @@ NAMESPACE_BEGIN
 class cXMLDocCache;
 class cScheduler;
 class cModuleType;
+class cIListener;
 // WITH_PARSIM:
 class cParsimCommunications;
 class cParsimPartition;
@@ -246,6 +247,18 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
      * user for a parameter value.
      */
     virtual void askParameter(cPar *par, bool unassigned) = 0;
+
+    /**
+     * Called from configure(component); adds result recording listeners
+     * for each declared signal (@signal property) in the component.
+     */
+    virtual void addResultRecorders(cComponent *component);
+
+    /**
+     * Factory method: create a corresponding result recorder object
+     * for the given scalar recording mode ("sum", "timeavg" etc).
+     */
+    virtual cIListener *createScalarResultRecorder(const char *mode);
 
   public:
     // Utility function: optionally appends host name to fname
