@@ -107,11 +107,11 @@ void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signal
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (d) {
-        // "record double with timestamp" case
-        if (d->time >= getEndWarmupPeriod())
-            collect(d->time, d->value);
+    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
+    if (v) {
+        simtime_t t = v->getSignalTime(signalID);
+        if (t >= getEndWarmupPeriod())
+            collect(t, v->getSignalValue(signalID));
     }
     else {
         simtime_t t = simulation.getSimTime();
@@ -141,18 +141,18 @@ void VectorRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
 void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
     // copied from base class to add monotonicity check
-    TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (d) {
-        // "record double with timestamp" case
-        if (d->time < lastTime) {
+    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
+    if (v) {
+        simtime_t t = v->getSignalTime(signalID);
+        if (t < lastTime) {
             const char *signalName = cComponent::getSignalName(signalID);
             throw cRuntimeError(
                     "%s: cannot record data with an earlier timestamp (t=%s) than "
                     "the previously recorded value, for signal %s (id=%d)",
-                    opp_typename(typeid(*this)), SIMTIME_STR(d->time), signalName, (int)signalID);
+                    opp_typename(typeid(*this)), SIMTIME_STR(t), signalName, (int)signalID);
         }
-        if (d->time >= getEndWarmupPeriod())
-            collect(d->time, d->value);
+        if (t >= getEndWarmupPeriod())
+            collect(t, v->getSignalValue(signalID));
     }
     else {
         simtime_t t = simulation.getSimTime();
@@ -178,13 +178,14 @@ void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cons
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    // if it is a TimeValue, we should use its time for checking warm-up period
-    TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (!d)
+    // if it is a cISignalValue, we should use its time for checking warm-up period
+    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
+    if (!v)
         collect(simulation.getSimTime(), (long)0);  // dummy value
     else {
-        if (d->time >= getEndWarmupPeriod())
-            collect(d->time, (long)0); // dummy value
+        simtime_t t = v->getSignalTime(signalID);
+        if (t >= getEndWarmupPeriod())
+            collect(t, (long)0); // dummy value
     }
 }
 

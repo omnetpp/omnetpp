@@ -18,9 +18,14 @@
 #include "ccomponent.h"
 #include "cmodule.h"
 #include "cchannel.h"
+#include "csimulation.h"
 
 USING_NAMESPACE
 
+simtime_t cISignalValue::getSignalTime(simsignal_t signalID)
+{
+    return simulation.getSimTime();
+}
 
 struct Subscription {cComponent *component; simsignal_t signalID;};
 typedef std::vector<Subscription> SubscriptionList;
