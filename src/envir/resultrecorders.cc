@@ -20,8 +20,6 @@
 #include "resultrecorders.h"
 
 
-simtime_t ResultRecorder::warmupEndTime;
-
 void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
 {
     ASSERT(getSubscribeCount() == 1);  // may only be subscribed once (otherwise results get mixed)

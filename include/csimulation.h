@@ -91,6 +91,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     int contexttype;          // CTX_BUILD, CTX_EVENT, CTX_INITIALIZE or CTX_FINISH
     cModuleType *networktype; // network type
     cScheduler *schedulerp;   // event scheduler
+    simtime_t warmup_period;  // warm-up period
 
     simtime_t sim_time;       // simulation time (time of current event)
     eventnumber_t event_num;  // sequence number of current event
@@ -360,6 +361,22 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Returns the sequence number of current event.
      */
     eventnumber_t getEventNumber() const  {return event_num;}
+
+    /**
+     * Returns the length of the initial warm-up period from the configuration.
+     * Modules that compute and record scalar results manually (via recordScalar(),
+     * recordStatistic(), etc.) should be implemented in a way that they ignore
+     * observations generated during the warm-up period. cOutVector objects,
+     * and results recorded via the signals mechanism automatically obey
+     * the warm-up period and need not be modified. The warm-up period is useful
+     * for steady-state simulations.
+     */
+    simtime_t_retval getWarmupPeriod() const  {return warmup_period;}
+
+    /**
+     * INTERNAL USE ONLY. Sets the warm-up period.
+     */
+    void setWarmupPeriod(simtime_t t)  {warmup_period = t;}
     //@}
 
     /** @name Scheduling and context switching during simulation. */

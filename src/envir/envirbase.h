@@ -94,6 +94,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     simtime_t opt_simtimelimit;
     long opt_cputimelimit;
+    simtime_t opt_warmupperiod;
 
     opp_string opt_fingerprint;
 

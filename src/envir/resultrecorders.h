@@ -29,15 +29,12 @@
  */
 class ENVIR_API ResultRecorder : public cIListener
 {
-    private:
-        static simtime_t warmupEndTime;
     protected:
-        simtime_t getEndWarmupPeriod() {return warmupEndTime;}
+        simtime_t getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
         std::string makeName(simsignal_t signalID, const char *opname);
         void extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result);
         void extractSignalAttributes(cComponent *component, const char *signalName, opp_string_map& result);
     public:
-        static void setEndWarmupPeriod(simtime_t t) {warmupEndTime = t;}
         virtual void listenerAdded(cComponent *component, simsignal_t signalID);
         virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
 };

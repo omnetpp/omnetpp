@@ -109,6 +109,7 @@ Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, NULL, "The nam
 Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
 Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
 Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
+Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", NULL, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.scalar-recording-mode). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To calculate the initial fingerprint, enter any dummy string (such as \"none\"), and run the simulation.");
 Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
@@ -1218,11 +1219,14 @@ void EnvirBase::readPerRunOptions()
     opt_warnings = cfg->getAsBool(CFGID_WARNINGS);
     opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
+    opt_warmupperiod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     opt_fingerprint = cfg->getAsString(CFGID_FINGERPRINT);
     opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
     opt_record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
+
+    simulation.setWarmupPeriod(opt_warmupperiod);
 
     // install hasher object
     if (!opt_fingerprint.empty())
