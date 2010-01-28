@@ -120,6 +120,11 @@ Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, N
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
 Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING_MODE, "scalar-recording-mode", CFG_STRING, "auto", "Defines how to calculate scalar results from the given signal. Example values: count, lastval, sum, mean, min, max, timeavg, stddev, histogram, auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
 
+// the following options are declared in other files
+extern cConfigOption *CFGID_SCALAR_RECORDING;
+extern cConfigOption *CFGID_VECTOR_RECORDING;
+
+
 #define STRINGIZE0(x) #x
 #define STRINGIZE(x) STRINGIZE0(x)
 
@@ -759,8 +764,6 @@ void EnvirBase::endRun()
 }
 
 //-------------------------------------------------------------
-extern cConfigOption *CFGID_SCALAR_RECORDING; //XXX better place
-extern cConfigOption *CFGID_VECTOR_RECORDING; //XXX better place
 
 void EnvirBase::configure(cComponent *component)
 {
@@ -769,7 +772,6 @@ void EnvirBase::configure(cComponent *component)
 
 void EnvirBase::addResultRecorders(cComponent *component)
 {
-//FIXME set endWarmupTime in readoptions!!!!
     std::vector<const char *> signalNames = component->getProperties()->getIndicesFor("signal");
     std::string componentFullPath;
     for (int i = 0; i < (int)signalNames.size(); i++)
@@ -793,6 +795,7 @@ void EnvirBase::addResultRecorders(cComponent *component)
                 if (numModeHints == 0)
                 {
                     cIListener *listener = createScalarResultRecorder("auto");
+                    ASSERT(listener != NULL);
                     component->subscribe(signalName, listener);
                 }
                 else
@@ -801,6 +804,8 @@ void EnvirBase::addResultRecorders(cComponent *component)
                     {
                         const char *modeHint = prop->getValue("modeHint",j);
                         cIListener *listener = createScalarResultRecorder(modeHint);
+                        if (!listener)
+                            throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the @signal[%s] property: \"%s\"", signalName, modeHint);
                         component->subscribe(signalName, listener);
                     }
                 }
@@ -808,6 +813,8 @@ void EnvirBase::addResultRecorders(cComponent *component)
             else if (!strchr(modeList.c_str(), ','))
             {
                 cIListener *listener = createScalarResultRecorder(modeList.c_str());
+                if (!listener)
+                    throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the configuration for signal %s: \"%s\"", signalName, modeList.c_str());
                 component->subscribe(signalName, listener);
             }
             else
@@ -817,6 +824,8 @@ void EnvirBase::addResultRecorders(cComponent *component)
                 {
                     std::string mode = opp_trim(tokenizer.nextToken());
                     cIListener *listener = createScalarResultRecorder(mode.c_str());
+                    if (!listener)
+                        throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the configuration for signal %s: \"%s\"", signalName, mode.c_str());
                     component->subscribe(signalName, listener);
                 }
             }
@@ -837,10 +846,10 @@ cIListener *EnvirBase::createScalarResultRecorder(const char *mode)
     if (!strcmp(mode, "auto"))
         mode = "histogram";
 
-    //XXX this should be extensible instead of hardcoded "if"-ladder
+    // this should be extensible instead of hardcoded "if"-ladder
     cIListener *listener;
     if (!strcmp(mode, "histogram"))
-        listener = new StatisticsRecorder(new cDoubleHistogram()); //XXX or cLongHistogram, we should probably decide from @signal property
+        listener = new StatisticsRecorder(new cDoubleHistogram()); // or cLongHistogram, we could decide from @signal property; or use an adaptive histogram that automatically chooses the best mode
     else if (!strcmp(mode, "count"))
         listener = new MeanRecorder();
     else if (!strcmp(mode, "lastval"))
@@ -858,7 +867,7 @@ cIListener *EnvirBase::createScalarResultRecorder(const char *mode)
     else if (!strcmp(mode, "stddev"))
         listener = new StatisticsRecorder(new cStdDev());
     else
-        throw cRuntimeError("Unknown scalar recording mode specified in the configuration: \"%s\"", mode); //XXX print file/line or key too
+        listener = NULL;
     return listener;
 }
 
