@@ -49,6 +49,17 @@ class ENVIR_API NumericResultRecorder : public ResultRecorder
 {
     protected:
         virtual void collect(simtime_t t, double value) = 0;
+
+        void maybeCollect(double value) {
+            simtime_t t = simulation.getSimTime();
+            if (t >= getEndWarmupPeriod())
+                collect(t, value);
+        }
+        void maybeCollect(simtime_t t, double value) {
+            if (t >= getEndWarmupPeriod())
+                collect(t, value);
+        }
+
     public:
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);

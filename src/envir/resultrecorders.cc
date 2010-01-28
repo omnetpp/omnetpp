@@ -79,45 +79,31 @@ void ResultRecorder::extractSignalAttributes(cComponent *component, const char *
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, long l)
 {
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        collect(t, l);
+    maybeCollect(l);
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, double d)
 {
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        collect(t, d);
+    maybeCollect(d);
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t d)
 {
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        collect(t, SIMTIME_DBL(d));
+    maybeCollect(SIMTIME_DBL(d));
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        collect(t, s!=NULL); // record 0 or 1
+    maybeCollect(s!=NULL); // record 0 or 1
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
     cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (v) {
-        simtime_t t = v->getSignalTime(signalID);
-        if (t >= getEndWarmupPeriod())
-            collect(t, v->getSignalValue(signalID));
-    }
-    else {
-        simtime_t t = simulation.getSimTime();
-        if (t >= getEndWarmupPeriod())
-            collect(t, obj!=NULL); // record 0 or 1
-    }
+    if (v)
+        maybeCollect(v->getSignalTime(signalID), v->getSignalValue(signalID));
+    else
+        maybeCollect(obj!=NULL); // record 0 or 1
 }
 
 //---
@@ -151,13 +137,10 @@ void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cOb
                     "the previously recorded value, for signal %s (id=%d)",
                     opp_typename(typeid(*this)), SIMTIME_STR(t), signalName, (int)signalID);
         }
-        if (t >= getEndWarmupPeriod())
-            collect(t, v->getSignalValue(signalID));
+        maybeCollect(t, v->getSignalValue(signalID));
     }
     else {
-        simtime_t t = simulation.getSimTime();
-        if (t >= getEndWarmupPeriod())
-            collect(t, obj!=NULL); // record 0 or 1
+        maybeCollect(obj!=NULL); // record 0 or 1
     }
 }
 
@@ -171,22 +154,18 @@ void VectorRecorder::collect(simtime_t t, double value)
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        collect(t, (long)0); // dummy value
+    maybeCollect(0.0); // dummy value
 }
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    // if it is a cISignalValue, we should use its time for checking warm-up period
+    // if it is a cISignalValue, we should use its time for checking warm-up period;
+    // base class method overridden to spare call to getSignalValue()
     cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (!v)
-        collect(simulation.getSimTime(), (long)0);  // dummy value
-    else {
-        simtime_t t = v->getSignalTime(signalID);
-        if (t >= getEndWarmupPeriod())
-            collect(t, (long)0); // dummy value
-    }
+    if (v)
+        maybeCollect(v->getSignalTime(signalID), 0.0); // dummy value
+    else
+        maybeCollect(0.0); // dummy value
 }
 
 void CountRecorder::finish(cComponent *component, simsignal_t signalID)
@@ -251,7 +230,7 @@ void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
 
 void TimeAverageRecorder::collect(simtime_t t, double value)
 {
-    if (startTime==-1)
+    if (startTime < SIMTIME_ZERO)
         startTime = t;
     else
         weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
@@ -261,7 +240,7 @@ void TimeAverageRecorder::collect(simtime_t t, double value)
 
 void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    bool empty = (startTime == -1);
+    bool empty = (startTime < SIMTIME_ZERO);
     simtime_t t = simulation.getSimTime();
     collect(t, 0.0); // to get the last interval counted in; value 0.0 is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
