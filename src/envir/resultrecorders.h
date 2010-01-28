@@ -91,6 +91,20 @@ class ENVIR_API CountRecorder : public NumericResultRecorder
 };
 
 /**
+ * Listener for recording the last signal value
+ */
+class ENVIR_API LastValueRecorder : public NumericResultRecorder
+{
+    protected:
+        double lastValue;
+    protected:
+        virtual void collect(simtime_t t, double value) {lastValue = value;}
+    public:
+        LastValueRecorder() {lastValue = NaN;}
+        virtual void finish(cComponent *component, simsignal_t signalID);
+};
+
+/**
  * Listener for recording the sum of signal values
  */
 class ENVIR_API SumRecorder : public NumericResultRecorder

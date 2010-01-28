@@ -780,6 +780,8 @@ void EnvirBase::configure(cComponent *component)
             cIListener *listener;
             if (mode == "count")
                 listener = new MeanRecorder();
+            else if (mode == "lastval")
+                listener = new LastValueRecorder();
             else if (mode == "sum")
                 listener = new MeanRecorder();
             else if (mode == "mean")

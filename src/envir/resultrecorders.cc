@@ -198,6 +198,16 @@ void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 
 //---
 
+void LastValueRecorder::finish(cComponent *component, simsignal_t signalID)
+{
+    std::string scalarName = makeName(signalID, "lastval");
+    opp_string_map attributes;
+    extractSignalAttributes(component, signalID, attributes);
+    ev.recordScalar(component, scalarName.c_str(), lastValue, &attributes);
+}
+
+//---
+
 void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     std::string scalarName = makeName(signalID, "sum");
