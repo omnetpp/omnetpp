@@ -802,7 +802,7 @@ void EnvirBase::configure(cComponent *component)
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
         {
             // add listener to record as output vector
-            cIListener *listener = new VectorRecorder(component, signalName);
+            cIListener *listener = new VectorRecorder();
             component->subscribe(signalName, listener);
         }
     }

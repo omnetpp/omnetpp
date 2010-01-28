@@ -66,10 +66,11 @@ class ENVIR_API VectorRecorder : public NumericResultRecorder
         void *handle;        // identifies output vector for the output vector manager
         simtime_t lastTime;  // to ensure increasing timestamp order
     protected:
-        void collect(simtime_t t, double value);
+        virtual void collect(simtime_t t, double value);
     public:
-        VectorRecorder(cComponent *component, const char *signalName);
-        void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+        VectorRecorder() {handle = NULL; lastTime = 0;}
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+        virtual void listenerAdded(cComponent *component, simsignal_t signalID);
 };
 
 /**
@@ -81,7 +82,7 @@ class ENVIR_API CountRecorder : public NumericResultRecorder
     protected:
         long count;
     protected:
-        void collect(simtime_t t, double value) {count++;}
+        virtual void collect(simtime_t t, double value) {count++;}
     public:
         CountRecorder() {count = 0;}
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s); // count strings too
@@ -97,7 +98,7 @@ class ENVIR_API SumRecorder : public NumericResultRecorder
     protected:
         double sum;
     protected:
-        void collect(simtime_t t, double value) {sum += value;}
+        virtual void collect(simtime_t t, double value) {sum += value;}
     public:
         SumRecorder() {sum = 0;}
         virtual void finish(cComponent *component, simsignal_t signalID);
@@ -112,7 +113,7 @@ class ENVIR_API MeanRecorder : public NumericResultRecorder
         long count;
         double sum;
     protected:
-        void collect(simtime_t t, double value) {count++; sum += value;}
+        virtual void collect(simtime_t t, double value) {count++; sum += value;}
     public:
         MeanRecorder() {count = 0; sum = 0;}
         virtual void finish(cComponent *component, simsignal_t signalID);
@@ -126,7 +127,7 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
     protected:
         double min;
     protected:
-        void collect(simtime_t t, double value) {if (value < min) min = value;}
+        virtual void collect(simtime_t t, double value) {if (value < min) min = value;}
     public:
         MinRecorder() {min = POSITIVE_INFINITY;}
         virtual void finish(cComponent *component, simsignal_t signalID);
@@ -140,7 +141,7 @@ class ENVIR_API MaxRecorder : public NumericResultRecorder
     protected:
         double max;
     protected:
-        void collect(simtime_t t, double value) {if (value > max) max = value;}
+        virtual void collect(simtime_t t, double value) {if (value > max) max = value;}
     public:
         MaxRecorder() {max = NEGATIVE_INFINITY;}
         virtual void finish(cComponent *component, simsignal_t signalID);
@@ -157,7 +158,7 @@ class ENVIR_API TimeAverageRecorder : public NumericResultRecorder
         double lastValue;
         double weightedSum;
     protected:
-        void collect(simtime_t t, double value);
+        virtual void collect(simtime_t t, double value);
     public:
         TimeAverageRecorder() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
         virtual void finish(cComponent *component, simsignal_t signalID);
@@ -171,7 +172,7 @@ class ENVIR_API StatisticsRecorder : public NumericResultRecorder, private cObje
     protected:
         cStatistic *statistic;
     protected:
-        void collect(simtime_t t, double value) {statistic->collect(value);}
+        virtual void collect(simtime_t t, double value) {statistic->collect(value);}
     public:
         StatisticsRecorder(cStatistic *stat) {statistic = stat; take(statistic);}
         ~StatisticsRecorder() {drop(statistic); delete statistic;}

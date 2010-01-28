@@ -121,14 +121,18 @@ void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signal
 
 //---
 
-//TODO use arg-less ctor!!! we could call registerOutputVector() in listenerAdded(), or just remember component ptr there, and register vector later when 1st signal gets fired
-
-VectorRecorder::VectorRecorder(cComponent *component, const char *signalName)
+void VectorRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
 {
+    NumericResultRecorder::listenerAdded(component, signalID);
+
+    // we can register the vector here, because base class ensures we are subscribed only at once place
+    const char *signalName = cComponent::getSignalName(signalID);
+    ASSERT(signalName != NULL);
     opp_string_map attributes;
     extractSignalAttributes(component, signalName, attributes);
+
     handle = ev.registerOutputVector(component->getFullPath().c_str(), signalName);
-    ASSERT(handle!=NULL);
+    ASSERT(handle != NULL);
     for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
         ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
 }
