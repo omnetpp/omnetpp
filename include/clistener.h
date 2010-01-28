@@ -28,6 +28,8 @@ class cComponent;
  *
  * @see cComponent::subscribe(), cComponent::unsubscribe(), cComponent::emit()
  * and cIListener
+ *
+ * @ingroup Signals
  */
 typedef int simsignal_t;
 
@@ -85,6 +87,8 @@ class SIM_API cSignalValue : public cObject, cISignalValue, noncopyable
  * when the destructor runs, the object is no longer subscribed anywhere.
  *
  * @see cComponent::subscribe(), cComponent::unsubscribe()
+ *
+ * @ingroup Signals
  */
 class SIM_API cIListener
 {
@@ -165,6 +169,8 @@ class SIM_API cIListener
  * for other listeners. The user needs to redefine one or more of the
  * overloaded receiveSignal() methods; the rest will throw a "Data type
  * not supported" error.
+ *
+ * @ingroup Signals
  */
 class SIM_API cListener : public cIListener
 {
