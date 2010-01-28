@@ -36,6 +36,7 @@
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
 #include "chistogram.h"
+#include "stringtokenizer.h"
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
 #include "cconfigoption.h"
@@ -776,29 +777,38 @@ void EnvirBase::configure(cComponent *component)
         {
             // add listener to record as output scalar
             //XXX this should be extensible instead of hardcoded "if"-ladder
-            std::string mode = ev.getConfig()->getAsString(signalFullPath.c_str(), CFGID_SCALAR_RECORDING_MODE, "");
-            cIListener *listener;
-            if (mode == "count")
-                listener = new MeanRecorder();
-            else if (mode == "lastval")
-                listener = new LastValueRecorder();
-            else if (mode == "sum")
-                listener = new MeanRecorder();
-            else if (mode == "mean")
-                listener = new MeanRecorder();
-            else if (mode == "min")
-                listener = new MinRecorder();
-            else if (mode == "max")
-                listener = new MaxRecorder();
-            else if (mode == "timeavg")
-                listener = new TimeAverageRecorder();
-            else if (mode == "stddev")
-                listener = new StatisticsRecorder(new cStdDev());
-            else if (mode == "histogram")
-                listener = new StatisticsRecorder(new cDoubleHistogram()); //XXX or cLongHistogram, we should probably decide from @signal property
-            else
-                throw cRuntimeError("Unknown scalar recording mode specified in the configuration: \"%s\"", mode); //XXX print file/line or key too
-            component->subscribe(signalName, listener);
+            std::string modeList = ev.getConfig()->getAsString(signalFullPath.c_str(), CFGID_SCALAR_RECORDING_MODE, "");
+            StringTokenizer tokenizer(modeList.c_str(), ",");
+            while (tokenizer.hasMoreTokens())
+            {
+                std::string mode = opp_trim(tokenizer.nextToken());
+                cIListener *listener;
+                if (mode == "auto") { //FIXME make this the result
+                    //XXX use "mode-hint" key in property
+                    mode = "histogram";
+                }
+                if (mode == "count")
+                    listener = new MeanRecorder();
+                else if (mode == "lastval")
+                    listener = new LastValueRecorder();
+                else if (mode == "sum")
+                    listener = new MeanRecorder();
+                else if (mode == "mean")
+                    listener = new MeanRecorder();
+                else if (mode == "min")
+                    listener = new MinRecorder();
+                else if (mode == "max")
+                    listener = new MaxRecorder();
+                else if (mode == "timeavg")
+                    listener = new TimeAverageRecorder();
+                else if (mode == "stddev")
+                    listener = new StatisticsRecorder(new cStdDev());
+                else if (mode == "histogram")
+                    listener = new StatisticsRecorder(new cDoubleHistogram()); //XXX or cLongHistogram, we should probably decide from @signal property
+                else
+                    throw cRuntimeError("Unknown scalar recording mode specified in the configuration: \"%s\"", mode); //XXX print file/line or key too
+                component->subscribe(signalName, listener);
+            }
         }
 
         if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
