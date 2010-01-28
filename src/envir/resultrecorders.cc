@@ -100,23 +100,24 @@ void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signal
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
-    const char *signalName = cComponent::getSignalName(signalID);
-    throw cRuntimeError(
-            "%s: unsupported signal data type 'const char *' for signal %s (id=%d)",
-            opp_typename(typeid(*this)), signalName, (int)signalID);
+    simtime_t t = simulation.getSimTime();
+    if (t >= getEndWarmupPeriod())
+        collect(t, s!=NULL); // record 0 or 1
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
     TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (!d) {
-        const char *signalName = cComponent::getSignalName(signalID);
-        throw cRuntimeError(
-                "%s: unsupported signal data type '%s *' for signal %s (id=%d)",
-                opp_typename(typeid(*this)), obj->getClassName(), signalName, (int)signalID);
+    if (d) {
+        // "record double with timestamp" case
+        if (d->time >= getEndWarmupPeriod())
+            collect(d->time, d->value);
     }
-    if (d->time >= getEndWarmupPeriod())
-        collect(d->time, d->value);
+    else {
+        simtime_t t = simulation.getSimTime();
+        if (t >= getEndWarmupPeriod())
+            collect(t, obj!=NULL); // record 0 or 1
+    }
 }
 
 //---
@@ -141,21 +142,23 @@ void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cOb
 {
     // copied from base class to add monotonicity check
     TimeValue *d = dynamic_cast<TimeValue *>(obj);
-    if (!d) {
-        const char *signalName = cComponent::getSignalName(signalID);
-        throw cRuntimeError(
-                "%s: unsupported signal data type '%s *' for signal %s (id=%d)",
-                opp_typename(typeid(*this)), obj->getClassName(), signalName, (int)signalID);
+    if (d) {
+        // "record double with timestamp" case
+        if (d->time < lastTime) {
+            const char *signalName = cComponent::getSignalName(signalID);
+            throw cRuntimeError(
+                    "%s: cannot record data with an earlier timestamp (t=%s) than "
+                    "the previously recorded value, for signal %s (id=%d)",
+                    opp_typename(typeid(*this)), SIMTIME_STR(d->time), signalName, (int)signalID);
+        }
+        if (d->time >= getEndWarmupPeriod())
+            collect(d->time, d->value);
     }
-    if (d->time < lastTime) {
-        const char *signalName = cComponent::getSignalName(signalID);
-        throw cRuntimeError(
-                "%s: cannot record data with an earlier timestamp (t=%s) than "
-                "the previously recorded value, for signal %s (id=%d)",
-                opp_typename(typeid(*this)), SIMTIME_STR(d->time), signalName, (int)signalID);
+    else {
+        simtime_t t = simulation.getSimTime();
+        if (t >= getEndWarmupPeriod())
+            collect(t, obj!=NULL); // record 0 or 1
     }
-    if (d->time >= getEndWarmupPeriod())
-        collect(d->time, d->value);
 }
 
 void VectorRecorder::collect(simtime_t t, double value)
