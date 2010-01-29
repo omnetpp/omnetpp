@@ -1,3 +1,8 @@
+2010-01-29  Andras Varga
+
+	* ned2.y: fixed ambiguity when parsing @foo(key=,"val"); solution
+	is that equal sign should not be allowed as part of the value.
+
 2009-07-18  Andras Varga
 
 	* opp_msgc: further refinements related to recent changes

@@ -892,7 +892,7 @@ property_value_tokens
 
 property_value_token
         : NAME | INTCONSTANT | REALCONSTANT | TRUE_ | FALSE_
-        | '$' | '@' | ':' | '=' | '[' | ']' | '{' | '}' | '.' | '?'
+        | '$' | '@' | ':' | '[' | ']' | '{' | '}' | '.' | '?'
         | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE
         | DOUBLEASTERISK | TO | PLUSPLUS | OR | AND | XOR | NOT
         ;
