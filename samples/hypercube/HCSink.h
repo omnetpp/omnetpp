@@ -20,9 +20,13 @@
  */
 class HCSink : public cSimpleModule
 {
+  private:
+    simsignal_t endToEndDelaySignal;
+    simsignal_t hopCountSignal;
+    simsignal_t hopRatioSignal;
   public:
-    HCSink() : cSimpleModule(STACKSIZE) {}
-    virtual void activity();
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
 };
 
 #endif

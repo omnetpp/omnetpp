@@ -7,7 +7,7 @@ Each node consists of router (rte) module, a source and a sink.
 Demonstrates:
   - hypercube topology with dimension as parameter
   - topology templates
-  - output vectors
+  - result collection
 
 Model description
 -----------------
