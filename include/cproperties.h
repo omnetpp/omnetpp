@@ -146,7 +146,7 @@ class SIM_API cProperties : public cObject
      * The strings in the returned array do not need to be deallocated and
      * must not be modified.
      */
-    virtual const std::vector<const char *> getIndicesFor(const char *name) const;
+    virtual std::vector<const char *> getIndicesFor(const char *name) const;
 
     /**
      * Adds the given property to this object.

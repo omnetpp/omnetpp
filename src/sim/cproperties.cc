@@ -137,7 +137,7 @@ const std::vector<const char *> cProperties::getNames() const
     return v;
 }
 
-const std::vector<const char *> cProperties::getIndicesFor(const char *name) const
+std::vector<const char *> cProperties::getIndicesFor(const char *name) const
 {
     std::vector<const char *> v;
     for (int i = 0; i < (int)propv.size(); i++)
