@@ -1,3 +1,8 @@
+2010-01-29  Andras Varga
+
+	* cProperty: getNumValues() to return 0 (instead of thowing an error)
+	when the property does not contain the given property key.
+
 2010-01-23  Andras Varga
 
 	* implemented signals mechanism. See new classes cIListener and
