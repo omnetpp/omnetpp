@@ -15,7 +15,7 @@ simple Sink
 {
     parameters:
         @display("i=block/sink");
-        @signal[arrival](title="lifetime of arrived jobs";unit="s");
+        @signal[lifetime](title="lifetime of arrived jobs";unit=s;interpolationMode=none);
     gates:
         input in;
 }

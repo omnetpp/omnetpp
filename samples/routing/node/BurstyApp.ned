@@ -22,9 +22,9 @@ simple BurstyApp like IApp
         volatile double sendIaTime @unit(s) = default(exponential(1s)); // time between generating packets during a burst
         volatile int packetLength @unit(byte); // length of a message
         @display("i=block/source");
-        @signal[endToEndDelay](title="end-to-end delay of arrived packets";unit=s);
-        @signal[hopCount](title="hop count of arrived packets");
-        @signal[sourceAddress](title="source address of arrived packets");
+        @signal[endToEndDelay](title="end-to-end delay of arrived packets";unit=s;interpolationMode=none);
+        @signal[hopCount](title="hop count of arrived packets";interpolationMode=none);
+        @signal[sourceAddress](title="source address of arrived packets";interpolationMode=none);
     gates:
         output out;
         input in;

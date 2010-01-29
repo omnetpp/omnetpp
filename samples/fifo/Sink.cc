@@ -17,7 +17,7 @@ namespace fifo {
 class Sink : public cSimpleModule
 {
   private:
-    simsignal_t arrivalSignal;
+    simsignal_t lifetimeSignal;
 
   protected:
     virtual void initialize();
@@ -28,14 +28,14 @@ Define_Module( Sink );
 
 void Sink::initialize()
 {
-    arrivalSignal = registerSignal("arrival");
+    lifetimeSignal = registerSignal("lifetime");
 }
 
 void Sink::handleMessage(cMessage *msg)
 {
     simtime_t lifetime = simTime() - msg->getCreationTime();
     EV << "Received " << msg->getName() << ", lifetime: " << lifetime << "s" << endl;
-    emit(arrivalSignal, lifetime);
+    emit(lifetimeSignal, lifetime);
     delete msg;
 }
 
