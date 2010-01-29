@@ -26,6 +26,10 @@ class AbstractFifo : public cSimpleModule
     cMessage *msgServiced;
     cMessage *endServiceMsg;
     cQueue queue;
+    simsignal_t qlenSignal;
+    simsignal_t busySignal;
+    simsignal_t queueingTimeSignal;
+    simsignal_t serviceStartSignal;
 
   public:
     AbstractFifo();
