@@ -19,7 +19,6 @@ simple Fifo
         @signal[qlen](title="queue length";modeHint="timeavg","max");
         @signal[busy](title="server busy state";modeHint="timeavg");
         @signal[queueingTime](title="queueing time at dequeue";unit="s");
-        @signal[serviceStart](title="service time at service start";unit="s");
     gates:
         input in;
         output out;
