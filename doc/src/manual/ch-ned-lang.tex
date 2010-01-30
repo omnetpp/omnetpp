@@ -498,8 +498,11 @@ Inheritance in general will be discussed in section \ref{sec:ch-ned-lang:inherit
 \label{sec:ch-ned-lang:compound-modules}
 
 A compound module groups other modules into a larger unit. A compound
-module may have gates and parameters like a simple module, but
-no active behavior (no C++ code) is associated with it.
+module may have gates and parameters like a simple module, but no active
+behavior is associated with it.\footnote{Although the C++ class
+for a compound module can be overridden with the \fprop{@class} property,
+this is a feature that should probably never be used. Encapsulate the code
+into a simple module, and add it as a submodule.}
 
 \begin{note}
     When there is a temptation to add code to a compound module,
