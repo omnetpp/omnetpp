@@ -1154,13 +1154,12 @@ The distribution estimation\index{distribution!estimation} classes
 \cclass{cDensityEstBase}. Distribution estimation classes (except for
 \cclass{cPSquare}) assume that the observations are within a range.
 You may specify the range explicitly (based on some a-priori info
-about the distribution) or you may let the object collect the first
-few observations and determine the range from them. Methods which let
-you specify range settings are part of \cclass{cDensityEstBase}.
+about the distribution), or you may let the object collect the first
+few observations and determine the range from them.
 
 The following member functions exist for setting up the range
-and to specify how many observations should be used for
-automatically determining the range.
+and to specify how many observations should be used for automatically
+determining the range (these methods are part of \cclass{cDensityEstBase}):
 
 \begin{cpp}
 setRange(lower,upper);
@@ -1197,8 +1196,6 @@ range.
     \caption{Setting up a histogram's range}
   \end{center}
 \end{figure}
-
-After the cells have been set up, collection can go on.
 
 The \ffunc{isTransformed()} function returns \textit{true} when the cells have
 already been set up. You can force range estimation and setting
@@ -1281,14 +1278,6 @@ double rnd = histogram.random();
 
 
 \cclass{cStdDev} assumes normal distribution.
-
-You can also wrap the distribution object in a \cclass{cPar}:
-
-\begin{cpp}
-cMsgPar rndPar("rndPar");
-rndPar.setDoubleValue(&histogram);
-\end{cpp}
-
 
 The \cclass{cPar} object stores the pointer to the histogram (or $P^{2}$ object),
 and whenever it is asked for the value, calls the histogram object's \ffunc{random()}
@@ -1406,7 +1395,8 @@ observations, and intermediate nodes contain mother observation counts
 for their children. If an observation falls outside the histogram
 range, the range is extended in a natural manner by inserting new
 level(s) at the top of the tree. The fundamental parameter to the
-algorithm is the split factor $k$. Experience shows that $k=2$ worked best.
+algorithm is the split factor $k$. Experience has shown that $k=2$
+works best.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -1494,10 +1484,8 @@ eliminated. It has been shown that the partition created by
 equal-frequency partition.
 
 
-{\opp} contains an experimental implementation of the \textit{k}-split
-algorithm, the \cclass{cKSplit} class. Research on \textit{k}-split is
-still under way.
-
+{\opp} contains an implementation of the \textit{k}-split algorithm,
+the \cclass{cKSplit} class.
 
 \subsubsection{The cKSplit class}
 
@@ -1680,14 +1668,16 @@ possible to record values into output vectors with a timestamp other than
 \ffunc{simTime()}. Increasing timestamp order is still enforced though.
 
 All \cclass{cOutVector} objects write to a single \textit{output vector file}
-named \ttt{omnetpp.vec} by default.
-You can configure output vectors from \ffilename{omnetpp.ini}:
-you can disable writing to the file, or limit it to a certain
-simulation time interval for recording (section
-\ref{sec:ch-config-sim:outvectors}).
-
+that has a file extension \ttt{.vec}.
+  \footnote{A \ttt{.vci} file is also created, but it is just an index for
+  the \ttt{.vec} file and does not contain any new information. The IDE
+  re-creates the \ttt{.vci} file if it is missing.}
 The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-vectors}.
+
+You can configure output vectors from \ffilename{omnetpp.ini}:
+you can disable individual vectors, or limit recording to certain
+simulation time intervals (section \ref{sec:ch-config-sim:outvectors}).
 
 If the output vector object is disabled or the simulation time is
 outside the specified interval, \ffunc{record()} doesn't write
@@ -1763,12 +1753,8 @@ void Sink::finish()
 }
 \end{cpp}
 
-The above calls write into the \textit{output scalar file} which is named
-\ttt{omnetpp.sca} by default. The output scalar file is preserved across
-simulation runs (unlike the output vector file which gets deleted
-at the beginning of every simulation run).
-Data are always appended at the end of the file, and
-output from different simulation runs are separated by special lines.
+The above calls record the data into an \textit{output scalar file},
+a line-oriented text file that has the file extension \ttt{.sca}.
 The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-scalars}.
 
