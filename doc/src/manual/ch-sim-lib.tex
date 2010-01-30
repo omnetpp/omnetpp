@@ -1081,6 +1081,7 @@ weightedMultiShortestPathsTo(cTopology::Node *target);
 
 
 \section{Statistics and distribution estimation}
+\label{sec:ch-sim-lib:statistics}
 
 \subsection{cStatistic and descendants}
 
@@ -1615,6 +1616,7 @@ void setParameters(double acc=0.1, int reps=3);
 
 
 \section{Recording simulation results}
+\label{sec:ch-sim-lib:result-recording}
 
 \subsection{Output vectors: cOutVector}
 \label{sec:ch-sim-lib:coutvector}
@@ -1671,7 +1673,7 @@ All \cclass{cOutVector} objects write to a single \textit{output vector file}
 that has a file extension \ttt{.vec}.
   \footnote{A \ttt{.vci} file is also created, but it is just an index for
   the \ttt{.vec} file and does not contain any new information. The IDE
-  re-creates the \ttt{.vci} file if it is missing.}
+  re-creates the \ttt{.vci} file if it gets lost.}
 The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-vectors}.
 
