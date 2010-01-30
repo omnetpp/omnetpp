@@ -1280,18 +1280,18 @@ directions.
 
 \subsubsection{Channel specification}
 
-A channel specification (\ttt{-{}-> $channelspec$ -{}->} inside a connection)
+Channel specifications (\ttt{-{}->$channelspec$-{}->} inside a connection)
 are similar to submodules in many respect.
 
 Let's see some examples:
 
 \begin{ned}
-<--> {delay=10ms;} <-->
-<--> {delay=10ms; datarate=1e-8;} <-->
-<--> C <-->
-<--> BBone {cost=100; length=52km; datarate=1e-8;} <-->
-<--> {@display("XXX");} <-->
-<--> BBone {@display("XXX");} <-->
+... <--> {delay=10ms;} <--> ...
+... <--> {delay=10ms; ber=1e-8;} <--> ...
+... <--> C <--> ...
+... <--> BBone {cost=100; length=52km; ber=1e-8;} <--> ...
+... <--> {@display("ls=red");} <--> ...
+... <--> BBone {@display("ls=green,2");} <--> ...
 \end{ned}
 
 
@@ -1645,7 +1645,7 @@ equivalent to \ttt{@host}: \ttt{@host()}, \ttt{@host(true)},
 tag.
 
 
-\subsubsection{Modifying properties}
+\subsubsection{Overriding and extending property values}
 
 When you subclass a NED type, use a module type as submodule or use a channel
 type for a connection, you may add new properties to the module or channel,

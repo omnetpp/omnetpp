@@ -354,16 +354,16 @@ Appendix \ref{cha:display-string-tags} about display string tags.
 \subsection{Connection display strings}
 
 Connections may also have display strings. Connections inherit the
-display string property of their channel in the same way submodules inherit
-their display string from their types. If no channel is specified for a
-connection, \cclass{IdealChannel} will be used implicitly by the simulation kernel.
+display string property from their channel types, in the same way as 
+submodules inherit theirs from module types. The default display
+strings are empty.
 
 Connections support the following tags:
 \begin{itemize}
-  \item{\ttt{ls} -- line shape, and colors}
+  \item{\ttt{ls} -- line style and color}
   \item{\ttt{t} -- text}
   \item{\ttt{tt} -- tooltip}
-  \item{\ttt{m} -- used for hinting Tkenv how the connections should route to/from the module}
+  \item{\ttt{m} -- orientation and positioning}
 \end{itemize}
 
 Example of a thick, red connection:
@@ -376,11 +376,12 @@ source1.out --> { @display("ls=red,3"); } --> queue1.in++;
 \end{center}
 
 \begin{note}
-If you want to hide a connection, specify width=0 for the connection. i.e. use \ttt{ls=,0}.
+If you want to hide a connection, specify zero line thickness in the display 
+string (\ttt{"ls=,0"}).
 \end{note}
 
-To see detailed descripton of these tags check
-Appendix \ref{cha:display-string-tags} about display string tags.
+To see a detailed description of these tags, check Appendix 
+\ref{cha:display-string-tags}.
 
 \subsection{Message display strings}
 
