@@ -271,7 +271,7 @@ parameter called \ttt{destAddress} (others have been omitted for now),
 and two gates named \ttt{out} and \ttt{in} for sending and receiving
 application packets.
 
-The argument of \ttt{@display()} is called a \textit{display string},
+The argument of \fprop{@display()} is called a \textit{display string},
 and it defines the rendering of the module in graphical environments;
 \ttt{"i=..."} defines the default icon.
 
@@ -399,7 +399,7 @@ Note that the NED definition doesn't contain any code to define the
 operation of the module: that part is expressed in C++. By default, {\opp}
 looks for C++ classes of the same name as the NED type (so here, \ttt{Queue}).
 
-One can explicitly specify the C++ class with the \ttt{@class} property.
+One can explicitly specify the C++ class with the \fprop{@class} property.
 Classes with namespace qualifiers are also accepted, as shown in the following
 example that uses the \ttt{mylib::Queue} class:
 
@@ -417,8 +417,8 @@ simple Queue
 \end{ned}
 
 If you have several modules that are all in a common namespace, then a
-better alternative to \ttt{@class} is the \ttt{@namespace} property. The
-C++ namespace given with \ttt{@namespace} will be prepended to the normal
+better alternative to \fprop{@class} is the \fprop{@namespace} property. The
+C++ namespace given with \fprop{@namespace} will be prepended to the normal
 class name. In the following example, the C++ classes will be
 \ttt{mylib::App}, \ttt{mylib::Router} and \ttt{mylib::Queue}:
 
@@ -438,7 +438,7 @@ simple Queue {
 }
 \end{ned}
 
-As you've seen, \ttt{@namespace} can be specified on file level. Moreover,
+As you've seen, \fprop{@namespace} can be specified on file level. Moreover,
 when placed in a file called \ttt{package.ned}, the namespace will apply to
 all files in the same directory and all directories below.
 
@@ -452,7 +452,7 @@ to a fixed value (see \ref{sec:ch-ned-lang:parameters} and
 \ref{sec:ch-ned-lang:gates}), or to replace the C++ class with a different
 one. Now, by default the derived NED module type will \textit{inherit} the
 C++ class from its base, so it is important to remember that you need to
-write out \ttt{@class} if you want it to use the new class.
+write out \fprop{@class} if you want it to use the new class.
 
 The following example shows how to specialize a module by setting a parameter
 to a fixed value (and leaving the C++ class unchanged):
@@ -480,7 +480,7 @@ simple PriorityQueue extends Queue // wrong! still uses the Queue C++ class
 }
 \end{ned}
 
-The correct solution is to add a \ttt{@class} property to override the
+The correct solution is to add a \fprop{@class} property to override the
 inherited C++ class:
 
 \begin{ned}
@@ -604,7 +604,7 @@ Channels encapsulate parameters and behaviour associated with connections.
 Channels are like simple modules, in the sense that there are C++ classes
 behind them. The rules for finding the C++ class for a NED channel type is
 the same as with simple modules: the default class name is the NED type
-name unless there is a \ttt{@class} property (\ttt{@namespace} is also
+name unless there is a \fprop{@class} property (\fprop{@namespace} is also
 observed), and the C++ class is inherited when the channel is subclassed.
 
 Thus, the following channel type would expect a \ttt{CustomChannel} C++ class
@@ -702,10 +702,10 @@ channel DatarateChannel2 extends ned.DatarateChannel
 Parameters are primarily useful as input to the underlying C++ class, but
 even if you reuse the underlying C++ class of built-in channel types, they
 may be read and used by other parts of the model. For example, adding a
-\ttt{cost} parameter (or \ttt{@cost} property) may be observed by the
+\ttt{cost} parameter (or \fprop{@cost} property) may be observed by the
 routing algorithm and used for routing decisions. The following example
 shows a \ttt{cost} parameter, and annotation using a property
-(\ttt{@backbone}).
+(\fprop{@backbone}).
 
 \begin{ned}
 channel Backbone extends ned.DatarateChannel
@@ -727,7 +727,7 @@ input to C++ code that implements simple modules and channels.
 Parameters can be of type \fkeyword{double}, \fkeyword{int},
 \fkeyword{bool}, \fkeyword{string} and \fkeyword{xml}; they can also
 be declared \fkeyword{volatile}. For the numeric types, a unit of
-measurement can also be specified (\ttt{@unit} property), to increase
+measurement can also be specified (\fprop{@unit} property), to increase
 type safety.
 
 Parameters can get their value from NED files or from the configuration
@@ -901,7 +901,7 @@ the parameter can be used a source of random numbers.
 \subsubsection{Units}
 
 One can declare a parameter to have an associated unit of measurement,
-by adding the \ttt{@unit} property. An example:
+by adding the \fprop{@unit} property. An example:
 
 \begin{ned}
 simple App
@@ -930,7 +930,7 @@ The {\opp} runtime does a full and rigorous unit check on
 parameters to ensure ``unit safety'' of models. Constants should
 always include the measurement unit.
 
-The \ttt{@unit} property of a parameter cannot be added or overridden
+The \fprop{@unit} property of a parameter cannot be added or overridden
 in subclasses or in submodule declarations.
 
 
@@ -1034,11 +1034,11 @@ The gate size can be queried from various NED expressions with the
 \ttt{sizeof()} operator.
 
 NED normally requires that all gates be connected. To relax this
-requirement, you can annotate selected gates with the \ttt{@loose}
+requirement, you can annotate selected gates with the \fprop{@loose}
 property, which turns off connectivity check for that gate. Also, input
 gates that solely exist so that the module can receive messages via
 \ffunc{sendDirect()} (see \ref{sec:simple-modules:direct-sending}) should
-be annotated with \ttt{@directIn}. It is also possible to turn off connectivity
+be annotated with \fprop{@directIn}. It is also possible to turn off connectivity
 check for all gates within a compound module, by specifying the
 \fkeyword{allowunconnected} keyword in the module's connections section.
 
@@ -1069,7 +1069,7 @@ simple Sink {
 \end{ned}
 
 A node for building a square grid. Gates around the edges of the grid are
-expected to remain unconnected, hence the \ttt{@loose} annotation:
+expected to remain unconnected, hence the \fprop{@loose} annotation:
 
 \begin{ned}
 simple GridNode {
@@ -1079,7 +1079,7 @@ simple GridNode {
 \end{ned}
 
 \ttt{WirelessNode} below is expected to receive messages (radio transmissions)
-via direct sending, so its \ttt{radioIn} gate is marked with \ttt{@directIn}.
+via direct sending, so its \ttt{radioIn} gate is marked with \fprop{@directIn}.
 
 \begin{ned}
 simple WirelessNode {
@@ -1168,7 +1168,7 @@ module Host
 
 As already seen in previous code examples, a submodule may also have a
 curly brace block as body, where one can assign parameters, set the size of gate vectors, and add/modify
-properties like the display string (\ttt{@display}). It is not possible to
+properties like the display string (\fprop{@display}). It is not possible to
 add new parameters and gates.
 
 Display strings specified here will be merged with the display string
@@ -1229,7 +1229,7 @@ parent module, or inside compound submodules.
 Input and output gates are connected with a normal arrow, and inout gates
 with a double-headed arrow ``\ttt{<-{}->}''. To connect the two gates
 with a channel, use two arrows and put the channel specification in between.
-The same syntax is used to add properties such as \ttt{@display} to the
+The same syntax is used to add properties such as \fprop{@display} to the
 connection.
 
 Some examples have already been shown in the Warmup section
@@ -1628,7 +1628,7 @@ the parser automatically drops one layer of quotes; thus, \ttt{@class(TCP)}
 and \ttt{@class("TCP")} are exactly the same.
 
 There are also some conventions. One can use properties to tag some NED element
-with a label; for example, a \ttt{@host} property could be used to mark
+with a label; for example, a \fprop{@host} property could be used to mark
 all module types that represent various hosts. This property could be used
 e.g. by editing tools, by topology discovery code inside the simulation model, etc.
 
@@ -1734,7 +1734,7 @@ the same component type: a simple module may only extend a simple module,
 compound module may only extend a compound module, and so on. Single
 inheritance is supported for modules and channels, and multiple inheritance
 is supported for module interfaces and channel interfaces. A network is a
-shorthand for a compound module with the \ttt{@isNetwork} property set, so
+shorthand for a compound module with the \fprop{@isNetwork} property set, so
 the same rules apply to it as to compound modules.
 
 However, a simple or compound module type may implement (\fkeyword{like}
@@ -1743,7 +1743,7 @@ several channel interfaces.
 
 \begin{important}
     When you extend a simple module type both in NED and in C++, you must
-    use the \ttt{@class} property to tell NED to use the new C++ class --
+    use the \fprop{@class} property to tell NED to use the new C++ class --
     otherwise your new module type inherits the C++ class of the base!
 \end{important}
 
@@ -1820,18 +1820,21 @@ directories, but this can be eliminated with a toplevel \ttt{package.ned}.
 NED files called \ffilename{package.ned} have a special role, as they are meant
 to represent the whole package. For example, comments in
 \ffilename{package.ned} are treated as documentation of the package. Also, a
-\ttt{@namespace} property in a \ffilename{package.ned} file affects all NED
+\fprop{@namespace} property in a \ffilename{package.ned} file affects all NED
 files in that directory and all directories below.
 
 The toplevel \ffilename{package.ned} file can be used to designate the root
 package, which is useful for eliminating a few levels of empty directories
-resulting from the package naming convention. That is, if you have a
-\ffilename{package.ned} file in your \ttt{<root>} directory whose package
-declaration says \ttt{org.example.myproject}, then the \ttt{<root>/a/b/c}
-directory will be package \ttt{org.example.myproject.a.b.c} -- and NED
+resulting from the package naming convention. For example, if you have a
+project where you want to have all NED types under the \ttt{org.example.myproject}
+package but don't want to have the directories named \ttt{org}, \ttt{example} and
+\ttt{myproject} in the source tree, then you can put a \ffilename{package.ned}
+file in the source root directory with the package declaration
+\ttt{org.example.myproject}. This will cause a directory \ttt{foo} under the
+root to be interpreted as package \ttt{org.example.myproject.foo}, and NED
 files in them must contain that as package declaration. Only the root
-\ffilename{package.ned} has this property, other \ffilename{package.ned}'s cannot
-change the package.
+\ffilename{package.ned} can define the package, \ffilename{package.ned} files
+in subdirectories must follow it.
 
 Let's look at the INET Framework as example, which contains hundreds of NED
 files in several dozen packages. The directory structure looks like this:

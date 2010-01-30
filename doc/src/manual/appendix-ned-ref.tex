@@ -246,17 +246,17 @@ and interface implementation rules in section \ref{ch-ned-ref:sec:implementing-a
 \subsubsection{The network keyword}
 
 A network declared with the \fkeyword{network} keyword is equivalent to a compound
-module (\fkeyword{module} keyword) with the \ttt{@isNetwork(true)} property.
+module (\fkeyword{module} keyword) with the \fprop{@isNetwork(true)} property.
 
 \begin{note}
     A simple module can only be designated to be a network by spelling out the
-    \ttt{@isNetwork} property; the \fkeyword{network} keyword cannot
+    \fprop{@isNetwork} property; the \fkeyword{network} keyword cannot
     be used for that purpose.
 \end{note}
 
 \subsubsection{The @isNetwork property}
 
-The \ttt{@isNetwork} property is only recognized on simple modules and
+The \fprop{@isNetwork} property is only recognized on simple modules and
 compound modules. The value may be empty, true or false:
 
 \begin{ned}
@@ -266,11 +266,11 @@ compound modules. The value may be empty, true or false:
 @isNetwork(false);
 \end{ned}
 
-The empty value corresponds to \ttt{@isNetwork(true)}.
+The empty value corresponds to \fprop{@isNetwork(true)}.
 
-The \ttt{@isNetwork} property does not get inherited, that is, a subclass
-of a module with \ttt{@isNetwork} set does not automatically become a network.
-The \ttt{@isNetwork} property needs to be explicitly added to the subclass
+The \fprop{@isNetwork} property does not get inherited, that is, a subclass
+of a module with \fprop{@isNetwork} set does not automatically become a network.
+The \fprop{@isNetwork} property needs to be explicitly added to the subclass
 to make it a network.
 
 \begin{rationale}
@@ -349,27 +349,27 @@ and for channels are identical. It goes as follows (we are going to say
 \textit{component} instead of \textit{``simple module or channel''}):
 
 If the component extends another component and has no
-\ttt{@class} property, the C++ implementation class is inherited from the base
+\fprop{@class} property, the C++ implementation class is inherited from the base
 type.
 
-If the component contains a \ttt{@class} property, the C++ class
+If the component contains a \fprop{@class} property, the C++ class
 name will be composed of the \textit{current namespace} (see
-\ref{cha:ned-ref:current-namespace}) and the value of the \ttt{@class}
-property. The \ttt{@class} property should contain a single value.
+\ref{cha:ned-ref:current-namespace}) and the value of the \fprop{@class}
+property. The \fprop{@class} property should contain a single value.
 
 \begin{note}
-    The \ttt{@class} property may itself contain a namespace declaration (ie.
+    The \fprop{@class} property may itself contain a namespace declaration (ie.
     may contain ``\ttt{::}'').
 \end{note}
 
-If the component contains no \ttt{@class} property and has no base
+If the component contains no \fprop{@class} property and has no base
 class, the C++ class name will be composed of the \textit{current namespace} and the
 unqualified name of the component.
 
 \begin{important}
     NED subclassing does not imply subclassing the C++ implementation! If you
     want to subclass a simple module or channel in NED as well as in C++, you
-    explicitly need to specify the \ttt{@class} property, otherwise the
+    explicitly need to specify the \fprop{@class} property, otherwise the
     derived simple module or channel will continue to use the C++ class from its
     super type.
 \end{important}
@@ -377,7 +377,7 @@ unqualified name of the component.
 \subsubsection{Current namespace}
 \label{cha:ned-ref:current-namespace}
 
-The \textit{current namespace} is the value of the first \ttt{@namespace}
+The \textit{current namespace} is the value of the first \fprop{@namespace}
 property found while searching the following order:
 \begin{enumerate}
   \item the current NED file
@@ -387,11 +387,11 @@ property found while searching the following order:
 \end{enumerate}
 
 \begin{note}
-    Note that namespaces coming from multiple \ttt{@namespace} properties
+    Note that namespaces coming from multiple \fprop{@namespace} properties
     in different scopes do not nest, but rather, the nearest one wins.
 \end{note}
 
-The \ttt{@namespace} property should contain a single value.
+The \fprop{@namespace} property should contain a single value.
 
 
 
@@ -525,24 +525,24 @@ are evaluated only once.
     are not supported yet.
 \end{note}
 
-The following properties are recognized for parameters: \ttt{@unit},
-\ttt{@prompt}.
+The following properties are recognized for parameters: \fprop{@unit},
+\fprop{@prompt}.
 
 
 \subsubsection{The @prompt property}
 
-The \ttt{@prompt} property defines a prompt string for the parameter. The
+The \fprop{@prompt} property defines a prompt string for the parameter. The
 prompt string is used when/if a simulation runtime user interface
 interactively prompts the user for the parameter's value.
 
-The \ttt{@prompt} property is expected to contain one string value for the
+The \fprop{@prompt} property is expected to contain one string value for the
 default key.
 
 
 \subsubsection{The @unit property}
 
-A parameter may have a \ttt{@unit} property to associate it with a measurement
-unit. The \ttt{@unit} property should contain one string value for the default
+A parameter may have a \fprop{@unit} property to associate it with a measurement
+unit. The \fprop{@unit} property should contain one string value for the default
 key. Examples:
 
 \begin{ned}
@@ -625,20 +625,20 @@ information on gates.
 
 \subsubsection{Recognized gate properties}
 
-The following properties are recognized on gates: \ttt{@directIn}
-and \ttt{@loose}. They have the same effect: When either of them is
+The following properties are recognized on gates: \fprop{@directIn}
+and \fprop{@loose}. They have the same effect: When either of them is
 present on a gate, the gate is not required to be connected in the
 connections section of a compound module (see \ref{ch-ned-ref:sec:connections}).
 
-\ttt{@directIn} should be used when the gate is an \fkeyword{input} gate that is
+\fprop{@directIn} should be used when the gate is an \fkeyword{input} gate that is
 intended for being used as a target for the \ffunc{sendDirect()} method;
-\ttt{@loose} should be used in any other case when the gate is not
+\fprop{@loose} should be used in any other case when the gate is not
 required to be connected for some reason.
 
 \begin{note}
-    The reason \ttt{@directIn} gates are not \textit{required} to remain
+    The reason \fprop{@directIn} gates are not \textit{required} to remain
     unconnected is that it is often useful to wrap such modules in a compound
-    module, where the compound module also has a \ttt{@directIn} input gate
+    module, where the compound module also has a \fprop{@directIn} input gate
     that is internally connected to the submodule's corresponding gate.
 \end{note}
 
@@ -714,7 +714,7 @@ of the compound module. When the \fkeyword{allowunconnected} modifier is present
 after \fkeyword{connections}, gates will be allowed to be left unconnected.
 
 \begin{note}
-    The \ttt{@directIn} and \ttt{@loose} gate properties are alternatives to the
+    The \fprop{@directIn} and \fprop{@loose} gate properties are alternatives to the
     \ttt{connections allow\-unconnected} syntax; see \ref{ch-ned-ref:sec:gates}.
 \end{note}
 
@@ -803,7 +803,7 @@ directions.
 The syntax to associate a channel (see \ref{ch-ned-ref:sec:channels})
 with the connection is to use two arrows with a channel specification
 in between (see later). The same syntax is used to add properties such as
-\ttt{@display} to the connection.
+\fprop{@display} to the connection.
 
 %% TODO examples
 
@@ -1031,7 +1031,7 @@ additional properties, and properties may add more keys and values.
         channel interfaces).
 \end{itemize}
 
-A network is a shorthand for a compound module with the \ttt{@isNetwork}
+A network is a shorthand for a compound module with the \fprop{@isNetwork}
 property set, so the same rules apply to it as to compound modules.
 
 Inheritance may:
