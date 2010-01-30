@@ -3990,7 +3990,7 @@ and prints a warning message when it is not zero in the destructor.
 \end{note}
 
 
-\subsection{Listening for model changes}
+\subsection{Listening to model changes}
 \label{sec:ch-simple-modules:model-change}
 
 In simulation models it is often useful to hold references to other
@@ -4080,6 +4080,207 @@ simulation.getSystemModule()->subscribe(PRE_MODEL_CHANGE, listener);
   by unsubscribing all modules/channels in the subtree before starting
   recursive deletion.
 \end{note}
+
+
+\subsection{Exposing statistics as signals}
+
+\subsubsection{Motivation}
+
+One use of signals is to expose variables for result collection without
+telling where, how, and whether to record them. With this approach,
+modules only publish the variables, and the actual result recording
+takes place in listeners. Listeners may be added by the simulation
+framework (based on the configuration), or by other modules (for example
+by dedicated result collection modules).
+
+The signals approach allows for several possibilities:
+
+\begin{enumerate}
+ \item Provides a controllable level of detail: in some simulation runs
+    you may want to record all values as a time series, in other runs
+    only record the mean, time average, minimum/maximum value, standard
+    deviation etc, and in yet other runs you may want to record the
+    distribution as a histogram;
+ \item Depending on the purpose of the simulation experiment, you may want
+    to process the results before recording them, for example
+    record a smoothed or filtered value, record the percentage of time the
+    value is nonzero or over a threshold, record the sum of the values, etc.;
+ \item You may want aggregate statistics, e.g. record the total number
+    of packet drops or the average end-to-end delay for the whole network;
+ \item You may want to record combined statistics, for example a drop
+    percentage (drop count/total number of packets);
+ \item You may want to ignore results generated during the warm-up period
+    or during other transients.
+\end{enumerate}
+
+With the signals approach the above goals can be fulfilled.
+
+
+\subsubsection{Emitting signals}
+
+Emitting signals for statistical purposes does not differ much from
+emitting signals for any other purpose. Statistic signals are primarily
+expected to emit numeric values, so the overloaded \ffunc{emit()} functions
+that take \ttt{long}, \ttt{double} and \ttt{simtime\_t} are going to be the
+most useful ones.
+
+%% \subsubsection{Emit with timestamp}
+
+The emitted values are associated with the current simulation time. At
+times it might be desirable to associate them with a different timestamp,
+in much the same way as the \ffunc{recordWithTimestamp()} method of
+\cclass{cOutVector} (see \ref{sec:ch-sim-lib:coutvector}) does. For example,
+assume that you want to emit a signal at the start of every successful
+wireless frame reception. However, whether any given frame reception is
+going to be successful can only be known after the reception has
+completed. Hence, values can only be emitted at reception completion,
+and need to be associated with past timestamps.
+
+To emit a value with a different timestamp, an object containing
+a $(timestamp, value)$ pair needs to be filled in, and emitted using
+the \ffunc{emit(simsignal\_t, cObject *)} method. The class is called
+\cclass{cSignalValue}, and it simply has two public data members called
+\ttt{time} and \ttt{value}, with types \ttt{simtime\_t} and \ttt{double}.
+It also has a convenience constructor taking these two values.
+
+\begin{note}
+\cclass{cSignalValue} is not part of the signal mechanism. Instead,
+the result recording listeners provided by {\opp} have been written
+in a way so that they understand \cclass{cSignalValue}, and know how
+to handle it.
+\end{note}
+
+An example usage:
+
+\begin{cpp}
+simtime_t frameReceptionStartTime = ...;
+double receivePower = ...;
+cSignalValue tmp(frameReceptionStartTime, receivePower);
+emit(recvPowerSignal, &tmp);
+\end{cpp}
+
+If performance is critical, the \cclass{cSignalValue} object may be
+made a class member or a static variable to eliminate object
+construction/destruction time.\footnote{It is safe to use a static
+variable here because the simulation program is single-threaded,
+but ensure that there isn't a listener somewhere that would modify
+the same static variable during firing.}
+
+Timestamps need to be monotonically increasing.
+
+%% \subsubsection{Emitting non-numeric values}
+
+Sometimes it is practical to have multi-purpose signals, or to retrofit
+an existing non-statistical signal so that it can be recorded as a result.
+For this reason, signals having non-numeric types (that is, \ttt{const char *}
+and \ttt{cObject *}) may also be recorded as results. Wherever such values
+need to be interpreted as numbers, the following rules are used by the
+built-in result recording listeners:
+
+\begin{itemize}
+  \item Strings are recorded as 1.0, except for \ttt{NULL} which is recorded as 0.0;
+  \item Objects that can be cast to \cclass{cISignalValue} are recorded
+     using the \ffunc{getSignalTime()} and \ffunc{getSignalValue()}
+     methods of the class;
+  \item Other objects are recorded as 1.0, except for \ttt{NULL} pointers which
+     are recorded as 0.0.
+\end{itemize}
+
+\cclass{cISignalValue} is a C++ interface that may be used as an additional
+base class for any class. It is declared like this:
+
+\begin{cpp}
+class cISignalValue {
+    public:
+        virtual ~cISignalValue() {}
+        virtual double getSignalValue(simsignal_t signalID) = 0;
+        virtual simtime_t getSignalTime(simsignal_t signalID);
+};
+\end{cpp}
+
+\ffunc{getSignalTime()} is pure virtual (it must return some value),
+but \ffunc{getSignalValue()} has a default implementation that
+returns the current simulation time. Note the \ttt{signalID} argument
+that allow the same class to serve multiple signals (i.e. to return
+different values for each).
+
+
+\subsubsection{Declaring signals}
+
+For signals to be automatically recorded as results, they need to be
+declared in the simple module's (or channel type's) NED file.
+
+An example NED file that declares signals on a queue module:
+
+\begin{ned}
+simple Fifo
+{
+    parameters:
+        volatile double serviceTime @unit(s);
+        @signal[qlen](title="queue length";modeHint=timeavg,max);
+        @signal[busy](title="server busy state";modeHint=timeavg);
+        @signal[queueingTime](title="queueing time at dequeue";unit=s);
+    gates:
+        input in;
+        output out;
+}
+\end{ned}
+
+This example declares three signals. The \ttt{"qlen"} signal is emitted
+whenever the queue length changes, and carries the new length of the queue.
+The \ttt{"busy"} signal emits a value of one whenever the queue server
+becomes busy (starts processing after an idle period), and emits zero when
+it becomes idle. The third signal, \ttt{"queueingTime"} is emitted whenever a
+job is dequeued, with the amount of time the job has spent in the queue; it
+is also emitted with a zero value when a job arrives when the queue is
+empty.
+
+As you can see, signal declarations have been added as indexed NED
+properties, see \ref{sec:ch-ned-lang:properties}. The property name is
+always \ttt{signal}, and the indices are the signal names. Further details
+and recording hints are provided as property values (everything inside the
+parentheses).
+
+Recording works the following way. When a module or channel is created in
+the simulation, the {\opp} runtime examines the \ttt{@signal} properties on
+its NED declaration. The runtime iterates on the property indices, and,
+interpreting them as signal names, adds one or more listeners for each.
+
+The types of listeners added depend on the configuration. If output vector
+recording is enabled for the given signal, a listener is added which
+records emitted values to an output vector. If scalar recording is enabled,
+the runtime adds appropriate listeners that compute a single value from the
+emitted ones and record it in the \ffunc{finish()} phase. There are various
+listeners that compute and record the count, the sum of values, their mean,
+their time avarage, minimum, maximum, a histogram, etc. The list of
+listeners are added depends on the configuration; or if the configuration
+does not specify it, the \ttt{modeHint=} property key will be used.
+
+Values in the property get recorded as result attributes, and will be
+available for whichever program does the result processing.
+
+XXX signal attributes: list which ones we support (title, unit, interpolationmode, modeHint, etc), what they do in the Analysis Tool, etc.
+
+\subsubsection{Result aggregation, result collection modules}
+
+XXX
+
+\subsubsection{Signal naming}
+
+XXX
+
+Some design difficulty: overlap in purposes of signals. I.e. we want to record
+the delay of each frame as it arrives; but other modules require an rxEnd signal.
+Question: these should be the same signal or two different signals? I.e.
+dedicated signals or not?
+
+Practical difficulty with signal naming: name would have to express 2 aspects:
+what happened (message removed from queue and started service), and what
+the signal value represents (time spent in queue). Recommendation:
+signal name should express the event ("dequeue"), and the signal title
+should describe the value (@signal[dequeue](title="Queueing time at dequeue")) ???
+
+
 
 %%% Local Variables:
 %%% mode: latex
