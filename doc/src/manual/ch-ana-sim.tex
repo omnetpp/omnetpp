@@ -1,18 +1,99 @@
-\chapter{Analyzing Simulation Results}
+\chapter{Result Recording and Analysis}
 \label{cha:analyzing-simulation-results}
+
+
+\section{Result recording}
+
+{\opp} provides built-in support for recording simulation results, via
+\textit{output scalars} and \textit{vector vectors}. Results may be
+collected and recorded in two ways:
+
+\begin{enumerate}
+  \item Explicitly from simple modules and channels, using the C++ API
+    provided by the simulation library
+  \item By means of configuration, using declared statistics and the
+    signal mechanism
+\end{enumerate}
+
+The first one is the traditional way of recording results. The second way
+was introduced in {\opp} 4.1, and it is preferable because it allows one
+to have much more control over the amount and form of results recorded,
+without requiring constant changes to the simulation model.
+
+\subsection{Using the C++ API}
+
+With this approach, scalar and statistics results are collected in class
+variables inside modules, then recorded in the finalization phase via
+\ffunc{recordScalar} calls. Simple statistics may be collected in
+\ttt{double} and \ttt{long} variables. To record more details like the
+minimum/maximum value or standard deviation, \cclass{cStdDev} and
+\cclass{cWeightedStdDev} can be used, and for recording the distribution
+there are several histogram classes and other distribution estimation
+classes (\cclass{cDoubleHistogram}, \cclass{cLongHistogram},
+\cclass{cPSquare}, \cclass{cKSplit}, and others). Vectors are recorded
+using \cclass{cOutVector} objects. These classes are described in sections
+\ref{sec:ch-sim-lib:statistics} and \ref{sec:ch-sim-lib:result-recording}.
+
+Recording of individual vectors, scalars and statistics can be enabled or
+disabled via the configuration (ini file), and it is also the place to set
+up recording intervals for vectors.
+
+XXX document where?
+
+\subsection{Using declared statistics and signals}
+
+This approach utilizes NED properties (section \ref{sec:ch-ned-lang:properties})
+and the signal mechanism (section \ref{sec:simple-modules:signals})
+in order to de-couple the generation of results from their recording,
+thereby providing more flexibility in what to record and in which form.
+
+Modules would act as signal sources, and the user would be able to decide
+whether to record a particular variable as a vector, as a statistic (mean,
+variance, histogram data, etc.), or only a single property the variable
+(mean, time average, count, maximum value, etc.) as a scalar. The
+simulation framework would implement result recording by registering
+listeners on the modules. The signal framework would also allow for
+implementing aggregate statistics (such as the total number of packet drops
+in the network) and warmup periods (ignoring an initial time interval when
+computing scalars or statistics) as well. It would also allow the user to
+use dedicated statistics collection and aggregation modules in the
+simulation, without the need to change existing modules.
+
 
 
 \section{Result files}
 
-\subsection{Results}
+Simulation results are recorded into textual, line-oriented \textit{scalar
+files} (which actually hold statistics results as well) as \textit{vector
+files}. The advantage of a text-based format is that it is very accessible
+with a wide range of tools and languages. The format of result files is
+documented in detail in Appendix \ref{cha:result-file-formats}.
+  \footnote{Recording is actually configurable, and one can record
+  results into a database as well, by writing appropriate result
+  manager classes and activating them in the configuration.}
 
-vector results, scalar results
+Vectors are recorded into a separate file for practical reasons: vector
+data usually consume several magnitudes more disk space than others. Files
+are self-describing: they contain many attributes of the simulation run:
+the network, experiment-measurement-replication labels; iteration
+variables; time/date, host, process id of the simulation, etc. By default,
+each file contains data from one run only.
+The vector file contains data clustered by vectors, and indexed for
+efficient access. This allows for extracting certain vectors from the file,
+and even near random access within vectors, without having to read the full
+contents of the vector file even once.
+
+XXX vector results, scalar results (scalars + stats/histograms)
+
+, and \textit{statistics}. A scalar is a single number;
+vectors are timestamped time series; and statistics are records composed of
+statistical properties (mean, variance, minimum, maximum, etc.; possibly
+also histogram data) of time series.
 
 unique run id
 
 attributes, e.g. experiment-measurement-replication
 
-The format of result files is documented in detail in \ref{cha:result-file-formats}.
 
 \subsection{Output vectors}
 \label{sec:ch-ana-sim:output-vectors}
