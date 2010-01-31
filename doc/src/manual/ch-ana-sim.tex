@@ -5,7 +5,7 @@
 \section{Result recording}
 
 {\opp} provides built-in support for recording simulation results, via
-\textit{output scalars} and \textit{vector vectors}. Results may be
+\textit{output scalars} and \textit{output vectors}. Results may be
 collected and recorded in two ways:
 
 \begin{enumerate}
@@ -16,7 +16,7 @@ collected and recorded in two ways:
 \end{enumerate}
 
 The first one is the traditional way of recording results. The second way
-was introduced in {\opp} 4.1, and it is preferable because it allows one
+was introduced in {\opp} 4.1, and it is preferable because it allows you
 to have much more control over the amount and form of results recorded,
 without requiring constant changes to the simulation model.
 
@@ -24,91 +24,142 @@ without requiring constant changes to the simulation model.
 
 With this approach, scalar and statistics results are collected in class
 variables inside modules, then recorded in the finalization phase via
-\ffunc{recordScalar} calls. Simple statistics may be collected in
-\ttt{double} and \ttt{long} variables. To record more details like the
-minimum/maximum value or standard deviation, \cclass{cStdDev} and
+\ffunc{recordScalar()} calls. Simple statistics may be collected in
+\ttt{double} and \ttt{long} variables. To record more details, like the
+minimum/maximum value or the standard deviation, \cclass{cStdDev} and
 \cclass{cWeightedStdDev} can be used, and for recording the distribution
 there are several histogram classes and other distribution estimation
 classes (\cclass{cDoubleHistogram}, \cclass{cLongHistogram},
 \cclass{cPSquare}, \cclass{cKSplit}, and others). Vectors are recorded
 using \cclass{cOutVector} objects. These classes are described in sections
 \ref{sec:ch-sim-lib:statistics} and \ref{sec:ch-sim-lib:result-recording}.
-
 Recording of individual vectors, scalars and statistics can be enabled or
 disabled via the configuration (ini file), and it is also the place to set
 up recording intervals for vectors.
 
-XXX document where?
+The drawback of recording results directly from modules is that result
+recording is hardcoded in modules, and even simple requirement changes
+(e.g. record the average delay instead of each delay value, or vica versa)
+requires code change or an excessive amount of result collection code
+in the modules.
 
 \subsection{Using declared statistics and signals}
 
-This approach utilizes NED properties (section \ref{sec:ch-ned-lang:properties})
-and the signal mechanism (section \ref{sec:simple-modules:signals})
-in order to de-couple the generation of results from their recording,
-thereby providing more flexibility in what to record and in which form.
+This approach utilizes NED properties (section
+\ref{sec:ch-ned-lang:properties}) and the signal mechanism (section
+\ref{sec:simple-modules:signals}) in order to de-couple the generation of
+results from their recording, thereby providing more flexibility in what to
+record and in which form.
 
-Modules would act as signal sources, and the user would be able to decide
-whether to record a particular variable as a vector, as a statistic (mean,
-variance, histogram data, etc.), or only a single property the variable
-(mean, time average, count, maximum value, etc.) as a scalar. The
-simulation framework would implement result recording by registering
-listeners on the modules. The signal framework would also allow for
-implementing aggregate statistics (such as the total number of packet drops
-in the network) and warmup periods (ignoring an initial time interval when
-computing scalars or statistics) as well. It would also allow the user to
-use dedicated statistics collection and aggregation modules in the
-simulation, without the need to change existing modules.
+Statistics are declared in the NED files with the \ttt{@signal} property,
+and modules emit values using the signal mechanism. The simulation
+framework records data by adding result file writing listeners to modules.
+By being able to choose what listeners to add, the user can control what to
+record in the result files and what computations to apply before recording.
 
+This approach allows for calculation of aggregate statistics (such as the
+total number of packet drops in the network) and for implementing a warm-up
+period without support from module code. It also allows you to write
+dedicated statistics collection modules for the simulation, also without
+touching existing modules.
 
-XXX Result aggregation, result collection modules
-
-XXX also: dedicated result collection modules
-
-Truncation (warmup-period) can be trivially supported! scalar-computing nodes should ignore the beginning.
-warmup-period = 20s
-
+The same configuration options that were used to control result recording
+with \cclass{cOutVector} and \ffunc{recordScalar()} also work when utilizing
+the signals approach, and there are extra configuration options to make
+the additional possibilities accessible.
 
 
 \section{Configuring result collection}
 
-\subsection{Output vectors and scalars}
+\subsection{Result file names}
 
-In {\opp} 3.x, the default result file names were \ttt{omnetpp.vec} and
-\ttt{omnetpp.sca}. This is not very convenient for batch execution, where
-an output vector file created in one run would be overwritten in the
-next run. Thus, we have changed the default file names to make them
-differ for every run. The new defaults are:
+Simulation results are recorded into \textit{output scalar files} that
+actually hold statistics results as well, and \textit{output vector
+files}. The usual file extension for scalar files is \ttt{.sca}, and
+for vector files \ttt{.vec}.
+
+Every simulation run generates a single scalar file and a vector file.
+The file names can be controlled with the \ttt{output-vector-file=}
+and \ttt{output-scalar-file=} options. These options rarely need
+to be used, because the default values are usually fine. The defaults
+are:
 
 \begin{inifile}
 output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
 output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
 \end{inifile}
 
-Where \ttt{\$\{resultdir\}} is the value of the \ttt{result-dir} configuration
-option, and defaults to \ttt{results/}. So the above defaults generate
-file names like \ttt{results/PureAloha-0.vec}, \ttt{results/PureAloha-1.vec},
+Here, \ttt{\$\{resultdir\}} is the value of the \ttt{result-dir=}
+configuration option which defaults to \ttt{results/}, and
+\ttt{\$\{configname\}} and \ttt{\$\{runnumber\}} are the name of
+the configuration name in the ini file (e.g. \ttt{[Config PureAloha]}),
+and the run number. Thus, the above defaults generate file names
+like \ttt{results/PureAloha-0.vec}, \ttt{results/PureAloha-1.vec},
 and so on.
 
-Also, in {\opp} 3.x output scalar files were always appended to by the
-simulation program, rather than being overwritten. This behavior was
-changed in 4.0 to make it consistent with vector files, that is, output
-scalar files are also overwritten by the simulator, and not appended
-to.
-
 \begin{note}
-    The old behavior can be turned back on by setting
-    \ttt{output-scalar-file-append=true}.
+  In {\opp} 3.x, the default result file names were \ttt{omnetpp.vec} and
+  \ttt{omnetpp.sca}, and scalar files were always appended to, rather than
+  being overwritten as in the 4.x version. When needed, the old behavior
+  for scalar files can be turned back on by setting
+  \ttt{output-scalar-file-append=true} in the configuration.
 \end{note}
 
-Although it has nothing to do with our main topic (ini files), this is a
-good place to mention that the format of result files have been
-extended to include meta info such as the run ID, network name, all
-configuration settings, etc. These data make the files more
-self-documenting, which can be valuable during the result analysis
-phase, and increase reproducibility of the results. Another change is
-that vector data are now recorded into the file clustered by the output
-vectors, which (combined with index files) allows much more efficient
-processing.
+\subsection{Turning on/off scalar or vector recording globally}
+
+The recording of scalar and/or vector results can be turned off with
+the \ttt{scalar-recording=} and \ttt{vector-recording=} options (both
+are turned on by default). These options actually provide per-vector
+and per-scalar control, but disabling all scalars/vectors will turn off
+file creation altogether. However, any existing file with the same name
+will still be removed before the simulation starts.
+
+\begin{inifile}
+**.scalar-recording = false
+**.vector-recording = false
+\end{inifile}
+
+
+\subsection{Warm-up period}
+
+The \ttt{warmup-period=} option specifies the length of the initial
+warm-up period. When set, results belonging to the first $x$ seconds
+of the simulation will not be recorded into output vectors, and will
+not be counted into the calculation of output scalars.
+This option is useful for steady-state simulations. The default is 0s
+(no warmup period).
+
+Example:
+
+\begin{inifile}
+warmup-period = 20s
+\end{inifile}
+
+Note that modules that compute and record scalar results manually
+(via \ffunc{recordScalar()}) will not automatically obey this setting.
+These modules need to be modified so that they take the warm-up period
+into account. The warm-up period is available via the
+\ffunc{getWarmupPeriod()} method of the \ttt{simulation} object,
+so the code that updates the corresponding state variables needs
+to be surrounded with an \textit{if} statement.
+
+Old:
+
+\begin{cpp}
+dropCount++;
+\end{cpp}
+
+New:
+
+\begin{cpp}
+if (simTime() >= simulation.getWarmupPeriod())
+    dropCount++;
+\end{cpp}
+
+
+\subsection{Configuring scalar results}
+
+XXX
 
 \subsection{Configuring output vectors}
 \label{sec:ch-config-sim:outvectors}
@@ -260,9 +311,8 @@ automatically saved into the result files.
 
 \section{Result files}
 
-Simulation results are recorded into textual, line-oriented \textit{scalar
-files} (which actually hold statistics results as well) as \textit{vector
-files}. The advantage of a text-based format is that it is very accessible
+Both output vector and scalar files are textual, line-oriented files.
+The advantage of a text-based format is that it is very accessible
 with a wide range of tools and languages. The format of result files is
 documented in detail in Appendix \ref{cha:result-file-formats}.
   \footnote{Recording is actually configurable, and one can record
@@ -290,6 +340,17 @@ also histogram data) of time series.
 unique run id
 
 attributes, e.g. experiment-measurement-replication
+
+Although it has nothing to do with our main topic (ini files), this is a
+good place to mention that the format of result files have been
+extended to include meta info such as the run ID, network name, all
+configuration settings, etc. These data make the files more
+self-documenting, which can be valuable during the result analysis
+phase, and increase reproducibility of the results. Another change is
+that vector data are now recorded into the file clustered by the output
+vectors, which (combined with index files) allows much more efficient
+processing.
+
 
 
 \subsection{Output vectors}
