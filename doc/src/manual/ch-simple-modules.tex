@@ -4255,21 +4255,29 @@ their time avarage, minimum, maximum, a histogram, etc. The list of
 listeners are added depends on the configuration; or if the configuration
 does not specify it, the \ttt{modeHint=} property key will be used.
 
-The values in the property will get recorded into the output files as result
-attributes, and will be available for result processing.
+The keys and values in the property will get recorded into the output files
+as result attributes, and will be available for result processing.
 
-\textbf{Result attributes.} The following result attributes are understood:
+The following property keys (result attributes) are supported:
 
 \begin{description}
   \item[title]: A longer, descriptive name for the statistic signal; result
       visualization tools may use it as chart label, e.g. in the legend.
   \item[unit]: Measurement unit of the values. This may also appear in charts.
-  \item[interpolationMode]: Possible values are "none", "sample-hold"; "backward-sample-hold"; "linear"
-  \item[type]: XXX int, double, enum
-  \item[enum]: XXX "IDLE=1,BUSY=2,DOWN=3"
-  \item[enumName]: xxx
-  \item[modeHint]: xxx
+  \item[interpolationMode]: Defines how to interpolate signal values where
+      needed (e.g. for drawing); possible values are \ttt{none},
+      \ttt{sample-hold}, \ttt{backward-sample-hold}, \ttt{linear}.
+%XXX clarify whether needed/used:  \item[type]: XXX int, double, enum
+  \item[enum]: Defines symbolic names for various integer signal values.
+      The property value must be a string, containing \textit{name=value} pairs
+      separated by comma. Example: \ttt{"IDLE=1,BUSY=2,DOWN=3"}.
+%XXX TODO implement:  \item[enumName]: xxx
+  \item[modeHint]: Defines how to derive scalar values from the signal;
+     see values below. Several modes can be listed, separated by comma.
 \end{description}
+
+It is allowed to use other keys/attributes, but they won't be interpreted
+by the {\opp} runtime or tools.
 
 Currently the following values are supported  for \ttt{modeHint}:
 
@@ -4287,7 +4295,7 @@ Currently the following values are supported  for \ttt{modeHint}:
       step function (sample-hold)
   \item[stddev]: record the count, sum, mean, standard deviation, minimum
       and maximum of the values
-  \item[histogram]: record everything the stddev records, plus a histogram
+  \item[histogram]: record everything \ttt{stddev} records, plus a histogram
       of the values (bins are set up automatically)
 \end{description}
 
