@@ -294,17 +294,24 @@ them module with the mouse.
 \end{center}
 
 \begin{note}
-  Generally it makes no sense to assign static texts in the NED file. Usually the
-  \ttt{t} and \ttt{tt} tags are used at runtime with the \ffunc{setDisplayString()}
-  method.
+  The \ttt{t} and \ttt{tt} tags, when set at runtime, can be used to display
+  various information about the module's state. The \ffunc{setTagArg()} method
+  of \cclass{cDisplayString} can be used to update the text:
+
+  \begin{cpp}
+char buf[64];
+sprintf(buf, "sent: %d, rcvd: %d", numPkSent, numPkReceived);
+getDisplayString().setTagArg("t", 0, buf);
+  \end{cpp}
+
 \end{note}
 
-To see detailed descripton of the display string tags check
-Appendix \ref{cha:display-string-tags} about display string tags.
+For a detailed descripton of the display string tags, check
+Appendix \ref{cha:display-string-tags}.
 
 \subsection{Display string tags used in module background context}
 
-The following tags describe what a module looks like if opened in
+The following tags describe what a module looks like when opened in
 Tkenv. They mostly deal with the module background.
 
 \begin{itemize}
@@ -317,14 +324,16 @@ Tkenv. They mostly deal with the module background.
   \item \ttt{bgp} -- background coordinate offset
 \end{itemize}
 
-In some cases it is required that the module's physical position should be modeled
-also in your model. In this case you would set the submodule display strings with
-the \ffunc{setDisplayString()} method at run time, but it would be also nice to
-customize the area in what the modules are moving. It is possible to manipulate
-what a module's background looks like or whether we can use measurement units instead
-of pixels to set the position of the modules. The following example demonstrates the use
-of module background tags. The coordinates are given in km (SI unit).
-The \ttt{bgs=$pixelsperunit$,$unit$} specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
+The \ttt{bgs} tag makes it possible to use a physical unit of measurement,
+(e.g. kilometers) for coordinates. \ttt{bgs} arguments include a pixel-per-unit
+factor (for mapping coordinates to the screen), and a unit name. When \ttt{bgs}
+is present, all coordinates (including submodule coordinates) are interpreted
+in the given unit of measurement. When combined with the \ttt{bgi} (background
+image) and \ttt{bgg} (grid) tags, it is possible to display maps.
+
+The following example demonstrates the use the of module background tags.
+The coordinates are given in km (SI unit). The \ttt{bgs=$pixelsperunit$,$unit$}
+specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
 The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a
 background and stretched to fill the module background.
 A light grey grid is drawn with a 1000km distance between major ticks,
@@ -348,13 +357,13 @@ network EuropePlayground
 After specifying the above \ttt{bgs} tag, all your submodule coordinates will be treated as if
 they were specified in km.
 
-To see detailed descripton of the display string tags check
-Appendix \ref{cha:display-string-tags} about display string tags.
+For a detailed descripton of the display string tags, check
+Appendix \ref{cha:display-string-tags}.
 
 \subsection{Connection display strings}
 
 Connections may also have display strings. Connections inherit the
-display string property from their channel types, in the same way as 
+display string property from their channel types, in the same way as
 submodules inherit theirs from module types. The default display
 strings are empty.
 
@@ -376,12 +385,12 @@ source1.out --> { @display("ls=red,3"); } --> queue1.in++;
 \end{center}
 
 \begin{note}
-If you want to hide a connection, specify zero line thickness in the display 
+If you want to hide a connection, specify zero line thickness in the display
 string (\ttt{"ls=,0"}).
 \end{note}
 
-To see a detailed description of these tags, check Appendix 
-\ref{cha:display-string-tags}.
+For a detailed descripton of the display string tags, check
+Appendix \ref{cha:display-string-tags}.
 
 \subsection{Message display strings}
 

@@ -4283,9 +4283,12 @@ Currently the following values are supported  for \ttt{modeHint}:
   \item[mean]: record the mean of the values
   \item[min]: record the minimum value
   \item[max]: record the maximum value
-  \item[timeavg]: record the time average, interpreting the signal as step function (sample-hold mode)
-  \item[stddev]: record the standard deviation of the values
-  \item[histogram]: record a histogram of the values (bins are set up automatically)
+  \item[timeavg]: record the time average, interpreting the signal as a
+      step function (sample-hold)
+  \item[stddev]: record the count, sum, mean, standard deviation, minimum
+      and maximum of the values
+  \item[histogram]: record everything the stddev records, plus a histogram
+      of the values (bins are set up automatically)
 \end{description}
 
 New ones cannot be defined at the moment; this feature is planned for future versions.
