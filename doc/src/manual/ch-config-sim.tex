@@ -105,13 +105,9 @@ following.
     usual time units such as ms, s, m, h, etc. can be used).}
 \end{itemize}
 
-It is important to note, that the loaded NED files may contain
-any number of modules, channel and \textit{any number of networks} as well.
-It does not matter whether you use all or just some of them
-in the simulations. You will be able to select \ttt{any} of the
-networks that occur in the loaded NED files using the \ttt{network=}
-\ffilename{omnetpp.ini} entry, and as long as every module, channel etc
-for it has been loaded, network setup will be successful.
+Note that the NED files loaded by the simulation may contain several
+networks, and any of them may be specified in the \ttt{network=}
+option.
 
 
 \subsection{Named configurations}
