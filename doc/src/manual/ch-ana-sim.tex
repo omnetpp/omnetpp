@@ -164,57 +164,36 @@ XXX
 \subsection{Configuring output vectors}
 \label{sec:ch-config-sim:outvectors}
 
+The size of output vector files can easily reach a magnitude of several
+hundred megabytes, but very often, only some of the recorded statistics are
+interesting to the analyst. {\opp} allows you to control which vectors you
+want to record, and to specify one or more result collection intervals. By
+default, all output vectors are turned on for the whole duration the
+simulation.
 
-As a simulation program is evolving, it is becoming capable of
-collecting more and more statistics. The size of output vector
-files\index{output!vector file} can easily reach a magnitude of
-several ten or hundred megabytes, but very often, only some of the
-recorded statistics are interesting to the analyst.
+Output vectors can be configured with the \ttt{vector-recording=} and
+\ttt{vector-recording-interval=} per-object options.
 
-In {\opp}, you can control how \cclass{cOutVector} objects record data
-to disk. You can turn output vectors on/off or you can assign a result
-collection interval. By default, all output vectors are turned on.
+XXX the object name is...
 
-
-\begin{note}
-    The way of configuring output vectors has changed. In {\opp} 3.x,
-    the keys for enabling-disabling a vector and specifying recording
-    interval were <module-and-vectorname-pattern>.enabled, and
-    <module-and-vectorname-pattern>.interval. The "enabled" and "interval"
-    words changed to "vector-recording" and "vector-recording-interval".
-    The reason for this change is that per-object
-    configuration keys are now required to have a hyphen in their names, to
-    make it possible to tell them apart from module parameter assignments.
-    This allows the simulator to catch mistyped config keys in ini files.
-    The syntax for specifying the recording interval has also been extended
-    (in a backward compatible way) to accept multiple intervals, separated
-    by comma.
-\end{note}
-
-
-Output vectors can be configured with the following syntax:
+As with parameter names, wildcards are allowed in the object
+names and module path names.
 
 \begin{inifile}
-module-pathname.objectname.vector-recording = true/false
-module-pathname.objectname.vector-recording-interval = start1..stop1,
+<module-pathname>.<objectname>.vector-recording = true/false
+<module-pathname>.<objectname>.vector-recording-interval = start1..stop1,
                                                        start2..stop2, ...
 \end{inifile}
 
 Either \textit{start} or \textit{stop} can be omitted, to mean the
 beginning and the end of the simulation, respectively.
 
-The object name is the string passed to \cclass{cOutVector} in its constructor
-or with the \ffunc{setName()} member function.
-
-\begin{cpp}
-cOutVector eed("End-to-End Delay");
-\end{cpp}
+The object name is the signal name as in the \ttt{@signal[name]},
+or the string passed to \cclass{cOutVector}
+in its constructor or with the \ffunc{setName()} member function.
 
 Start and stop values can be any time specification accepted
 in NED and config files (e.g. \textit{10h 30m 45.2s}).
-
-As with parameter names, wildcards are allowed in the object
-names and module path names.
 
 An example:
 
