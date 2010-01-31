@@ -4095,7 +4095,7 @@ by dedicated result collection modules).
 
 The signals approach allows for several possibilities:
 
-\begin{enumerate}
+\begin{itemize}
  \item Provides a controllable level of detail: in some simulation runs
     you may want to record all values as a time series, in other runs
     only record the mean, time average, minimum/maximum value, standard
@@ -4111,7 +4111,7 @@ The signals approach allows for several possibilities:
     percentage (drop count/total number of packets);
  \item You may want to ignore results generated during the warm-up period
     or during other transients.
-\end{enumerate}
+\end{itemize}
 
 With the signals approach the above goals can be fulfilled.
 
@@ -4124,17 +4124,16 @@ expected to emit numeric values, so the overloaded \ffunc{emit()} functions
 that take \ttt{long}, \ttt{double} and \ttt{simtime\_t} are going to be the
 most useful ones.
 
-%% \subsubsection{Emit with timestamp}
-
-The emitted values are associated with the current simulation time. At
-times it might be desirable to associate them with a different timestamp,
-in much the same way as the \ffunc{recordWithTimestamp()} method of
-\cclass{cOutVector} (see \ref{sec:ch-sim-lib:coutvector}) does. For example,
-assume that you want to emit a signal at the start of every successful
-wireless frame reception. However, whether any given frame reception is
-going to be successful can only be known after the reception has
-completed. Hence, values can only be emitted at reception completion,
-and need to be associated with past timestamps.
+\textbf{Emitting with timestamp.} The emitted values are associated with
+the current simulation time. At times it might be desirable to associate
+them with a different timestamp, in much the same way as the
+\ffunc{recordWithTimestamp()} method of \cclass{cOutVector} (see
+\ref{sec:ch-sim-lib:coutvector}) does. For example, assume that you want to
+emit a signal at the start of every successful wireless frame reception.
+However, whether any given frame reception is going to be successful can
+only be known after the reception has completed. Hence, values can only be
+emitted at reception completion, and need to be associated with past
+timestamps.
 
 To emit a value with a different timestamp, an object containing
 a $(timestamp, value)$ pair needs to be filled in, and emitted using
@@ -4168,14 +4167,13 @@ the same static variable during firing.}
 
 Timestamps need to be monotonically increasing.
 
-%% \subsubsection{Emitting non-numeric values}
-
-Sometimes it is practical to have multi-purpose signals, or to retrofit
-an existing non-statistical signal so that it can be recorded as a result.
-For this reason, signals having non-numeric types (that is, \ttt{const char *}
-and \ttt{cObject *}) may also be recorded as results. Wherever such values
-need to be interpreted as numbers, the following rules are used by the
-built-in result recording listeners:
+\textbf{Emitting non-numeric values.} Sometimes it is practical to have
+multi-purpose signals, or to retrofit an existing non-statistical signal so
+that it can be recorded as a result. For this reason, signals having
+non-numeric types (that is, \ttt{const char *} and \ttt{cObject *}) may
+also be recorded as results. Wherever such values need to be interpreted as
+numbers, the following rules are used by the built-in result recording
+listeners:
 
 \begin{itemize}
   \item Strings are recorded as 1.0, except for \ttt{NULL} which is recorded as 0.0;
@@ -4237,14 +4235,15 @@ empty.
 
 As you can see, signal declarations have been added as indexed NED
 properties, see \ref{sec:ch-ned-lang:properties}. The property name is
-always \ttt{signal}, and the indices are the signal names. Further details
-and recording hints are provided as property values (everything inside the
-parentheses).
+always \ttt{signal}, and the indices are the signal names. Property values
+(everything inside the parentheses) may carry hints and extra information
+for recording, and for result processing applications.
 
-Recording works the following way. When a module or channel is created in
-the simulation, the {\opp} runtime examines the \ttt{@signal} properties on
-its NED declaration. The runtime iterates on the property indices, and,
-interpreting them as signal names, adds one or more listeners for each.
+\textbf{Recording.} Recording works in the following way. When a module or
+channel is created in the simulation, the {\opp} runtime examines the
+\ttt{@signal} properties on its NED declaration. The runtime iterates on
+the property indices, and, interpreting them as signal names, adds one or
+more listeners for each.
 
 The types of listeners added depend on the configuration. If output vector
 recording is enabled for the given signal, a listener is added which
@@ -4256,30 +4255,57 @@ their time avarage, minimum, maximum, a histogram, etc. The list of
 listeners are added depends on the configuration; or if the configuration
 does not specify it, the \ttt{modeHint=} property key will be used.
 
-Values in the property get recorded as result attributes, and will be
-available for whichever program does the result processing.
+The values in the property will get recorded into the output files as result
+attributes, and will be available for result processing.
 
-XXX signal attributes: list which ones we support (title, unit, interpolationmode, modeHint, etc), what they do in the Analysis Tool, etc.
+\textbf{Result attributes.} The following result attributes are understood:
 
-\subsubsection{Result aggregation, result collection modules}
+\begin{description}
+  \item[title]: A longer, descriptive name for the statistic signal; result
+      visualization tools may use it as chart label, e.g. in the legend.
+  \item[unit]: Measurement unit of the values. This may also appear in charts.
+  \item[interpolationMode]: Possible values are "none", "sample-hold"; "backward-sample-hold"; "linear"
+  \item[type]: XXX int, double, enum
+  \item[enum]: XXX "IDLE=1,BUSY=2,DOWN=3"
+  \item[enumName]: xxx
+  \item[modeHint]: xxx
+\end{description}
 
-XXX
+Currently the following values are supported  for \ttt{modeHint}:
 
-\subsubsection{Signal naming}
+\begin{description}
+  \item[auto]: automatically select the best mode(s) for a signal. This mode
+      currently selects \ttt{histogram} mode (because it records the most
+      information), but this may change in future versions.
+  \item[count]: record the number of values emitted; values are ignored
+  \item[lastval]: record the last value
+  \item[sum]: record the sum of the values
+  \item[mean]: record the mean of the values
+  \item[min]: record the minimum value
+  \item[max]: record the maximum value
+  \item[timeavg]: record the time average, interpreting the signal as step function (sample-hold mode)
+  \item[stddev]: record the standard deviation of the values
+  \item[histogram]: record a histogram of the values (bins are set up automatically)
+\end{description}
 
-XXX
+New ones cannot be defined at the moment; this feature is planned for future versions.
 
-Some design difficulty: overlap in purposes of signals. I.e. we want to record
-the delay of each frame as it arrives; but other modules require an rxEnd signal.
-Question: these should be the same signal or two different signals? I.e.
-dedicated signals or not?
-
-Practical difficulty with signal naming: name would have to express 2 aspects:
-what happened (message removed from queue and started service), and what
-the signal value represents (time spent in queue). Recommendation:
-signal name should express the event ("dequeue"), and the signal title
-should describe the value (@signal[dequeue](title="Queueing time at dequeue")) ???
-
+%
+% \subsubsection{Signal naming}
+%
+% XXX
+%
+% Some design difficulty: overlap in purposes of signals. I.e. we want to record
+% the delay of each frame as it arrives; but other modules require an rxEnd signal.
+% Question: these should be the same signal or two different signals? I.e.
+% dedicated signals or not?
+%
+% Practical difficulty with signal naming: name would have to express 2 aspects:
+% what happened (message removed from queue and started service), and what
+% the signal value represents (time spent in queue). Recommendation:
+% signal name should express the event ("dequeue"), and the signal title
+% should describe the value (@signal[dequeue](title="Queueing time at dequeue")) ???
+%
 
 
 %%% Local Variables:
