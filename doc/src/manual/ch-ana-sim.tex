@@ -56,8 +56,10 @@ and modules emit values using the signal mechanism. The simulation
 framework records data by adding result file writing listeners to modules.
 By being able to choose what listeners to add, the user can control what to
 record in the result files and what computations to apply before recording.
+The section \label{sec:ch-simple-modules:statistic-signals} explains how to
+instrument simple modules and channels for signals-based result recording.
 
-This approach allows for calculation of aggregate statistics (such as the
+The signals approach allows for calculation of aggregate statistics (such as the
 total number of packet drops in the network) and for implementing a warm-up
 period without support from module code. It also allows you to write
 dedicated statistics collection modules for the simulation, also without
@@ -161,6 +163,37 @@ if (simTime() >= simulation.getWarmupPeriod())
 
 XXX
 
+scalar-recording
+
+Whether the matching output scalars should be recorded.
+Syntax: <module-full-path>.<scalar-name>.scalar-recording=true/false.
+
+Example: **.queue.packetsDropped.scalar-recording=true
+
+works for individual cStatistic members too
+**.eed:histogram.scalar-recording=false    disables histogram
+
+enable/disable
+
+scalar-recording-mode
+
+Defines how to calculate scalar results from the given signal. E
+xample values: count, lastval, sum, mean, min, max, timeavg,
+stddev, histogram, auto. `auto' chooses `histogram', unless the
+`modeHint' key in the @signal property tells otherwise. More
+than one values are accepted, separated by commas.
+
+Example:
+
+\begin{inifile}
+**.queueLength.scalar-recording-mode = timeavg,max
+\end{inifile}
+
+The recorded scalars will have a suffix...
+
+%% TODO output-scalar-precision, output-vector-precision (already described somewhere else?)
+%% ", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
+
 \subsection{Configuring output vectors}
 \label{sec:ch-config-sim:outvectors}
 
@@ -208,6 +241,16 @@ An example:
 The above configuration limits collection of all output vectors
 to the 1s..60s interval, and disables collection of output vectors
 except all end-to-end delays and the ones in any module called Router2.
+
+XXX document this: vector-record-eventnumbers, default=true: Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.
+
+\begin{inifile}
+**.vector-record-eventnumbers = true
+\end{inifile}
+
+XXX document these:
+output-vectors-memory-limit: Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.
+vector-max-buffered-values: For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file. The default is no per-vector limit (i.e. only the total memory limit is in effect
 
 
 \subsection{Saving parameters as scalars}

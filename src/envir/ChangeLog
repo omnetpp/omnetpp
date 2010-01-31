@@ -1,4 +1,9 @@
-2009-05-13  Levente M‚sz ros
+2010-01-31  Andras Varga
+
+	* checked in signals-based result recording; see the User Manual for more 
+	info. New configuration options: warmup-period,  **.scalar-recording-mode
+
+2009-05-13  Levente Meszaros
 
 	* changed EnvirBase to include hostname and pid by default in output file
           names when parallel simulation is enabled.
