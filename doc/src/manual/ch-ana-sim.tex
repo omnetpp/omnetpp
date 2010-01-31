@@ -65,6 +65,197 @@ XXX also: dedicated result collection modules
 Truncation (warmup-period) can be trivially supported! scalar-computing nodes should ignore the beginning.
 warmup-period = 20s
 
+
+
+\section{Configuring result collection}
+
+\subsection{Output vectors and scalars}
+
+In {\opp} 3.x, the default result file names were \ttt{omnetpp.vec} and
+\ttt{omnetpp.sca}. This is not very convenient for batch execution, where
+an output vector file created in one run would be overwritten in the
+next run. Thus, we have changed the default file names to make them
+differ for every run. The new defaults are:
+
+\begin{inifile}
+output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
+output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
+\end{inifile}
+
+Where \ttt{\$\{resultdir\}} is the value of the \ttt{result-dir} configuration
+option, and defaults to \ttt{results/}. So the above defaults generate
+file names like \ttt{results/PureAloha-0.vec}, \ttt{results/PureAloha-1.vec},
+and so on.
+
+Also, in {\opp} 3.x output scalar files were always appended to by the
+simulation program, rather than being overwritten. This behavior was
+changed in 4.0 to make it consistent with vector files, that is, output
+scalar files are also overwritten by the simulator, and not appended
+to.
+
+\begin{note}
+    The old behavior can be turned back on by setting
+    \ttt{output-scalar-file-append=true}.
+\end{note}
+
+Although it has nothing to do with our main topic (ini files), this is a
+good place to mention that the format of result files have been
+extended to include meta info such as the run ID, network name, all
+configuration settings, etc. These data make the files more
+self-documenting, which can be valuable during the result analysis
+phase, and increase reproducibility of the results. Another change is
+that vector data are now recorded into the file clustered by the output
+vectors, which (combined with index files) allows much more efficient
+processing.
+
+\subsection{Configuring output vectors}
+\label{sec:ch-config-sim:outvectors}
+
+
+As a simulation program is evolving, it is becoming capable of
+collecting more and more statistics. The size of output vector
+files\index{output!vector file} can easily reach a magnitude of
+several ten or hundred megabytes, but very often, only some of the
+recorded statistics are interesting to the analyst.
+
+In {\opp}, you can control how \cclass{cOutVector} objects record data
+to disk. You can turn output vectors on/off or you can assign a result
+collection interval. By default, all output vectors are turned on.
+
+
+\begin{note}
+    The way of configuring output vectors has changed. In {\opp} 3.x,
+    the keys for enabling-disabling a vector and specifying recording
+    interval were <module-and-vectorname-pattern>.enabled, and
+    <module-and-vectorname-pattern>.interval. The "enabled" and "interval"
+    words changed to "vector-recording" and "vector-recording-interval".
+    The reason for this change is that per-object
+    configuration keys are now required to have a hyphen in their names, to
+    make it possible to tell them apart from module parameter assignments.
+    This allows the simulator to catch mistyped config keys in ini files.
+    The syntax for specifying the recording interval has also been extended
+    (in a backward compatible way) to accept multiple intervals, separated
+    by comma.
+\end{note}
+
+
+Output vectors can be configured with the following syntax:
+
+\begin{inifile}
+module-pathname.objectname.vector-recording = true/false
+module-pathname.objectname.vector-recording-interval = start1..stop1,
+                                                       start2..stop2, ...
+\end{inifile}
+
+Either \textit{start} or \textit{stop} can be omitted, to mean the
+beginning and the end of the simulation, respectively.
+
+The object name is the string passed to \cclass{cOutVector} in its constructor
+or with the \ffunc{setName()} member function.
+
+\begin{cpp}
+cOutVector eed("End-to-End Delay");
+\end{cpp}
+
+Start and stop values can be any time specification accepted
+in NED and config files (e.g. \textit{10h 30m 45.2s}).
+
+As with parameter names, wildcards are allowed in the object
+names and module path names.
+
+An example:
+
+\begin{inifile}
+[General]
+**.vector-recording-interval = 1s..60s
+**.End-to-End Delay.vector-recording = true
+**.Router2.**.vector-recording = true
+**.vector-recording = false
+\end{inifile}
+
+The above configuration limits collection of all output vectors
+to the 1s..60s interval, and disables collection of output vectors
+except all end-to-end delays and the ones in any module called Router2.
+
+
+\subsection{Saving parameters as scalars}
+
+When you are running several simulations with different parameter
+settings, you'll usually want to refer to selected
+input parameters in the result analysis as well -- for example when
+drawing a throughput (or response time) versus load (or network
+background traffic) plot. Average throughput or response time numbers
+are saved into the output scalar files, and it is useful for the input
+parameters to get saved into the same file as well.
+
+For convenience, {\opp} automatically saves the iteration variables
+into the output scalar file if they have numeric value, so they can
+be referred to during result analysis.
+
+\begin{warning}
+    If an iteration variable has non-numeric value, it will not be recorded
+    automatically and cannot be used during analysis. This can happen
+    unintentionally if you specify units inside an iteration variable list:
+\begin{inifile}
+# NEVER USE:
+**.host[*].generationInterval = exponential( ${mean=0.2s, 0.4s, 0.6s} )
+# INSTEAD: Specify the unit outside of the variable
+**.host[*].generationInterval = exponential( ${mean=0.2, 0.4, 0.6}s )
+\end{inifile}
+\end{warning}
+
+Module parameters can also be saved, but this has to be
+requested by the user, by configuring \ttt{save-as-scalar=true} for the
+parameters in question. The configuration key is a pattern that
+identifies the parameter, plus \ttt{.save-as-scalar}. An example:
+
+\begin{inifile}
+**.host[*].networkLoad.save-as-scalar = true
+\end{inifile}
+
+This looks simple enough. However, there are three pitfalls:
+non-numeric parameters, too many matching parameters, and
+random-valued volatile parameters.
+
+First, the scalar file only holds numeric results, so non-numeric
+parameters cannot be recorded -- that will result in a runtime
+error.
+
+Second, if wildcards in the pattern match too many parameters, that
+might unnecessarily increase the size of the scalar file. For example,
+if the \ttt{host[]} module vector size is 1000 in the example below, then the
+same value (3) will be saved 1000 times into the scalar file, once for
+each host.
+
+\begin{inifile}
+**.host[*].startTime = 3
+**.host[*].startTime.save-as-scalar = true  # saves "3" once for each host
+\end{inifile}
+
+Third, recording a random-valued volatile parameter will just save a
+random number from that distribution. This is rarely what you need, and
+the simulation kernel will also issue a warning if this happens.
+
+\begin{inifile}
+**.interarrivalTime = exponential(1s)
+**.interarrivalTime.save-as-scalar = true  # wrong: saves random values!
+\end{inifile}
+
+These pitfalls are quite common in practice, so it is usually better
+to rely on the iteration variables in the result analysis.
+That is, one can rewrite the above example as
+
+\begin{inifile}
+**.interarrivalTime = exponential( ${mean=1}s )
+\end{inifile}
+
+and refer to the \ttt{\$mean} iteration variable instead of the
+interarrivalTime module parameter(s) during result analysis.
+\ttt{save-as-scalar=true} is not needed, because iteration variables are
+automatically saved into the result files.
+
+
+
 \section{Result files}
 
 Simulation results are recorded into textual, line-oriented \textit{scalar
