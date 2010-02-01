@@ -11,7 +11,7 @@ package org.omnetpp.queueing;
 
 //
 // A resource object representing a single type of resource.
-// More tan one ResourceBasedQueue block can specify this bolck as a resource.
+// More than one ResourceBasedQueue block can specify this bolck as a resource.
 // In this case unstatisfied resource requests are queued (with priority) and the
 // requestor will be notified once the resource gets available.
 //
@@ -19,6 +19,7 @@ simple ResourcePool
 {
     parameters:
         @group(Queueing);
+        @signal[amount](title="available resource";modeHint=timeavg,min;interpolationMode=sample-hold);
         @display("i=block/buffer;t=,r,black");
         int amount = default(1);        // the amount of resource units
 }

@@ -15,6 +15,7 @@ namespace queueing {
 
 void SourceBase::initialize()
 {
+	createdSignal = registerSignal("created");
     jobCounter = 0;
     WATCH(jobCounter);
     jobName = par("jobName").stringValue();
@@ -34,7 +35,7 @@ Job *SourceBase::createJob()
 
 void SourceBase::finish()
 {
-    recordScalar("jobs created", jobCounter);
+	emit(createdSignal, (long)jobCounter);
 }
 
 //----

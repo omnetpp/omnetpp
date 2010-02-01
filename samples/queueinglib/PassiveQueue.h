@@ -24,26 +24,20 @@ class SelectionStrategy;
 class QUEUEING_API PassiveQueue : public cSimpleModule, public IPassiveQueue
 {
     private:
-        cOutVector droppedVector;
-        cOutVector lengthVector;
-        cOutVector queueingTimeVector;
-        cWeightedStdDev scalarWeightedLengthStats;
-        cStdDev scalarLengthStats;
-        cWeightedStdDev scalarUtilizationStats;
+		simsignal_t droppedSignal;
+		simsignal_t queueLengthSignal;
+		simsignal_t queueingTimeSignal;
 
         bool fifo;
         int capacity;
-        int droppedJobs;
         cQueue queue;
         SelectionStrategy *selectionStrategy;
-        simtime_t prevEventTimeStamp;               // the timestamp of the last queuelength change
 
         void queueLengthChanged();
 
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
-        virtual void finish();
 
     public:
         PassiveQueue();

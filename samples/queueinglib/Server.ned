@@ -18,6 +18,8 @@ simple Server
     parameters:
         @group(Queueing);
         @display("i=block/server");
+        @signal[busy](title="server busy state";modeHint=timeavg;interpolationMode=sample-hold);
+
         string fetchingAlgorithm @enum("priority","random","roundRobin","longestQueue") = default("priority");
              // how the next job will be choosen from the attached queues
         volatile double serviceTime @unit(s); // service time of a job

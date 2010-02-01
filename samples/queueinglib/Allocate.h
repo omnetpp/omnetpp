@@ -35,10 +35,9 @@ class QUEUEING_API Allocate : public cSimpleModule, public IResourceAllocator
         int resourcePriority;
 
         // statistics
-        long numDropped;
-        cOutVector droppedVector;
-        cOutVector lengthVector;
-        cOutVector queueingTimeVector;
+		simsignal_t droppedSignal;
+		simsignal_t queueLengthSignal;
+		simsignal_t queueingTimeSignal;
 
     public:
         Allocate();
@@ -51,7 +50,6 @@ class QUEUEING_API Allocate : public cSimpleModule, public IResourceAllocator
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
-        virtual void finish();
 
         virtual Job *dequeue();
         virtual Job *peek();
