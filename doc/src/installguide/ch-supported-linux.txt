@@ -85,11 +85,11 @@ you need to log out and log in again for the changes to take effect.
 
 [NOTE]
 ===============================================================
-If you use a shell other than bash, consult the man page of that shell
+If you use a shell other than 'bash', consult the man page of that shell
 to find out which startup file to edit, and how to set and export variables.
 
 Note that all Linux distributions covered in this Installation Guide
-use bash, unless the user explicitly selects another shell.
+use 'bash' unless the user has explicitly selected another shell.
 ===============================================================
 
 
@@ -105,7 +105,7 @@ read by the makefiles during the build process.
 
 Normally, the `configure` script needs to be running under the graphical
 environment (X11) in order to test for `wish`, the Tcl/Tk shell. If you are logged in
-via an ssh session, or there is some other reason why X is not running,
+via an 'ssh' session, or there is some other reason why X is not running,
 the easiest way to work around the problem is to tell @OMNETPP@ to build
 without Tcl/Tk. To do that, use the command
 
@@ -160,7 +160,7 @@ the dyna simulation is started by entering the following commands:
     $ cd samples/dyna
     $ ./dyna
 
-By default the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
 
@@ -233,30 +233,31 @@ Note that at this point, MPI, Doxygen and GraphViz have been installed as part o
 ==== Akaroa
 
 Linux distributions do not contain the Akaroa package. It must be downloaded, compiled and installed
-manually before installing @OMNETPP@;
+manually before installing @OMNETPP@.
 
-Download Akaroa 2.7.6 from: 
+Download Akaroa 2.7.6 (which is the latest version at the time of writing)
+from the project's web site:
 'http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/'
 
-Extract into a temporary directory
+Extract it into a temporary directory:
 
   $ tar xfz akaroa-2.7.6.tar.gz
-  
-Unfortunately this version does not compile properly with gcc-4.4. A patch is available 
-in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change 
-to the Akaroa root directory and apply it to the sources.
+
+Unfortunately, this version does not compile properly with gcc-4.4. A patch is available
+in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change
+to the Akaroa root directory, and apply it to the sources.
 
   $ cd akaroa-2.7.6
-  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch 
-  
-Configure, build and install the Akaroa library. By default it will be installed into the 
+  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch
+
+Configure, build, and install the Akaroa library. By default, it will be installed into the
 `/usr/local/akaroa` directory.
-  
+
   $ ./configure
   $ make
   $ sudo make install
-  
-Go to the @OMNETPP@ directory and (re)run the `configure` script. Akaroa will be
+
+Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
 
 ifdef::OMNEST[]

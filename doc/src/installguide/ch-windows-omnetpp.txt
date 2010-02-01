@@ -1,5 +1,10 @@
 == Windows
 
+=== Supported Windows versions
+
+The supported Windows versions are the Intel 32-bit versions of Windows XP,
+and later Windows versions such as Vista and Windows 7.
+
 === Installing the prerequisites
 
 The only software that you need to download and install beforehand is the
@@ -22,7 +27,7 @@ libraries and programs required by @OMNETPP@.
 
 Copy the @OMNETPP@ archive to the directory where you want to install it.
 Choose a directory whose full path *does not contain any space*; for example,
-do *not* put @OMNETPP@ under 'Program Files'.
+do not put @OMNETPP@ under 'Program Files'.
 
 Extract the zip file. To do so, right-click the zip file in Windows Explorer,
 and select 'Extract All' from the menu. You can also use external programs
@@ -64,7 +69,7 @@ the dyna example is started by entering the following commands:
     $ cd samples/dyna
     $ ./dyna
 
-By default the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
 
@@ -183,8 +188,9 @@ that you use Linux, OS X, or another unix-like platform.
 
 ==== Akaroa
 
-NOTE: The Akaroa 2.6.7 distribution is not supported on Windows. You may try to port it using
-the porting guide from the akaroa distribution. 
+Akaroa 2.6.7, which is the latest version at the time of writing, does not
+support Windows. You may try to port it using the porting guide from the
+Akaroa distribution.
 
 ifdef::OMNEST[]
 ==== SystemC

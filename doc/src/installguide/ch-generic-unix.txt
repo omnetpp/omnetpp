@@ -1,5 +1,7 @@
 == Generic Unix
 
+=== Introduction
+
 This chapter provides additional information for installing @OMNETPP@
 on Unix-like operating systems not specifically covered by this
 Installation Guide. The list includes FreeBSD, Solaris, and Linux
@@ -7,17 +9,15 @@ distributions not covered in other chapters.
 
 [NOTE]
 ===============================================================
-In addition to Windows and OS X, the Simulation IDE will only work
+In addition to Windows and Mac OS X, the Simulation IDE will only work
 on Linux x86 32/64-bit platforms. Other operating systems (FreeBSD,
 Solaris, etc.) and architectures may still be used as simulation
 platforms, without the IDE.
 ===============================================================
 
-
-=== Derivative Linux distributions
-
-Some Linux distributions are derived from other distros, which means you
-may be able to use distro-specific instructions in this Guide.
+If your Linux distribution is not listed in this Installation Guide
+but it is a derivative of one that is, you may be able to use the
+distro-specific instructions in this Guide.
 
 Some Ubuntu derivatives (Ubuntu instructions may apply):
 
@@ -66,7 +66,7 @@ SUN JRE or OpenJDK, version 5.0 or later::
   The Java runtime is required to run the Eclipse-based Simulation IDE.
   Other implementations, for example Kaffe, have been found to have problems
   running the IDE. You do not need this package if you do not plan
-  to use the Simulation IDE. 
+  to use the Simulation IDE.
 xulrunner::
   This package is part of Firefox, and is needed by the IDE to display
   documentation, styled tooltips and other items.
@@ -78,12 +78,13 @@ GraphViz, Doxygen::
   These packages are used by the NED documentation generation feature
   of the IDE. When they are missing, documentation will have less content.
 
-MPI:: openmpi or some other MPI implementation is required to support 
+MPI::
+  openmpi or some other MPI implementation is required to support
       parallel simulation execution.
 
-akaroa::  
-  Multiple Replications In Parallel (MRIP). Should be downloaded from the
-  project's website.
+Akaroa::
+  Implements Multiple Replications In Parallel (MRIP). Akaroa can be downloaded
+  from the project's website.
 
 The exact names of these packages may differ across distributions.
 
@@ -125,15 +126,15 @@ work just in the console) or you really need to set the `DISPLAY` variable
 
 If you get the error: 'Tcl_Init failed: Can't find a usable init.tcl...'
 
-The `TCL_LIBRARY` environment variable should point to the directory which 
+The `TCL_LIBRARY` environment variable should point to the directory which
 contains `init.tcl`. That is, you probably want to put a line like
 
   export TCL_LIBRARY=/usr/lib/tcl8.4
 
-into your `~/.bash_profile`. 
+into your `~/.bash_profile`.
 
-  
-If you still have problems installing Tcl/Tk, we recommend visiting the @OMNETPP@ site's 
+
+If you still have problems installing Tcl/Tk, we recommend visiting the @OMNETPP@ site's
 wiki packages for further troubleshooting tips.
 Visit: 'http://www.omnetpp.org/pmwiki/index.php?n=Main.TclTkRelatedProblems'
 
@@ -151,11 +152,11 @@ then `make` and `make install`. (For the last step you'll need root privileges -
 you may need to contact your sysadmin). If there's any problem, refer to the
 `INSTALL` file in the package.
 
-You can try your installation by running `bltwish`, or `wish`
-and typing 
+You can try your installation by running `bltwish`, or running `wish`
+and typing
 
-  `% package require BLT` 
-  
+  % package require BLT
+
 in it.
 
 If you don't have root privileges or you get an error during the build,
@@ -164,9 +165,9 @@ please check the following page:
 
 ==== The Java Runtime
 
-You need to install the Sun JRE or OpenJDK. 
+You need to install the Sun JRE or OpenJDK.
 On Unix platforms other than Linux the IDE is not supported so JRE is not required
-either. We have tested various other Java runtimes ('gcj', 'kaffe', etc.), and 
+either. We have tested various other Java runtimes ('gcj', 'kaffe', etc.), and
 the IDE does not work well with them.
 
 Java version 5.0 (i.e. JRE 1.5) or later is required.
@@ -242,8 +243,8 @@ associated with the problem.
 The `configure` script tries to build and run small test programs that are using
 specific libraries or features of the system. You can check the `config.log` file
 to see which test program has failed and why. In most cases the problem is that the
-script cannot figure out the location of a specific library. Specifying the include file 
-or library location in the `configure.user` file and then re-running the `configure` script 
+script cannot figure out the location of a specific library. Specifying the include file
+or library location in the `configure.user` file and then re-running the `configure` script
 usually solves the problem.
 ===============================================================
 
@@ -255,7 +256,7 @@ Type in the terminal:
 [TIP]
 ===============================================================
 To take advantage of multiple processor cores, add the `-j2` option to the
-`make` command line. 
+`make` command line.
 ===============================================================
 
 [NOTE]
@@ -283,7 +284,7 @@ the dyna simulation is started by entering the following commands:
     $ cd samples/dyna
     $ ./dyna
 
-By default the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
 
@@ -294,10 +295,10 @@ nice gui windows and dialogs.
 The IDE is supported only on Windows, Mac OS X (x86) and Linux (x86,x64).
 ===============================================================
 
-You can run the IDE. Type in the terminal:
+You can run the IDE by typing the following command in the terminal:
 
   $ @omnetpp@
-  
+
 If you would like to be able to access the IDE from the application launcher or via
 a desktop shortcut, run one or both of the commands below:
 
@@ -306,40 +307,40 @@ a desktop shortcut, run one or both of the commands below:
 
 [NOTE]
 ===============================================================
-The above commands assume that your system has the `xdg` commands, 
+The above commands assume that your system has the `xdg` commands,
 which most modern distributions do.
 ===============================================================
 
-=== Optional packages 
+=== Optional packages
 
 ==== Akaroa
 
-Linux distributions do not contain the Akaroa package. It must be downloaded, compiled and installed
-manually before installing @OMNETPP@;. 
+Linux distributions do not contain the Akaroa package. It must be downloaded,
+compiled and installed manually before installing @OMNETPP@;.
 
 NOTE: Akaroa 2.7.6 is supported only on Linux and Solaris platforms.
 
-Download Akaroa 2.7.6 from: 
+Download Akaroa 2.7.6 from:
   'http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/'
-  
-Extract into a temporary directory
+
+Extract it into a temporary directory:
 
   $ tar xfz akaroa-2.7.6.tar.gz
-  
-Unfortunately this version does not compile properly with gcc-4.4. A patch is available 
-in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change 
-to the Akaroa root directory and apply it to the sources.
+
+Unfortunately, this version does not compile properly with gcc-4.4. A patch is available
+in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change
+to the Akaroa root directory and apply the patch to the sources.
 
   $ cd akaroa-2.7.6
-  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch 
-  
-Configure, build and install the Akaroa library. By default it will be installed into the 
+  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch
+
+Configure, build and install the Akaroa library. By default, it will be installed into the
 `/usr/local/akaroa` directory.
-  
+
   $ ./configure
   $ make
   $ sudo make install
-  
-Go to the @OMNETPP@ directory and (re)run the `configure` script. Akaroa will be
+
+Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
 
