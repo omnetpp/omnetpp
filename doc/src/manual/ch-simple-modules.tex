@@ -1383,6 +1383,7 @@ destructor\index{module!destructor}.
 
 
 \subsubsection{Multi-stage initialization}
+\label{sec:simple-modules:multi-stage-init}
 
 
 In simulation models, when one-stage
@@ -3660,12 +3661,6 @@ methods in listeners. The signal value can be of selected primitive types, or an
 object pointer; anything that is not feasible to emit as a primitive type may be
 wrapped into an object, and emitted as such.
 
-\begin{note}
-  The number of supported signal value types was intentially kept low, in order
-  to minimize the number of overloaded methods that authors of listeners have
-  to provide.
-\end{note}
-
 \subsection{Design considerations and rationale}
 
 The implementation of signals is based on the following assumptions:
@@ -3691,17 +3686,20 @@ per-component overhead is only the size of the pointer (which will be
 Second, additionally there are two bitfields in every component that store
 which one of the first 64 signals (IDs 0..63) have local listeners and
 listeners in ancestor modules.\footnote{It is assumed that there will be
-typically less than 64 signals used at a time in a simulation.} Using these
-bitfields, it is possible to determine in constant time for the first 64
-signals whether the signal has listeners, so \ffunc{emit()} can return
-immediately if there are no listeners, does not need to go up the ancestor
-chain of there only local listeners, and otherwise only needs to go up the
-ancestor chain as high as needed. For other signals, \ffunc{emit()} needs
-to examine the listener lists every time. Even if a simulation uses more
-than 64 signals, in performance-critical situations it is possible to
-arrange that frequently emitted signals (e.g. \ttt{"tx-begin"}) get the
-``fast'' signal IDs, while infrequent signals (like e.g.
-\ttt{"router-down"}) get the rest.
+typically less than 64 frequently used signals used at a time in a
+simulation.} Using these bitfields, it is possible to determine in constant
+time for the first 64 signals whether the signal has listeners, so
+\ffunc{emit()} can return immediately if there are none. For other signals,
+\ffunc{emit()} needs to examine the listener lists up to the root every
+time. Even if a simulation uses more than 64 signals, in
+performance-critical situations it is possible to arrange that frequently
+emitted signals (e.g. \ttt{"tx-begin"}) get the ``fast'' signal IDs, while
+infrequent signals (like e.g. \ttt{"routerDown"}) get the rest.
+
+The easiest way to ensure that frequently used signals get ``fast'' signal IDs
+is to register them in stage 0 initialization, and register the others
+in later stages. (Multi-stage initialization is described in
+\ref{sec:simple-modules:multi-stage-init}.)
 
 
 \subsection{The signals mechanism}

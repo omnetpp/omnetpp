@@ -161,43 +161,76 @@ if (simTime() >= simulation.getWarmupPeriod())
 
 \subsection{Configuring scalar results}
 
-XXX
+Recording scalar results can be enabled or disabled individually, using
+patterns. The syntax of the configuration option is
+\textit{<module-full-path>.<scalar-name>.}\ttt{scalar-recording=}\textit{true/false},
+where both \textit{<module-full-path>} and \textit{<scalar-name>}
+may contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
+\textit{<scalar-name>} is the signal name, or the string passed to the
+\ffunc{recordScalar()} call. By default, the recording of all scalars is
+enabled.
 
-scalar-recording
+The following example turns off recording all scalar results, except
+end-to-end delays and those produced by TCP modules:
 
-Whether the matching output scalars should be recorded.
-Syntax: <module-full-path>.<scalar-name>.scalar-recording=true/false.
+\begin{inifile}
+**.tcp.**.scalar-recording = true
+**.endToEndDelay.scalar-recording = true
+**.scalar-recording = false
+\end{inifile}
 
-Example: **.queue.packetsDropped.scalar-recording=true
+%% **.eed:histogram.scalar-recording=false    disables histogram
 
-works for individual cStatistic members too
-**.eed:histogram.scalar-recording=false    disables histogram
+When recording signals as scalars, one has to define how to derive the
+scalar value from the sequence of values emitted. One may be interested
+in the final value, in the count of the values, in their mean, the minimum
+or maximum value or other properties. This can be configured using the
+\textit{<module-full-path>.<scalar-name>.}\ttt{scalar-recording-mode=}
+configuration option. If \ttt{scalar-recording-mode=} is not defined
+in the configuration or it is set to \ttt{auto}, the \ttt{modeHint} key
+from the \ttt{@signal} property is used.
 
-enable/disable
+Several scalar recording modes can be specified, separated by comma.
+Currently the following modes are supported:
 
-scalar-recording-mode
+\begin{description}
+  \item[auto]: automatically select the best mode(s) for a signal. This mode
+      currently selects \ttt{histogram} mode (because it records the most
+      information), but this may change in future versions.
+  \item[count]: record the number of values emitted; values are ignored
+  \item[lastval]: record the last value
+  \item[sum]: record the sum of the values
+  \item[mean]: record the mean of the values
+  \item[min]: record the minimum value
+  \item[max]: record the maximum value
+  \item[timeavg]: this one makes use of timestamps as well, and computes the
+      time average, interpreting the signal as a step function (sample-hold)
+  \item[stddev]: record the count, sum, mean, standard deviation, minimum
+      and maximum of the values
+  \item[histogram]: record everything \ttt{stddev} records, plus a histogram
+      of the values (bins are set up automatically)
+\end{description}
 
-Defines how to calculate scalar results from the given signal. E
-xample values: count, lastval, sum, mean, min, max, timeavg,
-stddev, histogram, auto. `auto' chooses `histogram', unless the
-`modeHint' key in the @signal property tells otherwise. More
-than one values are accepted, separated by commas.
+New ones cannot be defined at the moment; this feature is planned for future versions.
 
-Example:
+An example:
 
 \begin{inifile}
 **.queueLength.scalar-recording-mode = timeavg,max
 \end{inifile}
 
-The recorded scalars will have a suffix...
+In the result file, the recorded scalars will be suffixed with the name
+of the operation, e.g. the mean of a \ttt{queueingTime} signal will
+be recorded as \ttt{queueingTime:mean}.
 
 %% TODO output-scalar-precision, output-vector-precision (already described somewhere else?)
 %% ", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
 
+
 \subsection{Configuring output vectors}
 \label{sec:ch-config-sim:outvectors}
 
-The size of output vector files can easily reach a magnitude of several
+The size of output vector files can easily reach the magnitude of several
 hundred megabytes, but very often, only some of the recorded statistics are
 interesting to the analyst. {\opp} allows you to control which vectors you
 want to record, and to specify one or more result collection intervals. By
