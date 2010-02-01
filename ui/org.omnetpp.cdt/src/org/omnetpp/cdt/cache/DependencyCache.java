@@ -7,7 +7,6 @@
 
 package org.omnetpp.cdt.cache;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -108,6 +107,7 @@ public class DependencyCache {
         List<Include> includes; // list of #includes in the file
         long modificationStamp; // date/time of file when it was parsed
 
+        @Override
         public String toString() {
             return "[" + StringUtils.join(includes, " ") + "] tstamp=" + modificationStamp;
         }
@@ -329,11 +329,12 @@ public class DependencyCache {
         FileIncludes fileData = fileIncludes.get(file);
         if (fileData == null || fileData.modificationStamp != fileTime) {
             if (fileData == null)
-                fileIncludes.put(file, (fileData = new FileIncludes()));
+                fileData = new FileIncludes();
 
             // re-parse file for includes
             fileData.includes = parseIncludes(file);
             fileData.modificationStamp = fileTime;
+            fileIncludes.put(file, fileData);
 
             if (debug)
                 Debug.println("   parsed includes from " + file + ": " + fileData.toString());
@@ -357,7 +358,7 @@ public class DependencyCache {
             String contents = FileUtils.readTextFile(file.getContents()) + "\n";
             return parseIncludes(contents);
         }
-        catch (IOException e) {
+        catch (Exception e) {
             throw Activator.wrapIntoCoreException("Error collecting #includes from " + file.getFullPath(), e);
         }
     }
