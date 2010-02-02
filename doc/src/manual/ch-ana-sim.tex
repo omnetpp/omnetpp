@@ -233,57 +233,63 @@ be recorded as \ttt{queueingTime:mean}.
 The size of output vector files can easily reach the magnitude of several
 hundred megabytes, but very often, only some of the recorded statistics are
 interesting to the analyst. {\opp} allows you to control which vectors you
-want to record, and to specify one or more result collection intervals. By
-default, all output vectors are turned on for the whole duration the
-simulation.
+want to record, and to specify one or more collection intervals.
 
 Output vectors can be configured with the \ttt{vector-recording=} and
-\ttt{vector-recording-interval=} per-object options.
+\ttt{vector-recording-interval=} per-object options. The syntax of the
+configuration options are
+\textit{<module-full-path>.<vector-name>.}\ttt{vector-recording=}\textit{true/false},
+and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-interval=}\textit{<intervals>},
+where both \textit{<module-full-path>} and \textit{<vector-name>} may
+contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
+\textit{<vector-name>} is the signal name, or the name string of the
+\ffunc{cOutVector} object. By default, all output vectors are turned
+on for the whole duration the simulation.
 
-XXX the object name is...
-
-As with parameter names, wildcards are allowed in the object
-names and module path names.
-
-\begin{inifile}
-<module-pathname>.<objectname>.vector-recording = true/false
-<module-pathname>.<objectname>.vector-recording-interval = start1..stop1,
-                                                       start2..stop2, ...
-\end{inifile}
-
-Either \textit{start} or \textit{stop} can be omitted, to mean the
-beginning and the end of the simulation, respectively.
-
-The object name is the signal name as in the \ttt{@signal[name]},
-or the string passed to \cclass{cOutVector}
-in its constructor or with the \ffunc{setName()} member function.
-
-Start and stop values can be any time specification accepted
-in NED and config files (e.g. \textit{10h 30m 45.2s}).
-
-An example:
+The following example only records the \ttt{queueLength} vectors and
+\ttt{endToEndDelay} in \ttt{voiceApp} modules, and turns off the rest:
 
 \begin{inifile}
-[General]
-**.vector-recording-interval = 1s..60s
-**.End-to-End Delay.vector-recording = true
-**.Router2.**.vector-recording = true
+**.queueLength.vector-recording = true
+**.voiceApp.endToEndDelay.vector-recording = true
 **.vector-recording = false
 \end{inifile}
 
-The above configuration limits collection of all output vectors
-to the 1s..60s interval, and disables collection of output vectors
-except all end-to-end delays and the ones in any module called Router2.
+For the \ttt{vector-recording-interval=} option, one can specify
+one or more intervals in the \textit{<startTime>..<stopTime>} syntax,
+separated by comma. \textit{<startTime>} or \textit{<stopTime>} need
+to be given with measurement units, and both can be omitted to denote
+the beginning and the end of the simulation, respectively.
 
-XXX document this: vector-record-eventnumbers, default=true: Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.
+The following example limits all vectors to three intervals, except
+\ttt{dropCount} vectors which will be recorded during the whole
+simulation run:
 
 \begin{inifile}
-**.vector-record-eventnumbers = true
+**.dropCount.vector-recording-interval = 0..
+**.vector-recording-interval = 0..1000s, 5000s..6000s, 9000s..
 \end{inifile}
 
-XXX document these:
-output-vectors-memory-limit: Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.
-vector-max-buffered-values: For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file. The default is no per-vector limit (i.e. only the total memory limit is in effect
+A third per-vector configuration option is \ttt{vector-record-eventnumbers=},
+which specifies whether to record event numbers for an output vector.
+(Simulation time and value are always recorded. Event numbers are needed
+by the Sequence Chart Tool, for example.) Event number recording is enabled
+by default; it may be turned off to spare disk space.
+
+\begin{inifile}
+**.vector-record-eventnumbers = false
+\end{inifile}
+
+If the (default) \cclass{cIndexedFileOutputVectorManager} class is used to
+record output vectors, there are two more options to fine-tune its resource
+usage. \ttt{output-vectors-memory-limit} specifies the total memory that
+can be used for buffering output vectors. Larger values produce less
+fragmented vector files (i.e. cause vector data to be grouped into larger
+chunks), and therefore allow more efficient processing later.
+\ttt{vector-max-buffered-values} specifies the maximum number of values to
+buffer per vector, before writing out a block into the output vector file.
+The default is no per-vector limit (i.e. only the total memory limit is in
+effect.)
 
 
 \subsection{Saving parameters as scalars}
@@ -305,10 +311,8 @@ be referred to during result analysis.
     automatically and cannot be used during analysis. This can happen
     unintentionally if you specify units inside an iteration variable list:
 \begin{inifile}
-# NEVER USE:
-**.host[*].generationInterval = exponential( ${mean=0.2s, 0.4s, 0.6s} )
-# INSTEAD: Specify the unit outside of the variable
-**.host[*].generationInterval = exponential( ${mean=0.2, 0.4, 0.6}s )
+**.param = exponential( ${mean=0.2s, 0.4s, 0.6s} )  #WRONG!
+**.param = exponential( ${mean=0.2, 0.4, 0.6}s )    #OK
 \end{inifile}
 \end{warning}
 
@@ -554,10 +558,10 @@ The corresponding output scalar file (by default, \ffilename{omnetpp.sca})
 will look like this:
 
 \begin{filelisting}
-scalar "lan.hostA.mac" "frames sent"                99
-scalar "lan.hostA.mac" "frames rcvd"                3088
-scalar "lan.hostA.mac" "bytes sent"                 64869
-scalar "lan.hostA.mac" "bytes rcvd"                 3529448
+scalar "lan.hostA.mac" "frames sent"  99
+scalar "lan.hostA.mac" "frames rcvd"  3088
+scalar "lan.hostA.mac" "bytes sent"   64869
+scalar "lan.hostA.mac" "bytes rcvd"   3529448
 ...
 \end{filelisting}
 
