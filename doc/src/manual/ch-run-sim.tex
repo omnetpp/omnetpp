@@ -873,7 +873,7 @@ $ ulimit -s
 65500
 \end{commandline}
 
-Further increase is only possible if you're root.
+Further increase is only possible if you are root.
 Resource limits are inherited by child processes.
 The following sequence can be used under Linux to get a shell with
 256M stack limit:
@@ -908,7 +908,7 @@ limit. Edit \ttt{/usr/src/linux/include/linux/sched.h} and increase
 \ttt{\_STK\_LIM} from \ttt{(8*1024*1024)} to \ttt{(64*1024*1024)}.
 \end{sloppypar}
 
-Finally, it you're tight with memory, you can switch to Cmdenv. Tkenv
+Finally, if you are tight with memory, you can switch to Cmdenv. Tkenv
 increases the stack size of each module by about 32K\index{stack!for
   Tkenv} so that user interface code that is called from a
 simple module's context can be safely executed.
@@ -917,11 +917,10 @@ Cmdenv does not need that much extra stack.
 
 \subsubsection{Eventually...}
 
-Once you get to the point where you have to adjust the total stack size
-to get your program running,
-you should probably consider transforming (some of) your \ffunc{activity()}
-simple modules to \ffunc{handleMessage()}. \ffunc{activity()} does not
-scale well for large simulations.
+Once you get to the point where you have to adjust the total stack size to
+get your program running, you should probably consider transforming (some
+of) your \ffunc{activity()} simple modules to \ffunc{handleMessage()}.
+\ffunc{activity()} does not scale well for large simulations.
 
 
 
@@ -940,27 +939,25 @@ The most common problems in C++ are associated with memory allocation
      array.}
 \end{itemize}
 
-By far the most common ways leaking memory in simulation programs
-is by not deleting messages (\cclass{cMessage} objects or subclasses).
-Both Tkenv and Cmdenv are able to display the number of messages
-currently in the simulation,
-see e.g. section \ref{sec:ch-run-sim:interpreting-cmdenv-output}.
+The most common cause of memory leaks in {\opp} simulations is
+forgetting to delete messages. Both Tkenv and Cmdenv are able
+to display the number of messages currently in the simulation,
+helping you to determine if you have such a memory leak;
+see section \ref{sec:ch-run-sim:interpreting-cmdenv-output}.
 If you find that the number of messages is steadily increasing,
-you need to find where the message objects are. You can do so
+you need to find where the message objects are located. You can do so
 by selecting \textit{Inspect|From list of all objects...} from
 the Tkenv menu, and reviewing the list in the dialog that pops up.
-(If the model is large, it may take a while for the dialog to appear.)
 
 If the number of messages is stable, it is still possible
-you're leaking other \cclass{cOwnedObject}-based objects. You can
-also find them using Tkenv's \textit{Inspect|From list of all objects...}
-function.
+you are leaking other \cclass{cOwnedObject}-based objects. You can
+find them using Tkenv's \textit{Inspect|From list of all objects...}
+function as well.
 
-If you're leaking non-\cclass{cOwnedObject}-based objects or just
-memory blocks (\ttt{struct}s, \ttt{int}/\ttt{double}/\ttt{struct} arrays,
-etc, allocated by \ttt{new}), you cannot find them via Tkenv.
-You'll probably need a specialized memory debugging tool like
-the ones described below.
+If you are leaking non-\cclass{cOwnedObject}-based objects or just
+memory blocks (structs, arrays, etc., allocated by \ttt{new}),
+you will not be able to find them via Tkenv. You will probably need
+a specialized memory debugging tool like the ones described below.
 
 \subsubsection{Memory debugging tools}
 
@@ -977,7 +974,7 @@ Other memory debuggers are \textit{NJAMD}, \textit{MemProf},
 Most of the above tools support tracking down memory leaks as well as
 detecting double deletion, writing past the end of an allocated block, etc.
 
-A proven commercial tool \textit{Rational Purify}. It has
+A proven commercial tool is \textit{Rational Purify}. It has
 a good reputation and proved its usefulness many times.
 
 \subsection{Simulation executes slowly}
@@ -998,17 +995,17 @@ What can you do if the simulation executes much slower than you expect?
 The best advice that can be given here is that you should
 \tbf{use a good profiler} to find out how much time is spent in each
 part of the program. Do not make the mistake of omitting this step,
-thinking that you know "which part is slow"! Even for experienced
-programmers, profiling session is all too often full of surprises.
+thinking that you know which part is slow! Even for experienced
+programmers, a profiling session is all too often full of surprises.
 It often turns out that lots of CPU time is spent in completely
-innocent-looking statements, while the big and complex algorithm
-doesn't take nearly as much time as expected. \textit{Don't assume anything
+innocent-looking statements, while big and complex algorithms
+don't take nearly as much time as you expected. \textit{Don't assume anything
 -- profile before you optimize!}
 
 A great profiler on Linux is the \textit{Valgrind}-based
 \textit{callgrind}, and its visualizer \textit{KCachegrind}.
 Unfortunately it won't be ported to Windows anytime soon.
-On Windows, you're out of luck -- commercial products may help, or,
+On Windows, you are out of luck -- commercial products may help, or,
 port your simulation to Linux. The latter goes usually much smoother
 than one would expect.
 

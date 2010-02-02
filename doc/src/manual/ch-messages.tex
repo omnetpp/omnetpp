@@ -315,7 +315,7 @@ if (dynamic_cast<IPv6Datagram *>(msg) != NULL)
 \subsubsection{Encapsulating packets}
 
 It is often necessary to encapsulate a
-message\index{message!encapsulation} into another when you're modeling
+message\index{message!encapsulation} into another when you are modeling
 layered protocols of computer networks. Although you can encapsulate
 messages by adding them to the parameter list, there's a better way.
 
@@ -533,7 +533,7 @@ long destAddr = msg->par("destAddr");
 \subsection{Introduction}
 
 In practice, you'll need to add various fields to \cclass{cMessage} to
-make it useful. For example, if you're modelling packets in communication
+make it useful. For example, if you are modelling packets in communication
 networks, you need to have a way to store protocol header fields in message
 objects. Since the simulation library is written in C++, the natural way
 of extending \cclass{cMessage} is via subclassing it.

@@ -301,7 +301,7 @@ implemented with \textit{binary heap}\index{binary heap}, the most
 widely used data structure for this purpose. Heap is also the best
 algorithm we know, although exotic data structures like
 \textit{skiplist}\index{skiplist} may perform better than heap in some
-cases. In case you're interested, the FES implementation is in the
+cases. In case you are interested, the FES implementation is in the
 \cclass{cMessageHeap} class, but as a simulation programmer you won't
 ever need to care about that.
 
@@ -2982,7 +2982,7 @@ output format by undefining \ttt{FSM\_Print()} after including
 The \fmac{FSM\_Switch()} is a macro. It expands to a \ffunc{switch()}
 statement embedded in a \ffunc{for()} loop which repeats until the
 FSM\index{FSM} reaches a steady state. (The actual code is rather
-scary, but if you're dying to see it, it is in \texttt{cfsm.h}.)
+scary, but if you are dying to see it, it is in \texttt{cfsm.h}.)
 
 Infinite loops are avoided by counting state transitions: if
 an FSM goes through 64 transitions without reaching a steady
@@ -3517,8 +3517,8 @@ invoked, but you can still manually invoke it.
 
 You can use the \ffunc{callFinish()} function to arrange \ffunc{finish()}
 to be called. It is usually not a good idea to invoke \ffunc{finish()}
-directly. If you're deleting a compound module, \ffunc{callFinish()} will
-recursively invoke \ffunc{finish()} for all submodules, and if you're deleting
+directly. If you are deleting a compound module, \ffunc{callFinish()} will
+recursively invoke \ffunc{finish()} for all submodules, and if you are deleting
 a simple module from another module, \ffunc{callFinish()} will do the context
 switch for the duration of the call.
   \footnote{The \ffunc{finish()} function is even made \ttt{protected}
