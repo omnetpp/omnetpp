@@ -22,25 +22,18 @@ class Job;
 class QUEUEING_API Queue : public cSimpleModule
 {
     private:
-        cOutVector droppedVector;
-        cOutVector lengthVector;
-        cOutVector queueingTimeVector;
-        cWeightedStdDev scalarWeightedLengthStats;
-        cStdDev scalarLengthStats;
-        cWeightedStdDev scalarUtilizationStats;
+		simsignal_t droppedSignal;
+		simsignal_t queueLengthSignal;
+		simsignal_t queueingTimeSignal;
+		simsignal_t busySignal;
 
         Job *jobServiced;
         cMessage *endServiceMsg;
         cQueue queue;
         int capacity;
         bool fifo;
-        int droppedJobs;
 
         Job *getFromQueue();
-        simtime_t prevQueueEventTimeStamp;   // the timestamp of the last queuelength change
-        simtime_t prevServiceEventTimeStamp; // the timestamp of the last service state change
-        void queueLengthWillChange();
-        void processorStateWillChange();
 
     public:
         Queue();

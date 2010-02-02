@@ -236,7 +236,8 @@ net.server.transactionsPerSecond = 100
 Models can have a large number of parameters to be configured, and it would
 be tedious to set them one-by-one in \ffilename{omnetpp.ini}. {\opp} supports
 \textit{wildcards patterns} which allow for setting several model parameters
-at once.
+at once. The same pattern syntax is used for per-object configuration options,
+for example \ttt{<object-path-pattern>.record-scalar=}, or \ttt{<module-path-pattern>.rng-<N>=}.
 
 The pattern syntax is a variation on the usual \textit{glob}-style
 patterns. The most apparent differences to the \textit{glob} rules are the

@@ -24,6 +24,7 @@ class QUEUEING_API SourceBase : public cSimpleModule
     protected:
         int jobCounter;
         std::string jobName;
+        simsignal_t createdSignal;
     protected:
         virtual void initialize();
         virtual Job *createJob();

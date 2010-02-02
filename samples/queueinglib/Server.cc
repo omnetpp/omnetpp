@@ -32,8 +32,8 @@ Server::~Server()
 
 void Server::initialize()
 {
-    scalarUtilizationStats.setName("utilization");
-    prevEventTimeStamp = 0.0;
+    busySignal = registerSignal("busy");
+    emit(busySignal, 0l);
 
     endServiceMsg = new cMessage("end-service");
     jobServiced = NULL;
@@ -44,9 +44,6 @@ void Server::initialize()
 
 void Server::handleMessage(cMessage *msg)
 {
-    scalarUtilizationStats.collect2((jobServiced != NULL ? 1 : 0), simTime()-prevEventTimeStamp);
-    prevEventTimeStamp = simTime();
-
     if (msg==endServiceMsg)
     {
         ASSERT(jobServiced!=NULL);
@@ -54,6 +51,7 @@ void Server::handleMessage(cMessage *msg)
         jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
         jobServiced = NULL;
+        emit(busySignal, 0l);
 
         if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
 
@@ -72,9 +70,9 @@ void Server::handleMessage(cMessage *msg)
             error("job arrived while already servicing one");
 
         jobServiced = check_and_cast<Job *>(msg);
-
         simtime_t serviceTime = par("serviceTime");
         scheduleAt(simTime()+serviceTime, endServiceMsg);
+        emit(busySignal, 1l);
 
         if (ev.isGUI()) getDisplayString().setTagArg("i",1,"cyan");
     }
@@ -82,7 +80,6 @@ void Server::handleMessage(cMessage *msg)
 
 void Server::finish()
 {
-    recordScalar("utilization", scalarUtilizationStats.getMean());
 }
 
 bool Server::isIdle()

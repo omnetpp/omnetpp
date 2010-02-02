@@ -20,7 +20,7 @@ namespace queueing {
 class QUEUEING_API Delay : public cSimpleModule
 {
     private:
-        cOutVector sizeVector;
+		simsignal_t delayedJobsSignal;
         int currentlyStored;
     protected:
         virtual void initialize();
