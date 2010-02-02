@@ -296,6 +296,11 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionTempl);
 		}
 
+		// particular properties
+        if (line.matches(".*@unit\\(\\w?")) {
+            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamUnitStringTempl);
+        }
+
 		// long millis = System.currentTimeMillis()-startMillis;
 		// Debug.println("Proposal creation: "+millis+"ms");
 

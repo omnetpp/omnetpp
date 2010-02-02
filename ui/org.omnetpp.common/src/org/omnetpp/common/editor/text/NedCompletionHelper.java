@@ -140,6 +140,17 @@ public final class NedCompletionHelper {
         makeShortTemplate("@unit(${unitName})", "property"),
     }; //XXX check this list before release
 
+    public final static Template[] proposedNedParamUnitStringTempl;
+
+    static {
+        PStringVector units = UnitConversion.getAllUnits();
+        proposedNedParamUnitStringTempl = new Template[(int)units.size()];
+        for (int i = 0; i < units.size(); i++) {
+            String shortName = units.get(i);
+            proposedNedParamUnitStringTempl[i] = makeTemplate(UnitConversion.getLongName(shortName), "unit", shortName);
+        }
+    }
+
     public final static Template[] proposedNedGatePropertyTempl = {
         makeShortTemplate("@labels(${label1})", "property"),
         makeShortTemplate("@inlabels(${inLabel1})", "property"),
