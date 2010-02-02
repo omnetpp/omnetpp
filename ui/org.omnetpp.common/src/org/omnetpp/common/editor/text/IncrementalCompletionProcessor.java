@@ -180,13 +180,13 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 			} catch (TemplateException e) {
 				continue;
 			}
-			if (template.matches(prefix, context.getContextType().getId()) && template.getName().startsWith(prefix))
+			if (template.matches(prefix, context.getContextType().getId()) && (template.getName().startsWith(prefix) || template.getPattern().startsWith(prefix)))
 				matches.add(createProposal(template, context, wordRegion, getRelevance(template, prefix)));
 		}
 
 		Collections.sort(matches, CompletionProposalComparator.getInstance());
 
-		return (ICompletionProposal[]) matches.toArray(new ICompletionProposal[matches.size()]);
+		return matches.toArray(new ICompletionProposal[matches.size()]);
 	}
 
     /**
@@ -195,6 +195,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @param template the template, ignored in this implementation
      * @return the default template image
      */
+    @Override
     protected Image getImage(Template template) {
         ImageRegistry registry = CommonPlugin.getDefault().getImageRegistry();
         Image image = registry.get(DEFAULT_IMAGE);

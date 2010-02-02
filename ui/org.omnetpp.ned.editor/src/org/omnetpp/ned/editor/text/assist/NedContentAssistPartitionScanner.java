@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.rules.*;
+import org.eclipse.jface.text.rules.EndOfLineRule;
+import org.eclipse.jface.text.rules.IPredicateRule;
+import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+import org.eclipse.jface.text.rules.Token;
 
 /**
  * This scanner recognizes the different partitions needed for different content assists.
@@ -28,34 +31,16 @@ public class NedContentAssistPartitionScanner extends RuleBasedPartitionScanner 
     public final static String NED_PRIVATE_DOC = "__ned_privatedoc";
     public final static String NED_DOC = "__ned_doc";
     public final static String NED_CODE = "__ned_code";
-    public final static String NED_STRING = "__ned_string";
-	public final static String[] SUPPORTED_PARTITION_TYPES
-        = new String[] { IDocument.DEFAULT_CONTENT_TYPE, NED_CODE, NED_PRIVATE_DOC, NED_DOC , NED_STRING};
+	public final static String[] SUPPORTED_PARTITION_TYPES = new String[] { IDocument.DEFAULT_CONTENT_TYPE, NED_CODE, NED_PRIVATE_DOC, NED_DOC};
 
 	/**
 	 * Creates the partitioner and sets up the appropriate rules.
 	 */
 	public NedContentAssistPartitionScanner() {
 		super();
-
-		IToken nedDocToken= new Token(NED_DOC);
-        IToken nedPrivateDocToken= new Token(NED_PRIVATE_DOC);
-        //IToken nedCodeToken= new Token(NED_CODE);
-        IToken nedStringToken= new Token(NED_STRING);
-
 		List<IPredicateRule> rules= new ArrayList<IPredicateRule>();
-
-        // Add rule for single line private comments.
-        rules.add(new EndOfLineRule("//#", nedPrivateDocToken));
-
-        // Add rule for single line comments.
-		rules.add(new EndOfLineRule("//", nedDocToken));
-
-		// Add rule for strings constants.
-        // currently the escape char is not implemented in the parser
-		// rules.add(new SingleLineRule("\"", "\"", nedStringToken, '\\'));
-        rules.add(new SingleLineRule("\"", "\"", nedStringToken));
-
+        rules.add(new EndOfLineRule("//#", new Token(NED_PRIVATE_DOC)));
+		rules.add(new EndOfLineRule("//", new Token(NED_DOC)));
 		IPredicateRule[] result= new IPredicateRule[rules.size()];
 		rules.toArray(result);
 		setPredicateRules(result);

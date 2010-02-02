@@ -98,6 +98,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 		public int sectionType; // SECT_xxx
 		public String submoduleTypeName;
         public String connectionTypeName;
+        public int parenthesisLevel;
 	}
 
 	protected IContextInformationValidator fValidator = new Validator();
@@ -190,25 +191,42 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, wordDetector, templates)));
     }
 
-    protected String trimLinePrefix(String source) {
-        return source.replaceFirst("(?s).*[;\\{\\}]", "");
-    }
-
     protected CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {
 		IDocument docu = viewer.getDocument();
         int offset = documentOffset;
         try {
     		String source = docu.get(0,offset);
     		// kill string literals
-			source = source.replaceAll("\".*\"", "\"###\"");  //FIXME but ignore embedded backslash+quote \" !!!
+			source = source.replaceAll("\".*?\"", "\"###\"");  //FIXME but ignore embedded backslash+quote \" !!!
     		// kill comments
     		source = source.replaceAll("(?m)//.*", "");
 
     		// completion prefix (linePrefix): stuff after last semicolon,
     		// curly brace, "parameters:", "gates:", "connections:" etc.
-    		String prefix = trimLinePrefix(source);
+    		String prefix = source;
             // normalize whitespace
             prefix = prefix.replaceAll("(?s)\\s+", " ");
+            // remove until the last brace
+            prefix = prefix.replaceFirst(".*[\\{\\}]", "");
+            // kill until the last good semicolon
+            boolean quote = false;
+            int parenthesisLevel = 0;
+            int lastSemicolonIndex = -1;
+            for (int i = 0; i < prefix.length(); i++) {
+                char ch = prefix.charAt(i);
+                if (ch == '"')
+                    quote = !quote;
+                else if (ch == '(')
+                    parenthesisLevel++;
+                else if (ch == ')')
+                    parenthesisLevel--;
+                else if (ch == ';' && !quote && parenthesisLevel == 0)
+                    lastSemicolonIndex = i;
+            }
+            prefix = prefix.substring(lastSemicolonIndex + 1);
+            // kill (...) regions
+            while (prefix.matches(".*\\([^\\(\\)]*\\).*"))
+                prefix = prefix.replaceAll("\\([^\\(\\)]*\\)", "###");
     		prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|submodules|connections|connections +[a-z]+) *:", "");
     		String linePrefixTrimmed = prefix.replaceFirst("[a-zA-Z_@][a-zA-Z0-9_]*$", "").trim(); // chop off last word
 
@@ -283,6 +301,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 			ret.sectionType = sectionType;
 			ret.submoduleTypeName = sectionType == SECT_SUBMODULE_GATES || sectionType == SECT_SUBMODULE_PARAMETERS ? lastTypeName : null;
             ret.connectionTypeName = sectionType == SECT_CONNECTION_PARAMETERS ? lastTypeName : null;
+            ret.parenthesisLevel = parenthesisLevel;
 			return ret;
 
         } catch (BadLocationException e) {

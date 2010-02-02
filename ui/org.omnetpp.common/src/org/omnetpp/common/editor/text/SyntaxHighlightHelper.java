@@ -141,4 +141,30 @@ public class SyntaxHighlightHelper {
             return c != ';' && c != '"';
         }
     }
+
+    /**
+     * Detects tags in a property.
+     */
+    public static class NedPropertyTagDetector implements IWordDetector {
+        public boolean isWordStart(char c) {
+            return Character.isLetter(c);
+        }
+
+        public boolean isWordPart(char c) {
+            return c != ';' && c != '(' && c != ')' && c != ' ';
+        }
+    }
+
+    /**
+     * Detects values in a property.
+     */
+    public static class NedPropertyTagValueDetector implements IWordDetector {
+        public boolean isWordStart(char c) {
+            return Character.isLetter(c);
+        }
+
+        public boolean isWordPart(char c) {
+            return c != ';' && c != '(' && c != ')' && c != ' ' && c != '=' && c != ',';
+        }
+    }
 }
