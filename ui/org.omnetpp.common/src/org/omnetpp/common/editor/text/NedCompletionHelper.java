@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.engine.PStringVector;
+import org.omnetpp.common.engine.UnitConversion;
 
 /**
  * This class contains data for context assist functions for NED files.
@@ -44,7 +46,9 @@ public final class NedCompletionHelper {
         makeShortTemplate("@display(\"i=${icon}\");", "property"),
         makeShortTemplate("@class(${className});", "property"),
         makeShortTemplate("@contains(${label1});", "property"),
-        makeShortTemplate("@labels(${label1})", "property"),
+        makeShortTemplate("@labels(${label1});", "property"),
+        makeShortTemplate("@signal[${name}];", "property"),
+        makeShortTemplate("@signal[${name}](title=\"${title}\",modeHint=${hints});", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
 
     public final static Template[] proposedNedComponentDisplayStringTempl;
