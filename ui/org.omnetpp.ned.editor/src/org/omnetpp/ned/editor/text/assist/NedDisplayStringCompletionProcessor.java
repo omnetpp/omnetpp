@@ -17,6 +17,14 @@ public class NedDisplayStringCompletionProcessor extends AbstractNedCompletionPr
     }
 
     @Override
+    protected String trimLinePrefix(String source) {
+        // remove before last block
+        source = source.replaceFirst("(?s).*[\\{\\}]", "");
+        // NOTE: there might be semicolons in the display string, don't remove those
+        return source.replaceFirst("(?s).*;.*?\n", "");
+    }
+
+    @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         // long startMillis = System.currentTimeMillis(); // measure time
 
@@ -32,7 +40,7 @@ public class NedDisplayStringCompletionProcessor extends AbstractNedCompletionPr
 
         // display string
         if (line.matches("@display\\(\".*")) {
-            if (line.matches(".*(i|i2)=")) {
+            if (line.matches(".*[\"|;| ](i|i2)=")) {
                 List<String> names = ImageFactory.getImageNameList();
                 String[] proposals = names.toArray(new String[0]);
                 Image[] images = new Image[proposals.length];
@@ -53,6 +61,6 @@ public class NedDisplayStringCompletionProcessor extends AbstractNedCompletionPr
         // long millis = System.currentTimeMillis()-startMillis;
         // Debug.println("Proposal creation: "+millis+"ms");
 
-        return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
+        return result.toArray(new ICompletionProposal[result.size()]);
     }
 }

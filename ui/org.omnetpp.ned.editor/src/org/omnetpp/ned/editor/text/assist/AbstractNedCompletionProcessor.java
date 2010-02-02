@@ -190,6 +190,10 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, wordDetector, templates)));
     }
 
+    protected String trimLinePrefix(String source) {
+        return source.replaceFirst("(?s).*[;\\{\\}]", "");
+    }
+
     protected CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {
 		IDocument docu = viewer.getDocument();
         int offset = documentOffset;
@@ -202,11 +206,11 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 
     		// completion prefix (linePrefix): stuff after last semicolon,
     		// curly brace, "parameters:", "gates:", "connections:" etc.
-    		String prefix = source;
-    		prefix = prefix.replaceAll("(?s)\\s+", " "); // normalize whitespace
-    		prefix = prefix.replaceFirst(".*[" + (this instanceof NedDisplayStringCompletionProcessor ? "" : ";") + "\\{\\}]", "");
+    		String prefix = trimLinePrefix(source);
+            // normalize whitespace
+            prefix = prefix.replaceAll("(?s)\\s+", " ");
     		prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|submodules|connections|connections +[a-z]+) *:", "");
-    		String prefix2 = prefix.replaceFirst("[a-zA-Z_@][a-zA-Z0-9_]*$", "").trim(); // chop off last word
+    		String linePrefixTrimmed = prefix.replaceFirst("[a-zA-Z_@][a-zA-Z0-9_]*$", "").trim(); // chop off last word
 
     		// kill {...} regions (including bodies of inner types, etc)
     		while (source.matches("(?s).*\\{[^\\{\\}]*\\}.*"))
@@ -268,12 +272,12 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 //			Debug.println(">>>"+source+"<<<");
 //			Debug.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
 //			Debug.println("PREFIX: >>"+prefix+"<<");
-//			Debug.println("PREFIX2: >>"+prefix2+"<<");
+//			Debug.println("LINEPREFIXTRIMMED: >>"+linePrefixTrimmed+"<<");
 //            Debug.println("inside inner type: "+insideInnertype);
 
 			CompletionInfo ret = new CompletionInfo();
 			ret.linePrefix = prefix;
-			ret.linePrefixTrimmed = prefix2;
+			ret.linePrefixTrimmed = linePrefixTrimmed;
 			ret.nedTypeName = nedTypeName;
 			ret.enclosingNedTypeName = enclosingNedTypeName;
 			ret.sectionType = sectionType;
