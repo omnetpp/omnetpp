@@ -1761,88 +1761,6 @@ The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-scalars}.
 
 
-\subsection{Precision}
-\label{sec:outputfile-precision}
-
-Output scalar and output vector files are text files, and floating point
-values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
-\ttt{"\%g"} format.
-The number of significant digits can be configured using the
-\ttt{output-scalar-precision=} and \ttt{output-vector-precision=}
-configuration entries (see \ref{sec:ch-config-sim:general-section}).
-The default precision is 12 digits. The following has to be considered
-when changing the default value:
-
-IEEE-754 doubles are 64-bit numbers. The mantissa is 52 bits, which
-is roughly equivalent to 16 decimal places (52*log(2)/log(10)).
-However, due to rounding errors, usually only
-12..14 digits are correct, and the rest is pretty much random garbage
-which should be ignored. However, when you convert the decimal
-representation back into an IEEE-754 double (as in Plove and Scalars),
-an additional small error will occurs because 0.1, 0.01, etc cannot be
-accurately represented in binary. This conversion error is usually
-smaller than the one that the \ttt{double}
-variable already had before recording into the file, however if
-it is important you can eliminate it by setting >16 digits precision
-for the file (but again, be aware that the last digits are garbage).
-The practical upper limit is 17 digits, setting it higher
-doesn't make any difference in \ttt{fprintf()}'s output.
-
-% To see finite machine precision and rounding errors, try this code:
-%
-% \ begin{verbatim}
-% double x = 0.1;
-% while (true)  {
-%    printf("%.15g\n", x);
-%    x = x + 0.1;
-% }
-% \ end{verbatim}
-%
-% The following, more advanced version will also print the error of
-% converting back from text to double:
-%
-% \ begin{verbatim}
-% double x = 0.1;
-% while (true) {
-%     char line[120];
-%     sprintf(line, "%.15g \t%.14g \t%.13g \t%.12g", x, x, x, x);
-%     double x15, x14, x13, x12;
-%     sscanf(line, "%lg%lg%lg%lg", &x15, &x14, &x13, &x12);
-%     printf("%s \t| %g  %g  %g  %g\n", line, (x15-x), (x14-x), (x13-x), (x12-x));
-%     x = x + 0.1;
-% }
-% \ end{verbatim}
-%
-% For the complexity of the issue, see "What Every Computer Scientist
-% Should Know About Floating-Point Arithmetic" by David Goldberg.
-
-
-Errors coming from converting to/from decimal representation can be
-eliminated by choosing an output vector/output scalar manager class
-which stores \ttt{double}s in their native binary form.
-The appropriate configuration entries are \ttt{outputvectormanager-class=}
-and \ttt{outputvectormanager-class=}; see \ref{sec:ch-config-sim:general-section}.
-For example, \cclass{cMySQLOutputScalarManager} and \cclass{cMySQLOutputScalarManager}
-provided in \ttt{samples/database} fulfill this requirement.
-
-However, before worrying too much about rounding and conversion errors,
-it is worth considering what is the \textit{real} accuracy of your results.
-Some things to consider:
-
-\begin{itemize}
-  \item{in real life, it is very hard to measure quantities (weight, distance,
-     even time) with more than a few digits of precision. What precision
-     are your input data? For example, if you approximate inter-arrival
-     time as \textit{exponential(0.153)} when the mean is really
-     \textit{0.152601...} and the distribution is not even exactly exponential,
-     you are already starting out with a bigger error than rounding can cause.}
-
-  \item{the simulation model is itself an approximation of real life. How much
-     error do the (known and unknown) simplifications cause in the results?}
-\end{itemize}
-
-
-
 
 \section{Watches and snapshots}
 
@@ -2006,7 +1924,6 @@ in module functions by the user) into the snapshot file\index{snapshot file}.
 bool snapshot(cOwnedObject *obj = &simulation, const char *label = NULL);
 \end{cpp}
 
-
 The function can be called from module functions, like this:
 
 \begin{cpp}
@@ -2017,9 +1934,8 @@ snapshot(&simulation.msgQueue); // dump future events
 
 This will append snapshot information to the end of the snapshot file.
 (The snapshot file name has an extension of \ttt{.sna}, default is
-\ttt{omnetpp.sna}\index{omnetpp.sna}. Actual file name can be set in the
+\ttt{omnetpp.sna}\index{omnetpp.sna}. The actual file name can be set in the
 config file.)
-
 
 The snapshot file output is detailed enough to be used for debugging
 the simulation: by regularly calling \ffunc{snapshot()}, one can trace
@@ -2031,82 +1947,72 @@ the whole simulation (all modules etc) will be written out.
 If you run the simulation with Tkenv, you can also create a snapshot
 from the menu.
 
-
-An example of a snapshot file:
+An example snapshot file (some abbreviations have been applied):
 
 \begin{filelisting}
-[...]
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<snapshot object="simulation" label="Long queue" simtime="9.038229311343"
+network="FifoNet">
+  <object class="cSimulation" fullpath="simulation">
+    <info></info>
+    <object class="cCompoundModule" fullpath="FifoNet">
+      <info>id=1</info>
+      <object class="fifo::Source" fullpath="FifoNet.gen">
+        <info>id=2</info>
+        <object class="cPar" fullpath="FifoNet.gen.sendIaTime">
+          <info>exponential(0.01s)</info>
+          <detailedinfo>double sendIaTime = exponential(0.01s) @unit(s)
+          </detailedinfo>
+        </object>
+        <object class="cGate" fullpath="FifoNet.gen.out">
+          <info>--&gt; fifo.in</info>
+        </object>
+      </object>
+      <object class="fifo::Fifo" fullpath="FifoNet.fifo">
+        <info>id=3</info>
+        <object class="cPar" fullpath="FifoNet.fifo.serviceTime">
+          <info>0.01</info>
+          <detailedinfo>double serviceTime = 0.01@unit(s)</detailedinfo>
+        </object>
+        <object class="cGate" fullpath="FifoNet.fifo.in">
+          <info>&lt;-- gen.out</info>
+        </object>
+        <object class="cGate" fullpath="FifoNet.fifo.out">
+          <info>--&gt; sink.in</info>
+        </object>
+        <object class="cQueue" fullpath="FifoNet.fifo.queue">
+          <info>length=13</info>
+          <object class="cMessage" fullpath="FifoNet.fifo.queue.job">
+            <info>src=FifoNet.gen (id=2)  dest=FifoNet.fifo (id=3)</info>
+          </object>
+          <object class="cMessage" fullpath="FifoNet.fifo.queue.job">
+            <info>src=FifoNet.gen (id=2)  dest=FifoNet.fifo (id=3)</info>
+          </object>
+        </object>
+      <object class="fifo::Sink" fullpath="FifoNet.sink">
+        <info>id=4</info>
+        <object class="cGate" fullpath="FifoNet.sink.in">
+          <info>&lt;-- fifo.out</info>
+        </object>
+      </object>
+    </object>
+    <object class="cMessageHeap" fullpath="simulation.scheduled-events">
+      <info>length=3</info>
+      <object class="cMessage" fullpath="simulation.scheduled-events.job">
+        <info>src=FifoNet.fifo (id=3)  dest=FifoNet.sink (id=4)</info>
+      </object>
+      <object class="cMessage" fullpath="...sendMessageEvent">
+        <info>at T=9.0464.., in dt=0.00817..; selfmsg for FifoNet.gen (id=2)</info>
+      </object>
+      <object class="cMessage" fullpath="...end-service">
+        <info>at T=9.0482.., in dt=0.01; selfmsg for FifoNet.fifo (id=3)</info>
+      </object>
+    </object>
+  </object>
+</snapshot>
 
-(cSimulation) 'simulation' begin
-  Modules in the network:
-    'token' #1 (TokenRing)
-      'comp[0]' #2 (Computer)
-        'mac' #3 (TokenRingMAC)
-        'gen' #4 (Generator)
-        'sink' #5 (Sink)
-      'comp[1]' #6 (Computer)
-        'mac' #7 (TokenRingMAC)
-        'gen' #8 (Generator)
-        'sink' #9 (Sink)
-      'comp[2]' #10 (Computer)
-        'mac' #11 (TokenRingMAC)
-        'gen' #12 (Generator)
-        'sink' #13 (Sink)
-end
-
-(TokenRing) 'token' begin
-  #1 params     (cArray) (n=6)
-  #1 gates      (cArray) (empty)
-  comp[0]          (cCompoundModule,#2)
-  comp[1]          (cCompoundModule,#6)
-  comp[2]          (cCompoundModule,#10)
-end
-
-(cArray) 'token.parameters' begin
-  num_stations (cModulePar) 3 (L)
-  num_messages (cModulePar) 10000 (L)
-  ia_time      (cModulePar) truncnormal(0.005,0.003) (F)
-  THT          (cModulePar) 0.01 (D)
-  data_rate    (cModulePar) 4000000 (L)
-  cable_delay  (cModulePar) 1e-06 (D)
-end
-
-[...]
-
-(cQueue) 'token.comp[0].mac.local-objects.send-queue' begin
-  0-->1         (cMessage) Tarr=0.0158105774 ( 15ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0163553310 ( 16ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0205628236 ( 20ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0242203591 ( 24ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0300994268 ( 30ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0364005251 ( 36ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0370745702 ( 37ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0387984129 ( 38ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0457462493 ( 45ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0487308918 ( 48ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0514466766 ( 51ms) Src=#4 Dest=#3
-end
-
-(cMessage) 'token.comp[0].mac.local-objects.send-queue.0-->1' begin
-  #4 --> #3
-  sent:         0.0158105774 ( 15ms)
-  arrived:      0.0158105774 ( 15ms)
-  length:       33536
-  kind:         0
-  priority:     0
-  error:        FALSE
-  time stamp:   0.0000000 ( 0.00s)
-  parameter list:
-    dest        (cPar) 1 (L)
-    source      (cPar) 0 (L)
-    gentime     (cPar) 0.0158106 (D)
-end
-
-[...]
 \end{filelisting}
 
-It is possible that the format of the snapshot file will change to XML
-in future {\opp} releases.
 
 
 % \subsection{Disabling warnings}

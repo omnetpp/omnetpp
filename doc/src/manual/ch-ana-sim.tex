@@ -363,6 +363,86 @@ interarrivalTime module parameter(s) during result analysis.
 automatically saved into the result files.
 
 
+\subsection{Recording precision}
+\label{sec:outputfile-precision}
+
+Output scalar and output vector files are text files, and floating point
+values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
+\ttt{"\%g"} format. The number of significant digits can be configured
+using the \ttt{output-scalar-precision=} and \ttt{output-vector-precision=}
+configuration options.
+
+The default precision is 12 digits. The following has to be considered when
+setting a different value:
+
+IEEE-754 doubles are 64-bit numbers. The mantissa is 52 bits, which is
+roughly equivalent to 16 decimal places (52*log(2)/log(10)). However, due
+to rounding errors, usually only 12..14 digits are correct, and the rest is
+pretty much random garbage which should be ignored. However, when you
+convert the decimal representation back into a \ttt{double} for result
+processing, an additional small error will occur, because 0.1, 0.01, etc.
+cannot be accurately represented in binary. This conversion error is
+usually smaller than the one that the \ttt{double} variable already had
+before recording into the file. However, if it is important, you can
+eliminate this error by setting the recording precision to 16 digits or
+more (but again, be aware that the last digits are garbage). The practical
+upper limit is 17 digits, setting it higher doesn't make any difference in
+\ttt{fprintf()}'s output.
+
+% To see finite machine precision and rounding errors, try this code:
+%
+% \ begin{verbatim}
+% double x = 0.1;
+% while (true)  {
+%    printf("%.15g\n", x);
+%    x = x + 0.1;
+% }
+% \ end{verbatim}
+%
+% The following, more advanced version will also print the error of
+% converting back from text to double:
+%
+% \ begin{verbatim}
+% double x = 0.1;
+% while (true) {
+%     char line[120];
+%     sprintf(line, "%.15g \t%.14g \t%.13g \t%.12g", x, x, x, x);
+%     double x15, x14, x13, x12;
+%     sscanf(line, "%lg%lg%lg%lg", &x15, &x14, &x13, &x12);
+%     printf("%s \t| %g  %g  %g  %g\n", line, (x15-x), (x14-x), (x13-x), (x12-x));
+%     x = x + 0.1;
+% }
+% \ end{verbatim}
+%    s
+% For the complexity of the issue, see "What Every Computer Scientist
+% Should Know About Floating-Point Arithmetic" by David Goldberg.
+
+Errors coming from converting to/from decimal representation can be
+eliminated by choosing an output vector/output scalar manager class
+which stores \ttt{double}s in their native binary form.
+The appropriate configuration options are \ttt{outputvectormanager-class=}
+and \ttt{outputvectormanager-class=}. For example,
+\cclass{cMySQLOutputScalarManager} and \cclass{cMySQLOutputScalarManager}
+provided in \ttt{samples/database} fulfill this requirement.
+
+However, before worrying too much about rounding and conversion errors,
+think what is the \textit{real} accuracy of your results.
+Some things to consider:
+
+\begin{itemize}
+  \item{in real life, it is very hard to measure quantities (weight, distance,
+     even time) with more than a few digits of precision. What precision
+     are your input data? For example, if you approximate inter-arrival
+     time as \textit{exponential(0.153)} when the mean is really
+     \textit{0.152601...} and the distribution is not even exactly exponential,
+     you are already starting out with a bigger error than rounding can cause.}
+
+  \item{the simulation model is itself an approximation of real life. How much
+     error do the (known and unknown) simplifications cause in the results?}
+\end{itemize}
+
+%% TODO also hint that results can be directed to database etc! by changing the implementation that cEnvir methods delegate to. (list cEnvir methods!)
+
 
 \section{Result files}
 
