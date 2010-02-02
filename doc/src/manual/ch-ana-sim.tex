@@ -5,20 +5,32 @@
 \section{Result recording}
 
 {\opp} provides built-in support for recording simulation results, via
-\textit{output scalars} and \textit{output vectors}. Results may be
-collected and recorded in two ways:
+\textit{output vectors} and \textit{output scalars}. Output vectors are
+time series data, recorded from simple modules or channels. You can use
+output vectors to record end-to-end delays or round trip times of packets,
+queue lengths, queueing times, module state, link utilization, packet
+drops, etc. -- anything that is useful to get a full picture of what
+happened in the model during the simulation run.
+
+Output scalars are summary results, computed during the simulation and
+written out when the simulation completes. A scalar result may be an
+(integer or real) number, or may be a statistical summary comprised of
+several fields such as count, mean, standard deviation, sum, minimum,
+maximum, etc., and optionally histogram data.
+
+Results may be collected and recorded in two ways:
 
 \begin{enumerate}
   \item Explicitly from simple modules and channels, using the C++ API
-    provided by the simulation library
+    provided by the simulation library;
   \item By means of configuration, using declared statistics and the
-    signal mechanism
+    signal mechanism.
 \end{enumerate}
 
 The first one is the traditional way of recording results. The second way
 was introduced in {\opp} 4.1, and it is preferable because it allows you
-to have much more control over the amount and form of results recorded,
-without requiring constant changes to the simulation model.
+to record the results always in the form you need, without requiring heavy
+instrumentation or continuous tweaking of the simulation model.
 
 \subsection{Using the C++ API}
 
@@ -193,23 +205,23 @@ from the \ttt{@signal} property is used.
 Several scalar recording modes can be specified, separated by comma.
 Currently the following modes are supported:
 
-\begin{description}
-  \item[auto]: automatically select the best mode(s) for a signal. This mode
+\begin{itemize}
+  \item\tbf{auto}: automatically select the best mode(s) for a signal. This mode
       currently selects \ttt{histogram} mode (because it records the most
       information), but this may change in future versions.
-  \item[count]: record the number of values emitted; values are ignored
-  \item[lastval]: record the last value
-  \item[sum]: record the sum of the values
-  \item[mean]: record the mean of the values
-  \item[min]: record the minimum value
-  \item[max]: record the maximum value
-  \item[timeavg]: this one makes use of timestamps as well, and computes the
+  \item\tbf{count}: record the number of values emitted; values are ignored
+  \item\tbf{lastval}: record the last value
+  \item\tbf{sum}: record the sum of the values
+  \item\tbf{mean}: record the mean of the values
+  \item\tbf{min}: record the minimum value
+  \item\tbf{max}: record the maximum value
+  \item\tbf{timeavg}: this one makes use of timestamps as well, and computes the
       time average, interpreting the signal as a step function (sample-hold)
-  \item[stddev]: record the count, sum, mean, standard deviation, minimum
+  \item\tbf{stddev}: record the count, sum, mean, standard deviation, minimum
       and maximum of the values
-  \item[histogram]: record everything \ttt{stddev} records, plus a histogram
+  \item\tbf{histogram}: record everything \ttt{stddev} records, plus a histogram
       of the values (bins are set up automatically)
-\end{description}
+\end{itemize}
 
 New ones cannot be defined at the moment; this feature is planned for future versions.
 
@@ -454,110 +466,70 @@ Both output vector and scalar files are textual, line-oriented files.
 The advantage of a text-based format is that it is very accessible
 with a wide range of tools and languages. The format of result files is
 documented in detail in Appendix \ref{cha:result-file-formats}.
-  \footnote{Recording is actually configurable, and one can record
-  results into a database as well, by writing appropriate result
-  manager classes and activating them in the configuration.}
+
+%XXX move away:
+%  \footnote{Recording is actually configurable, and one can record
+%  results into a database as well, by writing appropriate result
+%  manager classes and activating them in the configuration.}
+
+By default, each file contains data from one run only.
+
+Result files start with a header that contain several attributes of the
+simulation run: a reasonably globally unique run ID, the network NED type
+name, the experiment-measurement-replication labels, the values of
+iteration variables and the repetition counter, the date and time, the host
+name, the process id of the simulation, random number seeds, configuration
+options, and so on. These data can be useful during result processing, and
+increase the reproducibility of the results.
+
+%%FIXME example header!
 
 Vectors are recorded into a separate file for practical reasons: vector
-data usually consume several magnitudes more disk space than others. Files
-are self-describing: they contain many attributes of the simulation run:
-the network, experiment-measurement-replication labels; iteration
-variables; time/date, host, process id of the simulation, etc. By default,
-each file contains data from one run only.
-The vector file contains data clustered by vectors, and indexed for
-efficient access. This allows for extracting certain vectors from the file,
-and even near random access within vectors, without having to read the full
-contents of the vector file even once.
+data usually consume several magnitudes more disk space than others.
 
-XXX vector results, scalar results (scalars + stats/histograms)
+\subsection{Output vector files}
 
-, and \textit{statistics}. A scalar is a single number;
-vectors are timestamped time series; and statistics are records composed of
-statistical properties (mean, variance, minimum, maximum, etc.; possibly
-also histogram data) of time series.
-
-unique run id
-
-attributes, e.g. experiment-measurement-replication
-
-Although it has nothing to do with our main topic (ini files), this is a
-good place to mention that the format of result files have been
-extended to include meta info such as the run ID, network name, all
-configuration settings, etc. These data make the files more
-self-documenting, which can be valuable during the result analysis
-phase, and increase reproducibility of the results. Another change is
-that vector data are now recorded into the file clustered by the output
-vectors, which (combined with index files) allows much more efficient
-processing.
-
-
-
-\subsection{Output vectors}
-\label{sec:ch-ana-sim:output-vectors}
-
-Output vectors are time series data: values with timestamps.
-You can use output vectors to record end-to-end delays or
-round trip times of packets, queue lengths, queueing times,
-link utilization, the number of dropped packets, etc. --
-anything that is useful to get a full picture of what happened
-in the model during the simulation run.
-
-Output vectors are recorded from simple modules, by \cclass{cOutVector} objects
-(see section \ref{sec:ch-sim-lib:coutvector}). Since output vectors usually
-record a large amount of data, in \ffilename{omnetpp.ini} you can disable vectors
-or specify a simulation time interval for recording
-(see section \ref{sec:ch-config-sim:outvectors}).
-
-All \cclass{cOutVector} objects write to the same, common file.
+All output vectors from a simulation run are recorded into the same file.
 The following sections describe the format of the file, and
 how to process it.
 
-
-\subsection{Format of output vector files}
-
-An output vector file\index{output!vector file} contains several
-series of data produced during simulation. The file is textual, and it
-looks like this:
+An example file fragment (without header):
 
 \begin{filelisting}
-# net-1.vec
-vector 1   "subnet[4].term[12]"  "response time"  TV
-1  12.895  2355.66666666
+...
+vector 1   net.host[12]  responseTime  TV
+1  12.895  2355.66
 1  14.126  4577.66664666
-vector 2   "subnet[4].srvr"  "queue length"  TV
-2  16.960  2.00000000000.63663666
+vector 2   net.router[9].ppp[0] queueLength  TV
+2  16.960  2
 1  23.086  2355.66666666
-2  24.026  8.00000000000.44766536
+2  24.026  8
+...
 \end{filelisting}
 
-There two types of lines: vector declaration lines (beginning with
-the word \ttt{vector}), and data lines.
-A \textit{vector declaration line} introduces a new output vector, and
-its columns are: vector Id, module of creation, name of \cclass{cOutVector}
-object, and multiplicity (usually 1). Actual data recorded in this
-vector are on \textit{data lines} which begin with the vector Id.
-Further columns on data lines are the simulation time and the recorded value.
+There two types of lines: vector declaration lines (beginning with the word
+\ttt{vector}), and data lines. A \textit{vector declaration line}
+introduces a new output vector, and its columns are: vector Id, module of
+creation, name of \cclass{cOutVector} object, and multiplicity (usually 1).
+Actual data recorded in this vector are on \textit{data lines} which begin
+with the vector Id. Further columns on data lines are the simulation time
+and the recorded value.
 
-vector data clustering for efficiency
+% FIXME plus attribute lines!!! also event numbers
 
-indexed access
-
-how to configure the IndexVectorFileManager (?)
-
-
-\subsection{Scalar results}
-\label{sec:ch-ana-sim:output-scalars}
-
-Scalar results are recorded with \ffunc{recordScalar()} calls,
-usually from the \ttt{finish()} methods of modules.
+Since {\opp} 4.0, vector data are recorded into the file clustered by
+output vectors, which, combined with index files, allows much more
+efficient processing. Using the index file, tools can extract particular
+vectors by reading only those parts of the file where the desired data are
+located, and do not need to scan through the whole file linearly.
 
 
-\subsubsection{Format of scalar files}
+\subsection{Scalar result files}
 
-The corresponding output scalar file (by default, \ffilename{omnetpp.sca})
-will look like this:
+Fragment of an output scalar file (without header):
 
 \begin{filelisting}
+...
 scalar "lan.hostA.mac" "frames sent"  99
 scalar "lan.hostA.mac" "frames rcvd"  3088
 scalar "lan.hostA.mac" "bytes sent"   64869
@@ -565,15 +537,12 @@ scalar "lan.hostA.mac" "bytes rcvd"   3529448
 ...
 \end{filelisting}
 
-Every \ffunc{record()} call generates one "scalar" line in the file.
-(If you record statistics objects (\cclass{cStatictic} subclasses
-such as \cclass{cStdDev}) via their \ffunc{record()} methods,
-they'll generate several lines: mean, standard deviation, etc.)
-In addition, several simulation runs can record their results into a single file --
-this facilitates comparing them, creating x-y plots
-(\textit{offered load vs throughput}-type diagrams), etc.
+Every scalar generates one \ttt{scalar} line in the file.
 
+Statistics objects (\cclass{cStatictic} subclasses such as \cclass{cStdDev})
+generate several lines: mean, standard deviation, etc.
 
+%% FIXME TODO attributes, statistics example, etc
 
 \section{The Analysis Tool in the Simulation IDE}
 
