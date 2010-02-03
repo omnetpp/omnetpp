@@ -585,7 +585,16 @@ public class DatasetManager {
 		// Select all if no select at the beginning
 		IDList result = new IDList();
 		if (filters.isEmpty() || filters.get(0) instanceof Deselect) {
-			result.merge(source);
+		    if (type == null)
+		        result.merge(source);
+		    else {
+		        int resultType = ScaveModelUtil.asInternalResultType(type);
+		        for (int i = 0; i < source.size(); ++i) {
+		            long id = source.get(i);
+		            if (ResultFileManager.getTypeOf(id) == resultType)
+		                result.add(id);
+		        }
+		    }
 		}
 		// Execute filters
 		for (SelectDeselectOp filter : filters) {
