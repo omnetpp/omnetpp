@@ -38,7 +38,6 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MODULE_EVENT
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NUM_RNGS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RUNNUMBER_WIDTH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTSCALARMANAGER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTVECTORMANAGER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_SCALAR_FILE;
@@ -68,8 +67,11 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_DIR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RUNNUMBER_WIDTH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING_MODE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIM_TIME_LIMIT;
@@ -86,6 +88,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_MAX_B
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORD_EVENTNUMBERS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARMUP_PERIOD;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
@@ -163,7 +166,8 @@ public class GenericConfigPage extends ScrolledFormPage {
 
 		// obtain focus if background is clicked
 		form.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent e) {
+			@Override
+            public void mouseDown(MouseEvent e) {
 				setFocus();
 			}
 		});
@@ -238,6 +242,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		else if (category.equals(CAT_OUTPUTFILES)) {
 			addTextFieldEditor(form, CFGID_RESULT_DIR, "Result directory");
 			addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
+            addTextFieldEditor(form, CFGID_WARMUP_PERIOD, "Warmup period");
 			addSpacer(form);
 			Group group0 = createGroup(form, "Event log");
 			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable recording");
@@ -255,7 +260,9 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
 			addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
 			addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording");
+            addTextFieldEditor(group2, CFGID_SCALAR_RECORDING_MODE, "Recording mode");
 			addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars");
+
 			addSpacer(form);
             Group group3 = createGroup(form, "Snapshots");
 			addTextFieldEditor(group3, CFGID_SNAPSHOT_FILE, "Snapshot file");
@@ -271,6 +278,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group1, CFGID_OUTPUTVECTORMANAGER_CLASS, "Output vector manager class");
 			addTextFieldEditor(group1, CFGID_OUTPUTSCALARMANAGER_CLASS, "Output scalar manager class");
 			addTextFieldEditor(group1, CFGID_SNAPSHOTMANAGER_CLASS, "Snapshot manager class");
+            addTextFieldEditor(group1, CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "Config file reader class");
             addSpacer(form);
 		}
 		else if (category.equals(CAT_CMDENV)) {
@@ -358,7 +366,8 @@ public class GenericConfigPage extends ScrolledFormPage {
 
 		// when group background is clicked, transfer focus to first field editor in it
 		group.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent e) {
+			@Override
+            public void mouseDown(MouseEvent e) {
 				for (Control c : group.getChildren())
 					if (c instanceof FieldEditor)
 						{c.setFocus(); return;}
