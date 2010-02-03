@@ -39,9 +39,9 @@ This chapter discusses the rest of the simulation library:
 
 
 
-\section{Class library conventions}
+\section{Class Library Conventions}
 
-\subsection{Base class}
+\subsection{Base Class}
 \label{sec:ch-sim-lib:cobject}
 
 
@@ -63,7 +63,7 @@ in the following we'll discuss some of the practically important
 ones.
 
 
-\subsection{Setting and getting attributes}
+\subsection{Setting and Getting Attributes}
 
 Member functions that set and query object attributes follow
 a naming convention: the setter member function begins with
@@ -96,7 +96,7 @@ const char *classname = msg->getClassName(); // returns "cMessage"
 \end{cpp}
 
 
-\subsection{Name attribute}
+\subsection{Name Attribute}
 \label{sec:sim-lib:name}
 
 An object can be assigned a \textit{name} (a character string). The name
@@ -172,7 +172,7 @@ sprintf("msg is '%80s'", msg->getFullPath().c_str()); // note c_str()
 \end{cpp}
 
 
-\subsection{Copying and duplicating objects}
+\subsection{Copying and Duplicating Objects}
 
 
 The \ffunc{dup()} member function creates an exact copy of the
@@ -221,7 +221,7 @@ for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 
 
 
-\subsection{Error handling}
+\subsection{Error Handling}
 
 
 When library objects detect an error condition, they throw a C++ exception.
@@ -252,7 +252,7 @@ if (msg->getControlInfo()==NULL)
 
 
 
-\section{Logging from modules}
+\section{Logging from Modules}
 
 The logging feature will be used extensively in the code examples,
 we introduce it here.
@@ -307,7 +307,7 @@ binds looser than the conditional operator (\ttt{?:}).
 %FIXME add tale about debug channels etc.
 
 
-\section{Simulation time conversion}
+\section{Simulation Time Conversion}
 
 Simulation time is represented by the type \ttt{simtime\_t}
 which is a typedef to \ttt{double}.
@@ -351,7 +351,7 @@ simtime_t t = strToSimtime0(s); // now s points to "and something extra"
 \end{cpp}
 
 
-\section{Generating random numbers}
+\section{Generating Random Numbers}
 \label{cha:sim-lib:generating-random-numbers}
 
 Random numbers in simulation are never random. Rather, they are
@@ -374,7 +374,7 @@ usually between 0 or 1 and $2^{32}$ or so. Mathematical transformations
 are used to produce random variates from them that correspond to
 specific distributions.
 
-\subsection{Random number generators}
+\subsection{Random Number Generators}
 \label{sec:sim-lib:rngs}
 \index{random number generator}
 
@@ -385,7 +385,7 @@ T. Nishimura \cite{Matsumoto98}. MT has a period of $2^{19937}-1$,
 and 623-dimensional equidistribution property is assured. MT is
 also very fast: as fast or faster than ANSI C's \ttt{rand()}.
 
-\subsubsection{The "minimal standard" RNG}
+\subsubsection{The "Minimal Standard" RNG}
 
 {\opp} releases prior to 3.0 used a linear congruential generator
 (LCG) with a cycle length of $2^{31}-2$, described in
@@ -418,7 +418,7 @@ which has a period of about $2^{191}$ and can provide a large
 number of \textit{guaranteed} independent streams.
 
 
-\subsection{Random number streams, RNG mapping}
+\subsection{Random Number Streams, RNG Mapping}
 
 Simulation programs may consume random numbers from several streams,
 that is, from several independent RNG instances. For example, if a
@@ -451,7 +451,7 @@ configuration -- even for simulation models which were not written
 with RNG awareness.
 
 
-\subsection{Accessing the RNGs}
+\subsection{Accessing The RNGs}
 
 The \ffunc{intrand(n)} function generates random integers in the range $[0, n-1]$, and
 \ffunc{dblrand()} generates a random double on $[0,1)$. These functions
@@ -485,7 +485,7 @@ and to learn their ranges (\ttt{intRand()}, \ttt{intRandMax()}) as well as
 to query the number of random numbers generated (\ttt{getNumbersDrawn()}).
 
 
-\subsection{Random variates}
+\subsection{Random Variates}
 
 The following functions are based on \ffunc{dblrand()} and return
 random variables of different distributions\index{distribution!random variables}\index{random!numbers from distributions}:
@@ -540,7 +540,7 @@ with the \fmac{Register\_Function()} macro, you can use them in NED
 files and ini files too.
 
 
-\subsection{Random numbers from histograms}
+\subsection{Random Numbers from Histograms}
 
 You can also specify your distribution as a
 histogram\index{distribution!as histogram}. The
@@ -554,11 +554,11 @@ the statistical classes.
 
 
 
-\section{Container classes}
+\section{Container Classes}
 
 \subsection{Queue class: cQueue}
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 
 \cclass{cQueue} is a container class that acts as a queue.
@@ -624,7 +624,7 @@ queue.remove(msg);
 
 
 
-\subsubsection{Priority queue}
+\subsubsection{Priority Queue}
 
 
 By default, \cclass{cQueue} implements a FIFO, but it can also act as
@@ -659,7 +659,7 @@ is the queue object and the second one specifies the initial position
 of the iterator: 0=tail, 1=head. Otherwise it acts as any other
 {\opp} iterator class: you can use the ++ and -- operators to advance
 it, the () operator to get a pointer to the current item, and the
-\ffunc{end()} member function to examine if you're at the end (or the
+\ffunc{end()} member function to examine if you are at the end (or the
 beginning) of the queue.
 
 
@@ -676,9 +676,9 @@ for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 
 
 
-\subsection{Expandable array: cArray}
+\subsection{Expandable Array: cArray}
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 
 \cclass{cArray} is a container class that holds objects derived from
@@ -775,7 +775,7 @@ for (int i=0; i<array.size(); i++)
 
 
 %
-% \section{Non-object container classes}
+% \section{Non-object Container Classes}
 %
 % There are two container classes to store non-object
 % items\index{non-object container}: \cclass{cLinkedList} and
@@ -792,7 +792,7 @@ for (int i=0; i<array.size(); i++)
 %FIXME document: simulation.getUniqueNumber(), for generating unique IDs for models
 
 
-\section{Routing support: cTopology}
+\section{Routing Support: cTopology}
 
 \subsection{Overview}
 
@@ -817,7 +817,7 @@ module boundaries are also represented as one graph edge. Graph edges
 are directed, just as module gates are.
 
 
-If you're writing a router or switch model, the \cclass{cTopology}
+If you are writing a router or switch model, the \cclass{cTopology}
 graph can help you determine what nodes are available through which
 gate and also to find optimal routes\index{optimal routes}. The
 \cclass{cTopology} object can calculate shortest paths\index{shortest
@@ -831,7 +831,7 @@ the corresponding module for a \cclass{cTopology} node and vica versa.
 
 
 
-\subsection{Basic usage}
+\subsection{Basic Usage}
 
 You can extract the network topology into a \cclass{cTopology}
 object by a single function call. You have several ways to select
@@ -968,7 +968,7 @@ directions.)
 
 
 
-\subsection{Shortest paths}
+\subsection{Shortest Paths}
 
 The real power of \cclass{cTopology} is in finding shortest
 paths\index{topology!shortest path} in the network to support optimal
@@ -1080,9 +1080,10 @@ weightedMultiShortestPathsTo(cTopology::Node *target);
 
 
 
-\section{Statistics and distribution estimation}
+\section{Statistics and Distribution Estimation}
+\label{sec:ch-sim-lib:statistics}
 
-\subsection{cStatistic and descendants}
+\subsection{cStatistic and Descendants}
 
 There are several statistic and result collection classes:
 \cclass{cStdDev}, \cclass{cWeightedStdDev}, \cclass{Long\-Histogram},
@@ -1114,7 +1115,7 @@ There are several statistic and result collection classes:
     adaptive histogram-like algorithm.}
 \end{itemize}
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 One can insert an observation into a statistic object with the
 \ffunc{collect()} function or the \texttt{+=} operator (they are
@@ -1142,9 +1143,9 @@ double mean = stat.getMean(),
 
 
 
-\subsection{Distribution estimation}
+\subsection{Distribution Estimation}
 
-\subsubsection{Initialization and usage}
+\subsubsection{Initialization and Usage}
 
 % TBD this has to be rewritten at some point... maybe take over examples from Doxygen doc.
 
@@ -1154,13 +1155,12 @@ The distribution estimation\index{distribution!estimation} classes
 \cclass{cDensityEstBase}. Distribution estimation classes (except for
 \cclass{cPSquare}) assume that the observations are within a range.
 You may specify the range explicitly (based on some a-priori info
-about the distribution) or you may let the object collect the first
-few observations and determine the range from them. Methods which let
-you specify range settings are part of \cclass{cDensityEstBase}.
+about the distribution), or you may let the object collect the first
+few observations and determine the range from them.
 
 The following member functions exist for setting up the range
-and to specify how many observations should be used for
-automatically determining the range.
+and to specify how many observations should be used for automatically
+determining the range (these methods are part of \cclass{cDensityEstBase}):
 
 \begin{cpp}
 setRange(lower,upper);
@@ -1198,8 +1198,6 @@ range.
   \end{center}
 \end{figure}
 
-After the cells have been set up, collection can go on.
-
 The \ffunc{isTransformed()} function returns \textit{true} when the cells have
 already been set up. You can force range estimation and setting
 up the cells by calling the \ffunc{transform()} function.
@@ -1226,7 +1224,7 @@ Afterwards, a \cclass{cPSquare} can be used with the same member functions
 as a histogram.
 
 
-\subsubsection{Getting histogram data}
+\subsubsection{Getting Histogram Data}
 
 
 There are three member functions to explicitly return cell boundaries
@@ -1268,7 +1266,7 @@ return the value of the Probability Density Function and the Cumulated
 Density Function at a given \textit{x}, respectively.
 
 
-\subsubsection{Random number generation from distributions}
+\subsubsection{Random Number Generation from Distributions}
 
 
 The \ffunc{random()} member function generates random
@@ -1282,14 +1280,6 @@ double rnd = histogram.random();
 
 \cclass{cStdDev} assumes normal distribution.
 
-You can also wrap the distribution object in a \cclass{cPar}:
-
-\begin{cpp}
-cMsgPar rndPar("rndPar");
-rndPar.setDoubleValue(&histogram);
-\end{cpp}
-
-
 The \cclass{cPar} object stores the pointer to the histogram (or $P^{2}$ object),
 and whenever it is asked for the value, calls the histogram object's \ffunc{random()}
 function:
@@ -1298,7 +1288,7 @@ function:
 double rnd = (double)rndPar; // random number from the cPSquare
 \end{cpp}
 
-\subsubsection{Storing/loading distributions}
+\subsubsection{Storing and Loading Distributions}
 
 
 The statistic classes have \ffunc{loadFromFile()} member functions
@@ -1323,7 +1313,7 @@ fclose(f2);
 \end{cpp}
 
 
-\subsubsection{Histogram with custom cells}
+\subsubsection{Histogram with Custom Cells}
 
 
 The \cclass{cVarHistogram} class can be used to create
@@ -1369,7 +1359,7 @@ boundaries when the histogram has already been transformed.
 
 
 
-\subsection{The k-split algorithm}
+\subsection{The k-split Algorithm}
 
 \subsubsection{Purpose}
 
@@ -1386,7 +1376,7 @@ distributions\index{distribution!multi-dimensional}, but here we deal
 with the one-dimensional version only.
 
 
-\subsubsection{The algorithm}
+\subsubsection{The Algorithm}
 
 
 The \textit{k-split} algorithm is an adaptive histogram-type estimate which
@@ -1406,7 +1396,8 @@ observations, and intermediate nodes contain mother observation counts
 for their children. If an observation falls outside the histogram
 range, the range is extended in a natural manner by inserting new
 level(s) at the top of the tree. The fundamental parameter to the
-algorithm is the split factor $k$. Experience shows that $k=2$ worked best.
+algorithm is the split factor $k$. Experience has shown that $k=2$
+works best.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -1494,12 +1485,10 @@ eliminated. It has been shown that the partition created by
 equal-frequency partition.
 
 
-{\opp} contains an experimental implementation of the \textit{k}-split
-algorithm, the \cclass{cKSplit} class. Research on \textit{k}-split is
-still under way.
+{\opp} contains an implementation of the \textit{k}-split algorithm,
+the \cclass{cKSplit} class.
 
-
-\subsubsection{The cKSplit class}
+\subsubsection{The cKSplit Class}
 
 The \cclass{cKSplit} class is an implementation of the \textit{k-split} method.
 Member functions:
@@ -1543,7 +1532,7 @@ struct cKSplit::Grid
 
 
 
-\subsection{Transient detection and result accuracy}
+\subsection{Transient Detection and Result Accuracy}
 
 In many simulations, only the steady state performance (i.e.
 the performance after the system has reached a stable state)
@@ -1570,7 +1559,7 @@ detection and result accuracy detection algorithms are:
 \end{itemize}
 
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 %
 % TBD comments
@@ -1594,7 +1583,7 @@ Detecting the end of the period:
 \end{itemize}
 
 
-\subsubsection{Transient detection}
+\subsubsection{Transient Detection}
 
 
 Currently one transient detection\index{transient detection} algorithm
@@ -1610,7 +1599,7 @@ void setParameters(int reps=3,
                    double acc=0.3);
 \end{cpp}
 
-\subsubsection{Accuracy detection}
+\subsubsection{Accuracy Detection}
 
 
 Currently one accuracy detection\index{accuracy detection} algorithm
@@ -1626,9 +1615,10 @@ void setParameters(double acc=0.1, int reps=3);
 
 
 
-\section{Recording simulation results}
+\section{Recording Simulation Results}
+\label{sec:ch-sim-lib:result-recording}
 
-\subsection{Output vectors: cOutVector}
+\subsection{Output Vectors: cOutVector}
 \label{sec:ch-sim-lib:coutvector}
 
 Objects of type \cclass{cOutVector} are responsible for writing time series
@@ -1680,14 +1670,16 @@ possible to record values into output vectors with a timestamp other than
 \ffunc{simTime()}. Increasing timestamp order is still enforced though.
 
 All \cclass{cOutVector} objects write to a single \textit{output vector file}
-named \ttt{omnetpp.vec} by default.
-You can configure output vectors from \ffilename{omnetpp.ini}:
-you can disable writing to the file, or limit it to a certain
-simulation time interval for recording (section
-\ref{sec:ch-config-sim:outvectors}).
-
+that has a file extension \ttt{.vec}.
+  \footnote{A \ttt{.vci} file is also created, but it is just an index for
+  the \ttt{.vec} file and does not contain any new information. The IDE
+  re-creates the \ttt{.vci} file if it gets lost.}
 The format and processing of output vector files is described in section
-\ref{sec:ch-ana-sim:output-vectors}.
+\ref{cha:analyzing-simulation-results}.
+
+You can configure output vectors from \ffilename{omnetpp.ini}:
+you can disable individual vectors, or limit recording to certain
+simulation time intervals (section \ref{sec:ana-sim:vector-config}).
 
 If the output vector object is disabled or the simulation time is
 outside the specified interval, \ffunc{record()} doesn't write
@@ -1698,7 +1690,7 @@ output vector object.
 
 
 
-\subsection{Output scalars}
+\subsection{Output Scalars}
 
 While output vectors are to record time series data and thus they
 typically record a large volume of data during a simulation run,
@@ -1763,102 +1755,16 @@ void Sink::finish()
 }
 \end{cpp}
 
-The above calls write into the \textit{output scalar file} which is named
-\ttt{omnetpp.sca} by default. The output scalar file is preserved across
-simulation runs (unlike the output vector file which gets deleted
-at the beginning of every simulation run).
-Data are always appended at the end of the file, and
-output from different simulation runs are separated by special lines.
+The above calls record the data into an \textit{output scalar file},
+a line-oriented text file that has the file extension \ttt{.sca}.
 The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-scalars}.
 
 
-\subsection{Precision}
-\label{sec:outputfile-precision}
 
-Output scalar and output vector files are text files, and floating point
-values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
-\ttt{"\%g"} format.
-The number of significant digits can be configured using the
-\ttt{output-scalar-precision=} and \ttt{output-vector-precision=}
-configuration entries (see \ref{sec:ch-config-sim:general-section}).
-The default precision is 12 digits. The following has to be considered
-when changing the default value:
+\section{Watches and Snapshots}
 
-IEEE-754 doubles are 64-bit numbers. The mantissa is 52 bits, which
-is roughly equivalent to 16 decimal places (52*log(2)/log(10)).
-However, due to rounding errors, usually only
-12..14 digits are correct, and the rest is pretty much random garbage
-which should be ignored. However, when you convert the decimal
-representation back into an IEEE-754 double (as in Plove and Scalars),
-an additional small error will occurs because 0.1, 0.01, etc cannot be
-accurately represented in binary. This conversion error is usually
-smaller than the one that the \ttt{double}
-variable already had before recording into the file, however if
-it is important you can eliminate it by setting >16 digits precision
-for the file (but again, be aware that the last digits are garbage).
-The practical upper limit is 17 digits, setting it higher
-doesn't make any difference in \ttt{fprintf()}'s output.
-
-% To see finite machine precision and rounding errors, try this code:
-%
-% \ begin{verbatim}
-% double x = 0.1;
-% while (true)  {
-%    printf("%.15g\n", x);
-%    x = x + 0.1;
-% }
-% \ end{verbatim}
-%
-% The following, more advanced version will also print the error of
-% converting back from text to double:
-%
-% \ begin{verbatim}
-% double x = 0.1;
-% while (true) {
-%     char line[120];
-%     sprintf(line, "%.15g \t%.14g \t%.13g \t%.12g", x, x, x, x);
-%     double x15, x14, x13, x12;
-%     sscanf(line, "%lg%lg%lg%lg", &x15, &x14, &x13, &x12);
-%     printf("%s \t| %g  %g  %g  %g\n", line, (x15-x), (x14-x), (x13-x), (x12-x));
-%     x = x + 0.1;
-% }
-% \ end{verbatim}
-%
-% For the complexity of the issue, see "What Every Computer Scientist
-% Should Know About Floating-Point Arithmetic" by David Goldberg.
-
-
-Errors coming from converting to/from decimal representation can be
-eliminated by choosing an output vector/output scalar manager class
-which stores \ttt{double}s in their native binary form.
-The appropriate configuration entries are \ttt{outputvectormanager-class=}
-and \ttt{outputvectormanager-class=}; see \ref{sec:ch-config-sim:general-section}.
-For example, \cclass{cMySQLOutputScalarManager} and \cclass{cMySQLOutputScalarManager}
-provided in \ttt{samples/database} fulfill this requirement.
-
-However, before worrying too much about rounding and conversion errors,
-it is worth considering what is the \textit{real} accuracy of your results.
-Some things to consider:
-
-\begin{itemize}
-  \item{in real life, it is very hard to measure quantities (weight, distance,
-     even time) with more than a few digits of precision. What precision
-     are your input data? For example, if you approximate inter-arrival
-     time as \textit{exponential(0.153)} when the mean is really
-     \textit{0.152601...} and the distribution is not even exactly exponential,
-     you are already starting out with a bigger error than rounding can cause.}
-
-  \item{the simulation model is itself an approximation of real life. How much
-     error do the (known and unknown) simplifications cause in the results?}
-\end{itemize}
-
-
-
-
-\section{Watches and snapshots}
-
-\subsection{Basic watches}
+\subsection{Basic Watches}
 
 It would be nice, but variables of type \ttt{int}, \ttt{long}, \ttt{double}
 do not show up by default in Tkenv; neither do STL classes
@@ -1917,7 +1823,7 @@ WATCH(currentClientInfo);
 \end{cpp}
 
 
-\subsection{Read-write watches}
+\subsection{Read-write Watches}
 
 Watches for primitive types and \ttt{std::string} allow for changing
 the value from the GUI as well, but for other types you need to explicitly
@@ -1942,7 +1848,7 @@ WATCH_RW(currentClientInfo);
 \end{cpp}
 
 
-\subsection{Structured watches}
+\subsection{Structured Watches}
 
 \ttt{WATCH()} and \ttt{WATCH\_RW()} are basic watches: they allow one
 line of (unstructured) text to be displayed. However, if you have a
@@ -1976,7 +1882,7 @@ watchedPtr = NULL;  // set to NULL when object gets deleted
 \end{cpp}
 
 
-\subsection{STL watches}
+\subsection{STL Watches}
 
 The standard C++ container classes (\ttt{vector}, \ttt{map}, \ttt{set}, etc)
 also have structured watches, available via the following macros:
@@ -2018,7 +1924,6 @@ in module functions by the user) into the snapshot file\index{snapshot file}.
 bool snapshot(cOwnedObject *obj = &simulation, const char *label = NULL);
 \end{cpp}
 
-
 The function can be called from module functions, like this:
 
 \begin{cpp}
@@ -2029,9 +1934,8 @@ snapshot(&simulation.msgQueue); // dump future events
 
 This will append snapshot information to the end of the snapshot file.
 (The snapshot file name has an extension of \ttt{.sna}, default is
-\ttt{omnetpp.sna}\index{omnetpp.sna}. Actual file name can be set in the
+\ttt{omnetpp.sna}\index{omnetpp.sna}. The actual file name can be set in the
 config file.)
-
 
 The snapshot file output is detailed enough to be used for debugging
 the simulation: by regularly calling \ffunc{snapshot()}, one can trace
@@ -2043,85 +1947,75 @@ the whole simulation (all modules etc) will be written out.
 If you run the simulation with Tkenv, you can also create a snapshot
 from the menu.
 
-
-An example of a snapshot file:
+An example snapshot file (some abbreviations have been applied):
 
 \begin{filelisting}
-[...]
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<snapshot object="simulation" label="Long queue" simtime="9.038229311343"
+network="FifoNet">
+  <object class="cSimulation" fullpath="simulation">
+    <info></info>
+    <object class="cCompoundModule" fullpath="FifoNet">
+      <info>id=1</info>
+      <object class="fifo::Source" fullpath="FifoNet.gen">
+        <info>id=2</info>
+        <object class="cPar" fullpath="FifoNet.gen.sendIaTime">
+          <info>exponential(0.01s)</info>
+          <detailedinfo>double sendIaTime = exponential(0.01s) @unit(s)
+          </detailedinfo>
+        </object>
+        <object class="cGate" fullpath="FifoNet.gen.out">
+          <info>--&gt; fifo.in</info>
+        </object>
+      </object>
+      <object class="fifo::Fifo" fullpath="FifoNet.fifo">
+        <info>id=3</info>
+        <object class="cPar" fullpath="FifoNet.fifo.serviceTime">
+          <info>0.01</info>
+          <detailedinfo>double serviceTime = 0.01@unit(s)</detailedinfo>
+        </object>
+        <object class="cGate" fullpath="FifoNet.fifo.in">
+          <info>&lt;-- gen.out</info>
+        </object>
+        <object class="cGate" fullpath="FifoNet.fifo.out">
+          <info>--&gt; sink.in</info>
+        </object>
+        <object class="cQueue" fullpath="FifoNet.fifo.queue">
+          <info>length=13</info>
+          <object class="cMessage" fullpath="FifoNet.fifo.queue.job">
+            <info>src=FifoNet.gen (id=2)  dest=FifoNet.fifo (id=3)</info>
+          </object>
+          <object class="cMessage" fullpath="FifoNet.fifo.queue.job">
+            <info>src=FifoNet.gen (id=2)  dest=FifoNet.fifo (id=3)</info>
+          </object>
+        </object>
+      <object class="fifo::Sink" fullpath="FifoNet.sink">
+        <info>id=4</info>
+        <object class="cGate" fullpath="FifoNet.sink.in">
+          <info>&lt;-- fifo.out</info>
+        </object>
+      </object>
+    </object>
+    <object class="cMessageHeap" fullpath="simulation.scheduled-events">
+      <info>length=3</info>
+      <object class="cMessage" fullpath="simulation.scheduled-events.job">
+        <info>src=FifoNet.fifo (id=3)  dest=FifoNet.sink (id=4)</info>
+      </object>
+      <object class="cMessage" fullpath="...sendMessageEvent">
+        <info>at T=9.0464.., in dt=0.00817..; selfmsg for FifoNet.gen (id=2)</info>
+      </object>
+      <object class="cMessage" fullpath="...end-service">
+        <info>at T=9.0482.., in dt=0.01; selfmsg for FifoNet.fifo (id=3)</info>
+      </object>
+    </object>
+  </object>
+</snapshot>
 
-(cSimulation) 'simulation' begin
-  Modules in the network:
-    'token' #1 (TokenRing)
-      'comp[0]' #2 (Computer)
-        'mac' #3 (TokenRingMAC)
-        'gen' #4 (Generator)
-        'sink' #5 (Sink)
-      'comp[1]' #6 (Computer)
-        'mac' #7 (TokenRingMAC)
-        'gen' #8 (Generator)
-        'sink' #9 (Sink)
-      'comp[2]' #10 (Computer)
-        'mac' #11 (TokenRingMAC)
-        'gen' #12 (Generator)
-        'sink' #13 (Sink)
-end
-
-(TokenRing) 'token' begin
-  #1 params     (cArray) (n=6)
-  #1 gates      (cArray) (empty)
-  comp[0]          (cCompoundModule,#2)
-  comp[1]          (cCompoundModule,#6)
-  comp[2]          (cCompoundModule,#10)
-end
-
-(cArray) 'token.parameters' begin
-  num_stations (cModulePar) 3 (L)
-  num_messages (cModulePar) 10000 (L)
-  ia_time      (cModulePar) truncnormal(0.005,0.003) (F)
-  THT          (cModulePar) 0.01 (D)
-  data_rate    (cModulePar) 4000000 (L)
-  cable_delay  (cModulePar) 1e-06 (D)
-end
-
-[...]
-
-(cQueue) 'token.comp[0].mac.local-objects.send-queue' begin
-  0-->1         (cMessage) Tarr=0.0158105774 ( 15ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0163553310 ( 16ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0205628236 ( 20ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0242203591 ( 24ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0300994268 ( 30ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0364005251 ( 36ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0370745702 ( 37ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0387984129 ( 38ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0457462493 ( 45ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0487308918 ( 48ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0514466766 ( 51ms) Src=#4 Dest=#3
-end
-
-(cMessage) 'token.comp[0].mac.local-objects.send-queue.0-->1' begin
-  #4 --> #3
-  sent:         0.0158105774 ( 15ms)
-  arrived:      0.0158105774 ( 15ms)
-  length:       33536
-  kind:         0
-  priority:     0
-  error:        FALSE
-  time stamp:   0.0000000 ( 0.00s)
-  parameter list:
-    dest        (cPar) 1 (L)
-    source      (cPar) 0 (L)
-    gentime     (cPar) 0.0158106 (D)
-end
-
-[...]
 \end{filelisting}
 
-It is possible that the format of the snapshot file will change to XML
-in future {\opp} releases.
 
 
-% \subsection{Disabling warnings}
+% \subsection{Disabling Warnings}
 %
 % Some container classes and functions suspend the simulation and issue
 % warning messages in potentially bogus/dangerous situations, for
@@ -2149,7 +2043,7 @@ in future {\opp} releases.
 
 
 
-\subsection{Getting coroutine stack usage}
+\subsection{Getting Coroutine Stack Usage}
 
 It is important to choose the correct stack size for
 modules\index{module!stack size}\index{stack!size}.  If the stack is
@@ -2190,10 +2084,10 @@ effect with local variables.
 
 
 
-\section{Deriving new classes}
+\section{Deriving New Classes}
 \label{sec:ch-sim-lib:deriving-new-classes}
 
-\subsection{cOwnedObject or not?}
+\subsection{cOwnedObject or Not?}
 
 If you plan to implement a completely new class (as opposed to
 subclassing something already present in {\opp}), you have
@@ -2232,7 +2126,7 @@ extra cost because it doesn't have data members at all, only
 virtual functions.
 
 
-\subsection{cOwnedObject virtual methods}
+\subsection{cOwnedObject Virtual Methods}
 
 Most classes in the simulation class library are descendants of
 \cclass{cOwnedObject}. If you want to derive a new class from
@@ -2299,7 +2193,7 @@ The following methods are \textbf{recommended} to implement:
 \end{itemize}
 
 
-\subsection{Class registration}
+\subsection{Class Registration}
 
 You should also use the \fmac{Register\_Class()} macro to register the
 new class. It is used by the \ffunc{createOne()} factory function, which can
@@ -2539,10 +2433,10 @@ Sim library (\ttt{include/}, \ttt{src/sim/}) can serve as further examples.
 
 
 
-\section{Object ownership management}
+\section{Object Ownership Management}
 \label{sec:ch-sim-lib:ownership-management}
 
-\subsection{The ownership tree}
+\subsection{The Ownership Tree}
 
 {\opp} has a built-in ownership management mechanism which
 is used for sanity checks, and as part of the infrastructure
@@ -2573,7 +2467,7 @@ The other direction, enumerating the objects owned can be implemented with
 the \ffunc{forEachChild()} method by it looping through all
 contained objects and checking the owner of each object.
 
-\subsubsection{Why do we need this?}
+\subsubsection{Why Do We Need This?}
 
 The traditional concept of object ownership is associated with
 the ``right to delete'' objects. In addition to that,
@@ -2624,7 +2518,7 @@ message object which has been sent to (and so currently kept by) another
 module.
 
 
-\subsection{Managing ownership}
+\subsection{Managing Ownership}
 
 Ownership is managed transparently for the user, but this mechanism
 has to be supported by the participating classes themselves.
@@ -2727,7 +2621,7 @@ From the contained objects, only the owned ones are deleted -- that is,
 where \ttt{obj->getOwner()==this}.
 
 
-\subsubsection{Object copying}
+\subsubsection{Object Copying}
 
 The ownership mechanism also has to be taken into consideration
 when a \cclass{cArray} or \cclass{cQueue} object is duplicated.
@@ -2752,7 +2646,7 @@ is implemented as \ffunc{new cArray(*this)}).
 
 % FIXME finish this!
 %
-% \subsubsection{Another example: cMessage's encapsulation feature}
+% \subsubsection{Another Example: cMessage's Encapsulation Feature}
 %
 % This template should be followed in other places too. Like cMessage's
 % encapsulation...
@@ -2774,7 +2668,7 @@ is implemented as \ffunc{new cArray(*this)}).
 %\ end{verbatim}
 %
 %
-%\subsection{If you use STL containers}
+%\subsection{If you Use STL Containers}
 %
 
 

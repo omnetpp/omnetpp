@@ -262,6 +262,9 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 
     checkChannels();
 
+    // notify envir
+    if (chan)
+        ev.configure(chan);
     EVCB.connectionCreated(this);
 
     // initialize the channel here, to simplify dynamic connection creation.

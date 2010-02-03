@@ -26,17 +26,13 @@ PassiveQueue::~PassiveQueue()
 
 void PassiveQueue::initialize()
 {
-    droppedVector.setName("dropped jobs");
-    lengthVector.setName("length");
-    queueingTimeVector.setName("queueing time");
-    scalarUtilizationStats.setName("utilization");
-    scalarWeightedLengthStats.setName("time weighted length");
-    scalarLengthStats.setName("length");
+    droppedSignal = registerSignal("dropped");
+    queueingTimeSignal = registerSignal("queueingTime");
+    queueLengthSignal = registerSignal("queueLength");
+    emit(queueLengthSignal, 0l);
+
     capacity = par("capacity");
     queue.setName("queue");
-
-    droppedJobs = 0;
-    prevEventTimeStamp = 0.0;
 
     fifo = par("fifo");
 
@@ -55,7 +51,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
     {
         EV << "Queue full! Job dropped.\n";
         if (ev.isGUI()) bubble("Dropped!");
-        droppedVector.record(++droppedJobs);
+        emit(droppedSignal, 1l);
         delete msg;
         return;
     }
@@ -64,8 +60,9 @@ void PassiveQueue::handleMessage(cMessage *msg)
     if (k < 0)
     {
         // enqueue if no idle server found
-        queueLengthChanged();
         queue.insert(job);
+        emit(queueLengthSignal, (long)length());
+        job->setQueueCount(job->getQueueCount() + 1);
     }
     else if (length() == 0)
     {
@@ -75,20 +72,9 @@ void PassiveQueue::handleMessage(cMessage *msg)
     else
         error("This should not happen. Queue is NOT empty and there is an IDLE server attached to us.");
 
-    // statistics
-    lengthVector.record(length());
-
     // change the icon color
     if (ev.isGUI())
         getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan3");
-}
-
-void PassiveQueue::queueLengthChanged()
-{
-    scalarUtilizationStats.collect2((length() > 0 ? 1 : 0), simTime()-prevEventTimeStamp);
-    scalarWeightedLengthStats.collect2(length(), simTime()-prevEventTimeStamp);
-    scalarLengthStats.collect(length());
-    prevEventTimeStamp = simTime();
 }
 
 int PassiveQueue::length()
@@ -102,9 +88,6 @@ void PassiveQueue::request(int gateIndex)
 
     ASSERT(!queue.empty());
 
-    // gather queuelength statistics
-    queueLengthChanged();
-
     Job *job;
     if (fifo)
     {
@@ -116,28 +99,17 @@ void PassiveQueue::request(int gateIndex)
         // FIXME this may have bad performance as remove uses linear search
         queue.remove(job);
     }
+    emit(queueLengthSignal, (long)length());
 
     job->setQueueCount(job->getQueueCount()+1);
     simtime_t d = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
-    queueingTimeVector.record(d);
+    emit(queueingTimeSignal, d);
 
     send(job, "out", gateIndex);
 
-    // statistics
-    lengthVector.record(length());
-
     if (ev.isGUI())
         getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan");
-}
-
-void PassiveQueue::finish()
-{
-    recordScalar("min length",scalarLengthStats.getMin());
-    recordScalar("max length",scalarLengthStats.getMax());
-    recordScalar("avg length",scalarWeightedLengthStats.getMean());
-    recordScalar("utilization",scalarUtilizationStats.getMean());
-    recordScalar("dropped jobs", droppedJobs);
 }
 
 }; //namespace

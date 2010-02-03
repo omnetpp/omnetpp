@@ -27,6 +27,9 @@ class Routing : public cSimpleModule
     typedef std::map<int,int> RoutingTable; // destaddr -> gateindex
     RoutingTable rtable;
 
+    simsignal_t dropSignal;
+    simsignal_t outputIfSignal;
+
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
@@ -38,6 +41,9 @@ Define_Module(Routing);
 void Routing::initialize()
 {
     myAddress = getParentModule()->par("address");
+
+    dropSignal = registerSignal("drop");
+    outputIfSignal = registerSignal("outputIf");
 
     //
     // Brute force approach -- every node does topology discovery on its own,
@@ -80,6 +86,7 @@ void Routing::handleMessage(cMessage *msg)
     {
         EV << "local delivery of packet " << pk->getName() << endl;
         send(pk, "localOut");
+        emit(outputIfSignal, -1L); // -1: local
         return;
     }
 
@@ -87,6 +94,7 @@ void Routing::handleMessage(cMessage *msg)
     if (it==rtable.end())
     {
         EV << "address " << destAddr << " unreachable, discarding packet " << pk->getName() << endl;
+        emit(dropSignal, (long)pk->getByteLength());
         delete pk;
         return;
     }
@@ -94,7 +102,8 @@ void Routing::handleMessage(cMessage *msg)
     int outGateIndex = (*it).second;
     EV << "forwarding packet " << pk->getName() << " on gate index " << outGateIndex << endl;
     pk->setHopCount(pk->getHopCount()+1);
+    emit(outputIfSignal, (long)outGateIndex);
 
-    send(pk, "out", outGateIndex);
+    send(pk, "out", (long)outGateIndex);
 }
 

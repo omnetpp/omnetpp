@@ -14,9 +14,14 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedDisplayStringTagDetector;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagDetector;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagValueDetector;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -57,6 +62,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		IProject project = file.getProject();
 
 		String line = info.linePrefixTrimmed;
+		//Debug.println(">>>" + line + "<<<");
 
 		// calculate the lookup context used in nedresource calls
 		INedTypeLookupContext context = nedFileElement;
@@ -170,7 +176,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		}
 
 		// expressions: after "=", opening "[", "if" or "for"
-		if (line.contains("=") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
+		if (line.matches("[^(]*=.*") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
 			// Debug.println("proposals for expressions");
 
 			// offer parameter names, gate names, types,...
@@ -217,25 +223,27 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		}
 
         // offer existing and standard property names after "@"
-        if (line.equals("")) {
-            if (info.sectionType == SECT_GLOBAL ) {
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedFilePropertyTempl);
+		if (info.parenthesisLevel == 0) {
+            if (line.equals("")) {
+                if (info.sectionType == SECT_GLOBAL ) {
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedFilePropertyTempl);
+                }
+                if (info.sectionType == SECT_PARAMETERS && nedTypeInfo!=null) {
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentPropertyTempl);
+                    addProposals(viewer, documentOffset, result, "@", nedTypeInfo.getProperties().keySet(), "", "property");
+                }
+                if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null) {
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmodulePropertyTempl);
+                    addProposals(viewer, documentOffset, result, "@", submoduleType.getProperties().keySet(), "", "property");
+                }
             }
-            if (info.sectionType == SECT_PARAMETERS && nedTypeInfo!=null) {
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentPropertyTempl);
-                addProposals(viewer, documentOffset, result, "@", nedTypeInfo.getProperties().keySet(), "", "property");
+            else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
+                if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamPropertyTempl);
+                if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedGatePropertyTempl);
             }
-            if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null) {
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmodulePropertyTempl);
-                addProposals(viewer, documentOffset, result, "@", submoduleType.getProperties().keySet(), "", "property");
-            }
-        }
-        else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
-            if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamPropertyTempl);
-            if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedGatePropertyTempl);
-        }
+		}
 
 		// complete submodule type name
 		if (info.sectionType == SECT_SUBMODULES) {
@@ -295,6 +303,37 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
             if (line.equals(""))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionTempl);
 		}
+
+		// particular properties using the @ syntax
+        if (line.matches("@display\\(\".*")) {
+            if (line.matches(".*[\"|;| ](i|i2)=")) {
+                List<String> names = ImageFactory.getImageNameList();
+                String[] proposals = names.toArray(new String[0]);
+                Image[] images = new Image[proposals.length];
+                for (int i = 0; i < proposals.length; i++) {
+                    String proposal = proposals[i];
+                    images[i] = ImageFactory.getIconImage(proposal);
+                }
+                addProposals(viewer, documentOffset, result, proposals, proposals, images);
+            }
+            else if (info.sectionType == SECT_PARAMETERS)
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());
+            else if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl, new NedDisplayStringTagDetector());
+            else if (info.sectionType == SECT_CONNECTIONS)
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl, new NedDisplayStringTagDetector());
+        }
+        else if (line.matches(".*@unit\\(\\w?")) {
+            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamUnitTempl);
+        }
+        else if (line.matches("@signal\\[.*?\\]\\(.*")) {
+            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyParameterTempl, new NedPropertyTagDetector());
+
+            if (line.matches(".*modeHint=(\\w\\,?)*"))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyModeHintParameterValueTempl, new NedPropertyTagValueDetector());
+            else if (line.matches(".*interpolationMode=\\w?"))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyInterpolationModeParameterValueTempl, new NedPropertyTagValueDetector());
+        }
 
 		// long millis = System.currentTimeMillis()-startMillis;
 		// Debug.println("Proposal creation: "+millis+"ms");

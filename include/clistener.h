@@ -16,8 +16,6 @@
 #ifndef __CLISTENER_H
 #define __CLISTENER_H
 
-#include <vector>
-#include <map>
 #include "simtime_t.h"
 #include "cobject.h"
 
@@ -30,10 +28,57 @@ class cComponent;
  *
  * @see cComponent::subscribe(), cComponent::unsubscribe(), cComponent::emit()
  * and cIListener
+ *
+ * @ingroup Signals
  */
 typedef int simsignal_t;
 
 #define SIMSIGNAL_NULL   ((simsignal_t)-1)
+
+
+/**
+ * An interface that allows signal value classes that implement it to be recorded
+ * into an output vector.
+ *
+ * @ingroup Signals
+ */
+class SIM_API cISignalValue
+{
+    public:
+        virtual ~cISignalValue() {}
+
+        /**
+         * The signal value to be recorded. The signalID argument allows
+         * the same class to support multiple signals.
+         */
+        virtual double getSignalValue(simsignal_t signalID) = 0;
+
+        /**
+         * Allows the signal value to be recorded with a timestamp different
+         * from the current simulation time. The default implementation
+         * just returns the current simulation time.
+         */
+        virtual simtime_t getSignalTime(simsignal_t signalID);
+};
+
+/**
+ * A (simtime_t, double) pair, for emitting a signal value to be recorded
+ * into an output vector with a timestamp different from the current simulation
+ * time.
+ *
+ * @ingroup Signals
+ */
+class SIM_API cSignalValue : public cObject, cISignalValue, noncopyable
+{
+    public:
+        simtime_t time;
+        double value;
+    public:
+        cSignalValue() {}
+        cSignalValue(simtime_t t, double v) {time = t; value = v;}
+        virtual simtime_t getSignalTime(simsignal_t) {return time;}
+        virtual double getSignalValue(simsignal_t) {return value;}
+};
 
 /**
  * Interface for listeners in a simulation model.
@@ -42,6 +87,8 @@ typedef int simsignal_t;
  * when the destructor runs, the object is no longer subscribed anywhere.
  *
  * @see cComponent::subscribe(), cComponent::unsubscribe()
+ *
+ * @ingroup Signals
  */
 class SIM_API cIListener
 {
@@ -110,6 +157,11 @@ class SIM_API cIListener
      * careful to prevent double deletion, e.g. by reference counting.
      */
     virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
+
+    /**
+     * Returns the number of listener lists containing this listener.
+     */
+    int getSubscribeCount() const  { return subscribecount; }
 };
 
 /**
@@ -117,6 +169,8 @@ class SIM_API cIListener
  * for other listeners. The user needs to redefine one or more of the
  * overloaded receiveSignal() methods; the rest will throw a "Data type
  * not supported" error.
+ *
+ * @ingroup Signals
  */
 class SIM_API cListener : public cIListener
 {
@@ -129,9 +183,6 @@ class SIM_API cListener : public cIListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
-    virtual void finish(cComponent *component, simsignal_t signalID) {}
-    virtual void listenerAdded(cComponent *component, simsignal_t signalID) {}
-    virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
 };
 
 NAMESPACE_END

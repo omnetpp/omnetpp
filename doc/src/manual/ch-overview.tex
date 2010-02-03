@@ -2,7 +2,7 @@
 \label{cha:overview}
 
 
-\section{Modeling concepts}
+\section{Modeling Concepts}
 
 An {\opp} model consists of modules that communicate with message passing.
 The active modules are termed \textit{simple modules}; they are written in C++,
@@ -69,7 +69,7 @@ structure of the actual system. Some of the main features are:
 \item{topology description language}
 \end{itemize}
 
-\subsection{Hierarchical modules}
+\subsection{Hierarchical Modules}
 
 
 An {\opp} model consists of hierarchically nested
@@ -92,7 +92,7 @@ The user implements the simple modules in C++, using the {\opp}
 simulation class library.
 
 
-\subsection{Module types}
+\subsection{Module Types}
 \index{module!types}
 
 Both simple and compound modules are instances of \textit{module
@@ -118,7 +118,7 @@ will be discussed later, in Chapter \ref{cha:run-sim}.
 
 
 
-\subsection{Messages, gates, links}
+\subsection{Messages, Gates, Links}
 
 Modules communicate by exchanging
 \textit{messages}\index{message!exchanging}. In an actual simulation,
@@ -154,7 +154,7 @@ simple module are called \textit{routes}.  Compound modules act as
 between their inside and the outside world.
 
 
-\subsection{Modeling of packet transmissions}
+\subsection{Modeling of Packet Transmissions}
 
 Connections can be assigned three parameters, which facilitate
 the modeling of communication networks, but can be useful in
@@ -207,14 +207,14 @@ number of submodules, number of gates, and the way the internal
 connections are made.
 
 
-\subsection{Topology description method}
+\subsection{Topology Description Method}
 \index{topology!description}
 The user defines the structure of the model in NED language descriptions
 (Network Description).The NED language will be discussed in detail
 in Chapter \ref{cha:the-ned-language}.
 
 
-\section{Programming the algorithms}
+\section{Programming the Algorithms}
 
 The simple\index{module!simple} modules of a model contain algorithms
 as C++ functions.
@@ -248,7 +248,7 @@ This feature has made it possible to create a simulation GUI where
 all internals of the simulation are visible.
 
 
-% \subsection{Creating simple modules}
+% \subsection{Creating Simple Modules}
 % \index{module!simple!creation}
 %
 % Each simple\index{module!simple} module type is implemented with a C++ class. Simple
@@ -266,7 +266,7 @@ all internals of the simulation are visible.
 % that in the network description, actual module types can be parameters.
 %
 %
-% \subsection{Object mechanisms}
+% \subsection{Object Mechanisms}
 %
 % The use of smart container classes allows the user to build
 % \textit{aggregate data structures}\index{aggregate data structures}.
@@ -290,7 +290,7 @@ all internals of the simulation are visible.
 % mechanism; see later.)
 %
 %
-% \subsection{Derive new classes}
+% \subsection{Derive New Classes}
 %
 % It most cases, the functionality offered by the {\opp} classes
 % is enough for the user. But if it is needed, one can derive new
@@ -300,7 +300,7 @@ all internals of the simulation are visible.
 % so that the object can fully work together with other objects.
 %
 %
-% \subsection{Self-describing objects to ease debugging}
+% \subsection{Self-describing Objects to Ease Debugging}
 % \index{debugging}
 %
 %
@@ -318,7 +318,7 @@ all internals of the simulation are visible.
 \section{Using {\opp}}
 
 
-\subsection{Building and running simulations}
+\subsection{Building and Running Simulations}
 \index{simulation!building}
 \index{simulation!running}
 
@@ -360,7 +360,7 @@ text forms when the simulation program starts.
 
 
 
-\subsubsection{Running the simulation and analyzing the results}
+\subsubsection{Running the Simulation and Analyzing the Results}
 
 The simulation may be compiled as a standalone program executable,
 thus it can be run on other machines without {\opp}
@@ -396,7 +396,7 @@ or export data via the clipboard for more detailed analysis into
 spreadsheets and other programs.
 
 
-\subsubsection{User interfaces}
+\subsubsection{User Interfaces}
 \index{simulation!user interface}
 
 The primary purpose of user interfaces is to make the internals
@@ -416,7 +416,7 @@ graphical user interface, and finally run it with a simple and
 fast user interface that supports batch execution.
 
 
-\subsubsection{Component libraries}
+\subsubsection{Component Libraries}
 \index{module!libraries}
 
 Module types can be stored in files separate from the place
@@ -424,7 +424,7 @@ of their actual use. This enables the user to group existing
 module types and create component libraries.
 
 
-\subsubsection{Universal standalone simulation programs}
+\subsubsection{Universal Standalone Simulation Programs}
 
 
 A simulation executable can store several independent models
@@ -436,7 +436,7 @@ tool. The flexibility of the topology description language also
 supports this approach.
 
 
-\subsection{What is in the distribution}
+\subsection{What Is in the Distribution}
 
 If you installed the source distribution, the omnetpp directory on your system
 should contain the following subdirectories. (If you installed a precompiled

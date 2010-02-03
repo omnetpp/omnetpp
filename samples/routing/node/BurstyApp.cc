@@ -39,11 +39,13 @@ class BurstyApp : public cSimpleModule
     int pkCounter;
     cMessage *startStopBurst;
     cMessage *sendMessage;
+    int numSent;
+    int numReceived;
 
-    // statistics
-    long numSent;
-    long numReceived;
-    cOutVector eedVector;
+    // signals
+    simsignal_t endToEndDelaySignal;
+    simsignal_t hopCountSignal;
+    simsignal_t sourceAddressSignal;
 
   public:
     BurstyApp();
@@ -56,7 +58,7 @@ class BurstyApp : public cSimpleModule
 
     // new methods
     virtual void processTimer(cMessage *msg);
-    virtual void processPacket(cMessage *msg);
+    virtual void processPacket(Packet *pk);
     virtual void generatePacket();
     virtual void updateDisplayString();
 };
@@ -81,7 +83,6 @@ void BurstyApp::initialize()
     WATCH(numReceived);
 
     fsm.setName("fsm");
-    eedVector.setName("end-to-end delay");
 
     destAddresses = cStringTokenizer(par("destAddresses").stdstringValue().c_str()).asIntVector();
     myAddress = par("address").longValue();
@@ -89,6 +90,10 @@ void BurstyApp::initialize()
     burstTime = &par("burstTime");
     sendIATime = &par("sendIaTime");
     packetLengthBytes = &par("packetLength");
+
+    endToEndDelaySignal = registerSignal("endToEndDelay");
+    hopCountSignal =  registerSignal("hopCount");
+    sourceAddressSignal = registerSignal("sourceAddress");
 
     pkCounter = 0;
     WATCH(pkCounter); // always put watches in initialize(), NEVER in handleMessage()
@@ -104,7 +109,7 @@ void BurstyApp::handleMessage(cMessage *msg)
     if (msg->isSelfMessage())
         processTimer(msg);
     else
-        processPacket(msg);
+        processPacket(check_and_cast<Packet *>(msg));
 
     // update visual appearance of the module
     if (ev.isGUI())
@@ -194,15 +199,15 @@ void BurstyApp::generatePacket()
     send(pk,"out");
 }
 
-void BurstyApp::processPacket(cMessage *msg)
+void BurstyApp::processPacket(Packet *pk)
 {
     // update statistics and delete message
-    simtime_t eed = simTime()-msg->getCreationTime();
-    EV << "Received " << msg->getName() << ", end-to-end delay: " << eed << "sec" << endl;
-    delete msg;
-
+    EV << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
+    emit(endToEndDelaySignal, simTime() - pk->getCreationTime());
+    emit(hopCountSignal, (long)pk->getHopCount());
+    emit(sourceAddressSignal, (long)pk->getSrcAddr());
     numReceived++;
-    eedVector.record(eed);
+    delete pk;
 }
 
 void BurstyApp::updateDisplayString()

@@ -13,7 +13,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_CONFIG;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
@@ -216,7 +216,7 @@ s	 * before getting presented to the user.
         if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*"))
             addConfigVariableProposals(p);
 
-        if (entry==CFGID_VECTOR_RECORDING_INTERVAL) {
+        if (entry==CFGID_VECTOR_RECORDING_INTERVALS) {
             p.addAll(toProposals(new String[]{"$1..", "$1..$2, $3.."})); //XXX use templated proposals here!
         }
         if (entry.getDataType()==ConfigOption.DataType.CFG_BOOL) {

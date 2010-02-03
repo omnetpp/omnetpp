@@ -136,7 +136,7 @@ inline std::ostream& operator<<(std::ostream& out, const opp_string& s)
 
 /**
  * Lightweight string vector, used internally in some parts of \opp.
- * Inheritance is use to "de-templatize" the vector class, because the
+ * Inheritance is used to "de-templatize" the vector class, because the
  * Windows DLL interface isn't really a friend of templated classes.
  *
  * @ingroup Internals
@@ -151,7 +151,7 @@ class SIM_API opp_string_vector : public std::vector<opp_string>
 
 /**
  * Lightweight string vector, used internally in some parts of \opp.
- * Inheritance is use to "de-templatize" the map class, because the
+ * Inheritance is used to "de-templatize" the map class, because the
  * Windows DLL interface isn't really a friend of templated classes.
  *
  * @ingroup Internals

@@ -30,7 +30,7 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/main.obj $O/envirbase.obj $O/f
       $O/indexedfileoutvectormgr.obj $O/akoutvectormgr.obj \
       $O/speedometer.obj $O/matchableobject.obj $O/matchablefield.obj \
       $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj \
-      $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj
+      $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj $O/resultrecorders.obj
 
 
 !if "$(LIB_SUFFIX)"==".dll"
@@ -244,6 +244,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
   ../../include/cscheduler.h \
+  resultrecorders.h \
   ../../include/cgate.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
@@ -272,6 +273,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
+  ../../include/cstatistic.h \
   ../../include/envirext.h \
   ../../include/ccomponenttype.h \
   ../../include/cexception.h \
@@ -708,6 +710,40 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/opp_run.obj: opp_run.cc
+$O/resultrecorders.obj: resultrecorders.cc \
+  ../../include/cregistrationlist.h \
+  resultrecorders.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/cenvir.h \
+  ../../include/csimulation.h \
+  ../../include/onstartup.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  envirdefs.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/cclassfactory.h \
+  ../../include/globals.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cdefaultlist.h \
+  ../../include/opp_string.h \
+  ../../include/cstatistic.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexpression.h \
+  ../../include/cownedobject.h \
+  ../../include/clistener.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpar.h \
+  ../../include/cproperty.h \
+  ../../include/cproperties.h \
+  ../../include/ccomponent.h \
+  ../../include/regmacros.h
 $O/runattributes.obj: runattributes.cc \
   eventlogfilemgr.h \
   envirbase.h \

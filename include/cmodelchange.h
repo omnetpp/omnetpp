@@ -49,6 +49,8 @@ NAMESPACE_BEGIN
  * and not on the module that contains the deleteModule() call.
  *
  * See also: cComponent::emit(), cComponent::subscribe()
+ *
+ * @ingroup Signals
  */
 #define PRE_MODEL_CHANGE   ((simsignal_t)0)
 
@@ -93,6 +95,8 @@ NAMESPACE_BEGIN
  * module that contained the deleteModule() call.
  *
  * See also: cComponent::emit(), cComponent::subscribe()
+ *
+ * @ingroup Signals
  */
 #define POST_MODEL_CHANGE  ((simsignal_t)1)
 
@@ -100,6 +104,8 @@ NAMESPACE_BEGIN
 /**
  * Common base class for data objects that accompany PRE_MODEL_CHANGE
  * and POST_MODEL_CHANGE notifications (signals).
+ *
+ * @ingroup Signals
  */
 class SIM_API cModelChangeNotification : public cObject, noncopyable
 {
@@ -108,6 +114,8 @@ class SIM_API cModelChangeNotification : public cObject, noncopyable
 /**
  * Fired at the top of cModuleType::create(); fields contain the cModuleType
  * object, and the arguments of the create() method call.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPreModuleAddNotification : public cModelChangeNotification
 {
@@ -124,6 +132,8 @@ class SIM_API cPreModuleAddNotification : public cModelChangeNotification
  * already created, its gates and parameters are added and it is inserted
  * into the model, but it is not yet initialized nor its submodules
  * are created yet.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostModuleAddNotification : public cModelChangeNotification
 {
@@ -135,6 +145,8 @@ class SIM_API cPostModuleAddNotification : public cModelChangeNotification
  * Fired at the top of cModule::deleteModule(). The module still exists
  * at this point. Note that this notification also gets fired when the
  * network is being deleted after simulation completion.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPreModuleDeleteNotification : public cModelChangeNotification
 {
@@ -148,6 +160,8 @@ class SIM_API cPreModuleDeleteNotification : public cModelChangeNotification
  * Fields include properties of the deleted module. It also includes the
  * module pointer (in case it serves as a key in some user data structure),
  * but it must NOT be dereferenced because it points to a deleted object.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostModuleDeleteNotification : public cModelChangeNotification
 {
@@ -164,6 +178,8 @@ class SIM_API cPostModuleDeleteNotification : public cModelChangeNotification
 /**
  * Fired at the top of cModule::changeParentTo(), before any changes have
  * been done.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPreModuleReparentNotification : public cModelChangeNotification
 {
@@ -174,6 +190,8 @@ class SIM_API cPreModuleReparentNotification : public cModelChangeNotification
 
 /**
  * Fired at the end of cModule::changeParentTo().
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostModuleReparentNotification : public cModelChangeNotification
 {
@@ -193,6 +211,8 @@ class SIM_API cPostModuleReparentNotification : public cModelChangeNotification
  *
  * Fields in this class carry the module object on which the gate or gate vector
  * being created, and the arguments of the addGate() method call.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPreGateAddNotification : public cModelChangeNotification
 {
@@ -214,6 +234,8 @@ class SIM_API cPreGateAddNotification : public cModelChangeNotification
  *
  * Fields in this class carry the module object on which the gate or gate vector
  * was created, and the name of the gate or gate vector.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostGateAddNotification : public cModelChangeNotification
 {
@@ -230,6 +252,8 @@ class SIM_API cPostGateAddNotification : public cModelChangeNotification
  * whole, and not for individual gate objects in it. That is, a single
  * notification is fired for an inout gate (which is a gate pair) and
  * for gate vectors as well.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPreGateDeleteNotification : public cModelChangeNotification
 {
@@ -248,6 +272,8 @@ class SIM_API cPreGateDeleteNotification : public cModelChangeNotification
  * for gate vectors as well.
  *
  * Fields include properties of the deleted gate or gate vector.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostGateDeleteNotification : public cModelChangeNotification
 {
@@ -264,6 +290,8 @@ class SIM_API cPostGateDeleteNotification : public cModelChangeNotification
  * used for implementing the NED "gate++" syntax also expand the gate vector,
  * and fire this notification. These methods are getOrCreateFirstUnconnectedGate()
  * and getOrCreateFirstUnconnectedGatePair()).
+ *
+ * @ingroup Signals
  */
 class SIM_API cPreGateVectorResizeNotification : public cModelChangeNotification
 {
@@ -278,6 +306,8 @@ class SIM_API cPreGateVectorResizeNotification : public cModelChangeNotification
  * used for implementing the NED "gate++" syntax also expand the gate vector,
  * and fire this notification. These methods are getOrCreateFirstUnconnectedGate()
  * and getOrCreateFirstUnconnectedGatePair()).
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostGateVectorResizeNotification : public cModelChangeNotification
 {
@@ -295,6 +325,7 @@ class SIM_API cPostGateVectorResizeNotification : public cModelChangeNotificatio
  * parent module (as notifications propagate up).
  *
  * @see cPrePathCreateNotification
+ * @ingroup Signals
  */
 class SIM_API cPreGateConnectNotification : public cModelChangeNotification
 {
@@ -331,6 +362,7 @@ class SIM_API cPostGateConnectNotification : public cModelChangeNotification
  * parent module (as notifications propagate up).
  *
  * @see cPrePathCutNotification
+ * @ingroup Signals
  */
 class SIM_API cPreGateDisconnectNotification : public cModelChangeNotification
 {
@@ -347,6 +379,7 @@ class SIM_API cPreGateDisconnectNotification : public cModelChangeNotification
  * parent module (as notifications propagate up).
  *
  * @see cPostPathCutNotification
+ * @ingroup Signals
  */
 class SIM_API cPostGateDisconnectNotification : public cModelChangeNotification
 {
@@ -370,6 +403,8 @@ class SIM_API cPostGateDisconnectNotification : public cModelChangeNotification
  * users would have to listen for gate connect/disconnect notifications at the
  * top-level module, which is not very efficient (as ALL pre/post model change
  * events from all modules would then have to be propagated up to the top).
+ *
+ * @ingroup Signals
  */
 class SIM_API cPathChangeNotification : public cModelChangeNotification
 {
@@ -384,6 +419,8 @@ class SIM_API cPathChangeNotification : public cModelChangeNotification
  * modules of the start AND end gates of the future connection path that will
  * be created when the gate gets connected.
  * See cPathChangeNotification for more details.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPrePathCreateNotification : public cPathChangeNotification { };
 
@@ -392,6 +429,8 @@ class SIM_API cPrePathCreateNotification : public cPathChangeNotification { };
  * modules of the start AND end gates of the connection path that was formed
  * when the gate was connected.
  * See cPathChangeNotification for more details.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostPathCreateNotification : public cPathChangeNotification { };
 
@@ -400,6 +439,8 @@ class SIM_API cPostPathCreateNotification : public cPathChangeNotification { };
  * modules of the start AND end gates of the connection path that is about to
  * be cut when the gate gets connected.
  * See cPathChangeNotification for more details.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPrePathCutNotification : public cPathChangeNotification { };
 
@@ -408,12 +449,16 @@ class SIM_API cPrePathCutNotification : public cPathChangeNotification { };
  * modules of the start AND end gates of the connection path that was cut when
  * the gate got disconnected.
  * See cPathChangeNotification for more details.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostPathCutNotification : public cPathChangeNotification { };
 
 /**
  * This notification gets fired before a module or channel parameter value was
  * changed.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPreParameterChangeNotification : public cModelChangeNotification
 {
@@ -424,6 +469,8 @@ class SIM_API cPreParameterChangeNotification : public cModelChangeNotification
 /**
  * This notification gets fired after a module or channel parameter value was
  * changed.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostParameterChangeNotification : public cModelChangeNotification
 {
@@ -433,6 +480,8 @@ class SIM_API cPostParameterChangeNotification : public cModelChangeNotification
 
 /**
  * This notification gets fired before a display string gets changed.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPreDisplayStringChangeNotification : public cModelChangeNotification
 {
@@ -442,6 +491,8 @@ class SIM_API cPreDisplayStringChangeNotification : public cModelChangeNotificat
 
 /**
  * This notification gets fired after a display string gets changed.
+ *
+ * @ingroup Signals
  */
 class SIM_API cPostDisplayStringChangeNotification : public cModelChangeNotification
 {

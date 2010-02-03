@@ -306,6 +306,13 @@ class SIM_API cEnvir
     //@{
 
     /**
+     * Called when a module or channel has been created and installed in the model,
+     * and lets the environment perform extra setup. One use is to add signal
+     * listeners for result recording.
+     */
+    virtual void configure(cComponent *component) = 0;
+
+    /**
      * Assigns the module or channel parameter from the configuration, or
      * by asking the user.
      */

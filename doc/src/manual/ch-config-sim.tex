@@ -1,16 +1,12 @@
 \chapter{Configuring Simulations}
 \label{cha:config-sim}
 
-\section{Configuring simulations}
+\section{The Configuration File}
 
 Configuration and input data for the simulation are in
 a configuration file usually called \ffilename{omnetpp.ini}.
 
-The following sections explain \ffilename{omnetpp.ini}.
-
-\section{The configuration file: omnetpp.ini}
-
-\subsection{An example}
+\subsection{An Example}
 
 For a start, let us see a simple \ffilename{omnetpp.ini} file which
 can be used to run the Fifo example simulation.
@@ -42,7 +38,7 @@ and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
 Lines that start with ``\#'' are comments.
 
 
-\subsection{File syntax}
+\subsection{File Syntax}
 
 The ini file is a text file consisting of entries grouped into different sections.
 The order of the sections doesn't matter.
@@ -63,7 +59,7 @@ Example:
 for the foo parameter"
 \end{inifile}
 
-\subsection{File inclusion}
+\subsection{File Inclusion}
 
 {\opp} supports including an ini file in another\index{ini file!file inclusion},
 via the \ttt{include} keyword. This feature allows you to partition large ini
@@ -93,7 +89,7 @@ etc. options, and \ttt{xmldoc()} module parameter values.)
 \label{sec:ch-config-sim:general-section}
 
 
-\subsection{The [General] section}
+\subsection{The [General] Section}
 
 The most commonly used options of the \texttt{[General]} section are the
 following.
@@ -105,16 +101,12 @@ following.
     usual time units such as ms, s, m, h, etc. can be used).}
 \end{itemize}
 
-It is important to note, that the loaded NED files may contain
-any number of modules, channel and \textit{any number of networks} as well.
-It does not matter whether you use all or just some of them
-in the simulations. You will be able to select \ttt{any} of the
-networks that occur in the loaded NED files using the \ttt{network=}
-\ffilename{omnetpp.ini} entry, and as long as every module, channel etc
-for it has been loaded, network setup will be successful.
+Note that the NED files loaded by the simulation may contain several
+networks, and any of them may be specified in the \ttt{network=}
+option.
 
 
-\subsection{Named configurations}
+\subsection{Named Configurations}
 
 Named configurations are sections of the form \ttt{[Config <configname>]}, where
 \textit{<configname>} is by convention a camel-case string that starts with a capital letter:
@@ -148,7 +140,7 @@ section to set up the simulation. (Tkenv, of course, lets you select
 the configuration from a dialog.)
 
 
-\subsection{Section inheritance}
+\subsection{Section Inheritance}
 
 Actually, when you activate the PureAloha configuration, the contents of
 the \ttt{[General]} section will also be taken into account: if some
@@ -160,7 +152,7 @@ treated like an empty \ttt{[General]} section.
 
 All named configurations fall back to \ttt{[General]} by default. However, for
 each configuration it is possible to specify a fall-back section
-explicitly, using the extends= key. Consider the following ini file
+explicitly, using the \ttt{extends=} key. Consider the following ini file
 skeleton:
 
 \begin{inifile}
@@ -208,7 +200,7 @@ If you are experimenting a lot with different parameter settings of a
 simulation model, these techniques will make it a lot easier to manage
 ini files.
 
-\section{Setting module parameters}
+\section{Assigning Module Parameters}
 \label{sec:ch-config-sim:parameter-settings}
 
 Simulations get input via module parameters, which can be assigned a
@@ -234,20 +226,22 @@ net.server.transactionsPerSecond = 100
 \end{inifile}
 
 
-\subsection{Using wildcard patterns}
+\subsection{Using Wildcard Patterns}
 \label{sec:ch-config-sim:wildcards}
 
 Models can have a large number of parameters to be configured, and it would
 be tedious to set them one-by-one in \ffilename{omnetpp.ini}. {\opp} supports
 \textit{wildcards patterns} which allow for setting several model parameters
-at once.
+at once. The same pattern syntax is used for per-object configuration options,
+for example \ttt{<object-path-pattern>.record-scalar=}, or \ttt{<module-path-pattern>.rng-<N>=}.
 
-The notation is a variation on the usual glob-style patterns.
-The most apparent differences to the usual rules are the distinction between
-\ttt{*} and \ttt{**}, and that character ranges should be written
-with curly braces instead of square brackets (that is, \textit{any-letter}
-is \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}, because square brackets are
-already reserved for the notation of module vector indices).
+The pattern syntax is a variation on the usual \textit{glob}-style
+patterns. The most apparent differences to the \textit{glob} rules are the
+distinction between \ttt{*} and \ttt{**}, and that character ranges should
+be written with curly braces instead of square brackets (that is,
+\textit{any-letter} is expressed as \ttt{\{a-zA-Z\}} and not as
+\ttt{[a-zA-Z]}, because square brackets are reserved for the notation of
+module vector indices).
 
 Pattern syntax:
 
@@ -283,7 +277,7 @@ An example ini file:
 \end{inifile}
 
 
-\subsubsection{Asterisk vs double asterisk}
+\subsubsection{Asterisk vs Double Asterisk}
 
 The \ttt{*} wildcard is for matching a single module or parameter name in the
 path name, while \ttt{**} can be used to match several components in the path.
@@ -293,7 +287,7 @@ or \ttt{net.queue*.bufSize} selects only queues immediately on network level.
 Also note that \ttt{**.queue**.bufSize} would match \ttt{net.queue1.foo.bar.bufSize}
 as well!
 
-\subsubsection{Sets, negated sets}
+\subsubsection{Sets, Negated Sets}
 
 Sets and negated sets can contain several character ranges and also
 enumeration of characters. For example, \ttt{\{\_a-zA-Z0-9\}} matches any letter
@@ -302,12 +296,12 @@ x, y, z, c, d, e, f.
 To include '-' in the set, put it at a position where it cannot be
 interpreted as character range, for example: \ttt{\{a-z-\}} or \ttt{\{-a-z\}}.
 If you want to include '\}' in the set, it must be the first
-character: \ttt{\{\}a-z\}}, or as a negated set: \ttt{\{{\textasciicircum}\}a-z\}}. A backslash
-is always taken as literal backslash (and NOT as escape character)
+character: \ttt{\{\}a-z\}}, or as a negated set: \ttt{\{{\textasciicircum}\}a-z\}}.
+A backslash is always taken as a literal backslash (and not as an escape character)
 within set definitions.
 
 
-\subsubsection{Numeric ranges and index ranges}
+\subsubsection{Numeric Ranges and Index Ranges}
 
 Only nonnegative integers can be matched.  The start or the end of the range
 (or both) can be omitted: \ttt{\{10..\}}, \ttt{\{..99\}} or \ttt{\{..\}}
@@ -326,21 +320,18 @@ An example for numeric ranges:
 \end{inifile}
 
 
-\subsection{Using the default values}
+\subsection{Using the Default Values}
 
 It is also possible to utilize the default values specified in the NED files.
 The \textit{<parameter-fullpath>}\ttt{=default} setting assigns
-the default value to the parameter if it has one.
-
+the default value to a parameter if it has one.
 
 The \textit{<parameter-fullpath>}\ttt{=ask} setting will try to get the parameter
 value interactively from the user.
 
-
 If a parameter was not set but has a default value, that value will be
 assigned. This is like having a \ttt{**=default} line at the
 bottom of the \ttt{[General]} section.
-
 
 If a parameter was not set and has no default value, that will either
 cause an error or will be interactively prompted for, depending
@@ -357,8 +348,9 @@ More precisely, parameter resolution takes place as follows:
 \begin{enumerate}
 \item If the parameter is assigned in NED, it cannot be overridden in the
     configuration. The value is applied and the process finishes.
-\item If the first match is a value line (matches \textit{<parameter-fullpath>}\ttt{=somevalue}),
-    the value is applied and the process finishes.
+\item If the first match is a value line (matches
+    \textit{<parameter-fullpath>}\ttt{=}\textit{<value>}), the value is
+    applied and the process finishes.
 \item If the first match is a \textit{<parameter-fullpath>}\ttt{=default} line,
     the default value is applied and the process finishes.
 \item If the first match is a \textit{<parameter-fullpath>}\ttt{=ask} line,
@@ -371,9 +363,9 @@ More precisely, parameter resolution takes place as follows:
 \end{enumerate}
 
 
-\section{Parameter studies}
+\section{Parameter Studies}
 
-\subsection{Basic use}
+\subsection{Basic Use}
 
 
 It is quite common in simulation studies that the simulation model is
@@ -420,10 +412,10 @@ If you add the '-g' option, the program will also print out the
 values of the iteration variables for each run. (Use '-G' for even more info)
 Note that the parameter study actually maps to nested
 loops, with the last "\$\{..\}" becoming
-the innermost loop. The iteration variables are just named \$0 and \$1
+the innermost loop. The iteration variables are just named \ttt{\$0} and \ttt{\$1}
 -- we'll see that it is possible to give
 meaningful names to them. Please ignore the
-'\$repetition=0' part in the printout
+\ttt{\$repetition=0} part in the printout
 for now.
 
 
@@ -500,8 +492,8 @@ Let us get back to the ini file. We had:
 \end{inifile}
 
 
-The \$\{...\} syntax specifies an iteration. It is sort of a macro: at
-each run, the whole \$\{...\} string gets textually replaced with the
+The \ttt{\$\{...\}} syntax specifies an iteration. It is sort of a macro: at
+each run, the whole \ttt{\$\{...\}} string gets textually replaced with the
 current iteration value. The values to iterate over do not need to be
 numbers (unless you want to use the \textit{"a..b"} or
 \textit{"a..b step c"} syntax), and the
@@ -520,19 +512,18 @@ used):
         *.greeting = "We will simulate 5 host(s)."
 \end{Verbatim}
 
+To write a literal \ttt{\$\{..\}} inside a string constant, quote
+the left brace with a backslash: \ttt{\${\textbackslash}\{..\}}.
 
-To write a literal \$\{..\} inside a string constant, quote
-"\{" with a backslash, and write "\${\textbackslash}\{..\}".
 
-
-\subsection{Named iteration variables}
+\subsection{Named Iteration Variables}
 
 You can assign names to iteration variables, which has the advantage
-that you'll see meaningful names instead of \$0 and
-\$1 in the Cmdenv output, and also lets you refer to the variables at
+that you'll see meaningful names instead of \ttt{\$0} and
+\ttt{\$1} in the Cmdenv output, and also lets you refer to the variables at
 more than one place in the ini file. The syntax is
-\$\{<varname>=<iteration>\}, and variables can be referred to simply as
-\$\{<varname>\}:
+\ttt{\$\{<varname>=<iteration>\}}, and variables can be referred to simply as
+\ttt{\$\{<varname>\}}:
 
 \begin{inifile}
 [Config Aloha]
@@ -542,20 +533,20 @@ more than one place in the ini file. The syntax is
 \end{inifile}
 
 The scope of the variable name is the section that defines it, plus
-sections based on that section (via extends=).
+sections based on that section (via \ttt{extends=}).
 
-There are also a number of predefined variables: \$\{configname\} and
-\$\{runnumber\} with the obvious meanings; \$\{network\} is the name of
-the network that is simulated; \$\{processid\} and \$\{datetime\}
+There are also a number of predefined variables: \ttt{\$\{configname\}} and
+\ttt{\$\{runnumber\}} with the obvious meanings; \ttt{\$\{network\}} is the name of
+the network that is simulated; \ttt{\$\{processid\}} and \ttt{\$\{datetime\}}
 expand to the OS process id of the simulation and the time it was
-started; and there are some more: \$\{runid\}, \$\{iterationvars\} and
-\$\{repetition\}.
+started; and there are some more: \ttt{\$\{runid\},} \ttt{\$\{iterationvars\}} and
+\ttt{\$\{repetition\}.}
 
-\$\{runid\} holds the Run ID. When a simulation is run, it gets assigned
+\ttt{\$\{runid\}} holds the Run ID. When a simulation is run, it gets assigned
 a Run ID, which uniquely identifies that instance of running the
 simulation: if you run the same thing again, it will get a different
 Run ID. Run ID is a concatenation of several variables like
-\$\{configname\}, \$\{runnumber\}, \$\{datetime\} and \$\{processid\}.
+\ttt{\$\{configname\},} \ttt{\$\{runnumber\},} \ttt{\$\{datetime\}} and \ttt{\$\{processid\}.}
 This yields an identifier that is unique
 "enough" for all practical purposes, yet it
 is meaningful for humans. The Run ID is recorded into result files
@@ -566,9 +557,9 @@ In cases when not all combinations of the iteration variables make sense
 or need to be simulated, it is possible to specify an additional
 constraint expression. This expression is interpreted as a conditional
 (an "if" statement) within the innermost
-loop, and it must evaluate to "true" for
+loop, and it must evaluate to \ttt{true} for
 the variable combination to generate a run. The expression should be
-given with the constraint= configuration key. An example:
+given with the \ttt{constraint=} configuration key. An example:
 
 \begin{inifile}
 *.numNodes = ${n=10..100 step 10}
@@ -576,24 +567,23 @@ given with the constraint= configuration key. An example:
 constraint = $m <= sqrt($n)
 \end{inifile}
 
-
 The expression syntax supports most C language operators (including
 boolean, conditional and binary shift operations) and most
-<math.h> functions; data types are boolean,
+\textit{<math.h>} functions; data types are boolean,
 double and string. The expression must evaluate to a boolean.
 
 \begin{note}
     It is not supported to refer to other iteration variables
     in the definition of an iteration variable (i.e. you cannot write
-    things like \$\{j=\$i..10\}), although it might get implemented in
+    things like \ttt{\$\{j=\$i..10\}}), although it might get implemented in
     future {\opp} releases.
 \end{note}
 
-\subsection{Repeating runs with different seeds}
+\subsection{Repeating Runs with Different Seeds}
 
 It is directly supported to perform several runs with the same
 parameters but different random number seeds. There are two
-configuration keys related to this: repeat= and seed-set=. The first
+configuration keys related to this: \ttt{repeat=} and \ttt{seed-set=}. The first
 one simple specifies how many times a run needs to be repeated. For
 example,
 
@@ -602,13 +592,13 @@ repeat = 10
 \end{inifile}
 
 causes every combination of iteration variables to be repeated 10 times,
-and the \$\{repetition\} predefined variable holds the loop counter.
-Indeed, repeat=10 is equivalent of adding \$\{repetition=0..9\} to the
-ini file. The \$\{repetition\} loop always becomes the innermost loop.
+and the \ttt{\$\{repetition\}} predefined variable holds the loop counter.
+Indeed, \ttt{repeat=10} is equivalent to adding \ttt{\$\{repetition=0..9\}}
+to the ini file. The \ttt{\$\{repetition\}} loop always becomes the innermost loop.
 
-The seed-set= configuration key affects seed selection. Every
+The \ttt{seed-set=} configuration key affects seed selection. Every
 simulation uses one or more random number generators (as configured by
-the num-rngs= key), for which the simulation kernel can automatically
+the \ttt{num-rngs=} key), for which the simulation kernel can automatically
 generate seeds. The first simulation run may use one set of seeds (seed
 set 0), the second run may use a second set (seed set 1), and so on.
 Each set contains as many seeds as there are RNGs configured. All
@@ -621,12 +611,12 @@ Mersenne Twister, the default RNG of {\opp} has a cycle length of
 $2^{19937}$, which is more than enough for any conceivable purpose.
 \end{note}
 
-The seed-set= key tells the simulation kernel which seed set to use.
-It can be set to a concrete number (such as seed-set=0), but it
+The \ttt{seed-set=} key tells the simulation kernel which seed set to use.
+It can be set to a concrete number (such as \ttt{seed-set=0}), but it
 usually does not make sense as it would cause every simulation to run
 with exactly the same seeds. It is more practical to set it to either
-\$\{runnumber\} or to \$\{repetition\}. The default setting is
-\$\{runnumber\}:
+\ttt{\$\{runnumber\}} or to \ttt{\$\{repetition\}}. The default setting is
+\ttt{\$\{runnumber\}}:
 
 \begin{inifile}
 seed-set = ${runnumber}   # this is the default
@@ -639,20 +629,19 @@ second option is:
 seed-set = ${repetition}
 \end{inifile}
 
-where all \$repetition=0 runs will use the same seeds (seed set 0), all
-\$repetition=1 runs use another seed set, \$repetition=2 a third seed
+where all \ttt{\$repetition=0} runs will use the same seeds (seed set 0), all
+\ttt{\$repetition=1} runs use another seed set, \ttt{\$repetition=2} a third seed
 set, etc.
 
 To perform runs with manually selected seed sets, you can just define an
-iteration for the seed-set= key:
+iteration for the \ttt{seed-set=} key:
 
 \begin{inifile}
 seed-set = ${5,6,8..11}
 \end{inifile}
 
-In this case, the repeat= key should be left out, as seed-set= already
-defines an iteration and there's no need for an extra
-loop.
+In this case, the \ttt{repeat=} key should be left out, as \ttt{seed-set=}
+already defines an iteration and there's no need for an extra loop.
 
 It is of course also possible to manually specify individual seeds for
 simulations. This is rarely necessary, but we can use it here to
@@ -680,198 +669,8 @@ seed-2-mt = ${        75335, 35463, 24674, 56673 ! seed1}
 seed-3-mt = ${        34542, 67563, 96433, 23567 ! seed1}
 \end{inifile}
 
-That is, the iterators of seed-2-mt and seed-3-mt are advanced
-in lockstep with the seed1 iteration.
-
-
-\section{Parameter Studies and Result Analysis}
-
-\subsection{Output vectors and scalars}
-
-In {\opp} 3.x, the default result file names were ``omnetpp.vec'' and
-``omnetpp.sca''. This is not very convenient for batch execution, where
-an output vector file created in one run would be overwritten in the
-next run. Thus, we have changed the default file names to make them
-differ for every run. The new defaults are:
-
-\begin{inifile}
-output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
-output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
-\end{inifile}
-
-Where \ttt{\$\{resultdir\}} is the value of the \ttt{result-dir} configuration
-option, and defaults to \ttt{results/}. So the above defaults generate
-file names like "results/PureAloha-0.vec", "results/PureAloha-1.vec",
-and so on.
-
-Also, in {\opp} 3.x output scalar files were always appended to by the
-simulation program, rather than being overwritten. This behavior was
-changed in 4.0 to make it consistent with vector files, that is, output
-scalar files are also overwritten by the simulator, and not appended
-to.
-
-\begin{note}
-    The old behavior can be turned back on by setting
-    output-scalar-file-append=true.
-\end{note}
-
-Although it has nothing to do with our main topic (ini files), this is a
-good place to mention that the format of result files have been
-extended to include meta info such as the run ID, network name, all
-configuration settings, etc. These data make the files more
-self-documenting, which can be valuable during the result analysis
-phase, and increase reproducibility of the results. Another change is
-that vector data are now recorded into the file clustered by the output
-vectors, which (combined with index files) allows much more efficient
-processing.
-
-\subsection{Configuring output vectors}
-\label{sec:ch-config-sim:outvectors}
-
-
-As a simulation program is evolving, it is becoming capable of
-collecting more and more statistics. The size of output vector
-files\index{output!vector file} can easily reach a magnitude of
-several ten or hundred megabytes, but very often, only some of the
-recorded statistics are interesting to the analyst.
-
-In {\opp}, you can control how \cclass{cOutVector} objects record data
-to disk. You can turn output vectors on/off or you can assign a result
-collection interval. By default, all output vectors are turned on.
-
-
-\begin{note}
-    The way of configuring output vectors has changed. In {\opp} 3.x,
-    the keys for enabling-disabling a vector and specifying recording
-    interval were <module-and-vectorname-pattern>.enabled, and
-    <module-and-vectorname-pattern>.interval. The "enabled" and "interval"
-    words changed to "vector-recording" and "vector-recording-interval".
-    The reason for this change is that per-object
-    configuration keys are now required to have a hyphen in their names, to
-    make it possible to tell them apart from module parameter assignments.
-    This allows the simulator to catch mistyped config keys in ini files.
-    The syntax for specifying the recording interval has also been extended
-    (in a backward compatible way) to accept multiple intervals, separated
-    by comma.
-\end{note}
-
-
-Output vectors can be configured with the following syntax:
-
-\begin{inifile}
-module-pathname.objectname.vector-recording = true/false
-module-pathname.objectname.vector-recording-interval = start1..stop1,
-                                                       start2..stop2, ...
-\end{inifile}
-
-Either \textit{start} or \textit{stop} can be omitted, to mean the
-beginning and the end of the simulation, respectively.
-
-
-The object name is the string passed to \cclass{cOutVector} in its constructor
-or with the \ffunc{setName()} member function.
-
-\begin{cpp}
-cOutVector eed("End-to-End Delay");
-\end{cpp}
-
-Start and stop values can be any time specification accepted
-in NED and config files (e.g. \textit{10h 30m 45.2s}).
-
-As with parameter names, wildcards are allowed in the object
-names and module path names.
-
-An example:
-
-\begin{inifile}
-[General]
-**.vector-recording-interval = 1s..60s
-**.End-to-End Delay.vector-recording = true
-**.Router2.**.vector-recording = true
-**.vector-recording = false
-\end{inifile}
-
-The above configuration limits collection of all output vectors
-to the 1s..60s interval, and disables collection of output vectors
-except all end-to-end delays and the ones in any module called Router2.
-
-
-\subsection{Saving parameters as scalars}
-
-When you are running several simulations with different parameter
-settings, you'll usually want to refer to selected
-input parameters in the result analysis as well -- for example when
-drawing a throughput (or response time) versus load (or network
-background traffic) plot. Average throughput or response time numbers
-are saved into the output scalar files, and it is useful for the input
-parameters to get saved into the same file as well.
-
-For convenience, {\opp} automatically saves the iteration variables
-into the output scalar file if they have numeric value, so they can
-be referred to during result analysis.
-
-\begin{warning}
-    If an iteration variable has non-numeric value, it will not be recorded
-    automatically and cannot be used during analysis. This can happen
-    unintentionally if you specify units inside an iteration variable list:
-\begin{inifile}
-# NEVER USE:
-**.host[*].generationInterval = exponential( ${mean=0.2s, 0.4s, 0.6s} )
-# INSTEAD: Specify the unit outside of the variable
-**.host[*].generationInterval = exponential( ${mean=0.2, 0.4, 0.6}s )
-\end{inifile}
-\end{warning}
-
-Module parameters can also be saved, but this has to be
-requested by the user, by configuring save-as-scalar=true for the
-parameters in question. The configuration key is a pattern that
-identifies the parameter, plus ".save-as-scalar". An example:
-
-\begin{inifile}
-**.host[*].networkLoad.save-as-scalar = true
-\end{inifile}
-
-This looks simple enough. However, there are three pitfalls:
-non-numeric parameters, too many matching parameters, and
-random-valued volatile parameters.
-
-First, the scalar file only holds numeric results, so non-numeric
-parameters cannot be recorded -- that will result in a runtime
-error.
-
-Second, if wildcards in the pattern match too many parameters, that
-might unnecessarily increase the size of the scalar file. For example,
-if the host[] module vector size is 1000 in the example below, then the
-same value (3) will be saved 1000 times into the scalar file, once for
-each host.
-
-\begin{inifile}
-**.host[*].startTime = 3
-**.host[*].startTime.save-as-scalar = true  # saves "3" once for each host
-\end{inifile}
-
-Third, recording a random-valued volatile parameter will just save a
-random number from that distribution. This is rarely what you need, and
-the simulation kernel will also issue a warning if this happens.
-
-\begin{inifile}
-**.interarrivalTime = exponential(1s)
-**.interarrivalTime.save-as-scalar = true  # wrong: saves random values!
-\end{inifile}
-
-
-These pitfalls are not rare in practice, so it is usually more
-convenient to rely on the iteration variables in the result analysis.
-That is, one can rewrite the above example as
-
-\begin{inifile}
-**.interarrivalTime = exponential( ${mean=1}s )
-\end{inifile}
-
-and refer to the \ttt{\$mean} iteration variable instead of the
-interarrivalTime module parameter(s) during result analysis.
-save-as-scalar=true is not needed because iteration variables are
-automatically saved into the result files.
+That is, the iterators of \ttt{seed-2-mt} and \ttt{seed-3-mt} are advanced
+in lockstep with the \ttt{seed1} iteration.
 
 
 
@@ -892,14 +691,14 @@ particular random number stream used for the simulation, several
 \textit{replications} of every measurement are run with different
 random number seeds, and the results are averaged.
 
-{\opp} result analysis tools can take advantage of
-experiment/measurement/replication labels recorded into result files,
-and organize simulation runs and recorded output scalars and vectors
-accordingly on the user interface.
+{\opp} result analysis tools can take advantage of the \textit{experiment},
+\textit{measurement} and \textit{replication} labels recorded into result
+files, and display simulation runs and recorded results accordingly on
+the user interface.
 
 These labels can be explicitly specified in the ini file using the
-experiment=, measurement= and replication= config keys. If they are
-missing, the default is the following:
+\ttt{experiment=}, \ttt{measurement=} and \ttt{replication=} config keys.
+If they are missing, the default is the following:
 
 \begin{inifile}
 experiment = "${configname}"
@@ -907,12 +706,11 @@ measurement = "${iterationvars}"
 replication = "#${repetition},seed-set=<seedset>"
 \end{inifile}
 
-
 That is, the default experiment label is the configuration name; the
 measurement label is concatenated from the iteration variables; and the
-replication label contains the repeat loop variable and for the
-seed-set. Thus, for our first example the
-experiment-measurement-replication tree would look like this:
+replication label contains the repeat loop variable and seed-set.
+Thus, for our first example the \textit{experiment-measurement-replication}
+tree would look like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 "PureAloha"\textrm{\textit{--experiment}}
@@ -939,7 +737,7 @@ experiment-measurement-replication tree would look like this:
     ...
 \end{Verbatim}
 
-The experiment-measurement-replication labels should be enough to
+The \textit{experiment-measurement-replication} labels should be enough to
 reproduce the same simulation results, given of course that the ini
 files and the model (NED files and C++ code) haven't changed.
 
@@ -962,7 +760,6 @@ repetition in the tree. For example:
       ...
 \end{Verbatim}
 
-
 The tree shows that ("PureAloha", "\$N=1,\$mean=0.2", "\#0, seed-set=0")
 was run three times. The results produced
 by these three executions should be identical, unless, for example,
@@ -970,8 +767,8 @@ some parameter was modified in the ini file, or a bug got fixed in the
 C++ code.
 
 We believe that the default way of generating
-experiment-measurement-replication labels will be useful and
-sufficient in the majority of the simulation studies. However, you can
+\textit{experiment-measurement-replication} labels is useful and
+sufficient for the majority of simulation studies. However, you can
 customize it if needed. For example, here is a way to join two
 configurations into one experiment:
 
@@ -984,10 +781,9 @@ experiment = "PureAloha"
 ...
 \end{inifile}
 
-
 Measurement and replication labels can be customized in a similar way,
-making use of named iteration variables, \$\{repetition\},
-\$\{runnumber\} and other predefined variables. One possible benefit is
+making use of named iteration variables, \ttt{\$\{repetition\}},
+\ttt{\$\{runnumber\}} and other predefined variables. One possible benefit is
 to customize the generated measurement and replication labels. For
 example:
 
@@ -996,14 +792,13 @@ example:
 measurement = "${N} hosts, exponential(${mean}) packet generation interval"
 \end{inifile}
 
-
 One should be careful with the above technique though, because if some
 iteration variables are left out of the measurement labels, runs with
 all values of those variables will be grouped together to the same
 replications.
 
 
-\section{Configuring the random number generators}
+\section{Configuring the Random Number Generators}
 \label{sec:ch-config-sim:rng-config}
 
 The random number architecture of {\opp} was already outlined
@@ -1019,7 +814,7 @@ Referencing an RNG number greater or equal to this number
 (from a simple module or NED file) will cause a runtime error.
 
 
-\subsection{RNG choice}
+\subsection{RNG Choice}
 
 The \ttt{rng-class=} configuration option sets the random number
 generator class to be used. It defaults to \ttt{"cMersenneTwister"},
@@ -1028,7 +823,7 @@ the Mersenne Twister RNG. Other available classes are \ttt{"cLCG32"}
 of $2^{31}-2$), and \ttt{"cAkaroaRNG"} (Akaroa's random number generator,
 see section \ref{sec:ch-run-sim:akaroa}).
 
-\subsection{RNG mapping}
+\subsection{RNG Mapping}
 
 The RNG numbers used in simple modules may be arbitrarily mapped to the
 actual random number streams (actual RNG instances) from \ffilename{omnetpp.ini}.
@@ -1045,8 +840,8 @@ configuration entries is the following.
 \end{inifile}
 
 This maps module-local RNG N to physical RNG M. The following
-example maps all  \ttt{gen} module's default (N=0) RNG to physical RNG 1,
-and all  \ttt{noisychannel} module's default (N=0) RNG to physical RNG 2.
+example maps all \ttt{gen} module's default (N=0) RNG to physical RNG 1,
+and all \ttt{noisychannel} module's default (N=0) RNG to physical RNG 2.
 
 \begin{inifile}
 [General]
@@ -1059,7 +854,7 @@ This mapping allows variance reduction techniques to be applied to
 {\opp} models, without any model change or recompilation.
 
 
-\subsection{Automatic seed selection}
+\subsection{Automatic Seed Selection}
 
 Automatic seed selection gets used for an RNG if you don't explicitly
 specify seeds in omnetpp.ini. Automatic and manual seed selection can
@@ -1103,7 +898,7 @@ same seeds will be used again. It is best not to use the \ttt{cLCG32}
 at all -- \ttt{cMersenneTwister} is superior in every respect.
 
 
-\subsection{Manual seed configuration}
+\subsection{Manual Seed Configuration}
 
 In some cases you may want manually configure seed values.
 Reasons for doing that may be that you want to use variance reduction

@@ -778,6 +778,7 @@ class StaticEnv : public cEnvir
     virtual void undisposedObject(cObject *obj);
 
      // configuration, model parameters
+    virtual void configure(cComponent *component) {};
     virtual void readParameter(cPar *parameter)  {unsupported();}
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {return true;}
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL)  {unsupported(); return NULL;}

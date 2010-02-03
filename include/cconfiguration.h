@@ -117,7 +117,7 @@ class SIM_API cConfiguration : public cObject
     /**
      * Returns a per-object configuration value. Valid keysuffixes don't contain
      * dots or wildcard characters. Returns NULL if key is not found.
-     * keySuffix is something like "vector-recording-interval", "ev-output", etc.
+     * keySuffix is something like "vector-recording-intervals", "ev-output", etc.
      */
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const = 0;
 

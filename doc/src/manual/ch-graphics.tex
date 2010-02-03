@@ -1,7 +1,7 @@
 \chapter{Network Graphics And Animation}
 \label{cha:graphics}
 
-\section{Display strings}
+\section{Display Strings}
 \label{sec:ch-graphics:display-strings}
 
 Display strings\index{display strings} specify the arrangement and
@@ -25,7 +25,7 @@ Display strings can be used in the following contexts:
 \end{itemize}
 
 
-\subsection{Display string syntax}
+\subsection{Display String Syntax}
 
 The display string syntax is a semicolon-separated list of tags.
 Each tag consists of a key, an equal sign and a comma-separated list of
@@ -42,7 +42,7 @@ parameter list:
 @display("p=100,100;b=,,rect,blue")
 \end{ned}
 
-\subsection{Display string placement}
+\subsection{Display String Placement}
 
 The following NED sample shows where to place display strings in the code:
 
@@ -68,13 +68,13 @@ network SimpleQueue
 }
 \end{ned}
 
-\subsection{Display string inheritance}
+\subsection{Display String Inheritance}
 
 Every module and channel object has one single display string object,
 which controls its appearance in various contexts. The initial value of
-this display string object comes from merging the \ttt{@display}
+this display string object comes from merging the \fprop{@display}
 properties occurring at various places in NED files.
-This section describes the rules \ttt{@display} properties are merged
+This section describes the rules \fprop{@display} properties are merged
 to create the module or channel's display string.
 
 \begin{itemize}
@@ -123,7 +123,7 @@ network SimpleQueue {
 \end{ned}
 
 
-\subsection{Display string tags used in submodule context}
+\subsection{Display String Tags Used in Submodule Context}
 
 The following tags define how a module appears on the Tkenv user interface
 if it is used as a submodule:
@@ -194,7 +194,7 @@ is supported:
 \includegraphics{figures/graphics-btag}
 \end{center}
 
-\subsubsection{Positioning, coordinates}
+\subsubsection{Positioning, Coordinates}
 
 To define the position of a module inside an other one use the \ttt{p} tag.
 If you do not specify a \ttt{p} tag for your module, the parent module will
@@ -240,7 +240,7 @@ A matrix layout for a module vector:
   \end{center}
 \end{figure}
 
-\subsubsection{Wireless range}
+\subsubsection{Wireless Range}
 In wireless simulations it is very useful to show some kind of range
 around your module. This can be an interference range, transmission range
 etc. The following example will place the module at a given position,
@@ -261,7 +261,7 @@ submodules:
   \end{center}
 \end{figure}
 
-\subsubsection{Additional decorations}
+\subsubsection{Additional Decorations}
 Sometimes you want to annotate your modules with additional information
 to make your model more transparent. One special case is when you want to
 show the length of a queue (\cclass{cQueue}) embedded somewhere in a module.
@@ -294,17 +294,24 @@ them module with the mouse.
 \end{center}
 
 \begin{note}
-  Generally it makes no sense to assign static texts in the NED file. Usually the
-  \ttt{t} and \ttt{tt} tags are used at runtime with the \ffunc{setDisplayString()}
-  method.
+  The \ttt{t} and \ttt{tt} tags, when set at runtime, can be used to display
+  various information about the module's state. The \ffunc{setTagArg()} method
+  of \cclass{cDisplayString} can be used to update the text:
+
+  \begin{cpp}
+char buf[64];
+sprintf(buf, "sent: %d, rcvd: %d", numPkSent, numPkReceived);
+getDisplayString().setTagArg("t", 0, buf);
+  \end{cpp}
+
 \end{note}
 
-To see detailed descripton of the display string tags check
-Appendix \ref{cha:display-string-tags} about display string tags.
+For a detailed descripton of the display string tags, check
+Appendix \ref{cha:display-string-tags}.
 
-\subsection{Display string tags used in module background context}
+\subsection{Display String Tags Used in Module Background Context}
 
-The following tags describe what a module looks like if opened in
+The following tags describe what a module looks like when opened in
 Tkenv. They mostly deal with the module background.
 
 \begin{itemize}
@@ -317,14 +324,16 @@ Tkenv. They mostly deal with the module background.
   \item \ttt{bgp} -- background coordinate offset
 \end{itemize}
 
-In some cases it is required that the module's physical position should be modeled
-also in your model. In this case you would set the submodule display strings with
-the \ffunc{setDisplayString()} method at run time, but it would be also nice to
-customize the area in what the modules are moving. It is possible to manipulate
-what a module's background looks like or whether we can use measurement units instead
-of pixels to set the position of the modules. The following example demonstrates the use
-of module background tags. The coordinates are given in km (SI unit).
-The \ttt{bgs=$pixelsperunit$,$unit$} specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
+The \ttt{bgs} tag makes it possible to use a physical unit of measurement,
+(e.g. kilometers) for coordinates. \ttt{bgs} arguments include a pixel-per-unit
+factor (for mapping coordinates to the screen), and a unit name. When \ttt{bgs}
+is present, all coordinates (including submodule coordinates) are interpreted
+in the given unit of measurement. When combined with the \ttt{bgi} (background
+image) and \ttt{bgg} (grid) tags, it is possible to display maps.
+
+The following example demonstrates the use the of module background tags.
+The coordinates are given in km (SI unit). The \ttt{bgs=$pixelsperunit$,$unit$}
+specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
 The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a
 background and stretched to fill the module background.
 A light grey grid is drawn with a 1000km distance between major ticks,
@@ -348,22 +357,22 @@ network EuropePlayground
 After specifying the above \ttt{bgs} tag, all your submodule coordinates will be treated as if
 they were specified in km.
 
-To see detailed descripton of the display string tags check
-Appendix \ref{cha:display-string-tags} about display string tags.
+For a detailed descripton of the display string tags, check
+Appendix \ref{cha:display-string-tags}.
 
-\subsection{Connection display strings}
+\subsection{Connection Display Strings}
 
 Connections may also have display strings. Connections inherit the
-display string property of their channel in the same way submodules inherit
-their display string from their types. If no channel is specified for a
-connection, \cclass{IdealChannel} will be used implicitly by the simulation kernel.
+display string property from their channel types, in the same way as
+submodules inherit theirs from module types. The default display
+strings are empty.
 
 Connections support the following tags:
 \begin{itemize}
-  \item{\ttt{ls} -- line shape, and colors}
+  \item{\ttt{ls} -- line style and color}
   \item{\ttt{t} -- text}
   \item{\ttt{tt} -- tooltip}
-  \item{\ttt{m} -- used for hinting Tkenv how the connections should route to/from the module}
+  \item{\ttt{m} -- orientation and positioning}
 \end{itemize}
 
 Example of a thick, red connection:
@@ -376,13 +385,14 @@ source1.out --> { @display("ls=red,3"); } --> queue1.in++;
 \end{center}
 
 \begin{note}
-If you want to hide a connection, specify width=0 for the connection. i.e. use \ttt{ls=,0}.
+If you want to hide a connection, specify zero line thickness in the display
+string (\ttt{"ls=,0"}).
 \end{note}
 
-To see detailed descripton of these tags check
-Appendix \ref{cha:display-string-tags} about display string tags.
+For a detailed descripton of the display string tags, check
+Appendix \ref{cha:display-string-tags}.
 
-\subsection{Message display strings}
+\subsection{Message Display Strings}
 
 Message display string affects how messages are shown during animation.
 By default, they are displayed as a small filled circle, in one of
@@ -391,7 +401,8 @@ and with the message class and/or name displayed under it
 The latter is configurable in the Tkenv Options dialog, and message kind
 dependent coloring can also be turned off there.
 
-\subsubsection{Specifying message display strings}
+\subsubsection{Specifying Message Display Strings}
+
 Message objects do not store a display string by default, but you can redefine
 the \cclass{cMessage}'s \ffunc{getDisplayString()} method and make it return
 one.
@@ -416,7 +427,7 @@ message Job
 ...
 \end{msg}
 
-\subsubsection{Message display string tags}
+\subsubsection{Message Display String Tags}
 
 The following tags can be used in message display strings:
 \begin{itemize}
@@ -446,7 +457,7 @@ Their border color will depend on the \ttt{messageKind} property of the message.
 %FIXME more examples, WITH EXPLANATIONS
 
 
-\section{Parameter substitution}
+\section{Parameter Substitution}
 
 Parameters of the module or channel containing the
 display string can be substituted into the display string
@@ -469,7 +480,7 @@ simple MobileNode
 \section{Colors}
 \label{sec:ch-graphics:colors}
 
-\subsection{Color names}
+\subsection{Color Names}
 
 Any valid Tk color specification is accepted: English color names
 (blue, lightgrey, wheat) or \textit{\#rgb}, \textit{\#rrggbb} format
@@ -486,7 +497,7 @@ In message display strings, \ttt{kind} can also be used as a special color name.
 It will map to a color depending on the message kind.
 (See the \ffunc{getKind()} method of \cclass{cMessage}.)
 
-\subsection{Icon colorization}
+\subsection{Icon Colorization}
 
 The \ttt{"i="} display string tag allows for colorization of icons.
 It accepts a target color and a percentage as the degree of colorization.
@@ -506,10 +517,10 @@ Examples:
 Colorization works with both submodule and message icons.
 
 
-\section{The icons}
+\section{The Icons}
 \label{sec:ch-graphics:icon-library}
 
-\subsection{The image path}
+\subsection{The Image Path}
 
 In the current {\opp} version, module icons are PNG or GIF files. The icons shipped
 with {\opp} are in the \ttt{images/} subdirectory. Both the graphical NED editor
@@ -528,7 +539,7 @@ loaded.
 
 The compiled-in image path can be overridden with the \ttt{OMNETPP\_IMAGE\_PATH}
 environment variable. The way of setting environment variables is system
-specific: in Unix, if you're using the bash shell, adding a line
+specific: in Unix, if you are using the bash shell, adding a line
 
 \begin{commandline}
 export OMNETPP_IMAGE_PATH="/home/you/images;./images"
@@ -547,7 +558,7 @@ tkenv-image-path = "/home/you/model-framework/images;/home/you/extra-images"
 \end{inifile}
 
 
-\subsection{Categorized icons}
+\subsection{Categorized Icons}
 
 Since {\opp} 3.0, icons are organized into several categories, represented
 by folders. These categories include:
@@ -570,7 +581,7 @@ by naming the subdirectory (subdirectories) as well:
 For compatibility, if the display string contains a icon without
 a category (i.e. subdirectory) name, {\opp} tries it as "old/icon" as well.
 
-\subsection{Icon size}
+\subsection{Icon Size}
 
 Icons come in various sizes: normal, large, small, very small. Sizes are
 encoded into the icon name's suffix: \ttt{\_vl}, \ttt{\_l}, \ttt{\_s}, \ttt{\_vs}.
@@ -624,9 +635,9 @@ Caveats:
     display string tag.
 \end{itemize}
 
-\section{Enhancing animation}
+\section{Enhancing Animation}
 
-\subsection{Changing display strings at runtime}
+\subsection{Changing Display Strings at Runtime}
 
 Often it is useful to manipulate the display string at runtime.
 Changing colors, icon, or text may convey status change, and

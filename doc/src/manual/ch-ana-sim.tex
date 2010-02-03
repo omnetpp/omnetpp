@@ -1,101 +1,550 @@
-\chapter{Analyzing Simulation Results}
+\chapter{Result Recording and Analysis}
 \label{cha:analyzing-simulation-results}
 
+\section{Result Recording}
 
-\section{Result files}
+{\opp} provides built-in support for recording simulation results, via
+\textit{output vectors} and \textit{output scalars}. Output vectors are
+time series data, recorded from simple modules or channels. You can use
+output vectors to record end-to-end delays or round trip times of packets,
+queue lengths, queueing times, module state, link utilization, packet
+drops, etc. -- anything that is useful to get a full picture of what
+happened in the model during the simulation run.
 
-\subsection{Results}
+Output scalars are summary results, computed during the simulation and
+written out when the simulation completes. A scalar result may be an
+(integer or real) number, or may be a statistical summary comprised of
+several fields such as count, mean, standard deviation, sum, minimum,
+maximum, etc., and optionally histogram data.
 
-vector results, scalar results
+Results may be collected and recorded in two ways:
 
-unique run id
+\begin{enumerate}
+  \item Explicitly from simple modules and channels, using the C++ API
+    provided by the simulation library;
+  \item By means of configuration, using declared statistics and the
+    signal mechanism.
+\end{enumerate}
 
-attributes, e.g. experiment-measurement-replication
+The first one is the traditional way of recording results. The second way
+was introduced in {\opp} 4.1, and it is preferable because it allows you
+to record the results always in the form you need, without requiring heavy
+instrumentation or continuous tweaking of the simulation model.
 
-The format of result files is documented in detail in \ref{cha:result-file-formats}.
+\subsection{Using the C++ API}
 
-\subsection{Output vectors}
-\label{sec:ch-ana-sim:output-vectors}
+With this approach, scalar and statistics results are collected in class
+variables inside modules, then recorded in the finalization phase via
+\ffunc{recordScalar()} calls. Simple statistics may be collected in
+\ttt{double} and \ttt{long} variables. To record more details, like the
+minimum/maximum value or the standard deviation, \cclass{cStdDev} and
+\cclass{cWeightedStdDev} can be used, and for recording the distribution
+there are several histogram classes and other distribution estimation
+classes (\cclass{cDoubleHistogram}, \cclass{cLongHistogram},
+\cclass{cPSquare}, \cclass{cKSplit}, and others). Vectors are recorded
+using \cclass{cOutVector} objects. These classes are described in sections
+\ref{sec:ch-sim-lib:statistics} and \ref{sec:ch-sim-lib:result-recording}.
+Recording of individual vectors, scalars and statistics can be enabled or
+disabled via the configuration (ini file), and it is also the place to set
+up recording intervals for vectors.
 
-Output vectors are time series data: values with timestamps.
-You can use output vectors to record end-to-end delays or
-round trip times of packets, queue lengths, queueing times,
-link utilization, the number of dropped packets, etc. --
-anything that is useful to get a full picture of what happened
-in the model during the simulation run.
+The drawback of recording results directly from modules is that result
+recording is hardcoded in modules, and even simple requirement changes
+(e.g. record the average delay instead of each delay value, or vica versa)
+requires code change or an excessive amount of result collection code
+in the modules.
 
-Output vectors are recorded from simple modules, by \cclass{cOutVector} objects
-(see section \ref{sec:ch-sim-lib:coutvector}). Since output vectors usually
-record a large amount of data, in \ffilename{omnetpp.ini} you can disable vectors
-or specify a simulation time interval for recording
-(see section \ref{sec:ch-config-sim:outvectors}).
+\subsection{Using Declared Statistics and Signals}
 
-All \cclass{cOutVector} objects write to the same, common file.
+This approach utilizes NED properties (section
+\ref{sec:ch-ned-lang:properties}) and the signal mechanism (section
+\ref{sec:simple-modules:signals}) in order to de-couple the generation of
+results from their recording, thereby providing more flexibility in what to
+record and in which form.
+
+Statistics are declared in the NED files with the \ttt{@signal} property,
+and modules emit values using the signal mechanism. The simulation
+framework records data by adding result file writing listeners to modules.
+By being able to choose what listeners to add, the user can control what to
+record in the result files and what computations to apply before recording.
+The section \label{sec:ch-simple-modules:statistic-signals} explains how to
+instrument simple modules and channels for signals-based result recording.
+
+The signals approach allows for calculation of aggregate statistics (such as the
+total number of packet drops in the network) and for implementing a warm-up
+period without support from module code. It also allows you to write
+dedicated statistics collection modules for the simulation, also without
+touching existing modules.
+
+The same configuration options that were used to control result recording
+with \cclass{cOutVector} and \ffunc{recordScalar()} also work when utilizing
+the signals approach, and there are extra configuration options to make
+the additional possibilities accessible.
+
+
+\section{Configuring Result Collection}
+\label{sec:ana-sim:config-results}
+
+\subsection{Result File Names}
+
+Simulation results are recorded into \textit{output scalar files} that
+actually hold statistics results as well, and \textit{output vector
+files}. The usual file extension for scalar files is \ttt{.sca}, and
+for vector files \ttt{.vec}.
+
+Every simulation run generates a single scalar file and a vector file.
+The file names can be controlled with the \ttt{output-vector-file=}
+and \ttt{output-scalar-file=} options. These options rarely need
+to be used, because the default values are usually fine. The defaults
+are:
+
+\begin{inifile}
+output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
+output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
+\end{inifile}
+
+Here, \ttt{\$\{resultdir\}} is the value of the \ttt{result-dir=}
+configuration option which defaults to \ttt{results/}, and
+\ttt{\$\{configname\}} and \ttt{\$\{runnumber\}} are the name of
+the configuration name in the ini file (e.g. \ttt{[Config PureAloha]}),
+and the run number. Thus, the above defaults generate file names
+like \ttt{results/PureAloha-0.vec}, \ttt{results/PureAloha-1.vec},
+and so on.
+
+\begin{note}
+  In {\opp} 3.x, the default result file names were \ttt{omnetpp.vec} and
+  \ttt{omnetpp.sca}, and scalar files were always appended to, rather than
+  being overwritten as in the 4.x version. When needed, the old behavior
+  for scalar files can be turned back on by setting
+  \ttt{output-scalar-file-append=true} in the configuration.
+\end{note}
+
+\subsection{Turning Off Scalar or Vector Recording Globally}
+
+The recording of scalar and/or vector results can be turned off with
+the \ttt{scalar-recording=} and \ttt{vector-recording=} options (both
+are turned on by default). These options actually provide per-vector
+and per-scalar control, but disabling all scalars/vectors will turn off
+file creation altogether. However, any existing file with the same name
+will still be removed before the simulation starts.
+
+\begin{inifile}
+**.scalar-recording = false
+**.vector-recording = false
+\end{inifile}
+
+
+\subsection{Warm-up Period}
+\label{sec:ana-sim:warmup-period}
+
+The \ttt{warmup-period=} option specifies the length of the initial
+warm-up period. When set, results belonging to the first $x$ seconds
+of the simulation will not be recorded into output vectors, and will
+not be counted into the calculation of output scalars.
+This option is useful for steady-state simulations. The default is 0s
+(no warmup period).
+
+Example:
+
+\begin{inifile}
+warmup-period = 20s
+\end{inifile}
+
+Note that modules that compute and record scalar results manually
+(via \ffunc{recordScalar()}) will not automatically obey this setting.
+These modules need to be modified so that they take the warm-up period
+into account. The warm-up period is available via the
+\ffunc{getWarmupPeriod()} method of the \ttt{simulation} object,
+so the code that updates the corresponding state variables needs
+to be surrounded with an \textit{if} statement.
+
+Old:
+
+\begin{cpp}
+dropCount++;
+\end{cpp}
+
+New:
+
+\begin{cpp}
+if (simTime() >= simulation.getWarmupPeriod())
+    dropCount++;
+\end{cpp}
+
+
+\subsection{Configuring Scalar Results}
+\label{sec:ana-sim:scalar-results}
+
+Recording scalar results can be enabled or disabled individually, using
+patterns. The syntax of the configuration option is
+\textit{<module-full-path>.<scalar-name>.}\ttt{scalar-recording=}\textit{true/false},
+where both \textit{<module-full-path>} and \textit{<scalar-name>}
+may contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
+\textit{<scalar-name>} is the signal name, or the string passed to the
+\ffunc{recordScalar()} call. By default, the recording of all scalars is
+enabled.
+
+The following example turns off recording all scalar results, except
+end-to-end delays and those produced by TCP modules:
+
+\begin{inifile}
+**.tcp.**.scalar-recording = true
+**.endToEndDelay.scalar-recording = true
+**.scalar-recording = false
+\end{inifile}
+
+%% **.eed:histogram.scalar-recording=false    disables histogram
+
+When recording signals as scalars, one has to define how to derive the
+scalar value from the sequence of values emitted. One may be interested
+in the final value, in the count of the values, in their mean, the minimum
+or maximum value or other properties. This can be configured using the
+\textit{<module-full-path>.<scalar-name>.}\ttt{scalar-recording-mode=}
+configuration option. If \ttt{scalar-recording-mode=} is not defined
+in the configuration or it is set to \ttt{auto}, the \ttt{modeHint} key
+from the \ttt{@signal} property is used.
+
+Several scalar recording modes can be specified, separated by comma.
+Currently the following modes are supported:
+
+\begin{itemize}
+  \item\tbf{auto}: automatically select the best mode(s) for a signal. This mode
+      currently selects \ttt{histogram} mode (because it records the most
+      information), but this may change in future versions.
+  \item\tbf{count}: record the number of values emitted; values are ignored
+  \item\tbf{last}: record the last value
+  \item\tbf{sum}: record the sum of the values
+  \item\tbf{mean}: record the mean of the values
+  \item\tbf{min}: record the minimum value
+  \item\tbf{max}: record the maximum value
+  \item\tbf{timeavg}: this one makes use of timestamps as well, and computes the
+      time average, interpreting the signal as a step function (sample-hold)
+  \item\tbf{stats}: record the count, sum, mean, standard deviation, minimum
+      and maximum of the values
+  \item\tbf{histogram}: record everything \ttt{stats} records, plus a histogram
+      of the values (bins are set up automatically)
+\end{itemize}
+
+New ones cannot be defined at the moment; this feature is planned for future versions.
+
+An example:
+
+\begin{inifile}
+**.queueLength.scalar-recording-mode = timeavg,max
+\end{inifile}
+
+In the result file, the recorded scalars will be suffixed with the name
+of the operation, e.g. the mean of a \ttt{queueingTime} signal will
+be recorded as \ttt{queueingTime:mean}.
+
+%% TODO output-scalar-precision, output-vector-precision (already described somewhere else?)
+%% ", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
+
+
+\subsection{Configuring Output Vectors}
+\label{sec:ana-sim:vector-config}
+
+The size of output vector files can easily reach the magnitude of several
+hundred megabytes, but very often, only some of the recorded statistics are
+interesting to the analyst. {\opp} allows you to control which vectors you
+want to record, and to specify one or more collection intervals.
+
+Output vectors can be configured with the \ttt{vector-recording=} and
+\ttt{vector-recording-intervals=} per-object options. The syntax of the
+configuration options are
+\textit{<module-full-path>.<vector-name>.}\ttt{vector-recording=}\textit{true/false},
+and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-intervals=}\textit{<intervals>},
+where both \textit{<module-full-path>} and \textit{<vector-name>} may
+contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
+\textit{<vector-name>} is the signal name, or the name string of the
+\ffunc{cOutVector} object. By default, all output vectors are turned
+on for the whole duration the simulation.
+
+The following example only records the \ttt{queueLength} vectors and
+\ttt{endToEndDelay} in \ttt{voiceApp} modules, and turns off the rest:
+
+\begin{inifile}
+**.queueLength.vector-recording = true
+**.voiceApp.endToEndDelay.vector-recording = true
+**.vector-recording = false
+\end{inifile}
+
+For the \ttt{vector-recording-intervals=} option, one can specify
+one or more intervals in the \textit{<startTime>..<stopTime>} syntax,
+separated by comma. \textit{<startTime>} or \textit{<stopTime>} need
+to be given with measurement units, and both can be omitted to denote
+the beginning and the end of the simulation, respectively.
+
+The following example limits all vectors to three intervals, except
+\ttt{dropCount} vectors which will be recorded during the whole
+simulation run:
+
+\begin{inifile}
+**.dropCount.vector-recording-intervals = 0..
+**.vector-recording-intervals = 0..1000s, 5000s..6000s, 9000s..
+\end{inifile}
+
+A third per-vector configuration option is \ttt{vector-record-eventnumbers=},
+which specifies whether to record event numbers for an output vector.
+(Simulation time and value are always recorded. Event numbers are needed
+by the Sequence Chart Tool, for example.) Event number recording is enabled
+by default; it may be turned off to spare disk space.
+
+\begin{inifile}
+**.vector-record-eventnumbers = false
+\end{inifile}
+
+If the (default) \cclass{cIndexedFileOutputVectorManager} class is used to
+record output vectors, there are two more options to fine-tune its resource
+usage. \ttt{output-vectors-memory-limit} specifies the total memory that
+can be used for buffering output vectors. Larger values produce less
+fragmented vector files (i.e. cause vector data to be grouped into larger
+chunks), and therefore allow more efficient processing later.
+\ttt{vector-max-buffered-values} specifies the maximum number of values to
+buffer per vector, before writing out a block into the output vector file.
+The default is no per-vector limit (i.e. only the total memory limit is in
+effect.)
+
+
+\subsection{Saving Parameters as Scalars}
+
+When you are running several simulations with different parameter
+settings, you'll usually want to refer to selected
+input parameters in the result analysis as well -- for example when
+drawing a throughput (or response time) versus load (or network
+background traffic) plot. Average throughput or response time numbers
+are saved into the output scalar files, and it is useful for the input
+parameters to get saved into the same file as well.
+
+For convenience, {\opp} automatically saves the iteration variables
+into the output scalar file if they have numeric value, so they can
+be referred to during result analysis.
+
+\begin{warning}
+    If an iteration variable has non-numeric value, it will not be recorded
+    automatically and cannot be used during analysis. This can happen
+    unintentionally if you specify units inside an iteration variable list:
+\begin{inifile}
+**.param = exponential( ${mean=0.2s, 0.4s, 0.6s} )  #WRONG!
+**.param = exponential( ${mean=0.2, 0.4, 0.6}s )    #OK
+\end{inifile}
+\end{warning}
+
+Module parameters can also be saved, but this has to be
+requested by the user, by configuring \ttt{save-as-scalar=true} for the
+parameters in question. The configuration key is a pattern that
+identifies the parameter, plus \ttt{.save-as-scalar}. An example:
+
+\begin{inifile}
+**.host[*].networkLoad.save-as-scalar = true
+\end{inifile}
+
+This looks simple enough. However, there are three pitfalls:
+non-numeric parameters, too many matching parameters, and
+random-valued volatile parameters.
+
+First, the scalar file only holds numeric results, so non-numeric
+parameters cannot be recorded -- that will result in a runtime
+error.
+
+Second, if wildcards in the pattern match too many parameters, that
+might unnecessarily increase the size of the scalar file. For example,
+if the \ttt{host[]} module vector size is 1000 in the example below, then the
+same value (3) will be saved 1000 times into the scalar file, once for
+each host.
+
+\begin{inifile}
+**.host[*].startTime = 3
+**.host[*].startTime.save-as-scalar = true  # saves "3" once for each host
+\end{inifile}
+
+Third, recording a random-valued volatile parameter will just save a
+random number from that distribution. This is rarely what you need, and
+the simulation kernel will also issue a warning if this happens.
+
+\begin{inifile}
+**.interarrivalTime = exponential(1s)
+**.interarrivalTime.save-as-scalar = true  # wrong: saves random values!
+\end{inifile}
+
+These pitfalls are quite common in practice, so it is usually better
+to rely on the iteration variables in the result analysis.
+That is, one can rewrite the above example as
+
+\begin{inifile}
+**.interarrivalTime = exponential( ${mean=1}s )
+\end{inifile}
+
+and refer to the \ttt{\$mean} iteration variable instead of the
+interarrivalTime module parameter(s) during result analysis.
+\ttt{save-as-scalar=true} is not needed, because iteration variables are
+automatically saved into the result files.
+
+
+\subsection{Recording Precision}
+\label{sec:outputfile-precision}
+
+Output scalar and output vector files are text files, and floating point
+values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
+\ttt{"\%g"} format. The number of significant digits can be configured
+using the \ttt{output-scalar-precision=} and \ttt{output-vector-precision=}
+configuration options.
+
+The default precision is 12 digits. The following has to be considered when
+setting a different value:
+
+IEEE-754 doubles are 64-bit numbers. The mantissa is 52 bits, which is
+roughly equivalent to 16 decimal places (52*log(2)/log(10)). However, due
+to rounding errors, usually only 12..14 digits are correct, and the rest is
+pretty much random garbage which should be ignored. However, when you
+convert the decimal representation back into a \ttt{double} for result
+processing, an additional small error will occur, because 0.1, 0.01, etc.
+cannot be accurately represented in binary. This conversion error is
+usually smaller than the one that the \ttt{double} variable already had
+before recording into the file. However, if it is important, you can
+eliminate this error by setting the recording precision to 16 digits or
+more (but again, be aware that the last digits are garbage). The practical
+upper limit is 17 digits, setting it higher doesn't make any difference in
+\ttt{fprintf()}'s output.
+
+% To see finite machine precision and rounding errors, try this code:
+%
+% \ begin{verbatim}
+% double x = 0.1;
+% while (true)  {
+%    printf("%.15g\n", x);
+%    x = x + 0.1;
+% }
+% \ end{verbatim}
+%
+% The following, more advanced version will also print the error of
+% converting back from text to double:
+%
+% \ begin{verbatim}
+% double x = 0.1;
+% while (true) {
+%     char line[120];
+%     sprintf(line, "%.15g \t%.14g \t%.13g \t%.12g", x, x, x, x);
+%     double x15, x14, x13, x12;
+%     sscanf(line, "%lg%lg%lg%lg", &x15, &x14, &x13, &x12);
+%     printf("%s \t| %g  %g  %g  %g\n", line, (x15-x), (x14-x), (x13-x), (x12-x));
+%     x = x + 0.1;
+% }
+% \ end{verbatim}
+%    s
+% For the complexity of the issue, see "What Every Computer Scientist
+% Should Know About Floating-Point Arithmetic" by David Goldberg.
+
+Errors coming from converting to/from decimal representation can be
+eliminated by choosing an output vector/output scalar manager class
+which stores \ttt{double}s in their native binary form.
+The appropriate configuration options are \ttt{outputvectormanager-class=}
+and \ttt{outputvectormanager-class=}. For example,
+\cclass{cMySQLOutputScalarManager} and \cclass{cMySQLOutputScalarManager}
+provided in \ttt{samples/database} fulfill this requirement.
+
+However, before worrying too much about rounding and conversion errors,
+think what is the \textit{real} accuracy of your results.
+Some things to consider:
+
+\begin{itemize}
+  \item{in real life, it is very hard to measure quantities (weight, distance,
+     even time) with more than a few digits of precision. What precision
+     are your input data? For example, if you approximate inter-arrival
+     time as \textit{exponential(0.153)} when the mean is really
+     \textit{0.152601...} and the distribution is not even exactly exponential,
+     you are already starting out with a bigger error than rounding can cause.}
+
+  \item{the simulation model is itself an approximation of real life. How much
+     error do the (known and unknown) simplifications cause in the results?}
+\end{itemize}
+
+%% TODO also hint that results can be directed to database etc! by changing the implementation that cEnvir methods delegate to. (list cEnvir methods!)
+
+
+\section{Overview of the Result File Formats}
+
+Both output vector and scalar files are textual, line-oriented files.
+The advantage of a text-based format is that it is very accessible
+with a wide range of tools and languages. The format of result files is
+documented in detail in Appendix \ref{cha:result-file-formats}.
+
+%XXX move away:
+%  \footnote{Recording is actually configurable, and one can record
+%  results into a database as well, by writing appropriate result
+%  manager classes and activating them in the configuration.}
+
+By default, each file contains data from one run only.
+
+Result files start with a header that contain several attributes of the
+simulation run: a reasonably globally unique run ID, the network NED type
+name, the experiment-measurement-replication labels, the values of
+iteration variables and the repetition counter, the date and time, the host
+name, the process id of the simulation, random number seeds, configuration
+options, and so on. These data can be useful during result processing, and
+increase the reproducibility of the results.
+
+%%FIXME example header!
+
+Vectors are recorded into a separate file for practical reasons: vector
+data usually consume several magnitudes more disk space than others.
+
+\subsection{Output Vector Files}
+
+All output vectors from a simulation run are recorded into the same file.
 The following sections describe the format of the file, and
 how to process it.
 
-
-\subsection{Format of output vector files}
-
-An output vector file\index{output!vector file} contains several
-series of data produced during simulation. The file is textual, and it
-looks like this:
+An example file fragment (without header):
 
 \begin{filelisting}
-# net-1.vec
-vector 1   "subnet[4].term[12]"  "response time"  TV
-1  12.895  2355.66666666
+...
+vector 1   net.host[12]  responseTime  TV
+1  12.895  2355.66
 1  14.126  4577.66664666
-vector 2   "subnet[4].srvr"  "queue length"  TV
-2  16.960  2.00000000000.63663666
+vector 2   net.router[9].ppp[0] queueLength  TV
+2  16.960  2
 1  23.086  2355.66666666
-2  24.026  8.00000000000.44766536
-\end{filelisting}
-
-There two types of lines: vector declaration lines (beginning with
-the word \ttt{vector}), and data lines.
-A \textit{vector declaration line} introduces a new output vector, and
-its columns are: vector Id, module of creation, name of \cclass{cOutVector}
-object, and multiplicity (usually 1). Actual data recorded in this
-vector are on \textit{data lines} which begin with the vector Id.
-Further columns on data lines are the simulation time and the recorded value.
-
-vector data clustering for efficiency
-
-indexed access
-
-how to configure the IndexVectorFileManager (?)
-
-
-\subsection{Scalar results}
-\label{sec:ch-ana-sim:output-scalars}
-
-Scalar results are recorded with \ffunc{recordScalar()} calls,
-usually from the \ttt{finish()} methods of modules.
-
-
-\subsubsection{Format of scalar files}
-
-The corresponding output scalar file (by default, \ffilename{omnetpp.sca})
-will look like this:
-
-\begin{filelisting}
-scalar "lan.hostA.mac" "frames sent"                99
-scalar "lan.hostA.mac" "frames rcvd"                3088
-scalar "lan.hostA.mac" "bytes sent"                 64869
-scalar "lan.hostA.mac" "bytes rcvd"                 3529448
+2  24.026  8
 ...
 \end{filelisting}
 
-Every \ffunc{record()} call generates one "scalar" line in the file.
-(If you record statistics objects (\cclass{cStatictic} subclasses
-such as \cclass{cStdDev}) via their \ffunc{record()} methods,
-they'll generate several lines: mean, standard deviation, etc.)
-In addition, several simulation runs can record their results into a single file --
-this facilitates comparing them, creating x-y plots
-(\textit{offered load vs throughput}-type diagrams), etc.
+There two types of lines: vector declaration lines (beginning with the word
+\ttt{vector}), and data lines. A \textit{vector declaration line}
+introduces a new output vector, and its columns are: vector Id, module of
+creation, name of \cclass{cOutVector} object, and multiplicity (usually 1).
+Actual data recorded in this vector are on \textit{data lines} which begin
+with the vector Id. Further columns on data lines are the simulation time
+and the recorded value.
+
+% FIXME plus attribute lines!!! also event numbers
+
+Since {\opp} 4.0, vector data are recorded into the file clustered by
+output vectors, which, combined with index files, allows much more
+efficient processing. Using the index file, tools can extract particular
+vectors by reading only those parts of the file where the desired data are
+located, and do not need to scan through the whole file linearly.
 
 
+\subsection{Scalar Result Files}
+
+Fragment of an output scalar file (without header):
+
+\begin{filelisting}
+...
+scalar "lan.hostA.mac" "frames sent"  99
+scalar "lan.hostA.mac" "frames rcvd"  3088
+scalar "lan.hostA.mac" "bytes sent"   64869
+scalar "lan.hostA.mac" "bytes rcvd"   3529448
+...
+\end{filelisting}
+
+Every scalar generates one \ttt{scalar} line in the file.
+
+Statistics objects (\cclass{cStatictic} subclasses such as \cclass{cStdDev})
+generate several lines: mean, standard deviation, etc.
+
+%% FIXME TODO attributes, statistics example, etc
 
 \section{The Analysis Tool in the Simulation IDE}
 
@@ -131,33 +580,37 @@ When \fprog{scavetool} is invoked without arguments, it prints usage information
 scavetool <command> [options] <file>...
 \end{commandline}
 
-\subsection{Filter command}
+\subsection{The \textit{filter} Command}
 
-The result files can be filtered and processed by this command and the
-result can be written into files as vector files, CSV files,
-Matlab or Octave files.
+The \textit{filter} command allows you to filter and/or convert result files.
 
-The filter can be specified by the {\itshape -p <filter>} option.
-The filter is one or more {\itshape <fieldname>(<pattern>)} expression
-connected with AND, OR and NOT operators. The possible field names are:
+A filter can be specified with the \textit{-p <filter>} option.
+The filter is one or more \textit{<pattern>} or \textit{<fieldname>(<pattern>)}
+expressions connected with \ttt{AND}, \ttt{OR} and \ttt{NOT} operators;
+a naked \textit{<pattern>} is understood as \ttt{name(}\textit{<pattern>}\ttt{)}.
+For example, the filter \ttt{"module(**.sink) AND name(delay)"} (or just
+\ttt{"module(**.sink) AND delay"}) selects the \ttt{delay} vectors from all
+\ttt{sink} modules.
+
+The possible field names are:
 
 \begin{itemize}
     \item\tbf{file}: full path of the result file
     \item\tbf{run}: run identifier
     \item\tbf{module}: module name
     \item\tbf{name}: vector name
-    \item\tbf{attr:<runAttribute>}: value of an attribute of the run
-                                   (e.g. experiment)
+    \item\tbf{attr:<runAttribute>}: value of an attribute of the run,
+        e.g. \ttt{experiment}, \ttt{datetime} or \ttt{network}
     \item\tbf{param:<moduleParameter>}: value of the parameter in the run
 \end{itemize}
 
 Processing operations can be applied to vectors by the
-{\itshape -a <function>(<parameterlist>)} option. You can list
-the available functions and their parameters by the {\itshape info} command.
+\textit{-a <function>(<parameterlist>)} option. You can list
+the available functions and their parameters with the \textit{info} command.
 
-The name and format of the output file can be given by the
-{\itshape -O <file>} and {\itshape -F <formatname>} options, where
-the formatname is one of:
+The name and format of the output file can be specified with the
+\textit{-O <file>} and \textit{-F <formatname>} options, where
+the format name is one of the following:
 
 \begin{itemize}
     \item\tbf{vec}: vector file (default)
@@ -166,13 +619,16 @@ the formatname is one of:
     \item\tbf{matlab}: Matlab script file
 \end{itemize}
 
-Examples:
+The following example writes the window-averaged queuing times stored
+in \ttt{in.vec} into \ttt{out.vec}:
 
 \begin{commandline}
 scavetool filter -p "queuing time" -a winavg(10) -O out.vec in.vec
 \end{commandline}
 
-Writes the window averaged queuing times stored in in.vec into out.vec.
+The next example writes the queueing and transmission times of \ttt{sink}
+modules into CSV files. It generates a separate file for each vector,
+named \ttt{out-1.csv}, \ttt{out-2.csv}, etc.
 
 \begin{commandline}
 scavetool filter -p "module(**.sink) AND
@@ -180,10 +636,7 @@ scavetool filter -p "module(**.sink) AND
                  -O out.csv -F csv in.vec
 \end{commandline}
 
-Writes the queing and transmission times of sink modules into CSV files.
-It generates a separate files for each vector named
-\textit{out-1.csv}, \textit{out-2.csv}...
-The generated file contains a header and two columns:
+The generated CSV files contain a header and two columns:
 
 \begin{filelisting}
 time,"Queue.sink.queueing time"
@@ -195,31 +648,39 @@ time,"Queue.sink.queueing time"
 \end{filelisting}
 
 
-\subsection{Index command}
+\subsection{The \textit{index} Command}
 
 If the index file was deleted or the vector file was modified, you need to
-rebuild the index file before running the filter command.
+rebuild the index file before running the filter command:
+
+\begin{commandline}
+scavetool index Aloha-1.vec
+\end{commandline}
 
 Normally the vector data is written in blocks into the vector file.
-However if the vector file was generated by an older version of the
-\cclass{cOutputVectorManager} it might not be so. In this case you have
+However, if the vector file was generated by an older version of the
+\cclass{cOutputVectorManager}, it might not be so. In this case you have
 to specify the -r option to rearrange the records of the vector file,
 otherwise the index file would be too big and the indexing inefficient.
 
-\subsection{Summary command}
+\subsection{The \textit{summary} Command}
 
-The summary command reports the list of statistics names, module names,
+The \textit{summary} command reports the list of statistics names, module names,
 run ids, configuration names in the given files to the standard output.
 
+\begin{commandline}
+scavetool summary Aloha-1.vec
+\end{commandline}
 
 
-\section{Alternative statistical analysis and plotting tools}
+\section{Alternative Statistical Analysis and Plotting Tools}
+\label{sec:ana-sim:alt-tools}
 
 There are several programs and packages that can also be used to analyse
 result files, and create various plots and charts from them.
 
 
-\subsection{Spreadsheet programs}
+\subsection{Spreadsheet Programs}
 \index{Spreadsheets}
 
 One straightforward solution is to use spreadsheets such as OpenOffice

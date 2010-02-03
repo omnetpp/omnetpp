@@ -35,6 +35,8 @@
 #include "ccomponenttype.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
+#include "chistogram.h"
+#include "stringtokenizer.h"
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
 #include "cconfigoption.h"
@@ -44,6 +46,7 @@
 #include "stringutil.h"
 #include "enumstr.h"
 #include "simtime.h"
+#include "resultrecorders.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -106,6 +109,7 @@ Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, NULL, "The nam
 Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
 Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
 Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
+Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", NULL, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.scalar-recording-mode). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To calculate the initial fingerprint, enter any dummy string (such as \"none\"), and run the simulation.");
 Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
@@ -114,6 +118,12 @@ Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
+Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING_MODE, "scalar-recording-mode", CFG_STRING, "auto", "Defines how to calculate scalar results from the given signal. Example values: count, last, sum, mean, min, max, timeavg, stats, histogram, auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
+
+// the following options are declared in other files
+extern cConfigOption *CFGID_SCALAR_RECORDING;
+extern cConfigOption *CFGID_VECTOR_RECORDING;
+
 
 #define STRINGIZE0(x) #x
 #define STRINGIZE(x) STRINGIZE0(x)
@@ -755,6 +765,112 @@ void EnvirBase::endRun()
 
 //-------------------------------------------------------------
 
+void EnvirBase::configure(cComponent *component)
+{
+    addResultRecorders(component);
+}
+
+void EnvirBase::addResultRecorders(cComponent *component)
+{
+    std::vector<const char *> signalNames = component->getProperties()->getIndicesFor("signal");
+    std::string componentFullPath;
+    for (int i = 0; i < (int)signalNames.size(); i++)
+    {
+        const char *signalName = signalNames[i];
+        if (componentFullPath.empty())
+            componentFullPath = component->getFullPath();
+        std::string signalFullPath = componentFullPath + "." + signalName;
+
+        // add scalar result recorders
+        if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_SCALAR_RECORDING))
+        {
+            // add listener to record as output scalar
+            std::string modeList = ev.getConfig()->getAsString(signalFullPath.c_str(), CFGID_SCALAR_RECORDING_MODE, "");
+            if (modeList == "auto")
+            {
+                // obey mode-hint in @signal; example: @signal[queueLen](modeHint=timeavg,max);
+                cProperty *prop = component->getProperties()->get("signal", signalName);
+                ASSERT(prop!=NULL);
+                int numModeHints = prop->getNumValues("modeHint");
+                if (numModeHints == 0)
+                {
+                    cIListener *listener = createScalarResultRecorder("auto");
+                    ASSERT(listener != NULL);
+                    component->subscribe(signalName, listener);
+                }
+                else
+                {
+                    for (int j = 0; j < numModeHints; j++)
+                    {
+                        const char *modeHint = prop->getValue("modeHint",j);
+                        cIListener *listener = createScalarResultRecorder(modeHint);
+                        if (!listener)
+                            throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the @signal[%s] property: \"%s\"", signalName, modeHint);
+                        component->subscribe(signalName, listener);
+                    }
+                }
+            }
+            else if (!strchr(modeList.c_str(), ','))
+            {
+                cIListener *listener = createScalarResultRecorder(modeList.c_str());
+                if (!listener)
+                    throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the configuration for signal %s: \"%s\"", signalName, modeList.c_str());
+                component->subscribe(signalName, listener);
+            }
+            else
+            {
+                StringTokenizer tokenizer(modeList.c_str(), ",");
+                while (tokenizer.hasMoreTokens())
+                {
+                    std::string mode = opp_trim(tokenizer.nextToken());
+                    cIListener *listener = createScalarResultRecorder(mode.c_str());
+                    if (!listener)
+                        throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the configuration for signal %s: \"%s\"", signalName, mode.c_str());
+                    component->subscribe(signalName, listener);
+                }
+            }
+        }
+
+        // add vector result recorders
+        if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
+        {
+            // add listener to record as output vector
+            cIListener *listener = new VectorRecorder();
+            component->subscribe(signalName, listener);
+        }
+    }
+}
+
+cIListener *EnvirBase::createScalarResultRecorder(const char *mode)
+{
+    if (!strcmp(mode, "auto"))
+        mode = "histogram";
+
+    // this should be extensible instead of hardcoded "if"-ladder
+    cIListener *listener;
+    if (!strcmp(mode, "histogram"))
+        listener = new StatisticsRecorder(new cDoubleHistogram()); // or cLongHistogram, we could decide from @signal property; or use an adaptive histogram that automatically chooses the best mode
+    else if (!strcmp(mode, "count"))
+        listener = new CountRecorder();
+    else if (!strcmp(mode, "last"))
+        listener = new LastValueRecorder();
+    else if (!strcmp(mode, "sum"))
+        listener = new SumRecorder();
+    else if (!strcmp(mode, "mean"))
+        listener = new MeanRecorder();
+    else if (!strcmp(mode, "min"))
+        listener = new MinRecorder();
+    else if (!strcmp(mode, "max"))
+        listener = new MaxRecorder();
+    else if (!strcmp(mode, "timeavg"))
+        listener = new TimeAverageRecorder();
+    else if (!strcmp(mode, "stats"))
+        listener = new StatisticsRecorder(new cStdDev());
+    else
+        listener = NULL;
+    return listener;
+}
+
 void EnvirBase::readParameter(cPar *par)
 {
     ASSERT(!par->isSet());  // must be unset at this point
@@ -1112,11 +1228,14 @@ void EnvirBase::readPerRunOptions()
     opt_warnings = cfg->getAsBool(CFGID_WARNINGS);
     opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
+    opt_warmupperiod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     opt_fingerprint = cfg->getAsString(CFGID_FINGERPRINT);
     opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
     opt_record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
+
+    simulation.setWarmupPeriod(opt_warmupperiod);
 
     // install hasher object
     if (!opt_fingerprint.empty())

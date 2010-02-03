@@ -17,7 +17,11 @@ simple Allocate
 {
     parameters:
         @group(Queueing);
+        @signal[dropped](title="drop event";modeHint=count;interpolationMode=none);
+        @signal[queueLength](title="queue length";modeHint=timeavg,max;interpolationMode=sample-hold);
+        @signal[queueingTime](title="queueing time at dequeue";modeHint=mean,max;unit=s;interpolationMode=none);
         @display("i=block/arrival;q=queue");
+        
         int capacity = default(-1);    // negative capacity means unlimited queue
         bool fifo = default(true);     // whether the module works as a queue (fifo=true) or a stack (fifo=false)
 

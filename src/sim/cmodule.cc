@@ -232,7 +232,7 @@ std::string cModule::getFullPath() const
 {
     if (lastmodulefullpathmod != this)
     {
-        // stop at the toplevel getModule(don't go up to cSimulation);
+        // stop at the toplevel module (don't go up to cSimulation);
         // plus, cache the result, expecting more hits from this module
         if (getParentModule()==NULL)
             lastmodulefullpath = getFullName();
