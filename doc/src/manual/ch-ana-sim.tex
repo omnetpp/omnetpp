@@ -248,10 +248,10 @@ interesting to the analyst. {\opp} allows you to control which vectors you
 want to record, and to specify one or more collection intervals.
 
 Output vectors can be configured with the \ttt{vector-recording=} and
-\ttt{vector-recording-interval=} per-object options. The syntax of the
+\ttt{vector-recording-intervals=} per-object options. The syntax of the
 configuration options are
 \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording=}\textit{true/false},
-and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-interval=}\textit{<intervals>},
+and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-intervals=}\textit{<intervals>},
 where both \textit{<module-full-path>} and \textit{<vector-name>} may
 contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
 \textit{<vector-name>} is the signal name, or the name string of the
@@ -267,7 +267,7 @@ The following example only records the \ttt{queueLength} vectors and
 **.vector-recording = false
 \end{inifile}
 
-For the \ttt{vector-recording-interval=} option, one can specify
+For the \ttt{vector-recording-intervals=} option, one can specify
 one or more intervals in the \textit{<startTime>..<stopTime>} syntax,
 separated by comma. \textit{<startTime>} or \textit{<stopTime>} need
 to be given with measurement units, and both can be omitted to denote
@@ -278,8 +278,8 @@ The following example limits all vectors to three intervals, except
 simulation run:
 
 \begin{inifile}
-**.dropCount.vector-recording-interval = 0..
-**.vector-recording-interval = 0..1000s, 5000s..6000s, 9000s..
+**.dropCount.vector-recording-intervals = 0..
+**.vector-recording-intervals = 0..1000s, 5000s..6000s, 9000s..
 \end{inifile}
 
 A third per-vector configuration option is \ttt{vector-record-eventnumbers=},
