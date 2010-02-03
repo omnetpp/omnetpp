@@ -4195,8 +4195,8 @@ class cISignalValue {
 };
 \end{cpp}
 
-\ffunc{getSignalTime()} is pure virtual (it must return some value),
-but \ffunc{getSignalValue()} has a default implementation that
+\ffunc{getSignalValue()} is pure virtual (it must return some value),
+but \ffunc{getSignalTime()} has a default implementation that
 returns the current simulation time. Note the \ttt{signalID} argument
 that allow the same class to serve multiple signals (i.e. to return
 different values for each).
@@ -4293,9 +4293,9 @@ Currently the following values are supported  for \ttt{modeHint}:
   \item[max]: record the maximum value
   \item[timeavg]: record the time average, interpreting the signal as a
       step function (sample-hold)
-  \item[stddev]: record the count, sum, mean, standard deviation, minimum
+  \item[stats]: record the count, sum, mean, standard deviation, minimum
       and maximum of the values
-  \item[histogram]: record everything \ttt{stddev} records, plus a histogram
+  \item[histogram]: record everything \ttt{stats} records, plus a histogram
       of the values (bins are set up automatically)
 \end{description}
 
