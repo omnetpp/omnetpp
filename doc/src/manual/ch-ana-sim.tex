@@ -1,7 +1,6 @@
 \chapter{Result Recording and Analysis}
 \label{cha:analyzing-simulation-results}
 
-
 \section{Result Recording}
 
 {\opp} provides built-in support for recording simulation results, via
@@ -84,6 +83,7 @@ the additional possibilities accessible.
 
 
 \section{Configuring Result Collection}
+\label{sec:ana-sim:config-results}
 
 \subsection{Result File Names}
 
@@ -135,6 +135,7 @@ will still be removed before the simulation starts.
 
 
 \subsection{Warm-up Period}
+\label{sec:ana-sim:warmup-period}
 
 The \ttt{warmup-period=} option specifies the length of the initial
 warm-up period. When set, results belonging to the first $x$ seconds
@@ -172,6 +173,7 @@ if (simTime() >= simulation.getWarmupPeriod())
 
 
 \subsection{Configuring Scalar Results}
+\label{sec:ana-sim:scalar-results}
 
 Recording scalar results can be enabled or disabled individually, using
 patterns. The syntax of the configuration option is
@@ -210,7 +212,7 @@ Currently the following modes are supported:
       currently selects \ttt{histogram} mode (because it records the most
       information), but this may change in future versions.
   \item\tbf{count}: record the number of values emitted; values are ignored
-  \item\tbf{lastval}: record the last value
+  \item\tbf{last}: record the last value
   \item\tbf{sum}: record the sum of the values
   \item\tbf{mean}: record the mean of the values
   \item\tbf{min}: record the minimum value
@@ -240,7 +242,7 @@ be recorded as \ttt{queueingTime:mean}.
 
 
 \subsection{Configuring Output Vectors}
-\label{sec:ch-config-sim:outvectors}
+\label{sec:ana-sim:vector-config}
 
 The size of output vector files can easily reach the magnitude of several
 hundred megabytes, but very often, only some of the recorded statistics are
@@ -672,6 +674,7 @@ scavetool summary Aloha-1.vec
 
 
 \section{Alternative Statistical Analysis and Plotting Tools}
+\label{sec:ana-sim:alt-tools}
 
 There are several programs and packages that can also be used to analyse
 result files, and create various plots and charts from them.
