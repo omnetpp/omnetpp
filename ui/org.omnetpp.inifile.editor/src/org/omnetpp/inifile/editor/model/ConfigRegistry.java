@@ -12,8 +12,8 @@ import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_CUSTOM;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_DOUBLE;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_FILENAME;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_FILENAMES;
-import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_INT;
+import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_STRING;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
  * Contains the list of supported configuration options.
  *
  * This must be kept in sync with the C++ code. Procedure to do it:
- *   1. run any simulation executable with the "-q jconfig" option,
+ *   1. run any simulation executable with the "-h jconfig" option,
  *       and copy/paste the Java code it generates into this file
  *   2. run svn diff to see the damage.
  *   3. check that the form editor covers all config options:
@@ -130,11 +130,11 @@ public class ConfigRegistry {
     }
 
     public static ConfigOption[] getEntries() {
-        return (ConfigOption[]) options.values().toArray(new ConfigOption[options.size()]);
+        return options.values().toArray(new ConfigOption[options.size()]);
     }
 
     public static ConfigOption[] getPerObjectEntries() {
-        return (ConfigOption[]) perObjectOptions.values().toArray(new ConfigOption[perObjectOptions.size()]);
+        return perObjectOptions.values().toArray(new ConfigOption[perObjectOptions.size()]);
     }
 
     private static String addConfigVariable(String name, String description) {
@@ -221,7 +221,7 @@ public class ConfigRegistry {
         "omnetpp.ini with some other implementation, e.g. database input. The " +
         "simulation program still has to bootstrap from an omnetpp.ini (which " +
         "contains the configuration-class setting). The class should implement the " +
-        "cConfiguration interface.");
+        "cConfigurationEx interface.");
     public static final ConfigOption CFGID_CONSTRAINT = addPerRunOption(
         "constraint", CFG_STRING, null,
         "For scenarios. Contains an expression that iteration variables (${} syntax) " +
@@ -294,10 +294,11 @@ public class ConfigRegistry {
         "calculate the initial fingerprint, enter any dummy string (such as \"none\"), " +
         "and run the simulation.");
     public static final ConfigOption CFGID_FNAME_APPEND_HOST = addGlobalOption(
-        "fname-append-host", CFG_BOOL, "false",
+        "fname-append-host", CFG_BOOL, null,
         "Turning it on will cause the host name and process Id to be appended to the " +
         "names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially " +
-        "useful with distributed simulation.");
+        "useful with distributed simulation. The default value is true if parallel " +
+        "simulation is enabled, false otherwise.");
     public static final ConfigOption CFGID_LOAD_LIBS = addGlobalOption(
         "load-libs", CFG_FILENAMES, null,
         "A space-separated list of dynamic libraries to be loaded on startup. The " +
@@ -478,12 +479,24 @@ public class ConfigRegistry {
         "Whether the matching output scalars should be recorded. Syntax: " +
         "<module-full-path>.<scalar-name>.scalar-recording=true/false. Example: " +
         "**.queue.packetsDropped.scalar-recording=true");
+    public static final ConfigOption CFGID_SCALAR_RECORDING_MODE = addPerObjectOption(
+        "scalar-recording-mode", CFG_STRING, "auto",
+        "Defines how to calculate scalar results from the given signal. Example " +
+        "values: count, lastval, sum, mean, min, max, timeavg, stddev, histogram, " +
+        "auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal " +
+        "property tells otherwise. More than one values are accepted, separated by " +
+        "commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
     public static final ConfigOption CFGID_SCHEDULER_CLASS = addGlobalOption(
         "scheduler-class", CFG_STRING, "cSequentialScheduler",
         "Part of the Envir plugin mechanism: selects the scheduler class. This " +
         "plugin interface allows for implementing real-time, hardware-in-the-loop, " +
         "distributed and distributed parallel simulation. The class has to implement " +
         "the cScheduler interface.");
+    public static final ConfigOption CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS = addGlobalOption(
+        "sectionbasedconfig-configreader-class", CFG_STRING, null,
+        "When configuration-class=SectionBasedConfiguration: selects the " +
+        "configuration reader C++ class, which must subclass from " +
+        "cConfigurationReader.");
     public static final ConfigOption CFGID_SEED_n_LCG32 = addPerRunOption(
         "seed-%-lcg32", CFG_INT, null,
         "When cLCG32 is selected as random number generator: seed for the kth RNG. " +
@@ -552,7 +565,8 @@ public class ConfigRegistry {
         "Selects the user interface to be started. Possible values are Cmdenv and " +
         "Tkenv. This option is normally left empty, as it is more convenient to " +
         "specify the user interface via a command-line option or the IDE's Run and " +
-        "Debug dialogs.");
+        "Debug dialogs. New user interfaces can be defined by subclassing " +
+        "cRunnableEnvir.");
     public static final ConfigOption CFGID_VECTOR_MAX_BUFFERED_VALUES = addPerObjectOption(
         "vector-max-buffered-values", CFG_INT, null,
         "For output vectors: the maximum number of values to buffer per vector, " +
@@ -571,6 +585,15 @@ public class ConfigRegistry {
         "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... " +
         "That is, both start and end of an interval are optional, and intervals are " +
         "separated by comma. Example: ..100, 200..400, 900..");
+    public static final ConfigOption CFGID_WARMUP_PERIOD = addPerRunOptionU(
+        "warmup-period", "s", null,
+        "Length of the initial warm-up period. When set, results belonging to the " +
+        "first x seconds of the simulation will not be recorded into output vectors, " +
+        "and will not be counted into output scalars (see option " +
+        "**.scalar-recording-mode). This option is useful for steady-state " +
+        "simulations. The default is 0s (no warmup period). Note that models that " +
+        "compute and record scalar results manually (via recordScalar()) will not " +
+        "automatically obey this setting.");
     public static final ConfigOption CFGID_WARNINGS = addPerRunOption(
         "warnings", CFG_BOOL, "true",
         "Enables warnings.");
