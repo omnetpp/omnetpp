@@ -86,7 +86,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TOTAL_STACK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_MAX_BUFFERED_VALUES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORD_EVENTNUMBERS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARMUP_PERIOD;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARNINGS;
@@ -254,7 +254,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group1 = createGroup(form, "Output vector recording");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
             addCheckboxFieldEditor(group1, CFGID_VECTOR_RECORDING, "Enable recording");
-            addTextFieldEditor(group1, CFGID_VECTOR_RECORDING_INTERVAL, "Recording interval");
+            addTextFieldEditor(group1, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals");
             addSpacer(form);
             Group group2 = createGroup(form, "Output scalar recording");
 			addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");

@@ -4195,8 +4195,8 @@ class cISignalValue {
 };
 \end{cpp}
 
-\ffunc{getSignalTime()} is pure virtual (it must return some value),
-but \ffunc{getSignalValue()} has a default implementation that
+\ffunc{getSignalValue()} is pure virtual (it must return some value),
+but \ffunc{getSignalTime()} has a default implementation that
 returns the current simulation time. Note the \ttt{signalID} argument
 that allow the same class to serve multiple signals (i.e. to return
 different values for each).
@@ -4279,27 +4279,10 @@ The following property keys (result attributes) are supported:
 It is allowed to use other keys/attributes, but they won't be interpreted
 by the {\opp} runtime or tools.
 
-Currently the following values are supported  for \ttt{modeHint}:
+Possible values for \ttt{modeHint} include \ttt{count}, \ttt{last},
+\ttt{sum}, \ttt{mean}, \ttt{min}, \ttt{max}, \ttt{timeavg}, \ttt{stats},
+\ttt{histogram}; the complete list is \ref{sec:ana-sim:scalar-results}.
 
-\begin{description}
-  \item[auto]: automatically select the best mode(s) for a signal. This mode
-      currently selects \ttt{histogram} mode (because it records the most
-      information), but this may change in future versions.
-  \item[count]: record the number of values emitted; values are ignored
-  \item[lastval]: record the last value
-  \item[sum]: record the sum of the values
-  \item[mean]: record the mean of the values
-  \item[min]: record the minimum value
-  \item[max]: record the maximum value
-  \item[timeavg]: record the time average, interpreting the signal as a
-      step function (sample-hold)
-  \item[stddev]: record the count, sum, mean, standard deviation, minimum
-      and maximum of the values
-  \item[histogram]: record everything \ttt{stddev} records, plus a histogram
-      of the values (bins are set up automatically)
-\end{description}
-
-New ones cannot be defined at the moment; this feature is planned for future versions.
 
 %
 % \subsubsection{Signal Naming}

@@ -9,7 +9,7 @@ package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
@@ -809,13 +809,13 @@ public class InifileAnalyzer {
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 
 		// check validity of some settings, like record-interval=, etc
-		if (e==CFGID_VECTOR_RECORDING_INTERVAL) {
+		if (e==CFGID_VECTOR_RECORDING_INTERVALS) {
 			// validate syntax
 			StringTokenizer tokenizer = new StringTokenizer(value, ",");
 			while (tokenizer.hasMoreTokens()) {
 				String interval = tokenizer.nextToken();
 				if (!interval.contains(".."))
-					addError(section, key, "Syntax error in output vector interval");
+					addError(section, key, "Syntax error in output vector intervals");
 				else {
 					try {
 						String from = StringUtils.substringBefore(interval, "..").trim();

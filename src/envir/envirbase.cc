@@ -118,7 +118,7 @@ Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
-Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING_MODE, "scalar-recording-mode", CFG_STRING, "auto", "Defines how to calculate scalar results from the given signal. Example values: count, lastval, sum, mean, min, max, timeavg, stddev, histogram, auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
+Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING_MODE, "scalar-recording-mode", CFG_STRING, "auto", "Defines how to calculate scalar results from the given signal. Example values: count, last, sum, mean, min, max, timeavg, stats, histogram, auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
 
 // the following options are declared in other files
 extern cConfigOption *CFGID_SCALAR_RECORDING;
@@ -851,11 +851,11 @@ cIListener *EnvirBase::createScalarResultRecorder(const char *mode)
     if (!strcmp(mode, "histogram"))
         listener = new StatisticsRecorder(new cDoubleHistogram()); // or cLongHistogram, we could decide from @signal property; or use an adaptive histogram that automatically chooses the best mode
     else if (!strcmp(mode, "count"))
-        listener = new MeanRecorder();
-    else if (!strcmp(mode, "lastval"))
+        listener = new CountRecorder();
+    else if (!strcmp(mode, "last"))
         listener = new LastValueRecorder();
     else if (!strcmp(mode, "sum"))
-        listener = new MeanRecorder();
+        listener = new SumRecorder();
     else if (!strcmp(mode, "mean"))
         listener = new MeanRecorder();
     else if (!strcmp(mode, "min"))
@@ -864,7 +864,7 @@ cIListener *EnvirBase::createScalarResultRecorder(const char *mode)
         listener = new MaxRecorder();
     else if (!strcmp(mode, "timeavg"))
         listener = new TimeAverageRecorder();
-    else if (!strcmp(mode, "stddev"))
+    else if (!strcmp(mode, "stats"))
         listener = new StatisticsRecorder(new cStdDev());
     else
         listener = NULL;

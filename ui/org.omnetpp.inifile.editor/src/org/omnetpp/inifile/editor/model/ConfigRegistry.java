@@ -580,8 +580,8 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_VECTOR_RECORDING = addPerObjectOption(
         "vector-recording", CFG_BOOL, "true",
         "Whether data written into an output vector should be recorded.");
-    public static final ConfigOption CFGID_VECTOR_RECORDING_INTERVAL = addPerObjectOption(
-        "vector-recording-interval", CFG_CUSTOM, null,
+    public static final ConfigOption CFGID_VECTOR_RECORDING_INTERVALS = addPerObjectOption(
+        "vector-recording-intervals", CFG_CUSTOM, null,
         "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... " +
         "That is, both start and end of an interval are optional, and intervals are " +
         "separated by comma. Example: ..100, 200..400, 900..");

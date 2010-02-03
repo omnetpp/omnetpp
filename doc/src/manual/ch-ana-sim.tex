@@ -1,7 +1,6 @@
 \chapter{Result Recording and Analysis}
 \label{cha:analyzing-simulation-results}
 
-
 \section{Result Recording}
 
 {\opp} provides built-in support for recording simulation results, via
@@ -84,6 +83,7 @@ the additional possibilities accessible.
 
 
 \section{Configuring Result Collection}
+\label{sec:ana-sim:config-results}
 
 \subsection{Result File Names}
 
@@ -135,6 +135,7 @@ will still be removed before the simulation starts.
 
 
 \subsection{Warm-up Period}
+\label{sec:ana-sim:warmup-period}
 
 The \ttt{warmup-period=} option specifies the length of the initial
 warm-up period. When set, results belonging to the first $x$ seconds
@@ -172,6 +173,7 @@ if (simTime() >= simulation.getWarmupPeriod())
 
 
 \subsection{Configuring Scalar Results}
+\label{sec:ana-sim:scalar-results}
 
 Recording scalar results can be enabled or disabled individually, using
 patterns. The syntax of the configuration option is
@@ -210,16 +212,16 @@ Currently the following modes are supported:
       currently selects \ttt{histogram} mode (because it records the most
       information), but this may change in future versions.
   \item\tbf{count}: record the number of values emitted; values are ignored
-  \item\tbf{lastval}: record the last value
+  \item\tbf{last}: record the last value
   \item\tbf{sum}: record the sum of the values
   \item\tbf{mean}: record the mean of the values
   \item\tbf{min}: record the minimum value
   \item\tbf{max}: record the maximum value
   \item\tbf{timeavg}: this one makes use of timestamps as well, and computes the
       time average, interpreting the signal as a step function (sample-hold)
-  \item\tbf{stddev}: record the count, sum, mean, standard deviation, minimum
+  \item\tbf{stats}: record the count, sum, mean, standard deviation, minimum
       and maximum of the values
-  \item\tbf{histogram}: record everything \ttt{stddev} records, plus a histogram
+  \item\tbf{histogram}: record everything \ttt{stats} records, plus a histogram
       of the values (bins are set up automatically)
 \end{itemize}
 
@@ -240,7 +242,7 @@ be recorded as \ttt{queueingTime:mean}.
 
 
 \subsection{Configuring Output Vectors}
-\label{sec:ch-config-sim:outvectors}
+\label{sec:ana-sim:vector-config}
 
 The size of output vector files can easily reach the magnitude of several
 hundred megabytes, but very often, only some of the recorded statistics are
@@ -248,10 +250,10 @@ interesting to the analyst. {\opp} allows you to control which vectors you
 want to record, and to specify one or more collection intervals.
 
 Output vectors can be configured with the \ttt{vector-recording=} and
-\ttt{vector-recording-interval=} per-object options. The syntax of the
+\ttt{vector-recording-intervals=} per-object options. The syntax of the
 configuration options are
 \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording=}\textit{true/false},
-and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-interval=}\textit{<intervals>},
+and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-intervals=}\textit{<intervals>},
 where both \textit{<module-full-path>} and \textit{<vector-name>} may
 contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
 \textit{<vector-name>} is the signal name, or the name string of the
@@ -267,7 +269,7 @@ The following example only records the \ttt{queueLength} vectors and
 **.vector-recording = false
 \end{inifile}
 
-For the \ttt{vector-recording-interval=} option, one can specify
+For the \ttt{vector-recording-intervals=} option, one can specify
 one or more intervals in the \textit{<startTime>..<stopTime>} syntax,
 separated by comma. \textit{<startTime>} or \textit{<stopTime>} need
 to be given with measurement units, and both can be omitted to denote
@@ -278,8 +280,8 @@ The following example limits all vectors to three intervals, except
 simulation run:
 
 \begin{inifile}
-**.dropCount.vector-recording-interval = 0..
-**.vector-recording-interval = 0..1000s, 5000s..6000s, 9000s..
+**.dropCount.vector-recording-intervals = 0..
+**.vector-recording-intervals = 0..1000s, 5000s..6000s, 9000s..
 \end{inifile}
 
 A third per-vector configuration option is \ttt{vector-record-eventnumbers=},
@@ -672,6 +674,7 @@ scavetool summary Aloha-1.vec
 
 
 \section{Alternative Statistical Analysis and Plotting Tools}
+\label{sec:ana-sim:alt-tools}
 
 There are several programs and packages that can also be used to analyse
 result files, and create various plots and charts from them.
