@@ -165,14 +165,16 @@ public final class NedCompletionHelper {
 
     public final static Template[] proposedNedSignalPropertyInterpolationModeParameterValueTempl = {
         makeShortTemplate("none", "interpolation mode"),
+        makeShortTemplate("linear", "interpolation mode"),
         makeShortTemplate("sample-hold", "interpolation mode"),
         makeShortTemplate("backward-sample-hold", "interpolation mode"),
-        makeShortTemplate("linear", "interpolation mode"),
     };
 
     public final static Template[] proposedNedSignalPropertyModeHintParameterValueTempl = {
         makeShortTemplate("auto", "automatically select the best mode(s) for a signal, this mode currently selects histogram mode"),
+//        makeShortTemplate("none", "do not record anything"),
         makeShortTemplate("count", "record the number of values emitted; values are ignored"),
+//        makeShortTemplate("vector", "record all values"),
         makeShortTemplate("lastval", "record the last value"),
         makeShortTemplate("sum", "record the sum of the values"),
         makeShortTemplate("mean", "record the mean of the values"),
