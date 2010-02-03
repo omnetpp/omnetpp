@@ -39,9 +39,9 @@ This chapter discusses the rest of the simulation library:
 
 
 
-\section{Class library conventions}
+\section{Class Library Conventions}
 
-\subsection{Base class}
+\subsection{Base Class}
 \label{sec:ch-sim-lib:cobject}
 
 
@@ -63,7 +63,7 @@ in the following we'll discuss some of the practically important
 ones.
 
 
-\subsection{Setting and getting attributes}
+\subsection{Setting and Getting Attributes}
 
 Member functions that set and query object attributes follow
 a naming convention: the setter member function begins with
@@ -96,7 +96,7 @@ const char *classname = msg->getClassName(); // returns "cMessage"
 \end{cpp}
 
 
-\subsection{Name attribute}
+\subsection{Name Attribute}
 \label{sec:sim-lib:name}
 
 An object can be assigned a \textit{name} (a character string). The name
@@ -172,7 +172,7 @@ sprintf("msg is '%80s'", msg->getFullPath().c_str()); // note c_str()
 \end{cpp}
 
 
-\subsection{Copying and duplicating objects}
+\subsection{Copying and Duplicating Objects}
 
 
 The \ffunc{dup()} member function creates an exact copy of the
@@ -221,7 +221,7 @@ for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 
 
 
-\subsection{Error handling}
+\subsection{Error Handling}
 
 
 When library objects detect an error condition, they throw a C++ exception.
@@ -252,7 +252,7 @@ if (msg->getControlInfo()==NULL)
 
 
 
-\section{Logging from modules}
+\section{Logging from Modules}
 
 The logging feature will be used extensively in the code examples,
 we introduce it here.
@@ -307,7 +307,7 @@ binds looser than the conditional operator (\ttt{?:}).
 %FIXME add tale about debug channels etc.
 
 
-\section{Simulation time conversion}
+\section{Simulation Time Conversion}
 
 Simulation time is represented by the type \ttt{simtime\_t}
 which is a typedef to \ttt{double}.
@@ -351,7 +351,7 @@ simtime_t t = strToSimtime0(s); // now s points to "and something extra"
 \end{cpp}
 
 
-\section{Generating random numbers}
+\section{Generating Random Numbers}
 \label{cha:sim-lib:generating-random-numbers}
 
 Random numbers in simulation are never random. Rather, they are
@@ -374,7 +374,7 @@ usually between 0 or 1 and $2^{32}$ or so. Mathematical transformations
 are used to produce random variates from them that correspond to
 specific distributions.
 
-\subsection{Random number generators}
+\subsection{Random Number Generators}
 \label{sec:sim-lib:rngs}
 \index{random number generator}
 
@@ -385,7 +385,7 @@ T. Nishimura \cite{Matsumoto98}. MT has a period of $2^{19937}-1$,
 and 623-dimensional equidistribution property is assured. MT is
 also very fast: as fast or faster than ANSI C's \ttt{rand()}.
 
-\subsubsection{The "minimal standard" RNG}
+\subsubsection{The "Minimal Standard" RNG}
 
 {\opp} releases prior to 3.0 used a linear congruential generator
 (LCG) with a cycle length of $2^{31}-2$, described in
@@ -418,7 +418,7 @@ which has a period of about $2^{191}$ and can provide a large
 number of \textit{guaranteed} independent streams.
 
 
-\subsection{Random number streams, RNG mapping}
+\subsection{Random Number Streams, RNG Mapping}
 
 Simulation programs may consume random numbers from several streams,
 that is, from several independent RNG instances. For example, if a
@@ -451,7 +451,7 @@ configuration -- even for simulation models which were not written
 with RNG awareness.
 
 
-\subsection{Accessing the RNGs}
+\subsection{Accessing The RNGs}
 
 The \ffunc{intrand(n)} function generates random integers in the range $[0, n-1]$, and
 \ffunc{dblrand()} generates a random double on $[0,1)$. These functions
@@ -485,7 +485,7 @@ and to learn their ranges (\ttt{intRand()}, \ttt{intRandMax()}) as well as
 to query the number of random numbers generated (\ttt{getNumbersDrawn()}).
 
 
-\subsection{Random variates}
+\subsection{Random Variates}
 
 The following functions are based on \ffunc{dblrand()} and return
 random variables of different distributions\index{distribution!random variables}\index{random!numbers from distributions}:
@@ -540,7 +540,7 @@ with the \fmac{Register\_Function()} macro, you can use them in NED
 files and ini files too.
 
 
-\subsection{Random numbers from histograms}
+\subsection{Random Numbers from Histograms}
 
 You can also specify your distribution as a
 histogram\index{distribution!as histogram}. The
@@ -554,11 +554,11 @@ the statistical classes.
 
 
 
-\section{Container classes}
+\section{Container Classes}
 
 \subsection{Queue class: cQueue}
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 
 \cclass{cQueue} is a container class that acts as a queue.
@@ -624,7 +624,7 @@ queue.remove(msg);
 
 
 
-\subsubsection{Priority queue}
+\subsubsection{Priority Queue}
 
 
 By default, \cclass{cQueue} implements a FIFO, but it can also act as
@@ -676,9 +676,9 @@ for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 
 
 
-\subsection{Expandable array: cArray}
+\subsection{Expandable Array: cArray}
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 
 \cclass{cArray} is a container class that holds objects derived from
@@ -775,7 +775,7 @@ for (int i=0; i<array.size(); i++)
 
 
 %
-% \section{Non-object container classes}
+% \section{Non-object Container Classes}
 %
 % There are two container classes to store non-object
 % items\index{non-object container}: \cclass{cLinkedList} and
@@ -792,7 +792,7 @@ for (int i=0; i<array.size(); i++)
 %FIXME document: simulation.getUniqueNumber(), for generating unique IDs for models
 
 
-\section{Routing support: cTopology}
+\section{Routing Support: cTopology}
 
 \subsection{Overview}
 
@@ -831,7 +831,7 @@ the corresponding module for a \cclass{cTopology} node and vica versa.
 
 
 
-\subsection{Basic usage}
+\subsection{Basic Usage}
 
 You can extract the network topology into a \cclass{cTopology}
 object by a single function call. You have several ways to select
@@ -968,7 +968,7 @@ directions.)
 
 
 
-\subsection{Shortest paths}
+\subsection{Shortest Paths}
 
 The real power of \cclass{cTopology} is in finding shortest
 paths\index{topology!shortest path} in the network to support optimal
@@ -1080,10 +1080,10 @@ weightedMultiShortestPathsTo(cTopology::Node *target);
 
 
 
-\section{Statistics and distribution estimation}
+\section{Statistics and Distribution Estimation}
 \label{sec:ch-sim-lib:statistics}
 
-\subsection{cStatistic and descendants}
+\subsection{cStatistic and Descendants}
 
 There are several statistic and result collection classes:
 \cclass{cStdDev}, \cclass{cWeightedStdDev}, \cclass{Long\-Histogram},
@@ -1115,7 +1115,7 @@ There are several statistic and result collection classes:
     adaptive histogram-like algorithm.}
 \end{itemize}
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 One can insert an observation into a statistic object with the
 \ffunc{collect()} function or the \texttt{+=} operator (they are
@@ -1143,9 +1143,9 @@ double mean = stat.getMean(),
 
 
 
-\subsection{Distribution estimation}
+\subsection{Distribution Estimation}
 
-\subsubsection{Initialization and usage}
+\subsubsection{Initialization and Usage}
 
 % TBD this has to be rewritten at some point... maybe take over examples from Doxygen doc.
 
@@ -1224,7 +1224,7 @@ Afterwards, a \cclass{cPSquare} can be used with the same member functions
 as a histogram.
 
 
-\subsubsection{Getting histogram data}
+\subsubsection{Getting Histogram Data}
 
 
 There are three member functions to explicitly return cell boundaries
@@ -1266,7 +1266,7 @@ return the value of the Probability Density Function and the Cumulated
 Density Function at a given \textit{x}, respectively.
 
 
-\subsubsection{Random number generation from distributions}
+\subsubsection{Random Number Generation from Distributions}
 
 
 The \ffunc{random()} member function generates random
@@ -1288,7 +1288,7 @@ function:
 double rnd = (double)rndPar; // random number from the cPSquare
 \end{cpp}
 
-\subsubsection{Storing/loading distributions}
+\subsubsection{Storing and Loading Distributions}
 
 
 The statistic classes have \ffunc{loadFromFile()} member functions
@@ -1313,7 +1313,7 @@ fclose(f2);
 \end{cpp}
 
 
-\subsubsection{Histogram with custom cells}
+\subsubsection{Histogram with Custom Cells}
 
 
 The \cclass{cVarHistogram} class can be used to create
@@ -1359,7 +1359,7 @@ boundaries when the histogram has already been transformed.
 
 
 
-\subsection{The k-split algorithm}
+\subsection{The k-split Algorithm}
 
 \subsubsection{Purpose}
 
@@ -1376,7 +1376,7 @@ distributions\index{distribution!multi-dimensional}, but here we deal
 with the one-dimensional version only.
 
 
-\subsubsection{The algorithm}
+\subsubsection{The Algorithm}
 
 
 The \textit{k-split} algorithm is an adaptive histogram-type estimate which
@@ -1488,7 +1488,7 @@ equal-frequency partition.
 {\opp} contains an implementation of the \textit{k}-split algorithm,
 the \cclass{cKSplit} class.
 
-\subsubsection{The cKSplit class}
+\subsubsection{The cKSplit Class}
 
 The \cclass{cKSplit} class is an implementation of the \textit{k-split} method.
 Member functions:
@@ -1532,7 +1532,7 @@ struct cKSplit::Grid
 
 
 
-\subsection{Transient detection and result accuracy}
+\subsection{Transient Detection and Result Accuracy}
 
 In many simulations, only the steady state performance (i.e.
 the performance after the system has reached a stable state)
@@ -1559,7 +1559,7 @@ detection and result accuracy detection algorithms are:
 \end{itemize}
 
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 %
 % TBD comments
@@ -1583,7 +1583,7 @@ Detecting the end of the period:
 \end{itemize}
 
 
-\subsubsection{Transient detection}
+\subsubsection{Transient Detection}
 
 
 Currently one transient detection\index{transient detection} algorithm
@@ -1599,7 +1599,7 @@ void setParameters(int reps=3,
                    double acc=0.3);
 \end{cpp}
 
-\subsubsection{Accuracy detection}
+\subsubsection{Accuracy Detection}
 
 
 Currently one accuracy detection\index{accuracy detection} algorithm
@@ -1615,10 +1615,10 @@ void setParameters(double acc=0.1, int reps=3);
 
 
 
-\section{Recording simulation results}
+\section{Recording Simulation Results}
 \label{sec:ch-sim-lib:result-recording}
 
-\subsection{Output vectors: cOutVector}
+\subsection{Output Vectors: cOutVector}
 \label{sec:ch-sim-lib:coutvector}
 
 Objects of type \cclass{cOutVector} are responsible for writing time series
@@ -1690,7 +1690,7 @@ output vector object.
 
 
 
-\subsection{Output scalars}
+\subsection{Output Scalars}
 
 While output vectors are to record time series data and thus they
 typically record a large volume of data during a simulation run,
@@ -1762,9 +1762,9 @@ The format and processing of output vector files is described in section
 
 
 
-\section{Watches and snapshots}
+\section{Watches and Snapshots}
 
-\subsection{Basic watches}
+\subsection{Basic Watches}
 
 It would be nice, but variables of type \ttt{int}, \ttt{long}, \ttt{double}
 do not show up by default in Tkenv; neither do STL classes
@@ -1823,7 +1823,7 @@ WATCH(currentClientInfo);
 \end{cpp}
 
 
-\subsection{Read-write watches}
+\subsection{Read-write Watches}
 
 Watches for primitive types and \ttt{std::string} allow for changing
 the value from the GUI as well, but for other types you need to explicitly
@@ -1848,7 +1848,7 @@ WATCH_RW(currentClientInfo);
 \end{cpp}
 
 
-\subsection{Structured watches}
+\subsection{Structured Watches}
 
 \ttt{WATCH()} and \ttt{WATCH\_RW()} are basic watches: they allow one
 line of (unstructured) text to be displayed. However, if you have a
@@ -1882,7 +1882,7 @@ watchedPtr = NULL;  // set to NULL when object gets deleted
 \end{cpp}
 
 
-\subsection{STL watches}
+\subsection{STL Watches}
 
 The standard C++ container classes (\ttt{vector}, \ttt{map}, \ttt{set}, etc)
 also have structured watches, available via the following macros:
@@ -2015,7 +2015,7 @@ network="FifoNet">
 
 
 
-% \subsection{Disabling warnings}
+% \subsection{Disabling Warnings}
 %
 % Some container classes and functions suspend the simulation and issue
 % warning messages in potentially bogus/dangerous situations, for
@@ -2043,7 +2043,7 @@ network="FifoNet">
 
 
 
-\subsection{Getting coroutine stack usage}
+\subsection{Getting Coroutine Stack Usage}
 
 It is important to choose the correct stack size for
 modules\index{module!stack size}\index{stack!size}.  If the stack is
@@ -2084,10 +2084,10 @@ effect with local variables.
 
 
 
-\section{Deriving new classes}
+\section{Deriving New Classes}
 \label{sec:ch-sim-lib:deriving-new-classes}
 
-\subsection{cOwnedObject or not?}
+\subsection{cOwnedObject or Not?}
 
 If you plan to implement a completely new class (as opposed to
 subclassing something already present in {\opp}), you have
@@ -2126,7 +2126,7 @@ extra cost because it doesn't have data members at all, only
 virtual functions.
 
 
-\subsection{cOwnedObject virtual methods}
+\subsection{cOwnedObject Virtual Methods}
 
 Most classes in the simulation class library are descendants of
 \cclass{cOwnedObject}. If you want to derive a new class from
@@ -2193,7 +2193,7 @@ The following methods are \textbf{recommended} to implement:
 \end{itemize}
 
 
-\subsection{Class registration}
+\subsection{Class Registration}
 
 You should also use the \fmac{Register\_Class()} macro to register the
 new class. It is used by the \ffunc{createOne()} factory function, which can
@@ -2433,10 +2433,10 @@ Sim library (\ttt{include/}, \ttt{src/sim/}) can serve as further examples.
 
 
 
-\section{Object ownership management}
+\section{Object Ownership Management}
 \label{sec:ch-sim-lib:ownership-management}
 
-\subsection{The ownership tree}
+\subsection{The Ownership Tree}
 
 {\opp} has a built-in ownership management mechanism which
 is used for sanity checks, and as part of the infrastructure
@@ -2467,7 +2467,7 @@ The other direction, enumerating the objects owned can be implemented with
 the \ffunc{forEachChild()} method by it looping through all
 contained objects and checking the owner of each object.
 
-\subsubsection{Why do we need this?}
+\subsubsection{Why Do We Need This?}
 
 The traditional concept of object ownership is associated with
 the ``right to delete'' objects. In addition to that,
@@ -2518,7 +2518,7 @@ message object which has been sent to (and so currently kept by) another
 module.
 
 
-\subsection{Managing ownership}
+\subsection{Managing Ownership}
 
 Ownership is managed transparently for the user, but this mechanism
 has to be supported by the participating classes themselves.
@@ -2621,7 +2621,7 @@ From the contained objects, only the owned ones are deleted -- that is,
 where \ttt{obj->getOwner()==this}.
 
 
-\subsubsection{Object copying}
+\subsubsection{Object Copying}
 
 The ownership mechanism also has to be taken into consideration
 when a \cclass{cArray} or \cclass{cQueue} object is duplicated.
@@ -2646,7 +2646,7 @@ is implemented as \ffunc{new cArray(*this)}).
 
 % FIXME finish this!
 %
-% \subsubsection{Another example: cMessage's encapsulation feature}
+% \subsubsection{Another Example: cMessage's Encapsulation Feature}
 %
 % This template should be followed in other places too. Like cMessage's
 % encapsulation...
@@ -2668,7 +2668,7 @@ is implemented as \ffunc{new cArray(*this)}).
 %\ end{verbatim}
 %
 %
-%\subsection{If you use STL containers}
+%\subsection{If you Use STL Containers}
 %
 
 

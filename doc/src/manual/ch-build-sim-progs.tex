@@ -21,12 +21,13 @@ you first need to translate the MSG files\index{msg!files}
 into C++, using the message compiler (\ttt{opp\_msgc}).
 After this step, the process is the same as building any C/C++
 program from source: all C++ sources need to be compiled into object files
-(\ttt{.o} files (using gcc on Mac, Linux) or mingw on Windows)\ifcommercial or \ttt{.obj} (using MSVC on Windows)) \fi
+(\ttt{.o} files (using gcc on Mac, Linux) or mingw on Windows)
+\ifcommercial or \ttt{.obj} (using MSVC on Windows)) \fi
 and all object files need to be linked with the necessary libraries to get
 an executable or shared library.
 
 \begin{note}
-Compiling NED files directly to C++ classes is no longer supported in
+Compiling NED files directly to C++ code is no longer supported in
 {\opp} 4.0. NED files are always dynamically loaded.
 \end{note}
 
@@ -94,7 +95,7 @@ The \ttt{doc/} directory of your {\opp} installation contains
 \end{note}
 
 
-\subsection{The opp\_makemake tool}
+\subsection{The opp\_makemake Tool}
 
 The \fprog{opp\_makemake} tool can automatically generate a
 \texttt{Makefile} for your simulation program, based on the source files
@@ -130,7 +131,7 @@ The most important options are:
 \end{itemize}
 
 
-\subsection{Basic use}
+\subsection{Basic Use}
 
 Once you have the source files (\ttt{*.ned}, \ttt{*.msg}, \ttt{*.cc},
 \ttt{*.h}) in a directory, change there and type:
@@ -172,7 +173,7 @@ clean &  Deletes all files that were produced by the make process\\\hline
 \end{longtable}
 
 
-\subsection{Debug and release builds}
+\subsection{Debug and Release Builds}
 
 \fprog{opp\_makemake} generates a makefile that can create both release and debug builds.
 By default it creates debug version, but it is easy to override this behaviour.
@@ -189,7 +190,7 @@ $ opp_makemake --mode release ...
 \end{commandline}
 
 
-\subsection{Using external C/C++ libraries}
+\subsection{Using External C/C++ Libraries}
 
 If you are using external libraries you should specify the include path for the header files
 with the \ttt{-I} \textit{includedir} option. You should specify this option if you are using
@@ -201,7 +202,7 @@ the directory of the external library and \ttt{-llibrary} to specify the name of
 external dependency.
 
 
-\subsection{Building directory trees}
+\subsection{Building Directory Trees}
 
 It is possible to build a whole source directory tree with a single makefile.
 A source tree will generate a single output file (executable or library).
@@ -221,7 +222,7 @@ $ opp_makemake -f --deep -X experimental -X obsolete
 \end{commandline}
 
 
-\subsection{Automatic include dirs}
+\subsection{Automatic Include Dirs}
 
 If your source tree contains several subdirectories (maybe several levels
 deep), it can be annoying that you should specify relative paths for your
@@ -242,7 +243,7 @@ include a directory which is outside of your source directory tree you
 always must specify it with the \ttt{-I external/include/dir} option.
 
 
-\subsection{Dependency handling}
+\subsection{Dependency Handling}
 
 Dependency information is used by the makefile to minimize the time required to
 compile and link your project. If your makefile contains up-to date dependency info
@@ -263,7 +264,7 @@ files are always added to the file's dependency list.
 \end{note}
 
 
-\subsection{Out-of-directory build}
+\subsection{Out-of-Directory Build}
 
 The build system creates object and executable files in a separate directory, called
 \textit{output directory}. The structure of the output folder will be the same as your
@@ -293,7 +294,7 @@ source folder rather than in the output folder.
 \end{note}
 
 
-\subsection{Building shared and static libraries}
+\subsection{Building Shared and Static Libraries}
 
 By default the makefile will create an executable file, but it is also
 possible to build shared or static libraries. Shared libraries
@@ -317,7 +318,7 @@ your sources. This step allows to correctly generate DLL exports in windows.
 \fi
 
 
-\subsection{Recursive builds}
+\subsection{Recursive Builds}
 
 
 The \ttt{-{}-recurse} option enables recursive make: when you build the simulation, make
@@ -377,7 +378,7 @@ additional targets in your makefile or just simply wants to override the
 default target in the makefile.
 
 
-\subsection{Projects with multiple source trees}
+\subsection{Projects with Multiple Source Trees}
 
 In the case of a large project, your source files may be spread across
 several directories and your project may generate more than one executable
@@ -389,7 +390,7 @@ The toplevel makefile usually calls only the makefiles
 recursively in the source directory trees.
 
 
-\subsection{A multi-directory example}
+\subsection{A Multi-Directory Example}
 
 For a complex example of using \fprog{opp\_makemake}, we will check how to create
 the makefiles for the mobility-framework. First take a look at the

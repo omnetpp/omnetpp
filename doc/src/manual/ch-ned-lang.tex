@@ -2,7 +2,7 @@
 \label{cha:the-ned-language}
 
 
-\section{NED overview}
+\section{NED Overview}
 
 The user describes the structure of a simulation model in the NED language. NED
 stands for Network Description. NED lets the user declare simple modules, and
@@ -99,7 +99,7 @@ uses datagram-based communication, so that we can leave out the
 transport layer from the model.
 
 
-\subsection{The network}
+\subsection{The Network}
 \label{sec:ch-ned-lang:warmup:network}
 
 First we'll define the network, then in the next sections we'll continue
@@ -181,7 +181,7 @@ network = Network
 \end{inifile}
 
 
-\subsection{Introducing a channel}
+\subsection{Introducing a Channel}
 
 It is cumbersome to have to repeat the data rate for every connection.
 Luckily, NED provides a convenient solution: one can create a new channel
@@ -218,7 +218,7 @@ Later sections will cover the concepts used (inner types, channels, the
 \ttt{DatarateChannel} built-in type, inheritance) in details.
 
 
-\subsection{The App, Routing and Queue simple modules}
+\subsection{The App, Routing and Queue Simple Modules}
 
 Simple modules are the basic building blocks for other (compound) modules.
 All active behavior in the model is encapsulated in simple modules.
@@ -282,7 +282,7 @@ connections, and other objects, and parameter values have a very flexible
 syntax.
 
 
-\subsection{The Node compound module}
+\subsection{The Node Compound Module}
 
 Now we can assemble \ttt{App}, \ttt{Routing} and {Queue} into the
 compound module \ttt{Node}. A compound module can be thought of as
@@ -343,7 +343,7 @@ to connect the outgoing/incoming link (\ttt{line} gate) of each queue to the
 corresponding port of the enclosing module.
 
 
-\subsection{Putting it together}
+\subsection{Putting It Together}
 
 We have seen all NED definitions, but how does it get used by {\opp}? When
 the simulation program is started, it loads the NED files. The program
@@ -370,7 +370,7 @@ language and look at them in more details.
 
 
 
-\section{Simple modules}
+\section{Simple Modules}
 \label{sec:ch-ned-lang:simple-modules}
 
 Simple modules are the active components in the model.
@@ -494,7 +494,7 @@ Inheritance in general will be discussed in section \ref{sec:ch-ned-lang:inherit
 
 
 
-\section{Compound modules}
+\section{Compound Modules}
 \label{sec:ch-ned-lang:compound-modules}
 
 A compound module groups other modules into a larger unit. A compound
@@ -937,7 +937,7 @@ The \fprop{@unit} property of a parameter cannot be added or overridden
 in subclasses or in submodule declarations.
 
 
-\subsubsection{XML parameters}
+\subsubsection{XML Parameters}
 
 Sometimes modules need more complex input than simple module parameters
 can describe. Then you'd put these parameters into an external config file,
@@ -1278,7 +1278,7 @@ directions.
 %% XXX examples
 
 
-\subsubsection{Channel specification}
+\subsubsection{Channel Specification}
 
 Channel specifications (\ttt{-{}->$channelspec$-{}->} inside a connection)
 are similar to submodules in many respect.
@@ -1309,7 +1309,7 @@ assigned in an connection without an explicit channel type, it will be an error
 %% XXX example: how to set channel parameters from the ini file?
 
 
-\section{Multiple connections}
+\section{Multiple Connections}
 \label{sec:ch-ned-lang:multiple-connections}
 
 Simple programming constructs (loop, conditional) allow creating
@@ -1374,7 +1374,7 @@ on a gate which is not leading anywhere.
 
 
 
-\subsubsection{Random graph}
+\subsubsection{Random Graph}
 
 Conditional connections can be used to generate random
 topologies\index{topology!random}, for example. The following code
@@ -1404,7 +1404,7 @@ here too, to turn off error messages given by the network setup code
 for unconnected gates.
 
 
-\subsection{Connection patterns}
+\subsection{Connection Patterns}
 
 \index{module!compound!patterns}
 \index{topology!patterns}
@@ -1485,7 +1485,7 @@ would do it in most existing simulators.
 
 
 
-\section{Submodule type as parameter}
+\section{Submodule Type as Parameter}
 \label{sec:ch-ned-lang:submodule-like}
 
 A submodule type may be specified with a module parameter of the type
@@ -1545,7 +1545,7 @@ module SensorNode like INode
 %% XXX Note: parser may get confused around <>; you may help it by adding parens, i.e. <(typeName+"Module")>
 
 
-\section{Properties (metadata annotations)}
+\section{Properties (Metadata Annotations)}
 \label{sec:ch-ned-lang:properties}
 
 Properties allow adding metadata annotations to modules, parameters, gates,
@@ -1596,7 +1596,7 @@ module Example
 \end{ned}
 
 
-\subsubsection{Property indices}
+\subsubsection{Property Indices}
 
 Sometimes it is useful to have multiple properties with the same name,
 for example for declaring multiple statistics produced by a simple module.
@@ -1645,7 +1645,7 @@ simple DummyExt extends Dummy {
 \end{ned}
 
 
-\subsubsection{Data model}
+\subsubsection{Data Model}
 
 Properties may contain data, given in parentheses; the data model is quite
 flexible. To begin with, properties may contain no value or a single
@@ -1705,7 +1705,7 @@ equivalent to \ttt{@host}: \ttt{@host()}, \ttt{@host(true)},
 tag.
 
 
-\subsubsection{Overriding and extending property values}
+\subsubsection{Overriding and Extending Property Values}
 
 When you subclass a NED type, use a module type as submodule or use a channel
 type for a connection, you may add new properties to the module or channel,
@@ -1915,7 +1915,7 @@ package inet.transport.tcp;
 \end{ned}
 
 
-\subsubsection{Name resolution, imports}
+\subsubsection{Name Resolution, Imports}
 
 We already mentioned that packages can be used to distinguish
 similarly named NED types. The name that includes the package name
@@ -1960,7 +1960,7 @@ Inner types may not be referred to outside their enclosing types, so they
 cannot be imported either.
 
 
-\subsubsection{Name resolution with "like"}
+\subsubsection{Name Resolution With "like"}
 
 The situation is a little different for submodule and connection channel
 specifications using the \fkeyword{like} keyword, when the type name comes
@@ -2005,7 +2005,7 @@ but one must explicitly choose one of them by providing a package name:
 \ttt{mobility\-Type="inet.ad\-hoc.Random\-Walk"}.
 
 
-\subsubsection{The default package}
+\subsubsection{The Default Package}
 
 It is not mandatory to make use of packages: if all NED files are in a
 single directory listed on the NEDPATH, then package declarations (and

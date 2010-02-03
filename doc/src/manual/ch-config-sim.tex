@@ -1,16 +1,12 @@
 \chapter{Configuring Simulations}
 \label{cha:config-sim}
 
-\section{Configuring simulations}
+\section{The Configuration File}
 
 Configuration and input data for the simulation are in
 a configuration file usually called \ffilename{omnetpp.ini}.
 
-The following sections explain \ffilename{omnetpp.ini}.
-
-\section{The configuration file: omnetpp.ini}
-
-\subsection{An example}
+\subsection{An Example}
 
 For a start, let us see a simple \ffilename{omnetpp.ini} file which
 can be used to run the Fifo example simulation.
@@ -42,7 +38,7 @@ and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
 Lines that start with ``\#'' are comments.
 
 
-\subsection{File syntax}
+\subsection{File Syntax}
 
 The ini file is a text file consisting of entries grouped into different sections.
 The order of the sections doesn't matter.
@@ -63,7 +59,7 @@ Example:
 for the foo parameter"
 \end{inifile}
 
-\subsection{File inclusion}
+\subsection{File Inclusion}
 
 {\opp} supports including an ini file in another\index{ini file!file inclusion},
 via the \ttt{include} keyword. This feature allows you to partition large ini
@@ -93,7 +89,7 @@ etc. options, and \ttt{xmldoc()} module parameter values.)
 \label{sec:ch-config-sim:general-section}
 
 
-\subsection{The [General] section}
+\subsection{The [General] Section}
 
 The most commonly used options of the \texttt{[General]} section are the
 following.
@@ -110,7 +106,7 @@ networks, and any of them may be specified in the \ttt{network=}
 option.
 
 
-\subsection{Named configurations}
+\subsection{Named Configurations}
 
 Named configurations are sections of the form \ttt{[Config <configname>]}, where
 \textit{<configname>} is by convention a camel-case string that starts with a capital letter:
@@ -144,7 +140,7 @@ section to set up the simulation. (Tkenv, of course, lets you select
 the configuration from a dialog.)
 
 
-\subsection{Section inheritance}
+\subsection{Section Inheritance}
 
 Actually, when you activate the PureAloha configuration, the contents of
 the \ttt{[General]} section will also be taken into account: if some
@@ -204,7 +200,7 @@ If you are experimenting a lot with different parameter settings of a
 simulation model, these techniques will make it a lot easier to manage
 ini files.
 
-\section{Assigning module parameters}
+\section{Assigning Module Parameters}
 \label{sec:ch-config-sim:parameter-settings}
 
 Simulations get input via module parameters, which can be assigned a
@@ -230,7 +226,7 @@ net.server.transactionsPerSecond = 100
 \end{inifile}
 
 
-\subsection{Using wildcard patterns}
+\subsection{Using Wildcard Patterns}
 \label{sec:ch-config-sim:wildcards}
 
 Models can have a large number of parameters to be configured, and it would
@@ -281,7 +277,7 @@ An example ini file:
 \end{inifile}
 
 
-\subsubsection{Asterisk vs double asterisk}
+\subsubsection{Asterisk vs Double Asterisk}
 
 The \ttt{*} wildcard is for matching a single module or parameter name in the
 path name, while \ttt{**} can be used to match several components in the path.
@@ -291,7 +287,7 @@ or \ttt{net.queue*.bufSize} selects only queues immediately on network level.
 Also note that \ttt{**.queue**.bufSize} would match \ttt{net.queue1.foo.bar.bufSize}
 as well!
 
-\subsubsection{Sets, negated sets}
+\subsubsection{Sets, Negated Sets}
 
 Sets and negated sets can contain several character ranges and also
 enumeration of characters. For example, \ttt{\{\_a-zA-Z0-9\}} matches any letter
@@ -305,7 +301,7 @@ A backslash is always taken as a literal backslash (and not as an escape charact
 within set definitions.
 
 
-\subsubsection{Numeric ranges and index ranges}
+\subsubsection{Numeric Ranges and Index Ranges}
 
 Only nonnegative integers can be matched.  The start or the end of the range
 (or both) can be omitted: \ttt{\{10..\}}, \ttt{\{..99\}} or \ttt{\{..\}}
@@ -324,7 +320,7 @@ An example for numeric ranges:
 \end{inifile}
 
 
-\subsection{Using the default values}
+\subsection{Using the Default Values}
 
 It is also possible to utilize the default values specified in the NED files.
 The \textit{<parameter-fullpath>}\ttt{=default} setting assigns
@@ -367,9 +363,9 @@ More precisely, parameter resolution takes place as follows:
 \end{enumerate}
 
 
-\section{Parameter studies}
+\section{Parameter Studies}
 
-\subsection{Basic use}
+\subsection{Basic Use}
 
 
 It is quite common in simulation studies that the simulation model is
@@ -520,7 +516,7 @@ To write a literal \ttt{\$\{..\}} inside a string constant, quote
 the left brace with a backslash: \ttt{\${\textbackslash}\{..\}}.
 
 
-\subsection{Named iteration variables}
+\subsection{Named Iteration Variables}
 
 You can assign names to iteration variables, which has the advantage
 that you'll see meaningful names instead of \ttt{\$0} and
@@ -583,7 +579,7 @@ double and string. The expression must evaluate to a boolean.
     future {\opp} releases.
 \end{note}
 
-\subsection{Repeating runs with different seeds}
+\subsection{Repeating Runs with Different Seeds}
 
 It is directly supported to perform several runs with the same
 parameters but different random number seeds. There are two
@@ -802,7 +798,7 @@ all values of those variables will be grouped together to the same
 replications.
 
 
-\section{Configuring the random number generators}
+\section{Configuring the Random Number Generators}
 \label{sec:ch-config-sim:rng-config}
 
 The random number architecture of {\opp} was already outlined
@@ -818,7 +814,7 @@ Referencing an RNG number greater or equal to this number
 (from a simple module or NED file) will cause a runtime error.
 
 
-\subsection{RNG choice}
+\subsection{RNG Choice}
 
 The \ttt{rng-class=} configuration option sets the random number
 generator class to be used. It defaults to \ttt{"cMersenneTwister"},
@@ -827,7 +823,7 @@ the Mersenne Twister RNG. Other available classes are \ttt{"cLCG32"}
 of $2^{31}-2$), and \ttt{"cAkaroaRNG"} (Akaroa's random number generator,
 see section \ref{sec:ch-run-sim:akaroa}).
 
-\subsection{RNG mapping}
+\subsection{RNG Mapping}
 
 The RNG numbers used in simple modules may be arbitrarily mapped to the
 actual random number streams (actual RNG instances) from \ffilename{omnetpp.ini}.
@@ -858,7 +854,7 @@ This mapping allows variance reduction techniques to be applied to
 {\opp} models, without any model change or recompilation.
 
 
-\subsection{Automatic seed selection}
+\subsection{Automatic Seed Selection}
 
 Automatic seed selection gets used for an RNG if you don't explicitly
 specify seeds in omnetpp.ini. Automatic and manual seed selection can
@@ -902,7 +898,7 @@ same seeds will be used again. It is best not to use the \ttt{cLCG32}
 at all -- \ttt{cMersenneTwister} is superior in every respect.
 
 
-\subsection{Manual seed configuration}
+\subsection{Manual Seed Configuration}
 
 In some cases you may want manually configure seed values.
 Reasons for doing that may be that you want to use variance reduction

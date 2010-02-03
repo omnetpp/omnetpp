@@ -7,7 +7,7 @@ This chapter describes how to run simulations. It covers basic usage,
 user interfaces, batch runs, how to use Akaroa, and also explains
 how to solve the most common errors.
 
-\subsection{Running a simulation executable}
+\subsection{Running a Simulation Executable}
 \label{sec:ch-run-sim:running}
 
 By default, the output of an \fprog{opp\_makemake}-generated makefile is
@@ -16,7 +16,7 @@ this executable can be run without command-line arguments, but usually
 one will need to specify options to specify what ini file to use,
 which user interface to activate, where to load NED files from, and so on.
 
-\subsubsection{Getting help}
+\subsubsection{Getting Help}
 
 The following sections describe the most frequently used command-line
 options. To get a complete list of supported command line options, run
@@ -26,7 +26,7 @@ a simulation executable (or \fprog{opp\_run}) with the \ttt{-h} option.
 $ ./fifo -h
 \end{commandline}
 
-\subsubsection{Specifying ini files}
+\subsubsection{Specifying Ini Files}
 
 The default ini file is \ffilename{omnetpp.ini}, and is
 loaded if no other ini file is given on the command line.
@@ -44,7 +44,7 @@ allows for partitioning the configuration into separate files, for example
 to simulation options, module parameters and result recording options.
 
 
-\subsubsection{Specifying the NED path}
+\subsubsection{Specifying the NED Path}
 
 NED files are loaded from directories listed on the NED path. More precisely,
 they are loaded from the listed directories and their whole subdirectory trees.
@@ -70,7 +70,7 @@ NED path resolution rules are as follows:
 \end{itemize}
 
 
-\subsubsection{Selecting a user interface}
+\subsubsection{Selecting a User Interface}
 
 {\opp} simulations can be run under different user interfaces.
 Currently the following user interfaces are supported:
@@ -102,7 +102,7 @@ but you can override this with the \ttt{user-interface=Cmdenv} in your ini file 
 specifying \ttt{-u Cmdenv} on the command line. If both the config option and
 the command line option are present, the command line option takes precedence.
 
-\subsubsection{Selecting a configuration and run number}
+\subsubsection{Selecting a Configuration and Run Number}
 
 Configurations can be selected with the \ttt{-c <configname>} command line option.
 If you do not specify the configuration and you are running under:
@@ -127,7 +127,7 @@ variables and the number of runs in the configurations:
 \end{itemize}
 
 
-\subsubsection{Loading extra libraries}
+\subsubsection{Loading Extra Libraries}
 
 {\opp} allows you to load shared libraries at runtime. This means that you can create
 simulation models as a shared library and load the model later into a different executable without
@@ -166,7 +166,7 @@ The values from the command line and the config file will be merged.
   set the DYLD\_LIBRARY\_PATH as needed.)
 \end{note}
 
-\subsection{Running a shared library}
+\subsection{Running a Shared Library}
 
 Shared libraries can be run using the \fprog{opp\_run} program.
 Both \fprog{opp\_run} and simulation executables are capable of
@@ -180,7 +180,7 @@ opp_run -l mymodel
 
 The above example will load the model found in \ttt{libmymodel.so} and execute it.
 
-\subsection{Controlling the run}
+\subsection{Controlling the Run}
 
 There are several useful configuration options that control how a simulation is run.
 
@@ -224,7 +224,7 @@ opp_run -h config
 \end{commandline}
 
 
-\section{Cmdenv: the command-line interface}
+\section{Cmdenv: the Command-Line Interface}
 
 The command line user interface\index{command line user interface} is
 a small, portable and fast user interface that compiles and runs on
@@ -235,7 +235,7 @@ in the configuration file. If one run stops with an error message,
 subsequent ones will still be executed. The runs to be executed can be
 passed via command-line argument or in the ini file.
 
-\subsection{Example run}
+\subsection{Example Run}
 
 When run the Fifo example under Cmdenv, you should see
 something like this:
@@ -288,13 +288,13 @@ customized via \ffilename{omnetpp.ini} entries. The output file \ffilename{resul
 contains vector data recorded during simulation (here, queueing times),
 and it can be processed using the IDE or other tools.
 
-\subsection{Command-line switches}
+\subsection{Command-Line Switches}
 
 The command line environment allows you to specify more than one run by
 using the \ttt{-r 2,4,6..8} format. See \ref{sec:ch-run-sim:batch-execution}
 for more information about running simulation batches.
 
-\subsection{Cmdenv ini file options}
+\subsection{Cmdenv Ini File Options}
 \label{sec:ch-run-sim:cmdenv-section}
 
 \fpar{cmdenv-runs-to-execute} specifies which simulation runs should be executed.
@@ -325,7 +325,7 @@ For a full list of options, see the ones beginning with \ttt{cmdenv} in
 Appendix \ref{cha:config-options}.
 
 
-\subsection{Interpreting Cmdenv output}
+\subsection{Interpreting Cmdenv Output}
 \label{sec:ch-run-sim:interpreting-cmdenv-output}
 
 When the simulation is running in ``express'' mode with detailed
@@ -411,7 +411,7 @@ most common way of leaking memory in a simulation is by not deleting messages.
 
 
 
-\section{Tkenv: the graphical user interface}
+\section{Tkenv: the Graphical User Interface}
 
 Tkenv\index{Tkenv} is a portable graphical windowing user interface.
 Tkenv supports interactive execution of the simulation, tracing and
@@ -421,7 +421,7 @@ purposes, since it allows one to get a detailed picture of the state
 of simulation at any point of execution and to follow what happens
 inside the network.
 
-\subsection{Command-line switches}
+\subsection{Command-Line Switches}
 
 A simulation program built with Tkenv accepts all the general command line
 switches\index{command line switches}. In addition the \ttt{-r runnumber}
@@ -457,7 +457,7 @@ The usage of the Tkenv user interface is detailed in the {\opp}  User Guide's Tk
 chapter.
 \end{note}
 
-\section{Batch execution}
+\section{Batch Execution}
 \label{sec:ch-run-sim:batch-execution}
 
 Once your model works reliably, you'll usually want to run several
@@ -496,7 +496,7 @@ simulation with an API call if some condition is true.
 \end{warning}
 
 
-\subsection{Using shell scripts}
+\subsection{Using Shell Scripts}
 
 The following script executes a simulation named \ttt{wireless}
 several times, with parameters for the different runs
@@ -593,7 +593,7 @@ You can run your batch later by invoking the generated makefile.
 %%\subsection{Using Xgrid}
 
 
-\section{Akaroa support: Multiple Replications in Parallel}
+\section{Akaroa Support: Multiple Replications in Parallel}
 \label{sec:ch-run-sim:akaroa}
 \index{Akaroa}
 \index{Multiple Replications in Parallel}
@@ -631,7 +631,7 @@ But ex ante it is unknown how many observations have to be collected
 to achieve this level -- it must be determined runtime.
 
 
-\subsection{What is Akaroa}
+\subsection{What Is Akaroa}
 
 Akaroa \cite{Akaroa99} addresses the above problem.
 According to its authors, Akaroa (Akaroa2) is a ``fully automated
@@ -754,7 +754,7 @@ you can use the following trick:
 \end{inifile}
 
 
-\subsubsection{Using shared file systems}
+\subsubsection{Using Shared File Systems}
 \label{sec:run-sim:using-shared-filesystems}
 
 It is usually practical to have the same physical disk mounted (e.g. via NFS or Samba)
@@ -776,13 +776,13 @@ files (output vector, output scalar, snapshot files).
 
 \section{Troubleshooting}
 
-\subsection{Unrecognized configuration option}
+\subsection{Unrecognized Configuration Option}
 
 If you receive an error message about unrecognized configuration
 options you may use \ttt{-h config} or \ttt{-h configdetails} options
 to display all possible configuration options and their descriptions.
 
-\subsection{Stack problems}
+\subsection{Stack Problems}
 
 \subsubsection{``Stack violation (\textit{FooModule} stack too small?) in module \textit{bar.foo}''}
 \index{stack!too small}
@@ -924,7 +924,7 @@ of) your \ffunc{activity()} simple modules to \ffunc{handleMessage()}.
 
 
 
-\subsection{Memory leaks and crashes}
+\subsection{Memory Leaks and Crashes}
 
 The most common problems in C++ are associated with memory allocation
 (usage of \ttt{new} and \ttt{delete}):
@@ -959,7 +959,7 @@ memory blocks (structs, arrays, etc., allocated by \ttt{new}),
 you will not be able to find them via Tkenv. You will probably need
 a specialized memory debugging tool like the ones described below.
 
-\subsubsection{Memory debugging tools}
+\subsubsection{Memory Debugging Tools}
 
 If you suspect that you may have memory allocation problems
 (crashes associated with double-deletion or accessing already
@@ -977,7 +977,7 @@ detecting double deletion, writing past the end of an allocated block, etc.
 A proven commercial tool is \textit{Rational Purify}. It has
 a good reputation and proved its usefulness many times.
 
-\subsection{Simulation executes slowly}
+\subsection{Simulation Executes Slowly}
 
 Check the following if you think your simulation is running too slow.
 

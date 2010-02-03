@@ -1,9 +1,9 @@
 \chapter{Messages}
 \label{cha:messages}
 
-\section{Messages and packets}
+\section{Messages and Packets}
 
-\subsection{The cMessage class}
+\subsection{The cMessage Class}
 
 \cclass{cMessage} is a central class in {\opp}. Objects of \cclass{cMessage} and
 subclasses may model a number of things: events\index{events};
@@ -57,7 +57,7 @@ of the simulation programmer. A more-or-less complete list:
 \end{itemize}
 
 
-\subsubsection{Basic usage}
+\subsubsection{Basic Usage}
 
 
 The \cclass{cMessage} constructor accepts several arguments.
@@ -130,7 +130,7 @@ simtime_t t = msg->getTimestamp();
 but the result gets divided by 8 and rounded up.
 
 
-\subsubsection{Duplicating messages}
+\subsubsection{Duplicating Messages}
 \index{message!duplication}
 
 It is often necessary to duplicate a message (for example, sending
@@ -153,9 +153,9 @@ of the original, including message parameters (\cclass{cMsgPar} or other
 object types) and encapsulated messages.
 
 
-\subsection{Self-messages}
+\subsection{Self-Messages}
 
-\subsubsection{Using a message as self-message}
+\subsubsection{Using a Message as Self-Message}
 
 Messages are often used to represent events internal to a module,
 such as a periodically firing timer on expiry of a timeout.
@@ -186,7 +186,7 @@ simtime_t getSendingTime();
 simtime_t getArrivalTime();
 \end{cpp}
 
-\subsubsection{Context pointer}
+\subsubsection{Context Pointer}
 
 \cclass{cMessage} contains a \ttt{void*} pointer which is
 set/returned by the \ffunc{setContextPointer()} and
@@ -212,9 +212,9 @@ enough ``context'' information about the event.
 
 
 
-\subsection{Modelling packets}
+\subsection{Modelling Packets}
 
-\subsubsection{Arrival gate and time}
+\subsubsection{Arrival Gate and Time}
 
 The following methods can tell where the message came from and
 where it arrived (or will arrive if it is currently scheduled or under way.)
@@ -253,7 +253,7 @@ simtime_t getSendingTime();
 simtime_t getArrivalTime();
 \end{cpp}
 
-\subsubsection{Control info}
+\subsubsection{Control Info}
 
 One of the main application areas of {\opp} is the simulation of
 telecommunication networks. Here, protocol layers are usually
@@ -289,7 +289,7 @@ TCP CLOSE command), a dummy packet (empty \ttt{cMessage}) can be sent.
 
 
 
-\subsubsection{Identifying the protocol}
+\subsubsection{Identifying the Protocol}
 
 In {\opp} protocol models, the protocol type is usually represented
 in the message subclass. For example, instances of class
@@ -312,7 +312,7 @@ if (dynamic_cast<IPv6Datagram *>(msg) != NULL)
 
 \subsection{Encapsulation}
 
-\subsubsection{Encapsulating packets}
+\subsubsection{Encapsulating Packets}
 
 It is often necessary to encapsulate a
 message\index{message!encapsulation} into another when you are modeling
@@ -354,7 +354,7 @@ error occurs.
 The \ffunc{getEncapsulatedMsg()} function returns a pointer to the encapsulated
 message, or \ttt{NULL} if no message was encapsulated.
 
-\subsubsection{Reference counting}
+\subsubsection{Reference Counting}
 
 Since the 3.2 release, {\opp} implements reference counting of
 encapsulated messages, meaning that if you \ffunc{dup()} a message
@@ -383,7 +383,7 @@ shared between several messages, and any change would affect those
 other messages as well.
 
 
-\subsubsection{Encapsulating several messages}
+\subsubsection{Encapsulating Several Messages}
 
 The \cclass{cMessage} class doesn't directly support adding more than one
 messages to a message object, but you can subclass \cclass{cMessage}
@@ -424,14 +424,14 @@ about the things you need to take care of when deriving new classes.
 
 
 
-\subsection{Attaching parameters and objects}
+\subsection{Attaching Parameters and Objects}
 
 If you want to add parameters or objects to a message, the preferred
 way to do that is via message definitions, described in chapter
 \ref{ch:messages:message-definitions}.
 
 
-\subsubsection{Attaching objects}
+\subsubsection{Attaching Objects}
 
 The \cclass{cMessage} class has an internal \cclass{cArray} object which can
 carry objects\index{message!attaching objects}. Only objects
@@ -474,7 +474,7 @@ msg->par("conn").configPointer(NULL,NULL,sizeof(struct conn_t));
 
 
 
-\subsubsection{Attaching parameters}
+\subsubsection{Attaching Parameters}
 
 The preferred way of extending messages with new data fields is to use
 message definitions (see section \ref{ch:messages:message-definitions}).
@@ -527,7 +527,7 @@ long destAddr = msg->par("destAddr");
 \end{cpp}
 
 
-\section{Message definitions}
+\section{Message Definitions}
 \label{ch:messages:message-definitions}
 
 \subsection{Introduction}
@@ -559,7 +559,7 @@ The subclassing approach for adding message parameters was originally
 suggested by Nimrod Mesika.
 
 
-\subsubsection{The first message class}
+\subsubsection{The First Message Class}
 
 Let us begin with a simple example. Suppose that you need message objects to
 carry source and destination addresses as well as a hop count. You could write
@@ -613,7 +613,7 @@ linked into your simulation. (If you use the \fprog{opp\_makemake} tool
 to generate your makefiles, the latter will be automatically taken care of.)
 
 
-\subsubsection{What is message subclassing \textit{not?}}
+\subsubsection{What Is Message Subclassing \textit{Not?}}
 
 There might be some confusion around the purpose and
 concept of message definitions, so it seems to be a good idea
@@ -665,7 +665,7 @@ There are questions you might ask:
 The following sections describe the message syntax and features in detail.
 
 
-\subsection{Declaring enums}
+\subsection{Declaring Enums}
 
 An enum (declared with the \fkeyword{enum} keyword) generates a normal C++
 enum, plus creates an object which stores text representations of the
@@ -694,9 +694,9 @@ Enum values need to be unique.
 % };
 % end{msg}
 
-\subsection{Message declarations}
+\subsection{Message Declarations}
 
-\subsubsection{Basic use}
+\subsubsection{Basic Use}
 
 You can describe messages with the following syntax:
 
@@ -760,7 +760,7 @@ types as defined in the C++ language):
 Field values are initialized to zero.
 
 
-\subsubsection{Initial values}
+\subsubsection{Initial Values}
 
 You can initialize field values with the following syntax:
 
@@ -776,7 +776,7 @@ message FooPacket
 Initialization code will be placed in the constructor of the generated class.
 
 
-\subsubsection{Enum declarations}
+\subsubsection{Enum Declarations}
 
 You can declare that an \fkeyword{int} (or other integral type) field
 takes values from an enum. The message compiler can than generate code
@@ -794,7 +794,7 @@ message FooPacket
 The enum has to be declared separately in the message file.
 
 
-\subsubsection{Fixed-size arrays}
+\subsubsection{Fixed-Size Arrays}
 
 You can specify fixed size arrays:
 
@@ -817,7 +817,7 @@ If you call the methods with an index that is out of bounds, an exception
 will be thrown.
 
 
-\subsubsection{Dynamic arrays}
+\subsubsection{Dynamic Arrays}
 
 If the array size is not known in advance, you can declare the field
 to be a dynamic array:
@@ -847,7 +847,7 @@ The default array size is zero. This means that you need to call the
 \ffunc{set...ArraySize()} before you can start filling array elements.
 
 
-\subsubsection{String members}
+\subsubsection{String Members}
 
 You can declare string-valued fields with the following syntax:
 
@@ -886,7 +886,7 @@ virtual void setChars(unsigned k, char a);
 \end{cpp}
 
 
-\subsection{Inheritance, composition}
+\subsection{Inheritance, Composition}
 
 So far we have discussed how to add fields of primitive types
 (\fkeyword{int}, \fkeyword{double}, \fkeyword{char}, ...) to
@@ -907,7 +907,7 @@ have more complex models, you'll probably need to:
 The following section describes how to do this.
 
 
-\subsubsection{Inheritance among message classes}
+\subsubsection{Inheritance Among Message Classes}
 
 By default, messages are subclassed from \cclass{cMessage}. However, you can
 explicitly specify the base class using the \fkeyword{extends} keyword:
@@ -930,7 +930,7 @@ for details).
 
 
 
-\subsubsection{Defining classes}
+\subsubsection{Defining Classes}
 
 Until now we have used the \fkeyword{message} keyword to define classes, which
 implies that the base class is \cclass{cMessage}, either directly or indirectly.
@@ -960,7 +960,7 @@ class MyClass extends cOwnedObject
 
 
 
-\subsubsection{Defining plain C structs}
+\subsubsection{Defining Plain C Structs}
 
 You can define C-style structs to be used as fields in message classes,
 ``C-style'' meaning ``containing only data and no methods''.
@@ -1017,7 +1017,7 @@ But because a struct has no member functions, there are limitations:
 \end{itemize}
 
 
-\subsubsection{Using structs and classes as fields}
+\subsubsection{Using Structs and Classes as Fields}
 
 In addition to primitive types, you can also use other structs or objects
 as a field. For example, if you have a struct named \ttt{IPAddress},
@@ -1052,10 +1052,10 @@ Not supported yet.
 
 
 
-\subsection{Using existing C++ types}
+\subsection{Using Existing C++ Types}
 
 
-\subsubsection{Announcing C++ types}
+\subsubsection{Announcing C++ Types}
 
 If you want to use one of your own types (a class, struct or typedef,
 declared in a C++ header) in a message definition, you have to
@@ -1117,11 +1117,11 @@ message compiler into thinking that your class is rooted in
 error in the generated header file.
 
 
-\subsection{Customizing the generated class}
+\subsection{Customizing the Generated Class}
 \label{sec:ch-messages:customizing-generated-class}
 
 
-\subsubsection{The Generation Gap pattern}
+\subsubsection{The Generation Gap Pattern}
 
 Sometimes you need the generated code to do something
 more or do something differently than the version generated
@@ -1241,7 +1241,7 @@ void FooPacket::setPayloadLength(int newlength)
 
 
 
-\subsubsection{Abstract fields}
+\subsubsection{Abstract Fields}
 
 The purpose of abstract fields is to let you to override
 the way the value is stored inside the class,
@@ -1279,7 +1279,7 @@ supply your implementation.
 
 
 
-\subsection{Using STL in message classes}
+\subsection{Using STL in Message Classes}
 
 
 %%FIXME ADD THIS SOLUTION:
@@ -1522,7 +1522,7 @@ void setField(double d) = 0;
 \end{longtable}
 
 
-\subsubsection{Example simulations}
+\subsubsection{Example Simulations}
 
 Several of the example simulations contain message definitions, for example
 Tictoc, Dyna, Routing and Hypercube. For example, in Dyna you'll find this:
@@ -1539,7 +1539,7 @@ Tictoc, Dyna, Routing and Hypercube. For example, in Dyna you'll find this:
 
 
 
-\subsection{What else is there in the generated code?}
+\subsection{What Else Is There in the Generated Code?}
 
 In addition to the message class and its implementation,
 the message compiler also generates reflection code which makes it
