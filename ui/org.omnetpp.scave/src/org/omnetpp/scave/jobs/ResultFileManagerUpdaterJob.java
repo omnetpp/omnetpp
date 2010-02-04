@@ -108,7 +108,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 	 * If a vector file is loaded, it checks that the index file is up-to-date.
 	 * When not, it generates the index first and then loads it from the index.
 	 */
-	private void doLoad(final IFile file) {
+	public void doLoad(final IFile file) {
 		if (debug) Debug.format("  loadFile: %s ", file);
 
 		if (file.getLocation().toFile().exists()) {
@@ -138,7 +138,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 		}
 	}
 
-	private void doUnload(final IFile file) {
+	public void doUnload(final IFile file) {
 		if (debug) Debug.format("  unloadFile: %s%n ", file);
 		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
 			public Object call() throws Exception {

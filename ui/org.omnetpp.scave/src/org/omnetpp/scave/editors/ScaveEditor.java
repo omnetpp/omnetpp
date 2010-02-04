@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -67,6 +68,7 @@ import org.omnetpp.scave.editors.ui.DatasetPage;
 import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
@@ -273,17 +275,23 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
         getTabFolder().setMRUVisible(true);
 
-		// we can load the result files now
-        //XXX we should probably move this after creating the pages, but then we'll need something like browseDataPage.refresh()
-        // tracker.synchronize();
-
         createInputsPage();
         createBrowseDataPage();
         createDatasetsPage();
 
-        tracker.synchronize();
+        // We can load the result files now.
+        // The chart pages are not refreshed automatically when the result files change,
+        // so we have to load the files synchronously
+        // Note that tracker.updaterJob.join() can not be used here, because the JobManager is suspended during initalization of the UI.
+        tracker.synchronize(true);
 
-        restoreState();
+        // now we can restore chart pages (and other closable pages)
+        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+			public Object call() throws Exception {
+		        restoreState();
+                return null;
+			}
+        });
 
         final CTabFolder tabfolder = getTabFolder();
 		tabfolder.addSelectionListener(new SelectionAdapter() {

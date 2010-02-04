@@ -89,7 +89,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		//case Notification.UNSET:
 			Object notifier = notification.getNotifier();
 			if (notifier instanceof Inputs || notifier instanceof InputFile)
-				synchronize();
+				synchronize(false);
 		}
 	}
 
@@ -128,17 +128,17 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 					if (debug) Debug.format("File added: %s%n", file);
-					loadFile(resultFile);
+					loadFile(resultFile, false);
 					break;
 			case IResourceDelta.REMOVED:
 					if (debug) Debug.format("File removed: %s%n", file);
 					if (isResultFile(file) && !isDerived(file))
-						unloadFile(file);
+						unloadFile(file, false);
 					break;
 			case IResourceDelta.CHANGED:
 					if (debug) Debug.format("File changed: %s%n", file);
 					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0)
-						loadFile(resultFile);
+						loadFile(resultFile, false);
 					break;
 			}
 			return false;
@@ -149,7 +149,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * Ensure that exactly the result files specified in the Inputs node are loaded.
 	 * Missing files get loaded, and extra files get unloaded.
 	 */
-	public void synchronize() {
+	public void synchronize(boolean sync) {
 		if (manager == null)
 			return;
 
@@ -181,16 +181,18 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					if (matchFile(file, wildcard))
 						filesToBeLoaded.add(file.getFullPath().toString());
 		}
-
+		
 		Set<String> filesToBeUnloaded = new HashSet<String>(loadedFiles);
 		filesToBeUnloaded.removeAll(filesToBeLoaded);
-		for (String file : filesToBeUnloaded)
-			unloadFile(file);
+        filesToBeLoaded.removeAll(loadedFiles);
 
-		filesToBeLoaded.removeAll(loadedFiles);
+        for (String file : filesToBeUnloaded)
+			unloadFile(file, sync);
+
 		for (String file : filesToBeLoaded)
-			loadFile(file);
+			loadFile(file, sync);
 	}
+	
 
 	private void partitionInputFiles(List<InputFile> files, List<InputFile> wildcards) {
 		for (InputFile inputfile : inputs.getInputs()) {
@@ -233,10 +235,10 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	/**
 	 * Loads the file specified by <code>resourcePath</code> into the ResultFileManager.
 	 */
-	private void loadFile(String resourcePath) {
+	private void loadFile(String resourcePath, boolean sync) {
 		IFile file = findResultFileInWorkspace(resourcePath);
 		if (file != null)
-			loadFile(file);
+			loadFile(file, sync);
 	}
 
 	/**
@@ -244,26 +246,32 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * If a vector file is loaded, it checks that the index file is up-to-date.
 	 * When not, it generates the index first and then loads it from the index.
 	 */
-	private void loadFile(final IFile file) {
-		updaterJob.load(file);
+	private void loadFile(final IFile file, boolean sync) {
+	    if (sync)
+	        updaterJob.doLoad(file);
+	    else
+	        updaterJob.load(file);
 	}
 
 	/**
 	 * Unloads the file specified  by <code>resourcePath</code> from the ResultFileManager.
 	 * Has no effect when the file was not loaded.
 	 */
-	private void unloadFile(String resourcePath) {
+	private void unloadFile(String resourcePath, boolean sync) {
 		IFile file = findResultFileInWorkspace(resourcePath);
 		if (file != null)
-			unloadFile(file);
+			unloadFile(file, sync);
 	}
 
 	/**
 	 * Unloads the specified <code>file</code> from the ResultFileManager.
 	 * Has no effect when the file was not loaded.
 	 */
-	private void unloadFile(final IFile file) {
-		updaterJob.unload(file);
+	private void unloadFile(final IFile file, boolean sync) {
+	    if (sync)
+	        updaterJob.doUnload(file);
+	    else
+	        updaterJob.unload(file);
 	}
 
 	private IFile findResultFileInWorkspace(String resourcePath) {
