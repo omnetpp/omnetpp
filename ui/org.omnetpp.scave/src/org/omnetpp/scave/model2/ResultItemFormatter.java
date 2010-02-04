@@ -113,7 +113,7 @@ public class ResultItemFormatter {
 		if (formatObj instanceof String)
 			sb.append(formatObj);
 		else if (formatObj instanceof IResultItemFormatter) {
-			Set<String> strings = (Set<String>)new ListOrderedSet();
+			Set<String> strings = new ListOrderedSet();
 			IResultItemFormatter formatter = (IResultItemFormatter)formatObj;
 			for (ResultItem item : items) {
 				String str = formatter.format(item);
@@ -165,8 +165,14 @@ public class ResultItemFormatter {
 	private static IResultItemFormatter getFormatter(String field) {
 		if ("index".equals(field))
 			return new IndexFormatter();
-		else
-			return formatters.get(field);
+		else {
+		    IResultItemFormatter resultItemFormatter = formatters.get(field);
+
+		    if (resultItemFormatter != null)
+		        return resultItemFormatter;
+		    else
+		        return new ResultItemAttributeFormatter(field);
+		}
 	}
 
 	interface IResultItemFormatter
@@ -211,9 +217,26 @@ public class ResultItemFormatter {
 		}
 
 		public String format(ResultItem item) {
-			return item.getFileRun().getRun().getAttribute(attrName);
+	        return item.getFileRun().getRun().getAttribute(attrName);
 		}
 	}
+
+    static class ResultItemAttributeFormatter implements IResultItemFormatter
+    {
+        private String attrName;
+
+        public ResultItemAttributeFormatter(String attrName) {
+            this.attrName = attrName;
+        }
+
+        public String format(ResultItem item) {
+            String value = item.getAttribute(attrName);
+            if (value == null)
+                return attrName;
+            else
+                return value;
+        }
+    }
 
 	static class IndexFormatter implements IResultItemFormatter
 	{
