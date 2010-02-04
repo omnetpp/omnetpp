@@ -119,7 +119,10 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, ParamElementEx> getLocalParams();
 
     /** Properties from the local parameters section */
-    public Map<String, PropertyElementEx> getLocalProperties();
+    public Map<String, Map<String, PropertyElementEx>> getLocalProperties();
+
+    /** Property from the local parameters section */
+    public PropertyElementEx getLocalProperty(String name, String index);
 
     /** Gates declared locally within this type (i.e. where gate type is not empty) */
     public Map<String, GateElementEx> getLocalGateDeclarations();
@@ -154,7 +157,13 @@ public interface INEDTypeInfo extends INEDChangeListener {
      * see getPropertyInheritanceChain().
      */
     // TODO: properly implement property: name, index pair
-    public Map<String, PropertyElementEx> getProperties();
+    public Map<String, Map<String, PropertyElementEx>> getProperties();
+
+    /**
+     * Returns the property element for the given name and index. The index may be
+     * null to get the property without index.
+     */
+    public PropertyElementEx getProperty(String name, String index);
 
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
     public Map<String, GateElementEx> getGateDeclarations();

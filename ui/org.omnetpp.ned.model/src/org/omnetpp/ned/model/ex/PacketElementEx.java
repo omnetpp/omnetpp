@@ -51,7 +51,7 @@ public class PacketElementEx extends PacketElement implements IMsgTypeElement {
         return getMsgTypeInfo().getLocalUsedTypes();
     }
 
-    public Map<String, PropertyElementEx> getProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
         return getMsgTypeInfo().getProperties();
     }
 }

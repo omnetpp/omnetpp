@@ -54,6 +54,7 @@ import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
@@ -110,6 +111,7 @@ public class PaletteManager {
     private class ScoreComparator extends ShortNameComparator {
     	private Map<INEDTypeInfo,Integer> cachedScores = new HashMap<INEDTypeInfo, Integer>();
 
+        @Override
         public int compare(INEDTypeInfo first, INEDTypeInfo second) {
             int firstScore = getScore(first);
             int secondScore = getScore(second);
@@ -428,7 +430,7 @@ public class PaletteManager {
             if (!excludedPackages.contains(packageName) && matchesSubmodulesFilter(typeElement)) {
 
                 // determine which palette group it belongs to or put it into the default
-                PropertyElement property = typeElement.getNEDTypeInfo().getProperties().get(GROUP_PROPERTY);
+                PropertyElement property = typeElement.getNEDTypeInfo().getProperty(GROUP_PROPERTY, null);
                 String group = (property == null) ? "" : NEDElementUtilEx.getPropertyValue(property);
 
                 addToolEntry(typeElement, group, entries);

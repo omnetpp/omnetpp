@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -154,18 +153,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 		return lastImport;
 	}
 
-    @SuppressWarnings("unchecked")
-    public Map<String, PropertyElementEx> getProperties() {
-        Map<String, PropertyElementEx> map = new HashMap<String, PropertyElementEx>();
-
-        INEDElement node = getFirstChildWithTag(NED_PROPERTY);
-        while (node != null) {
-            if (node instanceof IHasName && node.getTagCode() == NED_PROPERTY)
-                ((Map)map).put(((IHasName)node).getName(), (PropertyElementEx)node);
-
-            node = node.getNextSibling();
-        }
-
-        return map;
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
+        return NEDElementUtilEx.collectProperties(this, new HashMap<String, Map<String, PropertyElementEx>>());
     }
 }

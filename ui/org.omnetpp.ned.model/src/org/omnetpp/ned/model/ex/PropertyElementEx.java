@@ -19,6 +19,7 @@ import org.omnetpp.ned.model.pojo.PropertyKeyElement;
  * @author rhornig, andras
  */
 public class PropertyElementEx extends PropertyElement implements IHasName {
+    public final static String DEFAULT_PROPERTY_INDEX = "";
 
     public PropertyElementEx() {
         super();
@@ -40,5 +41,13 @@ public class PropertyElementEx extends PropertyElement implements IHasName {
                         return ((LiteralElement)grandChild).getValue();
         return null;
     }
-}
 
+    public String getValue(String key) {
+        for (INEDElement child : this)
+            if (child instanceof PropertyKeyElement && key.equals(((PropertyKeyElement)child).getName()))
+                for (INEDElement grandChild : child)
+                    if (grandChild instanceof LiteralElement)
+                        return ((LiteralElement)grandChild).getValue();
+        return null;
+    }
+}

@@ -213,7 +213,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     protected void createBuiltInNEDTypes() {
     	String source = NEDParser.getBuiltInDeclarations();
     	INEDErrorStore errorStore = new SysoutNedErrorStore();
-    	builtInDeclarationsFile = (NedFileElementEx) NEDTreeUtil.parseNedText(source, errorStore, "[builtin-declarations]");
+    	builtInDeclarationsFile = NEDTreeUtil.parseNedText(source, errorStore, "[builtin-declarations]");
     	Assert.isTrue(errorStore.getNumProblems()==0);
     }
 
@@ -481,7 +481,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	public synchronized PropertyElementEx getPropertyFor(NedFileElementEx nedFileElement, String propertyName) {
 	    // look into this file, then into package.ned files in this folder and up
-	    PropertyElementEx property = nedFileElement.getProperties().get(propertyName);
+	    PropertyElementEx property = NEDElementUtilEx.getProperty(nedFileElement, propertyName, null);
 	    if (property != null)
 	        return property;
 	    return getPropertyFor(getNedFile(nedFileElement).getParent(), propertyName);
@@ -494,7 +494,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             IFile packageFile = folder.getFile(new Path(PACKAGE_NED_FILENAME));
             if (packageFile.exists()) {
                 NedFileElementEx nedFileElement = getNedFileElement(packageFile);
-                PropertyElementEx property = nedFileElement.getProperties().get(propertyName);
+                PropertyElementEx property = NEDElementUtilEx.getProperty(nedFileElement, propertyName, null);
                 if (property != null)
                     return property;
             }
