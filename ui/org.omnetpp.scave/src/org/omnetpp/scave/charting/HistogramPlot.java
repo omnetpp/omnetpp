@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -166,27 +167,32 @@ class HistogramPlot {
 					double yt = bars[series][index].maxY;
 					double yb = bars[series][index].minY;
 
-					if (yt != yb) {
-						int left = coordsMapping.toCanvasX(xl);
-						int right = coordsMapping.toCanvasX(xr);
-						int bottom = Double.isInfinite(yb) ? (yb<0?area.bottom():area.y) : coordsMapping.toCanvasY(yb);
-						int top = Double.isInfinite(yt) ? (yt<0?area.bottom():area.y) : coordsMapping.toCanvasY(yt);
-						graphics.fillRectangle(left, top, right-left, bottom-top);
-						graphics.drawRectangle(left, top, right-left, bottom-top);
-					}
-				}
+                    if (!Double.isInfinite(yt) && !Double.isInfinite(yb)) {
+                        int left = coordsMapping.toCanvasX(xl);
+                        int right = coordsMapping.toCanvasX(xr);
+                        int bottom = coordsMapping.toCanvasY(yb);
+                        int top = coordsMapping.toCanvasY(yt);
+                        if (top != bottom) {
+                            graphics.fillRectangle(left, top, right-left, bottom-top);
+                            graphics.drawRectangle(left, top, right-left, bottom-top);
+                        }
+                        else {
+                            graphics.drawLine(left, top, right, top);
+                        }
+                    }
+                }
 			}
 			break;
 		case Outline:
 			graphics.setLineWidth(4);
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.setAlpha(128);
+			int baselineY = coordsMapping.toCanvasY(transformedBaseline);
 			for (int series = 0; series < bars.length; ++series) {
 				graphics.setForegroundColor(getHistogramColor(series));
-				int prevY = area.bottom();
+				int prevY = baselineY;
 				int cellCount = bars[series].length;
-				int[] points = new int[6*cellCount]; // coordinates of 3*n points
-				int i = 0;
+				PointList points = new PointList(3*cellCount);
 				for (int index = 0 ; index < cellCount; ++index) {
 					double xl = bars[series][index].minX;
 					double xr = bars[series][index].maxX;
@@ -196,15 +202,26 @@ class HistogramPlot {
 
 					int left = coordsMapping.toCanvasX(xl);
 					int right = coordsMapping.toCanvasX(xr);
-					int yy = Double.isInfinite(y) ? (y<0?area.bottom():area.y): coordsMapping.toCanvasY(y);
-
-					points[i++] = left; points[i++] = prevY;
-					points[i++] = left; points[i++] = yy;
-					points[i++] = right; points[i++] = yy;
-
-					prevY = yy;
+					int yy;
+					if (Double.isInfinite(y)) {
+					    yy = baselineY;
+					    if (yy != prevY) {
+					        points.addPoint(left, prevY);
+					        points.addPoint(left, yy);
+					    }
+					    graphics.drawPolyline(points);
+					    points.removeAllPoints();
+					}
+					else {
+	                    yy = coordsMapping.toCanvasY(y);
+    					points.addPoint(left, prevY);
+    					points.addPoint(left, yy);
+    					points.addPoint(right, yy);
+					}
+                    prevY = yy;
 				}
-				graphics.drawPolyline(points);
+				if (points.size() > 0)
+				    graphics.drawPolyline(points);
 			}
 			break;
 		}
