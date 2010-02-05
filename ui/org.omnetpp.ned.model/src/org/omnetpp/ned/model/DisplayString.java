@@ -58,9 +58,9 @@ public class DisplayString implements IDisplayString {
     protected String cachedDisplayString = null;
 
     // map that stores the currently available tag instances
-    private final Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
+    private Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
 
-    private static class TagInstance {
+    public static class TagInstance {
         private String name = "";
         private Vector<String> args = new Vector<String>(1);
 
@@ -78,6 +78,14 @@ public class DisplayString implements IDisplayString {
          */
         public String getName() {
             return name;
+        }
+
+        public Tag getTag() {
+            return Tag.valueOf(name);
+        }
+
+        public int getArgSize() {
+            return args.size();
         }
 
         /**
@@ -295,18 +303,24 @@ public class DisplayString implements IDisplayString {
      * Parse the given string and store its contents.
      */
     public void set(String newValue) {
-    	tagMap.clear();
-    	if (newValue != null) {
+    	tagMap = parseTags(newValue);
+        cachedDisplayString = newValue;
+        updateNedElement();
+    }
+
+    public static LinkedHashMap<String, TagInstance> parseTags(String text) {
+        LinkedHashMap<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
+        tagMap.clear();
+    	if (text != null) {
     	    // parse the display string into tags along ";"
-    		Scanner scr = new Scanner(newValue);
+    		Scanner scr = new Scanner(text);
     		scr.useDelimiter(";");
     		while (scr.hasNext()) {
     			TagInstance parsedTag = new TagInstance(scr.next().trim());
     			tagMap.put(parsedTag.getName(), parsedTag);  //FIXME must resolve escaped ";" and "," ??? --Andras
     		}
     	}
-        cachedDisplayString = newValue;
-        updateNedElement();
+    	return tagMap;
     }
 
 	protected void updateNedElement() {
