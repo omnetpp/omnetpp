@@ -7,7 +7,7 @@
       <editor
             name="Freemarker Editor"
             icon="icons/icon.gif"
-            extensions="ftl, fti"
+            extensions="ftl,fti"
             contributorClass="freemarker.eclipse.editors.ActionContributor"
             class="freemarker.eclipse.editors.FreemarkerEditor"
             id="freemarker.eclipse.editors.FreemarkerEditor">
@@ -16,7 +16,7 @@
    <extension
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
-            extensions="ftl, fti"
+            extensions="ftl,fti"
             class="freemarker.eclipse.editors.SetupParticipant">
       </participant>
    </extension>
