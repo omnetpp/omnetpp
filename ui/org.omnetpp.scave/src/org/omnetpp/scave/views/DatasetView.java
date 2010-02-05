@@ -213,7 +213,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		if (control instanceof DataTree)
 		    ((DataTree)control).contributeToContextMenu(menuManager);
         ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
-        if (ResultType.VECTOR_LITERAL.equals(panel.getType())) {
+        if (editorContributor != null && ResultType.VECTOR_LITERAL.equals(panel.getType())) {
             menuManager.add(new Separator());
             menuManager.add(editorContributor.getShowOutputVectorViewAction());
         }
