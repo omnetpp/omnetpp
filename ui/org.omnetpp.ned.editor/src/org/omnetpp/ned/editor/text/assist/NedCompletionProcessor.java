@@ -306,16 +306,10 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 
 		// particular properties using the @ syntax
         if (line.matches("@display\\(\".*")) {
-            if (line.matches(".*[\"|;| ](i|i2)=")) {
-                List<String> names = ImageFactory.getImageNameList();
-                String[] proposals = names.toArray(new String[0]);
-                Image[] images = new Image[proposals.length];
-                for (int i = 0; i < proposals.length; i++) {
-                    String proposal = proposals[i];
-                    images[i] = ImageFactory.getIconImage(proposal);
-                }
-                addProposals(viewer, documentOffset, result, proposals, proposals, images);
-            }
+            if (line.matches(".*[\"|;| ](i|i2)="))
+                addImageProposals(viewer, documentOffset, result, ".*");
+            else if (line.matches(".*[\"|;| ]bgi="))
+                addImageProposals(viewer, documentOffset, result, "maps/.*");
             else if (info.sectionType == SECT_PARAMETERS)
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());
             else if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
@@ -323,13 +317,13 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
             else if (info.sectionType == SECT_CONNECTIONS)
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl, new NedDisplayStringTagDetector());
         }
-        else if (line.matches(".*@unit\\(\\w?")) {
-            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamUnitTempl);
-        }
+        else if (line.matches(".*@unit\\(\\w?"))
+            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
         else if (line.matches("@signal\\[.*?\\]\\(.*")) {
             addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyParameterTempl, new NedPropertyTagDetector());
-
-            if (line.matches(".*modeHint=(\\w\\,?)*"))
+            if (line.matches(".*unit=\\w?"))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
+            else if (line.matches(".*modeHint=(\\w\\,?)*"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyModeHintParameterValueTempl, new NedPropertyTagValueDetector());
             else if (line.matches(".*interpolationMode=\\w?"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyInterpolationModeParameterValueTempl, new NedPropertyTagValueDetector());
@@ -339,5 +333,20 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		// Debug.println("Proposal creation: "+millis+"ms");
 
 	    return result.toArray(new ICompletionProposal[result.size()]);
+	}
+
+	private void addImageProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String regex) {
+        List<String> names = ImageFactory.getImageNameList();
+        List<String> matchingName = new ArrayList<String>();
+        for (String name : names)
+            if (name.matches(regex))
+                matchingName.add(name);
+        String[] proposals = matchingName.toArray(new String[0]);
+        Image[] images = new Image[proposals.length];
+        for (int i = 0; i < proposals.length; i++) {
+            String proposal = proposals[i];
+            images[i] = ImageFactory.getIconImage(proposal);
+        }
+        addProposals(viewer, documentOffset, result, proposals, proposals, images);
 	}
 }
