@@ -738,11 +738,16 @@ public class ColorFactory {
     /**
      * @return All registered color names
      */
-    @SuppressWarnings("unchecked")
 	public static String[] getColorNames() {
-        return (String[])str2rgbRegistry.getKeySet().toArray(new String[0]);
+        ArrayList<String> keys = new ArrayList<String>();
+        for (Object key : str2rgbRegistry.getKeySet())
+            keys.add((String)key);
+        return keys.toArray(new String[0]);
     }
 
+    /**
+     * @return All registered color RGBs
+     */
     public static String[] getColorRGBs() {
         ArrayList<String> rgbs = new ArrayList<String>();
         for (Object key : str2rgbRegistry.getKeySet())
@@ -750,6 +755,9 @@ public class ColorFactory {
         return rgbs.toArray(new String[0]);
     }
 
+    /**
+     * @return All registered color images
+     */
     public static Image[] getColorImages() {
         ArrayList<Image> images = new ArrayList<Image>();
         for (Object key : str2rgbRegistry.getKeySet())
