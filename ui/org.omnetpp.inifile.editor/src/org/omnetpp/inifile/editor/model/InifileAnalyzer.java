@@ -19,14 +19,12 @@ import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_INT;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_STRING;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_XML;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -43,12 +41,9 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
-import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
-import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.util.StringUtils.DictionaryComparator;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
@@ -139,6 +134,7 @@ public class InifileAnalyzer {
 		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>();
 		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>(); // subset of allParamResolutions
 		List<ParamResolution> implicitlyAssignedParams = new ArrayList<ParamResolution>(); // subset of allParamResolutions
+		List<SignalResolution> signalResolutions = new ArrayList<SignalResolution>();
 		List<IterationVariable> iterations = new ArrayList<IterationVariable>();
 		Map<String,IterationVariable> namedIterations = new HashMap<String, IterationVariable>();
 	}
@@ -894,12 +890,14 @@ public class InifileAnalyzer {
 		// calculate parameter resolutions for each section
 		for (String activeSection : doc.getSectionNames()) {
 			// calculate param resolutions
-			List<ParamResolution> resList = collectParameters(activeSection);
+			List<ParamResolution> paramResoultions = collectParameters(activeSection);
+			List<SignalResolution> signalResolutions = collectSignalResolutions(activeSection);
 
 			// store with the section the list of all parameter resolutions (including unassigned params)
 			// store with every key the list of parameters it resolves
-			for (ParamResolution res : resList) {
+			for (ParamResolution res : paramResoultions) {
 				SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
+				sectionData.signalResolutions = signalResolutions;
 				sectionData.allParamResolutions.add(res);
 				if (res.type == ParamResolutionType.UNASSIGNED)
 					sectionData.unassignedParams.add(res);
@@ -923,7 +921,7 @@ public class InifileAnalyzer {
 		if (networkName == null)
 			return new ArrayList<ParamResolution>();
 		INEDTypeInfo network = resolveNetwork(res, networkName);
-		if (network == null )
+		if (network == null)
 			return new ArrayList<ParamResolution>();
 
 		// traverse the network and collect resolutions meanwhile
@@ -935,6 +933,7 @@ public class InifileAnalyzer {
 		return list;
 	}
 
+/*
     // TODO: move?
     // testParamAssignments("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out", list);
     public void testParamAssignments(String fileName, ArrayList<ParamResolution> list) {
@@ -943,7 +942,7 @@ public class InifileAnalyzer {
             Properties properties = new Properties();
             properties.load(new FileInputStream(fileName));
 
-            for (Object key : CollectionUtils.toSorted((Set<String>)(Set)properties.keySet(), new DictionaryComparator())) {
+            for (Object key : CollectionUtils.toSorted((Set)properties.keySet(), new DictionaryComparator())) {
                 String paramName = (String)key;
                 String runtimeParamValue = properties.getProperty(paramName);
                 boolean iniDefault = false;
@@ -1008,6 +1007,7 @@ public class InifileAnalyzer {
             throw new RuntimeException(e);
         }
     }
+*/
 
 	/**
 	 * Collects parameters of a module type (recursively), *without* an inifile present.
@@ -1034,11 +1034,13 @@ public class InifileAnalyzer {
 
     protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> resultList, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
         return new ParamUtil.RecursiveParamDeclarationVisitor() {
+            @Override
             protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 resolveParameter(resultList, fullPath, typeInfoPath, elementPath, sectionChain, doc, paramDeclaration);
                 return true;
             }
 
+            @Override
             public String resolveLikeType(ISubmoduleOrConnection element) {
                 // Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
                 // resolveLikeParam() which relies on the data structure we are currently building
@@ -1180,7 +1182,64 @@ public class InifileAnalyzer {
         }
 	}
 
-	public boolean containsSectionCycles() {
+	public List<SignalResolution> collectSignalResolutions(final String activeSection) {
+        INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+        final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+        String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
+        if (networkName == null)
+            networkName = CFGID_NETWORK.getDefaultValue();
+        INEDTypeInfo network = resolveNetwork(res, networkName);
+        if (networkName == null)
+            return new ArrayList<SignalResolution>();
+        if (network == null )
+            return new ArrayList<SignalResolution>();
+
+        // traverse the network and collect resolutions meanwhile
+        final ArrayList<SignalResolution> list = new ArrayList<SignalResolution>();
+        IProject contextProject = doc.getDocumentFile().getProject();
+        NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, new IModuleTreeVisitor() {
+            protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
+            protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc)
+
+            public boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+                elementPath.push(element);
+                fullPathStack.push(element == null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
+                Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("signal");
+                String fullPath = StringUtils.join(fullPathStack, ".");
+                if (propertyMap != null)
+                    for (PropertyElementEx property : propertyMap.values())
+                        list.add(new SignalResolution(fullPath + "." + property.getIndex(), elementPath, property, activeSection));
+                return true;
+            }
+
+            public void leave() {
+                elementPath.pop();
+                fullPathStack.pop();
+            }
+
+            public void recursiveType(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+            }
+
+            public String resolveLikeType(ISubmoduleOrConnection element) {
+                return null;
+            }
+
+            public void unresolvedType(ISubmoduleOrConnection element, String typeName) {
+            }
+        });
+        treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
+        return list;
+	}
+
+    public static void resolveModuleSignals(List<SignalResolution> list, String fullPath, Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
+        INEDTypeInfo typeInfo = typeInfoPath.lastElement();
+        Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("signal");
+        if (propertyMap != null)
+            for (PropertyElementEx property : propertyMap.values())
+                list.add(new SignalResolution(fullPath + "." + property.getIndex(), elementPath, property, null));
+    }
+
+    public boolean containsSectionCycles() {
 		analyzeIfChanged();
 		return !sectionsCausingCycles.isEmpty();
 	}
@@ -1357,7 +1416,32 @@ public class InifileAnalyzer {
 		return remark;
 	}
 
-	/**
+    public SignalResolution[] getSignalResolutions(String section) {
+        synchronized (lock) {
+            analyzeIfChanged();
+            SectionData sectionData = (SectionData) doc.getSectionData(section);
+            return sectionData.signalResolutions.toArray(new SignalResolution[]{});
+        }
+    }
+
+    public SignalResolution[] getSignalResolutionsForModule(ISubmoduleOrConnection element, String section) {
+        synchronized (lock) {
+            analyzeIfChanged();
+            SectionData data = (SectionData)doc.getSectionData(section);
+            List<SignalResolution> signalResolutions = data==null ? null : data.signalResolutions;
+            if (signalResolutions == null || signalResolutions.isEmpty())
+                return new SignalResolution[0];
+
+            // Note: linear search -- can be made more efficient with some lookup table if needed
+            ArrayList<SignalResolution> result = new ArrayList<SignalResolution>();
+            for (SignalResolution signalResolution : signalResolutions)
+                if (element == signalResolution.elementPath[signalResolution.elementPath.length - 1])
+                    result.add(signalResolution);
+            return result.toArray(new SignalResolution[]{});
+        }
+    }
+
+    /**
 	 * Returns names of declared iteration variables ("${variable=...}") from
 	 * the given section and all its fallback sections. Note: unnamed iterations
 	 * are not in the list.
