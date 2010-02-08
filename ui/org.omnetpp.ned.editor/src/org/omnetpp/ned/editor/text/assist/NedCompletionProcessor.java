@@ -8,6 +8,7 @@
 package org.omnetpp.ned.editor.text.assist;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -17,6 +18,9 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString.PropType;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedDisplayStringTagDetector;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagDetector;
@@ -24,6 +28,7 @@ import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagValueD
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -306,30 +311,55 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 
 		// particular properties using the @ syntax
         if (line.matches("@display\\(\".*")) {
-            if (line.matches(".*[\"|;| ](i|i2)=")) {
-                List<String> names = ImageFactory.getImageNameList();
-                String[] proposals = names.toArray(new String[0]);
-                Image[] images = new Image[proposals.length];
-                for (int i = 0; i < proposals.length; i++) {
-                    String proposal = proposals[i];
-                    images[i] = ImageFactory.getIconImage(proposal);
-                }
-                addProposals(viewer, documentOffset, result, proposals, proposals, images);
+            if (line.matches(".*(;|\")")) {
+                // add generic display string proposals
+                if (info.sectionType == SECT_PARAMETERS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());
+                else if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl, new NedDisplayStringTagDetector());
+                else if (info.sectionType == SECT_CONNECTIONS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl, new NedDisplayStringTagDetector());
             }
-            else if (info.sectionType == SECT_PARAMETERS)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());
-            else if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl, new NedDisplayStringTagDetector());
-            else if (info.sectionType == SECT_CONNECTIONS)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl, new NedDisplayStringTagDetector());
+            else {
+                // determine tag name and tag position from display string line
+                int tagPos = -1;
+                LinkedHashMap<String, DisplayString.TagInstance> tagMap = DisplayString.parseTags(line.replaceFirst(".*\"", ""));
+                ArrayList<DisplayString.TagInstance> tags = new ArrayList<DisplayString.TagInstance>(tagMap.values());
+                DisplayString.TagInstance tagInstance = null;
+                IDisplayString.Tag tag = null;
+                IDisplayString.Prop prop = null;
+                if (tags.size() != 0) {
+                    tagInstance = tags.get(tags.size() - 1);
+                    try {
+                        tag = tagInstance.getTag();
+                    }
+                    catch (IllegalArgumentException e) {
+                        // void
+                    }
+                    tagPos = tagInstance.getArgSize();
+                    prop = IDisplayString.Prop.findProp(tag, tagPos);
+                }
+                // add tag specific proposals
+                if (tagPos == 0 && tag.equals(IDisplayString.Tag.bgi))
+                    addImageProposals(viewer, documentOffset, result, "maps/.*");
+                else if (prop != null) {
+                    IDisplayString.EnumSpec enumSpec = prop.getEnumSpec();
+                    if (enumSpec != null)
+                        addProposals(viewer, documentOffset, result, enumSpec.getShorthands(), enumSpec.getNames());
+                    else if (prop.getType() == PropType.COLOR)
+                        addProposals(viewer, documentOffset, result, ColorFactory.getColorNames(), ColorFactory.getColorRGBs(), ColorFactory.getColorImages());
+                    else if (prop.getType() == PropType.IMAGE)
+                        addImageProposals(viewer, documentOffset, result, ".*");
+                }
+            }
         }
-        else if (line.matches(".*@unit\\(\\w?")) {
-            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamUnitTempl);
-        }
+        else if (line.matches(".*@unit\\(\\w?"))
+            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
         else if (line.matches("@signal\\[.*?\\]\\(.*")) {
             addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyParameterTempl, new NedPropertyTagDetector());
-
-            if (line.matches(".*modeHint=(\\w\\,?)*"))
+            if (line.matches(".*unit=\\w?"))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
+            else if (line.matches(".*modeHint=(\\w\\,?)*"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyModeHintParameterValueTempl, new NedPropertyTagValueDetector());
             else if (line.matches(".*interpolationMode=\\w?"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyInterpolationModeParameterValueTempl, new NedPropertyTagValueDetector());
@@ -339,5 +369,20 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		// Debug.println("Proposal creation: "+millis+"ms");
 
 	    return result.toArray(new ICompletionProposal[result.size()]);
+	}
+
+	private void addImageProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String regex) {
+        List<String> names = ImageFactory.getImageNameList();
+        List<String> matchingName = new ArrayList<String>();
+        for (String name : names)
+            if (name.matches(regex))
+                matchingName.add(name);
+        String[] proposals = matchingName.toArray(new String[0]);
+        Image[] images = new Image[proposals.length];
+        for (int i = 0; i < proposals.length; i++) {
+            String proposal = proposals[i];
+            images[i] = ImageFactory.getIconImage(proposal);
+        }
+        addProposals(viewer, documentOffset, result, proposals, proposals, images);
 	}
 }

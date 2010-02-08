@@ -144,43 +144,45 @@ public final class NedCompletionHelper {
         makeShortTemplate("@unit(${unitName})", "property"),
     }; //XXX check this list before release
 
-    public final static Template[] proposedNedParamUnitTempl;
+    public final static Template[] proposedNedUnitTempl;
 
     static {
         PStringVector units = UnitConversion.getAllUnits();
-        proposedNedParamUnitTempl = new Template[(int)units.size()];
+        proposedNedUnitTempl = new Template[(int)units.size()];
         for (int i = 0; i < units.size(); i++) {
             String shortName = units.get(i);
-            proposedNedParamUnitTempl[i] = makeTemplate(UnitConversion.getLongName(shortName), "unit", shortName);
+            proposedNedUnitTempl[i] = makeTemplate(UnitConversion.getLongName(shortName), "unit", shortName);
         }
     }
 
     public final static Template[] proposedNedSignalPropertyParameterTempl = {
         makeShortTemplate("title=\"${title}\"", "parameter"),
         makeShortTemplate("unit=${unit};", "parameter"),
-        makeShortTemplate("interpolationMode=${modes};", "parameter"),
+        makeShortTemplate("interpolationmode=${modes};", "parameter"),
         makeShortTemplate("enum=${value1, value2};", "parameter"),
         makeShortTemplate("modeHint=${hints};", "parameter"),
     };
 
     public final static Template[] proposedNedSignalPropertyInterpolationModeParameterValueTempl = {
         makeShortTemplate("none", "interpolation mode"),
+        makeShortTemplate("linear", "interpolation mode"),
         makeShortTemplate("sample-hold", "interpolation mode"),
         makeShortTemplate("backward-sample-hold", "interpolation mode"),
-        makeShortTemplate("linear", "interpolation mode"),
     };
 
     public final static Template[] proposedNedSignalPropertyModeHintParameterValueTempl = {
         makeShortTemplate("auto", "automatically select the best mode(s) for a signal, this mode currently selects histogram mode"),
+//        makeShortTemplate("none", "do not record anything"),
         makeShortTemplate("count", "record the number of values emitted; values are ignored"),
-        makeShortTemplate("lastval", "record the last value"),
+//        makeShortTemplate("vector", "record all values"),
+        makeShortTemplate("last", "record the last value"),
         makeShortTemplate("sum", "record the sum of the values"),
         makeShortTemplate("mean", "record the mean of the values"),
         makeShortTemplate("min", "record the minimum value"),
         makeShortTemplate("max", "record the maximum value"),
         makeShortTemplate("timeavg", "record the time average, interpreting the signal as a step function (sample-hold)"),
-        makeShortTemplate("stddev", "record the count, sum, mean, standard deviation, minimum and maximum of the values"),
-        makeShortTemplate("histogram", "record everything stddev records, plus a histogram of the values (bins are set up automatically)"),
+        makeShortTemplate("stats", "record the count, sum, mean, standard deviation, minimum and maximum of the values"),
+        makeShortTemplate("histogram", "record everything stats records, plus a histogram of the values (bins are set up automatically)"),
     };
 
     public final static Template[] proposedNedGatePropertyTempl = {

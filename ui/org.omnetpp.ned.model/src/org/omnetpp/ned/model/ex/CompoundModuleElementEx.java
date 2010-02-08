@@ -84,7 +84,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
     public boolean isNetwork() {
     	// this isNetwork property should not be inherited so we look only among the local properties
-    	PropertyElementEx networkPropertyElementEx = getNEDTypeInfo().getLocalProperties().get(IS_NETWORK_PROPERTY);
+    	PropertyElementEx networkPropertyElementEx = getNEDTypeInfo().getLocalProperty(IS_NETWORK_PROPERTY, null);
     	if (networkPropertyElementEx == null)
     		return false;
     	String propValue = NEDElementUtilEx.getPropertyValue(networkPropertyElementEx);
@@ -367,7 +367,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         return getNEDTypeInfo().getParameterInheritanceChain(parameterName);
     }
 
-    public Map<String, PropertyElementEx> getProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
         return getNEDTypeInfo().getProperties();
     }
 

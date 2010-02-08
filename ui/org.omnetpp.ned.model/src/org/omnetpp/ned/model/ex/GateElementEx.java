@@ -38,18 +38,7 @@ public class GateElementEx extends GateElement implements IHasIndex, IHasName, I
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    public Map<String, PropertyElementEx> getProperties() {
-        Map<String, PropertyElementEx> map = new HashMap<String, PropertyElementEx>();
-
-        INEDElement node = getFirstChildWithTag(NED_PROPERTY);
-        while (node != null) {
-            if (node instanceof IHasName && node.getTagCode() == NED_PROPERTY)
-                ((Map)map).put(((IHasName)node).getName(), (PropertyElementEx)node);
-
-            node = node.getNextSibling();
-        }
-
-        return map;
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
+        return NEDElementUtilEx.collectProperties(this, new HashMap<String, Map<String, PropertyElementEx>>());
     }
 }

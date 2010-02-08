@@ -9,7 +9,9 @@ package org.omnetpp.ned.model.ex;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -381,8 +383,36 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		return comment;
 	}
 
+
+    public static Map<String, Map<String, PropertyElementEx>> collectProperties(INEDElement node, Map<String, Map<String, PropertyElementEx>> map) {
+        INEDElement section = node.getFirstChildWithTag(NED_PARAMETERS);
+        if (section != null) {
+            for (INEDElement child : section) {
+                if (child instanceof IHasName && child.getTagCode()==NED_PROPERTY) {
+                    String name = ((IHasName)child).getName();
+                    Map<String, PropertyElementEx> propertyMap = map.get(name);
+                    if (propertyMap == null) {
+                        propertyMap = new HashMap<String, PropertyElementEx>();
+                        map.put(name, propertyMap);
+                    }
+                    PropertyElementEx property = (PropertyElementEx)child;
+                    propertyMap.put(property.getIndex(), property);
+                }
+            }
+        }
+        return map;
+    }
+
+    public static PropertyElementEx getProperty(IHasProperties element, String name, String index) {
+        Map<String, PropertyElementEx> propertyMap = element.getProperties().get(name);
+        if (propertyMap == null)
+            return null;
+        else
+            return propertyMap.get(index == null ? PropertyElementEx.DEFAULT_PROPERTY_INDEX : index);
+    }
+
     public static ArrayList<String> getPropertyValues(IHasProperties element, String propertyName) {
-        PropertyElementEx propertyElement = element.getProperties().get(propertyName);
+        PropertyElementEx propertyElement = getProperty(element, propertyName, null);
         ArrayList<String> properties = new ArrayList<String>();
 
         if (propertyElement != null)
@@ -395,7 +425,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 
     public static void setPropertyValues(IHasProperties element, String propertyName, Collection<String> values) {
         NEDElementFactory factory = NEDElementFactoryEx.getInstance();
-        PropertyElementEx propertyElement = element.getProperties().get(propertyName);
+        PropertyElementEx propertyElement = NEDElementUtilEx.getProperty(element, propertyName, null);
 
         if (propertyElement == null) {
             propertyElement = (PropertyElementEx)factory.createElement(NED_PROPERTY);
@@ -410,7 +440,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 
     public static void addPropertyValues(IHasProperties element, String propertyName, Collection<String> values) {
         NEDElementFactory factory = NEDElementFactoryEx.getInstance();
-        PropertyElementEx propertyElement = element.getProperties().get(propertyName);
+        PropertyElementEx propertyElement = NEDElementUtilEx.getProperty(element, propertyName, null);
 
         if (propertyElement == null) {
             propertyElement = (PropertyElementEx)factory.createElement(NED_PROPERTY);

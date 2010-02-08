@@ -96,7 +96,7 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
         return getNEDTypeInfo().getParameterInheritanceChain(parameterName);
     }
 
-    public Map<String, PropertyElementEx> getProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
         return getNEDTypeInfo().getProperties();
     }
 

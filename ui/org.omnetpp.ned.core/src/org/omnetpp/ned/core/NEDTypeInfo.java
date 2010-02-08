@@ -25,6 +25,7 @@ import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
@@ -62,7 +63,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	// local members
     protected boolean needsRefreshLocal;
 	protected Set<INedTypeElement> localInterfaces = new HashSet<INedTypeElement>();
-	protected Map<String, PropertyElementEx> localProperties = new LinkedHashMap<String, PropertyElementEx>();
+	protected Map<String, Map<String, PropertyElementEx>> localProperties = new LinkedHashMap<String, Map<String, PropertyElementEx>>();
     protected Map<String, ParamElementEx> localParams = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> localParamDecls = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> localParamValues = new LinkedHashMap<String, ParamElementEx>();
@@ -79,7 +80,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected boolean needsRefreshInherited; //XXX may be replaced with inheritedRefreshSerial, see INEDTypeResolver.getLastChangeSerial()
 	protected List<INEDTypeInfo> extendsChain = null;
 	protected Set<INedTypeElement> allInterfaces = new HashSet<INedTypeElement>();
-	protected Map<String, PropertyElementEx> allProperties = new LinkedHashMap<String, PropertyElementEx>();
+	protected Map<String, Map<String, PropertyElementEx>> allProperties = new LinkedHashMap<String, Map<String, PropertyElementEx>>();
     protected Map<String, ParamElementEx> allParamDecls = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> allParamValues = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, GateElementEx> allGates = new LinkedHashMap<String, GateElementEx>();
@@ -124,7 +125,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	 * (NED_PARAMETERS, NED_GATES, etc) into the map.
 	 */
 	@SuppressWarnings("unchecked")
-	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode, IPredicate predicate) {
+    protected void collect(Map<String, ? extends INEDElement> map, int sectionTagCode, IPredicate predicate) {
 		INEDElement section = componentNode.getFirstChildWithTag(sectionTagCode);
 		if (section != null)
 			for (INEDElement node : section)
@@ -241,10 +242,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         }
 
         // collect members from component declaration
-        collect(localProperties, NED_PARAMETERS, new IPredicate() {
-        	public boolean matches(IHasName node) {
-        		return node.getTagCode()==NED_PROPERTY;
-        	}});
+        NEDElementUtilEx.collectProperties(componentNode, localProperties);
         collect(localParams, NED_PARAMETERS, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node.getTagCode()==NED_PARAM;
@@ -276,7 +274,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
         // collect them in one common hash table as well (we assume there's no name clash --
         // that should be checked beforehand by validation!)
-        localMembers.putAll(localProperties);
         localMembers.putAll(localParamDecls);
         localMembers.putAll(localGateDecls);
         localMembers.putAll(localSubmodules);
@@ -407,7 +404,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         List<INEDTypeInfo> extendsChain = getExtendsChain();
 
         for (INEDTypeInfo typeInfo : extendsChain) {
-            PropertyElementEx property = typeInfo.getProperties().get("class");
+            PropertyElementEx property = typeInfo.getProperty("class", null);
 
             if (property != null)
                 className = property.getSimpleValue();
@@ -455,9 +452,17 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return localParams;
     }
 
-    public Map<String, PropertyElementEx> getLocalProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getLocalProperties() {
     	refreshLocalMembersIfNeeded();
         return localProperties;
+    }
+
+    public PropertyElementEx getLocalProperty(String name, String index) {
+        Map<String, PropertyElementEx> propertyMap = getLocalProperties().get(name);
+        if (propertyMap == null)
+            return null;
+        else
+            return propertyMap.get(index == null ? PropertyElementEx.DEFAULT_PROPERTY_INDEX : index);
     }
 
     public Map<String, GateElementEx> getLocalGateDeclarations() {
@@ -511,9 +516,17 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     }
 
     // TODO: properly implement property: name, index pair
-    public Map<String, PropertyElementEx> getProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
     	refreshInheritedMembersIfNeeded();
         return allProperties;
+    }
+
+    public PropertyElementEx getProperty(String name, String index) {
+        Map<String, PropertyElementEx> propertyMap = getProperties().get(name);
+        if (propertyMap == null)
+            return null;
+        else
+            return propertyMap.get(index == null ? PropertyElementEx.DEFAULT_PROPERTY_INDEX : index);
     }
 
     public Map<String, GateElementEx> getGateDeclarations() {
@@ -577,7 +590,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		List<PropertyElement> result = new ArrayList<PropertyElement>();
 		for (INEDTypeInfo type : getExtendsChain())
 			if (type.getLocalProperties().containsKey(propertyName))
-				result.add(type.getLocalProperties().get(propertyName));
+				result.add(type.getLocalProperty(propertyName, null));
 		return result;
 	}
 

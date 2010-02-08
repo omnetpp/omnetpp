@@ -31,10 +31,10 @@ simple L2Queue
         @display("i=block/queue;q=queue");
         @signal[qlen](title="queue length";modeHint=timeavg,max);
         @signal[busy](title="server busy state";modeHint=timeavg);
-        @signal[queueingTime](title="queueing time at dequeue";unit=s;interpolationMode=none);
-        @signal[drop](title="dropped packet byte length";unit=bytes;modeHint=count,sum;interpolationMode=none);
-        @signal[txBytes](title="transmitting packet byte length";unit=bytes;modeHint=count,sum,histogram;interpolationMode=none);
-        @signal[rxBytes](title="received packet byte length";unit=bytes;modeHint=count,sum,histogram;interpolationMode=none);
+        @signal[queueingTime](title="queueing time at dequeue";unit=s;interpolationmode=none);
+        @signal[drop](title="dropped packet byte length";unit=bytes;modeHint=count,sum;interpolationmode=none);
+        @signal[txBytes](title="transmitting packet byte length";unit=bytes;modeHint=count,sum,histogram;interpolationmode=none);
+        @signal[rxBytes](title="received packet byte length";unit=bytes;modeHint=count,sum,histogram;interpolationmode=none);
     gates:
         input in;
         output out;

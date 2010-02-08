@@ -7,6 +7,7 @@
 
 package org.omnetpp.common.color;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.jface.resource.ColorRegistry;
@@ -737,9 +738,31 @@ public class ColorFactory {
     /**
      * @return All registered color names
      */
-    @SuppressWarnings("unchecked")
 	public static String[] getColorNames() {
-        return (String[])str2rgbRegistry.getKeySet().toArray(new String[] {});
+        ArrayList<String> keys = new ArrayList<String>();
+        for (Object key : str2rgbRegistry.getKeySet())
+            keys.add((String)key);
+        return keys.toArray(new String[0]);
+    }
+
+    /**
+     * @return All registered color RGBs
+     */
+    public static String[] getColorRGBs() {
+        ArrayList<String> rgbs = new ArrayList<String>();
+        for (Object key : str2rgbRegistry.getKeySet())
+            rgbs.add(str2rgbRegistry.getRGB((String)key).toString());
+        return rgbs.toArray(new String[0]);
+    }
+
+    /**
+     * @return All registered color images
+     */
+    public static Image[] getColorImages() {
+        ArrayList<Image> images = new ArrayList<Image>();
+        for (Object key : str2rgbRegistry.getKeySet())
+            images.add(asImage((String)key));
+        return images.toArray(new Image[0]);
     }
 
     // helper function to fill the color table

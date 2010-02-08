@@ -76,9 +76,9 @@ public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
         return fields;
     }
 
-    public Map<String, PropertyElementEx> getProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
         // TODO:
-        return new HashMap<String, PropertyElementEx>();
+        return new HashMap<String, Map<String, PropertyElementEx>>();
     }
 
     public String getFullyQualifiedCppClassName() {

@@ -96,7 +96,7 @@ public class ChannelInterfaceElementEx extends ChannelInterfaceElement implement
         return getNEDTypeInfo().getParameterInheritanceChain(parameterName);
     }
 
-    public Map<String, PropertyElementEx> getProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
         return getNEDTypeInfo().getProperties();
     }
 

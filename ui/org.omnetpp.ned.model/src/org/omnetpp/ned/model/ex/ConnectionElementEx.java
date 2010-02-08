@@ -236,7 +236,27 @@ public class ConnectionElementEx extends ConnectionElement
 
     public String getEffectiveType() {
         String likeType = getLikeType();
-        return StringUtils.isEmpty(likeType) ? getType() : likeType;
+        if (StringUtils.isEmpty(likeType)) {
+            String type = getType();
+            if (StringUtils.isEmpty(type)) {
+                Map<String, ParamElementEx> paramAssignments = getParamAssignments(null);
+                int delayChannelParameterCount = 0;
+                if (paramAssignments.containsKey("delay"))
+                    delayChannelParameterCount++;
+                if (paramAssignments.containsKey("disabled"))
+                    delayChannelParameterCount++;
+                if (paramAssignments.size() == 0)
+                    return "ned.IdealChannel";
+                else if (paramAssignments.size() == delayChannelParameterCount)
+                    return "ned.DelayChannel";
+                else
+                    return "ned.DatarateChannel";
+            }
+            else
+                return getType();
+        }
+        else
+            return likeType;
     }
 
     public INEDTypeInfo getNEDTypeInfo() {

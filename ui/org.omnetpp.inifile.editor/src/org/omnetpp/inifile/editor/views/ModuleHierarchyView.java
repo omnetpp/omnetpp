@@ -53,6 +53,7 @@ import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
+import org.omnetpp.inifile.editor.model.SignalResolution;
 import org.omnetpp.ned.core.IModuleTreeVisitor;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.NEDTreeTraversal;
@@ -192,6 +193,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
         }
 	}
 
+	private static class SignalNode extends GenericTreeNode {
+        public SignalNode(Object payload) {
+            super(payload);
+        }
+	}
+
 	public ModuleHierarchyView() {
 	}
 
@@ -212,6 +219,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			    if (element instanceof ParamAssignmentGroupNode)
 			        // TODO: find/make a better icon
 			        return InifileUtils.ICON_PAR_GROUP;
+                else if (element instanceof SignalNode)
+                    // TODO: find/make a better icon
+                    return InifileUtils.ICON_KEY_EQUALS_ASK;
 			    else if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SubmoduleOrConnectionNode) {
@@ -321,7 +331,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					((IGotoInifile)associatedEditor).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
 				}
 			}
-			public void selectionChanged(SelectionChangedEvent event) {
+			@Override
+            public void selectionChanged(SelectionChangedEvent event) {
 				SectionKey sel = getSectionKeyFromSelection();
 				setEnabled(sel!=null);
 			}
@@ -340,7 +351,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				if (sel != null)
 					NEDResourcesPlugin.openNEDElementInEditor(sel);
 			}
-			public void selectionChanged(SelectionChangedEvent event) {
+			@Override
+            public void selectionChanged(SelectionChangedEvent event) {
 				INEDElement sel = getNEDElementFromSelection();
 				setEnabled(sel != null);
 				updateLabel(sel);
@@ -434,7 +446,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			treeViewer.getTree().setFocus();
 	}
 
-	public void buildContent(INEDElement element, final InifileAnalyzer analyzer, final String section, String key) {
+	@Override
+    public void buildContent(INEDElement element, final InifileAnalyzer analyzer, final String section, String key) {
 		this.inifileAnalyzer = analyzer;
 		this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 
@@ -532,14 +545,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
     	INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
     	IProject contextProject = nedResources.getNedFile(elementWithParameters.getContainingNedFileElement()).getProject();
     	NEDTreeTraversal iterator = new NEDTreeTraversal(nedResources, new TreeBuilder());
-        if (elementWithParameters instanceof SubmoduleElementEx) {
-            SubmoduleElementEx submodule = (SubmoduleElementEx)elementWithParameters;
-            iterator.traverse(submodule);
-        }
-        else if (elementWithParameters instanceof ConnectionElementEx){
-            ConnectionElementEx connectionElememnt = (ConnectionElementEx)elementWithParameters;
-            iterator.traverse(connectionElememnt.getNEDTypeInfo().getFullyQualifiedName(), contextProject);
-        }
+        if (elementWithParameters instanceof ISubmoduleOrConnection)
+            iterator.traverse((ISubmoduleOrConnection)elementWithParameters);
         else if (elementWithParameters instanceof INedTypeElement){
             INedTypeElement typeElement = (INedTypeElement)elementWithParameters;
             iterator.traverse(typeElement.getNEDTypeInfo().getFullyQualifiedName(), contextProject);
@@ -584,17 +591,23 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	private GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String fullPath, Vector<ISubmoduleOrConnection> elementPath, Vector<INEDTypeInfo> typeInfoPath, String activeSection, InifileAnalyzer analyzer) {
 	    INEDTypeInfo typeInfo = typeInfoPath.lastElement();
 		String moduleText = moduleFullName+"  ("+typeInfo.getName()+")";
-		GenericTreeNode treeNode = new GenericTreeNode(new SubmoduleOrConnectionNode(moduleText, elementPath.lastElement(), typeInfo.getNEDElement()));
+		ISubmoduleOrConnection lastElement = elementPath.lastElement();
+        GenericTreeNode treeNode = new GenericTreeNode(new SubmoduleOrConnectionNode(moduleText, lastElement, typeInfo.getNEDElement()));
 		parent.addChild(treeNode);
 
 		if (analyzer == null) {
 			// no inifile available, we only have NED info
-		    ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
-			InifileAnalyzer.resolveModuleParameters(list, fullPath, typeInfoPath, elementPath);
-			addParamResolutions(treeNode, list.toArray(new ParamResolution[0]));
+		    ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
+			InifileAnalyzer.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath);
+			addParamResolutions(treeNode, paramResolutions.toArray(new ParamResolution[0]));
+            ArrayList<SignalResolution> signalResolutions = new ArrayList<SignalResolution>();
+            InifileAnalyzer.resolveModuleSignals(signalResolutions, fullPath, typeInfoPath, elementPath);
+            addSignalResolutions(treeNode, signalResolutions.toArray(new SignalResolution[0]));
 		}
-		else
-		    addParamResolutions(treeNode, analyzer.getParamResolutionsForModule(elementPath.lastElement(), activeSection));
+		else {
+		    addParamResolutions(treeNode, analyzer.getParamResolutionsForModule(lastElement, activeSection));
+		    addSignalResolutions(treeNode, analyzer.getSignalResolutionsForModule(lastElement, activeSection));
+		}
 
 		return treeNode;
 	}
@@ -620,6 +633,11 @@ public class ModuleHierarchyView extends AbstractModuleView {
                 node.addChild(child);
             }
         }
+	}
+
+	protected void addSignalResolutions(GenericTreeNode node, SignalResolution[] signalResolutions) {
+        for (SignalResolution signalResolution : signalResolutions)
+            node.addChild(new SignalNode(signalResolution.signalDeclaration.getIndex() + " : " + signalResolution.signalDeclaration.getValue("title")));
 	}
 
 	protected String getLabelFor(ParamResolution res, IInifileDocument doc, boolean includeName) {

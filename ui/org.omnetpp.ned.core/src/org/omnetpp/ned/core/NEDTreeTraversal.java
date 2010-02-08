@@ -14,7 +14,6 @@ import java.util.Stack;
 import org.eclipse.core.resources.IProject;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -60,14 +59,14 @@ public class NEDTreeTraversal {
 	/**
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
-	public void traverse(SubmoduleElementEx submodule) {
+	public void traverse(ISubmoduleOrConnection element) {
 		visitedTypes.clear();
-		String submoduleTypeName = resolveEffectiveTypeName(submodule);
-		INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : resolver.lookupNedType(submoduleTypeName, submodule.getCompoundModule());
-		if (submoduleType == null)
-			visitor.unresolvedType(submodule, submoduleTypeName);
+		String elementTypeName = resolveEffectiveTypeName(element);
+		INEDTypeInfo elementType = StringUtils.isEmpty(elementTypeName) ? null : resolver.lookupNedType(elementTypeName, element.getEnclosingLookupContext());
+		if (elementType == null)
+			visitor.unresolvedType(element, elementTypeName);
 		else
-			doTraverse(submodule, submoduleType);
+			doTraverse(element, elementType);
 	}
 
 	protected void doTraverse(ISubmoduleOrConnection element, INEDTypeInfo effectiveTypeInfo) {
@@ -116,18 +115,10 @@ public class NEDTreeTraversal {
 	protected String resolveEffectiveTypeName(ISubmoduleOrConnection element) {
 		String typeName = element.getType();
 		if (StringUtils.isEmpty(typeName)) {
-		    if (element instanceof ConnectionElementEx)
-		        // TODO: KLUDGE: this is not obviously the correct solution (but might be)
-		        //       connection element's type is null when it is a net.IdealChannel
-		        //       to avoid printing its type name at certain places.
-		        //       This causes that a couple of functions should deal with the type
-		        //       being null instead of always getting a correct type name.
-		        return "ned.IdealChannel";
-
 		    // resolve "like" type
 			typeName = visitor.resolveLikeType(element);
 			if (typeName == null)
-				typeName = element.getLikeType();
+				typeName = element.getEffectiveType();
 			else {
 			    // submoduleTypeName is likely an unqualified name -- look it up according to
 			    // the "like" type name resolution rules

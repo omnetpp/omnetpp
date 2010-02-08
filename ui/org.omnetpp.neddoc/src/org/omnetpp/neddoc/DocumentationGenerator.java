@@ -1098,10 +1098,10 @@ public class DocumentationGenerator {
                             generatePropertiesTable(nedTypeElement);
 
                             if (typeElement instanceof IModuleTypeElement)
-                                generateGatesTable((IModuleTypeElement)nedTypeElement);
+                                generateGatesTable(nedTypeElement);
 
                             if (typeElement instanceof CompoundModuleElementEx)
-                                generateUnassignedParametersTable((CompoundModuleElementEx)nedTypeElement);
+                                generateUnassignedParametersTable(nedTypeElement);
                         }
                         else if (isMsgTypeElement) {
                             IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
@@ -1168,7 +1168,7 @@ public class DocumentationGenerator {
     }
 
     protected void generatePropertiesTable(ITypeElement typeElement) throws IOException {
-        Map<String, PropertyElementEx> properties = typeElement.getProperties();
+        Map<String, Map<String, PropertyElementEx>> properties = typeElement.getProperties();
 
         if (properties.size() != 0) {
             out("<h3 class=\"subtitle\">Properties:</h3>\r\n" +
@@ -1181,7 +1181,7 @@ public class DocumentationGenerator {
 
             for (String name : properties.keySet())
             {
-                PropertyElementEx property = properties.get(name);
+                PropertyElementEx property = properties.get(name).get(PropertyElementEx.DEFAULT_PROPERTY_INDEX);
 
             	out("<tr>\r\n" +
             		"   <td width=\"150\">" + name + "</td>\r\n" +
