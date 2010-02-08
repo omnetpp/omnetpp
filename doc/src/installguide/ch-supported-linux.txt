@@ -85,11 +85,11 @@ you need to log out and log in again for the changes to take effect.
 
 [NOTE]
 ===============================================================
-If you use a shell other than bash, consult the man page of that shell
+If you use a shell other than 'bash', consult the man page of that shell
 to find out which startup file to edit, and how to set and export variables.
 
 Note that all Linux distributions covered in this Installation Guide
-use bash, unless the user explicitly selects another shell.
+use 'bash' unless the user has explicitly selected another shell.
 ===============================================================
 
 
@@ -105,7 +105,7 @@ read by the makefiles during the build process.
 
 Normally, the `configure` script needs to be running under the graphical
 environment (X11) in order to test for `wish`, the Tcl/Tk shell. If you are logged in
-via an ssh session, or there is some other reason why X is not running,
+via an 'ssh' session, or there is some other reason why X is not running,
 the easiest way to work around the problem is to tell @OMNETPP@ to build
 without Tcl/Tk. To do that, use the command
 
@@ -160,7 +160,7 @@ the dyna simulation is started by entering the following commands:
     $ cd samples/dyna
     $ ./dyna
 
-By default the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
 
@@ -224,37 +224,7 @@ libraries, use:
 
     $ make SHARED_LIBS=no
 
-=== Moving the installation
-
-When you build @OMNETPP@ on your machine, several directory names are compiled
-into the binaries. This makes it easier to set up @OMNETPP@ in the first place,
-but if you rename the installation directory or move it to another location in
-the file system, the built-in paths become invalid and the correct paths have
-to be supplied via environment variables.
-
-The following environment variables are affected (in addition to `PATH`, which
-also needs to be adjusted):
-
-`LD_LIBRARY_PATH`:: This variable contains the list of additional directories
-where shared libraries are looked for. Initially, `LD_LIBRARY_PATH` is not needed
-because shared libraries are located via the 'rpath' mechanism. When you
-move the installation, you need to add the `lib/` subdirectory
-of your @OMNETPP@ installation to `LD_LIBRARY_PATH`.
-
-`OMNETPP_IMAGE_PATH`:: This variable contains the list of directories where
-Tkenv looks for icons. Set it to the `images/` subdirectory
-of your @OMNETPP@ installation.
-
-`OMNETPP_TKENV_DIR`:: This variable points to the directory that contains the
-script parts of Tkenv, which is by default the `src/tkenv/` subdirectory
-of your @OMNETPP@ installation. Normally you don't need to set this variable,
-because the Tkenv shared library contains all script files compiled in as
-string literals. However, if you compile @OMNETPP@ with the `EMBED_TCL_CODE=no`
-setting and then you move the installation, then you need to set
-`OMNETPP_TKENV_DIR`, otherwise Tkenv won't start.
-
-FIXME TODO this section applies to all operating system (except LD_LIBRARY_PATH
-is DYLD_LIBRARY_PATH on OS X). Should it go to some 'general' chapter?
+NOTE: For detailed description of all options please read the 'Build Options' chapter.
 
 === Additional packages
 
@@ -263,30 +233,32 @@ Note that at this point, MPI, Doxygen and GraphViz have been installed as part o
 ==== Akaroa
 
 Linux distributions do not contain the Akaroa package. It must be downloaded, compiled and installed
-manually before installing @OMNETPP@;
+manually before installing @OMNETPP@.
 
-* Download Akaroa 2.7.6 from: 
-  'http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/'
-* Extract into a temporary directory
+Download Akaroa 2.7.6 (which is the latest version at the time of writing)
+from the project's web site:
+'http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/'
+
+Extract it into a temporary directory:
 
   $ tar xfz akaroa-2.7.6.tar.gz
-  
-* Unfortunately this version does not compile properly with gcc-4.4. A patch is available 
-  in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change 
-  to the Akaroa root directory and apply it to the sources.
+
+Unfortunately, this version does not compile properly with gcc-4.4. A patch is available
+in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change
+to the Akaroa root directory, and apply it to the sources.
 
   $ cd akaroa-2.7.6
-  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch 
-  
-* Configure, build and install the Akaroa library. By default it will be installed into the 
-  `/usr/local/akaroa` directory.
-  
+  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch
+
+Configure, build, and install the Akaroa library. By default, it will be installed into the
+`/usr/local/akaroa` directory.
+
   $ ./configure
   $ make
   $ sudo make install
-  
-* Go to the @OMNETPP@ directory and (re)run the `configure` script. Akaroa will be
-  automatically detected if you installed it to the default location.
+
+Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
+automatically detected if you installed it to the default location.
 
 ifdef::OMNEST[]
 ==== SystemC

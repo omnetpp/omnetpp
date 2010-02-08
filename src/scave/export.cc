@@ -103,7 +103,7 @@ double XYDataTable::getDoubleValue(int row, int col) const
     if (col == 1)
         return vec->getY(row);
     else
-        return dblNaN;
+        return NaN;
 }
 
 static string createNameForXYDatasetRow(const XYDataset &data, int row, const string &separator = "/")
@@ -225,7 +225,7 @@ double ScalarDataTable::getDoubleValue(int row, int col) const
             return scalar.value;
         }
     }
-    return dblNaN;
+    return NaN;
 }
 
 BigDecimal ScalarDataTable::getBigDecimalValue(int row, int col) const
@@ -412,7 +412,7 @@ double JoinedDataTable::getDoubleValue(int row, int col) const
 	mapTableCell(row, col, table, tableRow, tableCol);
 	if (table)
 		return table->getDoubleValue(tableRow, tableCol);
-	return dblNaN;
+	return NaN;
 }
 
 void JoinedDataTable::mapTableCell(int row, int col, DataTable* &table, int &tableRow, int &tableCol) const

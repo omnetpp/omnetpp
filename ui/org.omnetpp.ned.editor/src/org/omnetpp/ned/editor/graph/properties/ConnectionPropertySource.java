@@ -17,7 +17,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
@@ -115,8 +115,8 @@ public class ConnectionPropertySource extends MergedPropertySource {
         mergePropertySource(new TypePropertySource(connectionNodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-                IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(connectionNodeModel.getContainingNedFileElement()).getProject();
-                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames(project));
+                IProject project = NedResourcesPlugin.getNedResources().getNedFile(connectionNodeModel.getContainingNedFileElement()).getProject();
+                List<String> channelNames = new ArrayList<String>(NedResourcesPlugin.getNedResources().getChannelQNames(project));
                 Collections.sort(channelNames);
                 return channelNames;
             }

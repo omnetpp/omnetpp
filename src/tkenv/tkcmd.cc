@@ -44,9 +44,11 @@
 #include "patternmatcher.h"
 #include "visitor.h"
 #include "fsutils.h"
+#include "opp_ctype.h"
 #include "stringutil.h"
 #include "stringtokenizer.h"
 #include "unitconversion.h"
+#include "modinsp.h"  // displayStringPar
 
 USING_NAMESPACE
 
@@ -1223,23 +1225,69 @@ int getStringHashCode_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    return TCL_OK;
 }
 
+static const char *substituteDisplayStringParams(const char *src, std::string& buffer, cComponent *component, bool searchparent)
+{
+    if (!strchr(src, '$') || !component)  // cannot resolve args if component==NULL
+        return src;
+
+    // recognize "$param" and "${param}" syntax inside the string
+    buffer = "";
+    for (const char *s = src; *s; )
+    {
+        if (*s != '$')
+            buffer += *s++;
+        else
+        {
+            // extract parameter name
+            s++; // skip '$'
+            std::string name;
+            if (*s == '{')
+            {
+                s++; // skip '{'
+                while (*s && *s != '}')
+                    name += *s++;
+                if (*s)
+                    s++; // skip '}'
+            }
+            else
+            {
+                while (opp_isalnum(*s) || *s == '_')
+                    name += *s++;
+            }
+
+            // append its value
+            cPar *par = displayStringPar(name.c_str(), component, searchparent);
+            if (par->getType() == cPar::STRING)
+                buffer += par->stdstringValue();
+            else
+                buffer += opp_stringf("%g", par->doubleValue());
+        }
+    }
+
+    return buffer.c_str();
+}
 
 int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc<5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    const char *dispstr = argv[1];
+   std::string buffer;
    if (0==strcmp(argv[2], "ptrparse"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount for ptrparse"), TCL_STATIC); return TCL_ERROR;}
+       if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount for ptrparse"), TCL_STATIC); return TCL_ERROR;}
        cDisplayString *dp = (cDisplayString *)strToVoidPtr(argv[1]);
        const char *array = argv[3];
+       cComponent *component = dynamic_cast<cComponent *>(strToPtr(argv[4]));
+       bool searchparent = atoi(argv[5])!=0;
+
        for (int k=0; k<dp->getNumTags(); k++)
        {
            Tcl_Obj *arglist = Tcl_NewListObj(0, NULL);
            for (int i=0; i<dp->getNumArgs(k); i++)
            {
                const char *s = dp->getTagArg(k,i);
+               TRY( s = substituteDisplayStringParams(s, buffer, component, searchparent) )
                Tcl_ListObjAppendElement(interp, arglist, Tcl_NewStringObj(TCLCONST(s),-1));
            }
            Tcl_SetVar2Ex(interp, TCLCONST(array), TCLCONST(dp->getTagName(k)), arglist, 0);
@@ -1247,8 +1295,11 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    }
    else if (0==strcmp(argv[2], "parse"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount for parse"), TCL_STATIC); return TCL_ERROR;}
+       if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount for parse"), TCL_STATIC); return TCL_ERROR;}
        const char *array = argv[3];
+       cComponent *component = dynamic_cast<cComponent *>(strToPtr(argv[4]));
+       bool searchparent = atoi(argv[5])!=0;
+
        cDisplayString dp(dispstr);
        for (int k=0; k<dp.getNumTags(); k++)
        {
@@ -1256,6 +1307,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
            for (int i=0; i<dp.getNumArgs(k); i++)
            {
                const char *s = dp.getTagArg(k,i);
+               TRY( s = substituteDisplayStringParams(s, buffer, component, searchparent) )
                Tcl_ListObjAppendElement(interp, arglist, Tcl_NewStringObj(TCLCONST(s),-1));
            }
            Tcl_SetVar2Ex(interp, TCLCONST(array), TCLCONST(dp.getTagName(k)), arglist, 0);
@@ -1264,12 +1316,16 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    else if (0==strcmp(argv[2], "getTagArg"))
    {
        // gettag <tag> <k> -- get kth component of given tag
-       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount for getTagArg"), TCL_STATIC); return TCL_ERROR;}
+       if (argc!=7) {Tcl_SetResult(interp, TCLCONST("wrong argcount for getTagArg"), TCL_STATIC); return TCL_ERROR;}
        const char *tag = argv[3];
        int k = atoi(argv[4]);
+       cComponent *component = dynamic_cast<cComponent *>(strToPtr(argv[5]));
+       bool searchparent = atoi(argv[6])!=0;
+
        cDisplayString dp(dispstr);
-       const char *val = dp.getTagArg(tag,k);
-       Tcl_SetResult(interp, TCLCONST(val), TCL_VOLATILE);
+       const char *s = dp.getTagArg(tag,k);
+       TRY( s = substituteDisplayStringParams(s, buffer, component, searchparent) )
+       Tcl_SetResult(interp, TCLCONST(s), TCL_VOLATILE);
    }
    else
    {

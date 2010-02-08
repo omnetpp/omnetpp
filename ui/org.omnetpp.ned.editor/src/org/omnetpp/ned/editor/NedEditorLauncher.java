@@ -22,8 +22,8 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.IDE;
 
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 
 public class NedEditorLauncher implements IEditorLauncher {
 
@@ -33,7 +33,7 @@ public class NedEditorLauncher implements IEditorLauncher {
         IWorkbenchPage page = workbenchWindow.getActivePage();
         try {
             IFile file = getNedFile(filePath);
-            NEDResources res = NEDResourcesPlugin.getNEDResources();
+            INedResources res = NedResourcesPlugin.getNedResources();
             if (!ProjectUtils.isOpenOmnetppProject(file.getProject())) {
                 boolean addNature = MessageDialog.openQuestion(workbenchWindow.getShell(),
                         "Not an OMNeT++ Project",

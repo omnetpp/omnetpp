@@ -32,9 +32,10 @@ class App : public cSimpleModule
     cMessage *generatePacket;
     long pkCounter;
 
-    // statistics
-    cLongHistogram hopCounts;
-    int pkReceived;
+    // signals
+    simsignal_t endToEndDelaySignal;
+    simsignal_t hopCountSignal;
+    simsignal_t sourceAddressSignal;
 
   public:
     App();
@@ -64,11 +65,9 @@ void App::initialize()
     packetLengthBytes = &par("packetLength");
     sendIATime = &par("sendIaTime");  // volatile parameter
     pkCounter = 0;
-    pkReceived = 0;
 
     WATCH(pkCounter);
     WATCH(myAddress);
-    WATCH(pkReceived);
 
     const char *destAddressesPar = par("destAddresses");
     cStringTokenizer tokenizer(destAddressesPar);
@@ -76,12 +75,12 @@ void App::initialize()
     while ((token = tokenizer.nextToken())!=NULL)
         destAddresses.push_back(atoi(token));
 
-    hopCounts.setName("hopCounts");
-    hopCounts.setRangeAutoUpper(0,20,1.5);
-    hopCounts.setNumCells(1000);
-
     generatePacket = new cMessage("nextPacket");
     scheduleAt(sendIATime->doubleValue(), generatePacket);
+
+    endToEndDelaySignal = registerSignal("endToEndDelay");
+    hopCountSignal =  registerSignal("hopCount");
+    sourceAddressSignal = registerSignal("sourceAddress");
 }
 
 void App::handleMessage(cMessage *msg)
@@ -109,8 +108,9 @@ void App::handleMessage(cMessage *msg)
         // Handle incoming packet
         Packet *pk = check_and_cast<Packet *>(msg);
         EV << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
-        hopCounts.collect(pk->getHopCount());
-        pkReceived++;
+        emit(endToEndDelaySignal, simTime() - pk->getCreationTime());
+        emit(hopCountSignal, (long)pk->getHopCount());
+        emit(sourceAddressSignal, (long)pk->getSrcAddr());
         delete pk;
 
         if (ev.isGUI())

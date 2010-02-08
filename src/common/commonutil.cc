@@ -22,6 +22,13 @@
 USING_NAMESPACE
 
 
+static double zero = 0.0;
+double const NaN = zero / zero;
+double const POSITIVE_INFINITY = 1.0 / zero;
+double const NEGATIVE_INFINITY = -1.0 / zero;
+
+//----
+
 void setPosixLocale()
 {
     setlocale(LC_ALL, "C");

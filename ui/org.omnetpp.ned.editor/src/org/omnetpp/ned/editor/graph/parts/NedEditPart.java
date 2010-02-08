@@ -22,12 +22,12 @@ import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.omnetpp.figures.IProblemDecorationSupport;
 import org.omnetpp.figures.ITooltipTextProvider;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.misc.IDirectEditSupport;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedDirectEditPolicy;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
@@ -53,10 +53,10 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	}
 
 	/**
-	 * Returns the model associated with this as a INEDElement.
+	 * Returns the model associated with this as a INedElement.
 	 */
-	public INEDElement getNedModel() {
-		return (INEDElement) getModel();
+	public INedElement getNedModel() {
+		return (INedElement) getModel();
 	}
 
 	@Override
@@ -69,7 +69,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 				public String getTooltipText(int x, int y) {
 					String message = "";
 					if (getNedModel().getMaxProblemSeverity() >= IMarker.SEVERITY_INFO) {
-						IMarker[] markers = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNedModel(), 11);
+						IMarker[] markers = NedResourcesPlugin.getNedResources().getMarkersForElement(getNedModel(), 11);
 						int i = 0;
 						for (IMarker marker : markers) {
 							message += marker.getAttribute(IMarker.MESSAGE , "")+"\n";
@@ -145,9 +145,9 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 			performDirectEdit();
 		// let's open or activate a new editor if someone has double clicked the component
 		if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-			INEDElement elementToOpen= getNEDElementToOpen();
+			INedElement elementToOpen= getNedElementToOpen();
 			if (elementToOpen != null)
-				NEDResourcesPlugin.openNEDElementInEditor(elementToOpen);
+				NedResourcesPlugin.openNedElementInEditor(elementToOpen);
 		}
 	}
 
@@ -167,7 +167,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	/**
 	 * Returns the type name that must be opened if the user double clicks the module
 	 */
-	protected abstract INEDElement getNEDElementToOpen();
+	protected abstract INedElement getNedElementToOpen();
 
 
     @Override

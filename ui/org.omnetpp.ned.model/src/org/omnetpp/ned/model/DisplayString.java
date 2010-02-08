@@ -18,12 +18,12 @@ import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 
 
 /**
- * The default implementation of IDisplayString. It is strongly tied to the NEDElement
+ * The default implementation of IDisplayString. It is strongly tied to the NedElement
  * model tree, and keeps its contents in sync with the LiteralElement in a display property.
  *
  * IMPORTANT: DisplayString doesn't support a listener list, and please do NOT add one!
@@ -58,9 +58,9 @@ public class DisplayString implements IDisplayString {
     protected String cachedDisplayString = null;
 
     // map that stores the currently available tag instances
-    private final Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
+    private Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
 
-    private static class TagInstance {
+    public static class TagInstance {
         private String name = "";
         private Vector<String> args = new Vector<String>(1);
 
@@ -78,6 +78,14 @@ public class DisplayString implements IDisplayString {
          */
         public String getName() {
             return name;
+        }
+
+        public Tag getTag() {
+            return Tag.valueOf(name);
+        }
+
+        public int getArgSize() {
+            return args.size();
         }
 
         /**
@@ -295,26 +303,32 @@ public class DisplayString implements IDisplayString {
      * Parse the given string and store its contents.
      */
     public void set(String newValue) {
-    	tagMap.clear();
-    	if (newValue != null) {
+    	tagMap = parseTags(newValue);
+        cachedDisplayString = newValue;
+        updateNedElement();
+    }
+
+    public static LinkedHashMap<String, TagInstance> parseTags(String text) {
+        LinkedHashMap<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
+        tagMap.clear();
+    	if (text != null) {
     	    // parse the display string into tags along ";"
-    		Scanner scr = new Scanner(newValue);
+    		Scanner scr = new Scanner(text);
     		scr.useDelimiter(";");
     		while (scr.hasNext()) {
     			TagInstance parsedTag = new TagInstance(scr.next().trim());
     			tagMap.put(parsedTag.getName(), parsedTag);  //FIXME must resolve escaped ";" and "," ??? --Andras
     		}
     	}
-        cachedDisplayString = newValue;
-        updateNedElement();
+    	return tagMap;
     }
 
 	protected void updateNedElement() {
 		if (owner != null) {
-			// Change the underlying NEDElement tree.
+			// Change the underlying NedElement tree.
 			// This could be optimized somewhat by remembering the LiteralElement, and quickly
 			// checking here if that's still where we have to change the display string
-			NEDElementUtilEx.setDisplayStringLiteral(owner, toString());
+			NedElementUtilEx.setDisplayStringLiteral(owner, toString());
 		}
 	}
 

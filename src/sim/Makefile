@@ -32,7 +32,7 @@ OBJS_STD=\
     $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
     $O/cenum.o $O/cexception.o $O/cfsm.o $O/cmathfunction.o $O/cgate.o $O/chistogram.o \
-    $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clongparimpl.o $O/cmersennetwister.o \
+    $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clistener.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o \
     $O/cnedfunction.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
     $O/cpar.o $O/cparimpl.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o \

@@ -369,6 +369,13 @@ public interface IDisplayString {
 			return enumDesc;
 		}
 
+		public static Prop findProp(Tag tag, int pos) {
+		    for (Prop prop : Prop.values())
+		        if (prop.tag != null && prop.tag.equals(tag) && prop.pos == pos)
+		            return prop;
+		    return null;
+		}
+
         private String getTagArgDefault(String tagName, int tagIndex) {
         	String displayString = IDisplayString.EMPTY_DEFAULTS_STR;
         	Assert.isTrue(StringUtils.containsNone(displayString, " \t\\"),

@@ -187,11 +187,17 @@ class NEDXML_API NEDTypeInfo
     SubmodulesElement *getSubmodulesElement() const;
     ConnectionsElement *getConnectionsElement() const;
 
-    /** Returns the submodule element with the given name, or NULL if not found */
-    NEDElement *getSubmoduleElement(const char *submoduleName) const;
+    /** Returns the submodule element with the given name from the local type, or NULL if not found */
+    SubmoduleElement *getLocalSubmoduleElement(const char *submoduleName) const;
 
-    /** Returns the connection element with the given id, or NULL if not found */
-    NEDElement *getConnectionElement(long id) const;
+    /** Returns the connection element with the given id from the local type, or NULL if not found */
+    ConnectionElement *getLocalConnectionElement(long id) const;
+
+    /** Returns the submodule element with the given name from the local type and "extends" types, or NULL if not found */
+    SubmoduleElement *getSubmoduleElement(const char *submoduleName) const;
+
+    /** Returns the connection element with the given id from the local type and "extends" types, or NULL if not found */
+    ConnectionElement *getConnectionElement(long id) const;
 
     /** Searches local type; NULL if not found */
     ParamElement *findLocalParamDecl(const char *name) const;

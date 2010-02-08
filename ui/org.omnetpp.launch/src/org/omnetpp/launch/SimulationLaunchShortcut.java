@@ -61,12 +61,12 @@ import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 import org.omnetpp.launch.tabs.OmnetppMainTab;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
@@ -142,12 +142,12 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     List<IniSection> candidates = collectInifileConfigsForFolder(folder);
                     if (candidates.isEmpty()) {
                         // collect networks, and let user create an inifile for one of them
-                        List<INEDTypeInfo> networks = collectNetworksForFolder(folder);
+                        List<INedTypeInfo> networks = collectNetworksForFolder(folder);
                         if (networks.isEmpty()) {
                             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + folder.getFullPath().toString() + "' does not contain ini files or networks.");
                             return;
                         }
-                        INEDTypeInfo network = networks.size()==1 ? networks.get(0) : chooseNetwork(networks);
+                        INedTypeInfo network = networks.size()==1 ? networks.get(0) : chooseNetwork(networks);
                         IniSection newIni = askAndCreateInifile(network);
                         if (newIni == null)
                             return; // user cancelled
@@ -192,12 +192,12 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 else if (resource instanceof IFile && "ned".equals(resource.getFileExtension())) {
                     // must be a valid NED file and must contain at least one network
                     IFile nedFile = (IFile)resource;
-                    NEDResources res = NEDResourcesPlugin.getNEDResources();
+                    INedResources res = NedResourcesPlugin.getNedResources();
                     if (!res.isNedFile(nedFile)) {
                         MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + nedFile.getName() + "' is not a NED file, or it is not in a NED source folder.");
                         return;
                     }
-                    List<INEDTypeInfo> networks = getNetworksInNedFile(nedFile);
+                    List<INedTypeInfo> networks = getNetworksInNedFile(nedFile);
                     if (networks.isEmpty()) {
                         MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + nedFile.getName() + "' does not contain a network.");
                         return;
@@ -211,7 +211,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                         exeFile = null;
 
                     // choose network from NED file
-                    INEDTypeInfo network = networks.size()==1 ? networks.get(0) : chooseNetwork(networks);
+                    INedTypeInfo network = networks.size()==1 ? networks.get(0) : chooseNetwork(networks);
                     if (network == null)
                         return; // cancelled
 
@@ -314,12 +314,12 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     /**
      * Collects all networks under the given folder
      */
-    protected List<INEDTypeInfo> collectNetworksForFolder(IContainer folder) {
-        List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+    protected List<INedTypeInfo> collectNetworksForFolder(IContainer folder) {
+        List<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
+        INedResources res = NedResourcesPlugin.getNedResources();
 
-        for (INEDTypeInfo type : res.getNedTypes(folder.getProject())) {
-            INedTypeElement element = type.getNEDElement();
+        for (INedTypeInfo type : res.getNedTypes(folder.getProject())) {
+            INedTypeElement element = type.getNedElement();
             if (element instanceof IModuleTypeElement && ((IModuleTypeElement)element).isNetwork()) {
                 IFile nedFile = res.getNedFile(element.getContainingNedFileElement());
                 if (folder.getFullPath().isPrefixOf(nedFile.getFullPath()))
@@ -332,17 +332,17 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     /**
      * Collects the networks from the given NED file
      */
-    protected List<INEDTypeInfo> getNetworksInNedFile(IFile nedFile) {
-        List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+    protected List<INedTypeInfo> getNetworksInNedFile(IFile nedFile) {
+        List<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
+        INedResources res = NedResourcesPlugin.getNedResources();
         NedFileElementEx nedFileElement = res.getNedFileElement(nedFile);
-        for (INEDElement child : nedFileElement)
+        for (INedElement child : nedFileElement)
             if (child instanceof IModuleTypeElement && ((IModuleTypeElement)child).isNetwork())
-                result.add(((IModuleTypeElement)child).getNEDTypeInfo());
+                result.add(((IModuleTypeElement)child).getNedTypeInfo());
         return result;
     }
 
-    protected INEDTypeInfo chooseNetwork(List<INEDTypeInfo> networks) {
+    protected INedTypeInfo chooseNetwork(List<INedTypeInfo> networks) {
         // choose network from dialog
         ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
         dialog.setLabelProvider(new NedModelLabelProvider());
@@ -352,7 +352,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         dialog.setInput(networks);
 
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0)
-            return ((INEDTypeInfo)dialog.getResult()[0]);
+            return ((INedTypeInfo)dialog.getResult()[0]);
         return null; // user cancelled
     }
 
@@ -367,8 +367,8 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     /**
      * Finds and returns all ini files that run the given network.
      */
-    protected List<IniSection> collectInifileConfigsForNetwork(INEDTypeInfo network) {
-        IFile nedFile = network.getNEDFile();
+    protected List<IniSection> collectInifileConfigsForNetwork(INedTypeInfo network) {
+        IFile nedFile = network.getNedFile();
 
         // first, collect all inifiles from *this* project
         // (note: an inifile that refers to this network cannot be in a referenced
@@ -482,13 +482,13 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * Asks the user if s/he wants to create an ini file for the given network,
      * then creates the inifile. Returns null if user cancelled.
      */
-    protected IniSection askAndCreateInifile(INEDTypeInfo network) throws CoreException {
+    protected IniSection askAndCreateInifile(INedTypeInfo network) throws CoreException {
         String text = "Network '" + network.getName() + "' does not have an associated ini file. Do you want to create one now?";
         if (!MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Create Ini File", text))
             return null; // user cancelled
 
         // generate new ini file with a good name for the selected network
-        IContainer container = network.getNEDFile().getParent();
+        IContainer container = network.getNedFile().getParent();
         String inifileName = generateGoodInifileName(container, network);
         IFile iniFile = container.getFile(new Path(inifileName));
         return createInifile(iniFile, network);
@@ -497,7 +497,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     /**
      * Generates unique name for a new inifile which will run the given network.
      */
-    protected String generateGoodInifileName(IContainer container, INEDTypeInfo network) {
+    protected String generateGoodInifileName(IContainer container, INedTypeInfo network) {
         if (!container.getFile(new Path("omnetpp.ini")).exists())
             return "omnetpp.ini";
 
@@ -515,7 +515,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * Creates the given inifile with a network= setting to run the given network.
      * The file must NOT yet exist.
      */
-    protected IniSection createInifile(IFile iniFile, INEDTypeInfo network) throws CoreException {
+    protected IniSection createInifile(IFile iniFile, INedTypeInfo network) throws CoreException {
         String content =
             "[General]\n" +
             "network = " + network.getName() + "\n";

@@ -33,6 +33,7 @@
 #include "cproperty.h"
 #include "stringutil.h"
 #include "simutil.h"
+#include "cmodelchange.h"
 
 USING_NAMESPACE
 
@@ -64,6 +65,10 @@ cModule::cModule()
 
 cModule::~cModule()
 {
+    // release listeners in the whole subtree first. This mostly eliminates
+    // the need for explicit unsubscribe() calls in module destructors.
+    releaseListeners();
+
     // notify envir while module object still exists (more or less)
     EVCB.moduleDeleted(this);
 
@@ -84,7 +89,7 @@ cModule::~cModule()
         }
 
         cModule *mod = submod++;
-        delete mod;
+        mod->deleteModule();
     }
 
     // adjust gates that were directed here
@@ -107,6 +112,15 @@ cModule::~cModule()
         getParentModule()->removeSubmodule(this);
 
     delete [] fullname;
+}
+
+void cModule::releaseListeners()
+{
+    releaseLocalListeners();
+    for (ChannelIterator chan(this); !chan.end(); chan++)
+        chan()->releaseLocalListeners();
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
+        submod()->releaseListeners();
 }
 
 void cModule::forEachChild(cVisitor *v)
@@ -146,6 +160,9 @@ void cModule::insertSubmodule(cModule *mod)
         firstsubmodp = mod;
     lastsubmodp = mod;
 
+    // update cached signal state
+    mod->repairSignalFlags();
+
     // cached module getFullPath() possibly became invalid
     lastmodulefullpathmod = NULL;
 }
@@ -168,6 +185,9 @@ void cModule::removeSubmodule(cModule *mod)
 
     // this is not strictly needed but makes it cleaner
     mod->prevp = mod->nextp = NULL;
+
+    // update cached signal state
+    mod->repairSignalFlags();
 
     // cached module getFullPath() possibly became invalid
     lastmodulefullpathmod = NULL;
@@ -212,7 +232,7 @@ std::string cModule::getFullPath() const
 {
     if (lastmodulefullpathmod != this)
     {
-        // stop at the toplevel getModule(don't go up to cSimulation);
+        // stop at the toplevel module (don't go up to cSimulation);
         // plus, cache the result, expecting more hits from this module
         if (getParentModule()==NULL)
             lastmodulefullpath = getFullName();
@@ -260,23 +280,45 @@ void cModule::disposeGateObject(cGate *gate, bool checkConnected)
 
 void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
 {
-    if (desc->namep)  // is alive
-    {
-        if (!desc->isVector()) {
-            disposeGateObject(desc->inputgate, checkConnected);
-            disposeGateObject(desc->outputgate, checkConnected);
+    if (!desc->namep)
+        return;  // already deleted
+
+    // notify pre-change listeners
+    if (hasListeners(PRE_MODEL_CHANGE)) {
+        cPreGateDeleteNotification tmp;
+        tmp.module = this;
+        tmp.gateName = desc->namep->name.c_str();
+        emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
+    // do it
+    if (!desc->isVector()) {
+        disposeGateObject(desc->inputgate, checkConnected);
+        disposeGateObject(desc->outputgate, checkConnected);
+    }
+    else {
+        for (int j=0; j<desc->gateSize(); j++) {
+            if (desc->inputgatev)
+                disposeGateObject(desc->inputgatev[j], checkConnected);
+            if (desc->outputgatev)
+                disposeGateObject(desc->outputgatev[j], checkConnected);
         }
-        else {
-            for (int j=0; j<desc->gateSize(); j++) {
-                if (desc->inputgatev)
-                    disposeGateObject(desc->inputgatev[j], checkConnected);
-                if (desc->outputgatev)
-                    disposeGateObject(desc->outputgatev[j], checkConnected);
-            }
-            delete [] desc->inputgatev;
-            delete [] desc->outputgatev;
-        }
-        desc->namep = NULL; // leave shared Name struct in the pool
+        delete [] desc->inputgatev;
+        delete [] desc->outputgatev;
+    }
+    const char *gatename = desc->namep->name.c_str();
+    cGate::Type gatetype = desc->getType();
+    desc->namep = NULL; // mark as deleted, but leave shared Name struct in the pool
+
+    // notify post-change listeners
+    if (hasListeners(POST_MODEL_CHANGE)) {
+        cPostGateDeleteNotification tmp;
+        tmp.module = this;
+        tmp.gateName = gatename;  // points into namePool
+        tmp.gateType = gatetype;
+        tmp.isVector = desc->isVector(); // desc still exists, only namep was NULL'd
+        tmp.vectorSize = desc->gateSize();
+        emit(POST_MODEL_CHANGE, &tmp);
     }
 }
 
@@ -450,11 +492,22 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
     if (suffix)
         throw cRuntimeError(this, "addGate(): Wrong gate name `%s', must not contain the `$i' or `$o' suffix", gatename);
 
+    // notify pre-change listeners
+    if (hasListeners(PRE_MODEL_CHANGE)) {
+        cPreGateAddNotification tmp;
+        tmp.module = this;
+        tmp.gateName = gatename;
+        tmp.gateType = type;
+        tmp.isVector = isVector;
+        emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
     // create desc for new gate (or gate vector)
     cGate::Desc *desc = addGateDesc(gatename, type, isVector);
     desc->ownerp = this;
 
     // if scalar gate, create gate object(s); gate vectors are created with size 0.
+    cGate *result = NULL;
     if (!isVector)
     {
         cGate *newGate;
@@ -470,9 +523,19 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
             desc->setOutputGate(newGate);
             EVCB.gateCreated(newGate);
         }
-        return type==cGate::INOUT ? NULL : newGate;
+        if (type!=cGate::INOUT)
+            result = newGate;
     }
-    return NULL;
+
+    // notify post-change listeners
+    if (hasListeners(POST_MODEL_CHANGE)) {
+        cPostGateAddNotification tmp;
+        tmp.module = this;
+        tmp.gateName = gatename;
+        emit(POST_MODEL_CHANGE, &tmp);
+    }
+
+    return result;
 }
 
 static void reallocGatev(cGate **&v, int oldSize, int newSize)
@@ -502,6 +565,16 @@ void cModule::setGateSize(const char *gatename, int newSize)
         throw cRuntimeError(this, "setGateSize(): negative vector size (%d) requested for gate %s[]", newSize, gatename);
     if (newSize>MAX_VECTORGATESIZE)
         throw cRuntimeError(this, "setGateSize(): vector size for gate %s[] too large (%d), limit is %d", gatename, newSize, MAX_VECTORGATESIZE);
+
+    // notify pre-change listeners
+    if (hasListeners(PRE_MODEL_CHANGE)) {
+        cPreGateVectorResizeNotification tmp;
+        tmp.module = this;
+        tmp.gateName = gatename;
+        tmp.newSize = newSize;
+        emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
     int oldSize = desc->size;
     cGate::Type type = desc->getType();
 
@@ -580,6 +653,16 @@ void cModule::setGateSize(const char *gatename, int newSize)
             }
         }
     }
+
+    // notify post-change listeners
+    if (hasListeners(POST_MODEL_CHANGE)) {
+        cPostGateVectorResizeNotification tmp;
+        tmp.module = this;
+        tmp.gateName = gatename;
+        tmp.oldSize = oldSize;
+        emit(POST_MODEL_CHANGE, &tmp);
+    }
+
 }
 
 int cModule::gateSize(const char *gatename) const
@@ -1011,10 +1094,38 @@ void cModule::deleteModule()
     // check this module doesn't contain the executing module somehow
     for (cModule *mod = simulation.getContextModule(); mod; mod = mod->getParentModule())
         if (mod==this)
-            throw cRuntimeError(this, "it is not supported to delete module which contains "
+            throw cRuntimeError(this, "it is not supported to delete a module that contains "
                                       "the currently executing simple module");
 
-    delete this;
+    // notify pre-change listeners
+    if (hasListeners(PRE_MODEL_CHANGE)) {
+        cPreModuleDeleteNotification tmp;
+        tmp.module = this;
+        emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
+    cModule *parent = getParentModule();
+    if (!parent || !parent->hasListeners(POST_MODEL_CHANGE))
+    {
+        // no listeners, just do it
+        delete this;
+    }
+    else {
+        // need to fill in notification data before deleting the module
+        cPostModuleDeleteNotification tmp;
+        tmp.module = this;
+        tmp.moduleId = getId();
+        tmp.moduleType = getModuleType();
+        std::string tmpname = getName();
+        tmp.moduleName = tmpname.c_str();
+        tmp.parentModule = getParentModule();
+        tmp.vectorSize = getVectorSize();
+        tmp.index = getIndex();
+
+        delete this;
+
+        parent->emit(POST_MODEL_CHANGE, &tmp);
+    }
 }
 
 void cModule::changeParentTo(cModule *mod)
@@ -1022,7 +1133,7 @@ void cModule::changeParentTo(cModule *mod)
     if (!mod)
         throw cRuntimeError(this, "changeParentTo(): got NULL pointer");
 
-    // gates must be unconnected to avoid connections break module hierarchy rules
+    // gates must be unconnected to avoid connections breaking module hierarchy rules
     cGate *g;
     for (GateIterator i(this); !i.end(); i++)
         if (g=i(), g->isConnectedOutside())
@@ -1034,6 +1145,14 @@ void cModule::changeParentTo(cModule *mod)
         if (m==this)
             throw cRuntimeError(this, "changeParentTo(): cannot move module under one of its own submodules");
 
+    // notify pre-change listeners
+    if (hasListeners(PRE_MODEL_CHANGE)) {
+        cPreModuleReparentNotification tmp;
+        tmp.module = this;
+        tmp.newParentModule = mod;
+        mod->emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
     // do it
     cModule *oldparent = getParentModule();
     oldparent->removeSubmodule(this);
@@ -1041,6 +1160,14 @@ void cModule::changeParentTo(cModule *mod)
 
     // notify environment
     EVCB.moduleReparented(this,oldparent);
+
+    // notify post-change listeners
+    if (hasListeners(POST_MODEL_CHANGE)) {
+        cPostModuleReparentNotification tmp;
+        tmp.module = this;
+        tmp.oldParentModule = oldparent;
+        mod->emit(POST_MODEL_CHANGE, &tmp);
+    }
 }
 
 void cModule::callInitialize()
@@ -1147,9 +1274,10 @@ void cModule::callFinish()
     // ...then for this module, in our context: save parameters, then finish()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_FINISH);
-    recordParametersAsScalars();
     try {
+        recordParametersAsScalars();
         finish();
+        fireFinish();
     } catch (cException&) {
         throw;
     } catch (std::exception& e) {

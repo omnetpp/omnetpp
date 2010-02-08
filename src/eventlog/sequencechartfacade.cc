@@ -27,12 +27,6 @@
 
 USING_NAMESPACE
 
-static double zero = 0;
-
-static double NaN = zero / zero;
-
-inline bool isNaN(double x) { return x != x; }
-
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
     timelineMode = NONLINEAR;

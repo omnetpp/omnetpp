@@ -54,10 +54,10 @@ To actually implement and select a plug-in for use:
 \end{enumerate}
 
 
-\section{Plug-in descriptions}
+\section{Plug-in Descriptions}
 
 
-\subsection{Defining a new random number generator}
+\subsection{Defining a New Random Number Generator}
 \label{sec:plugin-exts:rng}
 
 % TODO
@@ -65,7 +65,7 @@ The new RNG C++ class must implement the \cclass{cRNG} interface,
 and can be activated with the \fpar{rng-class} configuration option.
 
 
-\subsection{Defining a new scheduler}
+\subsection{Defining a New Scheduler}
 \label{sec:plugin-exts:scheduler}
 
 The scheduler plug-in interface allows for implementing real-time,
@@ -80,7 +80,7 @@ class in the simulation kernel, and \ttt{cSocketRTScheduler} which is part
 of the \textit{Sockets} sample simulation.
 
 
-\subsection{Defining a new configuration provider}
+\subsection{Defining a New Configuration Provider}
 \label{sec:plugin-exts:configuration}
 
 \subsubsection{Overview}
@@ -109,7 +109,7 @@ interface to provides the data in raw form to it.
 The default implementation of \cclass{cConfigurationReader} is
 \cclass{InifileReader}.
 
-\subsubsection{The startup sequence}
+\subsubsection{The Startup Sequence}
 
 From the configuration plug-in's point of view, the startup sequence
 looks like the following (see \ttt{src/envir/startup.cc} in the source code):
@@ -135,7 +135,7 @@ looks like the following (see \ttt{src/envir/startup.cc} in the source code):
      object.
 \end{enumerate}
 
-\subsubsection{Providing a custom configuration class}
+\subsubsection{Providing a Custom Configuration Class}
 
 To replace the configuration object with your custom implementation,
 you would write the class:
@@ -159,7 +159,7 @@ configuration-class = CustomConfiguration
 \end{inifile}
 
 
-\subsubsection{Providing a custom reader for SectionBasedConfiguration}
+\subsubsection{Providing a Custom Reader for SectionBasedConfiguration}
 
 As said already, writing a configuration class from scratch can
 be a lot of work, and it may be more practical to reuse
@@ -188,7 +188,7 @@ Register_Class(DatabaseConfigurationReader);
 \end{cpp}
 
 
-\subsection{Defining a new output scalar manager}
+\subsection{Defining a New Output Scalar Manager}
 \label{sec:plugin-exts:outputscalarmanager}
 
 cOutputScalarManager handles recording the scalar output data.
@@ -199,7 +199,7 @@ The new class can be activated with the \fpar{outputscalarmanager-class}
 configuration option.
 
 
-\subsection{Defining a new output vector manager}
+\subsection{Defining a New Output Vector Manager}
 \label{sec:plugin-exts:outputvectormanager}
 
 cOutputVectorManager handles recording the output from \cclass{cOutVector} objects.
@@ -210,7 +210,7 @@ The new class can be activated with the \fpar{outputvectormanager-class}
 configuration option.
 
 
-\subsection{Defining a new snapshot manager}
+\subsection{Defining a New Snapshot Manager}
 \label{sec:plugin-exts:snapshotmanager}
 
 cSnapshotManager provides an output stream to which snapshots are written
@@ -221,10 +221,10 @@ The new class can be activated with the \fpar{snapshotmanager-class}
 configuration option.
 
 
-\section{Accessing the configuration}
+\section{Accessing the Configuration}
 \label{sec:plugin-exts:accessing-config}
 
-\subsection{Defining new configuration options}
+\subsection{Defining New Configuration Options}
 
 New configuration options need to be declared with one of the appropriate
 registration macros. These macros are:
@@ -293,7 +293,7 @@ mistyped option names and other errors.
 \end{note}
 
 
-\subsection{Reading values from the configuration}
+\subsection{Reading Values from the Configuration}
 
 The configuration is accessible via the \ffunc{getConfig()} method of \cclass{cEnvir}.
 It returns a pointer to the configuration object (\cclass{cConfiguration}):
@@ -331,7 +331,7 @@ bool debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 \end{cpp}
 
 
-\section{Implementing a new user interface}
+\section{Implementing a New User Interface}
 \label{sec:plugin-exts:userinterface}
 
 It is possible to extend {\opp} with a new user interface. The new

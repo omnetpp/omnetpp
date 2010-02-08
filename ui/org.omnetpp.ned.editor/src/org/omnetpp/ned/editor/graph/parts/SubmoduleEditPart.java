@@ -21,7 +21,7 @@ import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.figures.SubmoduleFigureEx;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 
@@ -175,7 +175,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     }
 
     @Override
-    protected INEDElement getNEDElementToOpen() {
+    protected INedElement getNedElementToOpen() {
         return getSubmoduleModel().getEffectiveTypeRef();
     }
 }

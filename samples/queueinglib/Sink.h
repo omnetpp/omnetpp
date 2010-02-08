@@ -20,13 +20,13 @@ namespace queueing {
 class QUEUEING_API Sink : public cSimpleModule
 {
   private:
-    cOutVector lifeTimeVector;
-    cOutVector queueingTimeVector;
-    cOutVector queueVector;
-    cOutVector serviceTimeVector;
-    cOutVector delayTimeVector;
-    cOutVector delayVector;
-    cOutVector generationVector;
+	simsignal_t lifeTimeSignal;
+	simsignal_t totalQueueingTimeSignal;
+	simsignal_t queuesVisitedSignal;
+	simsignal_t totalServiceTimeSignal;
+	simsignal_t totalDelayTimeSignal;
+	simsignal_t delaysVisitedSignal;
+	simsignal_t generationSignal;
     bool keepJobs;
 
   protected:

@@ -269,19 +269,19 @@ ConnectionsElement *NEDTypeInfo::getConnectionsElement() const
     return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
 }
 
-NEDElement *NEDTypeInfo::getSubmoduleElement(const char *subcomponentName) const
+SubmoduleElement *NEDTypeInfo::getLocalSubmoduleElement(const char *subcomponentName) const
 {
     SubmodulesElement *submodulesNode = getSubmodulesElement();
     if (submodulesNode)
     {
         NEDElement *submoduleNode = submodulesNode->getFirstChildWithAttribute(NED_SUBMODULE, "name", subcomponentName);
         if (submoduleNode)
-            return submoduleNode;
+            return (SubmoduleElement *)submoduleNode;
     }
     return NULL;
 }
 
-NEDElement *NEDTypeInfo::getConnectionElement(long id) const
+ConnectionElement *NEDTypeInfo::getLocalConnectionElement(long id) const
 {
     if (id == -1)
         return NULL;  // "not a NED connection"
@@ -293,16 +293,38 @@ NEDElement *NEDTypeInfo::getConnectionElement(long id) const
         {
             if (child->getTagCode() == NED_CONNECTION) {
                 if (child->getId() == id)
-                    return child;
+                    return (ConnectionElement *)child;
             }
             else if (child->getTagCode() == NED_CONNECTION_GROUP) {
                 NEDElement *conngroup = child;
                 for (NEDElement *child=conngroup->getFirstChild(); child; child=child->getNextSibling())
                     if (child->getId() == id && child->getTagCode() == NED_CONNECTION)
-                        return child;
+                        return (ConnectionElement *)child;
             }
         }
     }
+    return NULL;
+}
+
+SubmoduleElement *NEDTypeInfo::getSubmoduleElement(const char *name) const
+{
+    SubmoduleElement *submodule = getLocalSubmoduleElement(name);
+    if (submodule)
+        return submodule;
+    for (int i=0; i<numExtendsNames(); i++)
+        if ((submodule = getResolver()->lookup(extendsName(i))->getSubmoduleElement(name))!=NULL)
+            return submodule;
+    return NULL;
+}
+
+ConnectionElement *NEDTypeInfo::getConnectionElement(long id) const
+{
+    ConnectionElement *conn = getLocalConnectionElement(id);
+    if (conn)
+        return conn;
+    for (int i=0; i<numExtendsNames(); i++)
+        if ((conn = getResolver()->lookup(extendsName(i))->getConnectionElement(id))!=NULL)
+            return conn;
     return NULL;
 }
 

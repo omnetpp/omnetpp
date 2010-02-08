@@ -30,7 +30,7 @@ public class InterfacesListPropertySource extends NedBasePropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Set<INedTypeElement> interfacesList = getNedTypeModel().getNEDTypeInfo().getInterfaces();
+        Set<INedTypeElement> interfacesList = getNedTypeModel().getNedTypeInfo().getInterfaces();
 
         pdesc = new PropertyDescriptor[interfacesList.size()];
         int totalCount = 0;
@@ -46,7 +46,7 @@ public class InterfacesListPropertySource extends NedBasePropertySource {
 
     @Override
     public Object getEditableValue() {
-    	return StringUtils.join(getNedTypeModel().getNEDTypeInfo().getInterfaces(), ",");
+    	return StringUtils.join(getNedTypeModel().getNedTypeInfo().getInterfaces(), ",");
     }
 
     public INedTypeElement getNedTypeModel() {

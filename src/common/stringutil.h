@@ -247,6 +247,23 @@ COMMON_API double opp_strtod(const char *s, char **endptr);
  */
 COMMON_API double opp_atof(const char *s);
 
+/**
+ * s should point to a double quote '"'. The function returns a pointer to
+ * the matching quote (i.e. the end of the string literal), or NULL if
+ * not found. It recognizes escaping embedded quotes with backslashes
+ * (C-style string literals).
+ */
+COMMON_API const char *opp_findmatchingquote(const char *s);
+
+/**
+ * s should point to an open parenthesis. The function returns the matching
+ * paren, or NULL if not found. It does not search inside string constants
+ * delimited by double quotes ('"'); it uses opp_findmatchingquote() to
+ * parse them. Note: a NULL return value (unmatched left paren) may also
+ * be caused by an unterminated string constant.
+ */
+COMMON_API const char *opp_findmatchingparen(const char *s);
+
 //NAMESPACE_END
 
 

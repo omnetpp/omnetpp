@@ -17,7 +17,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
@@ -109,8 +109,8 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-                IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(nodeModel.getContainingNedFileElement()).getProject();
-                List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames(project));
+                IProject project = NedResourcesPlugin.getNedResources().getNedFile(nodeModel.getContainingNedFileElement()).getProject();
+                List<String> moduleNames = new ArrayList<String>(NedResourcesPlugin.getNedResources().getModuleQNames(project));
                 Collections.sort(moduleNames);
                 return moduleNames;
             }

@@ -22,7 +22,7 @@ import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.text.util.NedTextUtils.Info;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -44,15 +44,15 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 	        return null;
 
 		if (info.referredElement instanceof INedTypeElement)
-		    return getHoverTextFor(((INedTypeElement)info.referredElement).getNEDTypeInfo());
+		    return getHoverTextFor(((INedTypeElement)info.referredElement).getNedTypeInfo());
 
-		return HoverSupport.addHTMLStyleSheet("<pre>" + info.referredElement.getNEDSource() + "</pre>"); //FIXME refine!!! ie docu, etc
+		return HoverSupport.addHTMLStyleSheet("<pre>" + info.referredElement.getNedSource() + "</pre>"); //FIXME refine!!! ie docu, etc
 	}
 
-	protected static String getHoverTextFor(INEDTypeInfo typeInfo) {
+	protected static String getHoverTextFor(INedTypeInfo typeInfo) {
 		String text = "<b>" + typeInfo.getFullyQualifiedName() +  "</b><br/>\n";
 
-		String comment = typeInfo.getNEDElement().getComment();
+		String comment = typeInfo.getNedElement().getComment();
 		if (StringUtils.isNotEmpty(comment))
 			text += "<br/>" + NedCommentFormatter.makeHtmlDocu(comment, false, null);
 

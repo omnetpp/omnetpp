@@ -389,7 +389,7 @@
         <title>Cleaning up NED files</title>
         <para> This function does a general repair on all selected NED files. Throws out or adds import
           statements as needed, checks (and fixes) whether the file's package declaration is correct and
-          reformats the source code. It can be activated by clicking on the ``Clean Up NED Files''
+          reformats the source code. It can be activated by clicking on the ``Project | Clean Up NED Files''
           menu item from the main menu.</para>
       </sect3>
       <sect3>

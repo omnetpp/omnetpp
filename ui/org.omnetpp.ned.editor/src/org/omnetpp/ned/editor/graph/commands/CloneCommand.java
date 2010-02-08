@@ -13,8 +13,8 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
 
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.TypesElement;
@@ -30,16 +30,16 @@ public class CloneCommand extends Command {
     // nodes that should be cloned by the command
     private List<INedTypeElement> nodes;
     // parent node where cloned nodes should go
-    private INEDElement parent;
+    private INedElement parent;
     // sibling node before the cloned nodes should be inserted (null means insertion at the end)
-    private INEDElement insertBefore;
+    private INedElement insertBefore;
 
     /**
      * @param parent The parent node where the newly cloned nodes should go
      * @param insertBefore A sibling in the parent before we should insert the cloned nodes
      *        <code>null</code> should be used to insert at the end of the child list
      */
-    public CloneCommand(INEDElement parent, INEDElement insertBefore) {
+    public CloneCommand(INedElement parent, INedElement insertBefore) {
         super("Clone");
         Assert.isTrue(parent instanceof NedFileElementEx || parent instanceof TypesElement, "The parent of a type must be a NedFile or a Types element");
         this.parent = parent;
@@ -67,7 +67,7 @@ public class CloneCommand extends Command {
 
         // set a unique name
         NedFileElementEx nedFile = oldNode.getContainingNedFileElement();
-        newNode.setName(NEDElementUtilEx.getUniqueNameForToplevelType(newNode.getName(), nedFile));
+        newNode.setName(NedElementUtilEx.getUniqueNameForToplevelType(newNode.getName(), nedFile));
 
     	// insert into the parent at the correct position
         parent.insertChildBefore(insertBefore, newNode);
@@ -92,7 +92,7 @@ public class CloneCommand extends Command {
 
     @Override
     public void undo() {
-        for (INEDElement mod : newNodes)
+        for (INedElement mod : newNodes)
             mod.removeFromParent();
     }
 

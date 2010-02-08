@@ -1,0 +1,56 @@
+%description:
+Test that gate size assignments in the super type take effect.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    gates:
+        input g[] @loose;
+    connections allowunconnected:
+}
+
+network TestBase
+{
+    parameters:
+        int p;
+    submodules:
+        n: Node {
+            gates:
+                g[p];
+        }
+        dump: Dump;
+}
+
+network Test extends TestBase
+{
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+Test.p = 4
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        p = 4
+    submodules:
+        module Test.n: Node {
+            gates:
+                g[0] @loose: not connected
+                g[1] @loose: not connected
+                g[2] @loose: not connected
+                g[3] @loose: not connected
+        }
+}
+
+

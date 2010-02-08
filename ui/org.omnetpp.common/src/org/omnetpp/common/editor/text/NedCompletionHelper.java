@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.engine.PStringVector;
+import org.omnetpp.common.engine.UnitConversion;
 
 /**
  * This class contains data for context assist functions for NED files.
@@ -44,7 +46,9 @@ public final class NedCompletionHelper {
         makeShortTemplate("@display(\"i=${icon}\");", "property"),
         makeShortTemplate("@class(${className});", "property"),
         makeShortTemplate("@contains(${label1});", "property"),
-        makeShortTemplate("@labels(${label1})", "property"),
+        makeShortTemplate("@labels(${label1});", "property"),
+        makeShortTemplate("@signal[${name}];", "property"),
+        makeShortTemplate("@signal[${name}](title=\"${title}\";modeHint=${hints});", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
 
     public final static Template[] proposedNedComponentDisplayStringTempl;
@@ -139,6 +143,47 @@ public final class NedCompletionHelper {
         makeShortTemplate("@enum(${value1}, ${value2})", "property"),
         makeShortTemplate("@unit(${unitName})", "property"),
     }; //XXX check this list before release
+
+    public final static Template[] proposedNedUnitTempl;
+
+    static {
+        PStringVector units = UnitConversion.getAllUnits();
+        proposedNedUnitTempl = new Template[(int)units.size()];
+        for (int i = 0; i < units.size(); i++) {
+            String shortName = units.get(i);
+            proposedNedUnitTempl[i] = makeTemplate(UnitConversion.getLongName(shortName), "unit", shortName);
+        }
+    }
+
+    public final static Template[] proposedNedSignalPropertyParameterTempl = {
+        makeShortTemplate("title=\"${title}\"", "parameter"),
+        makeShortTemplate("unit=${unit};", "parameter"),
+        makeShortTemplate("interpolationmode=${modes};", "parameter"),
+        makeShortTemplate("enum=${value1, value2};", "parameter"),
+        makeShortTemplate("modeHint=${hints};", "parameter"),
+    };
+
+    public final static Template[] proposedNedSignalPropertyInterpolationModeParameterValueTempl = {
+        makeShortTemplate("none", "interpolation mode"),
+        makeShortTemplate("linear", "interpolation mode"),
+        makeShortTemplate("sample-hold", "interpolation mode"),
+        makeShortTemplate("backward-sample-hold", "interpolation mode"),
+    };
+
+    public final static Template[] proposedNedSignalPropertyModeHintParameterValueTempl = {
+        makeShortTemplate("auto", "automatically select the best mode(s) for a signal, this mode currently selects histogram mode"),
+//        makeShortTemplate("none", "do not record anything"),
+        makeShortTemplate("count", "record the number of values emitted; values are ignored"),
+//        makeShortTemplate("vector", "record all values"),
+        makeShortTemplate("last", "record the last value"),
+        makeShortTemplate("sum", "record the sum of the values"),
+        makeShortTemplate("mean", "record the mean of the values"),
+        makeShortTemplate("min", "record the minimum value"),
+        makeShortTemplate("max", "record the maximum value"),
+        makeShortTemplate("timeavg", "record the time average, interpreting the signal as a step function (sample-hold)"),
+        makeShortTemplate("stats", "record the count, sum, mean, standard deviation, minimum and maximum of the values"),
+        makeShortTemplate("histogram", "record everything stats records, plus a histogram of the values (bins are set up automatically)"),
+    };
 
     public final static Template[] proposedNedGatePropertyTempl = {
         makeShortTemplate("@labels(${label1})", "property"),

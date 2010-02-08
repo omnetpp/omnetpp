@@ -31,17 +31,16 @@ information of the simulation run and later can be used for various purposes.
 
 \section{Configuration}
 
-To record an eventlog file during the simulation, simply insert the following line into
-the ini file.
+To record an eventlog file during the simulation, insert the following line into
+the ini file:
 
 \begin{inifile}
 record-eventlog = true
 \end{inifile}
 
 \begin{note}
-    Since writing an eventlog file might significantly decrease overall
-    simulation performance therefore eventlog recording is turned off by
-    default.
+    Eventlog recording is turned off by default, because creating the eventlog file
+    might significantly decrease the overall simulation performance.
 \end{note}
 
 \subsection{File Name}
@@ -56,22 +55,30 @@ eventlog-file = ${resultdir}/${configname}-${runnumber}.elog
 
 \subsection{Recording Intervals}
 
-The size of an eventlog file is approximately proportional to the number of events it
-contains. To reduce the file size and speed up the simulation it might be useful to record
-only certain events. The following ini file configuration entry instructs the kernel to
-record events with simulation time less than 10.2, between 22.2 and 100 and greater than
-233.3.
+The size of an eventlog file is approximately proportional to the number of
+events it contains. To reduce the file size and speed up the simulation, it
+might be useful to record only certain events. The
+\ttt{eventlog-recording-intervals} configuration option instructs the
+kernel to record events only in the specified intervals. The syntax is
+similar to that of \ttt{vector-recording-intervals}.
+
+An example:
 
 \begin{inifile}
 eventlog-recording-intervals = ..10.2, 22.2..100, 233.3..
 \end{inifile}
 
 \subsection{Recording Modules}
-Another factor that affects the size of an eventlog file is the number of modules for
-which the simulation kernel records events during the simulation. The following ini file
-configuration entry instructs the kernel to record only the events that occurred in any of
-the routers having index between 10 and 20 while turns off recording for all other
-modules. This configuration key makes sense only for simple modules.
+
+Another factor that affects the size of an eventlog file is the number of
+modules for which the simulation kernel records events during the
+simulation. The \ttt{module-eventlog-recording} per-module configuration
+option instructs the kernel to record only the events that occurred in the
+matching modules. The default is to record events from all modules. This
+configuration option only applies to simple modules.
+
+The following example records events from any of the routers whose index is
+between 10 and 20, and turns off recording for all other modules.
 
 \begin{inifile}
 **.router[10..20].**.module-eventlog-recording = true
@@ -80,42 +87,44 @@ modules. This configuration key makes sense only for simple modules.
 
 \subsection{Recording Message Data}
 
-Since recording message data dramatically increases the size of the eventlog file and
-additionally slows down the simulation therefore it is turned off by default even if
-writing the eventlog is enabled. To turn on message data recording enter a value for the
-following configuration key in the ini file:
+Since recording message data dramatically increases the size of the
+eventlog file and also slows down the simulation, it is turned off by
+default, even if writing the eventlog is enabled. To turn on message data
+recording, supply a value for the \ttt{eventlog-message-detail-pattern}
+option in the ini file.
 
-\begin{verbatim}
-eventlog-message-detail-pattern
-\end{verbatim}
+%TODO explain the syntax a little bit... it is not trivial
 
-An example configuration for an IEEE 80211 model that records the field encapsulationMsg
-and all other fields which name ends with Address from messages which class name ends with
-Frame looks like this:
+%TODO: how to record all details?  =* ? test!
+
+An example configuration for an IEEE 80211 model that records the \ttt{encapsulationMsg} field
+and all other fields whose name ends in \ttt{Address}, from messages whose class name ends in
+\ttt{Frame} looks like this:
 
 \begin{inifile}
 eventlog-message-detail-pattern = *Frame:encapsulatedMsg,*Address
 \end{inifile}
 
-An example configuration for a TCP/IP model that records the port and address fields in
-all network packets looks like the following:
+An example configuration for a TCP/IP model that records the port and address
+fields in all network packets looks like the following:
 
 \begin{inifile}
 eventlog-message-detail-pattern =
  PPPFrame:encapsulatedMsg|IPDatagram:encapsulatedMsg,*Address|TCPSegment:*Port
 \end{inifile}
 
-\begin{note}
-    Take care about long running simulations because they might output eventlog
-    files of several Gbytes and thus fail due to insufficient disk space.
-\end{note}
+% TODO : Assuming you have a message type named \ttt{WirelessFrame}, the following
+% option records -- what?
+%
+% \begin{inifile}
+% eventlog-message-detail-pattern = WirelessFrame:declaredOn(WirelessFrame) or bitLength
+%\end{inifile}
 
 
 \section{Eventlog Tool}
 
 The Eventlog Tool is a command line tool to process eventlog files. Invoking it without
-parameters will display usage information such as available commands and options. The
-following are the most useful commands for users.
+parameters will display usage information. The following are the most useful commands for users.
 
 \subsection{Filter}
 
@@ -133,7 +142,7 @@ filters. Anything not echoed back by the eventlog tool will not be taken into
 consideration by the other tools found in the {\opp} IDE.
 
 \begin{note}
-    Custom filter tools should filter out whole events only otherwise the
+    Custom filter tools should filter out whole events only, otherwise the
     consequences are undefined.
 \end{note}
 

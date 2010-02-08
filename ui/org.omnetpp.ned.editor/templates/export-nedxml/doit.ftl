@@ -10,9 +10,9 @@
   <#break>
 </#list>
 
-<#-- generate XML from its NEDElement tree -->
-<#assign nedElementTree = nedTypeInfo.getNEDElement()>
-<#assign NedTreeUtil = classes["org.omnetpp.ned.model.NEDTreeUtil"]>
+<#-- generate XML from its NedElement tree -->
+<#assign nedElementTree = nedTypeInfo.getNedElement()>
+<#assign NedTreeUtil = classes["org.omnetpp.ned.model.NedTreeUtil"]>
 <#assign xmlText = NedTreeUtil.generateXML(nedElementTree, false, 2)>
 
 <#-- save (TODO: ask permission to overwrite) -->

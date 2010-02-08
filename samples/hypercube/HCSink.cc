@@ -13,7 +13,7 @@
 
 
 // Module registration:
-Define_Module( HCSink );
+Define_Module(HCSink);
 
 
 int hammingDistance(unsigned long a, unsigned long b)
@@ -26,36 +26,33 @@ int hammingDistance(unsigned long a, unsigned long b)
      return k;
 }
 
-
-void HCSink::activity()
+void HCSink::initialize()
 {
-    cOutVector eed_vec("end-to-end delay");
-    cOutVector hops_vec("hops");
-    cOutVector hopratio_vec("actual/min hops ratio");
+    endToEndDelaySignal = registerSignal("endToEndDelay");
+    hopCountSignal = registerSignal("hopCount");
+    hopRatioSignal = registerSignal("hopRatio");
+}
 
-    for(;;)
-    {
-        // receive a message and cast it to HCPacket
-        cMessage *msg = receive();
-        HCPacket *pkt = check_and_cast<HCPacket *>(msg);
+void HCSink::handleMessage(cMessage *msg)
+{
+    HCPacket *pkt = check_and_cast<HCPacket *>(msg);
 
-        // calculate statistics and record in output vector file
-        simtime_t eed = pkt->getArrivalTime() - pkt->getTimestamp();
-        int acthops = pkt->getHops();
-        int minhops = hammingDistance(pkt->getSrcAddress(), pkt->getDestAddress());
+    // calculate statistics and record them
+    simtime_t eed = pkt->getArrivalTime() - pkt->getTimestamp();
+    int actualHops = pkt->getHops();
+    int minHops = hammingDistance(pkt->getSrcAddress(), pkt->getDestAddress());
 
-        eed_vec.record( eed );
-        hops_vec.record( acthops );
-        hopratio_vec.record( acthops/(double)minhops );
+    emit(endToEndDelaySignal, eed);
+    emit(hopCountSignal, (long)actualHops);
+    emit(hopRatioSignal, actualHops / (double)minHops );
 
 #ifdef TRACE_MSG
-        ev.printf("Message received: '%s'\n", pkt->getName());
-        ev.printf("  - end-to-end delay=%g\n", eed);
-        ev.printf("  - distance=%d, actual hops=%d\n", minhops, acthops);
+    ev.printf("Message received: '%s'\n", pkt->getName());
+    ev.printf("  - end-to-end delay=%g\n", eed);
+    ev.printf("  - distance=%d, actual hops=%d\n", minHops, actualHops);
 #endif
 
-        // message no longer needed
-        delete pkt;
-    }
+    // message no longer needed
+    delete pkt;
 }
 

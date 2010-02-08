@@ -15,7 +15,7 @@ import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
@@ -41,7 +41,7 @@ public class NedSelectionSynchronizer extends SelectionSynchronizer {
     @Override
     protected EditPart convert(EditPartViewer viewer, EditPart part) {
         if (part instanceof INedModelProvider) {
-            INEDElement model = ((INedModelProvider)part).getNedModel();
+            INedElement model = ((INedModelProvider)part).getNedModel();
             return GraphicalNedEditor.getNearestEditPartForModel(viewer, model);
         }
         return null;

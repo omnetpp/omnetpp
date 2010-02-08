@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTreeEditPolicy;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -75,8 +75,8 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
         // reorder support
     }
 
-    public INEDElement getNedModel() {
-        return (INEDElement)getModel();
+    public INedElement getNedModel() {
+        return (INedElement)getModel();
     }
 
     public boolean isEditable() {
@@ -94,7 +94,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
      */
     @Override
     protected List<Object> getModelChildren() {
-        return Arrays.asList(NEDTreeUtil.getNedModelContentProvider().getChildren(getModel()));
+        return Arrays.asList(NedTreeUtil.getNedModelContentProvider().getChildren(getModel()));
     }
 
     /**
@@ -103,8 +103,8 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
     @Override
     protected void refreshVisuals() {
         if (getWidget() instanceof Tree) return;
-    	setWidgetImage(NEDTreeUtil.getNedModelLabelProvider().getImage(getModel()));
-    	setWidgetText(NEDTreeUtil.getNedModelLabelProvider().getText(getModel()));
+    	setWidgetImage(NedTreeUtil.getNedModelLabelProvider().getImage(getModel()));
+    	setWidgetText(NedTreeUtil.getNedModelLabelProvider().getText(getModel()));
     }
 
     /**

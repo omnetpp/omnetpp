@@ -26,7 +26,7 @@ In the 4.0 version, the documentation tool is part of the Eclipse-based
 simulation IDE.
 
 
-\section{Documentation comments}
+\section{Documentation Comments}
 
 Documentation is embedded in normal comments. All \texttt{//} comments
 that are in the ``right place'' (from the documentation tool's
@@ -74,7 +74,7 @@ simple Sink
 }
 \end{ned}
 
-\subsection{Private comments}
+\subsection{Private Comments}
 
 If you want a comment line \textit{not} to appear in the documentation,
 begin it with \texttt{//\#}. Those lines will be ignored by the
@@ -99,7 +99,7 @@ simple Gen
 \end{ned}
 
 
-\subsection{More on comment placement}
+\subsection{More on Comment Placement}
 
 Comments should be written where nedtool will find them.
 This is a) immediately above the documented item, or b) after the
@@ -123,9 +123,9 @@ simple Gen
 Do not try to comment groups of parameters together. The result
 will be awkward.
 
-\section{Text layout and formatting}
+\section{Text Layout and Formatting}
 
-\subsection{Paragraphs and lists}
+\subsection{Paragraphs and Lists}
 
 If you write longer descriptions, you'll need text formatting capabilities.
 Text formatting works like in Javadoc or Doxygen -- you can break up the
@@ -155,7 +155,7 @@ Example:
 \end{ned}
 
 
-\subsection{Special tags}
+\subsection{Special Tags}
 
 The documentation tool understands the following tags and will render them accordingly:
 \ttt{@author}, \ttt{@date}, \ttt{@todo}, \ttt{@bug}, \ttt{@see}, \ttt{@since},
@@ -169,7 +169,7 @@ The documentation tool understands the following tags and will render them accor
 \end{ned}
 
 
-\subsection{Text formatting using HTML}
+\subsection{Text Formatting Using HTML}
 
 Common HTML tags are understood as formatting commands.
 The most useful tags are: \ttt{<i>..</i>} (italic),
@@ -275,7 +275,7 @@ will be rendered approximately as:
 \end{longtable}
 
 
-\subsection{Escaping HTML tags}
+\subsection{Escaping HTML Tags}
 
 Sometimes may need to off interpreting HTML tags (\ttt{<i>}, \ttt{<b>}, etc.)
 as formatting instructions, and rather you want them to appear as literal
@@ -309,9 +309,9 @@ an \ttt{IP} module in the NED files.
 
 
 
-\section{Customizing and adding pages}
+\section{Customizing and Adding Pages}
 
-\subsection{Adding a custom title page}
+\subsection{Adding a Custom Title Page}
 
 The title page is the one that appears in the main frame after
 opening the documentation in the browser. By default it contains
@@ -348,7 +348,7 @@ Example:
 \end{ned}
 
 
-\subsection{Adding extra pages}
+\subsection{Adding Extra Pages}
 
 You can add new pages to the documentation in a similar way as customizing
 the title page. The directive to be used is \ttt{@page}, and it can
@@ -399,7 +399,7 @@ Example:
 \end{ned}
 
 
-\subsection{Incorporating externally created pages}
+\subsection{Incorporating Externally Created Pages}
 
 You may want to create pages outside the documentation tool
 (e.g. using a HTML editor) and include them in the documentation.

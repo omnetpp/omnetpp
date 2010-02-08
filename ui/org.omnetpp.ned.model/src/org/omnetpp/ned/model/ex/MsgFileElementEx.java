@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
@@ -22,13 +22,13 @@ public class MsgFileElementEx extends MsgFileElement implements INedFileElement 
     protected MsgFileElementEx() {
     }
 
-    protected MsgFileElementEx(INEDElement parent) {
+    protected MsgFileElementEx(INedElement parent) {
         super(parent);
     }
 
     public List<IMsgTypeElement> getTopLevelTypeNodes() {
         List<IMsgTypeElement> result = new ArrayList<IMsgTypeElement>();
-        for (INEDElement currChild : this)
+        for (INedElement currChild : this)
             if (currChild instanceof IMsgTypeElement)
                 result.add((IMsgTypeElement)currChild);
 
@@ -39,7 +39,7 @@ public class MsgFileElementEx extends MsgFileElement implements INedFileElement 
     public Map<String, PropertyElementEx> getProperties() {
         Map<String, PropertyElementEx> map = new HashMap<String, PropertyElementEx>();
 
-        INEDElement node = getFirstChildWithTag(NED_PROPERTY);
+        INedElement node = getFirstChildWithTag(NED_PROPERTY);
         while (node != null) {
             if (node instanceof IHasName && node.getTagCode() == NED_PROPERTY)
                 ((Map)map).put(((IHasName)node).getName(), (PropertyElementEx)node);

@@ -7,7 +7,7 @@
 
 package org.omnetpp.ned.core;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * Interface to allow selection of a toplevel component or a line range from
@@ -19,9 +19,9 @@ public interface IGotoNedElement {
         enum Mode {AUTOMATIC, GRAPHICAL, TEXT};
 
         /**
-         * Opens the editor and shown the specified INEDElement
+         * Opens the editor and shown the specified INedElement
          * @param model Th ned element to be shown
          * @param mode Which editor should be used
          */
-        public void showInEditor(INEDElement model, Mode mode);
+        public void showInEditor(INedElement model, Mode mode);
 }

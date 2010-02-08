@@ -20,6 +20,7 @@ import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.inifile.editor.model.SignalResolution;
 
 /**
  * Generate proposals for inifile parameters.
@@ -55,14 +56,19 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 	@Override
 	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		if (section != null) {
-			//ParamResolution[] resList = analyzer.getUnassignedParams(section);
-			ParamResolution[] resList = analyzer.getParamResolutions(section);
+            Set<String> fullPaths = new HashSet<String>();
 
-			// collect unique full paths
-			Set<String> fullPaths = new HashSet<String>();
-			for (ParamResolution res : resList)
+            // collect unique param resolution full paths
+            //ParamResolution[] paramResolutions = analyzer.getUnassignedParams(section);
+			ParamResolution[] paramResolutions = analyzer.getParamResolutions(section);
+			for (ParamResolution res : paramResolutions)
 				if (res.type != ParamResolution.ParamResolutionType.NED)
 					fullPaths.add(res.fullPath + "." +res.paramDeclaration.getName());
+
+			// collect unique signals
+			SignalResolution[] signalResolutions = analyzer.getSignalResolutions(section);
+            for (SignalResolution signalResolution : signalResolutions)
+                fullPaths.add(signalResolution.fullPath + ".");
 
 			Set<String> moduleProposals = new HashSet<String>();
 			Set<String> paramProposals = new HashSet<String>();

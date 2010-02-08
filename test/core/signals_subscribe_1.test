@@ -1,0 +1,46 @@
+%description:
+Test signal subscribe/unsubscribe
+
+%includes:
+#include "../lib/noisylistener.h"
+
+%activity:
+
+NoisyListener *listener = new NoisyListener();
+
+#define P  EV << (isSubscribed("dummy",listener)?"Y":"N") << "\n";
+
+// check that listener gets added to listener list only once
+EV << "Subscribing:\n"; P
+subscribe("dummy", listener); P
+subscribe("dummy", listener); P
+subscribe("dummy", listener); P
+
+// check that if not subscribed, unsubscribe() does nothing
+EV << "Unsubscribing:\n"; P
+unsubscribe("dummy", listener); P
+unsubscribe("dummy", listener); P
+unsubscribe("dummy", listener); P
+
+EV << "Deleting:\n";
+delete listener;
+EV << "Done\n";
+
+%contains: stdout
+NOISYLISTENER CONSTRUCTOR
+Subscribing:
+N
+SUBSCRIBED at module "Test", signal "dummy" (id=2)
+Y
+Y
+Y
+Unsubscribing:
+Y
+UNSUBSCRIBED from module "Test", signal "dummy" (id=2)
+N
+N
+N
+Deleting:
+NOISYLISTENER DESTRUCTOR
+Done
+

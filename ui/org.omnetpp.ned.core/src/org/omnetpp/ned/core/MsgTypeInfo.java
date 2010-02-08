@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.pojo.FieldElement;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.NedElementTags;
 
 /**
  * Default implementation for IMsgTypeInfo.
@@ -25,7 +25,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  * @author levy
  */
 // TODO: implement caching if performance turns out to be bad
-public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
+public class MsgTypeInfo implements IMsgTypeInfo, NedElementTags {
     protected IMsgTypeElement typeNode;
 
     public MsgTypeInfo(IMsgTypeElement node) {
@@ -38,14 +38,14 @@ public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
         if (name == null)
             return null;
         else
-            return NEDResourcesPlugin.getMSGResources().lookupMsgType(name);
+            return NedResourcesPlugin.getMsgResources().lookupMsgType(name);
     }
 
     public Set<IMsgTypeElement> getLocalUsedTypes() {
         Set<IMsgTypeElement> usedTypes = new HashSet<IMsgTypeElement>();
 
         for (FieldElement field = (FieldElement)typeNode.getFirstChildWithTag(NED_FIELD); field != null; field = field.getNextFieldSibling()) {
-            IMsgTypeElement usedType = NEDResourcesPlugin.getMSGResources().lookupMsgType(field.getDataType());
+            IMsgTypeElement usedType = NedResourcesPlugin.getMsgResources().lookupMsgType(field.getDataType());
 
             if (usedType != null)
                 usedTypes.add(usedType);
@@ -76,16 +76,16 @@ public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
         return fields;
     }
 
-    public Map<String, PropertyElementEx> getProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
         // TODO:
-        return new HashMap<String, PropertyElementEx>();
+        return new HashMap<String, Map<String, PropertyElementEx>>();
     }
 
     public String getFullyQualifiedCppClassName() {
         String className = typeNode.getName();
 
         MsgFileElementEx fileElement = typeNode.getContainingMsgFileElement();
-        String namespace = NEDResourcesPlugin.getMSGResources().getCppNamespaceForFile(fileElement);
+        String namespace = NedResourcesPlugin.getMsgResources().getCppNamespaceForFile(fileElement);
 
         if (namespace == null)
             return className;

@@ -7,8 +7,8 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedNewFileWizard;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
 /**
  * "New Msg File" wizard
@@ -41,7 +41,7 @@ public class NewMsgFileWizard extends TemplateBasedNewFileWizard {
         CreationContext context = super.createContext(selectedTemplate, folder);
 
         // namespace
-        String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
+        String namespaceName = NedResourcesPlugin.getNedResources().getSimplePropertyFor(folder, INedTypeResolver.NAMESPACE_PROPERTY);
         context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
 
         return context;

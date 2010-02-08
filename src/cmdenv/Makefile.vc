@@ -103,6 +103,7 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cproperty.h \

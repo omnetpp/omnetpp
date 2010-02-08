@@ -18,7 +18,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
@@ -54,14 +54,14 @@ public class CopyAction extends SelectionAction {
 		selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));  // FIXME skip connections that already selected
 
 		// translate from editparts to model elements
-		List<INEDElement> selectedModelObjects = new ArrayList<INEDElement>();
+		List<INedElement> selectedModelObjects = new ArrayList<INedElement>();
 		for (EditPart editPart : selectedEditParts)
 			if (editPart instanceof INedModelProvider)
 				selectedModelObjects.add(((INedModelProvider)editPart).getNedModel().deepDup());
 
 		// copy to clipboard
 		if (selectedModelObjects.size() > 0)
-			Clipboard.getDefault().setContents(selectedModelObjects.toArray(new INEDElement[]{}));
+			Clipboard.getDefault().setContents(selectedModelObjects.toArray(new INedElement[]{}));
 	}
 
 }

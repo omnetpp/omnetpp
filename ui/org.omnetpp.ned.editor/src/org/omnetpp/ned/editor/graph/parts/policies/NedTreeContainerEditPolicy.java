@@ -17,7 +17,7 @@ import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * TODO add documentation
@@ -41,7 +41,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
               command.add(UnexecutableCommand.INSTANCE);
               return command;
             }
-            command.add(new ReorderCommand((INEDElement)insertBeforeEditPart.getModel(), (INEDElement)editPart2move.getModel()));
+            command.add(new ReorderCommand((INedElement)insertBeforeEditPart.getModel(), (INedElement)editPart2move.getModel()));
         }
         return command;
     }

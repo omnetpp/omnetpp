@@ -29,19 +29,16 @@ ResourceBasedQueue::~ResourceBasedQueue()
 
 void ResourceBasedQueue::initialize()
 {
-    droppedVector.setName("dropped jobs");
-    lengthVector.setName("length");
-    queueingTimeVector.setName("queueing time");
-    scalarUtilizationStats.setName("utilization");
-    scalarWeightedLengthStats.setName("time weighted length");
-    scalarLengthStats.setName("length");
+    droppedSignal = registerSignal("dropped");
+    queueingTimeSignal = registerSignal("queueingTime");
+    queueLengthSignal = registerSignal("queueLength");
+    emit(queueLengthSignal, 0l);
+    busySignal = registerSignal("busy");
+    emit(busySignal, 0l);
 
     endServiceMsg = new cMessage("end-service");
     fifo = par("fifo");
     capacity = par("capacity");
-    droppedJobs = 0;
-    prevQueueEventTimeStamp = 0.0;
-    prevServiceEventTimeStamp = 0.0;
     queue.setName("queue");
 
     resourceAmount = par("resourceAmount");
@@ -61,29 +58,28 @@ void ResourceBasedQueue::handleMessage(cMessage *msg)
         endService( jobServiced );
         if (!queue.empty() && allocateResource(peek()))
         {
-            queueLengthWillChange();
             jobServiced = getFromQueue();
+            emit(queueLengthSignal, (long)length());
             simtime_t serviceTime = startService( jobServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }
         else
         {
             jobServiced = NULL;
-            processorStateWillChange();
+            emit(busySignal, 0l);
         }
     }
     else
     {
         Job *job = check_and_cast<Job *>(msg);
 
-        job->setTimestamp();
+        arrival( job );
 
         if (!jobServiced && queue.isEmpty() && allocateResource(job))
         {
             // processor was idle and the allocation is successful
-            arrival( job );
             jobServiced = job;
-            processorStateWillChange();
+            emit(busySignal, 1l);
             simtime_t serviceTime = startService( jobServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }
@@ -94,17 +90,15 @@ void ResourceBasedQueue::handleMessage(cMessage *msg)
             {
                 EV << "Capacity full! Job dropped.\n";
                 if (ev.isGUI()) bubble("Dropped!");
-                droppedVector.record(++droppedJobs);
+                emit(droppedSignal, 1l);
                 delete job;
                 return;
             }
-            arrival( job );
-            queueLengthWillChange();
             queue.insert( job );
+            emit(queueLengthSignal, (long)length());
+            job->setQueueCount(job->getQueueCount() + 1);
         }
     }
-
-    lengthVector.record(length());
 
     if (ev.isGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
 }
@@ -136,19 +130,6 @@ int ResourceBasedQueue::length()
     return queue.length();
 }
 
-void ResourceBasedQueue::queueLengthWillChange()
-{
-    scalarWeightedLengthStats.collect2(length(), simTime()-prevQueueEventTimeStamp);
-    scalarLengthStats.collect(length());
-    prevQueueEventTimeStamp = simTime();
-}
-
-void ResourceBasedQueue::processorStateWillChange()
-{
-    scalarUtilizationStats.collect2((jobServiced ? 0 : 1), simTime()-prevServiceEventTimeStamp);
-    prevServiceEventTimeStamp = simTime();
-}
-
 void ResourceBasedQueue::arrival(Job *job)
 {
     job->setTimestamp();
@@ -159,7 +140,7 @@ simtime_t ResourceBasedQueue::startService(Job *job)
     // gather queueing time statistics
     simtime_t d = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
-    queueingTimeVector.record(d);
+    emit(queueingTimeSignal, d);
     EV << "Starting service of " << job->getName() << endl;
     job->setTimestamp();
     return par("serviceTime").doubleValue();
@@ -172,15 +153,6 @@ void ResourceBasedQueue::endService(Job *job)
     job->setTotalServiceTime(job->getTotalServiceTime() + d);
     send(job, "out");
     releaseResource();
-}
-
-void ResourceBasedQueue::finish()
-{
-    recordScalar("min length",scalarLengthStats.getMin());
-    recordScalar("max length",scalarLengthStats.getMax());
-    recordScalar("avg length",scalarWeightedLengthStats.getMean());
-    recordScalar("utilization",scalarUtilizationStats.getMean());
-    recordScalar("dropped jobs", droppedJobs);
 }
 
 bool ResourceBasedQueue::allocateResource(Job *job)
@@ -216,8 +188,9 @@ void ResourceBasedQueue::resourceGranted(IResourcePool *provider)
     // start servicing if the processor is idle and the queue is not empty
     if (!jobServiced && !queue.empty())
     {
-        queueLengthWillChange();
         jobServiced = getFromQueue();
+        emit(queueLengthSignal, (long)length());
+        emit(busySignal, 1l);
         simtime_t serviceTime = startService( jobServiced );
         scheduleAt( simTime()+serviceTime, endServiceMsg );
     }

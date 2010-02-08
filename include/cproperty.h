@@ -183,7 +183,7 @@ class SIM_API cProperty : public cNamedObject
      * Returns the number of values for the given key in the property.
      * Specify "" or DEFAULTKEY for the default key.
      *
-     * Throws an error of the given key does not exist.
+     * Returns 0 if the given key does not exist.
      */
     virtual int getNumValues(const char *key) const;
 
@@ -193,7 +193,7 @@ class SIM_API cProperty : public cNamedObject
      * for the default key. Note that simply setting an element above
      * getNumValues(key) will also expand the list.
      *
-     * Throws an error of the given key does not exist.
+     * Throws an error if the given key does not exist.
      */
     virtual void setNumValues(const char *key, int size);
 
@@ -210,7 +210,7 @@ class SIM_API cProperty : public cNamedObject
      * of the string passed. index may be greater than getNumValues(key);
      * that will cause the values list to expand, the new elements filled with "".
      *
-     * Throws an error of the given key does not exist, or the index is
+     * Throws an error if the given key does not exist, or the index is
      * negative.
      */
     virtual void setValue(const char *key, int index, const char *value);

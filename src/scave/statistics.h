@@ -38,7 +38,7 @@ class SCAVE_API Statistics
         double _sumSqr;
 
     public:
-        Statistics() : _count(0), _min(dblPositiveInfinity), _max(dblNegativeInfinity), _sum(0.0), _sumSqr(0.0) {}
+        Statistics() : _count(0), _min(POSITIVE_INFINITY), _max(NEGATIVE_INFINITY), _sum(0.0), _sumSqr(0.0) {}
         Statistics(long count, double min, double max, double sum, double sumSqr)
             :_count(count), _min(min), _max(max), _sum(sum), _sumSqr(sumSqr) {}
 
@@ -47,7 +47,7 @@ class SCAVE_API Statistics
         double getMax() const { return _max; }
         double getSum() const { return _sum; }
         double getSumSqr() const { return _sumSqr; }
-        double getMean() const { return _count == 0 ? dblNaN : _sum / _count; }
+        double getMean() const { return _count == 0 ? NaN : _sum / _count; }
         double getStddev() const { return sqrt(getVariance()); }
         double getVariance() const;
 
@@ -63,7 +63,7 @@ inline double Statistics::getVariance() const
         return var < 0 ? 0 : var;
     }
     else
-        return dblNaN;
+        return NaN;
 }
 
 inline void Statistics::collect(double value)

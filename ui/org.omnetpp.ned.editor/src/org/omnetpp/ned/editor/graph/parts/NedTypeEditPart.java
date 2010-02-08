@@ -12,7 +12,7 @@ import org.omnetpp.figures.NedTypeFigure;
 import org.omnetpp.ned.editor.graph.figures.NedTypeFigureEx;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -38,7 +38,7 @@ public class NedTypeEditPart extends NedEditPart {
     }
 
     /**
-     * Returns the model associated with this as a INEDElement.
+     * Returns the model associated with this as a INedElement.
      */
     @Override
 	protected IFigure createFigure() {
@@ -96,7 +96,7 @@ public class NedTypeEditPart extends NedEditPart {
      * open the first base component for double click
      */
     @Override
-    protected INEDElement getNEDElementToOpen() {
+    protected INedElement getNedElementToOpen() {
         if (getModel() instanceof INedTypeElement)
             return ((INedTypeElement)getNedModel()).getFirstExtendsRef();
 

@@ -232,8 +232,12 @@ cProperty::CharPtrVector& cProperty::getValuesVector(const char *key) const
 
 int cProperty::getNumValues(const char *key) const
 {
-    CharPtrVector& v = getValuesVector(key);
-    return v.size();
+    if (!key)
+        key = "";
+    int k = findKey(key);
+    if (k==-1)
+        return 0;
+    return valuesv[k].size();
 }
 
 void cProperty::setNumValues(const char *key, int size)

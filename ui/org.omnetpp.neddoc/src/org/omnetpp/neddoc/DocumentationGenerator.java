@@ -78,8 +78,8 @@ import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.MsgResources;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.misc.NedFigureProvider;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPart;
@@ -89,7 +89,7 @@ import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.ClassElementEx;
@@ -109,7 +109,7 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
@@ -195,7 +195,7 @@ public class DocumentationGenerator {
     protected IPath neddocRelativeRootPath;
     protected IPath customCssPath;
     protected IProject project;
-    protected NEDResources nedResources;
+    protected INedResources nedResources;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
 
@@ -220,8 +220,8 @@ public class DocumentationGenerator {
     public DocumentationGenerator(IProject project) {
         this.project = project;
 
-        nedResources = NEDResourcesPlugin.getNEDResources();
-        msgResources = NEDResourcesPlugin.getMSGResources();
+        nedResources = NedResourcesPlugin.getNedResources();
+        msgResources = NedResourcesPlugin.getMsgResources();
 
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
@@ -398,7 +398,7 @@ public class DocumentationGenerator {
     }
 
     protected String getPackageName(INedTypeElement typeElement) {
-        String packageName = typeElement.getNEDTypeInfo().getPackageName();
+        String packageName = typeElement.getNedTypeInfo().getPackageName();
 
         if (packageName != null)
             return packageName;
@@ -422,7 +422,7 @@ public class DocumentationGenerator {
         StringBuffer buffer = new StringBuffer();
         for (ITypeElement typeElement : typeElements) {
             if (typeElement instanceof INedTypeElement) {
-                String qname = ((INedTypeElement)typeElement).getNEDTypeInfo().getFullyQualifiedName();
+                String qname = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
                 buffer.append(qname + "|");
                 typeNamesMap.put(qname, typeElement);
             }
@@ -467,7 +467,7 @@ public class DocumentationGenerator {
             if (typeElement instanceof INedTypeElement && !(typeElement instanceof IInterfaceTypeElement)) {
                 INedTypeElement implementor = (INedTypeElement)typeElement;
 
-                for (INedTypeElement interfaze : implementor.getNEDTypeInfo().getLocalInterfaces()) {
+                for (INedTypeElement interfaze : implementor.getNedTypeInfo().getLocalInterfaces()) {
                     ArrayList<INedTypeElement> implementors = implementorsMap.get(interfaze);
 
                     if (implementors == null)
@@ -1086,7 +1086,7 @@ public class DocumentationGenerator {
 
                         if (isNedTypeElement) {
                             INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
-                            monitor.subTask(nedTypeElement.getReadableTagName() + ": " + nedTypeElement.getNEDTypeInfo().getFullyQualifiedName());
+                            monitor.subTask(nedTypeElement.getReadableTagName() + ": " + nedTypeElement.getNedTypeInfo().getFullyQualifiedName());
 
                             generateTypeDiagram(nedTypeElement);
                             generateUsageDiagram(nedTypeElement);
@@ -1098,10 +1098,10 @@ public class DocumentationGenerator {
                             generatePropertiesTable(nedTypeElement);
 
                             if (typeElement instanceof IModuleTypeElement)
-                                generateGatesTable((IModuleTypeElement)nedTypeElement);
+                                generateGatesTable(nedTypeElement);
 
                             if (typeElement instanceof CompoundModuleElementEx)
-                                generateUnassignedParametersTable((CompoundModuleElementEx)nedTypeElement);
+                                generateUnassignedParametersTable(nedTypeElement);
                         }
                         else if (isMsgTypeElement) {
                             IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
@@ -1168,7 +1168,7 @@ public class DocumentationGenerator {
     }
 
     protected void generatePropertiesTable(ITypeElement typeElement) throws IOException {
-        Map<String, PropertyElementEx> properties = typeElement.getProperties();
+        Map<String, Map<String, PropertyElementEx>> properties = typeElement.getProperties();
 
         if (properties.size() != 0) {
             out("<h3 class=\"subtitle\">Properties:</h3>\r\n" +
@@ -1181,7 +1181,7 @@ public class DocumentationGenerator {
 
             for (String name : properties.keySet())
             {
-                PropertyElementEx property = properties.get(name);
+                PropertyElementEx property = properties.get(name).get(PropertyElementEx.DEFAULT_PROPERTY_INDEX);
 
             	out("<tr>\r\n" +
             		"   <td width=\"150\">" + name + "</td>\r\n" +
@@ -1243,7 +1243,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateParametersTable(INedTypeElement typeElement) throws IOException {
-        Map<String, ParamElementEx> localParamsDeclarations = typeElement.getNEDTypeInfo().getLocalParamDeclarations();
+        Map<String, ParamElementEx> localParamsDeclarations = typeElement.getNedTypeInfo().getLocalParamDeclarations();
         Map<String, ParamElementEx> paramsDeclarations = typeElement.getParamDeclarations();
         Map<String, ParamElementEx> paramsAssignments = typeElement.getParamAssignments();
 
@@ -1280,7 +1280,7 @@ public class DocumentationGenerator {
 
     protected void generateUnassignedParametersTable(INedTypeElement typeElement) throws IOException {
         ArrayList<ArrayList<Object>> params = new ArrayList<ArrayList<Object>>();
-        collectUnassignedParameters(null, typeElement.getNEDTypeInfo().getSubmodules(), params);
+        collectUnassignedParameters(null, typeElement.getNedTypeInfo().getSubmodules(), params);
 
         if (params.size() != 0) {
             out("<h3 class=\"subtitle\">Unassigned submodule parameters:</h3>\r\n" +
@@ -1318,9 +1318,9 @@ public class DocumentationGenerator {
                 String newPrefix = (prefix == null ? "" : prefix + ".") + "<a href=\"" + getOutputFileName(typeElement) + "\">" + submodule.getName() + "</a>";
 
                 if (typeElement instanceof CompoundModuleElementEx)
-                    collectUnassignedParameters(newPrefix, typeElement.getNEDTypeInfo().getSubmodules(), params);
+                    collectUnassignedParameters(newPrefix, typeElement.getNedTypeInfo().getSubmodules(), params);
                 else {
-                    INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
+                    INedTypeInfo typeInfo = typeElement.getNedTypeInfo();
                     Map<String, ParamElementEx> declarations = typeInfo.getParamDeclarations();
                     Map<String, ParamElementEx> assigments = submodule.getParamAssignments();
 
@@ -1344,7 +1344,7 @@ public class DocumentationGenerator {
     protected void generateGatesTable(INedTypeElement typeElement) throws IOException {
         IModuleTypeElement module = (IModuleTypeElement)typeElement;
 
-        Map<String, GateElementEx> localGateDeclarations = module.getNEDTypeInfo().getLocalGateDeclarations();
+        Map<String, GateElementEx> localGateDeclarations = module.getNedTypeInfo().getLocalGateDeclarations();
         Map<String, GateElementEx> gateDeclarations = module.getGateDeclarations();
         Map<String, GateElementEx> gatesSizes = module.getGateSizes();
 
@@ -1415,7 +1415,7 @@ public class DocumentationGenerator {
         String className;
 
         if (typeElement instanceof INedTypeElement)
-            className = ((INedTypeElement)typeElement).getNEDTypeInfo().getFullyQualifiedCppClassName();
+            className = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedCppClassName();
         else if (typeElement instanceof IMsgTypeElement)
             className = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
         else
@@ -1513,7 +1513,7 @@ public class DocumentationGenerator {
                                 watermark(destinationImagePath.toString());
                         }
                         else
-                            throw new RuntimeException("Cannot generate image for " + typeElement.getNEDTypeInfo().getFullyQualifiedName());
+                            throw new RuntimeException("Cannot generate image for " + typeElement.getNedTypeInfo().getFullyQualifiedName());
                     }
 
                     monitor.worked(1);
@@ -1555,7 +1555,7 @@ public class DocumentationGenerator {
                 public void run() {
                     try {
                         NedFileElementEx modelRoot = typeElement.getContainingNedFileElement();
-                        ScrollingGraphicalViewer viewer = NedFigureProvider.createNEDViewer(modelRoot);
+                        ScrollingGraphicalViewer viewer = NedFigureProvider.createNedViewer(modelRoot);
                         NedEditPart editPart = (NedEditPart)viewer.getEditPartRegistry().get(typeElement);
 
                         out("<map name=\"type-diagram\">\r\n");
@@ -1750,7 +1750,7 @@ public class DocumentationGenerator {
                     }
                 }
                 else if (typeElement instanceof INedTypeElement) {
-                    INEDTypeInfo typeInfo = ((INedTypeElement)typeElement).getNEDTypeInfo();
+                    INedTypeInfo typeInfo = ((INedTypeElement)typeElement).getNedTypeInfo();
                     Set<INedTypeElement> interfaces = typeInfo.getLocalInterfaces();
 
                     if  (interfaces != null) {
@@ -1787,7 +1787,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateSourceContent(ITypeElement typeElement) throws IOException {
-        generateSourceContent(typeElement.getNEDSource(), typeElement instanceof INedTypeElement);
+        generateSourceContent(typeElement.getNedSource(), typeElement instanceof INedTypeElement);
     }
 
     protected void generateSourceContent(String source, boolean nedSource) throws IOException {
@@ -2044,7 +2044,7 @@ public class DocumentationGenerator {
         String fileName = "";
 
         if (typeElement instanceof INedTypeElement)
-            fileName += ((INedTypeElement)typeElement).getNEDTypeInfo().getFullyQualifiedName();
+            fileName += ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
         else if (typeElement instanceof IMsgTypeElement)
             fileName += typeElement.getName();
 
@@ -2063,7 +2063,7 @@ public class DocumentationGenerator {
         return getFullNeddocPath().append(relativePath).toFile();
     }
 
-    protected IFile getNedOrMsgFile(INEDElement element) {
+    protected IFile getNedOrMsgFile(INedElement element) {
         NedFileElementEx nedFileElement = element.getContainingNedFileElement();
 
         if (nedFileElement != null)

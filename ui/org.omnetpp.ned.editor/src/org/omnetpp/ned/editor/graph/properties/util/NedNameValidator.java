@@ -12,8 +12,8 @@ import java.util.Arrays;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.NEDElementConstants;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.NedElementConstants;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
@@ -32,11 +32,11 @@ public class NedNameValidator implements ICellEditorValidator {
         if (StringUtils.isBlank((String)value))
             return "Invalid identifier. Names must not be empty";
 
-        if (!NEDElementUtilEx.isValidIdentifier((String)value))
+        if (!NedElementUtilEx.isValidIdentifier((String)value))
             return "Invalid identifier. Names must begin with a letter or underscore, and may contain letters," +
             " digits or underscore.";
 
-        if (Arrays.asList(NEDElementConstants.RESERVED_NED_KEYWORDS).contains(value))
+        if (Arrays.asList(NedElementConstants.RESERVED_NED_KEYWORDS).contains(value))
             return "Name is a reserved keyword.";
         return null;
     }

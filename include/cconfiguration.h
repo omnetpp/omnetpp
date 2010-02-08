@@ -117,7 +117,7 @@ class SIM_API cConfiguration : public cObject
     /**
      * Returns a per-object configuration value. Valid keysuffixes don't contain
      * dots or wildcard characters. Returns NULL if key is not found.
-     * keySuffix is something like "vector-recording-interval", "ev-output", etc.
+     * keySuffix is something like "vector-recording-intervals", "ev-output", etc.
      */
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const = 0;
 
@@ -426,21 +426,25 @@ class SIM_API cConfigurationEx : public cConfiguration
     /**
      * This method returns an array of the following form: (key1, value1,
      * key2, value2,...), where keys and values correspond to parameter
-     * assignments in the configuration. This method should not be used
-     * for anything else than writing the header of result files.
+     * assignments in the configuration. This method is inefficient, and
+     * should not be used for anything else than writing the header of
+     * result files.
      */
     virtual std::vector<const char *> getParameterKeyValuePairs() const = 0;
 
     /**
-     * Returns the list of config keys that match the given wildcard pattern.
-     * The returned keys can be passed to getPerObjectConfigValue().
-     * objectFullPath may not contain wildcards.
+     * Returns the list of config keys that match the wildcard pattern
+     * objectFullPath + dot + keySuffixPattern. objectFullPath may either be
+     * a concrete string without wildcards, or "**" to match anything.
+     * The returned keys may be used with getPerObjectConfigValue() to obtain
+     * the corresponding values.
      */
     virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const = 0;
 
     /**
      * Like getMatchingPerObjectConfigKeys(), but returns the suffixes instead
-     * of the keys. Note: the result may contain duplicates.
+     * of the keys. Note: the result may contain duplicates. The returned suffixes
+     * may be used with getPerObjectConfigValue() to obtain the corresponding values.
      */
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const = 0;
     //@}

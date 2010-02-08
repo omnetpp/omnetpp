@@ -9,7 +9,7 @@ package org.omnetpp.ned.model.interfaces;
 
 import java.util.Map;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.GateElementEx;
 
 /**
@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.ex.GateElementEx;
  *
  * @author rhornig
  */
-public interface IHasGates extends INEDElement {
+public interface IHasGates extends INedElement {
 
     /**
      * Returns the list of all gate elements.

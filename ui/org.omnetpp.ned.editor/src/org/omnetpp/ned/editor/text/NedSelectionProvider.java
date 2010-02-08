@@ -15,8 +15,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.part.FileEditorInput;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * A selection provider that attaches to a NED text editor's viewer and delegates
@@ -55,7 +55,7 @@ public class NedSelectionProvider implements IPostSelectionProvider {
         		line = fNedTextEditor.getDocument().getLineOfOffset(offset);
         		int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
         		IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
-        		INEDElement selectedElement = NEDResourcesPlugin.getNEDResources().getNedElementAt(file, line+1, column);
+        		INedElement selectedElement = NedResourcesPlugin.getNedResources().getNedElementAt(file, line+1, column);
         		// create a structured selection
         		selection = (selectedElement != null) ? new StructuredSelection(selectedElement) : StructuredSelection.EMPTY;
         	} catch (BadLocationException e) {

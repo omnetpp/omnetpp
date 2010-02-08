@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
@@ -40,10 +40,10 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     @Override
     protected boolean calculateEnabled() {
         if (getSelectedObjects().size() == 1 && getSelectedObjects().get(0) instanceof INedModelProvider) {
-           INEDElement element = ((INedModelProvider)getSelectedObjects().get(0)).getNedModel();
+           INedElement element = ((INedModelProvider)getSelectedObjects().get(0)).getNedModel();
            return element instanceof IHasParameters &&
-               element.getConsistencyProblemMaxCumulatedSeverity() == NEDElement.SEVERITY_NONE &&
-               element.getSyntaxProblemMaxCumulatedSeverity() == NEDElement.SEVERITY_NONE;
+               element.getConsistencyProblemMaxCumulatedSeverity() == NedElement.SEVERITY_NONE &&
+               element.getSyntaxProblemMaxCumulatedSeverity() == NedElement.SEVERITY_NONE;
         }
         else
             return false;

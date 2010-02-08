@@ -1,0 +1,21 @@
+%description:
+Test that modules call finish() on listeners, and that
+module destructors unsubscribe listeners
+
+%includes:
+#include "../lib/noisylistener.h"
+
+%activity:
+EV << "Subscribing:\n";
+NoisyListener *listener = new NoisyListener();
+subscribe("dummy", listener);
+
+%contains: stdout
+Subscribing:
+NOISYLISTENER CONSTRUCTOR
+SUBSCRIBED at module "Test", signal "dummy" (id=2)
+
+%contains: stdout
+FINISH on module "Test", signal "dummy" (id=2)
+UNSUBSCRIBED from module "Test", signal "dummy" (id=2)
+

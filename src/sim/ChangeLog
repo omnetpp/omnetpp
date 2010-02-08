@@ -1,3 +1,11 @@
+2010-01-26  Andras Varga
+
+	* fix: cProperties::getNames() and getIndicesFor() were broken
+
+2010-01-23  Andras Varga
+
+	* implemented signals mechanism. See include/ChangeLog for details
+
 2010-01-22  Andras Varga
 
 	* componenttype.cc: fix: crash if module object ctor throws exception
@@ -14,8 +22,13 @@
 2009-10-14  Andras Varga
 
 	* dynamic network builder: cComponentType::create() sets NED parameters
-	as well from the similarly named submodule section of the parent 
+	as well from the similarly named submodule section of the parent
 	compound module's NED file
+
+2009-07-26  Andras Varga
+
+	* bugfix: cpar.cc: parse() and some other cPar methods did not cause
+	handleParameterChanged() to be invoked on the owner module [ViRe]
 
 2009-07-26  Andras Varga
 

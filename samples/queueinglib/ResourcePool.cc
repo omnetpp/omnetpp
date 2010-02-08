@@ -32,12 +32,10 @@ void ResourcePool::initialize()
     WATCH_LIST(allocatorList);
     WATCH(amount);
     amount = par("amount");
+    amountSignal = registerSignal("amount");
+    emit(amountSignal, amount);
     if (ev.isGUI())
         updateDisplayString();
-}
-
-void ResourcePool::finish()
-{
 }
 
 bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority)
@@ -45,6 +43,7 @@ bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAll
     Enter_Method("allocate(%ld): %s", amountToAllocate, amount >= amountToAllocate ? "success" : "fail");
     if (amount >= amountToAllocate) {
         amount -= amountToAllocate;
+        emit(amountSignal, amount);
         if (ev.isGUI())
             updateDisplayString();
         return true;
@@ -73,6 +72,7 @@ void ResourcePool::release(long amountToRelease)
         firstIt->allocator->resourceGranted(this);
         allocatorList.pop_front();
     }
+    emit(amountSignal, amount);
     if (ev.isGUI())
         updateDisplayString();
 }

@@ -68,7 +68,7 @@ you need to log out and log in again for the changes to take effect.
 
 [NOTE]
 ===============================================================
-If you use a shell other than the default one, bash, consult the man page
+If you use a shell other than the default one, 'bash', consult the man page
 of that shell to find out which startup file to edit, and how to set and
 export variables.
 ===============================================================
@@ -152,7 +152,7 @@ the dyna simulation is started by entering the following commands:
     $ cd samples/dyna
     $ ./dyna
 
-By default the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
 
@@ -285,7 +285,9 @@ Enter into a terminal:
 
 ==== Akaroa
 
-TODO
+Akaroa 2.6.7, which is the latest version at the time of writing, does not
+support Mac OS X. You may try to port it using the porting guide from the
+Akaroa distribution.
 
 ifdef::OMNEST[]
 ==== SystemC

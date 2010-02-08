@@ -20,11 +20,11 @@ import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDSourceRegion;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedSourceRegion;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
@@ -33,8 +33,8 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
@@ -56,11 +56,11 @@ public class NedTextUtils {
      * Result of findNedContext()
      */
     public static class Info {
-        public INEDElement element; // the element being hovered/under cursor
+        public INedElement element; // the element being hovered/under cursor
         public IRegion regionToHighlight; // range to highlight as link (word)
-        public INEDElement referredElement;  // the jump target, usually the declaration of the gate/param/submodule/type
+        public INedElement referredElement;  // the jump target, usually the declaration of the gate/param/submodule/type
 
-        public Info(INEDElement element, IRegion regionToHighlight, INEDElement referredElement) {
+        public Info(INedElement element, IRegion regionToHighlight, INedElement referredElement) {
             this.element = element;
             this.regionToHighlight = regionToHighlight;
             this.referredElement = referredElement;
@@ -85,13 +85,13 @@ public class NedTextUtils {
             int line = doc.getLineOfOffset(region.getOffset());
             int column = region.getOffset() - doc.getLineOffset(line);
 
-            INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-            INEDElement element = res.getNedElementAt(file, line+1, column);
+            INedTypeResolver res = NedResourcesPlugin.getNedResources();
+            INedElement element = res.getNedElementAt(file, line+1, column);
             if (element == null)
                 return null; // we don't know what's there
 
             if (element instanceof ImportElement) {
-                INEDElement declElement = lookupTypeElement(dottedWord, element.getContainingNedFileElement());
+                INedElement declElement = lookupTypeElement(dottedWord, element.getContainingNedFileElement());
                 return createInfo(element, dottedWordRegion, declElement);
             }
             if (element instanceof INedTypeElement) {
@@ -99,12 +99,12 @@ public class NedTextUtils {
                     return createInfo(element, wordRegion, element);
             }
             if (element instanceof ExtendsElement || element instanceof InterfaceNameElement) {
-                INEDElement declElement = lookupTypeElement(dottedWord, element.getParent().getEnclosingLookupContext());
+                INedElement declElement = lookupTypeElement(dottedWord, element.getParent().getEnclosingLookupContext());
                 return createInfo(element, dottedWordRegion, declElement);
             }
             if (element instanceof SubmoduleElementEx) {
                 if (dottedWord.equals(((SubmoduleElementEx)element).getEffectiveType())) {
-                    INEDElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
+                    INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
                     return createInfo(element, dottedWordRegion, declElement);
                 }
                 if (dottedWord.equals(((SubmoduleElementEx)element).getName()))
@@ -113,7 +113,7 @@ public class NedTextUtils {
             }
             if (element instanceof ChannelSpecElement) {
                 if (dottedWord.equals(((ConnectionElementEx)element.getParent()).getEffectiveType())) {
-                    INEDElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
+                    INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
                     return createInfo(element, dottedWordRegion, declElement);
                 }
                 return null;
@@ -141,7 +141,7 @@ public class NedTextUtils {
                 CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)element.getEnclosingTypeElement();
 
                 if (word.equals(conn.getSrcModule()) || word.equals(conn.getDestModule()))
-                    return createInfo(element, wordRegion, compoundModule.getNEDTypeInfo().getSubmodules().get(word));
+                    return createInfo(element, wordRegion, compoundModule.getNedTypeInfo().getSubmodules().get(word));
 
                 // gate names are often the same on both side of the conn ("a.port++ <--> b.port++;"),
                 // so we need to parse a bit where the user was hovering exactly
@@ -166,8 +166,8 @@ public class NedTextUtils {
      * Returns the region document region (offset+length) from the NED element, using its
      * source location info if present. If not, returns null.
      */
-    public static IRegion getElementRegion(IDocument doc, INEDElement element) throws BadLocationException {
-        NEDSourceRegion sourceRegion = element.getSourceRegion();
+    public static IRegion getElementRegion(IDocument doc, INedElement element) throws BadLocationException {
+        NedSourceRegion sourceRegion = element.getSourceRegion();
         if (sourceRegion == null)
             return null;
         // the "+column" bit assumes there're no tabs on that line. This is reasonable, because NED
@@ -177,24 +177,24 @@ public class NedTextUtils {
         return new Region(startOffset, endOffset - startOffset);
     }
 
-    private static Info createInfo(INEDElement element, IRegion wordRegion, INEDElement declElement) {
+    private static Info createInfo(INedElement element, IRegion wordRegion, INedElement declElement) {
         return declElement == null ? null : new Info(element, wordRegion, declElement);
     }
 
-    private static INEDElement lookupTypeElement(String dottedWord, INedTypeLookupContext context) {
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
-        INEDTypeInfo nedType = res.lookupNedType(dottedWord, context);
-        return nedType != null ? nedType.getNEDElement() : null;
+    private static INedElement lookupTypeElement(String dottedWord, INedTypeLookupContext context) {
+        INedResources res = NedResourcesPlugin.getNedResources();
+        INedTypeInfo nedType = res.lookupNedType(dottedWord, context);
+        return nedType != null ? nedType.getNedElement() : null;
     }
 
-    private static INEDElement findParentWithClass(INEDElement element, Class<?> clazz) {
+    private static INedElement findParentWithClass(INedElement element, Class<?> clazz) {
         while (element != null && !clazz.isInstance(element))
             element = element.getParent();
         return element;
     }
 
-    private static INEDElement lookupGate(CompoundModuleElementEx compoundModule, String moduleName, String gateName) {
-        IConnectableElement mod = StringUtils.isEmpty(moduleName) ? compoundModule : compoundModule.getNEDTypeInfo().getSubmodules().get(moduleName);
+    private static INedElement lookupGate(CompoundModuleElementEx compoundModule, String moduleName, String gateName) {
+        IConnectableElement mod = StringUtils.isEmpty(moduleName) ? compoundModule : compoundModule.getNedTypeInfo().getSubmodules().get(moduleName);
         if (mod != null) {
             GateElementEx gate = mod.getGateSizes().get(gateName);
             if (gate == null)

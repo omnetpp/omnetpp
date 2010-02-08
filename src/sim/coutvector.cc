@@ -199,13 +199,17 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
     if (!isEnabled())
         return false;
 
+    if (t < simulation.getWarmupPeriod())  //FIXME TODO implement an ignoreWarmupPeriod flag?
+        return false;
+
     // initialize if not yet done
     if (!handle)
         handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
 
     // pass data to envir for storage
     bool stored = ev.recordInOutputVector(handle, t, value);
-    if (stored) num_stored++;
+    if (stored)
+        num_stored++;
     return stored;
 }
 

@@ -38,9 +38,9 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.notification.INedChangeListener;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 
 /**
  * Standard implementation of IInifileDocument. Setters change the
@@ -61,7 +61,7 @@ public class InifileDocument implements IInifileDocument {
     // InifileDocument, InifileAnalyzer, and NEDResources are all accessed from
     // background threads (must be synchronized), and the analyze procedure needs
     // NEDResources -- so use NEDResources as lock to prevent deadlocks
-    private Object lock = NEDResourcesPlugin.getNEDResources();
+    private Object lock = NedResourcesPlugin.getNedResources();
 
     static class Line {
         IFile file;
@@ -105,7 +105,7 @@ public class InifileDocument implements IInifileDocument {
     // listeners
     private IDocumentListener documentListener; // we listen on IDocument
     private IResourceChangeListener resourceChangeListener; // we listen on the workspace
-    private INEDChangeListener nedChangeListener; // we listen on NED changes
+    private INedChangeListener nedChangeListener; // we listen on NED changes
     private InifileChangeListenerList listeners = new InifileChangeListenerList(); // clients that listen on us
 
     private ProblemMarkerSynchronizer markerSynchronizer; // only used during parse()
@@ -166,12 +166,12 @@ public class InifileDocument implements IInifileDocument {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
 
         // listen on NED changes as well
-        nedChangeListener = new INEDChangeListener() {
-            public void modelChanged(NEDModelEvent event) {
+        nedChangeListener = new INedChangeListener() {
+            public void modelChanged(NedModelEvent event) {
                 markAsChanged();
             }
         };
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedChangeListener);
+        NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedChangeListener);
     }
 
     public void markAsChanged() {
@@ -191,7 +191,7 @@ public class InifileDocument implements IInifileDocument {
     protected void unhookListeners() {
         document.removeDocumentListener(documentListener);
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(nedChangeListener);
+        NedResourcesPlugin.getNedResources().removeNedModelChangeListener(nedChangeListener);
     }
 
     public void parseIfChanged() {

@@ -24,6 +24,10 @@
             file="content/ide-customization-guide/toc.xml"
             primary="false">
       </toc>
+      <toc
+            file="content/ide-developersguide/toc.xml"
+            primary="false">
+      </toc>
    </extension>
 
    <extension

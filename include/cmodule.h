@@ -236,6 +236,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     bool isRecordEvents() const  {return flags&FL_RECORD_EVENTS;}
 
   protected:
+    // internal: called from destructor, recursively unsubscribes all listeners
+    void releaseListeners();
+
     // internal: has initialize() been called?
     bool buildInsideCalled() const {return flags&FL_BUILDINSIDE_CALLED;}
 
@@ -294,7 +297,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     void clearGates();
 
   public:
-    // internal
+    // internal: may only be called between simulations, when no modules exist
     static void clearNamePools();
 
     // internal utility function. Takes O(n) time as it iterates on the gates

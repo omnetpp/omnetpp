@@ -34,7 +34,7 @@ import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigureEx;
 import org.omnetpp.ned.editor.graph.parts.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.pojo.TypesElement;
@@ -137,8 +137,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     @Override
-    protected List<INEDElement> getModelChildren() {
-        List<INEDElement> result = new ArrayList<INEDElement>();
+    protected List<INedElement> getModelChildren() {
+        List<INedElement> result = new ArrayList<INedElement>();
         // add the innerTypes element (if exists)
         TypesElement typesElement = getCompoundModuleModel().getFirstTypesChild();
         if (typesElement != null)
@@ -229,7 +229,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      * open the first base component for double click
      */
     @Override
-    protected INEDElement getNEDElementToOpen() {
+    protected INedElement getNedElementToOpen() {
         return getCompoundModuleModel().getFirstExtendsRef();
     }
 }

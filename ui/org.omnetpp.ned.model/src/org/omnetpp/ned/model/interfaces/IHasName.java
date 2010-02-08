@@ -7,14 +7,14 @@
 
 package org.omnetpp.ned.model.interfaces;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * NED elements that have a name property
  *
  * @author rhornig
  */
-public interface IHasName extends INEDElement {
+public interface IHasName extends INedElement {
 
 	static String DEFAULT_TYPE_NAME = "Unnamed";
 

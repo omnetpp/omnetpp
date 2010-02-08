@@ -11,7 +11,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.omnetpp.ned.core.IGotoNedElement;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.editor.text.util.NedTextUtils;
 import org.omnetpp.ned.editor.text.util.NedTextUtils.Info;
@@ -39,7 +39,7 @@ public class GotoDeclarationAction extends NedTextEditorAction {
     protected void doRun() {
         Info info = getInfoForSelection();
         if (info != null && info.referredElement != null)
-            NEDResourcesPlugin.openNEDElementInEditor(info.referredElement, IGotoNedElement.Mode.TEXT);
+            NedResourcesPlugin.openNedElementInEditor(info.referredElement, IGotoNedElement.Mode.TEXT);
     }
 
     /**

@@ -10,7 +10,7 @@ import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedNewFileWizard;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 
 /**
  * "New Inifile" wizard
@@ -42,7 +42,7 @@ public class NewInifileWizard extends TemplateBasedNewFileWizard {
 
         IPath filePath = getFirstPage().getContainerFullPath().append(getFirstPage().getFileName());
         IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
-        String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
+        String packageName = NedResourcesPlugin.getNedResources().getExpectedPackageFor(newFile);
         context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
 
         return context;

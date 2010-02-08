@@ -9,24 +9,22 @@ package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_BOOL;
-import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_DOUBLE;
-import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_INT;
-import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_STRING;
-import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_XML;
+import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_BOOL;
+import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_DOUBLE;
+import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_INT;
+import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_STRING;
+import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_XML;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -43,26 +41,23 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
-import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
-import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.util.StringUtils.DictionaryComparator;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.IModuleTreeVisitor;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.core.NEDTreeTraversal;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.core.NedTreeTraversal;
 import org.omnetpp.ned.core.ParamUtil;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
@@ -86,7 +81,7 @@ import org.omnetpp.ned.model.pojo.ParamElement;
 //  **.ppp[*].queue.frameCapacity = 10     ===> "unused entry", although DropTailQueue has that parameter
 // because the queue type resolves to "Foo", and "DropTailQueue" is not considered.
 // How to fix this? Maybe: resolveLikeType() returns a set of potential types
-// (ie both "Foo" and "DropTailQueue", and NEDTreeTraversal should recurse with **all** of them?
+// (ie both "Foo" and "DropTailQueue", and NedTreeTraversal should recurse with **all** of them?
 //
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
@@ -95,10 +90,10 @@ public class InifileAnalyzer {
 	private Set<String> sectionsCausingCycles;
 	private ProblemMarkerSynchronizer markerSynchronizer; // only used during analyze()
 
-	// InifileDocument, InifileAnalyzer, and NEDResources are all accessed from
+	// InifileDocument, InifileAnalyzer, and NedResources are all accessed from
 	// background threads (must be synchronized), and the analyze procedure needs
-	// NEDResources -- so use NEDResources as lock to prevent deadlocks
-	private Object lock = NEDResourcesPlugin.getNEDResources();
+	// NedResources -- so use NedResources as lock to prevent deadlocks
+	private Object lock = NedResourcesPlugin.getNedResources();
 
 	// too speed up validating of values. Matches boolean, number+unit, string literal
 	private static final Pattern SIMPLE_EXPRESSION_REGEX = Pattern.compile("true|false|(-?\\d+(\\.\\d+)?\\s*[a-zA-Z]*)|\"[^\"]*\"");
@@ -139,6 +134,7 @@ public class InifileAnalyzer {
 		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>();
 		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>(); // subset of allParamResolutions
 		List<ParamResolution> implicitlyAssignedParams = new ArrayList<ParamResolution>(); // subset of allParamResolutions
+		List<SignalResolution> signalResolutions = new ArrayList<SignalResolution>();
 		List<IterationVariable> iterations = new ArrayList<IterationVariable>();
 		Map<String,IterationVariable> namedIterations = new HashMap<String, IterationVariable>();
 	}
@@ -192,7 +188,7 @@ public class InifileAnalyzer {
 	public void analyze() {
 		synchronized (lock) {
 			long startTime = System.currentTimeMillis();
-			INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
+			INedTypeResolver ned = NedResourcesPlugin.getNedResources();
 
 			// collect errors/warnings in a ProblemMarkerSynchronizer
 			markerSynchronizer = new ProblemMarkerSynchronizer(INIFILEANALYZERPROBLEM_MARKER_ID);
@@ -339,7 +335,7 @@ public class InifileAnalyzer {
 	/**
 	 * Validate a configuration entry (key+value) using ConfigRegistry.
 	 */
-	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
+	protected void validateConfig(String section, String key, INedTypeResolver ned) {
 		// check key and if it occurs in the right section
 		ConfigOption e = ConfigRegistry.getOption(key);
 		if (e == null) {
@@ -385,12 +381,12 @@ public class InifileAnalyzer {
 			// note: we do not validate "extends=" here -- that's all done in validateSections()!
 		}
 		else if (e==CFGID_NETWORK) {
-			INEDTypeInfo network = resolveNetwork(ned, value);
+			INedTypeInfo network = resolveNetwork(ned, value);
 			if (network == null) {
 				addError(section, key, "No such NED type: "+value);
 				return;
 			}
-			INedTypeElement node = network.getNEDElement();
+			INedTypeElement node = network.getNedElement();
             if (!(node instanceof IModuleTypeElement)) {
                 addError(section, key, "Not a module type: "+value);
                 return;
@@ -402,8 +398,8 @@ public class InifileAnalyzer {
 		}
 	}
 
-	public INEDTypeInfo resolveNetwork(INEDTypeResolver ned, String value) {
-		INEDTypeInfo network = null;
+	public INedTypeInfo resolveNetwork(INedTypeResolver ned, String value) {
+		INedTypeInfo network = null;
 		IFile iniFile = doc.getDocumentFile();
 		String inifilePackage = ned.getExpectedPackageFor(iniFile);
 		IProject contextProject = iniFile.getProject();
@@ -668,7 +664,7 @@ public class InifileAnalyzer {
 		return null;
 	}
 
-	protected void validateParamKey(String section, String key, INEDTypeResolver ned) {
+	protected void validateParamKey(String section, String key, INedTypeResolver ned) {
 		String value = doc.getValue(section, key).trim();
 		validateParamKey(section, key, value);
 	}
@@ -692,7 +688,7 @@ public class InifileAnalyzer {
 		}
 		else {
 		    // check syntax. note: regex is faster in most cases than parsing
-		    if (!SIMPLE_EXPRESSION_REGEX.matcher(value).matches() && !NEDTreeUtil.isExpressionValid(value)) {
+		    if (!SIMPLE_EXPRESSION_REGEX.matcher(value).matches() && !NedTreeUtil.isExpressionValid(value)) {
                 addError(section, key, "Syntax error in expression");
                 return;
 		    }
@@ -773,7 +769,7 @@ public class InifileAnalyzer {
         }
 	}
 
-	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
+	protected void validatePerObjectConfig(String section, String key, INedTypeResolver ned) {
 		Assert.isTrue(key.lastIndexOf('.') > 0);
 		String configName = key.substring(key.lastIndexOf('.')+1);
 		ConfigOption e = ConfigRegistry.getPerObjectEntry(configName);
@@ -809,13 +805,13 @@ public class InifileAnalyzer {
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 
 		// check validity of some settings, like record-interval=, etc
-		if (e==CFGID_VECTOR_RECORDING_INTERVAL) {
+		if (e==CFGID_VECTOR_RECORDING_INTERVALS) {
 			// validate syntax
 			StringTokenizer tokenizer = new StringTokenizer(value, ",");
 			while (tokenizer.hasMoreTokens()) {
 				String interval = tokenizer.nextToken();
 				if (!interval.contains(".."))
-					addError(section, key, "Syntax error in output vector interval");
+					addError(section, key, "Syntax error in output vector intervals");
 				else {
 					try {
 						String from = StringUtils.substringBefore(interval, "..").trim();
@@ -882,7 +878,7 @@ public class InifileAnalyzer {
 	/**
 	 * Calculate how parameters get assigned when the given section is the active one.
 	 */
-	protected void calculateParamResolutions(INEDTypeResolver ned) {
+	protected void calculateParamResolutions(INedTypeResolver ned) {
 		// initialize SectionData and KeyData objects
 		for (String section : doc.getSectionNames()) {
 			doc.setSectionData(section, new SectionData());
@@ -894,12 +890,14 @@ public class InifileAnalyzer {
 		// calculate parameter resolutions for each section
 		for (String activeSection : doc.getSectionNames()) {
 			// calculate param resolutions
-			List<ParamResolution> resList = collectParameters(activeSection);
+			List<ParamResolution> paramResoultions = collectParameters(activeSection);
+			List<SignalResolution> signalResolutions = collectSignalResolutions(activeSection);
 
 			// store with the section the list of all parameter resolutions (including unassigned params)
 			// store with every key the list of parameters it resolves
-			for (ParamResolution res : resList) {
+			for (ParamResolution res : paramResoultions) {
 				SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
+				sectionData.signalResolutions = signalResolutions;
 				sectionData.allParamResolutions.add(res);
 				if (res.type == ParamResolutionType.UNASSIGNED)
 					sectionData.unassignedParams.add(res);
@@ -915,26 +913,27 @@ public class InifileAnalyzer {
 
     protected List<ParamResolution> collectParameters(final String activeSection) {
 	    // resolve section chain and network
-		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+		INedTypeResolver res = NedResourcesPlugin.getNedResources();
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
 		if (networkName == null)
 			networkName = CFGID_NETWORK.getDefaultValue();
 		if (networkName == null)
 			return new ArrayList<ParamResolution>();
-		INEDTypeInfo network = resolveNetwork(res, networkName);
-		if (network == null )
+		INedTypeInfo network = resolveNetwork(res, networkName);
+		if (network == null)
 			return new ArrayList<ParamResolution>();
 
 		// traverse the network and collect resolutions meanwhile
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		IProject contextProject = doc.getDocumentFile().getProject();
-		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
+		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
 		treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
 
 		return list;
 	}
 
+/*
     // TODO: move?
     // testParamAssignments("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out", list);
     public void testParamAssignments(String fileName, ArrayList<ParamResolution> list) {
@@ -943,7 +942,7 @@ public class InifileAnalyzer {
             Properties properties = new Properties();
             properties.load(new FileInputStream(fileName));
 
-            for (Object key : CollectionUtils.toSorted((Set<String>)(Set)properties.keySet(), new DictionaryComparator())) {
+            for (Object key : CollectionUtils.toSorted((Set)properties.keySet(), new DictionaryComparator())) {
                 String paramName = (String)key;
                 String runtimeParamValue = properties.getProperty(paramName);
                 boolean iniDefault = false;
@@ -1008,14 +1007,15 @@ public class InifileAnalyzer {
             throw new RuntimeException(e);
         }
     }
+*/
 
 	/**
 	 * Collects parameters of a module type (recursively), *without* an inifile present.
 	 */
-	public static List<ParamResolution> collectParameters(INEDTypeInfo moduleType) {
+	public static List<ParamResolution> collectParameters(INedTypeInfo moduleType) {
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
-		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
+		INedTypeResolver res = NedResourcesPlugin.getNedResources();
+		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
 		treeTraversal.traverse(moduleType);
 		return list;
 	}
@@ -1025,20 +1025,22 @@ public class InifileAnalyzer {
 	 */
 	public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule) {
 		List<ParamResolution> list = new ArrayList<ParamResolution>();
-		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+		INedTypeResolver res = NedResourcesPlugin.getNedResources();
 		// TODO: this ignores deep parameter settings from the compound module above the submodule
-		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
+		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
 		treeTraversal.traverse(submodule);
 		return list;
 	}
 
-    protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> resultList, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
+    protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> resultList, INedTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
         return new ParamUtil.RecursiveParamDeclarationVisitor() {
-            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
+            @Override
+            protected boolean visitParamDeclaration(String fullPath, Stack<INedTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 resolveParameter(resultList, fullPath, typeInfoPath, elementPath, sectionChain, doc, paramDeclaration);
                 return true;
             }
 
+            @Override
             public String resolveLikeType(ISubmoduleOrConnection element) {
                 // Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
                 // resolveLikeParam() which relies on the data structure we are currently building
@@ -1065,7 +1067,7 @@ public class InifileAnalyzer {
                     return null; // something is wrong: value is not a string constant?
                 }
                 // note: value is likely a simple (unqualified) name, it'll be resolved
-                // to fully qualified name in the caller (NEDTreeTraversal)
+                // to fully qualified name in the caller (NedTreeTraversal)
                 return value;
             }
         };
@@ -1075,7 +1077,7 @@ public class InifileAnalyzer {
      * Resolve parameters of a module type or submodule, based solely on NED information,
      * without inifile. This is useful for views when a NED editor is active.
      */
-    public static void resolveModuleParameters(List<ParamResolution> resultList, String fullPath, Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
+    public static void resolveModuleParameters(List<ParamResolution> resultList, String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
         for (ParamElementEx paramDeclaration : typeInfoPath.lastElement().getParamDeclarations().values())
             resolveParameter(resultList, fullPath, typeInfoPath, elementPath, null, null, paramDeclaration);
     }
@@ -1097,23 +1099,23 @@ public class InifileAnalyzer {
     //       since indices are always individual constants, or constant ranges, or wildcards,
     //       and vector lower bound is always 0, while vector upper bound is either constant or unknown
     //       it is quite doable even if not so simple
-	public static void resolveParameter(List<ParamResolution> resultList, String fullPath, Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, String[] sectionChain, IInifileDocument doc, ParamElementEx paramDeclaration)
+	public static void resolveParameter(List<ParamResolution> resultList, String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, String[] sectionChain, IInifileDocument doc, ParamElementEx paramDeclaration)
 	{
 	    // look up parameter assignments in NED
         ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration(typeInfoPath, elementPath, paramDeclaration);
-        boolean hasNEDUnassigned = false;
-        boolean hasNEDTotalAssignment = false;
-        boolean hasNEDDefaultAssignment = false;
+        boolean hasNedUnassigned = false;
+        boolean hasNedTotalAssignment = false;
+        boolean hasNedDefaultAssignment = false;
         for (ParamElementEx paramAssignment : paramAssignments) {
-            hasNEDUnassigned |= StringUtils.isEmpty(paramAssignment.getValue());
-            hasNEDTotalAssignment |= ParamUtil.isTotalParamAssignment(paramAssignment);
-            hasNEDDefaultAssignment |= paramAssignment.getIsDefault();
+            hasNedUnassigned |= StringUtils.isEmpty(paramAssignment.getValue());
+            hasNedTotalAssignment |= ParamUtil.isTotalParamAssignment(paramAssignment);
+            hasNedDefaultAssignment |= paramAssignment.getIsDefault();
         }
 
         // look up parameter assignments in INI
         String activeSection = null;
         List<SectionKey> sectionKeys = null;
-        boolean hasINITotalAssignment = false;
+        boolean hasIniTotalAssignment = false;
 
         if (doc != null) {
             activeSection = sectionChain[0];
@@ -1122,9 +1124,9 @@ public class InifileAnalyzer {
             sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), false, sectionChain, doc);
 
             for (SectionKey sectionKey : sectionKeys)
-                hasINITotalAssignment |= ParamUtil.isTotalParamAssignment(sectionKey.key);
+                hasIniTotalAssignment |= ParamUtil.isTotalParamAssignment(sectionKey.key);
 
-            sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), hasNEDDefaultAssignment, sectionChain, doc);
+            sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), hasNedDefaultAssignment, sectionChain, doc);
         }
 
         // process non default parameter assignments from NED
@@ -1148,14 +1150,14 @@ public class InifileAnalyzer {
     	        // so, find out how the parameter's going to be assigned...
     	        ParamResolutionType type;
                 if (iniValue.equals(ConfigRegistry.DEFAULT)) {
-                    if (!hasNEDDefaultAssignment)
+                    if (!hasNedDefaultAssignment)
                         continue;
                     else
                         type = ParamResolutionType.INI_DEFAULT;
                 }
                 else if (iniValue.equals(ConfigRegistry.ASK))
                     type = ParamResolutionType.INI_ASK;
-                else if (paramAssignments.size() == 1 && hasNEDUnassigned)
+                else if (paramAssignments.size() == 1 && hasNedUnassigned)
     	            type = ParamResolutionType.INI;
     	        else if (paramAssignments.size() == 1 && paramAssignments.get(0).getValue().equals(iniValue))
     	            type = ParamResolutionType.INI_NEDDEFAULT;
@@ -1170,17 +1172,74 @@ public class InifileAnalyzer {
         // process default parameter assignments from NED (this is already in reverse order)
         for (ParamElementEx paramAssignment : paramAssignments) {
             if (StringUtils.isEmpty(paramAssignment.getValue())) {
-                if (hasINITotalAssignment)
+                if (hasIniTotalAssignment)
                     continue;
                 else
                     resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, null, ParamResolutionType.UNASSIGNED, activeSection, null, null));
             }
-            else if (paramAssignment.getIsDefault() && !hasINITotalAssignment)
+            else if (paramAssignment.getIsDefault() && !hasIniTotalAssignment)
                 resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, ParamResolutionType.IMPLICITDEFAULT, activeSection, null, null));
         }
 	}
 
-	public boolean containsSectionCycles() {
+	public List<SignalResolution> collectSignalResolutions(final String activeSection) {
+        INedTypeResolver res = NedResourcesPlugin.getNedResources();
+        final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+        String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
+        if (networkName == null)
+            networkName = CFGID_NETWORK.getDefaultValue();
+        INedTypeInfo network = resolveNetwork(res, networkName);
+        if (networkName == null)
+            return new ArrayList<SignalResolution>();
+        if (network == null )
+            return new ArrayList<SignalResolution>();
+
+        // traverse the network and collect resolutions meanwhile
+        final ArrayList<SignalResolution> list = new ArrayList<SignalResolution>();
+        IProject contextProject = doc.getDocumentFile().getProject();
+        NedTreeTraversal treeTraversal = new NedTreeTraversal(res, new IModuleTreeVisitor() {
+            protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
+            protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc)
+
+            public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
+                elementPath.push(element);
+                fullPathStack.push(element == null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
+                Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("signal");
+                String fullPath = StringUtils.join(fullPathStack, ".");
+                if (propertyMap != null)
+                    for (PropertyElementEx property : propertyMap.values())
+                        list.add(new SignalResolution(fullPath + "." + property.getIndex(), elementPath, property, activeSection));
+                return true;
+            }
+
+            public void leave() {
+                elementPath.pop();
+                fullPathStack.pop();
+            }
+
+            public void recursiveType(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
+            }
+
+            public String resolveLikeType(ISubmoduleOrConnection element) {
+                return null;
+            }
+
+            public void unresolvedType(ISubmoduleOrConnection element, String typeName) {
+            }
+        });
+        treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
+        return list;
+	}
+
+    public static void resolveModuleSignals(List<SignalResolution> list, String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
+        INedTypeInfo typeInfo = typeInfoPath.lastElement();
+        Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("signal");
+        if (propertyMap != null)
+            for (PropertyElementEx property : propertyMap.values())
+                list.add(new SignalResolution(fullPath + "." + property.getIndex(), elementPath, property, null));
+    }
+
+    public boolean containsSectionCycles() {
 		analyzeIfChanged();
 		return !sectionsCausingCycles.isEmpty();
 	}
@@ -1353,11 +1412,36 @@ public class InifileAnalyzer {
 		if (res.key!=null)
 			remark += "; see [" + res.section + "] / " + res.key + "=" + doc.getValue(res.section, res.key);
 		else if (res.paramAssignment != null && res.paramAssignment.getIsPattern())
-		    remark += "; see (" + res.paramAssignment.getEnclosingTypeElement().getName() + ") / " + res.paramAssignment.getNEDSource();
+		    remark += "; see (" + res.paramAssignment.getEnclosingTypeElement().getName() + ") / " + res.paramAssignment.getNedSource();
 		return remark;
 	}
 
-	/**
+    public SignalResolution[] getSignalResolutions(String section) {
+        synchronized (lock) {
+            analyzeIfChanged();
+            SectionData sectionData = (SectionData) doc.getSectionData(section);
+            return sectionData.signalResolutions.toArray(new SignalResolution[]{});
+        }
+    }
+
+    public SignalResolution[] getSignalResolutionsForModule(ISubmoduleOrConnection element, String section) {
+        synchronized (lock) {
+            analyzeIfChanged();
+            SectionData data = (SectionData)doc.getSectionData(section);
+            List<SignalResolution> signalResolutions = data==null ? null : data.signalResolutions;
+            if (signalResolutions == null || signalResolutions.isEmpty())
+                return new SignalResolution[0];
+
+            // Note: linear search -- can be made more efficient with some lookup table if needed
+            ArrayList<SignalResolution> result = new ArrayList<SignalResolution>();
+            for (SignalResolution signalResolution : signalResolutions)
+                if (element == signalResolution.elementPath[signalResolution.elementPath.length - 1])
+                    result.add(signalResolution);
+            return result.toArray(new SignalResolution[]{});
+        }
+    }
+
+    /**
 	 * Returns names of declared iteration variables ("${variable=...}") from
 	 * the given section and all its fallback sections. Note: unnamed iterations
 	 * are not in the list.

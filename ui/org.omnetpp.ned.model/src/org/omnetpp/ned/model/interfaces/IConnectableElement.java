@@ -23,7 +23,7 @@ public interface IConnectableElement extends IHasName, IHasGates, IHasDisplayStr
      * Returns null if the effective type is not filled in, or is not a valid NED type,
      * or not a type that's accepted at the given place (e.g. a channel for submodule type).
      */
-    public INEDTypeInfo getNEDTypeInfo();
+    public INedTypeInfo getNedTypeInfo();
 
     /**
      * Returns ALL VALID connections contained in / and inherited by

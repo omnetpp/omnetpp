@@ -10,7 +10,7 @@ package org.omnetpp.ned.editor.graph.properties.util;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * A property source that is the base of all ned element related property sources
@@ -18,9 +18,9 @@ import org.omnetpp.ned.model.INEDElement;
  * @author rhornig
  */
 abstract public class NedBasePropertySource implements IPropertySource2 {
-    private INEDElement nedModel;
+    private INedElement nedModel;
 
-    public NedBasePropertySource(INEDElement model) {
+    public NedBasePropertySource(INedElement model) {
         nedModel = model;
     }
 
@@ -48,7 +48,7 @@ abstract public class NedBasePropertySource implements IPropertySource2 {
 
     public abstract IPropertyDescriptor[] getPropertyDescriptors();
 
-    INEDElement getModel() {
+    INedElement getModel() {
         return nedModel;
     }
 }

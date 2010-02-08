@@ -15,7 +15,7 @@ package org.omnetpp.ned.model;
 public class SysoutNedErrorStore extends AbstractNedErrorStore {
 	int count;
 
-	public void add(int severity, INEDElement context, int line, String message) {
+	public void add(int severity, INedElement context, int line, String message) {
 		System.err.println("Error/Warning: " + message + " at line " + line + " at " + context);
 		count++;
 	}

@@ -35,11 +35,8 @@ class Server : public cSimpleModule
     simtime_t totalCollisionTime;
     double currentChannelUtilization;
 
-    cOutVector collisionMultiplicityVector;
-    cOutVector collisionLengthVector;
-    cOutVector channelUtilizationVector;
-    cLongHistogram collisionMultiplicityHistogram;
-    cDoubleHistogram collisionLengthHistogram;
+    simsignal_t beginRxSignal;
+    simsignal_t channelUtilizationSignal;
 
   public:
     Server();

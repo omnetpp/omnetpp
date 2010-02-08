@@ -33,7 +33,7 @@ import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
@@ -82,8 +82,8 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	protected Command getCloneCommand(ChangeBoundsRequest request) {
 
 		EditPart iPoint = getInsertionReference(request);
-		INEDElement insertBeforeNode = iPoint != null ? (INEDElement)iPoint.getModel() : null;
-		INEDElement parent = (INEDElement)getHost().getModel();
+		INedElement insertBeforeNode = iPoint != null ? (INedElement)iPoint.getModel() : null;
+		INedElement parent = (INedElement)getHost().getModel();
 		CloneCommand cloneCmd = new CloneCommand(parent, insertBeforeNode);
 
 		// iterate through all involved editparts and add their model to the coning list
@@ -106,8 +106,8 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	 */
 	@Override
     protected Command createMoveChildCommand(EditPart movedPart, EditPart wherePart) {
-		INEDElement where = wherePart != null ? (INEDElement)wherePart.getModel() : null;
-		INEDElement node = (INEDElement)movedPart.getModel();
+		INedElement where = wherePart != null ? (INedElement)wherePart.getModel() : null;
+		INedElement node = (INedElement)movedPart.getModel();
 		return new ReorderCommand(where, node);
 	}
 
@@ -119,8 +119,8 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	    INedTypeElement newTypeElement = (INedTypeElement)element;
 		EditPart insertionPoint = getInsertionReference(request);
-		INEDElement where = insertionPoint != null ? (INEDElement)insertionPoint.getModel() : null;
-		INEDElement parent = (INEDElement)getHost().getModel();
+		INedElement where = insertionPoint != null ? (INedElement)insertionPoint.getModel() : null;
+		INedElement parent = (INedElement)getHost().getModel();
 		return new CreateNedTypeElementCommand(parent, where, newTypeElement);
 	}
 

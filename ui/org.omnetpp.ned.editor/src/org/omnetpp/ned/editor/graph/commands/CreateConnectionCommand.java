@@ -12,7 +12,7 @@ import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.pojo.ImportElement;
 
 /**
@@ -46,13 +46,13 @@ public class CreateConnectionCommand extends Command {
     @Override
     public void redo() {
         parentModule.addConnection(connection);
-        importElement = NEDElementUtilEx.addImportFor(connection); // note: overwrites "type" (or "like-type") attribute
+        importElement = NedElementUtilEx.addImportFor(connection); // note: overwrites "type" (or "like-type") attribute
     }
 
     @Override
     public void undo() {
         connection.removeFromParent();
-        NEDElementUtilEx.setEffectiveType(connection, fullyQualifiedTypeName); // restore original value (redo() will need it)
+        NedElementUtilEx.setEffectiveType(connection, fullyQualifiedTypeName); // restore original value (redo() will need it)
         if (importElement != null)
             importElement.removeFromParent();
     }

@@ -26,6 +26,7 @@
 #include "globals.h"
 #include "cdelaychannel.h"
 #include "cdataratechannel.h"
+#include "cmodelchange.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -110,6 +111,18 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod)
 
 cModule *cModuleType::create(const char *modname, cModule *parentmod, int vectorsize, int index)
 {
+    // notify pre-change listeners
+    if (parentmod && parentmod->hasListeners(PRE_MODEL_CHANGE)) {
+        cPreModuleAddNotification tmp;
+        tmp.moduleType = this;
+        tmp.moduleName = modname;
+        tmp.parentModule = parentmod;
+        tmp.vectorSize = vectorsize;
+        tmp.index = index;
+        parentmod->emit(PRE_MODEL_CHANGE, &tmp);
+    }
+
+    // set context type to "BUILD"
     cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new module class are collected to tmplist.
@@ -148,7 +161,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     // put the object members of the new module to their place
     mod->takeAllObjectsFrom(tmplist);
 
-    // restore defaultowner
+    // restore defaultowner (must precede parameters)
     cOwnedObject::setDefaultOwner(oldlist);
 
     // register with cSimulation
@@ -163,7 +176,15 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     addParametersAndGatesTo(mod);
 
     // notify envir
+    ev.configure(mod);
     EVCB.moduleCreated(mod);
+
+    // notify post-change listeners
+    if (mod->hasListeners(POST_MODEL_CHANGE)) {
+        cPostModuleAddNotification tmp;
+        tmp.module = mod;
+        mod->emit(POST_MODEL_CHANGE, &tmp);
+    }
 
     // done -- if it's a compound module, buildInside() will do the rest
     return mod;

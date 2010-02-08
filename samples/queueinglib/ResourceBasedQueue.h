@@ -26,13 +26,10 @@ class QUEUEING_API ResourceBasedQueue : public cSimpleModule, public IResourceAl
 {
     private:
         // statistics
-        cOutVector droppedVector;
-        cOutVector lengthVector;
-        cOutVector queueingTimeVector;
-        cWeightedStdDev scalarWeightedLengthStats;
-        cStdDev scalarLengthStats;
-        cWeightedStdDev scalarUtilizationStats;
-        int droppedJobs;
+		simsignal_t droppedSignal;
+		simsignal_t queueLengthSignal;
+		simsignal_t queueingTimeSignal;
+		simsignal_t busySignal;
 
         // state
         Job *jobServiced;
@@ -70,7 +67,6 @@ class QUEUEING_API ResourceBasedQueue : public cSimpleModule, public IResourceAl
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
-        virtual void finish();
 
         // hook functions to (re)define behavior
         virtual void arrival(Job *job);

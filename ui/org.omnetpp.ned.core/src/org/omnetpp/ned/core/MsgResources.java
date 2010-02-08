@@ -33,8 +33,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.NedElement;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.SysoutNedErrorStore;
 import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
@@ -56,7 +56,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
     // singleton instance
     private static MsgResources instance = null;
 
-    // associate IFiles with their NEDElement trees
+    // associate IFiles with their NedElement trees
     private final Map<IFile, MsgFileElementEx> msgFiles = new HashMap<IFile, MsgFileElementEx>();
     private final Map<MsgFileElementEx, IFile> msgElementFiles = new HashMap<MsgFileElementEx,IFile>();
 
@@ -64,7 +64,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
     private final Map<String, IMsgTypeElement> msgTypes = new HashMap<String, IMsgTypeElement>();
 
     protected MsgResources() {
-        NEDElement.setDefaultMsgTypeResolver(this);
+        NedElement.setDefaultMsgTypeResolver(this);
         rebuild();
         // register as a workspace listener
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
@@ -126,10 +126,10 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
                         readMsgFile(file);
                     }
                     catch (IOException e) {
-                        NEDResourcesPlugin.logError("Error during reading message file: "+file.getName(), e);
+                        NedResourcesPlugin.logError("Error during reading message file: "+file.getName(), e);
                     }
                     catch (CoreException e) {
-                        NEDResourcesPlugin.logError("Error during gathering message files: "+file.getName(), e);
+                        NedResourcesPlugin.logError("Error during gathering message files: "+file.getName(), e);
                     }
         }
     }
@@ -147,7 +147,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
             });
         }
         catch (CoreException e) {
-            NEDResourcesPlugin.logError("Error during gathering message files", e);
+            NedResourcesPlugin.logError("Error during gathering message files", e);
         }
         return files;
     }
@@ -168,7 +168,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
     public synchronized boolean isMsgFile(IResource resource) {
         return resource instanceof IFile &&
                MSG_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) &&
-               NEDResourcesPlugin.getNEDResources().getNedSourceFolderFor((IFile)resource) != null;
+               NedResourcesPlugin.getNedResources().getNedSourceFolderFor((IFile)resource) != null;
     }
 
     public synchronized IMsgTypeElement lookupMsgType(String name) {
@@ -193,7 +193,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
 
     private void readMsgFile(IFile file) throws IOException, CoreException {
         String source = FileUtils.readTextFile(file.getContents());
-        MsgFileElementEx element = NEDTreeUtil.parseMsgSource(source, new SysoutNedErrorStore(), file.toString());
+        MsgFileElementEx element = NedTreeUtil.parseMsgSource(source, new SysoutNedErrorStore(), file.toString());
         msgFiles.put(file, element);
         msgElementFiles.put(element, file);
 
@@ -256,7 +256,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
             });
         }
         catch (CoreException e) {
-            NEDResourcesPlugin.logError("Error during workspace change notification: ", e);
+            NedResourcesPlugin.logError("Error during workspace change notification: ", e);
         }
     }
 

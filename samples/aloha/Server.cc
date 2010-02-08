@@ -20,12 +20,10 @@ Server::Server()
     endRxEvent = NULL;
 }
 
-
 Server::~Server()
 {
     cancelAndDelete(endRxEvent);
 }
-
 
 void Server::initialize()
 {
@@ -48,22 +46,10 @@ void Server::initialize()
     WATCH(totalCollisionTime);
     WATCH(currentChannelUtilization);
 
-    collisionMultiplicityVector.setName("collision multiplicity");
-    collisionMultiplicityVector.setType(cOutVector::TYPE_INT);
-    collisionMultiplicityVector.setInterpolationMode(cOutVector::NONE);
+    beginRxSignal = registerSignal("beginRx");
+    channelUtilizationSignal = registerSignal("channelUtilization");
 
-    collisionLengthVector.setName("collision length");
-    collisionLengthVector.setUnit("s");
-    collisionLengthVector.setInterpolationMode(cOutVector::NONE);
-
-    channelUtilizationVector.setName("channel utilization");
-    channelUtilizationVector.setType(cOutVector::TYPE_DOUBLE);
-    channelUtilizationVector.setInterpolationMode(cOutVector::LINEAR);
-
-    collisionMultiplicityHistogram.setName("collision multiplicity");
-    collisionMultiplicityHistogram.setRangeAutoUpper(0.0);
-    collisionLengthHistogram.setName("collision length");
-    collisionLengthHistogram.setRangeAutoUpper(0.0);
+    emit(channelUtilizationSignal, 0.0);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i2",0,"x_off");
@@ -86,15 +72,12 @@ void Server::handleMessage(cMessage *msg)
         else
         {
             totalCollisionTime += dt;
-            collisionMultiplicityVector.record(currentCollisionNumFrames);
-            collisionMultiplicityHistogram.collect(currentCollisionNumFrames);
-            collisionLengthVector.record(dt);
-            collisionLengthHistogram.collect(dt);
         }
         currentChannelUtilization = totalReceiveTime/simTime();
-        channelUtilizationVector.record(currentChannelUtilization);
+        emit(channelUtilizationSignal, currentChannelUtilization);
 
         currentCollisionNumFrames = 0;
+        emit(beginRxSignal, (long)0);
 
         // update network graphics
         if (ev.isGUI())
@@ -116,6 +99,8 @@ void Server::handleMessage(cMessage *msg)
             recvStartTime = simTime();
             channelBusy = true;
             scheduleAt(endReceptionTime, endRxEvent);
+            emit(beginRxSignal, (long)1);
+
             if (ev.isGUI())
             {
                 getDisplayString().setTagArg("i2",0,"x_yellow");
@@ -138,6 +123,8 @@ void Server::handleMessage(cMessage *msg)
                 cancelEvent(endRxEvent);
                 scheduleAt(endReceptionTime, endRxEvent);
             }
+
+            emit(beginRxSignal, (long)currentCollisionNumFrames);
 
             // update network graphics
             if (ev.isGUI())
@@ -170,9 +157,6 @@ void Server::finish()
     recordScalar("collided frames", collidedFrames);
     recordScalar("total receive time", totalReceiveTime);
     recordScalar("total collision time", totalCollisionTime);
-    recordScalar("channel utilization", currentChannelUtilization);
-    recordStatistic(&collisionMultiplicityHistogram, "packets");
-    recordStatistic(&collisionLengthHistogram, "s");
 }
 
 }; //namespace

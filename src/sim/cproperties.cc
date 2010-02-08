@@ -131,13 +131,13 @@ const std::vector<const char *> cProperties::getNames() const
     for (int i = 0; i < (int)propv.size(); i++)
     {
         const char *s = propv[i]->getName();
-        if (std::find(v.begin(), v.end(), s) != v.end())
+        if (std::find(v.begin(), v.end(), s) == v.end())
             v.push_back(s);
     }
     return v;
 }
 
-const std::vector<const char *> cProperties::getIndicesFor(const char *name) const
+std::vector<const char *> cProperties::getIndicesFor(const char *name) const
 {
     std::vector<const char *> v;
     for (int i = 0; i < (int)propv.size(); i++)
@@ -145,7 +145,7 @@ const std::vector<const char *> cProperties::getIndicesFor(const char *name) con
         if (!strcmp(propv[i]->getName(), name))
         {
             const char *s = propv[i]->getIndex();
-            if (std::find(v.begin(), v.end(), s) != v.end())
+            if (std::find(v.begin(), v.end(), s) == v.end())
                 v.push_back(s);
         }
     }

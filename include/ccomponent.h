@@ -23,6 +23,7 @@
 #include "cdefaultlist.h"
 #include "simtime.h"
 #include "cenvir.h"
+#include "clistener.h"
 
 NAMESPACE_BEGIN
 
@@ -41,8 +42,9 @@ class cStatistic;
 class SIM_API cComponent : public cDefaultList //implies noncopyable
 {
     friend class cPar; // needs to call handleParameterChange()
-    friend class cChannel; // allow it to access FL_INITIALIZED
-    friend class cModule; // allow it to access FL_INITIALIZED
+    friend class cChannel; // allow it to access FL_INITIALIZED and releaseLocalListeners()
+    friend class cModule; // allow it to access FL_INITIALIZED, releaseLocalListeners() and repairSignalFlags()
+    friend class cGate;   // because of repairSignalFlags()
 
   private:
     enum {
@@ -53,7 +55,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
       FL_DISPSTR_NOTEMPTY = 64, // for hasDisplayString(): whether the display string is not empty
     };
 
-  protected:
+  private:
     cComponentType *componenttype;  // component type object
 
     short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
@@ -64,6 +66,49 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     cPar *paramv;  // array of cPar objects
 
     cDisplayString *dispstr; // display string (created on demand)
+
+    struct SignalData
+    {
+        simsignal_t signalID;
+        cIListener **listeners; // NULL-terminated array
+
+        SignalData() {signalID=SIMSIGNAL_NULL; listeners=NULL;}
+        bool addListener(cIListener *l);
+        bool removeListener(cIListener *l);
+        int findListener(cIListener *l);
+        int countListeners();
+        bool hasListener() {return listeners && listeners[0];}
+        static bool gt(const SignalData& e1, const SignalData& e2) {return e1.signalID > e2.signalID;}
+    };
+
+    typedef std::vector<SignalData> SignalTable;
+    SignalTable *signalTable; // ordered by signalID so we can do binary search
+
+    // flags to speed up emit() for signals 0..63 when there are no or few listeners
+    uint64 signalHasLocalListeners;    // bit[k]==1: signalID k has local listeners
+    uint64 signalHasAncestorListeners; // bit[k]==1: signalID k has listener in parent or in any ancestor component
+
+    // string-to-simsignal_t mapping
+    static std::map<std::string,simsignal_t> signalIDs;
+    static std::map<simsignal_t,std::string> signalNames;
+    static int lastSignalID;
+
+    // stack of listener lists being notified, to detect concurrent modification
+    static cIListener **notificationStack[];
+    static int notificationSP;
+
+  private:
+    SignalData *findSignalData(simsignal_t signalID) const;
+    SignalData *findOrCreateSignalData(simsignal_t signalID);
+    void removeSignalData(simsignal_t signalID);
+    void checkNotFiring(simsignal_t, cIListener **listenerList);
+    template<typename T> void fire(cComponent *src, simsignal_t signalID, T x);
+    void fireFinish();
+    void signalListenerAdded(simsignal_t signalID);
+    void signalListenerRemoved(simsignal_t signalID);
+    void repairSignalFlags();
+    bool computeHasListeners(simsignal_t signalID) const;
+    void releaseLocalListeners();
 
   public:
     // internal: currently used by Cmdenv
@@ -95,6 +140,13 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: used from Tkenv: find out if this module has a display string.
     // getDisplayString() would create the object immediately which we want to avoid.
     bool hasDisplayString();
+
+    // internal: checks consistency of signal listener flags
+    void checkLocalSignalConsistency() const;
+    void checkSignalConsistency() const;
+
+    // internal: clears signal-related static data structures; to be invoked before each simulation run
+    static void clearSignalState();
 
   protected:
     /** @name Initialization, finish and parameter change hooks.
@@ -307,6 +359,142 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Check if a parameter exists.
      */
     bool hasPar(const char *s) const {return findPar(s)>=0;}
+    //@}
+
+    /** @name Emitting simulation signals. */
+    //@{
+    /**
+     * Returns the signal ID (handle) for the given signal name. Signal names
+     * and IDs are global. The signal ID for a particular name gets assigned
+     * at the first registerSignal() call; further registerSignal() calls for
+     * the same name will return the same ID.
+     *
+     * There is some significance to the order of registerSignal() calls: the
+     * first 64 signal names registered have somewhat better notification
+     * performance characteristics than later signals, so it is advised to
+     * register frequently emitted signals first.
+     */
+    static simsignal_t registerSignal(const char *name);
+
+    /**
+     * The inverse of registerSignal(): returns the name of the given signal,
+     * or NULL for invalid signal handles.
+     */
+    static const char *getSignalName(simsignal_t signalID);
+
+    /**
+     * Emits the long value as a signal. If the given signal has listeners in this
+     * component or in ancestor components, their appropriate receiveSignal() methods
+     * get called. If there are no listeners, the runtime cost is usually minimal.
+     */
+    void emit(simsignal_t signalID, long l);
+
+    /**
+     * Emits the double value as a signal. If the given signal has listeners in this
+     * component or in ancestor components, their appropriate receiveSignal() methods
+     * get called. If there are no listeners, the runtime cost is usually minimal.
+     */
+    void emit(simsignal_t signalID, double d);
+
+    /**
+     * Emits the simtime_t value as a signal. If the given signal has listeners in this
+     * component or in ancestor components, their appropriate receiveSignal() methods
+     * get called. If there are no listeners, the runtime cost is usually minimal.
+     */
+    void emit(simsignal_t signalID, simtime_t t);
+
+    /**
+     * Emits the given string as a signal. If the given signal has listeners in this
+     * component or in ancestor components, their appropriate receiveSignal() methods
+     * get called. If there are no listeners, the runtime cost is usually minimal.
+     */
+    void emit(simsignal_t signalID, const char *s);
+
+    /**
+     * Emits the given object as a signal. If the given signal has listeners in this
+     * component or in ancestor components, their appropriate receiveSignal() methods
+     * get called. If there are no listeners, the runtime cost is usually minimal.
+     */
+    void emit(simsignal_t signalID, cObject *obj);
+
+    /**
+     * If producing a value for a signal has a significant runtime cost, this
+     * method can be used to check beforehand whether the given signal possibly
+     * has any listeners at all -- if not, emitting the signal can be skipped.
+     * This functions is significantly more efficient than hasListeners()
+     * (amortizes in constant time), but may return "false positive".
+     */
+    bool mayHaveListeners(simsignal_t signalID) const {
+        // for fast signals (ID in 0..63) we use flags that cache the state;
+        // for other signals we return true. Note: no "if" for efficiency reasons
+        uint64 mask = (uint64)1 << signalID;
+        return (~signalHasLocalListeners & ~signalHasAncestorListeners & mask)==0; // always true for signalID > 63
+    }
+
+    /**
+     * Returns true if the given signal has any listeners. For some signals
+     * this method has a significant overhead (linear to the number of hierarchy
+     * levels in the network).
+     *
+     * @see mayHaveListeners()
+     */
+    bool hasListeners(simsignal_t signalID) const {
+        uint64 mask = (uint64)1 << signalID;
+        return mask ? ((signalHasLocalListeners|signalHasAncestorListeners) & mask) : computeHasListeners(signalID);
+    }
+    //@}
+
+    /** @name Subscribing to simulation signals. */
+    //@{
+    /**
+     * Adds a listener (callback object) that will be notified when a given
+     * signal is emitted (see emit() methods). It has no effect if the same
+     * listener is already subscribed. The order in which listeners will be
+     * notified is undefined, so it is not necessarily the same order in which
+     * listeners were subscribed.
+     */
+    void subscribe(simsignal_t signalID, cIListener *listener);
+
+    /**
+     * Convenience method; it is equivalent to
+     * <tt>subscribe(registerSignal(signalName), listener).</tt>
+     */
+    void subscribe(const char *signalName, cIListener *listener);
+
+    /**
+     * Removes the given listener. It has no effect if the given listener
+     * is not subscribed.
+     */
+    void unsubscribe(simsignal_t signalID, cIListener *listener);
+
+    /**
+     * Convenience method; it is equivalent to
+     * <tt>unsubscribe(registerSignal(signalName), listener).</tt>
+     */
+    void unsubscribe(const char *signalName, cIListener *listener);
+
+    /**
+     * Returns true if the given listener is subscribed to the given signal
+     * at this component (i.e. it does not look at listeners subscribed
+     * at ancestor components).
+     */
+    bool isSubscribed(simsignal_t signalID, cIListener *listener) const;
+
+    /**
+     * Convenience method; it is equivalent to
+     * <tt>isSubscribed(registerSignal(signalName), listener).</tt>
+     */
+    bool isSubscribed(const char *signalName, cIListener *listener) const;
+
+    /**
+     * Returns the signals which have listeners subscribed at this component.
+     */
+    std::vector<simsignal_t> getLocalListenedSignals() const;
+
+    /**
+     * Returns the listeners subscribed to the given signal at this component.
+     */
+    std::vector<cIListener*> getLocalSignalListeners(simsignal_t signalID) const;
     //@}
 
     /** @name Display strings, animation. */

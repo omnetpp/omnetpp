@@ -30,6 +30,7 @@ class QUEUEING_API ResourcePool : public cSimpleModule, public IResourcePool
             int priority;
         };
     private:
+		simsignal_t amountSignal;
         long amount;          // the amount of resource currently available
         typedef std::list<AllocationRequest> AllocationRequestList;
         AllocationRequestList allocatorList;
@@ -39,7 +40,6 @@ class QUEUEING_API ResourcePool : public cSimpleModule, public IResourcePool
 
     protected:
         virtual void initialize();
-        virtual void finish();
 
     public:
         ResourcePool();

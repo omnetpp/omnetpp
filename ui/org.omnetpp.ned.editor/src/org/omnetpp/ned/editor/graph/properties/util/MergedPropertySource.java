@@ -14,7 +14,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * Merges several IPropertySource into a single PropertySource (flattens structure)
@@ -28,7 +28,7 @@ public class MergedPropertySource extends NedBasePropertySource {
 
     private boolean readOnly = false;
 
-	public MergedPropertySource(INEDElement model) {
+	public MergedPropertySource(INedElement model) {
 	    super(model);
     }
 

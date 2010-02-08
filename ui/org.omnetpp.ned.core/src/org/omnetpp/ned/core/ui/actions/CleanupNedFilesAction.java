@@ -32,8 +32,8 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 
@@ -47,18 +47,18 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 //FIXME tell user if some files has syntax error
 public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
     // used internally
-    interface INEDRefactoring {
+    interface INedRefactoring {
         void process(NedFileElementEx nedFileElement);
     }
 
-    INEDRefactoring pass1 = new INEDRefactoring() {
+    INedRefactoring pass1 = new INedRefactoring() {
         public void process(NedFileElementEx nedFileElement) {
             RefactoringTools.cleanupTree(nedFileElement);
             RefactoringTools.fixupPackageDeclaration(nedFileElement);
         }
     };
 
-    INEDRefactoring pass2 = new INEDRefactoring() {
+    INedRefactoring pass2 = new INedRefactoring() {
         public void process(NedFileElementEx nedFileElement) {
             RefactoringTools.organizeImports(nedFileElement);
         }
@@ -91,8 +91,8 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
                 new ProgressMonitorDialog(shell).run(false, true, op);
             }
             catch (InvocationTargetException e) {
-                NEDResourcesPlugin.logError(e);
-                ErrorDialog.openError(shell, "Error", "Error during cleaning up NED files", new Status(IMarker.SEVERITY_ERROR, NEDResourcesPlugin.PLUGIN_ID, e.getMessage(), e));
+                NedResourcesPlugin.logError(e);
+                ErrorDialog.openError(shell, "Error", "Error during cleaning up NED files", new Status(IMarker.SEVERITY_ERROR, NedResourcesPlugin.PLUGIN_ID, e.getMessage(), e));
             } catch (InterruptedException e) {
                 // nothing to do
             }
@@ -102,8 +102,8 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
     protected void cleanupNedFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
 
-        	NEDResourcesPlugin.getNEDResources().setRefactoringInProgress(true);
-            NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
+        	NedResourcesPlugin.getNedResources().setRefactoringInProgress(true);
+            NedResourcesPlugin.getNedResources().fireBeginChangeEvent();
 
             // we need to fix package declarations and imports in two separate passes
             container.accept(createVisitor(pass1, monitor)); // fix all package declarations
@@ -112,21 +112,21 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
             monitor.done();
         }
         catch (CoreException e) {
-            NEDResourcesPlugin.logError(e);
+            NedResourcesPlugin.logError(e);
             IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
     		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
             ErrorDialog.openError(shell, "Error", "An error occurred during cleaning up NED files. Not all of the selected files have been processed.", e.getStatus());
         }
         finally {
-            NEDResourcesPlugin.getNEDResources().fireEndChangeEvent();
-            NEDResourcesPlugin.getNEDResources().setRefactoringInProgress(false);
+            NedResourcesPlugin.getNedResources().fireEndChangeEvent();
+            NedResourcesPlugin.getNedResources().setRefactoringInProgress(false);
         }
     }
 
-    protected IResourceVisitor createVisitor(final INEDRefactoring refactoring, final IProgressMonitor monitor) {
+    protected IResourceVisitor createVisitor(final INedRefactoring refactoring, final IProgressMonitor monitor) {
         return new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (NEDResourcesPlugin.getNEDResources().isNedFile(resource)) {
+                if (NedResourcesPlugin.getNedResources().isNedFile(resource)) {
                     monitor.subTask(resource.getFullPath().toString());
 
                     processNedFile((IFile)resource, refactoring);
@@ -142,18 +142,18 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
         };
     }
 
-    protected void processNedFile(IFile file, INEDRefactoring refactoring) throws CoreException {
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+    protected void processNedFile(IFile file, INedRefactoring refactoring) throws CoreException {
+        INedResources res = NedResourcesPlugin.getNedResources();
         NedFileElementEx nedFileElement = res.getNedFileElement(file);
 
         if (!nedFileElement.hasSyntaxError()) {
-            String originalSource = nedFileElement.getNEDSource();
+            String originalSource = nedFileElement.getNedSource();
 
         	// do the actual work
             refactoring.process(nedFileElement);
 
         	// save the file if changed
-        	String source = nedFileElement.getNEDSource();
+        	String source = nedFileElement.getNedSource();
         	if (!source.equals(originalSource))
         	    file.setContents(new ByteArrayInputStream(source.getBytes()), IFile.FORCE, null);
         }

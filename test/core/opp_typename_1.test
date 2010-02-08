@@ -42,6 +42,12 @@ PRINT(@TESTNAME@::Korte)
 PRINT(@TESTNAME@::Korte *)
 PRINT(const @TESTNAME@::Korte *)
 
+%subst: /char const \*/const char */
+%subst: /int const \*/const int */
+%subst: /int const \* \*/int * * const/
+%subst: /Alma const \*/const Alma */
+%subst: /@TESTNAME@::Korte const \*/const @TESTNAME@::Korte */
+
 %contains: stdout
 void * = void *
 bool = bool

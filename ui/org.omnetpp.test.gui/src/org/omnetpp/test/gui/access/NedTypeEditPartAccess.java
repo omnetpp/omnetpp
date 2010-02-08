@@ -18,7 +18,7 @@ public class NedTypeEditPartAccess extends EditPartAccess
 		super(nedTypeEditPart);
 	}
 
-	public NedTypeEditPart getNEDTypeEditPart() {
+	public NedTypeEditPart getNedTypeEditPart() {
 		return (NedTypeEditPart)editPart;
 	}
 }

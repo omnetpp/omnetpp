@@ -18,11 +18,11 @@ import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.ConnectionKindFigure;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEndpointEditPolicy;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementConstants;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
@@ -161,7 +161,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
 
         ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();
         cfig.setDisplayString(connectionModel.getDisplayString());
-        cfig.setArrowHeadEnabled(connectionModel.getArrowDirection() != NEDElementConstants.NED_ARROWDIR_BIDIR);
+        cfig.setArrowHeadEnabled(connectionModel.getArrowDirection() != NedElementConstants.NED_ARROWDIR_BIDIR);
 
         boolean isConditional = connectionModel.getFirstConditionChild() != null;
         boolean isGroup = connectionModel.getFirstLoopChild() != null;
@@ -198,7 +198,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         super.performRequest(req);
         // let's open or activate a new editor if someone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            NEDResourcesPlugin.openNEDElementInEditor(getConnectionModel().getEffectiveTypeRef());
+            NedResourcesPlugin.openNedElementInEditor(getConnectionModel().getEffectiveTypeRef());
         }
     }
 
@@ -235,8 +235,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
             registry.remove(getModel());
     }
 
-    public INEDElement getNedModel() {
-        return (INEDElement)getModel();
+    public INedElement getNedModel() {
+        return (INedElement)getModel();
     }
 }
 

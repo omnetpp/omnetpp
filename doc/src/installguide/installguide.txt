@@ -22,9 +22,11 @@ include::ch-centos.txt[]
 
 include::ch-debian.txt[]
 
+ifdef::TODO[]
 include::ch-opensuse.txt[]
 
 include::ch-mandriva.txt[]
+endif::TODO[]
 
 include::ch-generic-unix.txt[]
 

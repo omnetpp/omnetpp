@@ -28,19 +28,16 @@ Queue::~Queue()
 
 void Queue::initialize()
 {
-    droppedVector.setName("dropped jobs");
-    lengthVector.setName("length");
-    queueingTimeVector.setName("queueing time");
-    scalarUtilizationStats.setName("utilization");
-    scalarWeightedLengthStats.setName("time weighted length");
-    scalarLengthStats.setName("length");
+    droppedSignal = registerSignal("dropped");
+    queueingTimeSignal = registerSignal("queueingTime");
+    queueLengthSignal = registerSignal("queueLength");
+    emit(queueLengthSignal, 0l);
+    busySignal = registerSignal("busy");
+    emit(busySignal, 0l);
 
     endServiceMsg = new cMessage("end-service");
     fifo = par("fifo");
     capacity = par("capacity");
-    droppedJobs = 0;
-    prevQueueEventTimeStamp = 0.0;
-    prevServiceEventTimeStamp = 0.0;
     queue.setName("queue");
 }
 
@@ -52,12 +49,12 @@ void Queue::handleMessage(cMessage *msg)
         if (queue.empty())
         {
             jobServiced = NULL;
-            processorStateWillChange();
+            emit(busySignal, 0l);
         }
         else
         {
-            queueLengthWillChange();
             jobServiced = getFromQueue();
+            emit(queueLengthSignal, (long)length());
             simtime_t serviceTime = startService( jobServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }
@@ -65,18 +62,15 @@ void Queue::handleMessage(cMessage *msg)
     else
     {
         Job *job = check_and_cast<Job *>(msg);
-
-        job->setTimestamp();
+        arrival(job);
 
         if (!jobServiced)
         {
         // processor was idle
-            arrival( job );
             jobServiced = job;
-            processorStateWillChange();
+            emit(busySignal, 1l);
             simtime_t serviceTime = startService( jobServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
-
         }
         else
         {
@@ -85,17 +79,15 @@ void Queue::handleMessage(cMessage *msg)
             {
                 EV << "Capacity full! Job dropped.\n";
                 if (ev.isGUI()) bubble("Dropped!");
-                droppedVector.record(++droppedJobs);
+                emit(droppedSignal, 1l);
                 delete job;
                 return;
             }
-            arrival( job );
-            queueLengthWillChange();
             queue.insert( job );
+            emit(queueLengthSignal, (long)length());
+            job->setQueueCount(job->getQueueCount() + 1);
         }
     }
-
-    lengthVector.record(length());
 
     if (ev.isGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
 }
@@ -110,7 +102,7 @@ Job *Queue::getFromQueue()
     else
     {
         job = (Job *)queue.back();
-        // FIXME this may have bad performance as remove uses linear serch
+        // FIXME this may have bad performance as remove uses linear search
         queue.remove(job);
     }
     return job;
@@ -119,19 +111,6 @@ Job *Queue::getFromQueue()
 int Queue::length()
 {
     return queue.length();
-}
-
-void Queue::queueLengthWillChange()
-{
-    scalarWeightedLengthStats.collect2(length(), simTime()-prevQueueEventTimeStamp);
-    scalarLengthStats.collect(length());
-    prevQueueEventTimeStamp = simTime();
-}
-
-void Queue::processorStateWillChange()
-{
-    scalarUtilizationStats.collect2((jobServiced ? 0 : 1), simTime()-prevServiceEventTimeStamp);
-    prevServiceEventTimeStamp = simTime();
 }
 
 void Queue::arrival(Job *job)
@@ -143,8 +122,8 @@ simtime_t Queue::startService(Job *job)
 {
     // gather queueing time statistics
     simtime_t d = simTime() - job->getTimestamp();
+    emit(queueingTimeSignal, d);
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
-    queueingTimeVector.record(d);
     EV << "Starting service of " << job->getName() << endl;
     job->setTimestamp();
     return par("serviceTime").doubleValue();
@@ -160,11 +139,6 @@ void Queue::endService(Job *job)
 
 void Queue::finish()
 {
-    recordScalar("min length",scalarLengthStats.getMin());
-    recordScalar("max length",scalarLengthStats.getMax());
-    recordScalar("avg length",scalarWeightedLengthStats.getMean());
-    recordScalar("utilization",scalarUtilizationStats.getMean());
-    recordScalar("dropped jobs", droppedJobs);
 }
 
 }; //namespace

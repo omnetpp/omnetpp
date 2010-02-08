@@ -62,6 +62,7 @@ Sample simulations are in the samples directory.
 The contrib directory contains material from the OMNeT++ community.
 
     contrib/     directory for contributed material
+      akaroa/    patch file to compile akaroa with GCC 4.4
       gtk/       files to make Eclipse look good on Linux
       octave/    Octave scripts for result processing (somewhat outdated)
       emacs/     NED syntax highlighting for Emacs (somewhat outdated)
@@ -84,6 +85,7 @@ following files for instructions, depending on your OS and compiler:
    Readme.Unix    -- generic Unix/Linux
    Readme.OSX     -- Mac OS/X
 
+A more detailed, step by step InstallGuide can be found in the doc/ folder.
 
 Enjoy.
 

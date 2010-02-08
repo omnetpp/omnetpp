@@ -10,7 +10,7 @@ package org.omnetpp.ned.model.ex;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
@@ -27,7 +27,7 @@ public class GateElementEx extends GateElement implements IHasIndex, IHasName, I
         super();
     }
 
-    protected GateElementEx(INEDElement parent) {
+    protected GateElementEx(INedElement parent) {
         super(parent);
     }
 
@@ -38,18 +38,7 @@ public class GateElementEx extends GateElement implements IHasIndex, IHasName, I
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    public Map<String, PropertyElementEx> getProperties() {
-        Map<String, PropertyElementEx> map = new HashMap<String, PropertyElementEx>();
-
-        INEDElement node = getFirstChildWithTag(NED_PROPERTY);
-        while (node != null) {
-            if (node instanceof IHasName && node.getTagCode() == NED_PROPERTY)
-                ((Map)map).put(((IHasName)node).getName(), (PropertyElementEx)node);
-
-            node = node.getNextSibling();
-        }
-
-        return map;
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
+        return NedElementUtilEx.collectProperties(this, new HashMap<String, Map<String, PropertyElementEx>>());
     }
 }

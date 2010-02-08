@@ -29,14 +29,14 @@ import org.eclipse.ui.dialogs.CheckedTreeSelectionDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.editor.EditorUtil;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.core.refactoring.RefactoringTools.AddGateLabels;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -50,7 +50,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
 	}
 
 	private String getAddGateLabelsText(AddGateLabels addGateLabels) {
-	    INEDTypeInfo typeInfo = addGateLabels.gate.getEnclosingTypeElement().getNEDTypeInfo();
+	    INedTypeInfo typeInfo = addGateLabels.gate.getEnclosingTypeElement().getNedTypeInfo();
         String packageName = typeInfo.getPackageName();
         String labels = " @labels(" + StringUtils.join(addGateLabels.labels, ",") + ")";
 	    String gateName = addGateLabels.gate.getName();
@@ -144,7 +144,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
                     NedFileElementEx nedFileElement = addGateLabels.gate.getContainingNedFileElement();
 
                     try {
-                        FileEditorInput editorInput = new FileEditorInput(NEDResourcesPlugin.getNEDResources().getNedFile(nedFileElement));
+                        FileEditorInput editorInput = new FileEditorInput(NedResourcesPlugin.getNedResources().getNedFile(nedFileElement));
                         IEditorPart editor = workbenchWindow.getActivePage().findEditor(editorInput);
 
                         // we cannot modify the model while the NED text editor is active due to the way it handles changes
@@ -159,7 +159,7 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
                             }
                         }
                         else
-                            EditorUtil.openEditor(NEDResourcesPlugin.getNEDResources().getNedFile(nedFileElement), false);
+                            EditorUtil.openEditor(NedResourcesPlugin.getNedResources().getNedFile(nedFileElement), false);
 
                         addGateLabels.run();
                     }

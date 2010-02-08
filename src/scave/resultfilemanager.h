@@ -283,15 +283,15 @@ class SCAVE_API ResultFileManager
         sParseContext(ResultFile *fileRef)
             : fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0),
               fileRunRef(NULL), lastResultItemType(0), lastResultItemIndex(-1),
-              count(0), min(dblPositiveInfinity), max(dblNegativeInfinity), sum(0.0), sumSqr(0.0) {}
+              count(0), min(POSITIVE_INFINITY), max(NEGATIVE_INFINITY), sum(0.0), sumSqr(0.0) {}
 
         void clearHistogram()
         {
             moduleName.clear();
             statisticName.clear();
             count = 0;
-            min = dblPositiveInfinity;
-            max = dblNegativeInfinity;
+            min = POSITIVE_INFINITY;
+            max = NEGATIVE_INFINITY;
             sum = 0.0;
             sumSqr = 0.0;
         }

@@ -89,17 +89,19 @@ class SIM_API cPar : public cObject
     void init(cComponent *ownercomponent, cParImpl *p);
     // internal
     void moveto(cPar& other);
+    // internal: called each time before the value of this object changes.
+    void beforeChange();
     // internal: called each time after the value of this object changes.
     void afterChange();
 
   public:
     // internal: applies the default value if there's one
     void acceptDefault();
-    // internal: makes this parameter input
+    // internal
     void setImpl(cParImpl *p);
-    // internal, called from network building code
+    // internal
     cParImpl *impl() const {return p;}
-    // internal utility function
+    // internal
     cParImpl *copyIfShared();
 
   public:

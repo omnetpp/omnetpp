@@ -20,10 +20,10 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.core.ui.misc.NedHyperlink;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 
 /**
  * Adds hyperlinks to the ini file.
@@ -57,11 +57,11 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 				if (key.equals(ConfigRegistry.CFGID_NETWORK.getName())) {
 					// network key value hover
 					String networkName = doc.getValue(section, key);
-					INEDTypeInfo network = analyzer.resolveNetwork(NEDResourcesPlugin.getNEDResources(), networkName);
+					INedTypeInfo network = analyzer.resolveNetwork(NedResourcesPlugin.getNedResources(), networkName);
 					if (network != null) {
 						IRegion valueRegion = getValueRegion(textDoc, lineNumber);
 						if (contains(valueRegion, offset))
-							return new IHyperlink[] {new NEDHyperlink(valueRegion, network.getNEDElement())};
+							return new IHyperlink[] {new NedHyperlink(valueRegion, network.getNedElement())};
 					}
 				}
 			}
@@ -70,12 +70,12 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 
 				// NED element to go to
 				ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-				INEDElement node = resList.length==0 ? null : resList[0].paramAssignment!=null ? resList[0].paramAssignment : resList[0].paramDeclaration;
+				INedElement node = resList.length==0 ? null : resList[0].paramAssignment!=null ? resList[0].paramAssignment : resList[0].paramDeclaration;
 				if (node != null) {
 					// add hyperlink on the key
 					IRegion keyRegion = getKeyRegion(textDoc, lineNumber);
 					if (contains(keyRegion, offset))
-						return new IHyperlink[] {new NEDHyperlink(keyRegion, node)};
+						return new IHyperlink[] {new NedHyperlink(keyRegion, node)};
 				}
 			}
 

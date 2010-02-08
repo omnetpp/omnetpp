@@ -1,0 +1,158 @@
+%description:
+Test C++ API for accessing properties
+
+%file: test.ned
+
+module Base
+{
+    @foo;
+    @bar;
+    @bar[first];
+    @bar[second](numbers="one");
+}
+
+module Foo extends Base
+{
+    @baz;
+    @bar[second](numbers=,"two";letters="alpha");
+    @bar[third];
+    @dur[apples];
+    @val(1,2,3,4);
+}
+
+simple Tester {
+}
+
+network Test
+{
+    submodules:
+        foo: Foo {
+            @zap;
+            @bar[second](numbers=,,"three";colors="green");
+            @bar[fourth](sizes="big");
+            @duk[oranges];
+            @val(,x,,,5,6,7);
+        }
+        tester: Tester;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Tester);
+
+const char *_(const char *s) {return s ? s : "NULL";}
+
+#define P(x)  ev << #x << ": " << (x) << "\n"
+
+void Tester::activity()
+{
+    cModule *foo = getParentModule()->getSubmodule("foo");
+    cProperties *props = foo->getProperties();
+
+    // number of properties
+    EV << props->getNumProperties() << " properties:\n";
+    for (int i=0; i<props->getNumProperties(); i++)
+        EV << " " << i << ": " << props->get(i)->getName() << "[" << _(props->get(i)->getIndex()) << "]\n";
+    EV << "\n";
+
+    // by property names and indices
+    std::vector<const char *> names = props->getNames();
+    EV << names.size() << " names:\n";
+    for (int i=0; i<(int)names.size(); i++) {
+        EV << " " << i << ": " << names[i] << "\n";
+        std::vector<const char *> indices = props->getIndicesFor(names[i]);
+        for (int ii=0; ii<(int)indices.size(); ii++) {
+            EV << "  [" << _(indices[ii]) << "]\n";
+            cProperty *prop = props->get(names[i], indices[ii]);
+            ASSERT(opp_strcmp(prop->getName(), names[i])==0);
+            ASSERT(opp_strcmp(prop->getIndex(), indices[ii])==0);
+        }
+    }
+    EV << "\n";
+
+    // print individual keys and value-lists for each property
+    for (int i=0; i<props->getNumProperties(); i++)
+    {
+        EV << props->get(i)->getName() << "[" << _(props->get(i)->getIndex()) << "]:\n";
+        cProperty *prop = props->get(i);
+        const std::vector<const char *>& keys = prop->getKeys();
+        for (int ii=0; ii<(int)keys.size(); ii++) {
+            const char *key = keys[ii];
+            EV << " '" << _(key) << "'=";
+            int n = prop->getNumValues(key);
+            for (int k=0; k<n; k++) {
+                EV << " '" << _(prop->getValue(key,k)) << "'";
+            }
+            EV << "\n";
+        }
+    }
+
+    EV << ".\n";
+}
+
+} //namespace
+
+%contains: stdout
+11 properties:
+ 0: foo[NULL]
+ 1: bar[NULL]
+ 2: bar[first]
+ 3: bar[second]
+ 4: baz[NULL]
+ 5: bar[third]
+ 6: dur[apples]
+ 7: val[NULL]
+ 8: zap[NULL]
+ 9: bar[fourth]
+ 10: duk[oranges]
+
+7 names:
+ 0: foo
+  [NULL]
+ 1: bar
+  [NULL]
+  [first]
+  [second]
+  [third]
+  [fourth]
+ 2: baz
+  [NULL]
+ 3: dur
+  [apples]
+ 4: val
+  [NULL]
+ 5: zap
+  [NULL]
+ 6: duk
+  [oranges]
+
+foo[NULL]:
+bar[NULL]:
+bar[first]:
+bar[second]:
+ 'numbers'= 'one' 'two' 'three'
+ 'letters'= 'alpha'
+ 'colors'= 'green'
+baz[NULL]:
+bar[third]:
+dur[apples]:
+val[NULL]:
+ ''= '1' 'x' '3' '4' '5' '6' '7'
+zap[NULL]:
+bar[fourth]:
+ 'sizes'= 'big'
+duk[oranges]:
+.
+
+

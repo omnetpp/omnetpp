@@ -20,6 +20,9 @@ simple App like IApp
         volatile double sendIaTime @unit(s) = default(exponential(1s)); // time between generating packets
         volatile int packetLength @unit(byte);  // length of one message (fixed! no "volatile" modifier)
         @display("i=block/browser");
+        @signal[endToEndDelay](title="end-to-end delay of arrived packets";unit=s;interpolationmode=none);
+        @signal[hopCount](title="hop count of arrived packets";interpolationmode=none);
+        @signal[sourceAddress](title="source address of arrived packets";interpolationmode=none);
     gates:
         input in;
         output out;

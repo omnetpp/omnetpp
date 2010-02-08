@@ -26,12 +26,11 @@ class SelectionStrategy;
 class QUEUEING_API Server : public cSimpleModule, public IServer
 {
     private:
-        cWeightedStdDev scalarUtilizationStats;
+		simsignal_t busySignal;
 
         int numQueues;
         SelectionStrategy *selectionStrategy;
 
-        simtime_t prevEventTimeStamp;
         Job *jobServiced;
         cMessage *endServiceMsg;
 

@@ -31,7 +31,7 @@ OBJS_STD=\
     $O/ccompoundmodule.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cexception.obj $O/cfsm.obj $O/cmathfunction.obj $O/cgate.obj $O/chistogram.obj \
-    $O/cksplit.obj $O/clcg32.obj $O/clinkedlist.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
+    $O/cksplit.obj $O/clcg32.obj $O/clinkedlist.obj $O/clistener.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
     $O/cmessage.obj $O/cmsgpar.obj $O/cmodule.obj $O/cmessageheap.obj $O/chasher.obj \
     $O/cnedfunction.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj \
     $O/cpar.obj $O/cparimpl.obj $O/cownedobject.obj $O/cproperties.obj $O/cproperty.obj \
@@ -183,6 +183,7 @@ $O/cboolparimpl.obj: cboolparimpl.cc \
   ../../include/csimulation.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -228,6 +229,7 @@ $O/cchannel.obj: cchannel.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cchannel.h \
@@ -282,6 +284,7 @@ $O/cclassfactory.obj: cclassfactory.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -337,11 +340,14 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/cexpression.h \
   ../../include/cdisplaystring.h \
   ../../include/crng.h \
+  ../../include/cmodelchange.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cproperty.h \
   ../../include/cparimpl.h \
   ../../include/cproperties.h \
+  ../../include/cchannel.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/ccomponenttype.obj: ccomponenttype.cc \
@@ -377,6 +383,8 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cmodelchange.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cparimpl.h \
@@ -415,6 +423,7 @@ $O/ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -494,6 +503,7 @@ $O/cdataratechannel.obj: cdataratechannel.cc \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -560,6 +570,7 @@ $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cchannel.h \
@@ -638,6 +649,8 @@ $O/cdisplaystring.obj: cdisplaystring.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  ../../include/cmodelchange.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cchannel.h \
@@ -665,6 +678,7 @@ $O/cdoubleparimpl.obj: cdoubleparimpl.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cparimpl.h \
@@ -702,6 +716,7 @@ $O/cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -779,6 +794,7 @@ $O/cexception.obj: cexception.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -836,6 +852,8 @@ $O/cgate.obj: cgate.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  ../../include/cmodelchange.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cchannel.h \
@@ -887,6 +905,7 @@ $O/chistogram.obj: chistogram.cc \
   ../../include/cexpression.h \
   ../../include/crng.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/cdetect.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -926,6 +945,7 @@ $O/cksplit.obj: cksplit.cc \
   ../../include/cownedobject.h \
   ../../include/crng.h \
   ../../include/cksplit.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -981,6 +1001,39 @@ $O/clinkedlist.obj: clinkedlist.cc \
   ../../include/platdep/platdefs.h \
   ../../include/clinkedlist.h \
   ../../include/regmacros.h
+$O/clistener.obj: clistener.cc \
+  ../../include/cregistrationlist.h \
+  ../../include/cgate.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/cenvir.h \
+  ../../include/cmodule.h \
+  ../../include/onstartup.h \
+  ../../include/csimulation.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/cclassfactory.h \
+  ../../include/globals.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cdefaultlist.h \
+  ../../include/opp_string.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/cexpression.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
+  ../../include/cpar.h \
+  ../../include/cchannel.h \
+  ../../include/ccomponent.h \
+  ../../include/regmacros.h
 $O/clongparimpl.obj: clongparimpl.cc \
   ../../include/clongparimpl.h \
   ../../include/cvisitor.h \
@@ -1003,6 +1056,7 @@ $O/clongparimpl.obj: clongparimpl.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cparimpl.h \
@@ -1039,6 +1093,7 @@ $O/cmathfunction.obj: cmathfunction.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -1109,6 +1164,7 @@ $O/cmessage.obj: cmessage.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -1172,7 +1228,9 @@ $O/cmodule.obj: cmodule.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cmodelchange.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/cproperty.h \
   ../../include/cproperties.h \
@@ -1306,6 +1364,7 @@ $O/coutvector.obj: coutvector.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -1395,6 +1454,8 @@ $O/cpar.obj: cpar.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cmodelchange.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cproperty.h \
@@ -1432,6 +1493,7 @@ $O/cparimpl.obj: cparimpl.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cparimpl.h \
@@ -1535,6 +1597,7 @@ $O/cpsquare.obj: cpsquare.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -1641,6 +1704,7 @@ $O/csimplemodule.obj: csimplemodule.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
@@ -1687,6 +1751,7 @@ $O/csimulation.obj: csimulation.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/cproperty.h \
   ../../include/ccoroutine.h \
@@ -1726,6 +1791,7 @@ $O/cstatistic.obj: cstatistic.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cdetect.h \
   ../../include/random.h \
@@ -1764,6 +1830,7 @@ $O/cstddev.obj: cstddev.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cdetect.h \
   ../../include/random.h \
@@ -1815,6 +1882,7 @@ $O/cstringparimpl.obj: cstringparimpl.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cparimpl.h \
@@ -1874,6 +1942,7 @@ $O/ctopology.obj: ctopology.cc \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/cproperty.h \
   ../../include/cproperties.h \
@@ -1912,6 +1981,7 @@ $O/cvarhist.obj: cvarhist.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -1972,6 +2042,7 @@ $O/cxmlelement.obj: cxmlelement.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -1999,6 +2070,7 @@ $O/cxmlparimpl.obj: cxmlparimpl.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cparimpl.h \
@@ -2031,9 +2103,10 @@ $O/distrib.obj: distrib.cc \
   ../../include/distrib.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cexpression.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -2168,9 +2241,10 @@ $O/nedfunctions.obj: nedfunctions.cc \
   ../../include/cnedfunction.h \
   ../../include/cdynamicexpression.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cexpression.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
@@ -2208,6 +2282,7 @@ $O/nedsupport.obj: nedsupport.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccomponent.h \
@@ -2258,12 +2333,12 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cnullenvir.h \
   ../../include/cclassfactory.h \
   ../../include/cdoubleparimpl.h \
-  ../../include/errmsg.h \
   ../../include/packing.h \
+  ../../include/errmsg.h \
   ../../include/ctopology.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cstatistic.h \
   ../../include/distrib.h \
+  ../../include/cstatistic.h \
+  ../../include/ccomponenttype.h \
   ../../include/cnedfunction.h \
   ../../include/cpacketqueue.h \
   ../../include/cownedobject.h \
@@ -2271,6 +2346,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cexpression.h \
   ../../include/compat.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/random.h \
   ../../include/cdetect.h \
   ../../include/cproperty.h \
@@ -2317,6 +2393,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cksplit.h \
+  ../../include/cmodelchange.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
@@ -2371,6 +2448,7 @@ $O/util.obj: util.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/crng.h \
+  ../../include/clistener.h \
   ../../include/random.h \
   ../../include/cqueue.h \
   ../../include/cchannel.h \
@@ -2415,6 +2493,7 @@ $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/ccomponenttype.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/cproperty.h \
   ../../include/cparimpl.h \
   netbuilder/cneddeclaration.h \
@@ -2454,6 +2533,7 @@ $O/netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   ../../include/ccomponenttype.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/clistener.h \
   ../../include/cproperty.h \
   ../../include/cparimpl.h \
   netbuilder/cneddeclaration.h \
@@ -2519,6 +2599,7 @@ $O/netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
   ../../include/cdisplaystring.h \
+  ../../include/clistener.h \
   ../../include/cproperty.h \
   ../../include/cparimpl.h \
   netbuilder/cneddeclaration.h \
@@ -2559,6 +2640,7 @@ $O/netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  ../../include/clistener.h \
   ../../include/cproperty.h \
   ../../include/cparimpl.h \
   netbuilder/cneddeclaration.h \
@@ -2607,6 +2689,7 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  ../../include/clistener.h \
   ../../include/cproperty.h \
   ../../include/cparimpl.h \
   netbuilder/cneddeclaration.h \
@@ -2657,6 +2740,7 @@ $O/parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   parsim/cnullmessageprot.h \
   ../../include/cchannel.h \
   ../../include/cparsimcomm.h \
@@ -2774,6 +2858,7 @@ $O/parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   parsim/messagetags.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cparsimcomm.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
@@ -2817,6 +2902,7 @@ $O/parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   ../../include/errmsg.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   parsim/cnullmessageprot.h \
   ../../include/cparsimcomm.h \
   ../../include/ccomponent.h \
@@ -2864,6 +2950,7 @@ $O/parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   parsim/cnullmessageprot.h \
   ../../include/cchannel.h \
   ../../include/cparsimcomm.h \
@@ -3050,6 +3137,7 @@ $O/parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   parsim/messagetags.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cparsimcomm.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
@@ -3098,6 +3186,7 @@ $O/parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   parsim/messagetags.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   parsim/cnullmessageprot.h \
   ../../include/cchannel.h \
   ../../include/cparsimcomm.h \
@@ -3146,6 +3235,7 @@ $O/parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   parsim/messagetags.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cparsimcomm.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
@@ -3190,6 +3280,7 @@ $O/parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   parsim/messagetags.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/cparsimcomm.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
@@ -3235,6 +3326,7 @@ $O/parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
   parsim/cmpicomm.h \
+  ../../include/clistener.h \
   parsim/cnullmessageprot.h \
   ../../include/cparsimcomm.h \
   ../../include/ccomponent.h \
@@ -3279,6 +3371,7 @@ $O/parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/errmsg.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/clistener.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \

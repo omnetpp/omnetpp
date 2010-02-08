@@ -11,7 +11,7 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.ned.editor.graph.parts.IReadOnlySupport;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -36,7 +36,7 @@ public class NedEditPartPropertySourceProvider implements IPropertySourceProvide
         if ((object instanceof INedModelProvider))
         {
             // try to get the adapter from the model (if it was previously created)
-            INEDElement nedModel = ((INedModelProvider)object).getNedModel();
+            INedElement nedModel = ((INedModelProvider)object).getNedModel();
 
             // if no property source exists for this model object, create one
             if (nedModel instanceof SubmoduleElementEx)

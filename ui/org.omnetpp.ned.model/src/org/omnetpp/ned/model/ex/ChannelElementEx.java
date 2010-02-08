@@ -12,13 +12,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 
@@ -29,7 +29,7 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  */
 public class ChannelElementEx extends ChannelElement implements IChannelKindTypeElement {
 
-	private INEDTypeInfo typeInfo;
+	private INedTypeInfo typeInfo;
 	protected DisplayString displayString = null;
 
     protected ChannelElementEx() {
@@ -37,41 +37,41 @@ public class ChannelElementEx extends ChannelElement implements IChannelKindType
 		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
 	}
 
-    protected ChannelElementEx(INEDElement parent) {
+    protected ChannelElementEx(INedElement parent) {
 		super(parent);
 		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
 	}
 
-    public INEDTypeInfo getNEDTypeInfo() {
+    public INedTypeInfo getNedTypeInfo() {
     	return typeInfo;
     }
 
     @Override
-    public void fireModelEvent(NEDModelEvent event) {
+    public void fireModelEvent(NedModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NEDElementUtilEx.isDisplayStringUpToDate(displayString, this))
+    	if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
     		displayString = null;
     	super.fireModelEvent(event);
     }
 
     public DisplayString getDisplayString() {
     	if (displayString == null)
-    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NEDElement.displayStringOf(getFirstExtendsRef()));
+    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getFirstExtendsRef()));
     	return displayString;
     }
 
     // "extends" support
     public String getFirstExtends() {
-        return NEDElementUtilEx.getFirstExtends(this);
+        return NedElementUtilEx.getFirstExtends(this);
     }
 
     public void setFirstExtends(String ext) {
-        NEDElementUtilEx.setFirstExtends(this, ext);
+        NedElementUtilEx.setFirstExtends(this, ext);
     }
 
     public INedTypeElement getFirstExtendsRef() {
-        return getNEDTypeInfo().getFirstExtendsRef();
+        return getNedTypeInfo().getFirstExtendsRef();
     }
 
     public List<ExtendsElement> getAllExtends() {
@@ -83,22 +83,22 @@ public class ChannelElementEx extends ChannelElement implements IChannelKindType
 	}
 
     public Map<String, ParamElementEx> getParamAssignments() {
-        return getNEDTypeInfo().getParamAssignments();
+        return getNedTypeInfo().getParamAssignments();
     }
 
     public Map<String, ParamElementEx> getParamDeclarations() {
-        return getNEDTypeInfo().getParamDeclarations();
+        return getNedTypeInfo().getParamDeclarations();
     }
 
     public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
-        return getNEDTypeInfo().getParameterInheritanceChain(parameterName);
+        return getNedTypeInfo().getParameterInheritanceChain(parameterName);
     }
 
-    public Map<String, PropertyElementEx> getProperties() {
-        return getNEDTypeInfo().getProperties();
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
+        return getNedTypeInfo().getProperties();
     }
 
     public Set<INedTypeElement> getLocalUsedTypes() {
-        return getNEDTypeInfo().getLocalUsedTypes();
+        return getNedTypeInfo().getLocalUsedTypes();
     }
 }

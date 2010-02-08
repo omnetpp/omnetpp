@@ -24,7 +24,7 @@ import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.parts.ModuleConnectionEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPart;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
@@ -109,8 +109,8 @@ public class GraphicalNedEditorAccess
             public boolean matches(Object object) {
                 if (object instanceof ModuleConnectionEditPart) {
                     ModuleConnectionEditPart connectionEditPart = (ModuleConnectionEditPart)object;
-                    String sourceName = ((INEDElement)connectionEditPart.getSource().getModel()).getAttribute("name");
-                    String targetName = ((INEDElement)connectionEditPart.getTarget().getModel()).getAttribute("name");
+                    String sourceName = ((INedElement)connectionEditPart.getSource().getModel()).getAttribute("name");
+                    String targetName = ((INedElement)connectionEditPart.getTarget().getModel()).getAttribute("name");
 
                     return sourceName.matches(label1) && targetName.matches(label2);
                 }
@@ -161,7 +161,7 @@ public class GraphicalNedEditorAccess
         return (EditPartAccess)createAccess((EditPart)findDescendantEditPart(getRootEditPart(), new IPredicate() {
             public boolean matches(Object object) {
                 if (object instanceof NedEditPart) {
-                    INEDElement nedElement = ((NedEditPart)object).getNedModel();
+                    INedElement nedElement = ((NedEditPart)object).getNedModel();
 
                     return type.isInstance(nedElement) && nedElement.getAttribute("name").matches(name);
                 }

@@ -31,7 +31,7 @@ public interface IMsgTypeInfo {
      * (Given the special inheritance rules for properties, this may not be what you want;
      * see getPropertyInheritanceChain().
      */
-    public Map<String, PropertyElementEx> getProperties();
+    public Map<String, Map<String, PropertyElementEx>> getProperties();
 
     /** Fields including inherited ones */
     public Map<String, FieldElement> getFields();

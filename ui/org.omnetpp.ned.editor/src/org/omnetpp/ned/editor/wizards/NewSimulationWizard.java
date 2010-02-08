@@ -30,9 +30,9 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedWizard;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
 /**
  * "New Simulation" wizard.
@@ -93,11 +93,11 @@ public class NewSimulationWizard extends TemplateBasedWizard  implements INewWiz
 
         // NED-related stuff
         IFile someNedFile = folder.getFile(new Path("whatever.ned"));
-        String packageName = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(someNedFile);
+        String packageName = NedResourcesPlugin.getNedResources().getExpectedPackageFor(someNedFile);
         context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
 
         // namespace
-        String namespaceName = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
+        String namespaceName = NedResourcesPlugin.getNedResources().getSimplePropertyFor(folder, INedTypeResolver.NAMESPACE_PROPERTY);
         context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
 
         return context;

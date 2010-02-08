@@ -29,7 +29,6 @@ import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -174,13 +173,12 @@ public class SequenceChart
 	private static final int LONG_MESSAGE_ARROW_WIDTH = 80; // width for too long message lines and half ellipses
 	private static final int ARROWHEAD_LENGTH = 10; // length of message arrow head
 	private static final int ARROWHEAD_WIDTH = 7; // width of message arrow head
-	private static final int MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS = 16; // minimum spacing of timeline label above axis
 	private static final int EVENT_SELECTION_RADIUS = 10; // radius of event selection mark circle
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
 	private static final int AXIS_OFFSET = 20;  // extra y distance before and after first and last axes
-	public static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
 
-	private static Font font = JFaceResources.getDefaultFont();
+//	private static Font font = new Font(Display.getDefault(), "Arial", 8, SWT.NONE);
+	private int fontHeight = -1; // cached for cases where a graphics is not available
 
 	/*************************************************************************************
 	 * INTERNAL STATE
@@ -243,6 +241,8 @@ public class SequenceChart
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 
 	private boolean invalidVirtualSize = false; // requests recalculation
+
+    private boolean invalidViewportSize = false; // requests recalculation
 
     private boolean drawStuffUnderMouse = false; // true means axes, events, message dependencies will be highlighted under the mouse
     private boolean drawWithAntialias = true; // antialias gets turned on/off automatically
@@ -358,8 +358,7 @@ public class SequenceChart
             public void controlResized(ControlEvent e) {
                 if (eventLogInput != null) {
                     if (eventLogInput != null) {
-                        org.eclipse.swt.graphics.Rectangle r = getClientArea();
-                        setViewportRectangle(new Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
+                        invalidateViewportSize();
                         invalidateAxisSpacing();
                     }
                 }
@@ -468,6 +467,15 @@ public class SequenceChart
         MenuManager menuManager = new MenuManager();
         sequenceChartContributor.contributeToPopupMenu(menuManager);
         setMenu(menuManager.createContextMenu(this));
+    }
+
+    @Override
+    public void setFont(Font font) {
+        super.setFont(font);
+        fontHeight = -1;
+        invalidateAxisModules();
+        invalidateViewportSize();
+        clearCanvasCacheAndRedraw();
     }
 
     /**
@@ -2000,6 +2008,28 @@ public class SequenceChart
     }
 
     /*************************************************************************************
+     * VIEWPORT SIZE
+     */
+
+    private void validateViewportSize(Graphics graphics) {
+        if (invalidViewportSize)
+            calculateViewportSize(graphics);
+    }
+
+    private void calculateViewportSize(Graphics graphics) {
+        Rectangle r = new Rectangle(getClientArea());
+        setViewportRectangle(new Rectangle(r.x, r.y + getGutterHeight(graphics), r.width, r.height - getGutterHeight(graphics) * 2));
+    }
+
+    private void invalidateViewportSize() {
+        if (debug)
+            Debug.println("invalidateViewportSize(): enter");
+
+        invalidViewportSize = true;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /*************************************************************************************
      * AXIS SPACING
      */
 
@@ -2057,8 +2087,30 @@ public class SequenceChart
             if (getAxisModules().size() == 0)
                 axisSpacing = 1;
             else
-                axisSpacing = Math.max(MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS, (double)(getViewportHeight() - AXIS_OFFSET * 2 - getTotalAxesHeight()) / getAxisModules().size());
+                axisSpacing = Math.max(getFontHeight(null) + 1, (double)(getViewportHeight() - AXIS_OFFSET * 2 - getTotalAxesHeight()) / getAxisModules().size());
         }
+    }
+
+    /*************************************************************************************
+     * HEIGHTS
+     */
+
+    public int getGutterHeight(Graphics graphics) {
+        return getFontHeight(graphics) + 2;
+    }
+
+    public int getFontHeight(Graphics graphics) {
+        if (fontHeight == -1) {
+            if (graphics != null) {
+                graphics.setFont(getFont());
+                fontHeight = graphics.getFontMetrics().getHeight();
+            }
+            else
+                // NOTE: do not cache this value, because it might be different from the one returned by graphics
+                return getFont().getFontData()[0].getHeight() * getFont().getDevice().getDPI().y / 72;
+        }
+
+        return fontHeight;
     }
 
     /*************************************************************************************
@@ -2197,12 +2249,19 @@ public class SequenceChart
 	}
 
 	@Override
+	protected void paint(Graphics graphics) {
+        validateViewportSize(graphics);
+	    super.paint(graphics);
+	}
+
+	@Override
 	protected void paintCachableLayer(Graphics graphics) {
 		if (eventLogInput != null) {
 			initializeGraphics(graphics);
-			graphics.translate(0, GUTTER_HEIGHT);
+	        int gutterHeight = getGutterHeight(graphics);
+			graphics.translate(0, gutterHeight);
 			drawSequenceChart(graphics);
-			graphics.translate(0, -GUTTER_HEIGHT);
+			graphics.translate(0, -gutterHeight);
 			graphics.dispose();
 		}
 	}
@@ -2211,25 +2270,26 @@ public class SequenceChart
 	protected void paintNoncachableLayer(Graphics graphics) {
 		if (eventLogInput != null) {
 			initializeGraphics(graphics);
+            int gutterHeight = getGutterHeight(graphics);
 
-			graphics.translate(0, GUTTER_HEIGHT);
+            graphics.translate(0, gutterHeight);
 			if (showAxisLabels)
 			    drawAxisLabels(graphics);
 	        drawEventBookmarks(graphics);
 	        drawEventSelectionMarks(graphics);
-	        graphics.translate(0, -GUTTER_HEIGHT);
+	        graphics.translate(0, -gutterHeight);
 
 	        drawGutters(graphics, getViewportHeight());
 	        drawTickUnderMouse(graphics, getViewportHeight());
 	        drawSimulationTimeRange(graphics, getViewportWidth());
 	        drawTickPrefix(graphics);
 
-	        graphics.translate(0, GUTTER_HEIGHT);
+	        graphics.translate(0, gutterHeight);
 	        if (drawStuffUnderMouse) {
 	            drawStuffUnderMouse(graphics);
 	            drawStuffUnderMouse = false;
 	        }
-	        graphics.translate(0, -GUTTER_HEIGHT);
+	        graphics.translate(0, -gutterHeight);
 
 	        rubberbandSupport.drawRubberband(graphics);
 
@@ -2241,14 +2301,16 @@ public class SequenceChart
 	 * Used to paint the sequence chart offline without using the SWT widget framework.
 	 */
 	public void paintArea(Graphics graphics) {
+        validateViewportSize(graphics);
         revalidateAxisModules();
+        int gutterHeight = getGutterHeight(graphics);
 
-		graphics.translate(0, GUTTER_HEIGHT);
+		graphics.translate(0, gutterHeight);
 
 		drawSequenceChart(graphics);
 		drawAxisLabels(graphics);
 
-		graphics.translate(0, -GUTTER_HEIGHT);
+		graphics.translate(0, -gutterHeight);
 
         drawGutters(graphics, (int)getVirtualHeight());
         drawSimulationTimeRange(graphics, graphics.getClip(Rectangle.SINGLETON).width);
@@ -2264,7 +2326,7 @@ public class SequenceChart
         initializeGraphics(graphics);
 		graphics.setForegroundColor(ColorFactory.RED4);
 		graphics.setBackgroundColor(ColorFactory.WHITE);
-		graphics.setFont(font);
+		graphics.setFont(getFont());
 
         int x = getViewportWidth() / 2;
         int y = getViewportHeight() / 2;
@@ -2287,19 +2349,20 @@ public class SequenceChart
 		BigDecimal rightTick = calculateTick(viewportWidth, 1);
 		BigDecimal simulationTimeRange = rightTick.subtract(leftTick);
 		String timeString = "Range: " + TimeUtils.secondsToTimeString(simulationTimeRange);
-		graphics.setFont(font);
+		graphics.setFont(getFont());
 		int width = GraphicsUtils.getTextExtent(graphics, timeString).x;
 		int x = viewportWidth - width - 3;
-        int spacing = (GUTTER_HEIGHT - graphics.getFontMetrics().getHeight()) / 2;
+		int gutterHeight = getGutterHeight(graphics);
+        int spacing = (gutterHeight - getFontHeight(graphics)) / 2;
 
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-		graphics.fillRectangle(x - 3, GUTTER_HEIGHT, width + 6, GUTTER_HEIGHT + 1);
+		graphics.fillRectangle(x - 3, gutterHeight, width + 6, gutterHeight + 1);
 		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
 		graphics.setLineStyle(SWT.LINE_SOLID);
-		graphics.drawRectangle(x - 3, GUTTER_HEIGHT, width + 5, GUTTER_HEIGHT);
+		graphics.drawRectangle(x - 3, gutterHeight, width + 5, gutterHeight);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-        drawText(graphics, timeString, x, GUTTER_HEIGHT + 1 - spacing);
+        drawText(graphics, timeString, x, gutterHeight + 1 - spacing);
 	}
 
 	/**
@@ -2308,19 +2371,20 @@ public class SequenceChart
 	private void drawTickPrefix(Graphics graphics) {
 		// draw tick prefix on top gutter
 		String timeString = TimeUtils.secondsToTimeString(tickPrefix);
-		FontData fontData = font.getFontData()[0];
-		Font newFont = new Font(font.getDevice(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
+		FontData fontData = getFont().getFontData()[0];
+		Font newFont = new Font(getFont().getDevice(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
 		graphics.setFont(newFont);
 		int width = GraphicsUtils.getTextExtent(graphics, timeString).x;
+        int gutterHeight = getGutterHeight(graphics);
 
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-		graphics.fillRectangle(0, 0, width + 7, GUTTER_HEIGHT + 1);
+		graphics.fillRectangle(0, 0, width + 7, gutterHeight);
 		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
 		graphics.setLineStyle(SWT.LINE_SOLID);
-		graphics.drawRectangle(0, 0, width + 6, GUTTER_HEIGHT);
+		graphics.drawRectangle(0, 0, width + 6, gutterHeight);
 
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-		drawText(graphics, timeString, 3, (GUTTER_HEIGHT - graphics.getFontMetrics().getHeight()) / 2);
+		drawText(graphics, timeString, 3, (gutterHeight - getFontHeight(graphics)) / 2);
 		newFont.dispose();
 	}
 
@@ -2493,9 +2557,9 @@ public class SequenceChart
                     drawArrowHead(graphics, null, x, toY, 0, toY - fromY);
 
                 if (showMessageNames) {
-                    graphics.setFont(font);
+                    graphics.setFont(getFont());
                     int dy = Math.abs(fromY - toY);
-                    int fontHeight = graphics.getFontMetrics().getHeight();
+                    int fontHeight = getFontHeight(graphics);
                     int numberOfRows = dy / fontHeight / 2;
 
                     if (numberOfRows == 0)
@@ -2613,8 +2677,8 @@ public class SequenceChart
 		graphics.drawOval(x - 2, y - 3, 5, 7);
 
 		if (showEventNumbers) {
-			graphics.setFont(font);
-			drawText(graphics, "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr), x + 3, y + 3 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
+			graphics.setFont(getFont());
+			drawText(graphics, "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr), x + 5, y + 1 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
 		}
 	}
 
@@ -2623,20 +2687,21 @@ public class SequenceChart
 	 */
 	private void drawGutters(Graphics graphics, int viewportHeigth) {
 		graphics.getClip(Rectangle.SINGLETON);
-		Rectangle r = Rectangle.SINGLETON;
+		Rectangle r = new Rectangle(Rectangle.SINGLETON);
+        int gutterHeight = getGutterHeight(graphics);
 
 		// fill gutter backgrounds
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
-		graphics.fillRectangle(r.x, 0, r.right(), GUTTER_HEIGHT + 1);
-		graphics.fillRectangle(r.x, viewportHeigth + GUTTER_HEIGHT - 1, r.right(), GUTTER_HEIGHT + 1);
+		graphics.fillRectangle(r.x, 0, r.right(), gutterHeight);
+		graphics.fillRectangle(r.x, viewportHeigth + gutterHeight, r.right(), gutterHeight);
 
 		drawTicks(graphics, viewportHeigth);
 
 		// draw border around gutters
 		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
 		graphics.setLineStyle(SWT.LINE_SOLID);
-		graphics.drawRectangle(r.x, 0, r.right() - 1, GUTTER_HEIGHT);
-		graphics.drawRectangle(r.x, viewportHeigth + GUTTER_HEIGHT - 1, r.right() - 1, GUTTER_HEIGHT);
+		graphics.drawRectangle(r.x, 0, r.right() - 1, gutterHeight);
+		graphics.drawRectangle(r.x, viewportHeigth + gutterHeight - 1, r.right() - 1, gutterHeight);
 	}
 
 	/**
@@ -2662,9 +2727,10 @@ public class SequenceChart
 	 * Draws a tick under the mouse.
 	 */
 	private void drawTickUnderMouse(Graphics graphics, int viewportHeigth) {
+        int gutterHeight = getGutterHeight(graphics);
 		Point p = toControl(Display.getDefault().getCursorLocation());
 
-		if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + GUTTER_HEIGHT * 2) {
+		if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + gutterHeight * 2) {
 			BigDecimal tick = calculateTick(p.x, 1);
 			drawTick(graphics, viewportHeigth, MOUSE_TICK_LINE_COLOR, INFO_BACKGROUND_COLOR, tick, p.x, true);
 		}
@@ -2729,38 +2795,39 @@ public class SequenceChart
 		if (tickPrefix.doubleValue() != 0.0)
 			string = "+" + string;
 
-		graphics.setFont(font);
+		graphics.setFont(getFont());
 		int stringWidth = GraphicsUtils.getTextExtent(graphics, string).x;
 		int boxWidth = stringWidth + 6;
 		int boxX = mouseTick ? Math.min(getViewportWidth() - boxWidth, x) : x;
+        int gutterHeight = getGutterHeight(graphics);
 
 		// draw background
 		graphics.setBackgroundColor(backgroundColor);
-		graphics.fillRectangle(boxX, 0, boxWidth, GUTTER_HEIGHT + 1);
-		graphics.fillRectangle(boxX, viewportHeight + GUTTER_HEIGHT - 1, boxWidth, GUTTER_HEIGHT);
+		graphics.fillRectangle(boxX, 0, boxWidth, gutterHeight + 1);
+		graphics.fillRectangle(boxX, viewportHeight + gutterHeight - 1, boxWidth, gutterHeight);
 
 		// draw border only for mouse tick
 		if (mouseTick) {
 			graphics.setForegroundColor(GUTTER_BORDER_COLOR);
 			graphics.setLineStyle(SWT.LINE_SOLID);
-			graphics.drawRectangle(boxX, 0, boxWidth - 1, GUTTER_HEIGHT);
-			graphics.drawRectangle(boxX, viewportHeight + GUTTER_HEIGHT - 1, boxWidth - 1, GUTTER_HEIGHT);
+			graphics.drawRectangle(boxX, 0, boxWidth - 1, gutterHeight);
+			graphics.drawRectangle(boxX, viewportHeight + gutterHeight - 1, boxWidth - 1, gutterHeight);
 		}
 
 		// draw tick value
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(backgroundColor);
-		int spacing = (GUTTER_HEIGHT - graphics.getFontMetrics().getHeight()) / 2;
-		drawText(graphics, string, boxX + 3, spacing);
-		drawText(graphics, string, boxX + 3, viewportHeight + GUTTER_HEIGHT + 1 - spacing);
+		int spacing = (gutterHeight - getFontHeight(graphics)) / 2;
+		drawText(graphics, string, boxX + 3, spacing - 1);
+		drawText(graphics, string, boxX + 3, viewportHeight + gutterHeight + spacing - 1);
 
 		// draw hair line
 		graphics.setLineStyle(SWT.LINE_DOT);
 		graphics.setForegroundColor(tickColor);
 		if (mouseTick)
-			graphics.drawLine(x, GUTTER_HEIGHT, x, viewportHeight + GUTTER_HEIGHT);
+			graphics.drawLine(x, gutterHeight, x, viewportHeight + gutterHeight);
 		else
-			graphics.drawLine(x, 0, x, viewportHeight + GUTTER_HEIGHT * 2);
+			graphics.drawLine(x, 0, x, viewportHeight + gutterHeight * 2);
 	}
 
 	/**
@@ -2857,7 +2924,7 @@ public class SequenceChart
 	 * Draws axis labels if there's enough space between axes.
 	 */
 	private void drawAxisLabels(Graphics graphics) {
-		if (MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS <= getAxisSpacing()) {
+		if (getFontHeight(graphics) < getAxisSpacing()) {
 			for (int i = 0; i < getAxisModules().size(); i++) {
 				ModuleTreeItem treeItem = getAxisModules().get(i);
 				drawAxisLabel(graphics, i, treeItem);
@@ -2872,8 +2939,8 @@ public class SequenceChart
 		int y = getAxisModuleYs()[index] - (int)getViewportTop();
 		String label = axisModule.getModuleFullPath();
 		graphics.setForegroundColor(LABEL_COLOR);
-		graphics.setFont(font);
-		drawText(graphics, label, 5, y - MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS + 1);
+        graphics.setFont(getFont());
+		drawText(graphics, label, 5, y - getFontHeight(graphics) - 1);
 	}
 
 	/**
@@ -2926,7 +2993,7 @@ public class SequenceChart
                 beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
                     getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
-        int fontHeight = graphics.getFontMetrics().getHeight();
+        int fontHeight = getFontHeight(graphics);
 
         // calculate horizontal coordinates based on timeline coordinate limit
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / getPixelPerTimelineUnit();
@@ -3008,7 +3075,7 @@ public class SequenceChart
 						drawArrowHead(graphics, null, x1, y1, 0, 1);
 
 					if (showMessageNames)
-						drawMessageDependencyLabel(graphics, messageDependencyPtr, x1, y1, 2, -15);
+						drawMessageDependencyLabel(graphics, messageDependencyPtr, x1, y1, 2, -fontHeight);
 				}
 				else
 					return lineContainsPoint(x1, y1, x2, y2, fitX, fitY, tolerance);
@@ -3105,7 +3172,7 @@ public class SequenceChart
 				}
 
 				if (showMessageNames)
-					drawMessageDependencyLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - 18);
+					drawMessageDependencyLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - fontHeight);
 			}
 		}
 		else {
@@ -3200,7 +3267,7 @@ public class SequenceChart
 			    int dx = y2 == y1 ? 0 : (int)((double)(x2 - x1) / (y2 - y1) * dy);
                 mx += dx;
 			    my += dy;
-				drawMessageDependencyLabel(graphics, messageDependencyPtr, mx, my, 3, y1 < y2 ? -15 : 0);
+				drawMessageDependencyLabel(graphics, messageDependencyPtr, mx, my, 3, y1 < y2 ? -fontHeight : 0);
 			}
 		}
 
@@ -3324,7 +3391,7 @@ public class SequenceChart
 		if (MESSAGE_LABEL_COLOR != null)
 			graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
 
-		graphics.setFont(font);
+		graphics.setFont(getFont());
 		drawText(graphics, arrowLabel, x + dx, y + dy);
 	}
 
@@ -4156,7 +4223,7 @@ public class SequenceChart
 	 */
 	public ModuleTreeItem findAxisAt(int y) {
 		if (!eventLogInput.isCanceled()) {
-			y += getViewportTop() - GUTTER_HEIGHT;
+			y += getViewportTop() - getGutterHeight(null);
 
 			for (int i = 0; i < getAxisModuleYs().length; i++) {
 				int height = getAxisRenderers()[i].getHeight();
@@ -4202,11 +4269,11 @@ public class SequenceChart
     			                            long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
     			                            int y = getInitializationEventYViewportCoordinate(consequencePtr);
 
-    			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
+    			                            if (eventSymbolContainsPoint(mouseX, mouseY - getGutterHeight(null), x, y, MOUSE_TOLERANCE))
     		                                    events.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
     			                        }
     			            	    }
-    			            	    else if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
+    			            	    else if (eventSymbolContainsPoint(mouseX, mouseY - getGutterHeight(null), x, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
     			   						events.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
 
     			   					if (eventPtr == endEventPtr)
@@ -4230,7 +4297,7 @@ public class SequenceChart
 				        			// TODO: cast ptr_t as (ptr_t)(unsigned int)
 				        			// TODO: PtrVector should return Java long
 
-				        			if (drawOrFitMessageDependency(messageDependencyPtr, mouseX, mouseY - GUTTER_HEIGHT, MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
+				        			if (drawOrFitMessageDependency(messageDependencyPtr, mouseX, mouseY - getGutterHeight(null), MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
 				            			msgs.add(sequenceChartFacade.IMessageDependency_getMessageDependency(messageDependencyPtr));
 				        		}
 			    			}
@@ -4248,7 +4315,7 @@ public class SequenceChart
                                 for (int i = 0; i < moduleMethodBeginEntries.size(); i++) {
                                     long moduleMethodBeginEntryPtr = moduleMethodBeginEntries.get(i);
 
-                                    if (drawModuleMethodCall(moduleMethodBeginEntryPtr, mouseX, mouseY - GUTTER_HEIGHT, MOUSE_TOLERANCE, null))
+                                    if (drawModuleMethodCall(moduleMethodBeginEntryPtr, mouseX, mouseY - getGutterHeight(null), MOUSE_TOLERANCE, null))
                                         calls.add((ModuleMethodBeginEntry)sequenceChartFacade.EventLogEntry_getEventLogEntry(moduleMethodBeginEntryPtr));
                                 }
                             }

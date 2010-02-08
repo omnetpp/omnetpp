@@ -4,7 +4,7 @@
 <#assign content>
 NED types in open projects (exported by ${author}, on ${date}):
 <#list nedResources.getNedTypesFromAllProjects() as nedTypeInfo>
-  ${nedTypeInfo.getName()} (${nedTypeInfo.getFullyQualifiedName()}), in ${nedTypeInfo.getNEDFile().getFullPath().toString()})  
+  ${nedTypeInfo.getName()} (${nedTypeInfo.getFullyQualifiedName()}), in ${nedTypeInfo.getNedFile().getFullPath().toString()})  
 </#list>
 </#assign>
 

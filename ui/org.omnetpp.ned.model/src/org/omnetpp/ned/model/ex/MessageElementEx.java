@@ -10,7 +10,7 @@ package org.omnetpp.ned.model.ex;
 import java.util.Map;
 import java.util.Set;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
@@ -23,7 +23,7 @@ public class MessageElementEx extends MessageElement implements IMsgTypeElement 
         super();
     }
 
-    protected MessageElementEx(INEDElement parent) {
+    protected MessageElementEx(INedElement parent) {
         super(parent);
     }
 
@@ -51,7 +51,7 @@ public class MessageElementEx extends MessageElement implements IMsgTypeElement 
         return getMsgTypeInfo().getLocalUsedTypes();
     }
 
-    public Map<String, PropertyElementEx> getProperties() {
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
         return getMsgTypeInfo().getProperties();
     }
 }

@@ -22,21 +22,21 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
-import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.NedElementTags;
 
 /**
  * Helper class that allows to choose a connection for a module pair (src, dest) via a Popup menu
@@ -116,7 +116,7 @@ public class ConnectionChooser {
         List<String> noGates = new ArrayList<String>();
         if (srcMod.getGateDeclarations().size() == 0)
             noGates.add(srcMod.getName());
-        if (destMod.getGateDeclarations().size() == 0 && !srcMod.getNEDTypeInfo().equals(destMod.getNEDTypeInfo()))
+        if (destMod.getGateDeclarations().size() == 0 && !srcMod.getNedTypeInfo().equals(destMod.getNedTypeInfo()))
             noGates.add(destMod.getName());
         if (noGates.size() > 0) {
             MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
@@ -192,13 +192,13 @@ public class ConnectionChooser {
      */
     @SuppressWarnings("unchecked")
     public ConnectionElementEx openConnectionChannelMenu(CompoundModuleElementEx compound, ConnectionElementEx connectionWithGatesTemplate, Point location) {
-        NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
-        IProject project = compound.getNEDTypeInfo().getNEDFile().getProject();
+        INedResources nedResources = NedResourcesPlugin.getNedResources();
+        IProject project = compound.getNedTypeInfo().getNedFile().getProject();
         List<ChannelElementEx> channels = new ArrayList<ChannelElementEx>();
         List<String> commonGateLabels = connectionLabelsMap.get(connectionWithGatesTemplate);
         // TODO: handle inner channel types
         for (String channelType : nedResources.getChannelQNames(project))
-            channels.add((ChannelElementEx)nedResources.getToplevelOrInnerNedType(channelType, project).getNEDElement());
+            channels.add((ChannelElementEx)nedResources.getToplevelOrInnerNedType(channelType, project).getNedElement());
 
         // populate matching labels for each channel
         boolean matchingLabelsFound = false;
@@ -272,7 +272,7 @@ public class ConnectionChooser {
      */
     private MenuItem createChannelChooserMenuItem(BlockingMenu menu, ConnectionElementEx connectionWithGatesTemplate, ChannelElementEx channel, Collection<String> labels) {
         ConnectionElementEx connectionWithChannelTemplate = (ConnectionElementEx)connectionWithGatesTemplate.deepDup();
-        connectionWithChannelTemplate.setType(channel.getNEDTypeInfo().getFullyQualifiedName());
+        connectionWithChannelTemplate.setType(channel.getNedTypeInfo().getFullyQualifiedName());
         return createMenuItem(menu, channel.getName(), connectionWithChannelTemplate, labels);
     }
 
@@ -285,7 +285,7 @@ public class ConnectionChooser {
     }
 
     private String getConnectionMenuItemText(ConnectionElement connection) {
-        return StringUtils.removeEnd(NEDTreeUtil.generateNedSource(connection, false).trim(), ";");
+        return StringUtils.removeEnd(NedTreeUtil.generateNedSource(connection, false).trim(), ";");
     }
 
     private MenuItem createMenuItem(BlockingMenu menu, String text, Object data, Collection<String> labels) {
@@ -370,7 +370,7 @@ public class ConnectionChooser {
 	private ConnectionElementEx createTemplateConnection(IConnectableElement srcMod, GateElement srcGate,
 						                                 IConnectableElement destMod, GateElement destGate)
 	{
-		ConnectionElementEx conn = (ConnectionElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
+		ConnectionElementEx conn = (ConnectionElementEx)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_CONNECTION);
 		// set the source and dest module names.
 		// if compound module, name must be empty
 		// for Submodules name must be the submodule name
@@ -466,7 +466,7 @@ public class ConnectionChooser {
     }
 
     public static ArrayList<String> getLabels(IHasProperties element) {
-        ArrayList<String> labels = NEDElementUtilEx.getLabels(element);
+        ArrayList<String> labels = NedElementUtilEx.getLabels(element);
 
         if (labels.size() == 0)
             labels.add(null);

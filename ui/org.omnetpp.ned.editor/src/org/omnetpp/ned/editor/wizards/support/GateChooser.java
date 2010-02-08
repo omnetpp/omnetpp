@@ -17,13 +17,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IWidgetAdapterExt;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElementConstants;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.NedElementConstants;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.pojo.GateElement;
 
 /**
@@ -41,7 +41,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
     public static final int SCALAR = 16;
 
     // primary input
-    private INEDTypeInfo nedType;
+    private INedTypeInfo nedType;
     private int filter = 0;
 
     // widgets
@@ -69,11 +69,11 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
         return filter;
     }
 
-    public INEDTypeInfo getNedType() {
+    public INedTypeInfo getNedType() {
         return nedType;
     }
 
-    public void setNedType(INEDTypeInfo nedType) {
+    public void setNedType(INedTypeInfo nedType) {
         this.nedType = nedType;
 
         // create or fill the appropriate widget
@@ -95,7 +95,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
             if (comboViewer == null) {
                 comboViewer = new ComboViewer(this, SWT.READ_ONLY|SWT.BORDER);
                 comboViewer.setContentProvider(new ArrayContentProvider());
-                comboViewer.setLabelProvider(NEDTreeUtil.getNedModelLabelProvider());
+                comboViewer.setLabelProvider(NedTreeUtil.getNedModelLabelProvider());
                 layout(true);
             }
             
@@ -127,11 +127,11 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
 
         // if either INPUT, OUTPUT or INOUT is given, take gate direction into account
         if ((filter & (INPUT|OUTPUT|INOUT))!=0) {
-            if (gate.getType()==NEDElementConstants.NED_GATETYPE_INPUT && (filter & INPUT)==0)
+            if (gate.getType()==NedElementConstants.NED_GATETYPE_INPUT && (filter & INPUT)==0)
                 return false;
-            if (gate.getType()==NEDElementConstants.NED_GATETYPE_OUTPUT && (filter & OUTPUT)==0)
+            if (gate.getType()==NedElementConstants.NED_GATETYPE_OUTPUT && (filter & OUTPUT)==0)
                 return false;
-            if (gate.getType()==NEDElementConstants.NED_GATETYPE_INOUT && (filter & INOUT)==0)
+            if (gate.getType()==NedElementConstants.NED_GATETYPE_INOUT && (filter & INOUT)==0)
                 return false;
         }
         return true;
@@ -174,17 +174,17 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
     }
 
 
-    protected INEDTypeInfo lookupModuleType(String name, IProject project) {
-        NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+    protected INedTypeInfo lookupModuleType(String name, IProject project) {
+        INedResources nedResources = NedResourcesPlugin.getNedResources();
         if (project != null) {
-            INEDTypeInfo nedType = nedResources.getToplevelNedType(name, project);
-            if (nedType != null && nedType.getNEDElement() instanceof IModuleKindTypeElement)
+            INedTypeInfo nedType = nedResources.getToplevelNedType(name, project);
+            if (nedType != null && nedType.getNedElement() instanceof IModuleKindTypeElement)
                 return nedType;
         }
         else {
-            Set<INEDTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
-            for (INEDTypeInfo nedType : nedTypes)
-                if (nedType.getNEDElement() instanceof IModuleKindTypeElement)
+            Set<INedTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
+            for (INedTypeInfo nedType : nedTypes)
+                if (nedType.getNedElement() instanceof IModuleKindTypeElement)
                     return nedType;
         }
         return null;

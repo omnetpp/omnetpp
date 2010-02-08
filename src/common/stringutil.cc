@@ -497,3 +497,39 @@ double opp_atof(const char *s)
     return d;
 }
 
+const char *opp_findmatchingquote(const char *s)
+{
+    while (opp_isspace(*s))
+        s++;
+    if (*s++!='"')
+        throw opp_runtime_error("missing opening quote");
+    for (; *s && *s!='"'; s++)
+        if (*s=='\\')
+            s++;
+    return *s ? s : NULL;
+}
+
+const char *opp_findmatchingparen(const char *s)
+{
+    while (opp_isspace(*s))
+        s++;
+    if (*s++ != '(')
+        throw opp_runtime_error("missing left parenthesis");
+
+    int parens = 1;
+    while (*s && parens>0)
+    {
+        if (*s == '(')
+            parens++;
+        else if (*s == ')')
+            parens--;
+        else if (*s == '"') {
+            s = opp_findmatchingquote(s);
+            if (!s)
+                return NULL;
+        }
+        s++;
+    }
+    return parens>0 ? NULL : s;
+}
+

@@ -29,12 +29,12 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver.IPredicate;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver.IPredicate;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 // TODO completion within inner types
@@ -98,6 +98,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 		public int sectionType; // SECT_xxx
 		public String submoduleTypeName;
         public String connectionTypeName;
+        public int parenthesisLevel;
 	}
 
 	protected IContextInformationValidator fValidator = new Validator();
@@ -108,13 +109,13 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 	}
 
     protected void addNedTypeProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result,
-            IProject project, INEDTypeInfo nedTypeInfoForInnerTypes, IPredicate predicate) {
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+            IProject project, INedTypeInfo nedTypeInfoForInnerTypes, IPredicate predicate) {
+        INedResources res = NedResourcesPlugin.getNedResources();
         // add inner types
         if (nedTypeInfoForInnerTypes != null) {
             Set<String> innerTypeNames = new HashSet<String>();
             for (INedTypeElement innerTypeElement : nedTypeInfoForInnerTypes.getInnerTypes().values()) {
-                if (predicate.matches(innerTypeElement.getNEDTypeInfo()))
+                if (predicate.matches(innerTypeElement.getNedTypeInfo()))
                     innerTypeNames.add(innerTypeElement.getName());
             }
             addProposals(viewer, documentOffset, result, innerTypeNames, "inner type");
@@ -127,11 +128,11 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         String descriptions[] = new String[qnames.size()];
         int i = 0;
         for (String qname : qnames) {
-            INEDTypeInfo topLevelTypeInfo = res.getToplevelNedType(qname, project);
+            INedTypeInfo topLevelTypeInfo = res.getToplevelNedType(qname, project);
             names[i] = topLevelTypeInfo.getName();
             String packageName = StringUtils.chomp(topLevelTypeInfo.getNamePrefix(), ".");
             packageName = StringUtils.isBlank(packageName) ? "" : packageName+" - ";
-            descriptions[i] =  packageName + topLevelTypeInfo.getNEDElement().getReadableTagName()+" type";
+            descriptions[i] =  packageName + topLevelTypeInfo.getNedElement().getReadableTagName()+" type";
             i++;
         }
         addProposals(viewer, documentOffset, result, names, descriptions);
@@ -143,14 +144,14 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         return line.contains("[");
 	}
 
-    protected String extractSubmoduleTypeName(String line, INEDTypeInfo parentComponent) {
+    protected String extractSubmoduleTypeName(String line, INedTypeInfo parentComponent) {
 		// first, get rid of everything before any arrow(s), because it causes a problem for the next regexp
 		line = line.replaceFirst("^.*(-->|<--|<-->)", "");
 		// identifier followed by ".", potentially a submodule index ("[something]") in between
 		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.$").matcher(line);
 		if (matcher.find()) { // use find() because line may start with garbage
 			String submoduleName = matcher.group(1);
-			INEDElement submodNode = parentComponent.getMembers().get(submoduleName);
+			INedElement submodNode = parentComponent.getMembers().get(submoduleName);
 			if (submodNode instanceof SubmoduleElement) {
 				SubmoduleElement submod = (SubmoduleElement) submodNode;
 				String submodTypeName = submod.getType();
@@ -196,17 +197,38 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         try {
     		String source = docu.get(0,offset);
     		// kill string literals
-			source = source.replaceAll("\".*\"", "\"###\"");  //FIXME but ignore embedded backslash+quote \" !!!
+			source = source.replaceAll("\".*?\"", "\"###\"");  //FIXME but ignore embedded backslash+quote \" !!!
     		// kill comments
     		source = source.replaceAll("(?m)//.*", "");
 
     		// completion prefix (linePrefix): stuff after last semicolon,
     		// curly brace, "parameters:", "gates:", "connections:" etc.
     		String prefix = source;
-    		prefix = prefix.replaceAll("(?s)\\s+", " "); // normalize whitespace
-    		prefix = prefix.replaceFirst(".*[" + (this instanceof NedDisplayStringCompletionProcessor ? "" : ";") + "\\{\\}]", "");
+            // normalize whitespace
+            prefix = prefix.replaceAll("(?s)\\s+", " ");
+            // remove until the last brace
+            prefix = prefix.replaceFirst(".*[\\{\\}]", "");
+            // kill until the last good semicolon
+            boolean quote = false;
+            int parenthesisLevel = 0;
+            int lastSemicolonIndex = -1;
+            for (int i = 0; i < prefix.length(); i++) {
+                char ch = prefix.charAt(i);
+                if (ch == '"')
+                    quote = !quote;
+                else if (ch == '(')
+                    parenthesisLevel++;
+                else if (ch == ')')
+                    parenthesisLevel--;
+                else if (ch == ';' && !quote && parenthesisLevel == 0)
+                    lastSemicolonIndex = i;
+            }
+            prefix = prefix.substring(lastSemicolonIndex + 1);
+            // kill (...) regions
+            while (prefix.matches(".*\\([^\\(\\)]*\\).*"))
+                prefix = prefix.replaceAll("\\([^\\(\\)]*\\)", "###");
     		prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|submodules|connections|connections +[a-z]+) *:", "");
-    		String prefix2 = prefix.replaceFirst("[a-zA-Z_@][a-zA-Z0-9_]*$", "").trim(); // chop off last word
+    		String linePrefixTrimmed = prefix.replaceFirst("[a-zA-Z_@][a-zA-Z0-9_]*$", "").trim(); // chop off last word
 
     		// kill {...} regions (including bodies of inner types, etc)
     		while (source.matches("(?s).*\\{[^\\{\\}]*\\}.*"))
@@ -268,17 +290,18 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 //			Debug.println(">>>"+source+"<<<");
 //			Debug.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
 //			Debug.println("PREFIX: >>"+prefix+"<<");
-//			Debug.println("PREFIX2: >>"+prefix2+"<<");
+//			Debug.println("LINEPREFIXTRIMMED: >>"+linePrefixTrimmed+"<<");
 //            Debug.println("inside inner type: "+insideInnertype);
 
 			CompletionInfo ret = new CompletionInfo();
 			ret.linePrefix = prefix;
-			ret.linePrefixTrimmed = prefix2;
+			ret.linePrefixTrimmed = linePrefixTrimmed;
 			ret.nedTypeName = nedTypeName;
 			ret.enclosingNedTypeName = enclosingNedTypeName;
 			ret.sectionType = sectionType;
 			ret.submoduleTypeName = sectionType == SECT_SUBMODULE_GATES || sectionType == SECT_SUBMODULE_PARAMETERS ? lastTypeName : null;
             ret.connectionTypeName = sectionType == SECT_CONNECTION_PARAMETERS ? lastTypeName : null;
+            ret.parenthesisLevel = parenthesisLevel;
 			return ret;
 
         } catch (BadLocationException e) {

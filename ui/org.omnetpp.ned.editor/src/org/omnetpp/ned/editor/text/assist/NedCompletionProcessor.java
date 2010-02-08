@@ -8,20 +8,30 @@
 package org.omnetpp.ned.editor.text.assist;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString.PropType;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
-import org.omnetpp.ned.core.NEDResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedDisplayStringTagDetector;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagDetector;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagValueDetector;
+import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 // TODO completion within inner types
@@ -51,34 +61,35 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		if (info == null || info.linePrefix == null || info.linePrefixTrimmed == null)
 		    return new ICompletionProposal[0];
 
-		NEDResources res = NEDResourcesPlugin.getNEDResources();
+		INedResources res = NedResourcesPlugin.getNedResources();
 		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 		NedFileElementEx nedFileElement = res.getNedFileElement(file);
 		IProject project = file.getProject();
 
 		String line = info.linePrefixTrimmed;
+		//Debug.println(">>>" + line + "<<<");
 
 		// calculate the lookup context used in nedresource calls
 		INedTypeLookupContext context = nedFileElement;
-		INEDTypeInfo nedTypeInfo = null;
+		INedTypeInfo nedTypeInfo = null;
 		if (info.nedTypeName!=null) {
 		    nedTypeInfo = res.lookupNedType(info.nedTypeName, context);
-		    if (nedTypeInfo != null && nedTypeInfo.getNEDElement() instanceof CompoundModuleElementEx)
-		        context = (CompoundModuleElementEx)nedTypeInfo.getNEDElement();
+		    if (nedTypeInfo != null && nedTypeInfo.getNedElement() instanceof CompoundModuleElementEx)
+		        context = (CompoundModuleElementEx)nedTypeInfo.getNedElement();
 		}
 
-		INEDTypeInfo nedEnclosingTypeInfo = null;
+		INedTypeInfo nedEnclosingTypeInfo = null;
 		if (info.enclosingNedTypeName != null) { // we are inside an inner type
 		    nedEnclosingTypeInfo = res.lookupNedType(info.enclosingNedTypeName, nedFileElement);
-            if (nedEnclosingTypeInfo != null && nedEnclosingTypeInfo.getNEDElement() instanceof CompoundModuleElementEx)
-                context = (CompoundModuleElementEx)nedEnclosingTypeInfo.getNEDElement();
+            if (nedEnclosingTypeInfo != null && nedEnclosingTypeInfo.getNedElement() instanceof CompoundModuleElementEx)
+                context = (CompoundModuleElementEx)nedEnclosingTypeInfo.getNedElement();
 		}
 
-		INEDTypeInfo submoduleType = null;
+		INedTypeInfo submoduleType = null;
 		if (info.submoduleTypeName!=null)
 			submoduleType = res.lookupNedType(info.submoduleTypeName, context);
 
-		INEDTypeInfo connectionType = null;
+		INedTypeInfo connectionType = null;
         if (info.connectionTypeName!=null)
             connectionType = res.lookupNedType(info.connectionTypeName, context);
 
@@ -88,23 +99,23 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 
 			// match various "extends" and "like" clauses and offer component types
 			if (line.matches(".*\\bsimple .* extends"))
-			    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.SIMPLE_MODULE_FILTER);
+			    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.SIMPLE_MODULE_FILTER);
 			else if (line.matches(".*\\b(module|network) .* extends"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.COMPOUND_MODULE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.COMPOUND_MODULE_FILTER);
 			else if (line.matches(".*\\bchannel .* extends"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.CHANNEL_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNEL_FILTER);
 			else if (line.matches(".*\\bmoduleinterface .* extends"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\bchannelinterface .* extends"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.CHANNELINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNELINTERFACE_FILTER);
 
 			// match "like" clauses
 			if (line.matches(".*\\bsimple .* like") || line.matches(".*\\bsimple .* like .*,"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\b(module|network) .* like") || line.matches(".*\\b(module|network) .* like .*,"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\bchannel .* like") || line.matches(".*\\bchannel .* like .*,"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.CHANNELINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNELINTERFACE_FILTER);
 
 			if (!line.equals("") && !line.matches(".*\\b(like|extends)\\b.*") && line.matches(".*\\b(simple|module|network|channel|interface|channelinterface)\\b [_A-Za-z0-9]+"))
 				addProposals(viewer, documentOffset, result, new String[]{"extends "}, "keyword");
@@ -170,7 +181,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		}
 
 		// expressions: after "=", opening "[", "if" or "for"
-		if (line.contains("=") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
+		if (line.matches("[^(]*=.*") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
 			// Debug.println("proposals for expressions");
 
 			// offer parameter names, gate names, types,...
@@ -191,7 +202,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 					String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
 					if (submodTypeName != null) {
 					    // Debug.println(" offering params of type "+submodTypeName);
-					    INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
+					    INedTypeInfo submodType = res.lookupNedType(submodTypeName, context);
 					    if (submodType!=null) {
 					        if (line.matches(".*\\bsizeof *\\(.*"))
 					            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
@@ -217,34 +228,36 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		}
 
         // offer existing and standard property names after "@"
-        if (line.equals("")) {
-            if (info.sectionType == SECT_GLOBAL ) {
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedFilePropertyTempl);
+		if (info.parenthesisLevel == 0) {
+            if (line.equals("")) {
+                if (info.sectionType == SECT_GLOBAL ) {
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedFilePropertyTempl);
+                }
+                if (info.sectionType == SECT_PARAMETERS && nedTypeInfo!=null) {
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentPropertyTempl);
+                    addProposals(viewer, documentOffset, result, "@", nedTypeInfo.getProperties().keySet(), "", "property");
+                }
+                if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null) {
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmodulePropertyTempl);
+                    addProposals(viewer, documentOffset, result, "@", submoduleType.getProperties().keySet(), "", "property");
+                }
             }
-            if (info.sectionType == SECT_PARAMETERS && nedTypeInfo!=null) {
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentPropertyTempl);
-                addProposals(viewer, documentOffset, result, "@", nedTypeInfo.getProperties().keySet(), "", "property");
+            else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
+                if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamPropertyTempl);
+                if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedGatePropertyTempl);
             }
-            if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null) {
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmodulePropertyTempl);
-                addProposals(viewer, documentOffset, result, "@", submoduleType.getProperties().keySet(), "", "property");
-            }
-        }
-        else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
-            if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedParamPropertyTempl);
-            if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedGatePropertyTempl);
-        }
+		}
 
 		// complete submodule type name
 		if (info.sectionType == SECT_SUBMODULES) {
 			// Debug.println("testing proposals for SUBMODULES scope");
 			if (line.matches(".*:")) {
 			    if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types)
-	                addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULE_FILTER);
+	                addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, INedResources.MODULE_FILTER);
 			    else  // top level type
-			        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULE_FILTER);
+			        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULE_FILTER);
 			}
 			else if (line.matches(".*: *<")) {  // "like" syntax
 				if (nedTypeInfo!=null)
@@ -255,9 +268,9 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 			}
 			else if (line.matches(".*\\blike")) {
                 if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types)
-                    addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                    addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, INedResources.MODULEINTERFACE_FILTER);
                 else  // top level type
-                    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			}
 		}
 
@@ -275,7 +288,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 	    			addProposals(viewer, documentOffset, result, nedTypeInfo.getGateDeclarations().keySet(), "gate");
 	    			// only a single arrow can be present in the line to give channel assistance to
                     if (line.matches(".*--.*") && !line.matches(".*--.*--.*"))
-                        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.CHANNEL_FILTER);
+                        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNEL_FILTER);
 	    		}
 	    	}
 	    	else if (line.endsWith(".")) {
@@ -284,7 +297,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 	    		    String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
 	    		    if (submodTypeName != null) {
 	    		        // Debug.println(" offering gates of type "+submodTypeName);
-	    		        INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
+	    		        INedTypeInfo submodType = res.lookupNedType(submodTypeName, context);
 	    		        if (submodType != null)
 	    		            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
 	    		    }
@@ -296,9 +309,80 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionTempl);
 		}
 
+		// particular properties using the @ syntax
+        if (line.matches("@display\\(\".*")) {
+            if (line.matches(".*(;|\")")) {
+                // add generic display string proposals
+                if (info.sectionType == SECT_PARAMETERS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());
+                else if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl, new NedDisplayStringTagDetector());
+                else if (info.sectionType == SECT_CONNECTIONS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl, new NedDisplayStringTagDetector());
+            }
+            else {
+                // determine tag name and tag position from display string line
+                int tagPos = -1;
+                LinkedHashMap<String, DisplayString.TagInstance> tagMap = DisplayString.parseTags(line.replaceFirst(".*\"", ""));
+                ArrayList<DisplayString.TagInstance> tags = new ArrayList<DisplayString.TagInstance>(tagMap.values());
+                DisplayString.TagInstance tagInstance = null;
+                IDisplayString.Tag tag = null;
+                IDisplayString.Prop prop = null;
+                if (tags.size() != 0) {
+                    tagInstance = tags.get(tags.size() - 1);
+                    try {
+                        tag = tagInstance.getTag();
+                    }
+                    catch (IllegalArgumentException e) {
+                        // void
+                    }
+                    tagPos = tagInstance.getArgSize();
+                    prop = IDisplayString.Prop.findProp(tag, tagPos);
+                }
+                // add tag specific proposals
+                if (tagPos == 0 && tag.equals(IDisplayString.Tag.bgi))
+                    addImageProposals(viewer, documentOffset, result, "maps/.*");
+                else if (prop != null) {
+                    IDisplayString.EnumSpec enumSpec = prop.getEnumSpec();
+                    if (enumSpec != null)
+                        addProposals(viewer, documentOffset, result, enumSpec.getShorthands(), enumSpec.getNames());
+                    else if (prop.getType() == PropType.COLOR)
+                        addProposals(viewer, documentOffset, result, ColorFactory.getColorNames(), ColorFactory.getColorRGBs(), ColorFactory.getColorImages());
+                    else if (prop.getType() == PropType.IMAGE)
+                        addImageProposals(viewer, documentOffset, result, ".*");
+                }
+            }
+        }
+        else if (line.matches(".*@unit\\(\\w?"))
+            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
+        else if (line.matches("@signal\\[.*?\\]\\(.*")) {
+            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyParameterTempl, new NedPropertyTagDetector());
+            if (line.matches(".*unit=\\w?"))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
+            else if (line.matches(".*modeHint=(\\w\\,?)*"))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyModeHintParameterValueTempl, new NedPropertyTagValueDetector());
+            else if (line.matches(".*interpolationMode=\\w?"))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyInterpolationModeParameterValueTempl, new NedPropertyTagValueDetector());
+        }
+
 		// long millis = System.currentTimeMillis()-startMillis;
 		// Debug.println("Proposal creation: "+millis+"ms");
 
 	    return result.toArray(new ICompletionProposal[result.size()]);
+	}
+
+	private void addImageProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String regex) {
+        List<String> names = ImageFactory.getImageNameList();
+        List<String> matchingName = new ArrayList<String>();
+        for (String name : names)
+            if (name.matches(regex))
+                matchingName.add(name);
+        String[] proposals = matchingName.toArray(new String[0]);
+        Image[] images = new Image[proposals.length];
+        for (int i = 0; i < proposals.length; i++) {
+            String proposal = proposals[i];
+            images[i] = ImageFactory.getIconImage(proposal);
+        }
+        addProposals(viewer, documentOffset, result, proposals, proposals, images);
 	}
 }

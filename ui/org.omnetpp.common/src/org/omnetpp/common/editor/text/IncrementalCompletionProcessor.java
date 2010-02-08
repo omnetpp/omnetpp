@@ -32,6 +32,7 @@ import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -91,6 +92,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * Create a List of ICompletionProposal from an array of string. Checks the word under the current cursor
      * position and filters the proposal accordingly.
      */
+    @SuppressWarnings("unchecked")
     protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposals, String endStr, String[] descriptions, Image[] images) {
         List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
         String prefix;
@@ -105,20 +107,24 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 
         // we have to sort the name and the description together so we merge them in a single string
         String SEPARATOR = "\u0000";  // ASCII 0
-        String displayLine[] = new String[proposals.length];
+        Pair<String, Image> displayLines[] = new Pair[proposals.length];
         for (int i=0; i<proposals.length; i++) {
             Assert.isTrue(!proposals[i].contains(SEPARATOR), "Proposal string contains an internal terminator char.");
-            displayLine[i] = proposals[i]+SEPARATOR+StringUtils.nullToEmpty(descriptions[i]);
+            displayLines[i] = new Pair<String, Image>(proposals[i] + SEPARATOR + StringUtils.nullToEmpty(descriptions[i]), images == null ? null : images[i]);
         }
 
-        Arrays.sort(displayLine, StringUtils.dictionaryComparator);
+        Arrays.sort(displayLines, new Comparator<Pair<String, Image>>() {
+            public int compare(Pair<String, Image> o1, Pair<String, Image> o2) {
+                return StringUtils.dictionaryCompare(o1.first, o2.first);
+            }
+        });
 
-        for (int i = 0 ;i < displayLine.length; ++i) {
-            String prop = startStr + StringUtils.substringBefore(displayLine[i], SEPARATOR) + endStr;
-            String descr = StringUtils.substringAfter(displayLine[i], SEPARATOR);
+        for (int i = 0 ;i < displayLines.length; ++i) {
+            String prop = startStr + StringUtils.substringBefore(displayLines[i].first, SEPARATOR) + endStr;
+            String descr = StringUtils.substringAfter(displayLines[i].first, SEPARATOR);
             if (prop.toLowerCase().startsWith(prefix.toLowerCase())) {
             	String displayText = StringUtils.isEmpty(descr) ? StringUtils.strip(prop) : StringUtils.strip(prop)+" - "+descr;
-                propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), images == null ? null : images[i], displayText, null, null));
+                propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), images == null ? null : displayLines[i].second, displayText, null, null));
             }
         }
 
@@ -180,13 +186,13 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 			} catch (TemplateException e) {
 				continue;
 			}
-			if (template.matches(prefix, context.getContextType().getId()) && template.getName().startsWith(prefix))
+			if (template.matches(prefix, context.getContextType().getId()) && (template.getName().startsWith(prefix) || template.getPattern().startsWith(prefix)))
 				matches.add(createProposal(template, context, wordRegion, getRelevance(template, prefix)));
 		}
 
 		Collections.sort(matches, CompletionProposalComparator.getInstance());
 
-		return (ICompletionProposal[]) matches.toArray(new ICompletionProposal[matches.size()]);
+		return matches.toArray(new ICompletionProposal[matches.size()]);
 	}
 
     /**
@@ -195,6 +201,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @param template the template, ignored in this implementation
      * @return the default template image
      */
+    @Override
     protected Image getImage(Template template) {
         ImageRegistry registry = CommonPlugin.getDefault().getImageRegistry();
         Image image = registry.get(DEFAULT_IMAGE);

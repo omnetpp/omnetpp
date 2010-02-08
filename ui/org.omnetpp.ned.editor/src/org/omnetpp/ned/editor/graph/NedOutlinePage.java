@@ -35,17 +35,17 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.omnetpp.common.util.ReflectionUtils;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
-import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
+import org.omnetpp.ned.editor.graph.actions.GNedContextMenuProvider;
 import org.omnetpp.ned.editor.graph.parts.outline.NedTreeEditPartFactory;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.INedChangeListener;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 
 /**
  * Outline viewer for graphical ned editor
  */
-class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, ISelectionListener {
+class NedOutlinePage extends ContentOutlinePage implements INedChangeListener, ISelectionListener {
     private final GraphicalNedEditor graphicalNedEditor;
 	private boolean linkWithEditor = false;
 
@@ -57,7 +57,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
     @Override
     public void init(IPageSite pageSite) {
         super.init(pageSite);
-        NEDResources.getInstance().addNEDModelChangeListener(this);
+        NedResourcesPlugin.getNedResources().addNedModelChangeListener(this);
         getSite().getPage().addSelectionListener(this);
         getSite().getPage().addPostSelectionListener(this);
         // register actions for the editor
@@ -96,7 +96,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
 
         getViewer().setEditDomain(graphicalNedEditor.getEditDomain());
         getViewer().setEditPartFactory(new NedTreeEditPartFactory());
-        ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry(), getSite());
+        ContextMenuProvider provider = new GNedContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry(), getSite());
         getViewer().setContextMenu(provider);
         getViewer().setKeyHandler(this.graphicalNedEditor.getCommonKeyHandler());
         getViewer().addDropTargetListener((TransferDropTargetListener)
@@ -110,7 +110,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
         graphicalNedEditor.getSelectionSynchronizer().removeViewer(getViewer());
         getSite().getPage().removeSelectionListener(this);
         getSite().getPage().removePostSelectionListener(this);
-        NEDResources.getInstance().removeNEDModelChangeListener(this);
+        NedResourcesPlugin.getNedResources().removeNedModelChangeListener(this);
         super.dispose();
     }
 
@@ -122,7 +122,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
         getViewer().getContents().refresh();
     }
 
-	public void modelChanged(NEDModelEvent event) {
+	public void modelChanged(NedModelEvent event) {
 	    if (Display.getCurrent() != null) {
 	        refresh();
 	    }

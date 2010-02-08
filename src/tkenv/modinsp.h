@@ -44,9 +44,10 @@ NAMESPACE_BEGIN
 
 
 // utility functions:
-bool resolveBoolDispStrArg(const char *s, cModule *mod, bool defaultValue);
-long resolveLongDispStrArg(const char *s, cModule *mod, int defaultValue);
-double resolveDoubleDispStrArg(const char *s, cModule *mod, double defaultValue);
+cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent);
+bool resolveBoolDispStrArg(const char *s, cComponent *component, bool defaultValue);
+long resolveLongDispStrArg(const char *s, cComponent *component, int defaultValue);
+double resolveDoubleDispStrArg(const char *s, cComponent *component, double defaultValue);
 
 
 class TModuleWindow : public TInspector

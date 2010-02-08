@@ -328,15 +328,15 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
 void cSimpleModule::deleteModule()
 {
-    if (simulation.getContextModule()==this) //XXX revise. it was getActivityModule(), but it was no good with handleMessage()
-    {
-        // this module is committing suicide: gotta get outta here, and leave
-        // doing simulation.deleteModule(getId()) to whoever catches the exception
+    // if a coroutine wants to delete itself, that has to be handled from
+    // another coroutine (i.e. from main). Control is passed there by
+    // throwing an exception that gets transferred to the main coroutine
+    // by activate(), and handled in cSimulation::transferTo().
+    if (simulation.getActivityModule()==this)
         throw cDeleteModuleException();
-    }
 
-    // simple case: we're being deleted from main or from another module
-    delete this;
+    // else fall back to the base class implementation
+    cModule::deleteModule();
 }
 
 #define TRY(code, msgprefix) try {code;} catch(cRuntimeError& e) {e.prependMessage(msgprefix);throw;}

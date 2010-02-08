@@ -9,10 +9,10 @@ package org.omnetpp.ned.editor.text.actions;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 
 /**
@@ -35,14 +35,14 @@ public class FormatSourceAction extends NedTextEditorAction {
     @Override
     protected void doRun() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
+        INedElement model = NedResourcesPlugin.getNedResources().getNedFileElement(ifile);
         RefactoringTools.cleanupTree(model);
-        ((TextualNedEditor)getTextEditor()).pullChangesFromNEDResources();
+        ((TextualNedEditor)getTextEditor()).pullChangesFromNedResources();
     }
 
     protected NedFileElementEx getNedFileElement() {
 		IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        return NEDResourcesPlugin.getNEDResources().getNedFileElement(file);
+        return NedResourcesPlugin.getNedResources().getNedFileElement(file);
 	}
 
 }

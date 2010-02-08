@@ -10,11 +10,11 @@ package org.omnetpp.ned.editor.text.actions;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.editor.text.TextEditorUtil;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 
 /**
@@ -33,7 +33,7 @@ public class ConvertToNewFormatAction extends NedTextEditorAction {
     @Override
     public void update() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        NedFileElementEx nedFileNode = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
+        NedFileElementEx nedFileNode = NedResourcesPlugin.getNedResources().getNedFileElement(ifile);
         // enable only if the model does not have a syntax error and in V1 format
         setEnabled(nedFileNode != null
                    && !nedFileNode.hasSyntaxError()
@@ -43,9 +43,9 @@ public class ConvertToNewFormatAction extends NedTextEditorAction {
     @Override
     protected void doRun() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
+        INedElement model = NedResourcesPlugin.getNedResources().getNedFileElement(ifile);
         RefactoringTools.cleanupTree(model);
-        TextEditorUtil.getDocument(getTextEditor()).set(NEDTreeUtil.generateNedSource(model, false));
+        TextEditorUtil.getDocument(getTextEditor()).set(NedTreeUtil.generateNedSource(model, false));
         TextEditorUtil.resetMarkerAnnotations(getTextEditor());
     }
 

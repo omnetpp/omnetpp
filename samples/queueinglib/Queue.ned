@@ -17,6 +17,11 @@ simple Queue
     parameters:
         @group(Queueing);
         @display("i=block/queue;q=queue");
+        @signal[dropped](title="drop event";modeHint=count;interpolationmode=none);
+        @signal[queueLength](title="queue length";modeHint=timeavg,max;interpolationmode=sample-hold);
+        @signal[queueingTime](title="queueing time at dequeue";modeHint=mean,max;unit=s;interpolationmode=none);
+        @signal[busy](title="server busy state";modeHint=timeavg;interpolationmode=sample-hold);
+
         int capacity = default(-1);    // negative capacity means unlimited queue
         bool fifo = default(true);     // whether the module works as a queue (fifo=true) or a stack (fifo=false)
         volatile double serviceTime @unit(s);

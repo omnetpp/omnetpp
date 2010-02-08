@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
@@ -31,7 +31,7 @@ public class ParamElementEx extends ParamElement implements IHasName {
         super();
     }
 
-    protected ParamElementEx(INEDElement parent) {
+    protected ParamElementEx(INedElement parent) {
         super(parent);
     }
 
@@ -45,7 +45,7 @@ public class ParamElementEx extends ParamElement implements IHasName {
      */
     public Map<String, PropertyElementEx> getLocalProperties() {
         Map<String, PropertyElementEx> result = new HashMap<String, PropertyElementEx>();
-        for (INEDElement child : this) {
+        for (INedElement child : this) {
             if (child instanceof PropertyElementEx) {
                 PropertyElementEx property = (PropertyElementEx)child;
                 if (StringUtils.isEmpty(property.getIndex()))
@@ -71,10 +71,10 @@ public class ParamElementEx extends ParamElement implements IHasName {
         INedTypeElement typeElement = getEnclosingTypeElement();
 
         if (typeElement != null) {
-            INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
+            INedTypeInfo typeInfo = typeElement.getNedTypeInfo();
 
             if (typeInfo != null) {
-                for (INEDTypeInfo superTypeElement : typeInfo.getExtendsChain()) {
+                for (INedTypeInfo superTypeElement : typeInfo.getExtendsChain()) {
                     ParamElementEx paramElement = superTypeElement.getParamDeclarations().get(name);
 
                     if (paramElement != null)

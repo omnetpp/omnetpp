@@ -42,12 +42,12 @@ import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.ActionExt;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.interfaces.IHasType;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -87,14 +87,14 @@ public class NedInheritanceView extends AbstractModuleView {
 			public Image getImage(Object element) {
 				if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
-				return NEDTreeUtil.getNedModelLabelProvider().getImage(element);
+				return NedTreeUtil.getNedModelLabelProvider().getImage(element);
 			}
 
 			@Override
 			public String getText(Object element) {
                 if (element instanceof GenericTreeNode)
                     element = ((GenericTreeNode)element).getPayload();
-                return NEDTreeUtil.getNedModelLabelProvider().getText(element);
+                return NedTreeUtil.getNedModelLabelProvider().getText(element);
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
@@ -136,19 +136,19 @@ public class NedInheritanceView extends AbstractModuleView {
 			}
 			@Override
 			public void run() {
-				INEDElement sel = getNEDElementFromSelection();
+				INedElement sel = getNedElementFromSelection();
 				if (sel != null)
-					NEDResourcesPlugin.openNEDElementInEditor(sel);
+					NedResourcesPlugin.openNedElementInEditor(sel);
 			}
 			public void selectionChanged(SelectionChangedEvent event) {
-				INEDElement sel = getNEDElementFromSelection();
+				INedElement sel = getNedElementFromSelection();
 				setEnabled(sel != null);
 			}
-			private INEDElement getNEDElementFromSelection() {
+			private INedElement getNedElementFromSelection() {
 				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
 				if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
-				return (INEDElement)element;
+				return (INedElement)element;
 			}
 		};
 
@@ -187,15 +187,15 @@ public class NedInheritanceView extends AbstractModuleView {
 			treeViewer.getTree().setFocus();
 	}
 
-	public void buildContent(INEDElement selectedElement, final InifileAnalyzer analyzer, final String section, String key) {
-	    INEDTypeInfo inputNedType = null;
+	public void buildContent(INedElement selectedElement, final InifileAnalyzer analyzer, final String section, String key) {
+	    INedTypeInfo inputNedType = null;
 
 	    // find first usable parent
         while (inputNedType == null && selectedElement != null) {
             if (selectedElement instanceof INedTypeElement)
-                inputNedType = ((INedTypeElement)selectedElement).getNEDTypeInfo();
+                inputNedType = ((INedTypeElement)selectedElement).getNedTypeInfo();
             else if (selectedElement instanceof IHasType)
-                inputNedType = ((IHasType)selectedElement).getNEDTypeInfo();
+                inputNedType = ((IHasType)selectedElement).getNedTypeInfo();
             selectedElement = selectedElement.getParent();
         }
 
@@ -207,9 +207,9 @@ public class NedInheritanceView extends AbstractModuleView {
         // build tree
         final GenericTreeNode root = new GenericTreeNode("root");
 
-        List<INEDTypeInfo> extendsChain = inputNedType.getExtendsChain();
-        INEDTypeInfo rootType = extendsChain.get(extendsChain.size()-1);
-        buildInheritanceTreeOf(rootType, root, new HashSet<INEDTypeInfo>());
+        List<INedTypeInfo> extendsChain = inputNedType.getExtendsChain();
+        INedTypeInfo rootType = extendsChain.get(extendsChain.size()-1);
+        buildInheritanceTreeOf(rootType, root, new HashSet<INedTypeInfo>());
 
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
@@ -228,38 +228,38 @@ public class NedInheritanceView extends AbstractModuleView {
 		treeViewer.refresh();
 
 		// update label
-		String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNEDElement().getReadableTagName());
+		String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNedElement().getReadableTagName());
 		if (getPinnedToEditor() != null)
 		    text += ", in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
 		setContentDescription(text);
 	}
 
-	private void buildInheritanceTreeOf(INEDTypeInfo typeInfo, GenericTreeNode parentNode, Set<INEDTypeInfo> visited) {
-        GenericTreeNode node = new GenericTreeNode(typeInfo.getNEDElement());
+	private void buildInheritanceTreeOf(INedTypeInfo typeInfo, GenericTreeNode parentNode, Set<INedTypeInfo> visited) {
+        GenericTreeNode node = new GenericTreeNode(typeInfo.getNedElement());
         parentNode.addChild(node);
 
         if (!visited.contains(typeInfo)) {  // cycle detection
             visited.add(typeInfo);
-            for (INEDTypeInfo type : getSubtypesOf(typeInfo))
+            for (INedTypeInfo type : getSubtypesOf(typeInfo))
                 buildInheritanceTreeOf(type, node, visited);
         }
     }
 
-    private List<INEDTypeInfo> getSubtypesOf(INEDTypeInfo inputType) {
-        List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
-        INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+    private List<INedTypeInfo> getSubtypesOf(INedTypeInfo inputType) {
+        List<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
+        INedTypeResolver res = NedResourcesPlugin.getNedResources();
 
         // examine all NED types we know of, whether they extend/implement this one (not too efficient)
-        for (INEDTypeInfo type : res.getNedTypesFromAllProjects()) {
-            INedTypeLookupContext lookupContext = type.getNEDElement().getParentLookupContext();
-            for (INEDElement child : type.getNEDElement()) {
+        for (INedTypeInfo type : res.getNedTypesFromAllProjects()) {
+            INedTypeLookupContext lookupContext = type.getNedElement().getParentLookupContext();
+            for (INedElement child : type.getNedElement()) {
                 String superName = null;
                 if (child instanceof ExtendsElement)
                     superName = ((ExtendsElement)child).getName();
                 else if (child instanceof InterfaceNameElement)
                     superName = ((InterfaceNameElement)child).getName();
                 if (superName != null) {
-                    INEDTypeInfo superType = res.lookupNedType(superName, lookupContext);
+                    INedTypeInfo superType = res.lookupNedType(superName, lookupContext);
                     if (superType == inputType)
                         result.add(type);
                 }

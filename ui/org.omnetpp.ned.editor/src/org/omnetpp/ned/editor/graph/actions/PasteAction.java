@@ -7,11 +7,11 @@
 
 package org.omnetpp.ned.editor.graph.actions;
 
-import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_CONNECTIONS;
-import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_GATES;
-import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_PARAMETERS;
-import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_SUBMODULES;
-import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_TYPES;
+import static org.omnetpp.ned.model.pojo.NedElementTags.NED_CONNECTIONS;
+import static org.omnetpp.ned.model.pojo.NedElementTags.NED_GATES;
+import static org.omnetpp.ned.model.pojo.NedElementTags.NED_PARAMETERS;
+import static org.omnetpp.ned.model.pojo.NedElementTags.NED_SUBMODULES;
+import static org.omnetpp.ned.model.pojo.NedElementTags.NED_TYPES;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,14 +35,14 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.editor.graph.commands.AddNedElementCommand;
 import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -81,7 +81,7 @@ public class PasteAction extends SelectionAction {
 	@Override
 	protected boolean calculateEnabled() {
 		Clipboard clipboard = Clipboard.getDefault();
-		return clipboard != null && clipboard.getContents() instanceof INEDElement[];
+		return clipboard != null && clipboard.getContents() instanceof INedElement[];
 	}
 
 	@Override @SuppressWarnings("unchecked")
@@ -90,20 +90,20 @@ public class PasteAction extends SelectionAction {
 		if (clipboard == null)
 			return;
 		Object contents = clipboard.getContents();
-		if (!(contents instanceof INEDElement[]))
+		if (!(contents instanceof INedElement[]))
 			return;
 
 		// we'll paste a *duplicate* of the elements on the clipboard
-		List<INEDElement> elements = new ArrayList<INEDElement>();
-		for (INEDElement element : (INEDElement[])contents)
+		List<INedElement> elements = new ArrayList<INedElement>();
+		for (INedElement element : (INedElement[])contents)
 			elements.add(element.deepDup());
 
 		// sort the collection so named elements will be pasted in dictionary
 		// order, so that numbering after renaming the duplicates will be consistent
 		// with the original order (i.e. pasting node1, node2, node3 will result in
 		// node4, node5, node6 in *that* order)
-		Collections.sort(elements, new Comparator<INEDElement>() {
-			public int compare(INEDElement o1, INEDElement o2) {
+		Collections.sort(elements, new Comparator<INedElement>() {
+			public int compare(INedElement o1, INedElement o2) {
 				// do named ones in dictionary order
 				if (o1 instanceof IHasName && o2 instanceof IHasName)
 					return StringUtils.dictionaryCompare(((IHasName)o1).getName(), ((IHasName)o2).getName());
@@ -117,7 +117,7 @@ public class PasteAction extends SelectionAction {
 
 		// assemble compound command which effectively does the paste
 		CompoundCommand compoundCommand = new CompoundCommand();
-		List<INEDElement> pastedElements = new ArrayList<INEDElement>();
+		List<INedElement> pastedElements = new ArrayList<INedElement>();
 		pasteNedTypes(elements, compoundCommand, pastedElements);
 		pasteSubmodulesAndConnections(elements, compoundCommand, pastedElements);
 		pasteParametersAndProperties(elements, compoundCommand, pastedElements);
@@ -138,81 +138,81 @@ public class PasteAction extends SelectionAction {
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		graphicalViewer.getRootEditPart().refresh();
 		getGraphicalViewer().deselectAll();
-		Map<INEDElement,EditPart> editPartRegistry = graphicalViewer.getEditPartRegistry();
-		for (INEDElement element : pastedElements) {
+		Map<INedElement,EditPart> editPartRegistry = graphicalViewer.getEditPartRegistry();
+		for (INedElement element : pastedElements) {
 			EditPart editPart = editPartRegistry.get(element);
 			if (editPart != null)
 				graphicalViewer.appendSelection(editPart);
 		}
 	}
 
-	protected void pasteNedTypes(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
+	protected void pasteNedTypes(List<INedElement> elements, CompoundCommand compoundCommand, List<INedElement> pastedElements) {
 		boolean containsNedType = false;
-		for (INEDElement element : elements)
+		for (INedElement element : elements)
 			if (element instanceof INedTypeElement)
 				containsNedType = true;
 		if (!containsNedType)
 			return;
 
-		INEDElement parent;
-		INEDElement beforeElement;
+		INedElement parent;
+		INedElement beforeElement;
 		String namePrefix;
 		Set<String> usedNedTypeNames = new HashSet<String>();
 
 		// find insertion point
-		INEDElement primarySelectionElement = getPrimarySelectionElement();
+		INedElement primarySelectionElement = getPrimarySelectionElement();
 		if (primarySelectionElement instanceof CompoundModuleElementEx) {
 			// paste as inner type
 			CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)primarySelectionElement;
 			parent = findOrCreateSection(compoundModule, NED_TYPES, compoundCommand);
 			beforeElement = null;  // =append
 			namePrefix = "";
-			usedNedTypeNames.addAll(compoundModule.getNEDTypeInfo().getInnerTypes().keySet());
+			usedNedTypeNames.addAll(compoundModule.getNedTypeInfo().getInnerTypes().keySet());
 		}
 		else {
 			// paste as toplevel type into the file
 			EditPart toplevelEditPart = getGraphicalViewer().getContents();
-			parent = (INEDElement) toplevelEditPart.getModel();
+			parent = (INedElement) toplevelEditPart.getModel();
 			beforeElement = (primarySelectionElement != null && primarySelectionElement.getParent() == parent) ? primarySelectionElement : null;
-            IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(parent.getContainingNedFileElement()).getProject();
+            IProject project = NedResourcesPlugin.getNedResources().getNedFile(parent.getContainingNedFileElement()).getProject();
             namePrefix = parent.getContainingNedFileElement().getQNameAsPrefix();
-			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getReservedQNames(project));
+			usedNedTypeNames.addAll(NedResourcesPlugin.getNedResources().getReservedQNames(project));
 		}
 
 		// insert stuff into parent
-		for (INEDElement element : elements) {
+		for (INedElement element : elements) {
 			if (element instanceof INedTypeElement) {
 				INedTypeElement typeElement = (INedTypeElement) element;
 
 				// generate unique name
-				String newName = NEDElementUtilEx.getUniqueNameFor(namePrefix + typeElement.getName(), usedNedTypeNames);
+				String newName = NedElementUtilEx.getUniqueNameFor(namePrefix + typeElement.getName(), usedNedTypeNames);
 				typeElement.setName(newName.contains(".") ? StringUtils.substringAfterLast(newName, ".") : newName);
 				usedNedTypeNames.add(newName);
 
 				// paste it
-				compoundCommand.add(new AddNEDElementCommand(parent, typeElement, beforeElement));
+				compoundCommand.add(new AddNedElementCommand(parent, typeElement, beforeElement));
 				pastedElements.add(typeElement);
 			}
 		}
 	}
 
-	protected void pasteSubmodulesAndConnections(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
+	protected void pasteSubmodulesAndConnections(List<INedElement> elements, CompoundCommand compoundCommand, List<INedElement> pastedElements) {
 		CompoundModuleElementEx targetModule = getTargetCompoundModule();
 		if (targetModule == null)
 			return;
 
 		Set<String> usedSubmoduleNames = new HashSet<String>();
-		usedSubmoduleNames.addAll(targetModule.getNEDTypeInfo().getSubmodules().keySet());
+		usedSubmoduleNames.addAll(targetModule.getNedTypeInfo().getSubmodules().keySet());
 		Map<String, String> submoduleNameMap = new HashMap<String, String>();
 
 		// paste submodules
 		SubmodulesElement submodulesSection = null;
-		for (INEDElement element : elements) {
+		for (INedElement element : elements) {
 			if (element instanceof SubmoduleElementEx) {
 				SubmoduleElementEx submodule = (SubmoduleElementEx) element;
 
 				// generate unique name if needed
-				String newName = NEDElementUtilEx.getUniqueNameFor(submodule.getName(), usedSubmoduleNames);
+				String newName = NedElementUtilEx.getUniqueNameFor(submodule.getName(), usedSubmoduleNames);
 				usedSubmoduleNames.add(newName);
 				if (!newName.equals(submodule.getName())) {
 					submoduleNameMap.put(submodule.getName(), newName);
@@ -222,14 +222,14 @@ public class PasteAction extends SelectionAction {
 				// insert
 				if (submodulesSection == null)
 					submodulesSection = (SubmodulesElement) findOrCreateSection(targetModule, NED_SUBMODULES, compoundCommand);
-				compoundCommand.add(new AddNEDElementCommand(submodulesSection, submodule));
+				compoundCommand.add(new AddNedElementCommand(submodulesSection, submodule));
 				pastedElements.add(submodule);
 			}
 		}
 
 		// paste connections
 		ConnectionsElement connectionsSection = null;
-		for (INEDElement element : elements) {
+		for (INedElement element : elements) {
 			if (element instanceof ConnectionElementEx) {
 				ConnectionElementEx connection = (ConnectionElementEx)element;
 
@@ -242,51 +242,51 @@ public class PasteAction extends SelectionAction {
 				// insert
 				if (connectionsSection == null)
 					connectionsSection = (ConnectionsElement) findOrCreateSection(targetModule, NED_CONNECTIONS, compoundCommand);
-				compoundCommand.add(new AddNEDElementCommand(connectionsSection, connection));
+				compoundCommand.add(new AddNedElementCommand(connectionsSection, connection));
 				pastedElements.add(connection);
 			}
 		}
 	}
 
-	protected void pasteParametersAndProperties(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
-		INEDElement targetElement = getPrimarySelectionElement();
+	protected void pasteParametersAndProperties(List<INedElement> elements, CompoundCommand compoundCommand, List<INedElement> pastedElements) {
+		INedElement targetElement = getPrimarySelectionElement();
 		if (targetElement == null || !(targetElement instanceof IHasParameters))
 			return;
 
 		ParametersElement parametersSection = null;
-		for (INEDElement element : elements) {
+		for (INedElement element : elements) {
 			if (element instanceof ParamElement || element instanceof PropertyElement) {
 				// insert
 				if (parametersSection == null)
 					parametersSection = (ParametersElement) findOrCreateSection(targetElement, NED_PARAMETERS, compoundCommand);
-				compoundCommand.add(new AddNEDElementCommand(parametersSection, element));
+				compoundCommand.add(new AddNedElementCommand(parametersSection, element));
 				pastedElements.add(element);
 			}
 		}
 	}
 
-	protected void pasteGates(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
-		INEDElement targetElement = getPrimarySelectionElement();
+	protected void pasteGates(List<INedElement> elements, CompoundCommand compoundCommand, List<INedElement> pastedElements) {
+		INedElement targetElement = getPrimarySelectionElement();
 		if (targetElement == null || !(targetElement instanceof IHasGates))
 			return;
 
 		GatesElement gatesSection = null;
-		for (INEDElement element : elements) {
+		for (INedElement element : elements) {
 			if (element instanceof GateElement) {
 				// insert
 				if (gatesSection == null)
 					gatesSection = (GatesElement) findOrCreateSection(targetElement, NED_GATES, compoundCommand);
-				compoundCommand.add(new AddNEDElementCommand(gatesSection, element));
+				compoundCommand.add(new AddNedElementCommand(gatesSection, element));
 				pastedElements.add(element);
 			}
 		}
 	}
 
-	protected INEDElement findOrCreateSection(INEDElement parent, int tagcode, CompoundCommand compoundCommand) {
-		INEDElement sectionElement = parent.getFirstChildWithTag(tagcode);
+	protected INedElement findOrCreateSection(INedElement parent, int tagcode, CompoundCommand compoundCommand) {
+		INedElement sectionElement = parent.getFirstChildWithTag(tagcode);
 		if (sectionElement == null) {
-			sectionElement = NEDElementFactoryEx.getInstance().createElement(tagcode);
-			compoundCommand.add(new AddNEDElementCommand(parent, sectionElement));
+			sectionElement = NedElementFactoryEx.getInstance().createElement(tagcode);
+			compoundCommand.add(new AddNedElementCommand(parent, sectionElement));
 		}
 		return sectionElement;
 	}
@@ -303,7 +303,7 @@ public class PasteAction extends SelectionAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected INEDElement getPrimarySelectionElement() {
+	protected INedElement getPrimarySelectionElement() {
 		// return the element from the primary selection
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		List<EditPart> selectedEditParts = graphicalViewer.getSelectedEditParts();

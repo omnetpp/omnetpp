@@ -16,13 +16,13 @@ Define_Module(Sink);
 
 void Sink::initialize()
 {
-    lifeTimeVector.setName("total lifetime");
-    queueingTimeVector.setName("total queueing time");
-    queueVector.setName("number of queue nodes visited");
-    serviceTimeVector.setName("total service time");
-    delayTimeVector.setName("total delay");
-    delayVector.setName("number of delay nodes visited");
-    generationVector.setName("generation");
+    lifeTimeSignal = registerSignal("lifeTime");
+    totalQueueingTimeSignal = registerSignal("totalQueueingTime");
+    queuesVisitedSignal = registerSignal("queuesVisited");
+    totalServiceTimeSignal = registerSignal("totalServiceTime");
+    totalDelayTimeSignal = registerSignal("totalDelayTime");
+    delaysVisitedSignal = registerSignal("delaysVisited");
+    generationSignal = registerSignal("generation");
     keepJobs = par("keepJobs");
 }
 
@@ -31,13 +31,13 @@ void Sink::handleMessage(cMessage *msg)
     Job *job = check_and_cast<Job *>(msg);
 
     // gather statistics
-    lifeTimeVector.record(simTime()- job->getCreationTime());
-    queueingTimeVector.record(job->getTotalQueueingTime());
-    queueVector.record(job->getQueueCount());
-    serviceTimeVector.record(job->getTotalServiceTime());
-    delayTimeVector.record(job->getTotalDelayTime());
-    delayVector.record(job->getDelayCount());
-    generationVector.record(job->getGeneration());
+    emit(lifeTimeSignal, simTime()- job->getCreationTime());
+    emit(totalQueueingTimeSignal, job->getTotalQueueingTime());
+    emit(queuesVisitedSignal, (long)job->getQueueCount());
+    emit(totalServiceTimeSignal, job->getTotalServiceTime());
+    emit(totalDelayTimeSignal, job->getTotalDelayTime());
+    emit(delaysVisitedSignal, (long)job->getDelayCount());
+    emit(generationSignal, (long)job->getGeneration());
 
     if (!keepJobs)
         delete msg;

@@ -68,6 +68,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -76,6 +78,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -194,6 +197,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     protected SequenceChartAction showModuleMethodCallsAction;
 
+    protected SequenceChartAction changeFontAction;
+
     protected SequenceChartAction increaseSpacingAction;
 
 	protected SequenceChartAction decreaseSpacingAction;
@@ -242,6 +247,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.showAxesWithoutEventsAction = createShowAxesWithoutEventsAction();
         this.showTransmissionDurationsAction = createShowTransmissionDurationsAction();
         this.showModuleMethodCallsAction = createShowModuleMethodCallsAction();
+        this.changeFontAction = createChangeFontAction();
 		this.increaseSpacingAction = createIncreaseSpacingAction();
 		this.decreaseSpacingAction = createDecreaseSpacingAction();
         this.defaultZoomAction = createDefaultZoomAction();
@@ -374,6 +380,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 subMenuManager.add(showTransmissionDurationsAction);
                 subMenuManager.add(showModuleMethodCallsAction);
 
+                menuManager.add(changeFontAction);
                 menuManager.add(separatorAction);
 				menuManager.add(increaseSpacingAction);
 				menuManager.add(decreaseSpacingAction);
@@ -949,6 +956,19 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         };
     }
 
+    private SequenceChartAction createChangeFontAction() {
+        return new SequenceChartAction("Change Font...", Action.AS_PUSH_BUTTON) {
+            @Override
+            protected void doRun() {
+                FontDialog dialog = new FontDialog(Display.getCurrent().getActiveShell());
+                dialog.setFontList(sequenceChart.getFont().getFontData());
+                FontData fontData = dialog.open();
+                if (fontData != null)
+                    sequenceChart.setFont(new Font(Display.getDefault(), fontData));
+            }
+        };
+    }
+
 	private SequenceChartAction createIncreaseSpacingAction() {
 		return new SequenceChartAction("Increase Spacing", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_INCREASE_SPACING)) {
 			@Override
@@ -1001,7 +1021,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 			@Override
 			protected void doRun() {
 			    sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
-				sequenceChart.setAxisSpacing(16);
+				sequenceChart.setAxisSpacing(sequenceChart.getFontHeight(null) + 1);
 			}
 		};
 	}
@@ -1442,7 +1462,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 			private GraphicsSVG createGraphics(long exportBeginX, long exportEndX) {
 			    int width = (int)(exportEndX - exportBeginX);
-			    int height = (int)sequenceChart.getVirtualHeight() + SequenceChart.GUTTER_HEIGHT * 2 + 2;
+			    int height = (int)sequenceChart.getVirtualHeight() + sequenceChart.getGutterHeight(null) * 2 + 2;
 
 				GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
 				SVGGraphics2D g = graphics.getSVGGraphics2D();

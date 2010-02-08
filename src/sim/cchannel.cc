@@ -46,6 +46,7 @@ cChannel::cChannel(const char *name) : cComponent(name)
 
 cChannel::~cChannel()
 {
+    releaseLocalListeners();
 }
 
 std::string cChannel::info() const
@@ -141,9 +142,10 @@ void cChannel::callFinish()
     // subcomponents, so just we just invoke finish() in the right context here.
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_FINISH);
-    recordParametersAsScalars();
     try {
+        recordParametersAsScalars();
         finish();
+        fireFinish();
     } catch (cException&) {
         throw;
     } catch (std::exception& e) {

@@ -100,7 +100,7 @@ class SIM_API cGate : public cObject, noncopyable
     struct Desc
     {
         cModule *ownerp;
-        Name *namep;  // pooled
+        Name *namep;  // pooled (points into cModule::namePool)
         int size; // gate vector size, or -1 if scalar gate; actually allocated size is capacityFor(size)
         union { cGate *inputgate; cGate **inputgatev; };
         union { cGate *outputgate; cGate **outputgatev; };
@@ -207,7 +207,7 @@ class SIM_API cGate : public cObject, noncopyable
      * argument cannot be NULL, that is, you cannot use this function
      * to disconnect a gate; use disconnect() for that.
      *
-     * Note: When you set channel parameters are after channel initialization,
+     * Note: When you set channel parameters after channel initialization,
      * make sure the channel class is implemented so that the changes take
      * effect; i.e. the channel should either override and properly handle
      * handleParameterChange(), or should not cache any values from parameters.
@@ -346,7 +346,7 @@ class SIM_API cGate : public cObject, noncopyable
      * Usually invoked on an output gate, this method returns <i>the</i>
      * channel in the connection path that supports datarate (as determined
      * by cChannel::isTransmissionChannel(); it is guaranteed that there can be
-     * at most one such channel per path). If there is no suh channel,
+     * at most one such channel per path). If there is no such channel,
      * an error is thrown.
      *
      * This method only checks the segment of the connection path that

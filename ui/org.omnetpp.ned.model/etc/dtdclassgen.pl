@@ -249,7 +249,7 @@ foreach $element (@elements)
     print JAVA $decl;
     print JAVA " * </pre>\n";
     print JAVA " */\n";
-    print JAVA "public class $elementclass extends NEDElement implements NEDElementTags, NEDElementConstants\n";
+    print JAVA "public class $elementclass extends NedElement implements NedElementTags, NedElementConstants\n";
     print JAVA "{\n";
     for ($i=0; $i<$attcount; $i++)
     {
@@ -267,7 +267,7 @@ foreach $element (@elements)
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";
     print JAVA "    /** You should never create an instance directly, use factory class instead */\n";
-    print JAVA "    protected $elementclass(INEDElement parent) {\n";
+    print JAVA "    protected $elementclass(INedElement parent) {\n";
     print JAVA "        super(parent);\n";
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";
@@ -391,14 +391,14 @@ foreach $element (@elements)
 # Java util class
 #
 
-$javafile = "$outdir/NEDElementTags.java";
+$javafile = "$outdir/NedElementTags.java";
 open(JAVA,">$javafile") || die "*** cannot open output file $javafile";
 
 print JAVA "package $javapackage;\n\n";
 print JAVA "/**\n";
 print JAVA " * GENERATED CLASS.\n";
 print JAVA " */\n";
-print JAVA "public interface NEDElementTags\n";
+print JAVA "public interface NedElementTags\n";
 print JAVA "{\n";
 
 $i = 1;
@@ -417,7 +417,7 @@ print JAVA "}\n\n";
 # Factory class
 #
 
-$javafile = "$outdir/NEDElementFactory.java";
+$javafile = "$outdir/NedElementFactory.java";
 open(JAVA,">$javafile") || die "*** cannot open output file $javafile";
 
 print JAVA "package $javapackage;\n\n";
@@ -425,22 +425,22 @@ print JAVA "import $javaimportedpackage.*;\n\n";
 print JAVA "/**\n";
 print JAVA " * GENERATED CLASS.\n";
 print JAVA " */\n";
-print JAVA "public class NEDElementFactory implements NEDElementTags\n";
+print JAVA "public class NedElementFactory implements NedElementTags\n";
 print JAVA "{\n";
-print JAVA "    private static NEDElementFactory instance;\n";
+print JAVA "    private static NedElementFactory instance;\n";
 print JAVA "\n";
-print JAVA "    public static NEDElementFactory getInstance() {\n";
+print JAVA "    public static NedElementFactory getInstance() {\n";
 print JAVA "        return instance;\n";
 print JAVA "    }\n";
 print JAVA "\n";
-print JAVA "    public static void setInstance(NEDElementFactory inst) {\n";
+print JAVA "    public static void setInstance(NedElementFactory inst) {\n";
 print JAVA "        instance = inst;\n";
 print JAVA "    }\n";
 print JAVA "\n";
-print JAVA "    public INEDElement createElement(String tagname) {\n";
+print JAVA "    public INedElement createElement(String tagname) {\n";
 print JAVA "        return createElement(tagname, null);\n";
 print JAVA "    }\n\n";
-print JAVA "    public INEDElement createElement(String tagname, INEDElement parent) {\n";
+print JAVA "    public INedElement createElement(String tagname, INedElement parent) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagname.equals($elementclass{$element}.getStaticTagName()))\n";
@@ -450,11 +450,11 @@ print JAVA "        else\n";
 print JAVA "            throw new RuntimeException(\"invalid tagname \"+tagname);\n";
 print JAVA "    }\n\n";
 
-print JAVA "    public INEDElement createElement(int tagcode) {\n";
+print JAVA "    public INedElement createElement(int tagcode) {\n";
 print JAVA "        return createElement(tagcode, null);\n";
 print JAVA "    }\n\n";
 
-print JAVA "    public INEDElement createElement(int tagcode, INEDElement parent) {\n";
+print JAVA "    public INedElement createElement(int tagcode, INedElement parent) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagcode==$enumname{$element})\n";
@@ -470,7 +470,7 @@ print JAVA "}\n\n";
 # Validator class
 #
 
-$javafile = "$outdir/AbstractNEDValidator.java";
+$javafile = "$outdir/AbstractNedValidator.java";
 open(JAVA,">$javafile") || die "*** cannot open output file $javafile";
 
 print JAVA "package $javapackage;\n\n";
@@ -478,10 +478,10 @@ print JAVA "import $javaimportedpackage.*;\n\n";
 print JAVA "/**\n";
 print JAVA " * GENERATED CLASS. Base class for NED validators.\n";
 print JAVA " */\n";
-print JAVA "public abstract class AbstractNEDValidator implements NEDElementTags\n";
+print JAVA "public abstract class AbstractNedValidator implements NedElementTags\n";
 print JAVA "{\n";
-print JAVA "    abstract public void validate(INEDElement node);\n\n";
-print JAVA "    protected void validateElement(INEDElement node) {\n";
+print JAVA "    abstract public void validate(INedElement node);\n\n";
+print JAVA "    protected void validateElement(INedElement node) {\n";
 print JAVA "        switch (node.getTagCode()) {\n";
 foreach $element (@elements)
 {

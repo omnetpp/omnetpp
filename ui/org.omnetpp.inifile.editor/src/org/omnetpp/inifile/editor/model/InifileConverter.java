@@ -86,7 +86,7 @@ public class InifileConverter {
     	text = text.replaceAll(MULTILINE+"\\.use-default\\s*=\\s*(true|yes|1)", " = default");
     	text = text.replaceAll(MULTILINE+"\\.ev-output\\s*=", ".cmdenv-ev-output =");
     	text = text.replaceAll(MULTILINE+"\\.enabled\\s*=", ".vector-recording =");
-    	text = text.replaceAll(MULTILINE+"\\.interval\\s*=", ".vector-recording-interval =");
+    	text = text.replaceAll(MULTILINE+"\\.interval\\s*=", ".vector-recording-intervals =");
     	text = text.replaceAll(MULTILINE+"\\.pingApp\\.vector-recording =", ".pingApp.enabled =");  // change back false hit
     	text = text.replaceAll(MULTILINE+"\\.pingApp\\.vector-recording-interval =", ".pingApp.interval =");  // change back false hit
     	text = text.replaceAll(MULTILINE+"\\.akaroa\\s*=", ".with-akaroa =");

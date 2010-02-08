@@ -28,7 +28,7 @@ public interface INedTypeElement extends ITypeElement, IHasDisplayString, IHasPa
 	 * Only null for detached trees that haven't been seen at all by NEDResources
 	 * (i.e. not part of any NED file).
 	 */
-	public INEDTypeInfo getNEDTypeInfo();
+	public INedTypeInfo getNedTypeInfo();
 
     /**
      * Returns the base object's name (ONLY the first extends node name returned).

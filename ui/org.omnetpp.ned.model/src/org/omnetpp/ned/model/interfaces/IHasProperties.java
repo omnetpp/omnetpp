@@ -21,5 +21,5 @@ public interface IHasProperties {
      * Returns the name - property node association.
      * The returned map must not be modified.
      */
-    public Map<String, PropertyElementEx> getProperties();
+    public Map<String, Map<String, PropertyElementEx>> getProperties();
 }
