@@ -12,7 +12,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.actions.GNEDActionBarContributor;
+import org.omnetpp.ned.editor.graph.actions.GNedActionBarContributor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditorActionContributor;
 
@@ -24,7 +24,7 @@ import org.omnetpp.ned.editor.text.TextualNedEditorActionContributor;
  * @author rhornig
  */
 public class NedEditorActionContributor extends MultiPageEditorActionBarContributor {
-    private GNEDActionBarContributor graphContrib;
+    private GNedActionBarContributor graphContrib;
     private TextualNedEditorActionContributor textContrib;
     private IEditorPart activeEditorPart;
     /**
@@ -33,7 +33,7 @@ public class NedEditorActionContributor extends MultiPageEditorActionBarContribu
     public NedEditorActionContributor() {
         super();
         // create the multi page editor's own actions (if any)
-        graphContrib = new GNEDActionBarContributor();
+        graphContrib = new GNedActionBarContributor();
         textContrib = new TextualNedEditorActionContributor();
     }
 

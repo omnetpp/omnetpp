@@ -44,18 +44,19 @@ import org.eclipse.ui.menus.IMenuService;
 import org.eclipse.ui.services.IServiceLocator;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.image.ImageFactory;
+
 /**
  * Adds actions to the context menu in the graphical editor area
  *
  * @author rhornig
  */
-public class GNEDContextMenuProvider extends ContextMenuProvider {
+public class GNedContextMenuProvider extends ContextMenuProvider {
 
     private ActionRegistry actionRegistry;
 
     private IServiceLocator serviceLocator;
 
-    public GNEDContextMenuProvider(EditPartViewer viewer, ActionRegistry registry, IServiceLocator serviceLocator) {
+    public GNedContextMenuProvider(EditPartViewer viewer, ActionRegistry registry, IServiceLocator serviceLocator) {
         super(viewer);
         setActionRegistry(registry);
         this.serviceLocator = serviceLocator;
@@ -102,7 +103,7 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(TogglePinAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(ReLayoutAction.ID);
+        action = getActionRegistry().getAction(RelayoutAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
 
         if (IConstants.IS_COMMERCIAL) {
@@ -150,7 +151,7 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
         if (!submenu.isEmpty()) manager.appendToGroup(GROUP_EDIT, submenu);
 
-        action = getActionRegistry().getAction(GNEDToggleSnapToGeometryAction.ID);
+        action = getActionRegistry().getAction(ToggleSnapToGeometryAction.ID);
         manager.appendToGroup(GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(ZOOM_IN);

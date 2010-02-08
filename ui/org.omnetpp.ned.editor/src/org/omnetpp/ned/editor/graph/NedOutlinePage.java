@@ -37,7 +37,7 @@ import org.eclipse.ui.part.IPageSite;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
-import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
+import org.omnetpp.ned.editor.graph.actions.GNedContextMenuProvider;
 import org.omnetpp.ned.editor.graph.parts.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedModelEvent;
@@ -96,7 +96,7 @@ class NedOutlinePage extends ContentOutlinePage implements INedChangeListener, I
 
         getViewer().setEditDomain(graphicalNedEditor.getEditDomain());
         getViewer().setEditPartFactory(new NedTreeEditPartFactory());
-        ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry(), getSite());
+        ContextMenuProvider provider = new GNedContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry(), getSite());
         getViewer().setContextMenu(provider);
         getViewer().setKeyHandler(this.graphicalNedEditor.getCommonKeyHandler());
         getViewer().addDropTargetListener((TransferDropTargetListener)

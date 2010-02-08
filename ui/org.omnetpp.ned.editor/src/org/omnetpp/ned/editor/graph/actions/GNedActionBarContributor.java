@@ -33,13 +33,13 @@ import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.EditorActionBarContributor;
 
 /**
- * Adds Graphical ned editor actions to the action bar.
- * It is a copy of the original GEF ActionBarContributor because of the NPE issue if a non GEF editor
- * gets activated. once it is fixed in GEF their class can be derived from ActionBarContributor
+ * Adds Graphical NED editor actions to the action bar.
+ * It is a copy of the original GEF ActionBarContributor because of the NPE issue if a non-GEF editor
+ * gets activated. Once it is fixed in GEF their class can be derived from ActionBarContributor
  *
  * @author rhornig
  */
-public class GNEDActionBarContributor extends EditorActionBarContributor {
+public class GNedActionBarContributor extends EditorActionBarContributor {
 
     private ActionRegistry registry = new ActionRegistry();
 
@@ -163,9 +163,9 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addRetargetAction(retAction = new RetargetAction(TogglePinAction.ID, TogglePinAction.MENUNAME, IAction.AS_CHECK_BOX));
         retAction.setToolTipText(TogglePinAction.TOOLTIP);
         retAction.setImageDescriptor(TogglePinAction.IMAGE);
-        addRetargetAction(retAction = new RetargetAction(ReLayoutAction.ID, ReLayoutAction.MENUNAME));
-        retAction.setToolTipText(ReLayoutAction.TOOLTIP);
-        retAction.setImageDescriptor(ReLayoutAction.IMAGE);
+        addRetargetAction(retAction = new RetargetAction(RelayoutAction.ID, RelayoutAction.MENUNAME));
+        retAction.setToolTipText(RelayoutAction.TOOLTIP);
+        retAction.setImageDescriptor(RelayoutAction.IMAGE);
 
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.LEFT));
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.CENTER));
@@ -180,10 +180,10 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addRetargetAction(new MatchWidthRetargetAction());
         addRetargetAction(new MatchHeightRetargetAction());
 
-        addRetargetAction(retAction = new RetargetAction(GNEDToggleSnapToGeometryAction.ID, GNEDToggleSnapToGeometryAction.MENUNAME,
+        addRetargetAction(retAction = new RetargetAction(ToggleSnapToGeometryAction.ID, ToggleSnapToGeometryAction.MENUNAME,
                 IAction.AS_CHECK_BOX));
-        retAction.setToolTipText(GNEDToggleSnapToGeometryAction.TOOLTIP);
-        retAction.setImageDescriptor(GNEDToggleSnapToGeometryAction.IMAGE);
+        retAction.setToolTipText(ToggleSnapToGeometryAction.TOOLTIP);
+        retAction.setImageDescriptor(ToggleSnapToGeometryAction.IMAGE);
 
     }
 
@@ -209,7 +209,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
 
         tbm.add(new Separator());
     	tbm.add(getAction(TogglePinAction.ID));
-    	tbm.add(getAction(ReLayoutAction.ID));
+    	tbm.add(getAction(RelayoutAction.ID));
 
     }
 
@@ -223,7 +223,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
         viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
         viewMenu.add(new Separator());
-        viewMenu.add(getAction(GNEDToggleSnapToGeometryAction.ID));
+        viewMenu.add(getAction(ToggleSnapToGeometryAction.ID));
         viewMenu.add(new Separator());
         viewMenu.add(getAction(GEFActionConstants.ALIGN_LEFT));
         viewMenu.add(getAction(GEFActionConstants.ALIGN_CENTER));

@@ -22,11 +22,11 @@ import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
 /**
- * TODO add documentation
+ * Re-position unpinned submodules in the currently selected compound module
  *
  * @author rhornig
  */
-public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
+public class RelayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 	public static final String ID = "Layout";
 	public static final String MENUNAME = "&Layout";
@@ -35,7 +35,7 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 	GroupRequest request;
 
-	public ReLayoutAction(IWorkbenchPart part) {
+	public RelayoutAction(IWorkbenchPart part) {
 		super(part);
 		setText(MENUNAME);
 		setId(ID);
@@ -45,7 +45,7 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	}
 
 	/**
-	 * This command can be executed ONLY on submodules that have a fixed location
+	 * This command can be executed when a single compound module or a submodule is selected
 	 */
 	@Override
     protected boolean calculateEnabled() {

@@ -24,7 +24,7 @@ import org.omnetpp.ned.editor.NedEditorPreferenceInitializer;
  *
  * @author rhornig
  */
-public class GNEDToggleSnapToGeometryAction extends Action {
+public class ToggleSnapToGeometryAction extends Action {
 
     public static final String ID = "ToggleSnap";
     public static final String MENUNAME = GEFMessages.ToggleSnapToGeometry_Label;
@@ -41,7 +41,7 @@ public class GNEDToggleSnapToGeometryAction extends Action {
      *            the GraphicalViewer whose snap to geometry property is to be
      *            toggled
      */
-    public GNEDToggleSnapToGeometryAction(GraphicalViewer diagramViewer) {
+    public ToggleSnapToGeometryAction(GraphicalViewer diagramViewer) {
         super(MENUNAME, AS_CHECK_BOX);
         this.diagramViewer = diagramViewer;
         setToolTipText(TOOLTIP);

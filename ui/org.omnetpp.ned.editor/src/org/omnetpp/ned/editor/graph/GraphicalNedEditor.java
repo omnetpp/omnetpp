@@ -120,14 +120,14 @@ import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.CopyAction;
 import org.omnetpp.ned.editor.graph.actions.CutAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
+import org.omnetpp.ned.editor.graph.actions.GNedContextMenuProvider;
+import org.omnetpp.ned.editor.graph.actions.NedSelectAllAction;
+import org.omnetpp.ned.editor.graph.actions.ToggleSnapToGeometryAction;
 import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
 import org.omnetpp.ned.editor.graph.actions.PaletteFilterAction;
 import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
 import org.omnetpp.ned.editor.graph.actions.PasteAction;
-import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
+import org.omnetpp.ned.editor.graph.actions.RelayoutAction;
 import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
@@ -373,7 +373,7 @@ public class GraphicalNedEditor
         viewer.setRootEditPart(root);
 
         viewer.setEditPartFactory(new NedEditPartFactory());
-        ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry(), getSite());
+        ContextMenuProvider provider = new GNedContextMenuProvider(viewer, getActionRegistry(), getSite());
         viewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, NedEditorPlugin.getDefault().getPreferenceStore().getBoolean(NedEditorPreferenceInitializer.SNAP_TO_GEOMETRY));
         viewer.setContextMenu(provider);
         // register the menu so we can contribute to it from other plugins BUT do not include the
@@ -409,7 +409,7 @@ public class GraphicalNedEditor
         loadProperties();
 
         // create some actions here because they need an installed viewer
-        IAction action = new GNEDToggleSnapToGeometryAction(viewer);
+        IAction action = new ToggleSnapToGeometryAction(viewer);
         getActionRegistry().registerAction(action);
 
         // register global actions to the keybinding service otherwise the CTRL-Z CTRL-Y and DEL
@@ -496,7 +496,7 @@ public class GraphicalNedEditor
         ActionRegistry registry = getActionRegistry();
         IAction action;
 
-        action = new GNEDSelectAllAction(this);
+        action = new NedSelectAllAction(this);
         registry.registerAction(action);
 
         action = new ConvertToNewFormatAction(this);
@@ -531,7 +531,7 @@ public class GraphicalNedEditor
         // depends on stack state change too. We should reflect the pinned state of a module on the status bar too
         getStackActions().add(action.getId());
 
-        action = new ReLayoutAction(this);
+        action = new RelayoutAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 

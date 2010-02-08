@@ -22,10 +22,10 @@ import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
  *
  * @author rhornig
  */
-public class GNEDSelectAllAction extends SelectAllAction {
+public class NedSelectAllAction extends SelectAllAction {
 
     IWorkbenchPart wbp;
-    public GNEDSelectAllAction(IWorkbenchPart part) {
+    public NedSelectAllAction(IWorkbenchPart part) {
         super(part);
         wbp = part;
     }
