@@ -20,7 +20,7 @@ public class NedModelEvent {
     protected INedElement source;
 
     /**
-     * @param source The NED model element generating the event or null if unknown.
+     * @param source The NED model element generating the event, or null if unknown.
      */
     public NedModelEvent(INedElement source) {
         this.source = source;

@@ -242,12 +242,6 @@ public class NedResources implements INedResources, IResourceChangeListener {
         return nedElementFiles.get(nedFileElement);
     }
 
-    /**
-     * NED text editors should call this when editor content changes.
-     * Parses the given text, and synchronizes the stored NED model tree to it.
-     * @param file - which file should be set
-     * @param text - the textual content of the ned file
-     */
     public synchronized void setNedFileText(IFile file, String text) {
         NedFileElementEx currentTree = getNedFileElement(file);
 
@@ -613,12 +607,6 @@ public class NedResources implements INedResources, IResourceChangeListener {
         return result;
     }
 
-
-    /**
-     * Determines if a resource is a NED file, that is, if it should be parsed.
-     * It checks the file extension (".ned"), and whether the file is in one of
-     * the NED source folders designated for the project.
-     */
     public boolean isNedFile(IResource resource) {
         return (resource instanceof IFile &&
                 NED_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) &&
@@ -678,9 +666,6 @@ public class NedResources implements INedResources, IResourceChangeListener {
         return packageName;
     }
 
-    /**
-     * NED editors should call this when they get opened.
-     */
     public synchronized void connect(IFile file) {
         if (connectCount.containsKey(file))
             connectCount.put(file, connectCount.get(file) + 1);
@@ -691,9 +676,6 @@ public class NedResources implements INedResources, IResourceChangeListener {
         }
     }
 
-    /**
-     * NED editors should call this when they get closed.
-     */
     public synchronized void disconnect(IFile file) {
         Assert.isTrue(connectCount.containsKey(file));
         int count = connectCount.get(file); // must exist
@@ -965,7 +947,6 @@ public class NedResources implements INedResources, IResourceChangeListener {
         nedModelChanged(new NedEndModelChangeEvent(null));
     }
 
-    //XXX method not currently used
     public synchronized void runWithBeginEndNotification(Runnable runnable) {
         fireBeginChangeEvent();
         try {
@@ -993,7 +974,6 @@ public class NedResources implements INedResources, IResourceChangeListener {
      * (When an editor starts, the projects table must already be up to date, otherwise
      * the editor's input file might not qualify as "NED file" and that'll cause an error).
      */
-    //FIXME call from ctor?
     public synchronized void rebuildProjectsTable() {
         // rebuild table
         projects.clear();
