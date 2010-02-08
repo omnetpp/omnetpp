@@ -61,7 +61,7 @@ import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 import org.omnetpp.launch.tabs.OmnetppMainTab;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -192,7 +192,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 else if (resource instanceof IFile && "ned".equals(resource.getFileExtension())) {
                     // must be a valid NED file and must contain at least one network
                     IFile nedFile = (IFile)resource;
-                    NEDResources res = NEDResourcesPlugin.getNEDResources();
+                    INedResources res = NEDResourcesPlugin.getNEDResources();
                     if (!res.isNedFile(nedFile)) {
                         MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + nedFile.getName() + "' is not a NED file, or it is not in a NED source folder.");
                         return;
@@ -316,7 +316,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      */
     protected List<INEDTypeInfo> collectNetworksForFolder(IContainer folder) {
         List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NEDResourcesPlugin.getNEDResources();
 
         for (INEDTypeInfo type : res.getNedTypes(folder.getProject())) {
             INedTypeElement element = type.getNEDElement();
@@ -334,7 +334,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      */
     protected List<INEDTypeInfo> getNetworksInNedFile(IFile nedFile) {
         List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NEDResourcesPlugin.getNEDResources();
         NedFileElementEx nedFileElement = res.getNedFileElement(nedFile);
         for (INEDElement child : nedFileElement)
             if (child instanceof IModuleTypeElement && ((IModuleTypeElement)child).isNetwork())

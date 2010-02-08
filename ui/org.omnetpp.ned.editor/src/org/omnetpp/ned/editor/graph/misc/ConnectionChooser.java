@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
@@ -192,7 +192,7 @@ public class ConnectionChooser {
      */
     @SuppressWarnings("unchecked")
     public ConnectionElementEx openConnectionChannelMenu(CompoundModuleElementEx compound, ConnectionElementEx connectionWithGatesTemplate, Point location) {
-        NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+        INedResources nedResources = NEDResourcesPlugin.getNEDResources();
         IProject project = compound.getNEDTypeInfo().getNEDFile().getProject();
         List<ChannelElementEx> channels = new ArrayList<ChannelElementEx>();
         List<String> commonGateLabels = connectionLabelsMap.get(connectionWithGatesTemplate);

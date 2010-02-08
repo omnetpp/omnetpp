@@ -8,7 +8,6 @@
 package org.omnetpp.ned.core;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -24,9 +23,9 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.osgi.framework.BundleContext;
 
 /**
- * The main plugin class to be used in the desktop.
+ * Activator for the plug-in.
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class NEDResourcesPlugin extends AbstractUIPlugin {
 
@@ -49,7 +48,6 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
 		super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
-        // Debug.println("NEDResourcesPlugin started");
 	}
 
 	/**
@@ -57,7 +55,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
-        NEDResources.getInstance().dispose();
+        NedResources.getInstance().dispose();
         MsgResources.getInstance().dispose();
 
 		plugin = null;
@@ -74,8 +72,8 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	/**
 	 * Returns the NED file cache of the shared instance of the plugin
 	 */
-	public static NEDResources getNEDResources() {
-		return NEDResources.getInstance();
+	public static INedResources getNEDResources() {
+		return NedResources.getInstance();
 	}
 
     /**
@@ -109,7 +107,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
 	/**
 	 * Opens the given INEDElement in a NED editor, and positions the cursor on it.
-	 * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
+	 * @param element must not be null, and must be part of the model (i.e. in INedResources)
 	 */
 	public static void openNEDElementInEditor(INEDElement element) {
 	    Assert.isNotNull(element);
@@ -119,7 +117,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
     /**
      * Opens the given INEDElement in a NED editor, and positions the cursor on it.
      *
-     * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
+     * @param element must not be null, and must be part of the model (i.e. in INedResources)
      * @param mode IGotoNedElement.Mode  whether the editor should be opened in text or graphical mode
      *             or in automatic mode
      */
@@ -127,7 +125,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
         INEDTypeInfo typeInfo = element.getSelfOrEnclosingTypeElement().getNEDTypeInfo();
         IFile file = typeInfo.getNEDFile();
 
-        // check if file is null. it is a built in type in this case
+        // check if file is null; if so, it is a built-in type
         if (file == null) {
             MessageDialog.openInformation(Display.getDefault().getActiveShell(),
                     "Cannot Open Type", "Built-in types cannot be opened for editing.");
@@ -143,7 +141,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
                 ((IGotoNedElement)editor).showInEditor(element, mode);
             }
         } catch (PartInitException e) {
-            // no message dialog is needed, because the platform displays an erroreditpart anyway
+            // no message dialog is needed, because the platform displays an ErrorEditPart anyway
             logError("Cannot open NED editor", e);
         }
     }

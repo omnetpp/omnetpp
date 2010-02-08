@@ -38,7 +38,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -142,7 +142,7 @@ s	 * before getting presented to the user.
 
 		if (entry==CFGID_NETWORK) {
 			IProject contextProject = doc.getDocumentFile().getProject();
-			NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+			INedResources nedResources = NEDResourcesPlugin.getNEDResources();
 			// first
 			List<IContentProposal> p1 = new ArrayList<IContentProposal>();
 			String iniFilePackage = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(doc.getDocumentFile());

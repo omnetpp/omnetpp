@@ -25,7 +25,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -60,7 +60,7 @@ public class RefactoringTools {
         if (nedFileElement.hasSyntaxError())
             return;
 
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NEDResourcesPlugin.getNEDResources();
         IFile file = res.getNedFile(nedFileElement);
 
         String expectedPackage = res.getExpectedPackageFor(file);
@@ -78,7 +78,7 @@ public class RefactoringTools {
         if (nedFileElement.hasSyntaxError())
             return;
 
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NEDResourcesPlugin.getNEDResources();
         IFile file = res.getNedFile(nedFileElement);
         IProject contextProject = file.getProject();
 
@@ -130,7 +130,7 @@ public class RefactoringTools {
 	 * Find the fully qualified type for the given simple name, and add it to the imports list.
 	 */
 	protected static void resolveImport(IProject contextProject, String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
-		NEDResources res = NEDResourcesPlugin.getNEDResources();
+		INedResources res = NEDResourcesPlugin.getNEDResources();
 
 		// name is in the same package as this file, no need to add an import
 		if (res.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)

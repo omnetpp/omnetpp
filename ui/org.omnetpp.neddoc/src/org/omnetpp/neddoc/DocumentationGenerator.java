@@ -78,7 +78,7 @@ import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.MsgResources;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.misc.NedFigureProvider;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
@@ -195,7 +195,7 @@ public class DocumentationGenerator {
     protected IPath neddocRelativeRootPath;
     protected IPath customCssPath;
     protected IProject project;
-    protected NEDResources nedResources;
+    protected INedResources nedResources;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
 

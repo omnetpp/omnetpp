@@ -43,7 +43,7 @@ import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.model.INEDElement;
@@ -54,7 +54,6 @@ import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
@@ -393,7 +392,7 @@ public class PaletteManager {
         List<INEDTypeInfo> matchingTypeInfos = new ArrayList<INEDTypeInfo>();
         List<INEDTypeInfo> positiveScoreMatchingTypeInfos = new ArrayList<INEDTypeInfo>();
         for (INEDTypeInfo typeInfo : NEDResourcesPlugin.getNEDResources().getNedTypes(contextProject)) {
-            if (NEDResources.MODULE_FILTER.matches(typeInfo) || NEDResources.MODULEINTERFACE_FILTER.matches(typeInfo)) {
+            if (INedResources.MODULE_FILTER.matches(typeInfo) || INedResources.MODULEINTERFACE_FILTER.matches(typeInfo)) {
                 matchingTypeInfos.add(typeInfo);
 
                 if (calculateScore(typeInfo) > 0)

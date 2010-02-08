@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IWidgetAdapterExt;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDTreeUtil;
@@ -175,7 +175,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
 
 
     protected INEDTypeInfo lookupModuleType(String name, IProject project) {
-        NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+        INedResources nedResources = NEDResourcesPlugin.getNEDResources();
         if (project != null) {
             INEDTypeInfo nedType = nedResources.getToplevelNedType(name, project);
             if (nedType != null && nedType.getNEDElement() instanceof IModuleKindTypeElement)

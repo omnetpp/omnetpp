@@ -26,7 +26,7 @@ import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedDisplayStringTagD
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagDetector;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagValueDetector;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -61,7 +61,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		if (info == null || info.linePrefix == null || info.linePrefixTrimmed == null)
 		    return new ICompletionProposal[0];
 
-		NEDResources res = NEDResourcesPlugin.getNEDResources();
+		INedResources res = NEDResourcesPlugin.getNEDResources();
 		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 		NedFileElementEx nedFileElement = res.getNedFileElement(file);
 		IProject project = file.getProject();
@@ -99,23 +99,23 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 
 			// match various "extends" and "like" clauses and offer component types
 			if (line.matches(".*\\bsimple .* extends"))
-			    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.SIMPLE_MODULE_FILTER);
+			    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.SIMPLE_MODULE_FILTER);
 			else if (line.matches(".*\\b(module|network) .* extends"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.COMPOUND_MODULE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.COMPOUND_MODULE_FILTER);
 			else if (line.matches(".*\\bchannel .* extends"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.CHANNEL_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNEL_FILTER);
 			else if (line.matches(".*\\bmoduleinterface .* extends"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\bchannelinterface .* extends"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.CHANNELINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNELINTERFACE_FILTER);
 
 			// match "like" clauses
 			if (line.matches(".*\\bsimple .* like") || line.matches(".*\\bsimple .* like .*,"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\b(module|network) .* like") || line.matches(".*\\b(module|network) .* like .*,"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\bchannel .* like") || line.matches(".*\\bchannel .* like .*,"))
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.CHANNELINTERFACE_FILTER);
+                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNELINTERFACE_FILTER);
 
 			if (!line.equals("") && !line.matches(".*\\b(like|extends)\\b.*") && line.matches(".*\\b(simple|module|network|channel|interface|channelinterface)\\b [_A-Za-z0-9]+"))
 				addProposals(viewer, documentOffset, result, new String[]{"extends "}, "keyword");
@@ -255,9 +255,9 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 			// Debug.println("testing proposals for SUBMODULES scope");
 			if (line.matches(".*:")) {
 			    if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types)
-	                addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULE_FILTER);
+	                addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, INedResources.MODULE_FILTER);
 			    else  // top level type
-			        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULE_FILTER);
+			        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULE_FILTER);
 			}
 			else if (line.matches(".*: *<")) {  // "like" syntax
 				if (nedTypeInfo!=null)
@@ -268,9 +268,9 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 			}
 			else if (line.matches(".*\\blike")) {
                 if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types)
-                    addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                    addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, INedResources.MODULEINTERFACE_FILTER);
                 else  // top level type
-                    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			}
 		}
 
@@ -288,7 +288,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 	    			addProposals(viewer, documentOffset, result, nedTypeInfo.getGateDeclarations().keySet(), "gate");
 	    			// only a single arrow can be present in the line to give channel assistance to
                     if (line.matches(".*--.*") && !line.matches(".*--.*--.*"))
-                        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.CHANNEL_FILTER);
+                        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNEL_FILTER);
 	    		}
 	    	}
 	    	else if (line.endsWith(".")) {

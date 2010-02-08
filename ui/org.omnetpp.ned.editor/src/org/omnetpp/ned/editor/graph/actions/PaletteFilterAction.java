@@ -36,7 +36,7 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
@@ -68,7 +68,7 @@ public class PaletteFilterAction extends WorkbenchPartAction {
 
         // collect the list of (non-empty) packages, and how many NED types they contain
         IProject project = ((FileEditorInput)editor.getEditorInput()).getFile().getProject();
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NEDResourcesPlugin.getNEDResources();
         final Map<String,Integer> packages = new LinkedHashMap<String,Integer>();  // (package,count)
         List<String> orderedQNames = new ArrayList<String>(res.getNedTypeQNames(project));
         Collections.sort(orderedQNames);

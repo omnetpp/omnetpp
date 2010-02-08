@@ -20,7 +20,7 @@ import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.model.INEDElement;
@@ -182,7 +182,7 @@ public class NedTextUtils {
     }
 
     private static INEDElement lookupTypeElement(String dottedWord, INedTypeLookupContext context) {
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NEDResourcesPlugin.getNEDResources();
         INEDTypeInfo nedType = res.lookupNedType(dottedWord, context);
         return nedType != null ? nedType.getNEDElement() : null;
     }

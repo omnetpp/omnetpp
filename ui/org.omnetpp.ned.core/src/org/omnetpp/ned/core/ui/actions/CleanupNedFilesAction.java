@@ -32,7 +32,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -143,7 +143,7 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
     }
 
     protected void processNedFile(IFile file, INEDRefactoring refactoring) throws CoreException {
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NEDResourcesPlugin.getNEDResources();
         NedFileElementEx nedFileElement = res.getNedFileElement(file);
 
         if (!nedFileElement.hasSyntaxError()) {

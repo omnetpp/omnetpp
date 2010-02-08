@@ -29,7 +29,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -110,7 +110,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 
     protected void addNedTypeProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result,
             IProject project, INEDTypeInfo nedTypeInfoForInnerTypes, IPredicate predicate) {
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NEDResourcesPlugin.getNEDResources();
         // add inner types
         if (nedTypeInfoForInnerTypes != null) {
             Set<String> innerTypeNames = new HashSet<String>();

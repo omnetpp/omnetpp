@@ -6,7 +6,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.ned.core.MsgResources;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
@@ -20,7 +20,7 @@ public class NedUtils {
     /**
      * Returns all currently known NED types.
      */
-    public static NEDResources getNEDResources() {
+    public static INedResources getNEDResources() {
         return NEDResourcesPlugin.getNEDResources();
     }
 
@@ -51,7 +51,7 @@ public class NedUtils {
         Path path = new Path(inFolder);
         IContainer folder = (path.segmentCount() <= 1) ? root.getProject(inFolder) : root.getFolder(path);
 
-        NEDResources resources = NEDResourcesPlugin.getNEDResources();
+        INedResources resources = NEDResourcesPlugin.getNEDResources();
         if (!typeName.contains(".")) {
             // try look up unqualified name if the package of the folder
             String packageName = resources.getExpectedPackageFor(folder.getFile(new Path("dummy.ned")));

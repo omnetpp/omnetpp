@@ -35,7 +35,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.omnetpp.common.util.ReflectionUtils;
-import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.parts.outline.NedTreeEditPartFactory;
@@ -57,7 +57,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
     @Override
     public void init(IPageSite pageSite) {
         super.init(pageSite);
-        NEDResources.getInstance().addNEDModelChangeListener(this);
+        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
         getSite().getPage().addSelectionListener(this);
         getSite().getPage().addPostSelectionListener(this);
         // register actions for the editor
@@ -110,7 +110,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
         graphicalNedEditor.getSelectionSynchronizer().removeViewer(getViewer());
         getSite().getPage().removeSelectionListener(this);
         getSite().getPage().removePostSelectionListener(this);
-        NEDResources.getInstance().removeNEDModelChangeListener(this);
+        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
         super.dispose();
     }
 
