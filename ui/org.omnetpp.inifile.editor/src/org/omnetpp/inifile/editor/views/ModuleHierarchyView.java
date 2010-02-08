@@ -55,20 +55,20 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.SignalResolution;
 import org.omnetpp.ned.core.IModuleTreeVisitor;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.core.NEDTreeTraversal;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.core.NedTreeTraversal;
 import org.omnetpp.ned.core.ParamUtil;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
@@ -227,15 +227,15 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				if (element instanceof SubmoduleOrConnectionNode) {
 					SubmoduleOrConnectionNode mn = (SubmoduleOrConnectionNode) element;
 					if (mn.element == null)
-						return NEDTreeUtil.getNedModelLabelProvider().getImage(mn.typeElement);
+						return NedTreeUtil.getNedModelLabelProvider().getImage(mn.typeElement);
 					if (mn.typeElement == null)
-						return NEDTreeUtil.getNedModelLabelProvider().getImage(mn.element);
+						return NedTreeUtil.getNedModelLabelProvider().getImage(mn.element);
 					// for a "like" submodule, use icon of the concrete module type
 		            DisplayString dps = mn.element instanceof SubmoduleElementEx ?
 	                    ((SubmoduleElementEx)mn.element).getDisplayString((IModuleKindTypeElement)mn.typeElement) :
 	                    ((ConnectionElementEx)mn.element).getDisplayString((IChannelKindTypeElement)mn.typeElement);
 		            Image image = ImageFactory.getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
-					return image!=null ? image : NEDTreeUtil.getNedModelLabelProvider().getImage(mn.element);
+					return image!=null ? image : NedTreeUtil.getNedModelLabelProvider().getImage(mn.element);
 				}
 				else if (element instanceof ParamResolution)
 					return InifileUtils.suggestImage(((ParamResolution) element).type);
@@ -347,17 +347,17 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			}
 			@Override
 			public void run() {
-				INEDElement sel = getNEDElementFromSelection();
+				INedElement sel = getNedElementFromSelection();
 				if (sel != null)
-					NEDResourcesPlugin.openNEDElementInEditor(sel);
+					NedResourcesPlugin.openNedElementInEditor(sel);
 			}
 			@Override
             public void selectionChanged(SelectionChangedEvent event) {
-				INEDElement sel = getNEDElementFromSelection();
+				INedElement sel = getNedElementFromSelection();
 				setEnabled(sel != null);
 				updateLabel(sel);
 			}
-			private INEDElement getNEDElementFromSelection() {
+			private INedElement getNedElementFromSelection() {
 				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
 				if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
@@ -375,7 +375,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				}
 				return null;
 			}
-			private void updateLabel(INEDElement node) {
+			private void updateLabel(INedElement node) {
 				if (gotoDecl) {
 					if (node instanceof ParamElement)
 						setText("Open NED Declaration");
@@ -447,11 +447,11 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	@Override
-    public void buildContent(INEDElement element, final InifileAnalyzer analyzer, final String section, String key) {
+    public void buildContent(INedElement element, final InifileAnalyzer analyzer, final String section, String key) {
 		this.inifileAnalyzer = analyzer;
 		this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 
-		INEDElement elementWithParameters = findAncestorWithParameters(element);
+		INedElement elementWithParameters = findAncestorWithParameters(element);
 		if (elementWithParameters == null) {
 		    showMessage("No element with parameters selected.");
 		    return;
@@ -463,9 +463,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
     		private GenericTreeNode current = root;
 			private Stack<String> fullPathStack = new Stack<String>();
 			private Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
-			private Stack<INEDTypeInfo> typeInfoPath = new Stack<INEDTypeInfo>();
+			private Stack<INedTypeInfo> typeInfoPath = new Stack<INedTypeInfo>();
 
-    		public boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+    		public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
     			String fullName = element==null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element);
 				fullPathStack.push(fullName);
 				elementPath.push(element);
@@ -495,7 +495,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
                         if (vectorSize.equals("0"))
                             isEmptySubmoduleVector = true;
                         else if (vectorSize.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {  //XXX performance (precompile regex!)
-                            INEDTypeInfo paramDeclarationOwnerTypeInfo = typeInfoPath.size() != 0 ? typeInfoPath.get(typeInfoPath.size() - 1) : null;
+                            INedTypeInfo paramDeclarationOwnerTypeInfo = typeInfoPath.size() != 0 ? typeInfoPath.get(typeInfoPath.size() - 1) : null;
 
                             if (paramDeclarationOwnerTypeInfo != null) {
                                 ParamElementEx paramDeclaration = paramDeclarationOwnerTypeInfo.getParamDeclarations().get(vectorSize);
@@ -517,7 +517,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
                     current.addChild(new GenericTreeNode(new ErrorNode(fullName + " : unresolved type '" + typeName + "'")));
     		}
 
-    		public void recursiveType(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+    		public void recursiveType(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
     			String fullName = element==null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element);
     			current.addChild(new GenericTreeNode(new ErrorNode(fullName+" : "+typeInfo.getName()+" -- recursive use of type '"+typeInfo.getName()+"'")));
     		}
@@ -529,7 +529,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				return InifileUtils.resolveLikeParam(moduleFullPath, element, section, analyzer, inifileDocument);
     		}
 
-            private String resolveParamValue(String fullPath, Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
+            private String resolveParamValue(String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
                 String[] sectionChain = InifileUtils.resolveSectionChain(inifileDocument, section);
                 InifileAnalyzer.resolveParameter(paramResolutions, fullPath, typeInfoPath, elementPath, sectionChain, inifileDocument, paramDeclaration);
@@ -542,14 +542,14 @@ public class ModuleHierarchyView extends AbstractModuleView {
             }
     	}
 
-    	INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
+    	INedTypeResolver nedResources = NedResourcesPlugin.getNedResources();
     	IProject contextProject = nedResources.getNedFile(elementWithParameters.getContainingNedFileElement()).getProject();
-    	NEDTreeTraversal iterator = new NEDTreeTraversal(nedResources, new TreeBuilder());
+    	NedTreeTraversal iterator = new NedTreeTraversal(nedResources, new TreeBuilder());
         if (elementWithParameters instanceof ISubmoduleOrConnection)
             iterator.traverse((ISubmoduleOrConnection)elementWithParameters);
         else if (elementWithParameters instanceof INedTypeElement){
             INedTypeElement typeElement = (INedTypeElement)elementWithParameters;
-            iterator.traverse(typeElement.getNEDTypeInfo().getFullyQualifiedName(), contextProject);
+            iterator.traverse(typeElement.getNedTypeInfo().getFullyQualifiedName(), contextProject);
         }
         else {
         	showMessage("Please select a submodule, a compound module, a simple module or a connection");
@@ -588,11 +588,11 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	/**
 	 * Adds a node to the tree. The new node describes the module and its parameters.
 	 */
-	private GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String fullPath, Vector<ISubmoduleOrConnection> elementPath, Vector<INEDTypeInfo> typeInfoPath, String activeSection, InifileAnalyzer analyzer) {
-	    INEDTypeInfo typeInfo = typeInfoPath.lastElement();
+	private GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String fullPath, Vector<ISubmoduleOrConnection> elementPath, Vector<INedTypeInfo> typeInfoPath, String activeSection, InifileAnalyzer analyzer) {
+	    INedTypeInfo typeInfo = typeInfoPath.lastElement();
 		String moduleText = moduleFullName+"  ("+typeInfo.getName()+")";
 		ISubmoduleOrConnection lastElement = elementPath.lastElement();
-        GenericTreeNode treeNode = new GenericTreeNode(new SubmoduleOrConnectionNode(moduleText, lastElement, typeInfo.getNEDElement()));
+        GenericTreeNode treeNode = new GenericTreeNode(new SubmoduleOrConnectionNode(moduleText, lastElement, typeInfo.getNedElement()));
 		parent.addChild(treeNode);
 
 		if (analyzer == null) {

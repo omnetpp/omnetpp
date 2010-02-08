@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ChannelElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
@@ -51,14 +51,14 @@ public class NedModelContentProvider implements ITreeContentProvider {
 	}
 
 	public Object getParent(Object child) {
-		return ((INEDElement)child).getParent();
+		return ((INedElement)child).getParent();
 	}
 
 	// TODO maybe we should provide a more flatter layout (skipping the parameters, gates, suboldules, types, connections nodes)
 	@SuppressWarnings("unchecked")
     public Object[] getChildren(Object parent) {
         List result = new ArrayList();
-        INEDElement currElem = ((INEDElement)parent);
+        INedElement currElem = ((INedElement)parent);
 
         // if this is a channel spec we will give back the parameters subnode's children
         if (currElem instanceof ChannelSpecElement)
@@ -66,7 +66,7 @@ public class NedModelContentProvider implements ITreeContentProvider {
         if (currElem == null)
             return result.toArray();
 
-        for (INEDElement child : currElem) {
+        for (INedElement child : currElem) {
             // display only the following classes
             if ((child instanceof NedFileElement) ||
 //                    (child instanceof ImportElement) ||

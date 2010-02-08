@@ -47,7 +47,7 @@ import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
@@ -59,13 +59,13 @@ import org.omnetpp.ned.editor.text.actions.GotoDeclarationAction;
 import org.omnetpp.ned.editor.text.actions.InferAllGateLabelsAction;
 import org.omnetpp.ned.editor.text.actions.OrganizeImportsAction;
 import org.omnetpp.ned.editor.text.actions.ToggleCommentAction;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDSourceRegion;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedSourceRegion;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.INedChangeListener;
+import org.omnetpp.ned.model.notification.NedMarkerChangeEvent;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 
 
 /**
@@ -73,7 +73,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  *
  * @author rhornig
  */
-public class TextualNedEditor extends TextEditor implements INEDChangeListener, ISelectionListener {
+public class TextualNedEditor extends TextEditor implements INedChangeListener, ISelectionListener {
 
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates";
     public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.nedTextEditor" };
@@ -104,7 +104,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 		// delay update to avoid concurrent access to document
 		pullChangesJob = new DelayedJob(500) {
     		public void run() {
-				pullChangesFromNEDResourcesWhenPending();
+				pullChangesFromNedResourcesWhenPending();
     		}
         };
 
@@ -114,7 +114,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 	    super.init(site, input);
         // listen on NED model changes
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+        NedResourcesPlugin.getNedResources().addNedModelChangeListener(this);
         getSite().getPage().addSelectionListener(this);
 	}
 
@@ -133,7 +133,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
             pullChangesJob.cancel();
 
         getSite().getPage().removeSelectionListener(this);
-        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
+        NedResourcesPlugin.getNedResources().removeNedModelChangeListener(this);
         super.dispose();
     }
 
@@ -145,7 +145,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         super.initializeEditor();
         // redefine the main context menu id so we can contribute to it from the outside
         setEditorContextMenuId(ID);
-        //XXX for now NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+        //XXX for now NedResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
         setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
     }
 
@@ -315,7 +315,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 	}
 
 	public NedFileElementEx getModel() {
-		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
+		return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
 	}
 
 	@Override
@@ -395,23 +395,23 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 	/**
 	 * NOTE: this method is called from NON-UI threads. do not access SWT widgets
 	 */
-    public void modelChanged(NEDModelEvent event) {
-    	if (event.getSource() != null && !(event instanceof NEDMarkerChangeEvent) && !isActive() && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
-			INEDElement nedFileElement = event.getSource().getContainingNedFileElement();
+    public void modelChanged(NedModelEvent event) {
+    	if (event.getSource() != null && !(event instanceof NedMarkerChangeEvent) && !isActive() && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
+			INedElement nedFileElement = event.getSource().getContainingNedFileElement();
 
 			if (nedFileElement == getModel())
 				pullChangesJob.restartTimer();
     	}
     }
 
-	public synchronized void pushChangesIntoNEDResources() {
-		pushChangesIntoNEDResources(true);
+	public synchronized void pushChangesIntoNedResources() {
+		pushChangesIntoNedResources(true);
 	}
 
 	/**
 	 * Pushes down text changes from document into NEDResources.
 	 */
-	public synchronized void pushChangesIntoNEDResources(final boolean evenIfEditorIsInactive) {
+	public synchronized void pushChangesIntoNedResources(final boolean evenIfEditorIsInactive) {
 		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
 			public synchronized void run() {
 				Assert.isTrue(!pushingChanges);
@@ -424,7 +424,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 						// the access is serialized through asyncExec.
 						pushingChanges = true;
 						// perform parsing (of full text, we ignore the changed region)
-						NEDResourcesPlugin.getNEDResources().setNedFileText(getFile(), getText());
+						NedResourcesPlugin.getNedResources().setNedFileText(getFile(), getText());
 					}
 					finally {
 						pushingChanges = false;
@@ -437,14 +437,14 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 	/**
 	 * When a "pull changes from NEDResources" operation has been scheduled, do it now.
 	 */
-	public synchronized void pullChangesFromNEDResourcesWhenPending() {
+	public synchronized void pullChangesFromNedResourcesWhenPending() {
 	    // if the job is not scheduled then there are no changes at all and we don't pull
 	    // because that would only pretty print the source
 	    if (pullChangesJob.isScheduled()) {
     		pullChangesJob.cancel();
     		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
     			public synchronized void run() {
-    				pullChangesFromNEDResources();
+    				pullChangesFromNedResources();
     			}
     		});
 	    }
@@ -458,11 +458,11 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
      * NED tree and want those changes to be reflected in the text editor.
      * (e.g. reformat source, organize imports, etc).
      */
-    public void pullChangesFromNEDResources() {
+    public void pullChangesFromNedResources() {
         Assert.isTrue(Display.getCurrent() != null);
 //        Debug.println("texteditor: pulling changes from NEDResources");
         TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
-        		getDocument(), getModel().getNEDSource());
+        		getDocument(), getModel().getNedSource());
         TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
         // TODO: then parse in again, and update line numbers with the resulting tree? I think this should not be done here but somewhere else
     }
@@ -480,9 +480,9 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 			if (selection.isEmpty())
 				resetHighlightRange();
 			else if (firstElement instanceof INedModelProvider){
-				INEDElement node = ((INedModelProvider)firstElement).getNedModel();
+				INedElement node = ((INedModelProvider)firstElement).getNedModel();
 				//Debug.println("selected: "+node);
-				NEDSourceRegion region = node.getSourceRegion();
+				NedSourceRegion region = node.getSourceRegion();
 				if (region!=null) {
 					IDocument docu = getDocument();
 					try {

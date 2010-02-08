@@ -30,11 +30,11 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver.IPredicate;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver.IPredicate;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 // TODO completion within inner types
@@ -109,13 +109,13 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 	}
 
     protected void addNedTypeProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result,
-            IProject project, INEDTypeInfo nedTypeInfoForInnerTypes, IPredicate predicate) {
-        INedResources res = NEDResourcesPlugin.getNEDResources();
+            IProject project, INedTypeInfo nedTypeInfoForInnerTypes, IPredicate predicate) {
+        INedResources res = NedResourcesPlugin.getNedResources();
         // add inner types
         if (nedTypeInfoForInnerTypes != null) {
             Set<String> innerTypeNames = new HashSet<String>();
             for (INedTypeElement innerTypeElement : nedTypeInfoForInnerTypes.getInnerTypes().values()) {
-                if (predicate.matches(innerTypeElement.getNEDTypeInfo()))
+                if (predicate.matches(innerTypeElement.getNedTypeInfo()))
                     innerTypeNames.add(innerTypeElement.getName());
             }
             addProposals(viewer, documentOffset, result, innerTypeNames, "inner type");
@@ -128,11 +128,11 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         String descriptions[] = new String[qnames.size()];
         int i = 0;
         for (String qname : qnames) {
-            INEDTypeInfo topLevelTypeInfo = res.getToplevelNedType(qname, project);
+            INedTypeInfo topLevelTypeInfo = res.getToplevelNedType(qname, project);
             names[i] = topLevelTypeInfo.getName();
             String packageName = StringUtils.chomp(topLevelTypeInfo.getNamePrefix(), ".");
             packageName = StringUtils.isBlank(packageName) ? "" : packageName+" - ";
-            descriptions[i] =  packageName + topLevelTypeInfo.getNEDElement().getReadableTagName()+" type";
+            descriptions[i] =  packageName + topLevelTypeInfo.getNedElement().getReadableTagName()+" type";
             i++;
         }
         addProposals(viewer, documentOffset, result, names, descriptions);
@@ -144,14 +144,14 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
         return line.contains("[");
 	}
 
-    protected String extractSubmoduleTypeName(String line, INEDTypeInfo parentComponent) {
+    protected String extractSubmoduleTypeName(String line, INedTypeInfo parentComponent) {
 		// first, get rid of everything before any arrow(s), because it causes a problem for the next regexp
 		line = line.replaceFirst("^.*(-->|<--|<-->)", "");
 		// identifier followed by ".", potentially a submodule index ("[something]") in between
 		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.$").matcher(line);
 		if (matcher.find()) { // use find() because line may start with garbage
 			String submoduleName = matcher.group(1);
-			INEDElement submodNode = parentComponent.getMembers().get(submoduleName);
+			INedElement submodNode = parentComponent.getMembers().get(submoduleName);
 			if (submodNode instanceof SubmoduleElement) {
 				SubmoduleElement submod = (SubmoduleElement) submodNode;
 				String submodTypeName = submod.getType();

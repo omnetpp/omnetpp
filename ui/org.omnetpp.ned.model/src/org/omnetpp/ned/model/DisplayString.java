@@ -18,12 +18,12 @@ import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 
 
 /**
- * The default implementation of IDisplayString. It is strongly tied to the NEDElement
+ * The default implementation of IDisplayString. It is strongly tied to the NedElement
  * model tree, and keeps its contents in sync with the LiteralElement in a display property.
  *
  * IMPORTANT: DisplayString doesn't support a listener list, and please do NOT add one!
@@ -325,10 +325,10 @@ public class DisplayString implements IDisplayString {
 
 	protected void updateNedElement() {
 		if (owner != null) {
-			// Change the underlying NEDElement tree.
+			// Change the underlying NedElement tree.
 			// This could be optimized somewhat by remembering the LiteralElement, and quickly
 			// checking here if that's still where we have to change the display string
-			NEDElementUtilEx.setDisplayStringLiteral(owner, toString());
+			NedElementUtilEx.setDisplayStringLiteral(owner, toString());
 		}
 	}
 

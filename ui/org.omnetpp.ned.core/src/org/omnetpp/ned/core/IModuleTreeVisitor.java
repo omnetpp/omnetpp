@@ -12,11 +12,11 @@ import java.util.Stack;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 /**
- * Visitor interface for use with NEDTreeTraversal.
+ * Visitor interface for use with NedTreeTraversal.
  *
  * @author Andras
  */
@@ -29,7 +29,7 @@ public interface IModuleTreeVisitor {
 	 * @param typeInfo                    type of the element or root type, never null
 	 * @return true                       recurse
 	 */
-	boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo);
+	boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo);
 
 	/**
 	 * Leave the module last entered.
@@ -45,7 +45,7 @@ public interface IModuleTreeVisitor {
 	 * Encountered a submodule/connection which introduces type recursion, and traversal is
 	 * pruned here. No leave() will follow.
 	 */
-	void recursiveType(ISubmoduleOrConnection element, INEDTypeInfo typeInfo);
+	void recursiveType(ISubmoduleOrConnection element, INedTypeInfo typeInfo);
 
 	/**
 	 * Resolve the "like" parameter of a submodule/connection. The method should return the
@@ -61,7 +61,7 @@ public interface IModuleTreeVisitor {
 		private GenericTreeNode root = new GenericTreeNode("root");
 		private GenericTreeNode current = root;
 
-		public boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+		public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
 			GenericTreeNode child = new GenericTreeNode("("+typeInfo.getName()+")"+(element==null ? "" : ParamUtil.getParamPathElementName(element)));
 			current.addChild(child);
 			current = child;
@@ -75,7 +75,7 @@ public interface IModuleTreeVisitor {
 		public void unresolvedType(ISubmoduleOrConnection element, String typeName) {
 		}
 
-		public void recursiveType(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+		public void recursiveType(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
 		}
 
 		public String resolveLikeType(ISubmoduleOrConnection element) {
@@ -93,7 +93,7 @@ public interface IModuleTreeVisitor {
 	public static class FullPathBuilder implements IModuleTreeVisitor {
 		Stack<String> fullPath = new Stack<String>();
 
-		public boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+		public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
 			//fullPath.push("("+typeInfo.getName()+")"+(element==null ? "" : element.getName()));
 			fullPath.push(element==null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
 			Debug.println(StringUtils.join(fullPath.toArray(), "."));
@@ -107,7 +107,7 @@ public interface IModuleTreeVisitor {
 		public void unresolvedType(ISubmoduleOrConnection element, String typeName) {
 		}
 
-		public void recursiveType(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+		public void recursiveType(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
 		}
 
 		public String resolveLikeType(ISubmoduleOrConnection element) {

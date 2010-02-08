@@ -14,18 +14,18 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.pojo.*;
 
 /**
- * Label provider for INEDElement tree node. Assumes unparsed expressions.
+ * Label provider for INedElement tree node. Assumes unparsed expressions.
  *
  * @author rhornig
  */
@@ -33,10 +33,10 @@ public class NedModelLabelProvider extends LabelProvider {
 
 	@Override
     public String getText(Object obj) {
-	    if (obj instanceof INEDTypeInfo)
-	        obj = ((INEDTypeInfo)obj).getNEDElement();
+	    if (obj instanceof INedTypeInfo)
+	        obj = ((INedTypeInfo)obj).getNedElement();
 
-        INEDElement model = (INEDElement)obj;
+        INedElement model = (INedElement)obj;
         String label = "???";
 
         if (model instanceof ImportElement) {
@@ -114,12 +114,12 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof ConnectionElementEx) {
             // create a simplified representation (only the node and its channel spec is retained)
-            INEDElement dummyConn = model.dup();
-            INEDElement dummyChSpec = ((ConnectionElementEx)model).getFirstChannelSpecChild();
+            INedElement dummyConn = model.dup();
+            INedElement dummyChSpec = ((ConnectionElementEx)model).getFirstChannelSpecChild();
             if (dummyChSpec != null)
                 dummyConn.appendChild(dummyChSpec.dup());
 
-            label = StringUtils.strip(dummyConn.getNEDSource().trim(), ";");
+            label = StringUtils.strip(dummyConn.getNedSource().trim(), ";");
         }
         else if (model != null){
             label = model.getReadableTagName();
@@ -132,20 +132,20 @@ public class NedModelLabelProvider extends LabelProvider {
 		return attr==null || attr.equals("") ? "" : "["+attr+"]";
 	}
 
-    private static String getSourceWithoutComments(INEDElement element) {
-        INEDElement node = element.deepDup();
+    private static String getSourceWithoutComments(INedElement element) {
+        INedElement node = element.deepDup();
         // remove all comment nodes
-        while(node.getFirstChildWithTag(NEDElementTags.NED_COMMENT) != null)
-            node.getFirstChildWithTag(NEDElementTags.NED_COMMENT).removeFromParent();
-        return StringUtils.stripToEmpty(StringUtils.substringBefore(node.getNEDSource(), "\n"));
+        while(node.getFirstChildWithTag(NedElementTags.NED_COMMENT) != null)
+            node.getFirstChildWithTag(NedElementTags.NED_COMMENT).removeFromParent();
+        return StringUtils.stripToEmpty(StringUtils.substringBefore(node.getNedSource(), "\n"));
     }
 
     @Override
     public Image getImage(Object obj) {
-        if (obj instanceof INEDTypeInfo)
-            obj = ((INEDTypeInfo)obj).getNEDElement();
+        if (obj instanceof INedTypeInfo)
+            obj = ((INedTypeInfo)obj).getNedElement();
 
-        INEDElement model = (INEDElement)obj;
+        INedElement model = (INedElement)obj;
         Image image = null;
         if (model instanceof IHasDisplayString && !(model instanceof ChannelElementEx || model instanceof ChannelInterfaceElementEx)) {
             DisplayString dps = ((IHasDisplayString) model).getDisplayString();

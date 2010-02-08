@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.wizards;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplateContributor;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.wizards.support.NedUtils;
 
 import freemarker.ext.beans.BeansWrapper;
@@ -20,8 +20,8 @@ public class NedContentTemplateContributor implements IContentTemplateContributo
     }
 
     public void contributeToContext(CreationContext context) throws CoreException, TemplateException {
-        context.setVariable("nedResources", NEDResourcesPlugin.getNEDResources());
-        context.setVariable("msgResources", NEDResourcesPlugin.getMSGResources());
+        context.setVariable("nedResources", NedResourcesPlugin.getNedResources());
+        context.setVariable("msgResources", NedResourcesPlugin.getMsgResources());
         context.setVariable("NedUtils", BeansWrapper.getDefaultInstance().getStaticModels().get(NedUtils.class.getName()));
     }
 

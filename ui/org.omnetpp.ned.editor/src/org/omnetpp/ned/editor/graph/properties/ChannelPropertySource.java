@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
@@ -57,8 +57,8 @@ public class ChannelPropertySource extends MergedPropertySource {
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-                IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(nodeModel.getContainingNedFileElement()).getProject();
-                List<String> names = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames(project));
+                IProject project = NedResourcesPlugin.getNedResources().getNedFile(nodeModel.getContainingNedFileElement()).getProject();
+                List<String> names = new ArrayList<String>(NedResourcesPlugin.getNedResources().getChannelQNames(project));
                 Collections.sort(names);
                 return names;
             }

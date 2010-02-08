@@ -21,7 +21,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
@@ -61,10 +61,10 @@ public class CutAction extends SelectionAction {
 		selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));
 
 		// translate from editparts to model elements
-		List<INEDElement> selectedModelObjects = new ArrayList<INEDElement>();
+		List<INedElement> selectedModelObjects = new ArrayList<INedElement>();
 		for (EditPart editPart : selectedEditParts) {
         	if (editPart instanceof INedModelProvider) {
-				INEDElement model = ((INedModelProvider)editPart).getNedModel();
+				INedElement model = ((INedModelProvider)editPart).getNedModel();
 				selectedModelObjects.add(model.deepDup());
 				compoundCommand.add(new DeleteCommand(model));
 			}
@@ -72,7 +72,7 @@ public class CutAction extends SelectionAction {
 
         // copy to clipboard, and fire the deletion command
         if (selectedModelObjects.size() > 0) {
-        	Clipboard.getDefault().setContents(selectedModelObjects.toArray(new INEDElement[]{}));
+        	Clipboard.getDefault().setContents(selectedModelObjects.toArray(new INedElement[]{}));
         	compoundCommand.setLabel("Cut " + StringUtils.formatCounted(selectedModelObjects.size(), "object"));
         	execute(compoundCommand);
         }

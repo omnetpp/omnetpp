@@ -16,7 +16,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
@@ -89,7 +89,7 @@ public class CloneSubmoduleCommand extends Command {
 
         // make the cloned submodule's name unique within the parent, before inserting into the model
         // so it wont generate unnecessary notifications
-        newModule.setName(NEDElementUtilEx.getUniqueNameFor(newModule, parent.getSubmodules()));
+        newModule.setName(NedElementUtilEx.getUniqueNameFor(newModule, parent.getSubmodules()));
 
         if (index < 0) {
             parent.addSubmodule(newModule);

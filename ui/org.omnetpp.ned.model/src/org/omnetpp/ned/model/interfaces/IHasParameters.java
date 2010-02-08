@@ -10,7 +10,7 @@ package org.omnetpp.ned.model.interfaces;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 
 /**
@@ -18,7 +18,7 @@ import org.omnetpp.ned.model.ex.ParamElementEx;
  *
  * @author rhornig
  */
-public interface IHasParameters extends INEDElement {
+public interface IHasParameters extends INedElement {
 
 	/**
      * Returns the name - parameter node association. The returned map must not be modified.

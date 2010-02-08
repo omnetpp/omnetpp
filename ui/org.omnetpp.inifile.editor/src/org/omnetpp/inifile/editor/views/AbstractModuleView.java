@@ -20,12 +20,12 @@ import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.INedChangeListener;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelElement;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
@@ -43,26 +43,26 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * @author Andras
  */
 public abstract class AbstractModuleView extends PinnableView implements IShowInTarget {
-    private INEDChangeListener nedChangeListener;
+    private INedChangeListener nedChangeListener;
 
     @Override
     protected void hookListeners() {
         super.hookListeners();
 
         // Listen on NED changes as well (note: inifile changes arrive as selection changes)
-        nedChangeListener = new INEDChangeListener() {
-            public void modelChanged(NEDModelEvent event) {
+        nedChangeListener = new INedChangeListener() {
+            public void modelChanged(NedModelEvent event) {
                 nedModelChanged();
             }
         };
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedChangeListener);
+        NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedChangeListener);
     }
 
     @Override
     protected void unhookListeners() {
         super.unhookListeners();
         if (nedChangeListener != null)
-            NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedChangeListener);
+            NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedChangeListener);
     }
 
     protected void nedModelChanged() {
@@ -75,7 +75,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
      * which may have parameters (simple module, compound module, channel, submodule, connection).
      * Returns element itself if it already matches. Returns null if not found.
      */
-    protected static INEDElement findAncestorWithParameters(INEDElement element) {
+    protected static INedElement findAncestorWithParameters(INedElement element) {
         while (element != null) {
             if (element instanceof CompoundModuleElement || element instanceof SimpleModuleElement ||
                 element instanceof SubmoduleElement || element instanceof ModuleInterfaceElement ||
@@ -111,10 +111,10 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
             if (element instanceof INedModelProvider) {
                 //
                 // The NED graphical editor publishes selection as an IStructuredSelection,
-                // with editparts in it. INEDElement can be extracted from editparts
+                // with editparts in it. INedElement can be extracted from editparts
                 // via IModelProvider.
                 //
-                INEDElement model = ((INedModelProvider)element).getNedModel();
+                INedElement model = ((INedModelProvider)element).getNedModel();
                 if (model != null ) {
                     hideMessage();
                     buildContent(model, null, null, null);
@@ -138,14 +138,14 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
                     showMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
                     return;
                 }
-                INEDTypeInfo networkType = analyzer.resolveNetwork(NEDResourcesPlugin.getNEDResources(), networkName);
+                INedTypeInfo networkType = analyzer.resolveNetwork(NedResourcesPlugin.getNedResources(), networkName);
                 if (networkType == null) {
                     showMessage("No such NED network: "+networkName);
                     return;
                 }
 
                 hideMessage();
-                buildContent(networkType.getNEDElement(), analyzer, sel.getSection(), sel.getKey());
+                buildContent(networkType.getNedElement(), analyzer, sel.getSection(), sel.getKey());
             }
         }
         else {
@@ -161,7 +161,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
      * @param key selected section
      * @param section selected key
      */
-    protected abstract void buildContent(INEDElement module, InifileAnalyzer ana, String section, String key);
+    protected abstract void buildContent(INedElement module, InifileAnalyzer ana, String section, String key);
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.IShowInTarget#show(org.eclipse.ui.part.ShowInContext)

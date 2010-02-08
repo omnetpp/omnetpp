@@ -27,11 +27,11 @@ import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagDetect
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagValueDetector;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 // TODO completion within inner types
@@ -61,7 +61,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		if (info == null || info.linePrefix == null || info.linePrefixTrimmed == null)
 		    return new ICompletionProposal[0];
 
-		INedResources res = NEDResourcesPlugin.getNEDResources();
+		INedResources res = NedResourcesPlugin.getNedResources();
 		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 		NedFileElementEx nedFileElement = res.getNedFileElement(file);
 		IProject project = file.getProject();
@@ -71,25 +71,25 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 
 		// calculate the lookup context used in nedresource calls
 		INedTypeLookupContext context = nedFileElement;
-		INEDTypeInfo nedTypeInfo = null;
+		INedTypeInfo nedTypeInfo = null;
 		if (info.nedTypeName!=null) {
 		    nedTypeInfo = res.lookupNedType(info.nedTypeName, context);
-		    if (nedTypeInfo != null && nedTypeInfo.getNEDElement() instanceof CompoundModuleElementEx)
-		        context = (CompoundModuleElementEx)nedTypeInfo.getNEDElement();
+		    if (nedTypeInfo != null && nedTypeInfo.getNedElement() instanceof CompoundModuleElementEx)
+		        context = (CompoundModuleElementEx)nedTypeInfo.getNedElement();
 		}
 
-		INEDTypeInfo nedEnclosingTypeInfo = null;
+		INedTypeInfo nedEnclosingTypeInfo = null;
 		if (info.enclosingNedTypeName != null) { // we are inside an inner type
 		    nedEnclosingTypeInfo = res.lookupNedType(info.enclosingNedTypeName, nedFileElement);
-            if (nedEnclosingTypeInfo != null && nedEnclosingTypeInfo.getNEDElement() instanceof CompoundModuleElementEx)
-                context = (CompoundModuleElementEx)nedEnclosingTypeInfo.getNEDElement();
+            if (nedEnclosingTypeInfo != null && nedEnclosingTypeInfo.getNedElement() instanceof CompoundModuleElementEx)
+                context = (CompoundModuleElementEx)nedEnclosingTypeInfo.getNedElement();
 		}
 
-		INEDTypeInfo submoduleType = null;
+		INedTypeInfo submoduleType = null;
 		if (info.submoduleTypeName!=null)
 			submoduleType = res.lookupNedType(info.submoduleTypeName, context);
 
-		INEDTypeInfo connectionType = null;
+		INedTypeInfo connectionType = null;
         if (info.connectionTypeName!=null)
             connectionType = res.lookupNedType(info.connectionTypeName, context);
 
@@ -202,7 +202,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 					String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
 					if (submodTypeName != null) {
 					    // Debug.println(" offering params of type "+submodTypeName);
-					    INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
+					    INedTypeInfo submodType = res.lookupNedType(submodTypeName, context);
 					    if (submodType!=null) {
 					        if (line.matches(".*\\bsizeof *\\(.*"))
 					            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
@@ -297,7 +297,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 	    		    String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
 	    		    if (submodTypeName != null) {
 	    		        // Debug.println(" offering gates of type "+submodTypeName);
-	    		        INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
+	    		        INedTypeInfo submodType = res.lookupNedType(submodTypeName, context);
 	    		        if (submodType != null)
 	    		            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
 	    		    }

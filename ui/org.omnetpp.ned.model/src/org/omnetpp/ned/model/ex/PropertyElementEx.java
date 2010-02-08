@@ -8,7 +8,7 @@
 package org.omnetpp.ned.model.ex;
 
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.PropertyElement;
@@ -25,7 +25,7 @@ public class PropertyElementEx extends PropertyElement implements IHasName {
         super();
     }
 
-    public PropertyElementEx(INEDElement parent) {
+    public PropertyElementEx(INedElement parent) {
         super(parent);
     }
 
@@ -34,18 +34,18 @@ public class PropertyElementEx extends PropertyElement implements IHasName {
      * otherwise returns null.
      */
     public String getSimpleValue() {
-        for (INEDElement child : this)
+        for (INedElement child : this)
             if (child instanceof PropertyKeyElement && StringUtils.isEmpty(((PropertyKeyElement)child).getName()))
-                for (INEDElement grandChild : child)
+                for (INedElement grandChild : child)
                     if (grandChild instanceof LiteralElement)
                         return ((LiteralElement)grandChild).getValue();
         return null;
     }
 
     public String getValue(String key) {
-        for (INEDElement child : this)
+        for (INedElement child : this)
             if (child instanceof PropertyKeyElement && key.equals(((PropertyKeyElement)child).getName()))
-                for (INEDElement grandChild : child)
+                for (INedElement grandChild : child)
                     if (grandChild instanceof LiteralElement)
                         return ((LiteralElement)grandChild).getValue();
         return null;

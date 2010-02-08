@@ -111,7 +111,7 @@ import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.misc.FigureUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.NedEditorPreferenceInitializer;
@@ -135,22 +135,22 @@ import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySheetPage;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
-import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
-import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
-import org.omnetpp.ned.model.notification.NEDFileRemovedEvent;
-import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.INedChangeListener;
+import org.omnetpp.ned.model.notification.NedAttributeChangeEvent;
+import org.omnetpp.ned.model.notification.NedBeginModelChangeEvent;
+import org.omnetpp.ned.model.notification.NedEndModelChangeEvent;
+import org.omnetpp.ned.model.notification.NedFileRemovedEvent;
+import org.omnetpp.ned.model.notification.NedModelChangeEvent;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 
@@ -165,7 +165,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
 @SuppressWarnings("restriction")
 public class GraphicalNedEditor
 	extends GraphicalEditorWithFlyoutPalette
-	implements INEDChangeListener
+	implements INedChangeListener
 {
     private static final String PROP_PALETTE_FILTER = "paletteFilter";
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
@@ -218,7 +218,7 @@ public class GraphicalNedEditor
         super.init(site, input);
 
         // we listen on changes too
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+        NedResourcesPlugin.getNedResources().addNedModelChangeListener(this);
 
 		IContextService contextService = (IContextService)site.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.nedGraphEditor");
@@ -238,7 +238,7 @@ public class GraphicalNedEditor
 
     @Override
     public void dispose() {
-        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
+        NedResourcesPlugin.getNedResources().removeNedModelChangeListener(this);
         paletteRefreshJob.cancel();
 
         // save palette filter to a persistent property
@@ -334,7 +334,7 @@ public class GraphicalNedEditor
         // Kludge: override getSelection() to remove invalid EditParts from the returned
         // selection. This is needed because during refreshChildren(), editPart.removeNotify()
         // gets called and fires a selection change. Receivers of the selection change
-        // would find invalid editParts in the selection (editParts whose NEDElement is no
+        // would find invalid editParts in the selection (editParts whose NedElement is no
         // longer in the model), because refreshChildren() has not completed yet.
         // Ideally, GEF should arrange that selection change only gets fired when the graphical
         // editor is already in a consistent state; here the workaround is to manually remove
@@ -347,7 +347,7 @@ public class GraphicalNedEditor
                 List newSel = new ArrayList();
                 for (Object o : sel) {
                     if (o instanceof INedModelProvider) {
-                        INEDElement nedElement = ((INedModelProvider)o).getNedModel();
+                        INedElement nedElement = ((INedModelProvider)o).getNedModel();
                         if (nedElement.getContainingNedFileElement() != null)
                             newSel.add(o);
                     }
@@ -591,7 +591,7 @@ public class GraphicalNedEditor
 	}
 
 	public NedFileElementEx getModel() {
-		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
+		return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
 	}
 
     protected void loadProperties() {
@@ -610,7 +610,7 @@ public class GraphicalNedEditor
         super.setInput(input);
 
         Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
-        Assert.isTrue(NEDResourcesPlugin.getNEDResources().getConnectCount(getFile())>0);  // must be already connected
+        Assert.isTrue(NedResourcesPlugin.getNedResources().getConnectCount(getFile())>0);  // must be already connected
 
         getCommandStack().flush();
         NedFileElementEx model = getModel();
@@ -642,13 +642,13 @@ public class GraphicalNedEditor
             updateActions(getSelectionActions());
     }
 
-    public void modelChanged(final NEDModelEvent event) {
+    public void modelChanged(final NedModelEvent event) {
         // multi page editor will close us -> no need to do anything
-        if (event instanceof NEDFileRemovedEvent && ((NEDFileRemovedEvent)event).getFile().equals(getFile()))
+        if (event instanceof NedFileRemovedEvent && ((NedFileRemovedEvent)event).getFile().equals(getFile()))
             return;
 
         // ignore event when closing the editor and the file has already been removed from the NEDResources
-        if (!NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
+        if (!NedResourcesPlugin.getNedResources().containsNedFileElement(getFile()))
         	return;
 
     	// we do a full refresh in response of a change
@@ -656,15 +656,15 @@ public class GraphicalNedEditor
     	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
 			public void run() {
 				// count begin/end nesting
-				if (event instanceof NEDBeginModelChangeEvent)
+				if (event instanceof NedBeginModelChangeEvent)
 					nedBeginChangeCount++;
-				else if (event instanceof NEDEndModelChangeEvent)
+				else if (event instanceof NedEndModelChangeEvent)
 					nedBeginChangeCount--;
 				// Debug.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
 				Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
 
 				// record notification event as an external change iff it refers to our model and we are not the originator
-				if (event instanceof NEDModelChangeEvent && event.getSource() != null &&
+				if (event instanceof NedModelChangeEvent && event.getSource() != null &&
 					event.getSource().getContainingNedFileElement() == getModel() &&
 					!((LocalCommandStack)getCommandStack()).isInsideBeginEnd())
 				{
@@ -692,11 +692,11 @@ public class GraphicalNedEditor
 		    	// update all derived compound modules too, possibly after asking the user for
 		    	// confirmation -- which is more easily done here.
 		    	//
-		    	if (event instanceof NEDAttributeChangeEvent && event.getSource() instanceof SubmoduleElementEx) {
-		    		NEDAttributeChangeEvent e = (NEDAttributeChangeEvent) event;
+		    	if (event instanceof NedAttributeChangeEvent && event.getSource() instanceof SubmoduleElementEx) {
+		    		NedAttributeChangeEvent e = (NedAttributeChangeEvent) event;
 		    		if (e.getAttribute().equals(SubmoduleElement.ATT_NAME)) {
 		    			CompoundModuleElementEx compoundModule = ((SubmoduleElementEx)e.getSource()).getCompoundModule();
-		    			NEDElementUtilEx.renameSubmoduleInConnections(compoundModule, (String)e.getOldValue(), (String)e.getNewValue());
+		    			NedElementUtilEx.renameSubmoduleInConnections(compoundModule, (String)e.getOldValue(), (String)e.getNewValue());
 		    		}
 		    	}
 
@@ -720,7 +720,7 @@ public class GraphicalNedEditor
      * Reveals a model element in the editor (or its nearest ancestor which
      * has an associated editPart)
      */
-    public void reveal(INEDElement model) {
+    public void reveal(INedElement model) {
         EditPart editPart = getNearestEditPartForModel(getGraphicalViewer(), model);
 
          if (editPart == null) {
@@ -737,8 +737,8 @@ public class GraphicalNedEditor
      * returns the first one among ancestors that has a corresponding editpart.
      * Can return NULL no editpart has been found
      */
-    public static EditPart getNearestEditPartForModel(EditPartViewer viewer, INEDElement model) {
-            INEDElement originalModel = model;
+    public static EditPart getNearestEditPartForModel(EditPartViewer viewer, INedElement model) {
+            INedElement originalModel = model;
             while (model != null) {
             	// get the part directly from the main registry
                 EditPart ep = (EditPart)viewer.getEditPartRegistry().get(model);
@@ -783,20 +783,20 @@ public class GraphicalNedEditor
 		if (!(ep instanceof INedModelProvider))
 			return null;
 
-		INEDElement element = ((INedModelProvider)ep).getNedModel();
+		INedElement element = ((INedModelProvider)ep).getNedModel();
 		if (element instanceof NedFileElementEx)
 			return null;
 
 		String hoverText = "";
 
 		// brief
-		hoverText += "<b>" + StringUtils.quoteForHtml(NEDTreeUtil.getNedModelLabelProvider().getText(element)) + "</b>\n";
+		hoverText += "<b>" + StringUtils.quoteForHtml(NedTreeUtil.getNedModelLabelProvider().getText(element)) + "</b>\n";
 
 		//debug code:
 		//hoverText += element.getSourceLocation() + "<br/>" + element.getSourceRegion();
 		//DisplayString ds = ((IHasDisplayString)element).getDisplayString();
 		//String displayStringOwnerSource = "<pre>" + ds.getOwner().getSource() + "</pre>";
-		//String xml = "<pre>" + StringUtils.quoteForHtml(NEDTreeUtil.generateXmlFromPojoElementTree(element, "", false)) + "</pre>";
+		//String xml = "<pre>" + StringUtils.quoteForHtml(NedTreeUtil.generateXmlFromPojoElementTree(element, "", false)) + "</pre>";
 		//hoverText += displayStringOwnerSource;
 		//hoverText += xml;
 
@@ -826,11 +826,11 @@ public class GraphicalNedEditor
 		//debug code:
 		//hoverText += "<br/><br/>" + "SyntaxProblemMaxCumulatedSeverity:" + element.getSyntaxProblemMaxCumulatedSeverity() +
 		//			", ConsistencyProblemMaxCumulatedSeverity:" + element.getConsistencyProblemMaxCumulatedSeverity();
-		//INEDElement fileElement = element.getParentWithTag(NEDElementTags.NED_NED_FILE);
+		//INedElement fileElement = element.getParentWithTag(NedElementTags.NED_NED_FILE);
 		//hoverText += "<br/><br/>" + "File: SyntaxProblemMaxCumulatedSeverity:" + fileElement.getSyntaxProblemMaxCumulatedSeverity() +
 		//", ConsistencyProblemMaxCumulatedSeverity:" + fileElement.getConsistencyProblemMaxCumulatedSeverity();
 
-		String nedCode = StringUtils.stripLeadingCommentLines(element.getNEDSource().trim(), "//");
+		String nedCode = StringUtils.stripLeadingCommentLines(element.getNedSource().trim(), "//");
 		hoverText += "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
 
 		outPreferredSize.preferredWidth = Math.max(300, 7*(5+StringUtils.getMaximumLineLength(nedCode)));
@@ -992,7 +992,7 @@ public class GraphicalNedEditor
         // POST listeners. See super.execute() for why the code look like this.
         protected void notifyListeners(Command command, int state) {
             if (state==POST_EXECUTE || state==POST_UNDO || state==POST_REDO) {
-                NEDResourcesPlugin.getNEDResources().fireEndChangeEvent();
+                NedResourcesPlugin.getNedResources().fireEndChangeEvent();
                 Assert.isTrue(insideBeginEnd); // no nested PRE/POST notifications in GEF
                 insideBeginEnd = false;
                 notifyListeners();  // do postponed notifyListeners() now
@@ -1002,7 +1002,7 @@ public class GraphicalNedEditor
 
             if (state==PRE_EXECUTE || state==PRE_UNDO || state==PRE_REDO) {
                 Assert.isTrue(!insideBeginEnd, "Nested execute is not allowed");
-                NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
+                NedResourcesPlugin.getNedResources().fireBeginChangeEvent();
                 insideBeginEnd = true;
             }
         }

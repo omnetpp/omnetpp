@@ -7,14 +7,14 @@
 
 package org.omnetpp.ned.model.interfaces;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * Elements that are instances of a NED type: submodule and connection.
  *
  * @author rhornig
  */
-public interface IHasType extends INEDElement {
+public interface IHasType extends INedElement {
     /**
      * Returns the type of the object
      */
@@ -56,11 +56,11 @@ public interface IHasType extends INEDElement {
      * Returns null if the effective type is not filled in, or is not a valid NED type,
      * or not a type that's accepted at the given place (e.g. a channel for submodule type).
      */
-    public INEDTypeInfo getNEDTypeInfo();
+    public INedTypeInfo getNedTypeInfo();
 
     /**
      * Returns the model element for the effective type. Equivalent to
-     * getNEDTypeInfo().getNEDElement(), but handles nulls.
+     * getNedTypeInfo().getNedElement(), but handles nulls.
      *
      * Returns null if the effective type is not filled in, or is not a valid NED type,
      * or not a type that's accepted at the given place (e.g. a channel for submodule type).

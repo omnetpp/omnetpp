@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -25,15 +25,15 @@ import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
  */
 public class DeleteCommand extends Command {
     private static class ElementUndoItem {
-        public INEDElement node;
-        public INEDElement parent;
-        public INEDElement nextSibling;
+        public INedElement node;
+        public INedElement parent;
+        public INedElement nextSibling;
     }
 
     private final ElementUndoItem elementUndoItem = new ElementUndoItem();
     private final List<ElementUndoItem> connectionUndoItems = new ArrayList<ElementUndoItem>();
 
-    public DeleteCommand(INEDElement toBeDeleted) {
+    public DeleteCommand(INedElement toBeDeleted) {
     	elementUndoItem.node = toBeDeleted;
     }
 
@@ -84,7 +84,7 @@ public class DeleteCommand extends Command {
         }
     }
 
-    private void deleteEmptyConnectionGroup(INEDElement node) {
+    private void deleteEmptyConnectionGroup(INedElement node) {
         if (node instanceof ConnectionGroupElement) {
             ConnectionGroupElement group = (ConnectionGroupElement)node;
 

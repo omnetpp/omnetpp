@@ -75,13 +75,13 @@ import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
+import org.omnetpp.ned.editor.graph.commands.AddNedElementCommand;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementConstants;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedElementConstants;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -91,7 +91,7 @@ import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 
@@ -370,7 +370,7 @@ public class ParametersDialog extends TitleAreaDialog {
             if (originalParamLocal != null)
                 currentParamLocal = (ParamElementEx)originalParamLocal.deepDup();
             else {
-                currentParamLocal = (ParamElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_PARAM);
+                currentParamLocal = (ParamElementEx)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_PARAM);
 
                 setType(currentParamLocal, type);
                 setName(currentParamLocal, name);
@@ -441,15 +441,15 @@ public class ParametersDialog extends TitleAreaDialog {
             }
             else {
                 if (propertyElement == null)
-                    propertyElement = (PropertyElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PROPERTY, paramElement);
+                    propertyElement = (PropertyElementEx)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_PROPERTY, paramElement);
 
                 while (propertyElement.getFirstChild() != null)
                     propertyElement.getFirstChild().removeFromParent();
 
                 propertyElement.setName("unit");
-                PropertyKeyElement propertyKeyElement = (PropertyKeyElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PROPERTY_KEY, propertyElement);
-                LiteralElement literalElement = (LiteralElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_LITERAL, propertyKeyElement);
-                literalElement.setType(NEDElementConstants.NED_CONST_STRING);
+                PropertyKeyElement propertyKeyElement = (PropertyKeyElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_PROPERTY_KEY, propertyElement);
+                LiteralElement literalElement = (LiteralElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_LITERAL, propertyKeyElement);
+                literalElement.setType(NedElementConstants.NED_CONST_STRING);
                 literalElement.setValue(unit);
             }
         }
@@ -532,7 +532,7 @@ public class ParametersDialog extends TitleAreaDialog {
          * Returns the comment of the parameter; the "right-comment" is used.
          */
         protected String getComment(ParamElementEx paramElement) {
-            CommentElement commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
+            CommentElement commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NedElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
 
             if (commentElement == null)
                 return "";
@@ -549,10 +549,10 @@ public class ParametersDialog extends TitleAreaDialog {
 
         protected void setComment(ParamElementEx paramElement, String comment) {
             String commentPadding = " // ";
-            CommentElement commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
+            CommentElement commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NedElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
 
             if (commentElement == null) {
-                commentElement = (CommentElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_COMMENT, paramElement);
+                commentElement = (CommentElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_COMMENT, paramElement);
                 commentElement.setLocid("right");
             }
             else
@@ -561,7 +561,7 @@ public class ParametersDialog extends TitleAreaDialog {
             if (StringUtils.strip(comment).equals("")) {
                 while (commentElement != null) {
                     commentElement.removeFromParent();
-                    commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
+                    commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NedElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
                 }
             }
             else {
@@ -578,11 +578,11 @@ public class ParametersDialog extends TitleAreaDialog {
 
     // BEGIN KLUDGE: TODO: work around the fact that ConnectionElementEx does not have its parameters directly
     // but there is an extra node under it called ChannelSpecElement, we may want to get rid of that at some point
-    private INEDElement getRealParametersProvider() {
+    private INedElement getRealParametersProvider() {
         return parameterProvider instanceof ConnectionElementEx ? ((ConnectionElementEx)parameterProvider).getFirstChannelSpecChild() : parameterProvider;
     }
 
-    private INEDElement getFirstParametersChild() {
+    private INedElement getFirstParametersChild() {
         if (parameterProvider instanceof ConnectionElementEx) {
             ChannelSpecElement channelSpecElement = ((ConnectionElementEx)parameterProvider).getFirstChannelSpecChild();
 
@@ -592,7 +592,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 return null;
         }
         else
-            return parameterProvider.getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
+            return parameterProvider.getFirstChildWithTag(NedElementTags.NED_PARAMETERS);
     }
     // END KLUDGE:
 
@@ -705,8 +705,8 @@ public class ParametersDialog extends TitleAreaDialog {
             }
 
             private void appendParamText(StringBuffer buffer, ParamElementEx paramElement) {
-                INEDElement parentElement = paramElement.getParent();
-                INEDElement paramOwner = parentElement == null ? parameterProvider : parentElement.getParent();
+                INedElement parentElement = paramElement.getParent();
+                INedElement paramOwner = parentElement == null ? parameterProvider : parentElement.getParent();
                 if (paramOwner instanceof SubmoduleElementEx) {
                     buffer.append("Submodule <b>");
                     buffer.append(((SubmoduleElementEx)paramOwner).getCompoundModule().getName());
@@ -721,7 +721,7 @@ public class ParametersDialog extends TitleAreaDialog {
                     buffer.append("</b>");
                 }
                 buffer.append("<br/><li>");
-                buffer.append(paramElement.getNEDSource());
+                buffer.append(paramElement.getNedSource());
                 buffer.append("</li><br/><br/>");
             }
         });
@@ -955,18 +955,18 @@ public class ParametersDialog extends TitleAreaDialog {
 
     @Override
 	protected void okPressed() {
-       INEDElement parametersElement = getFirstParametersChild();
+       INedElement parametersElement = getFirstParametersChild();
        ParametersElement newParametersElement = null;
        if (parametersElement != null)
            newParametersElement = (ParametersElement)parametersElement.deepDup();
        else {
-           newParametersElement = (ParametersElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PARAMETERS);
+           newParametersElement = (ParametersElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_PARAMETERS);
            if (parameterProvider instanceof ConnectionElementEx)
                newParametersElement.setIsImplicit(true);
        }
 
        // remove old parameters from copy
-       for (INEDElement element : newParametersElement)
+       for (INedElement element : newParametersElement)
            if (element instanceof ParamElementEx)
                element.removeFromParent();
 
@@ -981,7 +981,7 @@ public class ParametersDialog extends TitleAreaDialog {
            parameterReplaceCommand.add(new DeleteCommand(parametersElement));
 
        if (newParametersElement.getFirstChild() != null)
-           parameterReplaceCommand.add(new AddNEDElementCommand(getRealParametersProvider(), newParametersElement));
+           parameterReplaceCommand.add(new AddNedElementCommand(getRealParametersProvider(), newParametersElement));
        else if (parametersElement != null)
            parameterReplaceCommand.add(new DeleteCommand(parametersElement));
 
@@ -1021,7 +1021,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 errorMessages.append("The provided parameter name \"" + paramLine.name + "\" is a reserved NED keyword\n");
 
             String value = paramLine.removeDefaultAroundValue(paramLine.value);
-            if (!StringUtils.isEmpty(value) && !NEDTreeUtil.isExpressionValid(value))
+            if (!StringUtils.isEmpty(value) && !NedTreeUtil.isExpressionValid(value))
                 errorMessages.append("The provided parameter value \"" + value + "\" is not a valid expression\n");
         }
 

@@ -26,16 +26,16 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
@@ -60,7 +60,7 @@ public class RefactoringTools {
         if (nedFileElement.hasSyntaxError())
             return;
 
-        INedResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NedResourcesPlugin.getNedResources();
         IFile file = res.getNedFile(nedFileElement);
 
         String expectedPackage = res.getExpectedPackageFor(file);
@@ -78,7 +78,7 @@ public class RefactoringTools {
         if (nedFileElement.hasSyntaxError())
             return;
 
-        INedResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NedResourcesPlugin.getNedResources();
         IFile file = res.getNedFile(nedFileElement);
         IProject contextProject = file.getProject();
 
@@ -99,7 +99,7 @@ public class RefactoringTools {
             for (String importSpec : imports)
                 nedFileElement.addImport(importSpec);
             if (!imports.isEmpty())
-                nedFileElement.getLastImportChild().appendChild(NEDElementUtilEx.createCommentElement("right", "\n\n\n"));
+                nedFileElement.getLastImportChild().appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
         }
     }
 
@@ -108,8 +108,8 @@ public class RefactoringTools {
      */
 	protected static Set<String> collectUnqualifiedTypeNames(NedFileElementEx nedFileElement) {
 		final Set<String> result = new HashSet<String>();
-		NEDElementUtilEx.visitNedTree(nedFileElement, new NEDElementUtilEx.INEDElementVisitor() {
-			public void visit(INEDElement element) {
+		NedElementUtilEx.visitNedTree(nedFileElement, new NedElementUtilEx.INedElementVisitor() {
+			public void visit(INedElement element) {
 				if (element instanceof IHasType)
 					collect(result, ((IHasType)element).getEffectiveType());
 				else if (element instanceof ExtendsElement)
@@ -130,7 +130,7 @@ public class RefactoringTools {
 	 * Find the fully qualified type for the given simple name, and add it to the imports list.
 	 */
 	protected static void resolveImport(IProject contextProject, String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
-		INedResources res = NEDResourcesPlugin.getNEDResources();
+		INedResources res = NedResourcesPlugin.getNedResources();
 
 		// name is in the same package as this file, no need to add an import
 		if (res.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)
@@ -160,7 +160,7 @@ public class RefactoringTools {
 			// oldImports may contain wildcards, so try with regex as well
 			for (String oldImport : oldImports)
 				if (oldImport.contains("*"))
-					if (potentialMatch.matches(NEDElementUtilEx.importToRegex(oldImport))) {
+					if (potentialMatch.matches(NedElementUtilEx.importToRegex(oldImport))) {
 						imports.add(potentialMatch);
 						return;
 					}
@@ -194,9 +194,9 @@ public class RefactoringTools {
      * This method removes unnecessary elements from the NED tree, such as empty
      * channel spec, empty "parameters", "gates", "submodule" etc elements.
      */
-    public static void cleanupTree(INEDElement element) {
+    public static void cleanupTree(INedElement element) {
         // filter the child nodes first
-        for (INEDElement child : element)
+        for (INedElement child : element)
             cleanupTree(child);
 
         // see if the current node can be filtered out
@@ -228,7 +228,7 @@ public class RefactoringTools {
         Collection<AddGateLabels> result = new HashSet<AddGateLabels>();
 
         // TODO: why do we need to copy it? some notification seems to cause a recalculation of gate declarations during inference
-        for (GateElementEx gate : new ArrayList<GateElementEx>(element.getNEDTypeInfo().getGateDeclarations().values()))
+        for (GateElementEx gate : new ArrayList<GateElementEx>(element.getNedTypeInfo().getGateDeclarations().values()))
             inferGateLabels(gate, forward, result);
 
         return result;
@@ -237,8 +237,8 @@ public class RefactoringTools {
     public static void inferGateLabels(GateElementEx gate, boolean forward, Collection<AddGateLabels> result) {
         INedTypeElement typeElement = gate.getEnclosingTypeElement();
 
-        for (INEDTypeInfo typeInfo : NEDResourcesPlugin.getNEDResources().getNedTypesFromAllProjects()) {
-            INedTypeElement element = typeInfo.getNEDElement();
+        for (INedTypeInfo typeInfo : NedResourcesPlugin.getNedResources().getNedTypesFromAllProjects()) {
+            INedTypeElement element = typeInfo.getNedElement();
 
             if (element instanceof CompoundModuleElementEx) {
                 CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)element;
@@ -257,11 +257,11 @@ public class RefactoringTools {
     }
 
     private static void inferLabelsOnConnections(List<ConnectionElementEx> connections, GateElementEx gate1, boolean forward, Collection<AddGateLabels> result) {
-        INEDTypeInfo typeInfo = gate1.getEnclosingTypeElement().getNEDTypeInfo();
+        INedTypeInfo typeInfo = gate1.getEnclosingTypeElement().getNedTypeInfo();
         for (ConnectionElementEx connection : connections) {
             GateElementEx gate2 = null;
-            INEDTypeInfo srcTypeInfo = connection.getSrcModuleRef().getNEDTypeInfo();
-            INEDTypeInfo destTypeInfo = connection.getDestModuleRef().getNEDTypeInfo();
+            INedTypeInfo srcTypeInfo = connection.getSrcModuleRef().getNedTypeInfo();
+            INedTypeInfo destTypeInfo = connection.getDestModuleRef().getNedTypeInfo();
 
             if (connection.getDestGate().equals(gate1.getName()) && destTypeInfo == typeInfo)
                 gate2 = srcTypeInfo.getGateDeclarations().get(connection.getSrcGate());
@@ -279,8 +279,8 @@ public class RefactoringTools {
 
     @SuppressWarnings("unchecked")
     private static void inferGateLabels(GateElementEx fromGate, GateElementEx toGate, Collection<AddGateLabels> result) {
-        ArrayList<String> fromLabels = NEDElementUtilEx.getLabels(fromGate);
-        ArrayList<String> toLabels = NEDElementUtilEx.getLabels(toGate);
+        ArrayList<String> fromLabels = NedElementUtilEx.getLabels(fromGate);
+        ArrayList<String> toLabels = NedElementUtilEx.getLabels(toGate);
         Collection<String> addedLabels = CollectionUtils.subtract(fromLabels, toLabels);
 
         if (!addedLabels.isEmpty())
@@ -331,7 +331,7 @@ public class RefactoringTools {
 
         public void run() {
             //Debug.println("*** Adding labels: " + labels + " to gate: " + gate.getEnclosingTypeElement().getName() + "." + gate.getName());
-            NEDElementUtilEx.addLabels(gate, labels);
+            NedElementUtilEx.addLabels(gate, labels);
         }
     }
 }

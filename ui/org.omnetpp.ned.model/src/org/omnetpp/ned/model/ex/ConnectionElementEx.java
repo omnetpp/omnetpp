@@ -14,14 +14,14 @@ import java.util.Map;
 
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
@@ -40,7 +40,7 @@ public class ConnectionElementEx extends ConnectionElement
 		setArrowDirection(ConnectionElementEx.NED_ARROWDIR_L2R);
 	}
 
-    protected ConnectionElementEx(INEDElement parent) {
+    protected ConnectionElementEx(INedElement parent) {
 		super(parent);
 		setArrowDirection(ConnectionElementEx.NED_ARROWDIR_L2R);
 	}
@@ -149,17 +149,17 @@ public class ConnectionElementEx extends ConnectionElement
 	}
 
     @Override
-    public void fireModelEvent(NEDModelEvent event) {
+    public void fireModelEvent(NedModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NEDElementUtilEx.isDisplayStringUpToDate(displayString, this))
+    	if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
     		displayString = null;
     	super.fireModelEvent(event);
     }
 
     public DisplayString getDisplayString() {
     	if (displayString == null)
-    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NEDElement.displayStringOf(getEffectiveTypeRef()));
+    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getEffectiveTypeRef()));
     	return displayString;
     }
 
@@ -168,7 +168,7 @@ public class ConnectionElementEx extends ConnectionElement
      */
     public DisplayString getDisplayString(IChannelKindTypeElement channelType) {
         if (displayString == null)
-            displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
+            displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
         displayString.setFallbackDisplayString(channelType.getDisplayString());
         return displayString;
     }
@@ -198,7 +198,7 @@ public class ConnectionElementEx extends ConnectionElement
     public void setType(String type) {
         ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
         if (channelSpecElement == null) {
-            channelSpecElement = (ChannelSpecElement)NEDElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
+            channelSpecElement = (ChannelSpecElement)NedElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
             appendChild(channelSpecElement);
         }
         channelSpecElement.setType(type);
@@ -213,7 +213,7 @@ public class ConnectionElementEx extends ConnectionElement
         ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
 
         if (channelSpecElement == null) {
-            channelSpecElement = (ChannelSpecElement)NEDElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
+            channelSpecElement = (ChannelSpecElement)NedElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
             appendChild(channelSpecElement);
         }
         channelSpecElement.setLikeType(type);
@@ -228,7 +228,7 @@ public class ConnectionElementEx extends ConnectionElement
         ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
 
         if (channelSpecElement == null) {
-            channelSpecElement = (ChannelSpecElement)NEDElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
+            channelSpecElement = (ChannelSpecElement)NedElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
             appendChild(channelSpecElement);
         }
         channelSpecElement.setLikeParam(param);
@@ -259,15 +259,15 @@ public class ConnectionElementEx extends ConnectionElement
             return likeType;
     }
 
-    public INEDTypeInfo getNEDTypeInfo() {
-    	INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
-    	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNEDElement();
+    public INedTypeInfo getNedTypeInfo() {
+    	INedTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
+    	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNedElement();
 		return (typeElement instanceof IChannelKindTypeElement) ? typeInfo : null;
     }
 
     public INedTypeElement getEffectiveTypeRef() {
-        INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? null : info.getNEDElement();
+        INedTypeInfo info = getNedTypeInfo();
+        return info == null ? null : info.getNedElement();
     }
 
     /**
@@ -282,7 +282,7 @@ public class ConnectionElementEx extends ConnectionElement
 
         ParametersElement parametersElement = channelSpecElement.getFirstParametersChild();
         if (parametersElement != null)
-        	for (INEDElement currChild : parametersElement)
+        	for (INedElement currChild : parametersElement)
         		if (currChild instanceof ParamElementEx)
         			result.add((ParamElementEx)currChild);
 
@@ -297,7 +297,7 @@ public class ConnectionElementEx extends ConnectionElement
      * so the interface NED type is used.
      */
     public Map<String, ParamElementEx> getParamAssignments() {
-        return getParamAssignments(getNEDTypeInfo());
+        return getParamAssignments(getNedTypeInfo());
     }
 
     /**
@@ -307,7 +307,7 @@ public class ConnectionElementEx extends ConnectionElement
      * parameter. This is useful when the channel is a "like" channel, and the
      * caller knows the actual channel type (e.g. from an inifile).
      */
-    public Map<String, ParamElementEx> getParamAssignments(INEDTypeInfo channelType) {
+    public Map<String, ParamElementEx> getParamAssignments(INedTypeInfo channelType) {
         Map<String, ParamElementEx> result = new HashMap<String, ParamElementEx>();
 
         if (channelType != null)
@@ -326,7 +326,7 @@ public class ConnectionElementEx extends ConnectionElement
      * so the interface NED type is used.
      */
     public Map<String, ParamElementEx> getParamDeclarations() {
-        return getParamDeclarations(getNEDTypeInfo());
+        return getParamDeclarations(getNedTypeInfo());
     }
 
     /**
@@ -336,12 +336,12 @@ public class ConnectionElementEx extends ConnectionElement
      * a "like" channel, and the caller knows the actual channel type
      * (e.g. from an inifile).
      */
-    public Map<String, ParamElementEx> getParamDeclarations(INEDTypeInfo channelType) {
+    public Map<String, ParamElementEx> getParamDeclarations(INedTypeInfo channelType) {
         return channelType == null ? new HashMap<String, ParamElementEx>() : channelType.getParamDeclarations();
     }
 
     public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
-        List<ParamElementEx> chain = getNEDTypeInfo().getParameterInheritanceChain(parameterName);
+        List<ParamElementEx> chain = getNedTypeInfo().getParameterInheritanceChain(parameterName);
 
         for (ParamElementEx param : getOwnParams()) {
             if (parameterName.equals(param.getName())) {

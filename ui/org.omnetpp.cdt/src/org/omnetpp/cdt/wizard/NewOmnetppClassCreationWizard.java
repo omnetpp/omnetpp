@@ -25,8 +25,8 @@ import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
 /**
  * Modified C++ Class Creation Wizard that: (1) generates .cc files not .cpp
@@ -47,7 +47,7 @@ public class NewOmnetppClassCreationWizard extends NewClassCreationWizard {
             if (path != null && !path.isEmpty()) {
                 IContainer folder = path.segmentCount()==1 ? wsroot.getProject(path.segment(0)) : wsroot.getFolder(path);
                 if (folder.exists()) {
-                    String namespace = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(folder, INEDTypeResolver.NAMESPACE_PROPERTY);
+                    String namespace = NedResourcesPlugin.getNedResources().getSimplePropertyFor(folder, INedTypeResolver.NAMESPACE_PROPERTY);
                     boolean empty = StringUtils.isEmpty(namespace);
                     setNamespaceText(empty ? "" : namespace, true);
                     setNamespaceSelection(!empty, !empty);
@@ -76,7 +76,7 @@ public class NewOmnetppClassCreationWizard extends NewClassCreationWizard {
             // So the easiest and most robust solution is to simply replace the comment
             // in the generated files afterwards.
             //
-            String license = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(getCreatedHeaderFile().getParent(), INEDTypeResolver.LICENSE_PROPERTY);
+            String license = NedResourcesPlugin.getNedResources().getSimplePropertyFor(getCreatedHeaderFile().getParent(), INedTypeResolver.LICENSE_PROPERTY);
             if (license==null || !LicenseUtils.isAcceptedLicense(license))
                 license = LicenseUtils.getDefaultLicense();
             String bannerComment = LicenseUtils.getBannerComment(license, "//");

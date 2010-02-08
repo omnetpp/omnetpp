@@ -11,7 +11,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.GroupRequest;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * Adds support for deleting model elements
@@ -26,6 +26,6 @@ public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.Compone
         if (!EditPartUtil.isEditable(getHost()))
             return null;
 
-        return new DeleteCommand((INEDElement)getHost().getModel());
+        return new DeleteCommand((INedElement)getHost().getModel());
     }
 }

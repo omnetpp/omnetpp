@@ -39,7 +39,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 
 /**
  * Edit section name and some of its attributes
@@ -154,7 +154,7 @@ public class SectionDialog extends TitleAreaDialog {
 
 		// fill network combo
 		IProject contextProject = doc.getDocumentFile().getProject();
-		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames(contextProject);
+		Set<String> networkNameSet = NedResourcesPlugin.getNedResources().getNetworkQNames(contextProject);
 		String[] networkNames = networkNameSet.toArray(new String[]{});
 		Arrays.sort(networkNames);
 		networkCombo.setItems(networkNames);

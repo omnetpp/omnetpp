@@ -17,9 +17,9 @@ import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IWidgetAdapterExt;
 import org.omnetpp.common.wizard.support.AbstractChooser;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NedTypeSelectionDialog;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 
 /**
  * A control for selecting a NED type.
@@ -70,14 +70,14 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
                     // fill network combo
                     IContainer container = (IContainer)resource;
                     IProject project = container.getProject();
-                    INedResources nedResources = NEDResourcesPlugin.getNEDResources();
+                    INedResources nedResources = NedResourcesPlugin.getNedResources();
 
                     // collect networks: separately those in the local package, and others
                     List<String> networkNames = new ArrayList<String>();
                     List<String> networkQNames = new ArrayList<String>();
                     String iniFilePackage = nedResources.getExpectedPackageFor(container.getFile(new Path("anything.ini")));
                     for (String networkQName : nedResources.getNetworkQNames(project)) {
-                        INEDTypeInfo network = nedResources.getToplevelNedType(networkQName, project);
+                        INedTypeInfo network = nedResources.getToplevelNedType(networkQName, project);
                         if (StringUtils.isEmpty(iniFilePackage)) {
                             networkQNames.add(network.getFullyQualifiedName());
                         } else {
@@ -92,22 +92,22 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
                     networkNames.addAll(networkQNames);
  */
         // need to filter its contents according to the filter flags
-        INedResources nedResources = NEDResourcesPlugin.getNEDResources();
-        Collection<INEDTypeInfo> allTypes = project==null ? nedResources.getNedTypesFromAllProjects() : nedResources.getNedTypes(project);
-        List<INEDTypeInfo> offeredTypes = new ArrayList<INEDTypeInfo>();
-        for (INEDTypeInfo nedType : allTypes)
+        INedResources nedResources = NedResourcesPlugin.getNedResources();
+        Collection<INedTypeInfo> allTypes = project==null ? nedResources.getNedTypesFromAllProjects() : nedResources.getNedTypes(project);
+        List<INedTypeInfo> offeredTypes = new ArrayList<INedTypeInfo>();
+        for (INedTypeInfo nedType : allTypes)
             if (isAcceptedType(nedType))
                 offeredTypes.add(nedType);
         dialog.setElements(offeredTypes.toArray());
 
         if (dialog.open() == ListDialog.OK) {
-            INEDTypeInfo component = dialog.getResult()[0];
+            INedTypeInfo component = dialog.getResult()[0];
             return component.getFullyQualifiedName();
         }
         return null;
     }
 
-    protected boolean isAcceptedType(INEDTypeInfo nedType) {
+    protected boolean isAcceptedType(INedTypeInfo nedType) {
         if ((acceptedTypes & MODULE)!=0 && INedResources.MODULE_FILTER.matches(nedType)) return true;
         if ((acceptedTypes & SIMPLE_MODULE)!=0 && INedResources.SIMPLE_MODULE_FILTER.matches(nedType)) return true;
         if ((acceptedTypes & COMPOUND_MODULE)!=0 && INedResources.COMPOUND_MODULE_FILTER.matches(nedType)) return true;
@@ -130,8 +130,8 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
     protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
         if (StringUtils.isEmpty(getText()))
             return null;
-        INEDTypeInfo nedType = lookupNedType();
-        String contents = nedType==null ? null : nedType.getNEDElement().getNEDSource();
+        INedTypeInfo nedType = lookupNedType();
+        String contents = nedType==null ? null : nedType.getNedElement().getNedSource();
         String html = (contents == null) ? "<i>No such NED type</i>" : "<pre>"+StringUtils.quoteForHtml(contents)+"</pre>";
         return HoverSupport.addHTMLStyleSheet(html);
     }
@@ -141,17 +141,17 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
         return lookupNedType() != null;
     }
 
-    protected INEDTypeInfo lookupNedType() {
+    protected INedTypeInfo lookupNedType() {
         String name = getText();
-        INedResources nedResources = NEDResourcesPlugin.getNEDResources();
+        INedResources nedResources = NedResourcesPlugin.getNedResources();
         if (project != null) {
-            INEDTypeInfo nedType = nedResources.getToplevelNedType(name, project);
+            INedTypeInfo nedType = nedResources.getToplevelNedType(name, project);
             if (nedType!=null && isAcceptedType(nedType))
                 return nedType;
         }
         else {
-            Set<INEDTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
-            for (INEDTypeInfo nedType : nedTypes)
+            Set<INedTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
+            for (INedTypeInfo nedType : nedTypes)
                 if (isAcceptedType(nedType))
                     return nedType;
         }
@@ -162,7 +162,7 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
      * Adapter interface.
      */
     public void setValue(Object value, CreationContext context) {
-        String nedTypeName = value instanceof INEDTypeInfo ? ((INEDTypeInfo)value).getFullyQualifiedName() : value.toString();
+        String nedTypeName = value instanceof INedTypeInfo ? ((INedTypeInfo)value).getFullyQualifiedName() : value.toString();
         setProject(context.getFolder() == null ? null : context.getFolder().getProject());
         setNedName(nedTypeName);
     }

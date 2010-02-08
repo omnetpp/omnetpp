@@ -10,7 +10,7 @@ package org.omnetpp.ned.editor.text.actions;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -45,12 +45,12 @@ public class OrganizeImportsAction extends NedTextEditorAction {
         RefactoringTools.organizeImports(nedFileElement);
 
         // update text editor
-        ((TextualNedEditor)getTextEditor()).pullChangesFromNEDResources();
+        ((TextualNedEditor)getTextEditor()).pullChangesFromNedResources();
         //((TextualNedEditor)getTextEditor()).setText(nedFileElement.getNEDSource());
     }
 
 	protected NedFileElementEx getNedFileElement() {
 	    IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        return NEDResourcesPlugin.getNEDResources().getNedFileElement(file);
+        return NedResourcesPlugin.getNedResources().getNedFileElement(file);
 	}
 }

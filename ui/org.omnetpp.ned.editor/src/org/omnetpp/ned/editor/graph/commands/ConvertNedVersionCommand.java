@@ -8,7 +8,7 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 
 /**
@@ -21,7 +21,7 @@ public class ConvertNedVersionCommand extends Command {
     protected String newVersion = "2";
     protected NedFileElementEx fileElement;
 
-    public ConvertNedVersionCommand(INEDElement element) {
+    public ConvertNedVersionCommand(INedElement element) {
         while (element != null && !(element instanceof NedFileElementEx)) {
             element = element.getParent();
         }

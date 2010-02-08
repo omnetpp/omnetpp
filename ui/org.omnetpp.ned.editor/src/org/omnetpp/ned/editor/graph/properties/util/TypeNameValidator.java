@@ -9,7 +9,7 @@ package org.omnetpp.ned.editor.graph.properties.util;
 
 import org.eclipse.core.resources.IProject;
 
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
@@ -25,8 +25,8 @@ public class TypeNameValidator extends NedNameValidator {
 
     @Override
     public String isValid(Object newText) {
-        IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(element.getContainingNedFileElement()).getProject();
-        if (NEDResourcesPlugin.getNEDResources().getReservedQNames(project).contains(newText) &&
+        IProject project = NedResourcesPlugin.getNedResources().getNedFile(element.getContainingNedFileElement()).getProject();
+        if (NedResourcesPlugin.getNedResources().getReservedQNames(project).contains(newText) &&
                 !newText.equals(originalName))
             return "Name is already in use. There is already a type with the same name.";
 

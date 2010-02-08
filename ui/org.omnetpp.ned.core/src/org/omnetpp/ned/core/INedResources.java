@@ -18,10 +18,10 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.INedChangeListener;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -32,15 +32,15 @@ import org.omnetpp.ned.model.notification.INEDChangeListener;
  *
  * @author andras
  */
-public interface INedResources extends INEDTypeResolver {
+public interface INedResources extends INedTypeResolver {
     // utilities for predicate-based filtering of NED types using getAllNedTypes()
     public static class InstanceofPredicate implements IPredicate {
         private Class<? extends INedTypeElement> clazz;
         public InstanceofPredicate(Class<? extends INedTypeElement> clazz) {
             this.clazz = clazz;
         }
-        public boolean matches(INEDTypeInfo component) {
-            return clazz.isInstance(component.getNEDElement());
+        public boolean matches(INedTypeInfo component) {
+            return clazz.isInstance(component.getNedElement());
         }
     };
     public static final IPredicate MODULE_FILTER = new InstanceofPredicate(IModuleTypeElement.class);
@@ -50,9 +50,9 @@ public interface INedResources extends INEDTypeResolver {
     public static final IPredicate CHANNEL_FILTER = new InstanceofPredicate(ChannelElementEx.class);
     public static final IPredicate CHANNELINTERFACE_FILTER = new InstanceofPredicate(ChannelInterfaceElementEx.class);
     public static final IPredicate NETWORK_FILTER = new IPredicate() {
-        public boolean matches(INEDTypeInfo component) {
-            return component.getNEDElement() instanceof IModuleTypeElement &&
-                   ((IModuleTypeElement)component.getNEDElement()).isNetwork();
+        public boolean matches(INedTypeInfo component) {
+            return component.getNedElement() instanceof IModuleTypeElement &&
+                   ((IModuleTypeElement)component.getNedElement()).isNetwork();
         }
     };
     
@@ -70,8 +70,8 @@ public interface INedResources extends INEDTypeResolver {
     public int getConnectCount(IFile file);
     public boolean hasConnectedEditor(IFile file);
     
-    public void readNEDFile(IFile file);
-    public void forgetNEDFile(IFile file);
+    public void readNedFile(IFile file);
+    public void forgetNedFile(IFile file);
     public void validateAllFiles();
     public void fireBeginChangeEvent();
     public void fireEndChangeEvent();
@@ -81,8 +81,8 @@ public interface INedResources extends INEDTypeResolver {
     public void scheduleReadMissingNedFiles();
     public void readMissingNedFiles();
 
-    public void addNEDModelChangeListener(INEDChangeListener listener);
-    public void removeNEDModelChangeListener(INEDChangeListener listener);
+    public void addNedModelChangeListener(INedChangeListener listener);
+    public void removeNedModelChangeListener(INedChangeListener listener);
     
     public void dumpProjectsTable();
 }

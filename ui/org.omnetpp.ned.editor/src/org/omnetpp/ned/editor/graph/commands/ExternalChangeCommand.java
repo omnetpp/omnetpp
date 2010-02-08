@@ -10,18 +10,18 @@ package org.omnetpp.ned.editor.graph.commands;
 import java.util.ArrayList;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
+import org.omnetpp.ned.model.notification.NedAttributeChangeEvent;
+import org.omnetpp.ned.model.notification.NedModelEvent;
+import org.omnetpp.ned.model.notification.NedStructuralChangeEvent;
 
 public class ExternalChangeCommand extends Command {
-	private ArrayList<NEDModelEvent> events = new ArrayList<NEDModelEvent>();
+	private ArrayList<NedModelEvent> events = new ArrayList<NedModelEvent>();
 
 	public ExternalChangeCommand() {
 		super("External change");
 	}
 
-	public void addEvent(NEDModelEvent event) {
+	public void addEvent(NedModelEvent event) {
 		events.add(event);
 	}
 
@@ -33,17 +33,17 @@ public class ExternalChangeCommand extends Command {
 
 	@Override
 	public void redo() {
-		for (NEDModelEvent event : events)
+		for (NedModelEvent event : events)
 			redoEvent(event);
 	}
 
-	private void redoEvent(NEDModelEvent event) {
-		if (event instanceof NEDAttributeChangeEvent) {
-			NEDAttributeChangeEvent attributeChangeEvent = (NEDAttributeChangeEvent)event;
+	private void redoEvent(NedModelEvent event) {
+		if (event instanceof NedAttributeChangeEvent) {
+			NedAttributeChangeEvent attributeChangeEvent = (NedAttributeChangeEvent)event;
 			attributeChangeEvent.getSource().setAttribute(attributeChangeEvent.getAttribute(), (String)attributeChangeEvent.getNewValue());
 		}
-		else if (event instanceof NEDStructuralChangeEvent) {
-			NEDStructuralChangeEvent structuralChangeEvent = (NEDStructuralChangeEvent)event;
+		else if (event instanceof NedStructuralChangeEvent) {
+			NedStructuralChangeEvent structuralChangeEvent = (NedStructuralChangeEvent)event;
 			switch (structuralChangeEvent.getType()) {
 				case INSERTION:
 					structuralChangeEvent.getSource().insertChildBefore(structuralChangeEvent.getNewLocation(), structuralChangeEvent.getChild());
@@ -65,13 +65,13 @@ public class ExternalChangeCommand extends Command {
 			undoEvent(events.get(i));
 	}
 
-	private void undoEvent(NEDModelEvent event) {
-		if (event instanceof NEDAttributeChangeEvent) {
-			NEDAttributeChangeEvent attributeChangeEvent = (NEDAttributeChangeEvent)event;
+	private void undoEvent(NedModelEvent event) {
+		if (event instanceof NedAttributeChangeEvent) {
+			NedAttributeChangeEvent attributeChangeEvent = (NedAttributeChangeEvent)event;
 			attributeChangeEvent.getSource().setAttribute(attributeChangeEvent.getAttribute(), (String)attributeChangeEvent.getOldValue());
 		}
-		else if (event instanceof NEDStructuralChangeEvent) {
-			NEDStructuralChangeEvent structuralChangeEvent = (NEDStructuralChangeEvent)event;
+		else if (event instanceof NedStructuralChangeEvent) {
+			NedStructuralChangeEvent structuralChangeEvent = (NedStructuralChangeEvent)event;
 			switch (structuralChangeEvent.getType()) {
 				case INSERTION:
 					structuralChangeEvent.getChild().removeFromParent();

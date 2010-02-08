@@ -61,11 +61,11 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 
@@ -234,15 +234,15 @@ public class ModuleParametersView extends AbstractModuleView {
 			}
 			@Override
 			public void run() {
-				INEDElement sel = getNEDElementFromSelection();
+				INedElement sel = getNedElementFromSelection();
 				if (sel!=null)
-					NEDResourcesPlugin.openNEDElementInEditor(sel);
+					NedResourcesPlugin.openNedElementInEditor(sel);
 			}
 			public void selectionChanged(SelectionChangedEvent event) {
-				INEDElement sel = getNEDElementFromSelection();
+				INedElement sel = getNedElementFromSelection();
 				setEnabled(sel!=null);
 			}
-			private INEDElement getNEDElementFromSelection() {
+			private INedElement getNedElementFromSelection() {
 				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
@@ -344,9 +344,9 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@Override
-	public void buildContent(INEDElement element, InifileAnalyzer analyzer, String section, String key) {
+	public void buildContent(INedElement element, InifileAnalyzer analyzer, String section, String key) {
 
-	    INEDElement elementWithParameters = findAncestorWithParameters(element);
+	    INedElement elementWithParameters = findAncestorWithParameters(element);
         if (elementWithParameters == null) {
             showMessage("No element with parameters selected.");
             return;
@@ -360,16 +360,16 @@ public class ModuleParametersView extends AbstractModuleView {
 
 			if (elementWithParameters instanceof SubmoduleElementEx) {
 			    SubmoduleElementEx submodule = (SubmoduleElementEx)elementWithParameters;
-			    text = "Submodule: " + submodule.getName() + " (" + submodule.getNEDTypeInfo().getName() + ")";
+			    text = "Submodule: " + submodule.getName() + " (" + submodule.getNedTypeInfo().getName() + ")";
 				pars = InifileAnalyzer.collectParameters(submodule);
 			}
             else if (elementWithParameters instanceof ConnectionElementEx) {
-                INEDTypeInfo typeInfo = ((ConnectionElementEx)elementWithParameters).getNEDTypeInfo();
+                INedTypeInfo typeInfo = ((ConnectionElementEx)elementWithParameters).getNedTypeInfo();
                 text = "Connection: " + typeInfo.getName();
                 pars = InifileAnalyzer.collectParameters(typeInfo);
             }
 			else if (elementWithParameters instanceof INedTypeElement) {
-			    INEDTypeInfo typeInfo = ((INedTypeElement)elementWithParameters).getNEDTypeInfo();
+			    INedTypeInfo typeInfo = ((INedTypeElement)elementWithParameters).getNedTypeInfo();
 			    text = StringUtils.capitalize(elementWithParameters.getReadableTagName()) + ": " + typeInfo.getName();
 				pars = InifileAnalyzer.collectParameters(typeInfo);
 			}

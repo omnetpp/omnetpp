@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ImportElement;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 import org.omnetpp.ned.model.pojo.PackageElement;
 
@@ -35,7 +35,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
     protected NedFileElementEx() {
 	}
 
-    protected NedFileElementEx(INEDElement parent) {
+    protected NedFileElementEx(INedElement parent) {
 		super(parent);
 	}
 
@@ -53,7 +53,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
      */
     public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
-		fireModelEvent(new NEDModelReadOnlyEvent(this, readOnly));
+		fireModelEvent(new NedModelReadOnlyEvent(this, readOnly));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	 */
     public List<INedTypeElement> getTopLevelTypeNodes() {
 		List<INedTypeElement> result = new ArrayList<INedTypeElement>();
-		for (INEDElement currChild : this)
+		for (INedElement currChild : this)
 			if (currChild instanceof INedTypeElement)
 				result.add((INedTypeElement)currChild);
 
@@ -69,10 +69,10 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	}
 
 	@Override
-	public void fireModelEvent(NEDModelEvent event) {
+	public void fireModelEvent(NedModelEvent event) {
 	    // note: the following assert is technically correct; it is commented out because
 	    // hasSyntaxError() absolutely kills the performance while validating large models
-		//XXX Assert.isTrue((!readOnly && !hasSyntaxError()) || !(event instanceof NEDModelChangeEvent), "Attempted to modify the NED element tree while it is in read only mode");
+		//XXX Assert.isTrue((!readOnly && !hasSyntaxError()) || !(event instanceof NedModelChangeEvent), "Attempted to modify the NED element tree while it is in read only mode");
 		super.fireModelEvent(event);
 	}
 
@@ -99,9 +99,9 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	    }
 	    else {
 	        if (packageElement == null) {
-	            packageElement = (PackageElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PACKAGE);
+	            packageElement = (PackageElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_PACKAGE);
 	            insertChildBefore(getFirstChild(), packageElement);
-	            packageElement.appendChild(NEDElementUtilEx.createCommentElement("right", "\n\n"));
+	            packageElement.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n"));
 	        }
 	        packageElement.setName(packageName);
 	    }
@@ -112,7 +112,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	 */
 	public List<String> getImports() {
 		List<String> result = new ArrayList<String>();
-		for (INEDElement child : this)
+		for (INedElement child : this)
 			if (child instanceof ImportElement)
 				result.add(((ImportElement)child).getImportSpec());
 		return result;
@@ -122,11 +122,11 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	 * Insert an import after the last import in the file
 	 */
    public ImportElement addImport(String importSpec) {
-		ImportElement importElement = (ImportElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_IMPORT);
+		ImportElement importElement = (ImportElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_IMPORT);
 		importElement.setImportSpec(importSpec);
 
-		INEDElement lastImport = getLastImportChild();
-		INEDElement insertionPoint = lastImport!=null ? lastImport.getNextSibling() :
+		INedElement lastImport = getLastImportChild();
+		INedElement insertionPoint = lastImport!=null ? lastImport.getNextSibling() :
 			getFirstPackageChild()!=null ? getFirstPackageChild().getNextSibling() :
 				getFirstChild();
 
@@ -147,13 +147,13 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	 */
 	public ImportElement getLastImportChild() {
 		ImportElement lastImport = null;
-		for (INEDElement element : this)
+		for (INedElement element : this)
 			if (element instanceof ImportElement)
 				lastImport = (ImportElement)element;
 		return lastImport;
 	}
 
     public Map<String, Map<String, PropertyElementEx>> getProperties() {
-        return NEDElementUtilEx.collectProperties(this, new HashMap<String, Map<String, PropertyElementEx>>());
+        return NedElementUtilEx.collectProperties(this, new HashMap<String, Map<String, PropertyElementEx>>());
     }
 }

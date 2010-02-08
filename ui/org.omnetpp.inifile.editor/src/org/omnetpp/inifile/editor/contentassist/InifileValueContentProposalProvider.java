@@ -39,12 +39,12 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElementConstants;
+import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
@@ -142,14 +142,14 @@ s	 * before getting presented to the user.
 
 		if (entry==CFGID_NETWORK) {
 			IProject contextProject = doc.getDocumentFile().getProject();
-			INedResources nedResources = NEDResourcesPlugin.getNEDResources();
+			INedResources nedResources = NedResourcesPlugin.getNedResources();
 			// first
 			List<IContentProposal> p1 = new ArrayList<IContentProposal>();
-			String iniFilePackage = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(doc.getDocumentFile());
+			String iniFilePackage = NedResourcesPlugin.getNedResources().getExpectedPackageFor(doc.getDocumentFile());
 			if (StringUtils.isNotEmpty(iniFilePackage)) {
 				for (String networkName : nedResources.getNetworkQNames(contextProject)) {
-					INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNEDElement();
-					if ((iniFilePackage+".").equals(network.getNEDTypeInfo().getNamePrefix())) {
+					INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNedElement();
+					if ((iniFilePackage+".").equals(network.getNedTypeInfo().getNamePrefix())) {
 						String docu = NedCommentFormatter.makeTextDocu(network.getComment());
 						p1.add(new ContentProposal(network.getName(), network.getName()+" - "+iniFilePackage, docu));
 					}
@@ -158,7 +158,7 @@ s	 * before getting presented to the user.
 			}
 			List<IContentProposal> p2 = new ArrayList<IContentProposal>();
 			for (String networkName : nedResources.getNetworkQNames(contextProject)) {
-				INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNEDElement();
+				INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNedElement();
 				String docu = NedCommentFormatter.makeTextDocu(network.getComment());
 				// TODO make a better presentation ( name - package ) = prefix filtering should be correctly implemented (prefix should match the name ONLY excluding the package)
 //				String namePrefix = StringUtils.removeEnd(network.getNEDTypeInfo().getNamePrefix(),".");
@@ -261,35 +261,35 @@ s	 * before getting presented to the user.
         p.addAll(toProposals(new String[] {"default", "ask"}));
 
 		switch (dataType) {
-		case NEDElementConstants.NED_PARTYPE_BOOL:
+		case NedElementConstants.NED_PARTYPE_BOOL:
 			p.addAll(toProposals(new String[] {"true", "false"}));
 			break;
-		case NEDElementConstants.NED_PARTYPE_INT:
+		case NedElementConstants.NED_PARTYPE_INT:
 			p.addAll(toProposals(new String[] {"0"}, "or any integer value"));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr."));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG"));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr."));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG"));
 			break;
-		case NEDElementConstants.NED_PARTYPE_DOUBLE:
+		case NedElementConstants.NED_PARTYPE_DOUBLE:
 			p.addAll(toProposals(new String[] {"0.0"}, "or any double value"));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr."));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG"));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr."));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG"));
 			break;
-		case NEDElementConstants.NED_PARTYPE_STRING:
+		case NedElementConstants.NED_PARTYPE_STRING:
 		    // if the param is used in a "<param> like IFoo", propose all modules that implement IFoo
-		    Collection<INEDTypeInfo> types = getProposedNedTypesFor(resList);
+		    Collection<INedTypeInfo> types = getProposedNedTypesFor(resList);
 		    if (types != null)
-	            for (INEDTypeInfo type : types) {
+	            for (INedTypeInfo type : types) {
 	                String docu = type.getFullyQualifiedName() + "\n\n";
-	                docu += StringUtils.nullToEmpty(NedCommentFormatter.makeTextDocu(type.getNEDElement().getComment()));
+	                docu += StringUtils.nullToEmpty(NedCommentFormatter.makeTextDocu(type.getNedElement().getComment()));
 	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", docu));
 	            }
 			p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
 			break;
-		case NEDElementConstants.NED_PARTYPE_XML:
+		case NedElementConstants.NED_PARTYPE_XML:
 			p.addAll(toProposals(new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}));
 			break;
 		}
@@ -313,21 +313,21 @@ s	 * before getting presented to the user.
 	 * propose all modules that implement IFoo. If there's IFoo, IBar etc, propose modules
 	 * that implement both (all).
 	 */
-	protected Collection<INEDTypeInfo> getProposedNedTypesFor(ParamResolution[] paramResList) {
+	protected Collection<INedTypeInfo> getProposedNedTypesFor(ParamResolution[] paramResList) {
         IProject context = doc.getDocumentFile().getProject();
 
 	    // collect all interfaces that parameters require
-	    Set<INEDTypeInfo> likeInterfaces = new HashSet<INEDTypeInfo>();
+	    Set<INedTypeInfo> likeInterfaces = new HashSet<INedTypeInfo>();
         for (ParamResolution param : paramResList)
             likeInterfaces.addAll(extractParamLikeInterfaces(param, context));
 
         // if different params require different interfaces, find the common subset
         // of modules that implement both/all, and return that.
-	    INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-        Set<INEDTypeInfo> result = new HashSet<INEDTypeInfo>();
+	    INedTypeResolver res = NedResourcesPlugin.getNedResources();
+        Set<INedTypeInfo> result = new HashSet<INedTypeInfo>();
         boolean firstIter = true;
-	    for (INEDTypeInfo likeInterface : likeInterfaces) {
-	        Collection<INEDTypeInfo> types = res.getNedTypesThatImplement(likeInterface, context);
+	    for (INedTypeInfo likeInterface : likeInterfaces) {
+	        Collection<INedTypeInfo> types = res.getNedTypesThatImplement(likeInterface, context);
 	        if (firstIter) {
 	            result.addAll(types);
 	            firstIter = false;
@@ -345,7 +345,7 @@ s	 * before getting presented to the user.
 	 * If the param is used in a "<param> like IFoo", return IFoo. If it's used
 	 * in several submodules (IFoo, IBar, etc), return all.
 	 */
-	protected Set<INEDTypeInfo> extractParamLikeInterfaces(ParamResolution param, IProject context) {
+	protected Set<INedTypeInfo> extractParamLikeInterfaces(ParamResolution param, IProject context) {
         // find compound module in which the parameter is declared. We'll be looking for
         // matching "like" submodules in there.
 
@@ -355,23 +355,23 @@ s	 * before getting presented to the user.
 	    // find out the subclass from ParamResolution -- TODO add it
         INedTypeLookupContext paramContext = param.paramDeclaration.getEnclosingLookupContext();
         if (!(paramContext instanceof CompoundModuleElementEx))
-            return new HashSet<INEDTypeInfo>(); // not a compound module parameter
+            return new HashSet<INedTypeInfo>(); // not a compound module parameter
 
         CompoundModuleElementEx module = (CompoundModuleElementEx)paramContext;
 
         // collect its "like" submodules that refer to our parameter.
         // note: we only look to local submodules: inherited submodules wouldn't see
         // this parameter (since it's declared in a subclass)
-        Set<INEDTypeInfo> result = new HashSet<INEDTypeInfo>();
-        INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+        Set<INedTypeInfo> result = new HashSet<INedTypeInfo>();
+        INedTypeResolver res = NedResourcesPlugin.getNedResources();
         String paramName = param.paramDeclaration.getName();
         for (SubmoduleElementEx submodule : module.getSubmodules()) {
             if (submodule.getLikeParam().equals(paramName)) {
                 // resolve interface, then add to the result
                 //Debug.println("found 'like' submodule: " + submodule + " --> " + submodule.getLikeType());
                 String likeType = submodule.getLikeType();
-                INEDTypeInfo likeInterface = res.lookupNedType(likeType, module);
-                if (likeInterface != null && likeInterface.getNEDElement() instanceof ModuleInterfaceElement)
+                INedTypeInfo likeInterface = res.lookupNedType(likeType, module);
+                if (likeInterface != null && likeInterface.getNedElement() instanceof ModuleInterfaceElement)
                     result.add(likeInterface);
             }
         }

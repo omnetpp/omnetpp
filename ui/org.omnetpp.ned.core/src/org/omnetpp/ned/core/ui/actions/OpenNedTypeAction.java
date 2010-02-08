@@ -13,9 +13,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NedTypeSelectionDialog;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 
 /**
  * Action to open a NED type selection dialog.
@@ -36,8 +36,8 @@ public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
         dialog.setMessage("Select NED type to open:");
         dialog.setTitle("Open NED Type");
         if (dialog.open() == ListDialog.OK) {
-            INEDTypeInfo component = dialog.getResult()[0];
-            NEDResourcesPlugin.openNEDElementInEditor(component.getNEDElement());
+            INedTypeInfo component = dialog.getResult()[0];
+            NedResourcesPlugin.openNedElementInEditor(component.getNedElement());
         }
     }
 

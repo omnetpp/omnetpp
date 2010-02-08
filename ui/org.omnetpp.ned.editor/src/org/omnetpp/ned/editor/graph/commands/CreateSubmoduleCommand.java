@@ -11,9 +11,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.pojo.ImportElement;
 
@@ -41,7 +41,7 @@ public class CreateSubmoduleCommand extends Command {
     @Override
     public boolean canExecute() {
         // check that the type exists
-    	return NEDElement.getDefaultNedTypeResolver().lookupNedType(fullyQualifiedTypeName, parent) != null;
+    	return NedElement.getDefaultNedTypeResolver().lookupNedType(fullyQualifiedTypeName, parent) != null;
     }
 
     @Override
@@ -60,19 +60,19 @@ public class CreateSubmoduleCommand extends Command {
     @Override
     public void redo() {
         // make the submodule name unique if needed before inserting into the model
-        child.setName(NEDElementUtilEx.getUniqueNameFor(child, parent.getSubmodules()));
+        child.setName(NedElementUtilEx.getUniqueNameFor(child, parent.getSubmodules()));
 
         // insert
         parent.insertSubmodule(null, child);
 
         // replace fully qualified type name with simple name + import
-        importElement = NEDElementUtilEx.addImportFor(child); // note: overwrites "type" (or "like-type") attribute
+        importElement = NedElementUtilEx.addImportFor(child); // note: overwrites "type" (or "like-type") attribute
     }
 
     @Override
     public void undo() {
         parent.removeSubmodule(child);
-        NEDElementUtilEx.setEffectiveType(child, fullyQualifiedTypeName); // restore original value (redo() will need it)
+        NedElementUtilEx.setEffectiveType(child, fullyQualifiedTypeName); // restore original value (redo() will need it)
         if (importElement != null)
         	importElement.removeFromParent();
     }

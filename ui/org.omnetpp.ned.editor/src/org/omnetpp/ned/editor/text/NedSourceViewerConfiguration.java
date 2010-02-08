@@ -35,7 +35,7 @@ import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
-import org.omnetpp.ned.editor.text.util.NEDHyperlinkDetector;
+import org.omnetpp.ned.editor.text.util.NedHyperlinkDetector;
 import org.omnetpp.ned.editor.text.util.NedAutoIndentStrategy;
 import org.omnetpp.ned.editor.text.util.NedDoubleClickSelector;
 import org.omnetpp.ned.editor.text.util.NedTextHover;
@@ -47,7 +47,7 @@ import org.omnetpp.ned.editor.text.util.NedTextHover;
  */
 public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 
-	private TextualNedEditor editor = null; // because NEDReconcileStrategy will need IFile from editorInput
+	private TextualNedEditor editor = null; // because NedReconcileStrategy will need IFile from editorInput
 
 	public NedSourceViewerConfiguration(TextualNedEditor editor) {
 		this.editor = editor;
@@ -133,7 +133,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		// Based on: JavaSourceViewerConfiguration.getReconciler() in JDT which
 		// creates and configures JavaReconciler; than in turn will eventually
 		// result in calls to org.eclipse.jdt.internal.compiler.parser.Parser.
-		MonoReconciler reconciler = new MonoReconciler(new NEDReconcileStrategy(editor), true);
+		MonoReconciler reconciler = new MonoReconciler(new NedReconcileStrategy(editor), true);
 		reconciler.setIsIncrementalReconciler(false);
 		reconciler.setIsAllowedToModifyDocument(false);
 		reconciler.setProgressMonitor(new NullProgressMonitor());
@@ -146,6 +146,6 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
         if (sourceViewer == null)
             return null;
 
-        return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new NEDHyperlinkDetector(editor) };
+        return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new NedHyperlinkDetector(editor) };
     }
 }

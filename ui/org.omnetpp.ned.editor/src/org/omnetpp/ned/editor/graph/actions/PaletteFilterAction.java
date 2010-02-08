@@ -37,10 +37,10 @@ import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 
 
 /**
@@ -68,12 +68,12 @@ public class PaletteFilterAction extends WorkbenchPartAction {
 
         // collect the list of (non-empty) packages, and how many NED types they contain
         IProject project = ((FileEditorInput)editor.getEditorInput()).getFile().getProject();
-        INedResources res = NEDResourcesPlugin.getNEDResources();
+        INedResources res = NedResourcesPlugin.getNedResources();
         final Map<String,Integer> packages = new LinkedHashMap<String,Integer>();  // (package,count)
         List<String> orderedQNames = new ArrayList<String>(res.getNedTypeQNames(project));
         Collections.sort(orderedQNames);
         for (String qname : orderedQNames) {
-            INEDTypeInfo nedType = res.getToplevelNedType(qname, project);
+            INedTypeInfo nedType = res.getToplevelNedType(qname, project);
             String packageName = StringUtils.fallback(nedType.getPackageName(), "(default)");
             if (!packages.containsKey(packageName))
                 packages.put(packageName, 1);

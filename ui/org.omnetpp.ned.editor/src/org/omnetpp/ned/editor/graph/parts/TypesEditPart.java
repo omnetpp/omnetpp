@@ -15,7 +15,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
 import org.omnetpp.ned.editor.graph.parts.policies.NedFileLayoutEditPolicy;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -44,8 +44,8 @@ public class TypesEditPart extends AbstractGraphicalEditPart implements INedMode
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedFileLayoutEditPolicy());
     }
 
-    public INEDElement getNedModel() {
-        return (INEDElement)getModel();
+    public INedElement getNedModel() {
+        return (INedElement)getModel();
     }
 
     @Override

@@ -10,11 +10,11 @@ import java.util.Vector;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 public class ParamUtil {
@@ -58,8 +58,8 @@ public class ParamUtil {
      * Calls visitor for each parameter declaration accessible under the provided type info.
      * Recurses down on submodules.
      */
-    public static void mapParamDeclarationsRecursively(INEDTypeInfo typeInfo, RecursiveParamDeclarationVisitor visitor) {
-        NEDTreeTraversal treeTraversal = new NEDTreeTraversal(NEDResourcesPlugin.getNEDResources(), visitor);
+    public static void mapParamDeclarationsRecursively(INedTypeInfo typeInfo, RecursiveParamDeclarationVisitor visitor) {
+        NedTreeTraversal treeTraversal = new NedTreeTraversal(NedResourcesPlugin.getNedResources(), visitor);
         treeTraversal.traverse(typeInfo);
     }
 
@@ -68,7 +68,7 @@ public class ParamUtil {
      * Recurses down on submodules.
      */
     public static void mapParamDeclarationsRecursively(SubmoduleElementEx submodule, RecursiveParamDeclarationVisitor visitor) {
-        NEDTreeTraversal treeTraversal = new NEDTreeTraversal(NEDResourcesPlugin.getNEDResources(), visitor);
+        NedTreeTraversal treeTraversal = new NedTreeTraversal(NedResourcesPlugin.getNedResources(), visitor);
         treeTraversal.traverse(submodule);
     }
 
@@ -76,7 +76,7 @@ public class ParamUtil {
      * Returns the parameter declaration under type info with the path that matches the provided name pattern.
      * Recurses down on submodules.
      */
-    public static Object[] findMatchingParamDeclarationRecursively(INEDTypeInfo typeInfo, String paramNamePattern) {
+    public static Object[] findMatchingParamDeclarationRecursively(INedTypeInfo typeInfo, String paramNamePattern) {
         String fullPattern = typeInfo.getName() + "." + paramNamePattern;
         Object[] result = new Object[] {null, null, null};
         mapParamDeclarationsRecursively(typeInfo, createFindMatchingParamDeclarationVisitor(fullPattern, result));
@@ -99,12 +99,12 @@ public class ParamUtil {
     private static RecursiveParamDeclarationVisitor createFindMatchingParamDeclarationVisitor(final String fullPattern, final Object[] result) {
         return new RecursiveParamDeclarationVisitor() {
             @Override
-            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
+            protected boolean visitParamDeclaration(String fullPath, Stack<INedTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 String paramName = paramDeclaration.getName();
 
                 if (matchesPattern(fullPattern, fullPath == null ? paramName : fullPath + "." + paramName)) {
                     result[0] = paramDeclaration;
-                    result[1] = new Vector<INEDTypeInfo>(typeInfoPath);
+                    result[1] = new Vector<INedTypeInfo>(typeInfoPath);
                     result[2] = new Vector<ISubmoduleOrConnection>(elementPath);
 
                     return false;
@@ -129,7 +129,7 @@ public class ParamUtil {
      * value. This is achieved by sorting out the non default assignments to the beginning, while leaving the defaults at the end in
      * reverse order (to account for being default values).
      */
-    public static ArrayList<ParamElementEx> findParamAssignmentsForParamDeclaration(Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, final ParamElementEx paramDeclaration) {
+    public static ArrayList<ParamElementEx> findParamAssignmentsForParamDeclaration(Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, final ParamElementEx paramDeclaration) {
         ArrayList<ParamElementEx> foundParamAssignments = new ArrayList<ParamElementEx>();
         String paramName = paramDeclaration.getName();
         String paramRelativePath = paramName;
@@ -138,7 +138,7 @@ public class ParamUtil {
         if (!collectParamAssignments(foundParamAssignments, paramDeclaration, true)) {
             // walk up the submodule path starting from the end (i.e. from the deepest submodule)
             outer: for (int i = elementPath.size() - 1; i >= 0; i--) {
-                INEDTypeInfo typeInfo = typeInfoPath.get(i);
+                INedTypeInfo typeInfo = typeInfoPath.get(i);
                 ISubmoduleOrConnection element = elementPath.get(i);
 
                 Map<String, ParamElementEx> paramAssignments = null;
@@ -213,7 +213,7 @@ public class ParamUtil {
     public static String getParamPathElementName(ISubmoduleOrConnection element, boolean useWildcard) {
         if (element instanceof ConnectionElementEx) {
             ConnectionElementEx connection = (ConnectionElementEx)element;
-            INEDElement connectedElement = connection.getSrcModuleRef();
+            INedElement connectedElement = connection.getSrcModuleRef();
             String gateIndex = "";
 
             if (StringUtils.isNotEmpty(connection.getSrcGateIndex()))
@@ -260,10 +260,10 @@ public class ParamUtil {
 
     public static abstract class RecursiveParamDeclarationVisitor implements IModuleTreeVisitor {
         protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
-        protected Stack<INEDTypeInfo> typeInfoPath = new Stack<INEDTypeInfo>();
+        protected Stack<INedTypeInfo> typeInfoPath = new Stack<INedTypeInfo>();
         protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc)
 
-        public boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+        public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
             elementPath.push(element);
             typeInfoPath.push(typeInfo);
             fullPathStack.push(element == null ? typeInfo.getName() : getParamPathElementName(element));
@@ -280,7 +280,7 @@ public class ParamUtil {
         public void unresolvedType(ISubmoduleOrConnection element, String typeName) {
         }
 
-        public void recursiveType(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+        public void recursiveType(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
         }
 
         public String resolveLikeType(ISubmoduleOrConnection element) {
@@ -288,12 +288,12 @@ public class ParamUtil {
             return null;
         }
 
-        protected boolean visitParamDeclarations(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath) {
-            INEDTypeInfo typeInfo = typeInfoPath.lastElement();
+        protected boolean visitParamDeclarations(String fullPath, Stack<INedTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath) {
+            INedTypeInfo typeInfo = typeInfoPath.lastElement();
             return visitParamDeclarations(fullPath, typeInfoPath, elementPath, typeInfo.getParamDeclarations());
         }
 
-        protected boolean visitParamDeclarations(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, Map<String, ParamElementEx> paramDeclarations) {
+        protected boolean visitParamDeclarations(String fullPath, Stack<INedTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, Map<String, ParamElementEx> paramDeclarations) {
             for (ParamElementEx paramDeclaration : paramDeclarations.values())
                 if (!visitParamDeclaration(fullPath, typeInfoPath, elementPath, paramDeclaration))
                     return false;
@@ -301,6 +301,6 @@ public class ParamUtil {
             return true;
         }
 
-        protected abstract boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration);
+        protected abstract boolean visitParamDeclaration(String fullPath, Stack<INedTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration);
     };
 }

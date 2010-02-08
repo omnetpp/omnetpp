@@ -18,7 +18,7 @@ import org.eclipse.gef.SnapToHelper;
 
 import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.parts.policies.NedFileLayoutEditPolicy;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
@@ -97,7 +97,7 @@ public class NedFileEditPart extends NedEditPart {
      * do not open anything on double click
      */
     @Override
-    protected INEDElement getNEDElementToOpen() {
+    protected INedElement getNedElementToOpen() {
         return null;
     }
 

@@ -49,16 +49,16 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.IGotoNedElement;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDFileRemovedEvent;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.INedChangeListener;
+import org.omnetpp.ned.model.notification.NedFileRemovedEvent;
+import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
@@ -98,7 +98,7 @@ public class NedEditor
         public void partActivated(IWorkbenchPart part) {
         	Debug.println(part.toString()+" activated");
             if (part == NedEditor.this) {
-                if (getEditorInput() != null && NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile())) {
+                if (getEditorInput() != null && NedResourcesPlugin.getNedResources().containsNedFileElement(getFile())) {
                     // when switching from another MultiPageNedEditor to this one for the same file
                     // we need to immediately pull the changes, because editing in this editor
                     // can be done correctly only if it is synchronized with NEDResources
@@ -106,7 +106,7 @@ public class NedEditor
                     NedFileElementEx nedFileElement = getModel();
                     if (getActivePage() == textPageIndex && graphicalEditor.hasContentChanged() &&
                     	!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
-                        textEditor.pullChangesFromNEDResourcesWhenPending();
+                        textEditor.pullChangesFromNedResourcesWhenPending();
                 }
 
                 if (getControl(getActivePage()).isVisible())
@@ -121,8 +121,8 @@ public class NedEditor
                 // can be done correctly only if it is synchronized with the one just being deactivated
                 // synchronization is normally done in a delayed job and here we enforce to happen it right now
                 if (getActivePage() == textPageIndex &&
-                        NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
-                    textEditor.pushChangesIntoNEDResources();
+                        NedResourcesPlugin.getNedResources().containsNedFileElement(getFile()))
+                    textEditor.pushChangesIntoNedResources();
             }
         }
 
@@ -130,9 +130,9 @@ public class NedEditor
         }
     };
 
-    protected INEDChangeListener nedModelListener = new INEDChangeListener() {
-        public void modelChanged(NEDModelEvent event) {
-            if (event instanceof NEDFileRemovedEvent && ((NEDFileRemovedEvent)event).getFile().equals(getFile())) {
+    protected INedChangeListener nedModelListener = new INedChangeListener() {
+        public void modelChanged(NedModelEvent event) {
+            if (event instanceof NedFileRemovedEvent && ((NedFileRemovedEvent)event).getFile().equals(getFile())) {
                 final boolean dirty = isDirty(); // this must be called before closeEditor
                 // FIXME IMPORTANT
                 final String oldContent = getTextEditor().getText();
@@ -170,7 +170,7 @@ public class NedEditor
             IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "File "+file.getFullPath()+" does not exist", null);
             throw new PartInitException(status);
 		}
-        if (NEDResourcesPlugin.getNEDResources().getNedSourceFolderFor(file) == null) {
+        if (NedResourcesPlugin.getNedResources().getNedSourceFolderFor(file) == null) {
 		    IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "NED File is not in a NED Source Folder of an OMNeT++ Project, and cannot be opened with this editor.", null);
 		    throw new PartInitException(status);
 		}
@@ -178,7 +178,7 @@ public class NedEditor
 		super.init(site, editorInput);
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedModelListener);
+        NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedModelListener);
         getSite().getPage().addPartListener(partListener);
 	}
 
@@ -188,14 +188,14 @@ public class NedEditor
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
         if (getSite() != null && getSite().getPage() != null)
         	getSite().getPage().removePartListener(partListener);
-        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(nedModelListener);
+        NedResourcesPlugin.getNedResources().removeNedModelChangeListener(nedModelListener);
 
         // super must be called before disconnect to let the child editors remove their listeners
         super.dispose();
 
         // disconnect the editor from the ned resources plugin
         if (getEditorInput() != null)
-            NEDResourcesPlugin.getNEDResources().disconnect(getFile());
+            NedResourcesPlugin.getNedResources().disconnect(getFile());
     }
 
     @Override
@@ -213,11 +213,11 @@ public class NedEditor
 
 		// disconnect from the old file (if there was any)
         if (oldInput != null)
-            NEDResourcesPlugin.getNEDResources().disconnect(getFile());
+            NedResourcesPlugin.getNedResources().disconnect(getFile());
 
         // connect() must take place *before* setInput()
         IFile newFile = ((IFileEditorInput) newInput).getFile();
-        NEDResourcesPlugin.getNEDResources().connect(newFile);
+        NedResourcesPlugin.getNedResources().connect(newFile);
 
         // set the new input
         super.setInput(newInput);
@@ -315,11 +315,11 @@ public class NedEditor
         	// generate text representation from the model NOW
             NedFileElementEx nedFileElement = getModel();
             if (graphicalEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
-                textEditor.pullChangesFromNEDResourcesWhenPending();
+                textEditor.pullChangesFromNedResourcesWhenPending();
             }
 
             // keep the current selection between the two editors
-            INEDElement currentNEDElementSelection = null;
+            INedElement currentNEDElementSelection = null;
             Object object = ((IStructuredSelection)graphicalEditor.getSite()
                     .getSelectionProvider().getSelection()).getFirstElement();
             if (object != null)
@@ -329,14 +329,14 @@ public class NedEditor
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
 		}
 		else if (newPageIndex == graphPageIndex) {
-		    textEditor.pushChangesIntoNEDResources();
+		    textEditor.pushChangesIntoNedResources();
 		    graphicalEditor.markContent();
 		    // earlier ned changes may not caused a refresh (because of optimizations)
 		    // in the graphical editor (ie. the editor was not visible) so we must do it now
 		    graphicalEditor.refresh();
 
             // keep the current selection between the two editors
-	        INEDElement currentNEDElementSelection = null;
+	        INedElement currentNEDElementSelection = null;
 	        if (textEditor.getSite().getSelectionProvider().getSelection() instanceof IStructuredSelection) {
 	            Object object = ((IStructuredSelection)textEditor.getSite()
 	                    .getSelectionProvider().getSelection()).getFirstElement();
@@ -367,12 +367,12 @@ public class NedEditor
         NedFileElementEx nedFileElement = getModel();
 
         if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
-            textEditor.pullChangesFromNEDResourcesWhenPending();
+            textEditor.pullChangesFromNedResourcesWhenPending();
             graphicalEditor.markSaved();
 		}
 
 		if (getActivePage() == textPageIndex)
-		    textEditor.pushChangesIntoNEDResources();
+		    textEditor.pushChangesIntoNedResources();
     }
 
     @Override
@@ -453,7 +453,7 @@ public class NedEditor
             gm.gotoMarker(marker);
     }
 
-    public void showInEditor(INEDElement model, Mode mode) {
+    public void showInEditor(INedElement model, Mode mode) {
         if (mode == Mode.AUTOMATIC) {
             mode = model instanceof INedTypeElement || model instanceof SubmoduleElement ? Mode.GRAPHICAL : Mode.TEXT;
         }
@@ -506,7 +506,7 @@ public class NedEditor
 	}
 
     public NedFileElementEx getModel() {
-    	return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
+    	return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
     }
 
     // NOTE: this method is called from NON UI thread too (notifications) so

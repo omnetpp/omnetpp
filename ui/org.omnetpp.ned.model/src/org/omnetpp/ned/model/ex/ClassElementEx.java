@@ -10,7 +10,7 @@ package org.omnetpp.ned.model.ex;
 import java.util.Map;
 import java.util.Set;
 
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
@@ -23,7 +23,7 @@ public class ClassElementEx extends ClassElement implements IMsgTypeElement {
         super();
     }
 
-    protected ClassElementEx(INEDElement parent) {
+    protected ClassElementEx(INedElement parent) {
         super(parent);
     }
 

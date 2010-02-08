@@ -14,7 +14,7 @@ import org.eclipse.gef.requests.GroupRequest;
 
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * Generally this contains only the delete command for the connections
@@ -29,7 +29,7 @@ public class NedConnectionEditPolicy extends ConnectionEditPolicy {
         if (!EditPartUtil.isEditable(getHost()))
             return UnexecutableCommand.INSTANCE;
 
-        return new DeleteCommand((INEDElement)getHost().getModel());
+        return new DeleteCommand((INedElement)getHost().getModel());
     }
 
 }

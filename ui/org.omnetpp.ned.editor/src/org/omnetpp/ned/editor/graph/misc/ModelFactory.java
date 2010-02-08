@@ -8,8 +8,8 @@
 package org.omnetpp.ned.editor.graph.misc;
 
 import org.eclipse.gef.requests.CreationFactory;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasType;
 
@@ -26,13 +26,13 @@ public class ModelFactory implements CreationFactory {
 	protected boolean useLike = false;
 
     /**
-     * @param objectType The class identifier of the INEDElement passed NEDElementFactoryEx.getInstance().createElement
+     * @param objectType The class identifier of the INedElement passed NedElementFactoryEx.getInstance().createElement
      */
     public ModelFactory(int tagCode) {
         this(tagCode, null);
     }
     /**
-     * @param objectType The class identifier of the INEDElement
+     * @param objectType The class identifier of the INedElement
      * @param name The optional name of the new element
      */
     public ModelFactory(int tagCode, String name) {
@@ -40,7 +40,7 @@ public class ModelFactory implements CreationFactory {
     }
 
     /**
-     * @param objectType The class identifier of the INEDElement
+     * @param objectType The class identifier of the INedElement
      * @param name The optional name of the new element
      * @param type The optional type of the new element (for submodules and connections)
      */
@@ -49,7 +49,7 @@ public class ModelFactory implements CreationFactory {
     }
 
     /**
-	 * @param objectType The class identifier of the INEDElement
+	 * @param objectType The class identifier of the INedElement
 	 * @param name The optional name of the new element
 	 * @param type The optional type of the new element (for submodules and connections)
 	 * @param useLike The provided type will be used as an interface type t
@@ -62,7 +62,7 @@ public class ModelFactory implements CreationFactory {
 	}
 
 	public Object getNewObject() {
-		INEDElement element = NEDElementFactoryEx.getInstance().createElement(tagCode);
+		INedElement element = NedElementFactoryEx.getInstance().createElement(tagCode);
         if (element instanceof IHasName)
             ((IHasName)element).setName(name);
 

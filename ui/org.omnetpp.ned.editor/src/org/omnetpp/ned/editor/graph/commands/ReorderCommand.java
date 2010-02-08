@@ -8,7 +8,7 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * Move a child to a different position in the parent's list
@@ -18,12 +18,12 @@ import org.omnetpp.ned.model.INEDElement;
  */
 public class ReorderCommand extends Command {
 
-    private INEDElement node;
-    private INEDElement parent;
-    private INEDElement oldInsertBeforePos;
-    private INEDElement newInsertChildBefore;
+    private INedElement node;
+    private INedElement parent;
+    private INedElement oldInsertBeforePos;
+    private INedElement newInsertChildBefore;
 
-    public ReorderCommand(INEDElement insertBefore, INEDElement child) {
+    public ReorderCommand(INedElement insertBefore, INedElement child) {
         super("Reorder");
         node = child;
         parent = child.getParent();

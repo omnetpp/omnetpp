@@ -33,7 +33,7 @@ public class InferAllGateLabelsAction extends NedTextEditorAction {
 		        for (RefactoringTools.AddGateLabels runnable : RefactoringTools.inferAllGateLabels(typeElement, false))
 	                runnable.run();
 
-		    textEditor.pullChangesFromNEDResources();
+		    textEditor.pullChangesFromNedResources();
 		}
 	}
 }

@@ -20,4 +20,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ide.nativelibs,
  org.eclipse.draw2d
 Eclipse-LazyStart: true
-Bundle-Activator: org.omnetpp.ned.model.NEDModelPlugin
+Bundle-Activator: org.omnetpp.ned.model.NedModelPlugin

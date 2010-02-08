@@ -2927,7 +2927,7 @@ If the type is a fully qualified name, it is recognized if it is
 defined in the same project as the given folder, or in one of its
 referenced projects; if the type is a simple name (without package),
 it is recognized if it&#8217;s in the NED package of the given folder.</simpara>
-<literallayout class="monospaced">INEDTypeInfo getNedType(String typeName, String inFolder)</literallayout>
+<literallayout class="monospaced">INedTypeInfo getNedType(String typeName, String inFolder)</literallayout>
 <simpara>Like isVisibleNedType(), but actually returns the given NED type
 if it was found; otherwise it returns null. Useful if you implement
 a complex wizard page in Java.</simpara>

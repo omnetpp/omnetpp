@@ -10,8 +10,8 @@ package org.omnetpp.ned.editor.graph.commands;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
 
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.TypesElement;
@@ -24,11 +24,11 @@ import org.omnetpp.ned.model.pojo.TypesElement;
  */
 public class CreateNedTypeElementCommand extends Command {
     private INedTypeElement child;
-    private INEDElement parent;
-    private INEDElement insertBefore;
+    private INedElement parent;
+    private INedElement insertBefore;
 
 
-    public CreateNedTypeElementCommand(INEDElement parent, INEDElement where, INedTypeElement child) {
+    public CreateNedTypeElementCommand(INedElement parent, INedElement where, INedTypeElement child) {
         Assert.isTrue(parent instanceof NedFileElementEx || parent instanceof TypesElement, "The parent of a type must be a NedFile or a Types element");
     	this.child = child;
     	this.parent = parent;
@@ -56,7 +56,7 @@ public class CreateNedTypeElementCommand extends Command {
 
         // make the name unique
         NedFileElementEx nedFile = parent.getContainingNedFileElement();
-        namedChild.setName(NEDElementUtilEx.getUniqueNameForToplevelType(namedChild.getName(), nedFile));
+        namedChild.setName(NedElementUtilEx.getUniqueNameForToplevelType(namedChild.getName(), nedFile));
 
         // insert
         parent.insertChildBefore(insertBefore, child);
