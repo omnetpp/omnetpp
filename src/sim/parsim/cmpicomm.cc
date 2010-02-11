@@ -20,8 +20,8 @@
 
 #ifdef WITH_MPI
 
-#include <stdio.h>
 #include <mpi.h>
+#include <stdio.h>
 #include "cmpicomm.h"
 #include "cmpicommbuffer.h"
 #include "globals.h"
