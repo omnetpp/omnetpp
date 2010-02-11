@@ -56,7 +56,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	makeindex usman
 	pdflatex usman.tex $(LOGFILTER)
 	pdflatex usman.tex $(LOGFILTER)
-	cp usman.pdf ../../Manual.pdf
+	pdftk C=cover.pdf E=empty.pdf D=usman.pdf cat C E D output ../../Manual.pdf
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
 %.pdf: %.svg

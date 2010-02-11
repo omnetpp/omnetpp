@@ -34,7 +34,7 @@ pdf:
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf ide-customization-guide.pdf
 	rm -f tmp.fo tmp.xml tmp0.xml
 	rm -f custom-fo-docbook-tmp.xsl
-	cp ide-customization-guide.pdf ../../IDE-CustomizationGuide.pdf
+	pdftk C=cover.pdf E=empty.pdf D=ide-customization-guide.pdf cat C E D1 E D3-end output ../../IDE-CustomizationGuide.pdf
 
 clean:
 	rm -rf ide-customization-guide.pdf ide-customization-guide.html

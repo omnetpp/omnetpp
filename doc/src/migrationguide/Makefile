@@ -34,7 +34,7 @@ pdf:
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf migration.pdf
 	rm -f tmp.fo tmp.xml tmp0.xml
 	rm -f custom-fo-docbook-tmp.xsl
-	cp migration.pdf ../../Migration.pdf
+	pdftk C=cover.pdf E=empty.pdf D=migration.pdf cat C E D1 E D3 E D4-end output ../../Migration.pdf
 
 clean:
 	rm -rf migration.pdf migration.html

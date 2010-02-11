@@ -41,7 +41,7 @@ pdf:  chart-properties.xml processing-operations.xml
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf userguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	cp userguide.pdf ../../UserGuide.pdf
+	pdftk C=cover.pdf E=empty.pdf D=userguide.pdf cat C E D1 E D3-5 E D6-end output ../../UserGuide.pdf
 
 clean:
 	rm -f userguide.pdf userguide.html tmp1.xml tmp.xml

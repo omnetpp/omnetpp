@@ -65,7 +65,7 @@ pdf: docbook
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf ide-developersguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	cp ide-developersguide.pdf ../../IDE-DevelopersGuide.pdf
+	pdftk C=cover.pdf E=empty.pdf D=ide-developersguide.pdf cat C E D1 E D3 E D4-end output ../../IDE-DevelopersGuide.pdf
 
 clean:
 	rm -f ide-developersguide.pdf ide-developersguide.html ide-developersguide.xml tmp1.xml tmp.xml

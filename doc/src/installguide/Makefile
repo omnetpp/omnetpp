@@ -65,7 +65,7 @@ pdf: docbook
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf installguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	cp installguide.pdf ../../InstallGuide.pdf
+	pdftk C=cover.pdf E=empty.pdf D=installguide.pdf cat C E D1 E D3 E D4-end output ../../InstallGuide.pdf
 
 clean:
 	rm -f installguide.pdf installguide.html tmp1.xml tmp.xml

@@ -53,6 +53,6 @@ clean:
 	cd migrationguide && $(MAKE) clean
 	cd installguide && $(MAKE) clean
 	cd ide-customization-guide && $(MAKE) clean
-	cd ide-developers-guide && $(MAKE) clean
+	cd ide-developersguide && $(MAKE) clean
 	cd ide-overview && $(MAKE) clean
 	cd tictoc-tutorial && $(MAKE) clean
