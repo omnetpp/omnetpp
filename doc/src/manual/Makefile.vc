@@ -2,8 +2,11 @@
 PERL=C:\OMNEST\msys\bin\perl.exe
 INKSCAPE="C:\Program Files\inkscape\inkscape.exe"
 DOT=C:\home\tools\Graphviz\bin\dot.exe
+PDFTK=$(TOOLS_DIR)\pdftk\pdftk
 
 CWD=C:\home\omnetpp40\omnetpp\doc\src\manual  # because Inkscape is broken and needs full paths; and nmake is also broken as there's no way to produce the current dir programmatically
+
+TITLE=User Manual
 
 # --- generating pdf ---
 
@@ -69,12 +72,17 @@ LOGFILTER =
 
 default: pdf html eclipse
 
-pdf: $(ALLTEX) $(DOTPICS:.dot=.svg) $(PDFPICS) figures/*.png
+include ../cover/cover.makefrag.vc
+
+pdf: $(ALLTEX) $(DOTPICS:.dot=.svg) $(PDFPICS) figures/*.png cover
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
 	bibtex tmp/usman
 	makeindex tmp/usman
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
+	-del tmp.pdf
+	ren usman.pdf tmp.pdf
+	$(PDFTK) C=cover.pdf B=../cover/copyright.pdf D=tmp.pdf cat C B D3-end output usman.pdf dont_ask
 	copy usman.pdf ..\..\manual\Manual.pdf
 
 .svg.pdf:
@@ -129,7 +137,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs
 	copy figures\*.png ..\..\manual
 
 clean:
-	-del usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
+	-del usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf
 	-del /s /q ..\..\manual 2>nul
 	-rmdir ..\..\manual 2>nul
 	-del /s /q eclipse

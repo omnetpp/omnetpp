@@ -13,8 +13,8 @@
    height="1052.3622047"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="test.svg">
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="cover.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -227,10 +227,10 @@
      inkscape:document-units="px"
      inkscape:current-layer="g4084"
      showgrid="false"
-     inkscape:window-width="1272"
-     inkscape:window-height="728"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-width="1440"
+     inkscape:window-height="825"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -1551,7 +1551,7 @@
       <flowRoot
          xml:space="preserve"
          id="flowRoot5117"
-         style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         style="font-size:64.00000008px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
          transform="matrix(0.77215844,0,0,-0.86358485,-31.976077,770.46985)"><flowRegion
            id="flowRegion5119"><rect
              id="rect5121"
@@ -1559,7 +1559,7 @@
              height="215.71429"
              x="85.714287"
              y="35.219326"
-             style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial" /></flowRegion><flowPara
+             style="font-size:64.00000008px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial Bold" /></flowRegion><flowPara
            id="flowPara5123">@product@</flowPara><flowPara
            id="flowPara5125" /></flowRoot>      <g
          transform="matrix(1.8680124,0,0,2.089192,398.22182,41.780158)"
