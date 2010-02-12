@@ -2,7 +2,11 @@ FOP=fop
 DOCBOOK=/usr/share/xml/docbook/stylesheet/nwalsh
 export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
+TITLE=User Guide
+
 all: pdf html eclipse
+
+include ../cover/cover.makefrag
 
 html:
 	xsltproc --nonet --xinclude --output tmp1.xml trans.xsl userguide.xml
@@ -34,17 +38,17 @@ eclipse:
 	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	rm tmp.xml
 
-pdf:  chart-properties.xml processing-operations.xml
+pdf:  chart-properties.xml processing-operations.xml cover
 	xsltproc --nonet --xinclude --stringparam output pdf --output tmp1.xml trans.xsl userguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf userguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	pdftk C=cover.pdf E=empty.pdf D=userguide.pdf cat C E D1 E D3-5 E D6-end output ../../UserGuide.pdf
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=userguide.pdf cat C B D3-end output ../../UserGuide.pdf
 
 clean:
-	rm -f userguide.pdf userguide.html tmp1.xml tmp.xml
+	rm -f userguide.pdf userguide.html tmp1.xml tmp.xml cover.svg cover.pdf
 	rm -rf eclipse
 	rm -rf ../../userguide ../../UserGuide.pdf
 

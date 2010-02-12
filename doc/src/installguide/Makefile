@@ -2,14 +2,18 @@ FOP=fop
 DOCBOOK=/usr/share/xml/docbook/stylesheet/nwalsh
 export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
+TITLE=Installation Guide
+
 ifneq ($(what),omnest)
   WHAT_REPL = OMNeT&\#x2060;+&\#x2060;+
   what_repl = omnetpp
   DOWNLOADSITE = http://omnetpp.org
+  PRODUCT = OMNeT++
 else
   WHAT_REPL = OMNEST
   what_repl = omnest
   DOWNLOADSITE = http://omnest.com
+  PRODUCT = OMNEST
   DEFINE_OMNEST = -a OMNEST=1
 endif
 
@@ -20,6 +24,8 @@ else
 endif
 
 all: pdf html
+
+include ../cover/cover.makefrag
 
 docbook:
 	asciidoc -b docbook -d book -f asciidoc.conf $(DEFINE_OMNEST) installguide.txt
@@ -58,17 +64,17 @@ eclipse: docbook
 	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	rm tmp.xml
 
-pdf: docbook
+pdf: docbook cover
 	xsltproc --nonet --xinclude --stringparam output pdf --output tmp1.xml trans.xsl installguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf installguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	pdftk C=cover.pdf E=empty.pdf D=installguide.pdf cat C E D1 E D3 E D4-end output ../../InstallGuide.pdf
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=installguide.pdf cat C B D3-end output ../../InstallGuide.pdf
 
 clean:
-	rm -f installguide.pdf installguide.html tmp1.xml tmp.xml
+	rm -f installguide.pdf installguide.html tmp1.xml tmp.xml cover.svg cover.pdf
 	rm -rf eclipse
 	rm -rf ../../installguide
 

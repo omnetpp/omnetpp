@@ -1,0 +1,18 @@
+ifneq ($(what),omnest)
+  PRODUCT = OMNeT++
+else
+  PRODUCT = OMNEST
+endif
+
+ifneq ($(VERSION),)
+  VERSION_TEXT = Version $(VERSION)
+else
+  VERSION_TEXT = Version 4.X
+endif
+
+cover:
+	cp ../cover/cover.svg .
+	perl -i~ -pe "s/\@product\@/$(PRODUCT)/g" cover.svg
+	perl -i~ -pe "s/\@title\@/$(TITLE)/g" cover.svg
+	perl -i~ -pe "s/\@version\@/$(VERSION_TEXT)/g" cover.svg
+	inkscape cover.svg -A cover.pdf
