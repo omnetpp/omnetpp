@@ -370,25 +370,14 @@ The configuration file can also prescribe several simulation runs; in
 the simplest case, they will be executed by the simulation program one
 after another.
 
-The output of the simulation is written into data files: output vector
-files\index{output!vector file}, output scalar files
-\index{output!scalar file}, and possibly the user's own output files.
-{\opp} contains an Integrated Development Environment that provides
-rich environment for analyzing these files. It is not expected that someone will
-process the result files using {\opp} alone: output files are text
-files in a format that can be read into math packages like Matlab
-or Octave, or imported into spreadsheets like OpenOffice Calc,
-Gnumeric or MS Excel (some preprocessing using \fprog{sed}, \fprog{awk},
-or \fprog{perl} might be required, this will be discussed later).
-All these external programs provide rich functionality for statistical
-analysis and visualization, and it is outside the scope of {\opp} to
-duplicate their efforts. This manual briefly describes
-some data plotting programs and how to use them with {\opp}.
-
-Output scalar files can also be visualized with the {\opp} IDE.
-It can draw bar charts, draw x-y plots (e.g., throughput vs. offered load),
-or export data via the clipboard for more detailed analysis into
-spreadsheets and other programs.
+The output of the simulation is written into result files: output vector
+files\index{output!vector file}, output scalar files\index{output!scalar file},
+and possibly the user's own output files.
+{\opp} contains an Integrated Development Environment (IDE) that provides
+rich environment for analyzing these files. Output files are line-oriented
+text files which makes it possible to process them with a variety of tools
+and programming languages as well, including Matlab, GNU R, Perl, Python,
+and spreadsheet programs.
 
 
 \subsubsection{User Interfaces}

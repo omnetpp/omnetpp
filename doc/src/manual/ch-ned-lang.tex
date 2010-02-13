@@ -1688,7 +1688,8 @@ Whenever the syntax does not permit some value, it should be enclosed in
 quotes. This quoting does not make any difference in the value, because
 the parser automatically drops one layer of quotes; thus, \ttt{@class(TCP)}
 and \ttt{@class("TCP")} are exactly the same. If you want the quotes
-to be part of the value, use double quoting: \ttt{@foo("\\"some string\\"")}.
+to be part of the value, use double quoting:
+\ttt{@foo("{\textbackslash}"some string{\textbackslash}"")}.
 
 There are also some conventions. One can use properties to tag some NED element
 with a label; for example, a \fprop{@host} property could be used to mark
