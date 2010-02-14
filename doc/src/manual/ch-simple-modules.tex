@@ -685,7 +685,7 @@ Message/event related functions you can use in \ffunc{handleMessage()}:
   \item{\ffunc{cancelEvent()} -- to delete an event scheduled with \ffunc{scheduleAt()}}
 \end{itemize}
 
-You cannot use the \ffunc{receive()} family and
+You cannot use the \ffunc{receive()} and
 \ffunc{wait()} functions in \ffunc{handleMessage()}, because they are
 coroutine-based by nature, as explained in the section about
 \ffunc{activity()}.
@@ -936,7 +936,7 @@ something like a state machine\index{finite state machine}
 (FSM\index{FSM}) which hides the underlying function calls. Such
 systems are:
 \begin{itemize}
-  \item{OPNET$^TM$ which uses FSM's designed using a graphical editor;}
+  \item{OPNET$^{TM}$ which uses FSM's designed using a graphical editor;}
   \item{NetSim++ clones OPNET's approach;}
   \item{SMURPH (University of Alberta) defines a (somewhat eclectic)
       language to describe FSMs, and uses a precompiler to turn it
@@ -2041,16 +2041,11 @@ store, modify, schedule and destroy messages -- everything else
 is supposed to facilitate this task, and collect statistics
 about what was going on.
 
-Messages in {\opp} are instances of the \cclass{cMessage} class or
-one of its subclasses. Network packets are represented with \cclass{cPacket},
-which is also subclassed from \cclass{cMessage}.
-Message objects are created using the C++
-\ttt{new} operator, and destroyed using the \ttt{delete} operator
-when they are no longer needed. During their lifetimes,
-messages travel between modules via gates and connections
-(or are sent directly, bypassing the connections), or
-they are scheduled by and delivered to modules,
-representing internal events of that module.
+Messages in {\opp} are instances of the \cclass{cMessage} class or one of
+its subclasses. Network packets are represented with \cclass{cPacket},
+which is also subclassed from \cclass{cMessage}. Message objects are
+created using the C++ \ttt{new} operator, and destroyed using the
+\ttt{delete} operator when they are no longer needed.
 
 Messages are described in detail in chapter \ref{cha:messages}.
 At this point, all we need to know about them is that they are
@@ -2058,6 +2053,110 @@ referred to as \ttt{cMessage *} pointers. In the examples below,
 messages will be created as \ttt{new cMessage("foo")} where
 \ttt{"foo"} is a descriptive message name, used for visualization
 and debugging purposes.
+
+
+\subsection{Self-Messages}
+\label{sec:ch-simple-modules:self-messages}
+
+Nearly all simulation models need to schedule future events in order
+to implement timers, timeouts, delays, etc. Some typical examples:
+
+\begin{itemize}
+  \item A source module that periodically creates and sends messages
+    needs to schedule the next send after every send operation;
+  \item A server which processes jobs from a queue needs to start
+    a timer every time it begins processing a job. When the timer
+    expires, the finished job can be sent out, and a new job may
+    start processing;
+  \item When a packet is sent by a communications protocol that employs
+    retransmission, it needs to schedule a timeout so that the packet
+    can be retransmitted if no acknowledge arrives within a certain
+    amount of time.
+\end{itemize}
+
+In {\opp}, you solve such tasks by letting the simple module send a message
+to itself; the message would be delivered to the simple module at a later
+point of time. Messages used this way are called
+\textit{self-messages}\index{self-message}, and the module class has
+special methods for them that allow for implementing self-messages without
+gates and connections.
+
+\subsubsection{Scheduling an Event}
+
+The module can send a message to itself using the \ffunc{scheduleAt()} function.
+\ffunc{scheduleAt()} accepts an \textit{absolute} simulation time,
+usually calculated as \ffunc{simTime()}+\textit{delta}:
+
+\begin{cpp}
+scheduleAt(absoluteTime, msg);
+scheduleAt(simtime()+delta, msg);
+\end{cpp}
+
+Self-messages are delivered to the module in the same way as other
+messages (via the usual receive calls or \ffunc{handleMessage()});
+the module may call the \ffunc{isSelfMessage()} member of any received
+message to determine if it is a self-message.
+
+You can determine whether a message is currently in the FES\index{FES}
+by calling its \ffunc{isScheduled()} member function.
+
+\subsubsection{Cancelling an Event}
+
+Scheduled self-messages can be cancelled\index{self-message!cancelling}
+\index{message!cancelling} (i.e. removed from the FES\index{FES}).
+This feature facilitates implementing timeouts.
+
+\begin{cpp}
+cancelEvent(msg);
+\end{cpp}
+
+The \ffunc{cancelEvent()} function takes a pointer to the message to
+be cancelled, and also returns the same pointer. After having it
+cancelled, you may delete the message or reuse it in subsequent
+\ffunc{scheduleAt()} calls. \ffunc{cancelEvent()} has no effect if
+the message is not scheduled at that time.
+
+There is also a convenience method called \ffunc{cancelAndDelete()}
+implemented as \ttt{if (msg!=NULL) delete cancelEvent(msg)};
+this method is primarily useful for writing destructors.
+
+The following example shows how to implement timeout in a simple
+imaginary stop-and-wait protocol. The code utilizes a \ttt{timeoutEvent}
+module class data member that stores the pointer of the \cclass{cMessage} used
+as self-message, and compares it to the pointer of the received message
+to identify whether a timeout has occurred.
+
+\begin{cpp}
+void Protocol::handleMessage(cMessage *msg)
+{
+    if (msg == timeoutEvent) {
+        // timeout expired, re-send packet and restart timer
+        send(currentPacket->dup(), "out");
+        scheduleAt(simTime() + timeout, timeoutEvent);
+    }
+    else if (...) {  // if acknowledgement received
+        // cancel timeout, prepare to send next packet, etc.
+        cancelEvent(timeoutEvent);
+        ...
+    }
+    else {
+       ...
+    }
+}
+\end{cpp}
+
+
+\subsubsection{Re-scheduling an Event}
+
+If you want to reschedule an event which is currently scheduled to a different
+simulation time, first you have to cancel it using \ffunc{cancelEvent()}.
+This is shown in the following example code:
+
+\begin{cpp}
+if (msg->isScheduled())
+    cancelEvent(msg);
+scheduleAt(simTime() + delay, msg);
+\end{cpp}
 
 
 \subsection{Sending Messages}
@@ -2091,14 +2190,187 @@ send(msg, "outGates", i); // send via outGates[i]
 The following code example creates and sends messages
 every five simulated seconds:
 
+% rewrite to handleMessage, or just remove
+
 \begin{cpp}
 int outGateId = findGate("outGate");
 while(true)
 {
   send(new cMessage("job"), outGateId);
-  wait(5);
+  wait(5);  // works in activity() only!
 }
 \end{cpp}
+
+
+
+\subsection{Broadcasts and Retransmissions}
+
+When you implement broadcasts or retransmissions, two frequently
+occurring tasks in protocol simulation, you might feel tempted
+to use the same message in multiple \ffunc{send()} operations.
+Do not do it -- you cannot send the same message object multiple times.
+Instead, duplicate the message object.
+
+Why? A message is like any real world object -- it cannot be at two places
+at the same time. Once you've sent it, the message object no longer belongs
+to the module: it is taken over by the simulation kernel, and will
+eventually be delivered to the destination module. The sender module should
+not even refer to its pointer any more. Once the message arrived in the
+destination module, that module will have full authority over it -- it can
+send it on, destroy it immediately, or store it for further handling. The
+same applies to messages that have been scheduled -- they belong to the
+simulation kernel until they are delivered back to the module.
+
+To enforce the rules above, all message sending functions check that you
+actually own the message you are about to send. If the message is in
+another module, currently scheduled or in a queue, etc., you'll get a
+runtime error: \textit{not owner of message}.
+  \footnote{The feature does not increase runtime overhead significantly, because
+  it uses the object ownership\index{ownership} management (described in
+  Section \ref{sec:ch-sim-lib:ownership-management});
+  it merely checks that the owner of the message is the module that
+  wants to send it.}
+
+
+\subsubsection{Broadcasting Messages}
+
+In your model, you may need to broadcast a message to several destinations.
+Broadcast can be implemented in a simple module by sending out copies
+of the same message, for example on every gate of a gate vector.
+As described above, you cannot use the same message pointer for
+in all \ffunc{send()} calls -- what you have to do instead is
+create copies (duplicates) of the message object and send them.
+
+Example:
+
+\begin{cpp}
+for (int i=0; i<n; i++)
+{
+    cMessage *copy = msg->dup();
+    send(copy, "out", i);
+}
+delete msg;
+\end{cpp}
+
+You might have noticed that copying the message for the last gate is
+redundant: we can just send out the original message there.
+Also, we can utilize gate IDs to spare looking up the gate by name
+for each send operation. The optimized version of the code looks
+like this:
+
+\begin{cpp}
+int outGateBaseId = gateBaseId("out");
+for (int i=0; i<n; i++)
+    send(i==n-1 ? msg : msg->dup(), outGateBaseId+i);
+\end{cpp}
+
+
+\subsubsection{Retransmissions}
+
+Many communication protocols involve retransmissions of packets (frames).
+When implementing retransmissions, you cannot just hold a pointer
+to the same message object and send it again and again -- you'd get
+the \textit{not owner of message} error on the first resend.
+
+Instead, whenever it comes to (re)transmission, you should create and
+send copies of the message, and retain the original.
+When you are sure there will not be any more retransmission,
+you can delete the original message.
+
+Creating and sending a copy:
+
+\begin{cpp}
+// (re)transmit packet:
+cMessage *copy = packet->dup();
+send(copy, "out");
+\end{cpp}
+
+and finally (when no more retransmissions will occur):
+
+\begin{cpp}
+delete packet;
+\end{cpp}
+
+
+\subsection{Delayed Sending}
+\label{sec:simple-modules:delayed-sending}
+
+Sometimes it is needed for module to hold a message for some time interval,
+and then send it. This can be achieved with self-messages, but there is a
+more straightforward method: delayed sending\index{delayed sending}. The
+following methods are provided for delayed sending:
+
+\begin{cpp}
+sendDelayed(cMessage *msg, double delay, const char *gateName, int index);
+sendDelayed(cMessage *msg, double delay, int gateId);
+sendDelayed(cMessage *msg, double delay, cGate *gate);
+\end{cpp}
+
+The arguments are the same as for \ffunc{send()}, except for the extra \textit{delay}
+parameter. The effect of the function is the same as if the module
+had kept the message for the delay interval and sent it afterwards.
+That is, the sending time of the message will be the current
+simulation time (time at the \ffunc{sendDelayed()} call) plus the delay.
+The delay value must be non-negative.
+
+Example:
+
+\begin{cpp}
+sendDelayed(msg, 0.005, "outGate");
+\end{cpp}
+
+
+
+\subsection{Direct Message Sending}
+\label{sec:simple-modules:direct-sending}
+
+At times it is covenient to be able to send a message directly to an input
+gate of another module. The \ffunc{sendDirect()} function does that:
+
+XXX duration!!!
+
+\begin{cpp}
+sendDirect(cMessage *msg, double delay, cModule *mod, int gateId)
+sendDirect(cMessage *msg, double delay, cModule *mod, const char *gateName, int index=-1)
+sendDirect(cMessage *msg, double delay, cGate *gate)
+\end{cpp}
+
+In addition to the message and delay arguments, it also takes the
+target module and gate. The gate should be an \textit{unconnected}
+input gate.
+
+An example for direct sending:
+
+\begin{cpp}
+cModule *destinationModule = getParentModule()->getSubmodule("node2");
+double delay = truncnormal(0.005, 0.0001);
+sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
+\end{cpp}
+
+At the target module, there is no difference between messages received
+directly and those received over connections.
+
+It is also possible to send to an input gate of a \textit{compound} module.
+In that case, the message will follow the connection path inside the
+compound module, and will be delived to the module at the end of the path
+-- just as with normal connections. The gate must be connected inside the
+compound module, and the path must end in a simple module.
+
+It was mentioned that the target gate must not be connected, that is, a
+module needs dedicated gates to be able to receive messages sent via
+\ttt{sendDirect()}. It is recommended to tag the gate with the
+\ttt{@directIn} property in the module's NED declaration; this causes
+{\opp} not to complain that the gate is not connected in the network or
+compound module where the module is used.
+
+An example:
+
+\begin{ned}
+simple Radio {
+    gates:
+        input radioIn @directIn; // for receiving air frames
+}
+\end{ned}
 
 
 \subsection{Packet Transmissions}
@@ -2223,7 +2495,7 @@ Note that this works with wireless connections (\ffunc{sendDirect()})
 as well; there, the duration is an argument to the sendDirect() call.
 
 
-\subsection{Delay, Data Rate, Bit Error Rate, Packet Error Rate}
+\subsubsection{Delay, Data Rate, Bit Error Rate, Packet Error Rate}
 
 %% FIXME revise!
 
@@ -2251,7 +2523,7 @@ through the channel. The bit error rate (\textit{ber}) is the probability that
 a bit is incorrectly transmitted. Thus, the probability that
 a message of \textit{n} bits length is transferred without bit errors is:\\
 
-$P_{no bit error} = (1 - ber)^length$
+$P_{no bit error} = (1 - {ber})^{length}$
 
 The message has an error flag which is set in case of transmission
 errors.
@@ -2270,16 +2542,7 @@ of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
 \end{center}
 \end{figure}
 
-The above model may not be suitable to model all protocols. In Token Ring
-and FDDI, stations start to repeat bits before the whole frame arrives;
-in other words, frames ``flow through'' the stations, being delayed only a few bits.
-In such cases, the data rate modeling feature of {\opp} cannot be used.
-
-If a message travels along a path, passing through successive links and
-compound modules, the model behaves as if each module waited until the
-last bit of the message arrives and only started its transmission
-afterwards.
-(Fig. \ref{fig:ch-overview:msg-multiple-ch}).
+XXX ?
 
 \begin{figure}[htbp]
 \begin{center}
@@ -2289,10 +2552,6 @@ afterwards.
 \end{center}
 \end{figure}
 
-Since the above effect is usually not the desired one, typically
-you will want to assign data rate to only one connection in the
-path.
-
 
 \subsubsection{Multiple Transmissions on Links}
 
@@ -2301,14 +2560,6 @@ will have a certain nonzero transmission time\index{transmission
   time}, depending on the length of the connection. This implies that
 a message that is passsing through an output gate, ``reserves'' the gate
 for a given period (``it is being transmitted'').
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[width=2.315in, height=1.015in]{figures/simple-conndatarate}
-    \caption{Connection with a data rate}
-    \label{fig:ch-simple-modules:conn-w-data-rate}
-  \end{center}
-\end{figure}
 
 While a message is under transmission, other messages have to wait
 until the transmission is completed. The module sends another message while the
@@ -2418,19 +2669,6 @@ transmitting. (If the gate in not currently transmitting,
 \ffunc{getTransmissionFinishTime()} returns the simulation time
 when it finished its last transmission.)
 
-An example:
-
-\begin{cpp}
-cMessage *packet = new cMessage("DATA");
-packet->setByteLength(1024);  // 1K
-
-if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
-{                             // becomes free
-  wait( gate("TxGate")->getTransmissionFinishTime() - simTime());
-}
-send( packet, "TxGate");
-\end{cpp}
-
 If the connection with a data rate is not directly connected
 to the simple module's output gate but is the second
 one in the path, you have to check the second gate's busy
@@ -2447,186 +2685,14 @@ simulation, the changes will affect only the messages that are
 \textit{sent} after the change.
 
 
+\subsection{Receiving Messages with activity()}
 
-\subsection{Broadcasts and Retransmissions}
-
-When you implement broadcasts or retransmissions, two frequently
-occurring tasks in protocol simulation, you might feel tempted
-to use the same message in multiple \ffunc{send()} operations.
-Do not do it -- you cannot send the same message object multiple times.
-The solution in such cases is duplicating the message.
-
-\subsubsection{Broadcasting Messages}
-
-In your model, you may need to broadcast a message to several destinations.
-Broadcast can be implemented in a simple module by sending out copies
-of the same message, for example on every gate of a gate vector.
-As described above, you cannot use the same message pointer for
-in all \ffunc{send()} calls -- what you have to do instead is
-create copies (duplicates) of the message object and send them.
-
-Example:
-
-\begin{cpp}
-for (int i=0; i<n; i++)
-{
-    cMessage *copy = msg->dup();
-    send(copy, "out", i);
-}
-delete msg;
-\end{cpp}
-
-You might have noticed that copying the message for the last gate is
-redundant: we can just send out the original message there.
-Also, we can utilize gate IDs to spare looking up the gate by name
-for each send operation. The optimized version of the code looks
-like this:
-
-\begin{cpp}
-int outGateBaseId = gateBaseId("out");
-for (int i=0; i<n; i++)
-    send(i==n-1 ? msg : msg->dup(), outGateBaseId+i);
-\end{cpp}
-
-
-\subsubsection{Retransmissions}
-
-Many communication protocols involve retransmissions of packets (frames).
-When implementing retransmissions, you cannot just hold a pointer
-to the same message object and send it again and again -- you'd get
-the \textit{not owner of message} error on the first resend.
-
-Instead, whenever it comes to (re)transmission, you should create and
-send copies of the message, and retain the original.
-When you are sure there will not be any more retransmission,
-you can delete the original message.
-
-Creating and sending a copy:
-
-\begin{cpp}
-// (re)transmit packet:
-cMessage *copy = packet->dup();
-send(copy, "out");
-\end{cpp}
-
-and finally (when no more retransmissions will occur):
-
-\begin{cpp}
-delete packet;
-\end{cpp}
-
-
-\subsubsection{Why?}
-
-A message is like any real world object -- it cannot be at two places
-at the same time. Once you've sent it, the message object
-no longer belongs to the module: it is taken over by the simulation kernel,
-and will eventually be delivered to the destination module.
-The sender module should not even refer to its pointer any more.
-Once the message arrived in the destination module, that module
-will have full authority over it -- it can send it on,
-destroy it immediately, or store it for further handling.
-The same applies to messages that have been scheduled -- they
-belong to the simulation kernel until they are delivered back to
-the module.
-
-To enforce the rules above, all message sending functions
-check that you actually own the message you are about to send.
-If the message is with another module, it is currently scheduled or
-in a queue etc., you'll get a runtime error: \textit{not owner of message}.
-  \footnote{The feature does not increase runtime overhead significantly, because
-  it uses the object ownership\index{ownership} management (described in
-  Section \ref{sec:ch-sim-lib:ownership-management});
-  it merely checks that the owner of the message is the module that
-  wants to send it.}
-
-
-
-\subsection{Delayed Sending}
-\label{sec:simple-modules:delayed-sending}
-
-It is often needed to model a delay (processing time, etc.) immediately
-followed by message sending. In {\opp}, it is possible to implement
-it like this:
-
-\begin{cpp}
-wait(someDelay);
-send(msg, "outgate");
-\end{cpp}
-
-
-If the module needs to react to messages that arrive during the delay,
-\ffunc{wait()} cannot be used and the timer mechanism described in
-Section \ref{sec:ch-simple-modules:self-messages}, ``Self-messages'', would
-need to be employed.
-
-
-There is also a more straightforward method than those mentioned above:
-delayed sending\index{delayed sending}. Delayed sending can be achieved
-by using one of these functions:
-
-\begin{cpp}
-sendDelayed(cMessage *msg, double delay, const char *gateName, int index);
-sendDelayed(cMessage *msg, double delay, int gateId);
-sendDelayed(cMessage *msg, double delay, cGate *gate);
-\end{cpp}
-
-The arguments are the same as for \ffunc{send()}, except for the extra \textit{delay}
-parameter. The effect of the function is the same as if the module
-had kept the message for the delay interval and sent it afterwards.
-That is, the sending time of the message will be the current
-simulation time (time at the \ffunc{sendDelayed()} call) plus the delay.
-The delay value must be non-negative.
-
-Example:
-
-\begin{cpp}
-sendDelayed(msg, 0.005, "outGate");
-\end{cpp}
-
-
-
-\subsection{Direct Message Sending}
-\label{sec:simple-modules:direct-sending}
-
-Sometimes it is necessary or convenient to ignore gates/connections
-and send a message directly to a remote destination module. The \ffunc{sendDirect()}
-function does that:
-
-\begin{cpp}
-sendDirect(cMessage *msg, double delay, cModule *mod, int gateId)
-sendDirect(cMessage *msg, double delay, cModule *mod, const char *gateName, int index=-1)
-sendDirect(cMessage *msg, double delay, cGate *gate)
-\end{cpp}
-
-In addition to the message and a delay, it also takes the destination module
-and gate. The gate should be an \textit{input} gate and should not be connected.
-In other words, the module needs dedicated gates for receiving via \ttt{sendDirect()}.
-(Note: For leaving a gate unconnected in a compound module, you'll need to specify
-\ttt{connections allowunconnected:} instead of plain \ttt{connections:} in the NED file.)
-
-An example:
-
-\begin{cpp}
-cModule *destinationModule = getParentModule()->getSubmodule("node2");
-double delay = truncnormal(0.005, 0.0001);
-sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
-\end{cpp}
-
-At the destination module, there is no difference between messages received
-directly and those received over connections.
-
-
-
-\subsection{Receiving Messages}
+\subsubsection{Receiving Messages}
 \label{sec:simple-modules:receiving-messages}
 
-\textbf{With activity() only!} The message receiving functions can
-only be used in the \ffunc{activity()} function,
-\ffunc{handleMessage()} gets received messages in its argument list.
-
-Messages are received using the \ffunc{receive()} function.
-\ffunc{receive()} is a member of \cclass{cSimpleModule}.
+\ffunc{activity()}-based modules receive messages with the \ffunc{receive()}
+method of \cclass{cSimpleModule}. \ffunc{receive()} cannot be used with
+\ffunc{handleMessage()}-based modules.
 
 \begin{cpp}
 cMessage *msg = receive();
@@ -2642,7 +2708,7 @@ within the timeout period, the function returns a NULL pointer.
 
 \begin{cpp}
 simtime_t timeout = 3.0;
-cMessage *msg = receive( timeout );
+cMessage *msg = receive(timeout);
 
 if (msg==NULL)
 {
@@ -2654,16 +2720,12 @@ else
 }
 \end{cpp}
 
-
-
-\subsection{The wait() Function}
+\subsubsection{The wait() Function}
 \label{sec:simple-modules:wait}
 
-\textbf{With activity() only!} The \ffunc{wait()} function's implementation
-contains a \ffunc{receive()} call which cannot be used in \ffunc{handleMessage()}.
-
-The \ffunc{wait()} function suspends the execution of the module for
-a given amount of simulation time (a \textit{delta}).
+The \ffunc{wait()} function suspends the execution of the module for a
+given amount of simulation time (a \textit{delta}). \ffunc{wait()} cannot
+be used with \ffunc{handleMessage()}-based modules.
 
 \begin{cpp}
 wait(delay);
@@ -2679,12 +2741,12 @@ An example:
 \begin{cpp}
 for (;;)
 {
-  // wait for a (potentially random amount of) time, specified
-  // in the interArrivalTime volatile module parameter
-  wait(par("interArrivalTime").doubleValue());
+    // wait for some, potentially random, amount of time, specified
+    // in the interarrivalTime volatile module parameter
+    wait(par("interarrivalTime").doubleValue());
 
-  // generate and send message
-  ...
+    // generate and send message
+    ...
 }
 \end{cpp}
 
@@ -2702,128 +2764,10 @@ cQueue queue("queue");
 waitAndEnqueue(waitTime, &queue);
 if (!queue.empty())
 {
-  // process messages arrived during wait interval
-  ...
+    // process messages arrived during wait interval
+    ...
 }
 \end{cpp}
-
-
-\subsection{Modeling Events Using Self-messages}
-\label{sec:ch-simple-modules:self-messages}
-
-In most simulation models it is necessary to implement timers,
-or schedule events that occur at some point in the future.
-For example, when a packet is sent by a communications protocol model,
-it has to schedule an event that would occur when a timeout expires,
-because it will have to resent the packet then.
-As another example, suppose you want to write a model of a server which
-processes jobs from a queue. Whenever it begins processing
-a job, the server model will want to schedule an event to occur
-when the job finishes processing, so that it can begin processing
-the next job.
-
-In {\opp} you solve such tasks by letting the simple module
-send a message to itself; the message would be delivered
-to the simple module at a later point of time. Messages used
-this way are called self-messages\index{self-message}.
-Self-messages are used to model events which occur within the module.
-
-\subsubsection{Scheduling an Event}
-
-The module can send a message to itself using the \ffunc{scheduleAt()} function.
-\ffunc{scheduleAt()} accepts an \textit{absolute} simulation time,
-usually calculated as \ffunc{simTime()}+\textit{delta}:
-
-\begin{cpp}
-scheduleAt(absoluteTime, msg);
-scheduleAt(simtime()+delta, msg);
-\end{cpp}
-
-Self-messages are delivered to the module in the same way as other
-messages (via the usual receive calls or \ffunc{handleMessage()});
-the module may call the \ffunc{isSelfMessage()} member of any received
-message to determine if it is a self-message.
-
-As an example, here's how you could implement your own \ffunc{wait()}
-function in an \ffunc{activity()} simple module, if the simulation kernel
-didn't provide it already:
-
-%
-%TBD
-%This looks like a pointless thing to do... Is there no better example?
-%The kernel DOES after all, have a Wait() function built in...
-%Of course, this is low priority.
-%Gabor
-%
-
-\begin{cpp}
-cMessage *msg = new cMessage();
-scheduleAt(simtime()+waitTime, msg);
-cMessage *recvd = receive();
-if (recvd!=msg)
-   // hmm, some other event occurred meanwhile: error!
-...
-\end{cpp}
-
-You can determine if a message is currently in the FES\index{FES}
-by calling its \ffunc{isScheduled()} member:
-
-\begin{cpp}
-if (msg->isScheduled())
-  // currently scheduled
-else
-  // not scheduled
-\end{cpp}
-
-
-\subsubsection{Re-scheduling an Event}
-
-If you want to reschedule an event which is currently scheduled to a different
-simulation time, first you have to cancel it using \ffunc{cancelEvent()}.
-
-
-\subsubsection{Cancelling an Event}
-
-Scheduled self-messages can be cancelled\index{self-message!cancelling}
-\index{message!cancelling} (removed from the FES\index{FES}).
-This is particularly useful because self-messages are often used
-to model timers.
-
-\begin{cpp}
-cancelEvent( msg );
-\end{cpp}
-
-The \ffunc{cancelEvent()} function takes a pointer to the message to
-be cancelled, and also returns the same pointer. After having it
-cancelled, you may delete the message or reuse it in the next
-\ffunc{scheduleAt()} calls. \ffunc{cancelEvent()} gives an error if
-the message is not in the FES\index{FES}.
-
-
-\subsubsection{Implementing Timers}
-
-The following example shows how to implement timers:
-
-\begin{cpp}
-cMessage *timeoutEvent = new cMessage("timeout");
-
-scheduleAt(simTime()+10.0, timeoutEvent);
-//...
-
-cMessage *msg = receive();
-if (msg == timeoutEvent)
-{
-  // timeout expired
-}
-else
-{
-  // other message has arrived, timer can be cancelled now:
-  delete cancelEvent(timeoutEvent);
-}
-\end{cpp}
-
-
-
 
 
 \section{Stopping the Simulation}
@@ -2850,18 +2794,18 @@ The \ttt{cRuntimeError} class has a constructor whose argument list
 is similar to \ffunc{printf()}:
 
 \begin{cpp}
-if (windowSize<1)
+if (windowSize <= 0)
     throw cRuntimeError("Invalid window size %d; must be >=1", windowSize);
 \end{cpp}
 
-Do not include a newline (``{\textbackslash}n'') or punctuation (period
-or exclamation mark) in the error text; it will be added by {\opp}.
+Do not include newline (\ttt{{\textbackslash}n}), period or exclamation mark
+in the error text; it will be added by {\opp}.
 
 You can achieve the same effect by calling the \ffunc{error()} method of
-\cclass{cModule}.
+\cclass{cModule}
 
 \begin{cpp}
-if (windowSize<1)
+if (windowSize <= 0)
     error("Invalid window size %d; must be >=1", windowSize);
 \end{cpp}
 
@@ -2870,17 +2814,14 @@ is available.
 
 
 
-\section{Finite State Machines in {\opp}}
+\section{Finite State Machines}
 \label{sec:simple-modules:fsm}
 
 \subsubsection{Overview}
 
-
 Finite State Machines\index{finite state machine} (FSMs)\index{FSM}
 can make life with \ffunc{handleMessage()} easier. {\opp} provides a
-class and a set of macros to build FSMs. {\opp}'s FSMs work very much
-like OPNET's or SDL's.
-
+class and a set of macros to build FSMs.
 
 The key points are:
 \begin{itemize}
