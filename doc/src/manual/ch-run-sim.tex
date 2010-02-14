@@ -91,16 +91,20 @@ simulation executable. (Creating the executable was described in
 chapter \ref{cha:building-simulation-programs}). Both user interfaces
 are supported on Unix and Windows platforms.
 
-You can choose which runtime environment is included in your simulation executable when
-you generate your makefile. By default both Tkenv and Cmdenv is linked in so you can choose
-between them during runtime, but it is possible to specify only a single user interface with the
-\ttt{-u Cmdenv} or \ttt{-u Tkenv} option on the \fprog{opp\_makemake} command line. This can be
-useful if you intend to run your simulations on a machine where Tcl/Tk is not installed.
+You can choose which runtime environment is included in your simulation
+executable when you generate your makefile. By default, both Tkenv and
+Cmdenv is linked in so you can choose between them during runtime, but it
+is possible to specify only a single user interface with the \ttt{-u
+Cmdenv} or \ttt{-u Tkenv} option on the \fprog{opp\_makemake} command line.
+This can be useful if you intend to run your simulations on a machine where
+Tcl/Tk is not installed.
 
-By default, Tkenv will be used if both runtime environment is present in your executable,
-but you can override this with the \ttt{user-interface=Cmdenv} in your ini file or by
-specifying \ttt{-u Cmdenv} on the command line. If both the config option and
-the command line option are present, the command line option takes precedence.
+By default, Tkenv will be used if both runtime environment is present in
+your executable. You explicitly select a user interface by adding the
+\ttt{user-interface=Cmdenv} (or \ttt{=Tkenv}) option in your ini file, or
+by specifying \ttt{-u Cmdenv} or \ttt{-u Tkenv} on the command line. If
+both the config option and the command line option are present, the command
+line option takes precedence.
 
 \subsubsection{Selecting a Configuration and Run Number}
 
@@ -141,16 +145,20 @@ the need to explicitly link against that library. This approach has several adva
     without the need of linking or compiling.
 \end{itemize}
 
-Use the \ttt{-l libraryname} command line option to load a library dynamically at run time.
+Use the \ttt{-l libraryname} command line option to load a library dynamically.
 {\opp} will attempt to load it using the \ffunc{dlopen()} or \ffunc{LoadLibrary()} functions and
 automatically registers all simple modules in the library.
 
-The prefix and suffix from the library name can be omitted (the extension (\ttt{.dll, .so, .dylib} and also
-the common \ttt{lib} prefix on unix systems). This means that you can specify the library name in a
-platform independent way (name.dll, libname.dll, libname.so and libname.dylib can be loaded with \ttt{-l name}).
+The prefix and suffix from the library name can be omitted (the extensions
+\ttt{.dll}, \ttt{.so}, \ttt{.dylib}, and also the common \ttt{lib} prefix
+on Unix systems). This means that you can specify the library name in a
+platform independent way: if you specify \ttt{-l foo}, then {\opp} will
+look for \ttt{foo.dll}, \ttt{libfoo.dll}, \ttt{libfoo.so} or \ttt{libfoo.dylib},
+depending on the platform.
 
-It is also possible to specify the libraries to be loaded in the ini file with the \ttt{load-libs=} config option.
-The values from the command line and the config file will be merged.
+It is also possible to specify the libraries to be loaded in the ini file
+with the \ttt{load-libs=} configuration option. The values from the command line
+and the config file will be merged.
 
 \begin{note}
   Runtime loading is not needed if your executable or shared lib was
@@ -159,11 +167,11 @@ The values from the command line and the config file will be merged.
 \end{note}
 
 \begin{note}
-  You must ensure that the library can be accessed by {\opp} . You have to specify
-  the path with your library name (pre- and postfixes of the library filename
-  still can be omitted) or adjust your shared library path according to your OS.
-  (On Windows set the PATH, on Unix set LD\_LIBRARY\_PATH and on Mac OS X
-  set the DYLD\_LIBRARY\_PATH as needed.)
+  You must ensure that the library can be accessed by {\opp}. Either specify the
+  library name with a full path (pre- and postfixes of the library file name
+  still can be omitted), or adjust the shared library path environment variable
+  of your OS (\ttt{PATH} on Windows, \ttt{LD\_LIBRARY\_PATH} on Unix, and
+  \ttt{DYLD\_LIBRARY\_PATH} on Mac OS X.)
 \end{note}
 
 \subsection{Running a Shared Library}
@@ -288,7 +296,7 @@ customized via \ffilename{omnetpp.ini} entries. The output file \ffilename{resul
 contains vector data recorded during simulation (here, queueing times),
 and it can be processed using the IDE or other tools.
 
-\subsection{Command-Line Switches}
+\subsection{Command-Line Options}
 
 The command line environment allows you to specify more than one run by
 using the \ttt{-r 2,4,6..8} format. See \ref{sec:ch-run-sim:batch-execution}
@@ -301,7 +309,7 @@ for more information about running simulation batches.
 It accepts a comma-separated list of run numbers or run number ranges, e.g.
 \ttt{1,3..4,7..9}. If the value is missing, Cmdenv executes all runs that have
 ini file sections; if no runs are specified in the ini file, Cmdenv does one run.
-The -r command line option overrides this ini file setting.
+The \ttt{-r} command line option overrides this ini file setting.
 
 
 Cmdenv can be executed in two modes, selected by the \fconfig{cmdenv-express-mode}
@@ -416,26 +424,35 @@ most common way of leaking memory in a simulation is by not deleting messages.
 Tkenv\index{Tkenv} is a portable graphical windowing user interface.
 Tkenv supports interactive execution of the simulation, tracing and
 debugging\index{simulation!debugging}. Tkenv is recommended in the
-development stage of a simulation or for presentation and educational
-purposes, since it allows one to get a detailed picture of the state
+development stage of a simulation and for presentation purposes,
+since it allows one to get a detailed picture of the state
 of simulation at any point of execution and to follow what happens
 inside the network.
 
-\subsection{Command-Line Switches}
+\begin{note}
+  This section only covers the command-line and configuration options
+  of Tkenv; the user interface is described in the Tkenv chapter of the
+  {\opp} User Guide.
+\end{note}
+
+\subsection{Command-Line and Configuration Options}
 
 A simulation program built with Tkenv accepts all the general command line
-switches\index{command line switches}. In addition the \ttt{-r runnumber}
-option allows only specifying a single run. Multiple runs are not supported.
+options \index{command line options}. Additionally, the \ttt{-c configname}
+and \ttt{-r runnumber} options can be used to preselect a single run for execution,
+that is, these options suppress the initial run selection dialog.
 
 Tkenv configuration options:
 \begin{itemize}
   \item{\fconfig{tkenv-default-config}:
     Specifies which config Tkenv should set up automatically on startup. The
-    default is to ask the user.}
+    default is to ask the user. This option is equivalent to the \ttt{-c}
+    command-line option.}
 
   \item{\fconfig{tkenv-default-run}: Specifies which run (of the default
-    config, see tkenv-default-config) Tkenv
-    should set up automatically on startup. The default is to ask the user.}
+    config, see tkenv-default-config) Tkenv should set up automatically on startup.
+    The default is to ask the user. This option is equivalent to the \ttt{-r}
+    command-line option.}
 
   \item{\fconfig{tkenv-extra-stack}:
     Specifies the extra amount of stack that is reserved for each activity()
@@ -448,14 +465,10 @@ Tkenv configuration options:
     that get evaluated on startup.}
 \end{itemize}
 
-Tkenv specific configuration options can be specified also on command line
-by prefixing them with double dash (e.g -{}-tkenv-option=value). See
+Tkenv-specific configuration options can also be specified on the command line
+by prefixing them with two dashes (e.g \ttt{-{}-tkenv-option=value}). See
 Appendix \ref{cha:config-options} for the list of possible configuration options.
 
-\begin{note}
-The usage of the Tkenv user interface is detailed in the {\opp}  User Guide's Tkenv
-chapter.
-\end{note}
 
 \section{Batch Execution}
 \label{sec:ch-run-sim:batch-execution}
