@@ -2320,43 +2320,38 @@ sendDelayed(msg, 0.005, "outGate");
 \label{sec:simple-modules:direct-sending}
 
 At times it is covenient to be able to send a message directly to an input
-gate of another module. The \ffunc{sendDirect()} function does that:
+gate of another module. The \ffunc{sendDirect()} function is provided for
+this purpose.
 
-XXX duration!!!
+This function has several flavors. The first set of \ffunc{sendDirect()}
+functions accept a message and a target gate; the latter can be specified
+in various forms:
 
 \begin{cpp}
-sendDirect(cMessage *msg, double delay, cModule *mod, int gateId)
-sendDirect(cMessage *msg, double delay, cModule *mod, const char *gateName, int index=-1)
-sendDirect(cMessage *msg, double delay, cGate *gate)
+sendDirect(cMessage *msg, cModule *mod, int gateId)
+sendDirect(cMessage *msg, cModule *mod, const char *gateName, int index=-1)
+sendDirect(cMessage *msg, cGate *gate)
 \end{cpp}
-
-In addition to the message and delay arguments, it also takes the
-target module and gate. The gate should be an \textit{unconnected}
-input gate.
 
 An example for direct sending:
 
 \begin{cpp}
-cModule *destinationModule = getParentModule()->getSubmodule("node2");
-double delay = truncnormal(0.005, 0.0001);
-sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
+cModule *targetModule = getParentModule()->getSubmodule("node2");
+sendDirect(new cMessage("msg"), targetModule, "in");
 \end{cpp}
 
 At the target module, there is no difference between messages received
 directly and those received over connections.
 
-You can also send messages to an input gate of a \textit{compound} module.
-In that case, the message will follow the connection path inside the
-compound module, and will be delivered to the module at the end of the path
--- just as with normal connections. The gate must be connected inside the
-compound module, and the path must end in a simple module.
+The target gate must be unconnected gate; in other words,
+modules must have dedicated gates to be able to receive messages
+sent via \ffunc{sendDirect()}. You cannot have a gate which receives
+messages via both connections and \ffunc{sendDirect()}.
 
-It was mentioned that the target gate must not be connected, that is, a
-module needs dedicated gates to be able to receive messages sent via
-\ttt{sendDirect()}. It is recommended to tag the gate with the
-\ttt{@directIn} property in the module's NED declaration; this causes
-{\opp} not to complain that the gate is not connected in the network or
-compound module where the module is used.
+It is recommended to tag gates dedicated for receiving messages via
+\ffunc{sendDirect()} with the \ttt{@directIn} property in the module's NED
+declaration. This will cause {\opp} not to complain that the gate is not
+connected in the network or compound module where the module is used.
 
 An example:
 
@@ -2366,6 +2361,43 @@ simple Radio {
         input radioIn @directIn; // for receiving air frames
 }
 \end{ned}
+
+The target module is usually a simple module, but it can also be a compound
+module. The message will follow the connections that start at the target
+gate, and will be delivered to the module at the end of the path -- just as
+with normal connections. The path must end in a simple module.
+
+It is even permitted to send to an output gate, which will also cause the
+message to follow the connections starting at that gate.
+This can be useful, for example, when several submodules are sending
+to a single output gate of their parent module.
+
+A second set of \ffunc{sendDirect()} methods accept a propagation
+delay and a transmission duration as parameters as well:
+
+\begin{cpp}
+sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
+           cModule *mod, int gateId)
+sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
+           cModule *mod, const char *gateName, int index=-1)
+sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
+           cGate *gate)
+\end{cpp}
+
+The transmission duration parameter is important when the message is also
+a packet (instance of \cclass{cPacket}). For messages that are not packets
+(not subclassed from \cclass{cPacket}), the duration parameter
+is ignored.
+
+If the message is a packet, the duration will be written into the packet,
+and can be read by the receiver with the \ffunc{getDuration()} method of
+the packet.
+
+The receiver module can choose whether it wants the simulation kernel
+to deliver the packet object to it at the start or at the end of the
+reception. The default is the latter; the module can change it by calling
+\ffunc{setDeliverOnReceptionStart()} on the final input gate, that is, on
+\ttt{targetGate->getPathEndGate()}.
 
 
 \subsection{Packet Transmissions}
@@ -2379,6 +2411,10 @@ Several connections in the path may have an associated channel,
 but there can be only one channel per path that models nonzero
 transmission duration. This restriction is enforced by the simulation
 kernel. This channel is called the \textit{transmission channel}.
+  \footnote{Moreover, if \ffunc{sendDirect()} with a nonzero duration
+  was used to send the packet to the start gate of the path,
+  then the path cannot have a transmission channel at all.
+  The point is that the a transission duration must be unambiguous.}
 
 \begin{note}
   In practice, this means that there can be only one \ttt{ned.DatarateChannel}
@@ -3490,7 +3526,7 @@ directly. If you are deleting a compound module, \ffunc{callFinish()} will
 recursively invoke \ffunc{finish()} for all submodules, and if you are deleting
 a simple module from another module, \ffunc{callFinish()} will do the context
 switch for the duration of the call.
-  \footnote{The \ffunc{finish()} function is even made \ttt{protected}
+  \footnote{The \ffunc{finish()} function has even been made \ttt{protected}
   in \cclass{cSimpleModule}, in order to discourage its invocation from
   other modules.}
 
