@@ -393,7 +393,7 @@ recursively in the source directory trees.
 \subsection{A Multi-Directory Example}
 
 For a complex example of using \fprog{opp\_makemake}, we will check how to create
-the makefiles for the mobility-framework. First take a look at the
+the makefiles for the Mobility Framework. First, take a look at the
 project's directory structure and find the directories that should be used as
 source trees:
 
@@ -408,20 +408,20 @@ mobility-framework
     testSuite <-- source tree (build testSuite executable from this dir)
 \end{verbatim}
 
-Additionally there are dependencies between these output files: \ttt{mfcontrib}
+Additionally, there are dependencies between these output files: \ttt{mfcontrib}
 requires \ttt{mfcore} and \ttt{testSuite} requires \ttt{mfcontrib} (and indirectly
-\ttt{mfcore} of course).
+\ttt{mfcore}).
 
-First create the makefile for the core directory (build a shared lib from all .cc files
-found in the core subtree and name it 'mfcore'):
+First, we create the makefile for the core directory. The makefile will build
+a shared lib from all .cc files in the \ttt{core} subtree, and will name it \ttt{mfcore}):
 
 \begin{commandline}
 $ cd core && opp_makemake -f --deep --make-so -o mfcore -O out
 \end{commandline}
 
-The contrib directory is depending on \ttt{mfcore} so we use the -L and -l options
+The \ttt{contrib} directory is depending on \ttt{mfcore} so we use the \ttt{-L} and \ttt{-l} options
 to specify the library we should link with. Note that we must also add
-the include directories manually from the core source tree, because autodiscovery works only
+the include directories manually from the \ttt{core} source tree, because autodiscovery works only
 in the same source tree:
 
 \begin{commandline}
@@ -429,7 +429,7 @@ $ cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out \\
   -I../core/basicModules -I../core/utils -L../out/$(CONFIGNAME)/core -lmfcore
 \end{commandline}
 
-The testSuite will be created as an executable file which depends on both
+The \ttt{testSuite} will be created as an executable file which depends on both
 \ttt{mfcontrib} and \ttt{mfcore}.
 
 \begin{commandline}
@@ -440,8 +440,8 @@ $ cd testSuite && opp_makemake -f --deep -o testSuite -O out
 
 Now the last step is to create a top-level makefile in the root of the project that
 calls the previously created makefiles in the correct order. We will use the
-\ttt{-{}-nolink} option, exclude every subdirectory from the build (-X.) and explicitly call
-the above makefiles (-d dirname).
+\ttt{-{}-nolink} option, exclude every subdirectory from the build (\ttt{-X.}), and explicitly call
+the above makefiles (\ttt{-d dirname}).
 
 \begin{commandline}
 $ opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.

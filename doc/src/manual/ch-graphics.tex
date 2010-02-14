@@ -17,10 +17,10 @@ Display strings can be used in the following contexts:
         (for module vectors), icon, icon color, auxiliary icon, status text,
         communication range (as circle or filled circle), tooltip, etc.
   \item \textit{compound modules, networks} -- display string can specify
-        background color, border color, border thickness,
+        background color, border color, border width,
         background image, scaling, grid, unit of measurement, etc.
   \item \textit{connections} -- display string can specify positioning, color,
-        line thickness, line style, text and tooltip
+        line width, line style, text and tooltip
   \item \textit{messages} -- display string can specify icon, icon color, etc.
 \end{itemize}
 
@@ -385,7 +385,7 @@ source1.out --> { @display("ls=red,3"); } --> queue1.in++;
 \end{center}
 
 \begin{note}
-If you want to hide a connection, specify zero line thickness in the display
+If you want to hide a connection, specify zero line width in the display
 string (\ttt{"ls=,0"}).
 \end{note}
 
@@ -397,7 +397,7 @@ Appendix \ref{cha:display-string-tags}.
 Message display string affects how messages are shown during animation.
 By default, they are displayed as a small filled circle, in one of
 8 basic colors (the color is determined as \textit{message kind modulo 8}),
-and with the message class and/or name displayed under it
+and with the message class and/or name displayed under it.
 The latter is configurable in the Tkenv Options dialog, and message kind
 dependent coloring can also be turned off there.
 
@@ -416,9 +416,9 @@ const char *CustomPacket::getDisplayString() const
 }
 \end{cpp}
 
-Or better: If you add the field \ffunc{displayString} to your message
-definition (.msg file) the message compiler will automatically generate
-the \ffunc{set/getDisplayString} methods for you:
+Alternatively, you can add the field \ffunc{displayString} to your message
+definition (.msg file), and the message compiler will automatically generate
+\ffunc{setDisplayString()} and \ffunc{getDisplayString()} methods for you:
 
 \begin{msg}
 message Job
