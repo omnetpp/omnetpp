@@ -751,7 +751,7 @@ class SIM_API cPacket : public cMessage
     virtual ~cPacket();
 
     /**
-     * Assignment operator. Duplication and the assignment operator work all right with cMessage.
+     * Assignment operator. Duplication and the assignment operator work all right with cPacket.
      * The name member doesn't get copied; see cNamedObject's operator=() for more details.
      */
     cPacket& operator=(const cPacket& packet);

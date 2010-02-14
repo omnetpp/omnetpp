@@ -3,57 +3,74 @@
 
 \section{Messages and Packets}
 
-\subsection{The cMessage Class}
+\subsection{The cMessage and cPacket Classes}
 
-\cclass{cMessage} is a central class in {\opp}. Objects of \cclass{cMessage} and
-subclasses may model a number of things: events\index{events};
-messages; packets, frames, cells, bits or signals travelling
-in a network; entities travelling in a system and so on.
+Messages are a central concept in {\opp}. In the model, message objects
+represent events, packets, commands, jobs, customers or other kinds of
+entities, depending on the model domain.
 
-%
-% FIXME add @omitGetVerb(true) !!
-%
+Messages are represented with the \cclass{cMessage} class and its subclass
+\cclass{cPacket}. \cclass{cPacket} is used for network packets (frames,
+datagrams, transport packets, etc.) in a communication network, and
+\cclass{cMessage} is used for everything else. Users are free to subclass
+both \cclass{cMessage} and \cclass{cPacket} to create new types and to
+add data.
 
-\subsubsection{Attributes}
-
-
-A \cclass{cMessage} object has number of attributes. Some are used by
-the simulation kernel, others are provided just for the convenience
-of the simulation programmer. A more-or-less complete list:
+\cclass{cMessage} has the following fields. Some are used by
+the simulation kernel, others are provided for the convenience
+of the simulation programmer:
 
 \begin{itemize}
-  \item{The \textit{name} attribute is a string (\ttt{const char *}),
+  \item The \textit{name} field is a string (\ttt{const char *}),
     which can be freely used by the simulation programmer. The message
-    name appears in many places in Tkenv (for example, in animations),
-    and it is generally very useful to choose a descriptive name.
-    This attribute is inherited from \cclass{cOwnedObject} (see section
-    \ref{sec:ch-sim-lib:cobject}).}
-  \item{The \textit{message kind} attribute is supposed to carry some message
-    type information. Zero and positive values can be freely used
-    for any purpose. Negative values are reserved for use by the
-    {\opp} simulation library.}
-  \item{The \textit{length} attribute (understood in bits) is used to compute
-    transmission delay when the message travels through a connection
-    that has an assigned data rate.}
-  \item{The \textit{bit error flag} attribute is set to true by the simulation
-    kernel with a probability of $1-(1-\textit{ber})^{\mathit{length}}$ when the
-    message is sent through a connection that has an assigned bit
-    error rate (\textit{ber}).}
-  \item{The \textit{priority} attribute is used by the simulation kernel to
-    order messages in the message queue (FES\index{FES}) that have the same
-    arrival time values.}
-  \item{The \textit{time stamp} attribute is not used by the simulation kernel;
-    you can use it for purposes such as noting the time when the
-    message was enqueued or re-sent.}
-  \item{Other attributes and data members make simulation programming
-    easier, they will be discussed later: \textit{parameter list}, \textit{encapsulated
-      message}, \textit{control info} and \textit{context pointer}.}
-  \item{A number of read-only attributes store information about the
-    message's (last) sending/scheduling: \textit{source/destination module
-      and gate}, \textit{sending (scheduling) and arrival time}. They are
-    mostly used by the simulation kernel while the message is in
-    the FES\index{FES}, but the information is still in the message object when
-    a module receives the message.}
+    name gets displayed at many places in the graphical runtime interface,
+    so it is generally useful to choose a descriptive name. Message name
+    is inherited from \cclass{cOwnedObject} (see section
+    \ref{sec:ch-sim-lib:cobject}).
+  \item \textit{Message kind} is an integer field.
+    Some negative values are reserved by the simulation library, but zero
+    and positive values can be freely used in the model for any purpose.
+    Message kind is typically used to carry a value that conveys the
+    role, type, category or identity of the message.
+  \item The \textit{scheduling priority} field is used by the simulation
+    kernel to determine the delivery order of messages that have the same
+    arrival time values. This field is rarely used in practice.
+  \item The \textit{send time}, \textit{arrival time}, \textit{source module},
+    \textit{source gate}, \textit{destination module}, \textit{destination gate}
+    fields store information about the message's last sending or scheduling,
+    and should not be modified from the model. These fields are primarily
+    used internally by the simulation kernel while the message is in the
+    future events set (FES)\index{FES}, but the information is still in
+    the message object when the message gets delivered to a module.
+  \item \textit{Time stamp} (not to be confused with \textit{arrival time})
+    is a utility field, which the programmer can freely use for any purpose.
+    The time stamp is not examined or changed by the simulation kernel at all.
+  \item The \textit{parameter list}, \textit{control info} and
+    \textit{context pointer} fields make some simulation tasks easier
+    to program, and they will be discussed later.
+\end{itemize}
+
+The \cclass{cPacket} class extends \cclass{cMessage} with fields that are
+useful for representing network packets:
+
+\begin{itemize}
+  \item The \textit{packet length} field represents the length of the packet
+    in bits. It is used by the simulation kernel to compute the transmission
+    duration when a packet travels through a connection that has an assigned
+    data rate, and also for error modeling on channels with a nonzero
+    bit error rate.
+  \item The \textit{encapsulated packet} field helps modeling protocol layers
+    by supporting the concept of encapsulation and decapsulation.
+  \item The \textit{bit error flag} field carries the result of error
+    modelling after the packet is sent through a channel that has a nonzero
+    packet error rate (PER) or bit error rate (BER). It is up to the receiver
+    to examine this flag after having received the packet, and to act upon it.
+  \item The \textit{duration} field carries the transmission duration after
+    the packet was sent through a channel with a data rate.
+  \item The \textit{is-reception-start} flag tells whether this packet
+    represents the start or the end of the reception after the packet travelled
+    through a channel with a data rate. This flag is controlled by the
+    \textit{deliver-on-reception-start} flag of the receiving gate.
 \end{itemize}
 
 
@@ -65,7 +82,7 @@ Most commonly, you would create a message using an \textit{object name}
 (a \ttt{const char *} string) and a \textit{message kind} (\ttt{int}):
 
 \begin{cpp}
-cMessage *msg = new cMessage("MessageName", msgKind);
+cMessage *msg = new cMessage("timer", kind);
 \end{cpp}
 
 Both arguments are optional and initialize to the null string (\ttt{""})
@@ -73,24 +90,18 @@ and 0, so the following statements are also valid:
 
 \begin{cpp}
 cMessage *msg = new cMessage();
-cMessage *msg = new cMessage("MessageName");
+cMessage *msg = new cMessage("timer");
 \end{cpp}
 
-It is a good idea to \textit{always} use message names -- they can be
-extremely useful when debugging or demonstrating your simulation.
+Descriptive message names can be very useful when tracing, debugging or
+demonstrating the simulation, so it is recommended to use them.
 
 Message kind is usually initialized with a symbolic constant
 (e.g. an \textit{enum} value) which signals what the message object
-represents in the simulation (i.e. a data packet, a jam signal, a job, etc.)
-Please use \textit{positive values or zero} only as message kind --
+represents. Only positive values and zero can be used --
 negative values are reserved for use by the simulation kernel.
 
-
-The \cclass{cMessage} constructor accepts further arguments too
-(\textit{length}, \textit{priority}, \textit{bit error flag}),
-but for readability of the code it is best to set them explicitly
-via the \ttt{set...()} methods described below.
-Length and priority are integers, and the bit error flag is boolean.
+The \cclass{cPacket} constructor accepts a further \textit{bit length} argument.
 
 \index{message!data members}
 
@@ -100,7 +111,7 @@ Once a message has been created, its data members can be changed by the followin
 msg->setKind( kind );
 msg->setBitLength( length );
 msg->setByteLength( lengthInBytes );
-msg->setPriority( priority );
+msg->setSchedulingPriority( priority );
 msg->setBitError( err );
 msg->setTimestamp();
 msg->setTimestamp( simtime );
@@ -112,45 +123,40 @@ the priority\index{message!priority}, the error
 flag\index{message!error flag} and the time stamp\index{message!time
   stamp}. The \ffunc{setTimeStamp()} function without any argument
 sets the time stamp to the current simulation time.
-\ffunc{setByteLength()} sets the same length field as \ffunc{setBitLength()},
+\ffunc{setByteLength()} sets the same field as \ffunc{setBitLength()},
 only the parameters gets internally multiplied by 8.
 
 The values can be obtained by the following functions:
 
 \begin{cpp}
 int k       = msg->getKind();
-int p       = msg->getPriority();
+int p       = msg->getSchedulingPriority();
 int l       = msg->getBitLength();
 int lb      = msg->getByteLength();
 bool b      = msg->hasBitError();
 simtime_t t = msg->getTimestamp();
 \end{cpp}
 
-\ffunc{getByteLength()} also reads the length field as \ffunc{length()},
-but the result gets divided by 8 and rounded up.
+\ffunc{getBitLength()} and \ffunc{getByteLength()} both read the same
+field, but the latter divides by 8 and rounds up the result.
 
 
 \subsubsection{Duplicating Messages}
 \index{message!duplication}
 
-It is often necessary to duplicate a message (for example, sending
-one and keeping a copy). This can be done in the same way as
+It is often necessary to duplicate a message or a packet, for example,
+to send one and keep a copy. Duplication can be done in the same way as
 for any other {\opp} object:
 
 \begin{cpp}
 cMessage *copy = msg->dup();
 \end{cpp}
 
-or
-
-\begin{cpp}
-cMessage *copy = new cMessage( *msg );
-\end{cpp}
-
-
-The two are equivalent. The resulting message is an exact copy
-of the original, including message parameters (\cclass{cMsgPar} or other
-object types) and encapsulated messages.
+The resulting message (or packet) will be an exact copy of the original,
+including message parameters and encapsulated messages.
+  \footnote{Note, however, that the simulation library may delay the
+  duplication of the encapsulated message until it is really needed;
+  see section \ref{ch:messages:reference-counting}.}
 
 
 \subsection{Self-Messages}
@@ -314,57 +320,57 @@ if (dynamic_cast<IPv6Datagram *>(msg) != NULL)
 
 \subsubsection{Encapsulating Packets}
 
-It is often necessary to encapsulate a
-message\index{message!encapsulation} into another when you are modeling
-layered protocols of computer networks. Although you can encapsulate
-messages by adding them to the parameter list, there's a better way.
+It is often necessary to encapsulate a packet\index{packet!encapsulation}
+into another when you are modeling layered protocols of computer networks.
 
-
-The \ffunc{encapsulate()} function encapsulates a message
-into another one. The length of the message will grow by the length of
-the encapsulated message. An exception: when the encapsulating (outer)
-message has zero length, {\opp} assumes it is not a real packet but
+The \ffunc{encapsulate()} function encapsulates a packet
+into another one. The length of the packet will grow by the length of
+the encapsulated packet. An exception: when the encapsulating (outer)
+packet has zero length, {\opp} assumes it is not a real packet but
 some out-of-band signal, so its length is left at zero.
 
 \begin{cpp}
-cMessage *userdata = new cMessage("userdata");
+cPacket *data = new cPacket("data");
+data->setByteLength(1024);
 
-userdata->setByteLength(2048);  // 2K
-cMessage *tcpseg = new cMessage("tcp");
+TCPSegment *tcpseg = new TCPSegment("tcp"); // subclassed from cPacket
 tcpseg->setByteLength(24);
-tcpseg->encapsulate(userdata);
-ev << tcpseg->getByteLength() << endl; // --> 2048+24 = 2072
+
+tcpseg->encapsulate(data);
+ev << tcpseg->getByteLength() << endl; // --> 1024+24 = 1028
 \end{cpp}
 
-A message can only hold one encapsulated message at a time. The
+A packet can only hold one encapsulated packet at a time, the
 second \ffunc{encapsulate()} call will result in an error. It is also
-an error if the message to be encapsulated isn't owned by the
+an error if the packet to be encapsulated is not owned by the
 module.
 
-You can get back the encapsulated message by \ffunc{decapsulate()}:
+You can get back the encapsulated packet by calling \ffunc{decapsulate()}:
 
 \begin{cpp}
-cMessage *userdata = tcpseg->decapsulate();
+cPacket *userdata = tcpseg->decapsulate();
 \end{cpp}
 
-\ffunc{decapsulate()} will decrease the length of the message accordingly,
+\ffunc{decapsulate()} will decrease the length of the packet accordingly,
 except if it was zero. If the length would become negative, an
 error occurs.
 
 The \ffunc{getEncapsulatedMsg()} function returns a pointer to the encapsulated
-message, or \ttt{NULL} if no message was encapsulated.
+packet, or \ttt{NULL} if no packet is encapsulated.
+
 
 \subsubsection{Reference Counting}
+\label{ch:messages:reference-counting}
 
 Since the 3.2 release, {\opp} implements reference counting of
-encapsulated messages, meaning that if you \ffunc{dup()} a message
-that contains an encapsulated message, then the encapsulated message will
+encapsulated packets, meaning that if you \ffunc{dup()} a packet
+that contains an encapsulated packet, then the encapsulated packet will
 not be duplicated, only a reference count incremented. Duplication of
-the encapsulated message is deferred until \ffunc{decapsulate()}
-actually gets called. If the outer message gets deleted without its
+the encapsulated packet is deferred until \ffunc{decapsulate()}
+actually gets called. If the outer packet gets deleted without its
 \ffunc{decapsulate()} method ever being called, then the reference
-count of the encapsulated message simply gets decremented. The
-encapsulated message is deleted when its reference count reaches
+count of the encapsulated packet simply gets decremented. The
+encapsulated packet is deleted when its reference count reaches
 zero.
 
 Reference counting can significantly improve performance, especially
@@ -374,20 +380,20 @@ get duplicated (and then discarded without being used) if the
 MAC address doesn't match in the first place.
 
 The reference counting mechanism works transparently. However, there
-is one implication: \tbf{one must not change anything in a message
+is one implication: \tbf{one must not change anything in a packet
 that is encapsulated into another!} That is,
 \ffunc{getEncapsulatedMsg()} should be viewed as if it returned a
 pointer to a read-only object (it returns a \ttt{const} pointer
-indeed), for quite obvious reasons: the encapsulated message may be
-shared between several messages, and any change would affect those
-other messages as well.
+indeed), for quite obvious reasons: the encapsulated packet may be
+shared between several packets, and any change would affect those
+other packets as well.
 
 
-\subsubsection{Encapsulating Several Messages}
+\subsubsection{Encapsulating Several Packets}
 
-The \cclass{cMessage} class doesn't directly support adding more than one
-messages to a message object, but you can subclass \cclass{cMessage}
-and add the necessary functionality. (It is recommended that you
+The \cclass{cPacket} class does not directly support encapsulating more
+than one packet, but you can subclass \cclass{cPacket} or \cclass{cMessage}
+to add the necessary functionality. (It is recommended that you
 use the message definition syntax \ref{ch:messages:message-definitions}
 and customized messages \ref{sec:ch-messages:customizing-generated-class}
 to be described later on in this chapter -- it can spare you some work.)
@@ -565,6 +571,8 @@ Let us begin with a simple example. Suppose that you need message objects to
 carry source and destination addresses as well as a hop count. You could write
 a \ttt{mypacket.msg} file with the following contents:
 
+%% FIXME TODO show the "packet" keyword too!
+
 \begin{msg}
 message MyPacket
 {
@@ -615,8 +623,8 @@ to generate your makefiles, the latter will be automatically taken care of.)
 
 \subsubsection{What Is Message Subclassing \textit{Not?}}
 
-There might be some confusion around the purpose and
-concept of message definitions, so it seems to be a good idea
+There can be some confusion about the purpose and
+concept of message definitions, so it might be a good idea
 to deal with them right here.
 
 It is \textit{\textbf{not:}}
@@ -715,8 +723,12 @@ a C++ header file with a generated class, \ttt{FooPacket}.
 
 For each field in the above description, the generated class will have
 a protected data member, a getter and a setter method. The names of the
-methods will begin with \ttt{get} and \ttt{set},
-followed by the field name with its first letter converted to uppercase.
+methods will begin with \ttt{get} and \ttt{set}, followed by the field name
+with its first letter converted to uppercase.\footnote{
+  To generate getter methods without the \ttt{get} verb, add the
+  \ttt{@omitGetVerb(true)} property to the message. It is not recommended
+  to use \ttt{@omitGetVerb(true)} though, because it goes against the
+  accepted naming convention in {\opp} and models.}
 Thus, \ttt{FooPacket} will contain the following methods:
 
 \begin{cpp}

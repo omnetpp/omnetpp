@@ -1617,26 +1617,26 @@
          xml:space="preserve"
          style="font-size:39.19646835px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
          x="34.540016"
-         y="-618.6629"
+         y="-649.75201"
          id="text7121"
          sodipodi:linespacing="125%"
          transform="scale(1,-1)"><tspan
            sodipodi:role="line"
            id="tspan7123"
            x="34.540016"
-           y="-618.6629">@title@</tspan></text>
+           y="-649.75201">@title@</tspan></text>
       <text
          xml:space="preserve"
          style="font-size:19.59823418px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
          x="35.320015"
-         y="-561.68884"
+         y="-610.04968"
          id="text7125"
          sodipodi:linespacing="125%"
          transform="scale(1,-1)"><tspan
            sodipodi:role="line"
            id="tspan7127"
            x="35.320015"
-           y="-561.68884">@version@</tspan></text>
+           y="-610.04968">@version@</tspan></text>
     </g>
   </g>
 </svg>

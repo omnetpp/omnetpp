@@ -9,7 +9,7 @@ PRODUCT = OMNEST
 !if "$(VERSION)" != ""
 VERSION_TEXT = Version $(VERSION)
 !else
-VERSION_TEXT = Version 4.X
+VERSION_TEXT = Version 4.x
 !endif
 
 cover:
