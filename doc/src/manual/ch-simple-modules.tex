@@ -1771,7 +1771,7 @@ cGate *gOut = gateHalf("g", cGate::OUTPUT);
 
 These methods throw an error if the gate does not exist, so they cannot
 be used to determine whether the module has a particular gate.
-The \ffunc{hasGate()} method can be used then. An example:
+For that purpose there is a \ffunc{hasGate()} method. An example:
 
 \begin{cpp}
 if (hasGate("optOut"))
@@ -1828,12 +1828,13 @@ is within the bounds.
 \subsubsection{Gate IDs}
 
 A gate can also be accessed by its ID. A very important property of gate IDs
-is that \textit{the ID of gate $k$ in a gate vector equals the ID of gate $0$ plus the index}.
+is that they are \textit{contiguous} within a gate vector, that is,
+the ID of a gate \ttt{g[k]} can be calculated as the ID of \ttt{g[0]} plus $k$.
 This allows you to efficiently access any gate in a gate vector, because
 retrieving a gate by ID is more efficient than by name and index.
 The index of the first gate can be obtained with \ttt{gate("out",0)->getId()},
 but it is better to use a dedicated method, \ffunc{gateBaseId()},
-which also works if the gate size is zero.
+because it also works when the gate vector size is zero.
 
 Two further important properties of gate IDs: they are \textit{stable}
 and \textit{unique} (within the module). By stable we mean that the ID
@@ -1843,10 +1844,10 @@ gates do not get reused later, so gate IDs are unique in the lifetime
 of a simulation run.
 
 \begin{note}
-    Earlier versions of {\opp} did not have these guarantees -- resizing
+    {\opp} version earlier than 4.0 did not have these guarantees -- resizing
     a gate vector could cause its ID range to be relocated, if it
     would have overlapped with the ID range of other gate vectors.
-    {\opp} 4.0 solves the same problem by interpreting the gate ID
+    {\opp} 4.x solves the same problem by interpreting the gate ID
     as a bitfield, basically containing bits that identify the gate name,
     and other bits that hold the index. This also means that the theoretical
     upper limit for a gate size is now smaller, albeit it is still
@@ -1972,16 +1973,17 @@ following sections.
 Simple module gates have normally one connection attached. Compound module
 gates, however, need to be connected both inside and outside of the
 module to be useful. A series of connections (joined with compound
-module gates) is called a path. A path is directed, and it normally
-starts at an output gate of a simple module, ends at an input gate
-of a simple module, and passes through several compound module gates.
+module gates) is called a \textit{connection path} or just path.
+A path is directed, and it normally starts at an output gate of
+a simple module, ends at an input gate of a simple module,
+and passes through several compound module gates.
 
 Every \cclass{cGate} object contains pointers to the previous gate
 and the next gate in the path (returned by the \ffunc{getPreviousGate()}
 and \ffunc{getNextGate()} methods), so a path can be thought of as
 a double-linked list.
 
-The use of the \textit{previous gate} / \textit{next gate} pointers
+The use of the \textit{previous gate} and \textit{next gate} pointers
 with various gate types is illustrated on figure
 \ref{fig:ch-simple-modules:gates}.
 
@@ -1995,13 +1997,15 @@ with various gate types is illustrated on figure
 \end{figure}
 
 The start and end gates of the path can be found with the \ffunc{getPathStartGate()}
-and \ffunc{getPathEndGate()} methods, which simply follow the \textit{previous gate} /
-\textit{next gate} pointers until they return \ttt{NULL}.
+and \ffunc{getPathEndGate()} methods, which simply follow the \textit{previous gate} and
+\textit{next gate} pointers, respectively, until they are \ttt{NULL}.
 
 The \ffunc{isConnectedOutside()} and \ffunc{isConnectedInside()} methods
 return whether a gate is connected on the outside or on the inside. They
-examine either the \textit{from} or the \textit{to} pointer, depending on the
-gate type (input or output). Again, see figure \ref{fig:ch-simple-modules:gates}
+examine either the \textit{previous} or the \textit{next} pointer, depending on the
+gate type (input or output). For example, an output gate is \textit{connected outside}
+if the \textit{next} pointer is non-\ttt{NULL}; the same function for an input gate
+checks the \textit{previous} pointer. Again, see figure \ref{fig:ch-simple-modules:gates}
 for an illustration.
 
 The \ffunc{isConnected()} method is a bit different: it returns true if the gate
@@ -2073,9 +2077,9 @@ a vector gate, \ttt{index} determines though which particular output
 gate this has to be done; otherwise, the \ttt{index} argument is not
 needed.
 
-The second and third functions use the gate Id and the pointer to the gate
+The second and third functions use the gate ID and the pointer to the gate
 object. They are faster than the first one because they don't have to
-search through the gate array.
+search for the gate by name.
 
 Examples:
 
@@ -2085,7 +2089,7 @@ send(msg, "outGates", i); // send via outGates[i]
 \end{cpp}
 
 The following code example creates and sends messages
-every 5 simulated seconds:
+every five simulated seconds:
 
 \begin{cpp}
 int outGateId = findGate("outGate");
