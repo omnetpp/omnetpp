@@ -2050,7 +2050,7 @@ created using the C++ \ttt{new} operator, and destroyed using the
 Messages are described in detail in chapter \ref{cha:messages}.
 At this point, all we need to know about them is that they are
 referred to as \ttt{cMessage *} pointers. In the examples below,
-messages will be created as \ttt{new cMessage("foo")} where
+messages will be created with \ttt{new cMessage("foo")} where
 \ttt{"foo"} is a descriptive message name, used for visualization
 and debugging purposes.
 
@@ -2183,24 +2183,19 @@ search for the gate by name.
 Examples:
 
 \begin{cpp}
-send(msg, "outGate");
-send(msg, "outGates", i); // send via outGates[i]
+send(msg, "out");
+send(msg, "outv", i); // send via a gate in a gate vector
 \end{cpp}
 
-The following code example creates and sends messages
-every five simulated seconds:
-
-% rewrite to handleMessage, or just remove
+To send via an inout gate, remember that an inout gate is an input and an
+output gate glued together, and the two halves can be identified with the
+\ttt{\$i} and \ttt{\$o} name suffixes. Thus, for sending you need to specify
+the gate name with the \ttt{\$o} suffix:
 
 \begin{cpp}
-int outGateId = findGate("outGate");
-while(true)
-{
-  send(new cMessage("job"), outGateId);
-  wait(5);  // works in activity() only!
-}
+send(msg, "g$o");
+send(msg, "g$o", i); // if "g[]" is a gate vector
 \end{cpp}
-
 
 
 \subsection{Broadcasts and Retransmissions}
@@ -2350,9 +2345,9 @@ sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
 At the target module, there is no difference between messages received
 directly and those received over connections.
 
-It is also possible to send to an input gate of a \textit{compound} module.
+You can also send messages to an input gate of a \textit{compound} module.
 In that case, the message will follow the connection path inside the
-compound module, and will be delived to the module at the end of the path
+compound module, and will be delivered to the module at the end of the path
 -- just as with normal connections. The gate must be connected inside the
 compound module, and the path must end in a simple module.
 
@@ -2427,7 +2422,7 @@ else
 }
 \end{cpp}
 
-Note that the above code invoked \ttt{getTransmissionFinishTime()} on the
+Note that the above code invokes \ttt{getTransmissionFinishTime()} on the
 output gate, not on the channel. \cclass{cGate}'s
 \ffunc{getTransmissionFinishTime()} and \ffunc{isBusy()} methods are just
 shortcuts to \ttt{getDatarate\-Channel()->isBusy()} and
@@ -2441,15 +2436,15 @@ If performance is important, it is recommended that you obtain the
 transmission channel pointer once, and then call \ffunc{isBusy()} and
 \ffunc{getTransmissionFinishTime()} on the channel. When the network topology
 changes, the cached channel pointer needs to be updated; section
-\ref{sec:ch-simple-modules:model-change} describes the mechanism to get
-notified about topology changes.
+\ref{sec:ch-simple-modules:model-change} describes the mechanism that can
+be used to get notified about topology changes.
 
 \subsubsection{Receiving a Packet}
 
 Normally the packet object gets delivered to the destination module
 at the simulation time that corresponds to finishing the reception
 of the message (ie. the arrival of its last bit). However, the receiver
-module may change this by "reprogramming" the receiver gate with
+module may change this by ``reprogramming'' the receiver gate with
 the \ffunc{setDeliverOnReceptionStart()} method:
 
 \begin{cpp}
@@ -2489,10 +2484,9 @@ else
 ev << "interval: " << startTime << ".." << endTime << "\n";
 \end{cpp}
 
-XXX:
-
 Note that this works with wireless connections (\ffunc{sendDirect()})
-as well; there, the duration is an argument to the sendDirect() call.
+as well; there, the duration is an argument to the \ffunc{sendDirect()}
+call.
 
 
 \subsubsection{Delay, Data Rate, Bit Error Rate, Packet Error Rate}
@@ -2700,8 +2694,8 @@ cMessage *msg = receive();
 
 The \ffunc{receive()} function accepts an optional \textit{timeout}
 parameter\index{receive!timeout}. (This is a \textit{delta}, not an
-absolute simulation time.) If an appropriate message doesn't arrive
-within the timeout period, the function returns a NULL pointer.
+absolute simulation time.) If no message arrives within the timeout
+period, the function returns a \ttt{NULL} pointer.
     \footnote{Putaside-queue and the functions \ttt{receiveOn()},
     \ttt{receiveNew()}, and \ttt{receiveNewOn()} were deprecated
     in {\opp} 2.3 and removed in {\opp} 3.0.}
