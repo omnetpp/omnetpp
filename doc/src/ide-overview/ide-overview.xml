@@ -28,7 +28,7 @@
     <picture file="pictures/img3.png">Properties view</picture>
     <para>The Properties View lets the user edit graphical and non-graphical properties of objects. Special
       cell editors facilitate selecting colors, icons, etc. Undo and redo is supported for property changes
-      too. The Properties View is also used with other editors like "Result Analysis", where the user can
+      too. The Properties View is also used with other editors like the Result Analysis editor, where it allows the user to
       customize charts and other objects.</para>
     <picture file="pictures/img4.png">The NED Editor in source editing mode</picture>
     <para>Text mode lets the user work with the NED source directly. When hitting Ctrl+Space, the editor
@@ -68,11 +68,11 @@
       analyzed and errors/warnings are displayed in real time.</para>
     <para>
       The editor considers all NED declarations (simple modules, compound modules, channels, etc.) and can
-      fully exploit this information to provide diagnostics and assistance to the user.  Looking at the 
+      fully exploit this information to provide diagnostics and assistance to the user.�Looking at the 
       <emphasis>network=</emphasis>
       configuration key, it knows the top-level compound module NED type, and internally builds a static picture
       of the network by recursively enumerating the top-level module's submodules, sub-submodules,
-      sub-sub-submodules, etc. – and continually relates this information to the ini file contents. Thus, the
+      sub-sub-submodules, etc., and continually relates this information to the ini file contents. Thus, the
       editor always knows which ini file keys match which module parameters, which are the ini file keys that
       are unused (will not match anything), and which module parameters are still open (i.e. have no value assigned
       yet). It displays this information in tooltips, as warnings, and in various views.
@@ -143,7 +143,7 @@
     <picture file="pictures/img13.png">Progress View</picture>
     <para>The Progress View reports the status of simulation execution when you have a long-running
       simulation, or you are executing several runs in a batch. It is possible to cancel the whole batch
-      operation with a single click, if necessary. Simulation runs use different processes
+      operation with a single click, if necessary. Simulations run in separate processes
       that do not block the IDE, so users can keep working while their simulations run in the
       background. In the above screenshot, the number of processes to run in parallel was set to 2; run #1 has
       already terminated (and is no longer shown), run #3 has already launched, and run #2 is still
