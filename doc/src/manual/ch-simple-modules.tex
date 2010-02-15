@@ -2028,7 +2028,50 @@ else
 
 \subsection{The Connection's Channel}
 
-TODO
+The channel object associated with a connection is accessible by
+a pointer stored at the source gate of the connection. The pointer
+is returned by the \ffunc{getChannel()} method of the gate:
+
+\begin{cpp}
+cChannel *channel = gate->getChannel();
+\end{cpp}
+
+The result may be \ttt{NULL}, that is, a connection may not have
+an associated channel object.
+
+If you have a channel pointer, you can get back its source gate
+with the \ffunc{getSourceGate()} method:
+
+\begin{cpp}
+cGate *gate = channel->getSourceGate();
+\end{cpp}
+
+\cclass{cChannel} is just an abstract base class for channels, so
+to access details of the channel you might need to cast the resulting
+pointer into a specific channel class, for example \cclass{cDelayChannel}
+or \cclass{cDatarateChannel}.
+
+Another specific channel type is \cclass{cIdealChannel}, which basically
+does nothing: it acts as if there was no channel object assigned to the
+connection. {\opp} sometimes transparently inserts a \cclass{cIdealChannel}
+into a channel-less connection, for example to hold the display string
+associated with the connection.
+
+Often you are not really interested in a specific connection's channel,
+but rather in the \textit{transmission channel} (see
+\ref{sec:simple-modules:packet-transmission}) of the connection path
+that starts at the given gate (typically, a simple module output gate).
+The transmission channel can be found by navigating the path until
+you find a channel whose \ffunc{isTransmissionChannel()} method returns
+\ttt{true}, but there is a convenience method for this, named
+\ffunc{getTransmissionChannel()}. An example:
+
+\begin{cpp}
+cChannel *txchan = gate("ppp$o")->getTransmissionChannel();
+\end{cpp}
+
+Channels are covered in more detail in the \ref{sec:simple-modules:channels}
+section.
 
 
 \section{Sending and Receiving Messages}
@@ -2636,6 +2679,7 @@ if (!queue.empty())
 
 
 \section{Channels}
+\label{sec:simple-modules:channels}
 
 \subsection{Writing Channels}
 
