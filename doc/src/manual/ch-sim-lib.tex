@@ -92,36 +92,58 @@ For each class, the \ffunc{getClassName()} member function returns the class
 name as a string:
 
 \begin{cpp}
-const char *classname = msg->getClassName(); // returns "cMessage"
+const char *className = msg->getClassName(); // returns "cMessage"
 \end{cpp}
 
 
-\subsection{Name Attribute}
+\subsection{Object Names}
 \label{sec:sim-lib:name}
 
-An object can be assigned a \textit{name} (a character string). The name
-string is the first argument to the constructor of every class,
-and it defaults to \ttt{NULL} (no name string). An example:
+Gates, parameters and modules all have names in the NED files. At runtime,
+those names are stored in the corresponding C++ objects, and are available 
+for the code with the \ffunc{getName()} method. Other objects such as messages,
+queues, result collection objects, etc. may also have names. 
+  \footnote{Object name is inherited from \cclass{cObject} (which defines 
+  \ffunc{getName()}), and from its subclass \cclass{cNamedObject} (which
+  defines \ffunc{setName()} and actually stores the name string).}
+Object names are generally very useful when you are tracing, debugging or 
+demonstrating a simulation model.
+
+For example, you can get the name of a message object like this:
+
+\begin{cpp}
+const char *name = msg->getName();
+\end{cpp}
+
+The \ffunc{getName()} method will never return \ttt{NULL}, the absence
+of name string is always returned as the empty string (\ttt{""}).
+
+By convention, the object name is the first argument to the constructor 
+of every class, and it defaults to the empty string. To create an object with 
+a name, pass the name string (a \ttt{const char *} pointer) as the first 
+argument of the constructor:
 
 \begin{cpp}
 cMessage *timeoutMsg = new cMessage("timeout");
 \end{cpp}
 
-You can also set the name after the object has been created:
+You can also change the name of an existing object:
 
 \begin{cpp}
 timeoutMsg->setName("timeout");
 \end{cpp}
 
-You can get a pointer to the internally stored copy of the name
-string like this:
-
-\begin{cpp}
-const char *name = timeoutMsg->getName(); // --> "timeout"
-\end{cpp}
+Both the constructor and \ffunc{setName()} make an internal copy of the string,
+and not just store the pointer passed to them.
+  \footnote{In a simulation, there are usually many objects with the same name:
+  modules, parameters, gates, etc. To conserve memory, several classes
+  keep names in a shared, reference-counted \textit{name pool} instead of
+  making separate copies for each object. The runtime cost of looking up an 
+  existing string in the name pool and incrementing its reference count 
+  also compares favourably to the cost of allocation and copying.}
 
 For convenience and efficiency reasons, the empty string \ttt{""}
-and \ttt{NULL} are treated as equivalent by library objects.
+and \ttt{NULL} are treated as interchangeable by library objects.
 That is, \ttt{""} is stored as \ttt{NULL} but returned as \ttt{""}.
 If you create a message object with either \ttt{NULL}
 or \ttt{""} as name string, it will be stored as \ttt{NULL}
@@ -133,12 +155,12 @@ const char *str = msg->getName(); // --> returns ""
 \end{cpp}
 
 
-\subsection{getFullName() and getFullPath()}
+\subsection{Object Full Name and Full Path}
 \label{sec:sim-lib:fullname-and-fullpath}
 
 
-Objects have two more member functions which return strings
-based on object names: \ffunc{getFullName()} and \ffunc{getFullPath()}.
+Objects have two additional member functions that return strings
+based on the object name: \ffunc{getFullName()} and \ffunc{getFullPath()}.
 For gates and modules which are part of gate or module vectors,
 \ffunc{getFullName()} returns the name with the index in brackets.
 That is, for a module \ttt{node[3]} in the submodule vector \ttt{node[10]}
