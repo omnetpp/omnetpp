@@ -165,15 +165,6 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual bool deliver(cMessage *msg, simtime_t at) = 0;
 
     /**
-     * For transmission channels: Calculates the transmission duration
-     * of the message with the current channel configuration (datarate, etc).
-     * Does not check or modify channel state.
-     *
-     * @see isTransmissionChannel(), cDatarateChannel
-     */
-    virtual simtime_t calculateDuration(cMessage *msg) const = 0;
-
-    /**
      * For transmission channels: Returns the simulation time
      * the sender gate will finish transmitting. If the gate is not
      * currently transmitting, the result is unspecified but less or equal
@@ -237,11 +228,6 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
      * Returns false.
      */
     virtual bool isTransmissionChannel() const {return false;}
-
-    /**
-     * Returns zero.
-     */
-    virtual simtime_t calculateDuration(cMessage *msg) const {return SIMTIME_ZERO;}
 
     /**
      * Returns zero.

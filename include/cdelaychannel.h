@@ -83,11 +83,6 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     virtual bool isTransmissionChannel() const {return false;}
 
     /**
-     * Returns zero.
-     */
-    virtual simtime_t calculateDuration(cMessage *msg) const {return 0;}
-
-    /**
      * Returns the current simulation time.
      */
     virtual simtime_t getTransmissionFinishTime() const {return simTime();}
