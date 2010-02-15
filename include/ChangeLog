@@ -1,3 +1,11 @@
+2010-02-15  Andras Varga
+
+	* cChannel: deliver() method semantics changed, method renamed to 
+	process(), and argument list changed. Reason is to decrease the 
+	amount of code that needs to be written when implementing a new
+	channel class, and to improve reusability via subclassing.
+	See documentation in the code.
+
 2010-01-29  Andras Varga
 
 	* cProperty: getNumValues() to return 0 (instead of thowing an error)
@@ -12,7 +20,6 @@
 	constants PRE_MODEL_CHANGE and POST_MODEL_CHANGE; new class
 	cModelChangeNotification and subclasses; and new "Signals" section
 	in the Manual.
-
 
 2009-09-14  Rudolf Hornig
 
