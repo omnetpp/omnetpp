@@ -144,42 +144,27 @@ a gate of the compound module (Fig.
 
 Because of the hierarchical structure of the model, messages typically
 travel through a series of connections, starting and arriving in simple
-modules. Such series of connections from simple module to
-simple module are called \textit{routes}.  Compound modules act like
-`cardboard boxes' in the model, transparently relaying messages
-between their inner realm and the outside world.
+modules. Compound modules act like ``cardboard boxes'' in the model,
+transparently relaying messages between their inner realm and the
+outside world.
 
 
 \subsection{Modeling of Packet Transmissions}
 
-Connections can be assigned three parameters that facilitate
-the modeling of communication networks, but can also be useful in
-other models: \textit{propagation delay}, \textit{bit error rate}
-and \textit{data rate}, all three being optional. One can specify
-link parameters individually for each connection, or define link types
-and use them throughout the whole model.
+To facilitate the modeling of communication networks, connections
+can be used to model physical links. Connections support
+the following parameters: \textit{data rate}, \textit{propagation delay},
+\textit{bit error rate} and \textit{packet error rate}, and may be
+disabled. These parameters and the underlying algorithms are encapsulated
+into \textit{channel} objects. The user can parameterize the channel
+types provided by {\opp}, and also create new ones.
 
-Propagation delay is the amount of time by which the arrival of
-the message is delayed when it travels through the channel.
-
-Bit error rate specifies the probability that a bit is incorrectly
-transmitted, and allows for simple noisy channel modelling.
-
-Data rate is specified in bits/second, and used to calculate
-transmission time of a packet.
-
-When data rates are in use, the sending of the message in the model
-corresponds to transmission of the first bit, and
-arrival of the message corresponds to reception
-of the last bit. This model is not always applicable;
-for example protocols like Token Ring and FDDI do not wait
-for the frame to arrive in its entirety; rather, they start repeating
-its first bits soon after they arrive -- in other words,
-frames ``flow through'' the stations, delayed by only a few bits.
-If you want to model such networks, it is possible to change this default
-behavior and deliver the message to the module when the first bit is
-received.
-
+When data rates are in use, a packet object is by default delivered to the
+target module at the simulation time that corresponds to the end of the
+packet reception. Since this behavior is not suitable for the modeling of
+some protocols (e.g. half-duplex Ethernet), {\opp} provides the possibility
+for the target module to specify that it wants the packet object to be
+delivered to it when the packet reception starts.
 
 
 \subsection{Parameters}
@@ -187,7 +172,7 @@ received.
 \index{parameters|see{module parameters}}
 
 Modules can have parameters. Parameters can be assigned  in either
-the NED files or the configuration file omnetpp.ini.
+the NED files or the configuration file \ttt{omnetpp.ini}.
 
 Parameters can be used to customize simple module behavior,
 and to parameterize the model topology.
@@ -205,6 +190,7 @@ connections are made.
 
 \subsection{Topology Description Method}
 \index{topology!description}
+
 The user defines the structure of the model in NED language descriptions
 (Network Description). NED language will be discussed in detail
 in chapter \ref{cha:the-ned-language}.
@@ -227,9 +213,8 @@ creating a powerful simulation programming framework.
 The following classes are part of the simulation class library:
 
 \begin{itemize}
-  \item{modules, gates, connections etc.}
-  \item{parameters}
-  \item{messages}
+  \item{module, gate, parameter, channel}
+  \item{message, packet}
   \item{container classes (e.g. queue, array)}
   \item{data collection classes}
   \item{statistic and distribution estimation classes (histograms, $P^2$
