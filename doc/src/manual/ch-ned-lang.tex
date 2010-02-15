@@ -691,14 +691,14 @@ channel C extends ned.DatarateChannel
 \end{note}
 
 You may add parameters and properties to channels via subclassing, and
-modify existing ones. In the following example, we introduce length-based
+may modify existing ones. In the following example, we introduce distance-based
 calculation of the propagation delay:
 
 \begin{ned}
 channel DatarateChannel2 extends ned.DatarateChannel
 {
-    double length @unit(m);
-    delay = this.length / 200000km * 1s;
+    double distance @unit(m);
+    delay = this.distance / 200000km * 1s;
 }
 \end{ned}
 

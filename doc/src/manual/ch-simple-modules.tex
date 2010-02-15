@@ -191,14 +191,14 @@ Events are consumed from the FES\index{FES} in arrival time order, to
 maintain causality. More precisely, given two messages, the following
 rules apply:
 \begin{enumerate}
-\item{the message with \textbf{earlier arrival time} is executed
+\item{the message with the \textbf{earlier arrival time} is executed
     first.  If arrival times are equal,}
-\item{the one with \textbf{smaller priority value} is executed first.
-    If priorities are the same,}
+\item{the one with the \textbf{smaller scheduling priority value} is
+    executed first. If priorities are the same,}
 \item{the one \textbf{scheduled or sent earlier} is executed first.}
 \end{enumerate}
 
-\textit{Priority}\index{message!priority} is a user-assigned integer
+\textit{Scheduling priority}\index{message!priority} is a user-assigned integer
 attribute of messages.
 
 
