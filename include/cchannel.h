@@ -56,6 +56,18 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual void finalizeParameters();
 
   public:
+    /**
+     * Allows for returning multiple values from the process() method.
+     * The constructor initializes all fields to zero.
+     */
+    struct result_t {
+        result_t() : delay(SIMTIME_ZERO), duration(SIMTIME_ZERO), deleteMessage(false) {}
+        simtime_t delay;     //< propagation delay
+        simtime_t duration;  //< transmission duration
+        bool deleteMessage;  //< whether the channel is losing the message
+    };
+
+  public:
     /** @name Constructors, destructor */
     //@{
     /**
@@ -157,12 +169,25 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /** @name Channel functionality */
     //@{
     /**
-     * This method is called by the simulation kernel for transmission
-     * modelling. A return value of false means that the message object
-     * should be deleted by the caller; this can be used to model that
-     * the message gets lost in the channel.
+     * This method encapsulates the channel's functionality. The method should
+     * model the transmission of the given message starting at the given t time,
+     * and store the results (propagation delay, transmission duration,
+     * deleteMessage flag) in the result object. Only the relevant fields
+     * in the result object need to be changed, others can be left untouched.
+     *
+     * Transmission duration and bit error modeling only applies to packets
+     * (i.e. to instances of cPacket, where cMessage's isPacket() returns true),
+     * it should be skipped for non-packet messages.
+     *
+     * If the transmission duration is nonzero, it is the method's responsibility
+     * to call <tt>setDuration(duration)</tt> on the packet. As a result of bit
+     * error modeling, the method may set the packet's bit error flag.
+     *
+     * If the method sets the deleteMessage flag in the result object, that
+     * means that the message object should be deleted by the caller; this
+     * facility can be used to model that the message gets lost in the channel.
      */
-    virtual bool deliver(cMessage *msg, simtime_t at) = 0;
+    virtual void process(cMessage *msg, simtime_t t, result_t& result) = 0;
 
     /**
      * For transmission channels: Returns the simulation time
@@ -219,23 +244,22 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     /** @name Redefined cChannel member functions. */
     //@{
     /**
-     * This implementation just delivers the message to the opposite gate
-     * of the connection without any processing.
+     * The cIdealChannel implementation of this method does nothing.
      */
-    virtual bool deliver(cMessage *msg, simtime_t at);
+    virtual void process(cMessage *msg, simtime_t t, result_t& result) {}
 
     /**
-     * Returns false.
+     * The cIdealChannel implementation of this method always returns false.
      */
     virtual bool isTransmissionChannel() const {return false;}
 
     /**
-     * Returns zero.
+     * The cIdealChannel implementation of this method always returns zero.
      */
     virtual simtime_t getTransmissionFinishTime() const {return SIMTIME_ZERO;}
 
     /**
-     * Returns false.
+     * The cIdealChannel implementation of this method always returns false.
      */
     virtual bool isBusy() const {return false;}
     //@}

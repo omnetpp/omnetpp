@@ -39,10 +39,10 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     };
 
     // cached values of parameters (note: parameters are non-volatile)
-    simtime_t delayparam; // propagation delay
-    double datarateparam; // data rate
-    double berparam;    // bit error rate
-    double perparam;    // packet error rate
+    simtime_t delay; // propagation delay
+    double datarate; // data rate
+    double ber;      // bit error rate
+    double per;      // packet error rate
 
     // stores the end of the last transmission; used if there is a datarate
     simtime_t txfinishtime;
@@ -134,7 +134,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * Returns the propagation delay of the channel, in seconds.
      * This method is equivalent to reading the "delay" parameter, via par("delay").
      */
-    virtual simtime_t getDelay() const {checkState(); return delayparam;}
+    virtual simtime_t getDelay() const {checkState(); return delay;}
 
     /**
      * Returns the data rate of the channel, in bit/second.
@@ -142,7 +142,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * This value affects the transmission time of messages sent through
      * the channel.
      */
-    virtual double getDatarate() const  {checkState(); return datarateparam;}
+    virtual double getDatarate() const  {checkState(); return datarate;}
 
     /**
      * Returns the bit error rate (BER) of the channel.
@@ -150,7 +150,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * When a message sent through the channel suffers at least
      * one bit error, its bit error flag will be set.
      */
-    virtual double getBitErrorRate() const  {checkState(); return berparam;}
+    virtual double getBitErrorRate() const  {checkState(); return ber;}
 
     /**
      * Returns the packet error rate (PER) of the channel.
@@ -158,7 +158,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * When a message is sent through the channel, its bit error flag
      * will be set with this probability.
      */
-    virtual double getPacketErrorRate() const  {checkState(); return perparam;}
+    virtual double getPacketErrorRate() const  {checkState(); return per;}
 
     /**
      * Returns whether the channel is disabled.
@@ -198,7 +198,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Performs bit error rate, delay and transmission time modelling.
      */
-    virtual bool deliver(cMessage *msg, simtime_t at);
+    virtual void process(cMessage *msg, simtime_t t, result_t& result);
     //@}
 };
 

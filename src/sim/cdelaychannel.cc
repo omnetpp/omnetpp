@@ -47,11 +47,11 @@ void cDelayChannel::finalizeParameters()
 
 void cDelayChannel::rereadPars()
 {
-    delayparam = par("delay");
-    if (delayparam<0)
-        throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delayparam));
+    delay = par("delay");
+    if (delay < 0)
+        throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delay));
     setFlag(FL_ISDISABLED, par("disabled"));
-    setFlag(FL_DELAY_NONZERO, delayparam!=0);
+    setFlag(FL_DELAY_NONZERO, delay!=0);
 }
 
 void cDelayChannel::handleParameterChange(const char *)
@@ -69,22 +69,12 @@ void cDelayChannel::setDisabled(bool d)
     par("disabled").setBoolValue(d);
 }
 
-bool cDelayChannel::deliver(cMessage *msg, simtime_t t)
+void cDelayChannel::process(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
-    if (flags & FL_ISDISABLED)
-        return false;
+    result.deleteMessage = (flags & FL_ISDISABLED);
 
     // propagation delay modeling
-    if (flags & FL_DELAY_NONZERO)
-        t += delayparam;
-
-    // FIXME: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
-    // i.e use template method...?
-    EVCB.messageSendHop(msg, getSourceGate(), delayparam, SIMTIME_ZERO);
-
-    // hand over msg to next gate
-    cGate *nextgate = getSourceGate()->getNextGate();
-    return nextgate->deliver(msg, t);
+    result.delay = delay;
 }
 

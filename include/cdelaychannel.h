@@ -38,7 +38,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
       FL_DELAY_NONZERO = 256,
     };
 
-    simtime_t delayparam; // cached value of propagation delay parameter
+    simtime_t delay; // cached value of propagation delay parameter
 
   private:
     // internal: checks whether parameters have been set up
@@ -78,17 +78,17 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     /** @name Redefined cChannel member functions. */
     //@{
     /**
-     * Returns false.
+     * The cDelayChannel implementation of this method always returns false.
      */
     virtual bool isTransmissionChannel() const {return false;}
 
     /**
-     * Returns the current simulation time.
+     * The cDelayChannel implementation of this method always returns zero.
      */
-    virtual simtime_t getTransmissionFinishTime() const {return simTime();}
+    virtual simtime_t getTransmissionFinishTime() const {return SIMTIME_ZERO;}
 
     /**
-     * Returns false.
+     * The cDelayChannel implementation of this method always returns false.
      */
     virtual bool isBusy() const {return false;}
     //@}
@@ -109,7 +109,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      * Returns the propagation delay of the channel, in seconds.
      * This method is equivalent to reading the "delay" parameter, via par("delay").
      */
-    virtual simtime_t getDelay() const {checkState(); return delayparam;}
+    virtual simtime_t getDelay() const {checkState(); return delay;}
 
     /**
      * Returns whether the channel is disabled. This method is equivalent
@@ -130,7 +130,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      * This implementation delivers the message to the opposite gate
      * with a delay.
      */
-    virtual bool deliver(cMessage *msg, simtime_t at);
+    virtual void process(cMessage *msg, simtime_t t, result_t& result);
     //@}
 };
 
