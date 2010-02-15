@@ -2740,6 +2740,112 @@ The channel API:
 %     */
 %    virtual simtime_t getTransmissionFinishTime() const = 0;
 
+TODO explain step by step:
+
+\begin{cpp}
+bool cIdealChannel::deliver(cMessage *msg, simtime_t t)
+{
+    // just hand over msg to next gate
+    EVCB.messageSendHop(msg, getSourceGate());
+    return getSourceGate()->getNextGate()->deliver(msg, t);
+}
+\end{cpp}
+
+TODO simplify: read params in-place, and explain that the normal implementations cache param values, and override paramChanged() to track changes
+
+\begin{cpp}
+bool cDelayChannel::deliver(cMessage *msg, simtime_t t)
+{
+    // if channel is disabled, signal that message should be deleted
+    if (flags & FL_ISDISABLED)
+        return false;
+
+    // propagation delay modeling
+    if (flags & FL_DELAY_NONZERO)
+        t += delayparam;
+
+    // FIXME: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
+    // i.e use template method...?
+    EVCB.messageSendHop(msg, getSourceGate(), delayparam, SIMTIME_ZERO);
+
+    // hand over msg to next gate
+    cGate *nextgate = getSourceGate()->getNextGate();
+    return nextgate->deliver(msg, t);
+}
+\end{cpp}
+
+\begin{cpp}
+bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
+{
+    // if channel is disabled, signal that message should be deleted
+    if (flags & FL_ISDISABLED)
+        return false;
+
+    // must wait until previous transmissions end
+    if (txfinishtime > t)
+        throw cRuntimeError("Error sending message (%s)%s on gate %s: gate is currently "
+                            "busy with an ongoing transmission -- please rewrite the sender "
+                            "simple module to only send when the previous transmission has "
+                            "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "
+                            "and possibly a cQueue for storing messages waiting to be transmitted",
+                            msg->getClassName(), msg->getFullName(), getSourceGate()->getFullPath().c_str());
+
+    cGate *nextgate = getSourceGate()->getNextGate();
+
+    simtime_t duration = 0;
+
+    // datarate modeling
+    if (flags & FL_DATARATE_NONZERO)
+    {
+        if (msg->isPacket())
+        {
+            cPacket *pkt = (cPacket *)msg;
+            if (pkt->getDuration() != SIMTIME_ZERO)
+                throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
+                    "may be more than one channel with data rate in the connection path, or "
+                    "it was sent with a sendDirect() call that specified duration as well",
+                    pkt->getClassName(), pkt->getName());
+            duration = pkt->getBitLength() / datarateparam;
+            pkt->setDuration(duration);
+            txfinishtime = t + duration;
+        }
+        else {
+            txfinishtime = t;
+        }
+    }
+    else {
+        txfinishtime = t;
+    }
+
+    // propagation delay modeling
+    if (flags & FL_DELAY_NONZERO)
+    {
+        t += delayparam;
+    }
+
+    // bit error modeling
+    if (flags & (FL_BER_NONZERO | FL_PER_NONZERO))
+    {
+        if (msg->isPacket())
+        {
+            cPacket *pkt = (cPacket *)msg;
+            if (flags & FL_BER_NONZERO)
+                if (dblrand() < 1.0 - pow(1.0-berparam, (double)pkt->getBitLength()))
+                    pkt->setBitError(true);
+            if (flags & FL_PER_NONZERO)
+                if (dblrand() < perparam)
+                    pkt->setBitError(true);
+        }
+    }
+
+    // FIXME: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
+    // i.e use template method...?
+    EVCB.messageSendHop(msg, getSourceGate(), delayparam, duration);
+
+    // hand over msg to next gate
+    return nextgate->deliver(msg, t);
+}
+\end{cpp}
 
 why no timers: then it would become a simple module
 
@@ -3702,8 +3808,8 @@ As an example, we create two modules and connect them in both directions:
 
 \begin{cpp}
 cModuleType *moduleType = cModuleType::get("TicToc");
-cModule *a = modtype->createScheduleInit("a",this);
-cModule *b = modtype->createScheduleInit("b",this);
+cModule *a = modtype->createScheduleInit("a", this);
+cModule *b = modtype->createScheduleInit("b", this);
 
 a->gate("out")->connectTo(b->gate("in"));
 b->gate("out")->connectTo(a->gate("in"));
@@ -3714,12 +3820,18 @@ additional, optional argument. Channels are subclassed from
 \cclass{cChannel}. Almost always you'll want use an instance of
 \cclass{cDatarateChannel} as channel -- this is the one that supports
 delay\index{channel!delay}, bit error rate \index{channel!error}
-and data rate\index{channel!datarate}. The channel object will
-be owned by the source gate of the connection, and you cannot
-reuse the same channel object with several connections.
+and data rate\index{channel!datarate}.
+
+FIXME XXX TODO and PER! and why always dataratechannel?
+
+The channel object will be owned by the source gate of the connection, and
+you cannot reuse the same channel object with several connections.
 
 \cclass{cDatarateChannel} has \ffunc{setDelay()}, \ffunc{setBitErrorRate()}
 and \ffunc{setDatarate()} methods to set up the channel attributes.
+
+FIXME XXX TODO update! channel objects should NEVER be created directly! use cChannelType::create etc! or cIdealChannel *cIdealChannel::create(const char *name) and other static utility functions!
+
 
 An example that sets up a channel with a delay:
 
