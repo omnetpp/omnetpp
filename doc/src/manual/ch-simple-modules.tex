@@ -2301,19 +2301,43 @@ sendDelayed(cMessage *msg, double delay, int gateId);
 sendDelayed(cMessage *msg, double delay, cGate *gate);
 \end{cpp}
 
-The arguments are the same as for \ffunc{send()}, except for the extra \textit{delay}
-parameter. The effect of the function is the same as if the module
-had kept the message for the delay interval and sent it afterwards.
-That is, the sending time of the message will be the current
-simulation time (time at the \ffunc{sendDelayed()} call) plus the delay.
-The delay value must be non-negative.
+The arguments are the same as for \ffunc{send()}, except for the extra
+\textit{delay} parameter. The delay value must be non-negative.
+The effect of the function is similar to as if the module
+had kept the message for the delay interval and sent it afterwards;
+even the \textit{sending time} timestamp of the message will be set to
+the current simulation time plus \textit{delay}.
 
-Example:
+A example call:
 
 \begin{cpp}
-sendDelayed(msg, 0.005, "outGate");
+sendDelayed(msg, 0.005, "out");
 \end{cpp}
 
+The \ffunc{sendDelayed()} function does not internally perform a
+\ffunc{scheduleAt()} followed by a \ffunc{send()}, but rather it computes
+everything about the message sending up front, including the arrival time
+and the target module. This has two consequences. First,
+\ffunc{sendDelayed()} is more efficient than a \ffunc{scheduleAt()}
+followed by a \ffunc{send()} because it spares one event. The second, less
+pleasant consequence is that changes in the connection path during the
+delay will \textit{not} be taken into account (because everything is
+calculated in advance, before the changes take place).
+
+\begin{note}
+  The fact that \ffunc{sendDelayed()} computes the message arrival
+  information up front does not make a difference if the model is static,
+  but may lead to surprising results if the model changes in time.
+  For example, if a connection in the path gets deleted, disabled, or
+  reconnected to another module during the delay period, the message
+  will still be delivered to the original module as if nothing happened.
+
+  Therefore, despite its performance advantage, you should think twice
+  before using \ffunc{sendDelayed()} in a simulation model. It may have
+  its place in a one-shot simulation model that you know is static,
+  but it certainly should be avoided in reusable modules that need to
+  work correctly in a wide variety of simulation models.
+\end{note}
 
 
 \subsection{Direct Message Sending}
@@ -2525,6 +2549,153 @@ as well; there, the duration is an argument to the \ffunc{sendDirect()}
 call.
 
 
+
+\subsection{Receiving Messages with activity()}
+
+\subsubsection{Receiving Messages}
+\label{sec:simple-modules:receiving-messages}
+
+\ffunc{activity()}-based modules receive messages with the \ffunc{receive()}
+method of \cclass{cSimpleModule}. \ffunc{receive()} cannot be used with
+\ffunc{handleMessage()}-based modules.
+
+\begin{cpp}
+cMessage *msg = receive();
+\end{cpp}
+
+The \ffunc{receive()} function accepts an optional \textit{timeout}
+parameter\index{receive!timeout}. (This is a \textit{delta}, not an
+absolute simulation time.) If no message arrives within the timeout
+period, the function returns a \ttt{NULL} pointer.
+    \footnote{Putaside-queue and the functions \ttt{receiveOn()},
+    \ttt{receiveNew()}, and \ttt{receiveNewOn()} were deprecated
+    in {\opp} 2.3 and removed in {\opp} 3.0.}
+
+\begin{cpp}
+simtime_t timeout = 3.0;
+cMessage *msg = receive(timeout);
+
+if (msg==NULL)
+{
+    ...   // handle timeout
+}
+else
+{
+    ...  // process message
+}
+\end{cpp}
+
+\subsubsection{The wait() Function}
+\label{sec:simple-modules:wait}
+
+The \ffunc{wait()} function suspends the execution of the module for a
+given amount of simulation time (a \textit{delta}). \ffunc{wait()} cannot
+be used with \ffunc{handleMessage()}-based modules.
+
+\begin{cpp}
+wait(delay);
+\end{cpp}
+
+In other simulation software, \ffunc{wait()} is often called \textit{hold}.
+Internally, the \ffunc{wait()} function is implemented by a
+\ffunc{scheduleAt()} followed by a \ffunc{receive()}.
+The \ffunc{wait()} function is very convenient in modules that do not need
+to be prepared for arriving messages, for example message generators.
+An example:
+
+\begin{cpp}
+for (;;)
+{
+    // wait for some, potentially random, amount of time, specified
+    // in the interarrivalTime volatile module parameter
+    wait(par("interarrivalTime").doubleValue());
+
+    // generate and send message
+    ...
+}
+\end{cpp}
+
+It is a runtime error if a message arrives during the wait interval.
+If you expect messages to arrive during the wait period, you can
+use the \ffunc{waitAndEnqueue()} function. It takes a pointer to a queue object
+(of class \cclass{cQueue}, described in chapter \ref{cha:the-simulation-library})
+in addition to the wait interval. Messages that arrive during the
+wait interval will be accumulated in the queue, so you can
+process them after the \ffunc{waitAndEnqueue()} call returned.
+
+\begin{cpp}
+cQueue queue("queue");
+...
+waitAndEnqueue(waitTime, &queue);
+if (!queue.empty())
+{
+    // process messages arrived during wait interval
+    ...
+}
+\end{cpp}
+
+
+\section{Channels}
+
+\subsection{Writing Channels}
+
+FIXME TODO:
+
+NED decl, @class
+
+C++: subclass from existing classes: cIdealChannel, cDelayChannel, cDatarateChannel
+
+register with: Define\_Channel()
+
+Channel is a component: initialize(), finish() etc.
+
+The channel API:
+
+%    /**
+%     * Returns true if the channel models a nonzero-duration transmission,
+%     * that is, sets the duration field of cPacket. Only one transmission
+%     * channel is allowed per connection path (see cGate methods getPreviousGate(),
+%     * getNextGate(), getPathStartGate(), getPathEndGate()).
+%     */
+%    virtual bool isTransmissionChannel() const = 0;
+%    //@}
+
+%    /** @name Channel functionality */
+%    //@{
+%    /**
+%     * This method is called by the simulation kernel for transmission
+%     * modelling. A return value of false means that the message object
+%     * should be deleted by the caller; this can be used to model that
+%     * the message gets lost in the channel.
+%     */
+%    virtual bool deliver(cMessage *msg, simtime_t at) = 0;
+
+%    /**
+%     * For transmission channels: Calculates the transmission duration
+%     * of the message with the current channel configuration (datarate, etc).
+%     * Does not check or modify channel state.
+%     *
+%     * @see isTransmissionChannel(), cDatarateChannel
+%     */
+%    virtual simtime_t calculateDuration(cMessage *msg) const = 0;
+
+%    /**
+%     * For transmission channels: Returns the simulation time
+%     * the sender gate will finish transmitting. If the gate is not
+%     * currently transmitting, the result is unspecified but less or equal
+%     * the current simulation time.
+%     *
+%     * @see isTransmissionChannel(), isBusy(), cDatarateChannel
+%     */
+%    virtual simtime_t getTransmissionFinishTime() const = 0;
+
+
+why no timers: then it would become a simple module
+
+
+\subsection{Junk}  XXX FIXME
+
+
 \subsubsection{Delay, Data Rate, Bit Error Rate, Packet Error Rate}
 
 %% FIXME revise!
@@ -2715,89 +2886,8 @@ simulation, the changes will affect only the messages that are
 \textit{sent} after the change.
 
 
-\subsection{Receiving Messages with activity()}
 
-\subsubsection{Receiving Messages}
-\label{sec:simple-modules:receiving-messages}
 
-\ffunc{activity()}-based modules receive messages with the \ffunc{receive()}
-method of \cclass{cSimpleModule}. \ffunc{receive()} cannot be used with
-\ffunc{handleMessage()}-based modules.
-
-\begin{cpp}
-cMessage *msg = receive();
-\end{cpp}
-
-The \ffunc{receive()} function accepts an optional \textit{timeout}
-parameter\index{receive!timeout}. (This is a \textit{delta}, not an
-absolute simulation time.) If no message arrives within the timeout
-period, the function returns a \ttt{NULL} pointer.
-    \footnote{Putaside-queue and the functions \ttt{receiveOn()},
-    \ttt{receiveNew()}, and \ttt{receiveNewOn()} were deprecated
-    in {\opp} 2.3 and removed in {\opp} 3.0.}
-
-\begin{cpp}
-simtime_t timeout = 3.0;
-cMessage *msg = receive(timeout);
-
-if (msg==NULL)
-{
-    ...   // handle timeout
-}
-else
-{
-    ...  // process message
-}
-\end{cpp}
-
-\subsubsection{The wait() Function}
-\label{sec:simple-modules:wait}
-
-The \ffunc{wait()} function suspends the execution of the module for a
-given amount of simulation time (a \textit{delta}). \ffunc{wait()} cannot
-be used with \ffunc{handleMessage()}-based modules.
-
-\begin{cpp}
-wait(delay);
-\end{cpp}
-
-In other simulation software, \ffunc{wait()} is often called \textit{hold}.
-Internally, the \ffunc{wait()} function is implemented by a
-\ffunc{scheduleAt()} followed by a \ffunc{receive()}.
-The \ffunc{wait()} function is very convenient in modules that do not need
-to be prepared for arriving messages, for example message generators.
-An example:
-
-\begin{cpp}
-for (;;)
-{
-    // wait for some, potentially random, amount of time, specified
-    // in the interarrivalTime volatile module parameter
-    wait(par("interarrivalTime").doubleValue());
-
-    // generate and send message
-    ...
-}
-\end{cpp}
-
-It is a runtime error if a message arrives during the wait interval.
-If you expect messages to arrive during the wait period, you can
-use the \ffunc{waitAndEnqueue()} function. It takes a pointer to a queue object
-(of class \cclass{cQueue}, described in chapter \ref{cha:the-simulation-library})
-in addition to the wait interval. Messages that arrive during the
-wait interval will be accumulated in the queue, so you can
-process them after the \ffunc{waitAndEnqueue()} call returned.
-
-\begin{cpp}
-cQueue queue("queue");
-...
-waitAndEnqueue(waitTime, &queue);
-if (!queue.empty())
-{
-    // process messages arrived during wait interval
-    ...
-}
-\end{cpp}
 
 
 \section{Stopping the Simulation}
