@@ -2681,15 +2681,31 @@ if (!queue.empty())
 \section{Channels}
 \label{sec:simple-modules:channels}
 
-\subsection{Writing Channels}
+\subsection{Overview}
 
-FIXME TODO:
+Channels encapsulate parameters and behaviour associated with connections.
+Channel types are like simple modules, in the sense that they are declared
+in NED, and there are C++ implementation classes behind them. Section
+\ref{sec:ch-ned-lang:channels} describes NED language support for channels,
+and explains how to associate C++ classes with channel types declared in
+NED.
 
-NED decl, @class
+C++ channel classes must subclass from the abstract base class
+\cclass{cChannel}. However, when creating a new channel class, it may be
+more practical to extend one of the existing C++ channel classes behind the
+three predefined NED channel types:
 
-C++: subclass from existing classes: cIdealChannel, cDelayChannel, cDatarateChannel
+\begin{itemize}
+  \item \cclass{cIdealChannel} implements the functionality of \ttt{ned.IdealChannel}
+  \item \cclass{cDelayChannel} implements the functionality of \ttt{ned.DelayChannel}
+  \item \cclass{cDatarateChannel} implements the functionality of \ttt{ned.DatarateChannel}
+\end{itemize}
 
-register with: Define\_Channel()
+Channel classes need to be registered with the \fmac{Define\_Channel()} macro,
+just like simple module classes need \fmac{Define\_Module()}.
+
+
+\subsection{The Channel API}
 
 Channel is a component: initialize(), finish() etc.
 
