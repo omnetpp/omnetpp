@@ -191,7 +191,7 @@ Register_Class(DatabaseConfigurationReader);
 \subsection{Defining a New Output Scalar Manager}
 \label{sec:plugin-exts:outputscalarmanager}
 
-cOutputScalarManager handles recording the scalar output data.
+\cclass{cOutputScalarManager} handles recording the scalar output data.
 The default output scalar manager is \cclass{cFileOutputScalarManager},
 defined in the Envir library.
 
@@ -202,7 +202,7 @@ configuration option.
 \subsection{Defining a New Output Vector Manager}
 \label{sec:plugin-exts:outputvectormanager}
 
-cOutputVectorManager handles recording the output from \cclass{cOutVector} objects.
+\cclass{cOutputVectorManager} handles recording the output from \cclass{cOutVector} objects.
 The default output vector manager is \cclass{cIndexedFileOutputVectorManager},
 defined in the Envir library.
 
@@ -213,7 +213,7 @@ configuration option.
 \subsection{Defining a New Snapshot Manager}
 \label{sec:plugin-exts:snapshotmanager}
 
-cSnapshotManager provides an output stream to which snapshots are written
+\cclass{cSnapshotManager} provides an output stream to which snapshots are written
 (see section \ref{sec:ch-sim-lib:snapshots}). The default snapshot manager
 is \cclass{cFileSnapshotManager}, defined in the Envir library.
 
@@ -305,7 +305,7 @@ cConfiguration *config = ev.getConfig();
 \cclass{cConfiguration} provides several methods for querying the configuration.
 
 \begin{note}
-The configuration object provides a flattened view of the INI file. Sections
+The configuration object provides a flattened view of the ini file. Sections
 inheriting from each other are merged for you. Configuration options provided
 on the command line in the form \ttt{--option=value} are added first to the object.
 This ensures that the command line options take precedence over the values specified
