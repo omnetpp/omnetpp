@@ -318,13 +318,13 @@ of the following member functions:
      gets invoked with the message as parameter whenever the
      module receives a message. \ffunc{handleMessage()} is
      expected to \textit{process} the message, and then return.
-     No simulation time never elapses during \ffunc{handleMessage()}
+     Simulation time never elapses inside \ffunc{handleMessage()}
      calls, only between them.
   \item \ffunc{activity()} is started as a coroutine\footnote{Cooperatively
      scheduled thread, see later.} at the beginning of the simulation, and
      then it keeps running until the end of simulation (or until the function
      returns or otherwise terminates). Messages are obtained with
-     \ffunc{receive()} calls. Simulation time elapses inside the
+     \ffunc{receive()} calls. Simulation time elapses inside
      \ffunc{receive()} calls.
 \end{itemize}
 
@@ -541,11 +541,11 @@ with a runtime error.
 \end{note}
 
 The calling order is the reverse of the order of \ffunc{initialize()}: first
-submodules, then the encompassing compound module. (The bottom line is that at
-the moment there is no ``official'' possibility to redefine
-\ffunc{initialize()} and \ffunc{finish()} for compound modules; the unofficial
-way is to write into the nedtool-generated C++ code. Future versions of {\opp}
-will support adding these functions to compound modules.)
+submodules, then the encompassing compound module.
+  \footnote{The way you can provide an \ffunc{initialize()} function
+  for a compound module is to subclass \cclass{cCompoundModule}, and tell
+  {\opp} to use the new class for the compound module. The latter is done
+  by adding the \ttt{@class(<classname>)} property into the NED declaration.}
 
 This is summarized in the following pseudocode:
 
@@ -640,128 +640,6 @@ end-of-simulation events were dropped in favour of \ffunc{finish()}
 (called \ffunc{finalize()} in PARSEC).
 
 
-\subsection{A Complete Simple Module Example}
-
-The following code is a bit longer but actually useful simple module
-implementation. It demonstrates several of the above concepts, plus
-some others which will be explained in later sections:
-\begin{enumerate}
-  \item{constructor, initialize and destructor conventions}
-  \item{using messages for timers}
-  \item{accessing module parameters}
-  \item{recording statistics at the end of the simulation}
-  \item{documenting the programmer's assumptions using ASSERT()}
-\end{enumerate}
-
-\begin{cpp}
-// file: FFGenerator.h
-
-#include <omnetpp.h>
-
-/**
- * Generates messages or jobs; see NED file for more info.
- */
-class FFGenerator : public cSimpleModule
-{
-  private:
-    cMessage *sendMessageEvent;
-    long numSent;
-
-  public:
-    FFGenerator();
-    virtual ~FFGenerator();
-
-  protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
-};
-\end{cpp}
-
-\begin{cpp}
-// file: FFGenerator.cc
-
-#include "FFGenerator.cc"
-
-// register module class with `\opp`
-Define_Module(FFGenerator);
-
-FFGenerator::FFGenerator()
-{
-    sendMessageEvent = NULL;
-}
-
-void FFGenerator::initialize()
-{
-    numSent = 0;
-    sendMessageEvent = new cMessage("sendMessageEvent");
-    scheduleAt(0.0, sendMessageEvent);
-}
-
-void FFGenerator::handleMessage(cMessage *msg)
-{
-    ASSERT(msg==sendMessageEvent);
-
-    cMessage *m = new cMessage("packet");
-    m->setBitLength(par("msgLength"));
-    send(m, "out");
-    numSent++;
-
-    double deltaT = (double)par("sendIaTime");
-    scheduleAt(simTime()+deltaT, sendMessageEvent);
-}
-
-void FFGenerator::finish()
-{
-    recordScalar("packets sent", numSent);
-}
-
-FFGenerator::~FFGenerator()
-{
-    cancelAndDelete(sendMessageEvent);
-}
-\end{cpp}
-
-The corresponding NED declaration:
-
-\begin{ned}
-// file: FFGenerator.ned
-simple FFGenerator
-{
-    parameters:
-        volatile double sendIaTime;
-    gates:
-        output out;
-}
-\end{ned}
-
-
-
-
-\subsection{Using Global Variables}
-\label{sec:simple-modules:global-vars}
-\index{global variables}
-
-If possible, avoid using global variables, including
-static class members. They are prone to cause several problems.
-First, they are not reset to their initial values (to zero)
-when you rebuild the simulation in Tkenv, or start another run
-in Cmdenv. This may produce surprising results.
-Second, they prevent you from running your simulation in parallel.
-When using parallel simulation, each partition of your model
-(may) run in a separate process, having its own copy of the
-global variables. This is usually not what you want.
-
-The solution is to encapsulate the variables into simple modules
-as private or protected data members, and expose them via public methods.
-Other modules can then call these public methods to get or set the values.
-Calling methods of other modules will be discussed in section
-\ref{sec:simple-modules:direct-method-calls}.
-Examples of such modules are the \ttt{Blackboard} in the \textit{Mobility Framework},
-and \ttt{InterfaceTable} and \ttt{RoutingTable} in the \textit{INET Framework}.
-
-
-
 \section{Adding Functionality to cSimpleModule}
 \label{sec:simple-modules:adding-functionality-to-csimplemodule}
 
@@ -771,7 +649,6 @@ mentioned member functions, intended to be redefined by the user:
 and \ffunc{finish()}. A fifth, less frequently used method,
 \ffunc{handleParameterChange}, is described in section
 \ref{sec:simple-modules:handleParameterChange}.
-
 
 
 \subsection{handleMessage()}
@@ -1439,19 +1316,34 @@ Coroutines are used by a number of other simulation packages:
     threads.}
 \end{itemize}
 
+\subsection{How to Avoid Global Variables}
+\label{sec:simple-modules:global-vars}
+\index{global variables}
+
+If possible, avoid using global variables, including
+static class members. They are prone to cause several problems.
+First, they are not reset to their initial values (to zero)
+when you rebuild the simulation in Tkenv, or start another run
+in Cmdenv. This may produce surprising results.
+Second, they prevent you from running your simulation in parallel.
+When using parallel simulation, each partition of your model
+(may) run in a separate process, having its own copy of the
+global variables. This is usually not what you want.
+
+The solution is to encapsulate the variables into simple modules
+as private or protected data members, and expose them via public methods.
+Other modules can then call these public methods to get or set the values.
+Calling methods of other modules will be discussed in section
+\ref{sec:simple-modules:direct-method-calls}.
+Examples of such modules are the \ttt{Blackboard} in the \textit{Mobility Framework},
+and \ttt{InterfaceTable} and \ttt{RoutingTable} in the \textit{INET Framework}.
 
 
 \subsection{Reusing Module Code via Subclassing}
 \label{sec:simple-modules:module-subclassing}
 
-It is often needed to have several variants of a simple module.
-A good design strategy is to create a simple module class with
-the common functionality, then subclass from it to create the
-specific simple module types.
-
-% FIXME use QueueBase example!
-
-An example:
+The code of simple modules can be reused via subclassing, and redefining
+virtual member functions. An example:
 
 \begin{cpp}
 class ModifiedTransportProtocol : public TransportProtocol
