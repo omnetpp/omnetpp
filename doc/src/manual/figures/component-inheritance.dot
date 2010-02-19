@@ -1,0 +1,14 @@
+digraph g {
+        fontsize=12; size="5,5";
+
+	node [shape = "rectangle"];
+
+	cComponent -> cObject [label="..."];
+	cModule -> cComponent;
+	cChannel -> cComponent;
+	cSimpleModule -> cModule;
+	cCompoundModule -> cModule;
+	cIdealChannel -> cChannel;
+	cDelayChannel -> cChannel;
+	cDatarateChannel -> cChannel;
+};

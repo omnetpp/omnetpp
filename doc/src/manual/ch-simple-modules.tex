@@ -109,8 +109,8 @@ packet, updating the retry count, scheduling another ``timeout''
 event, and so on. The user code may also remove events from the FES\index{FES},
 for example when canceling timeouts.
 
-The simulation stops when there are no events left (this happens
-rarely in practice), or when it isn't necessary for the simulation
+The simulation stops when there are no events left (this rarely happens
+in practice), or when it isn't necessary for the simulation
 to run further because the model time or the CPU time has reached
 a given limit, or because the statistics have reached the desired
 accuracy. At this time, before the program exits, the user
@@ -118,60 +118,95 @@ will typically want to record statistics into output files.
 
 
 
-\subsection{Simple Modules in {\opp}}
+\subsection{Simple Modules and Channels}
 \label{sec:simple-modules-in-opp}
+
+{\opp} simulation models are composed of modules and connections. Modules
+may be simple (atomic) modules or compound modules; simple modules are the
+active components in a model, and their behaviour is defined by the user as
+C++ code. Connections may have associated channel objects. Channel objects
+encapsulate channel behavior: propagation and transmission time modeling,
+error modeling, and possibly others. Channels are also programmable in C++
+by the user.
+
+Modules and channels are called \textit{components}. Components are
+represented with the C++ class \cclass{cComponent}. The abstract module
+class \cclass{cModule} and the abstract channel class \cclass{cChannel}
+both subclass from \cclass{cComponent}.
+
+\cclass{cModule} has two subclasses: \cclass{cSimpleModule} and
+\cclass{cCompoundModule}. The user defines simple module types by
+subclassing \cclass{cSimpleModule}.
+
+The \cclass{cChannel}'s subclasses include the three built-in channel
+types: \cclass{cIdealChannel}, \cclass{cDelayChannel} and
+\cclass{cDatarateChannel}. The user can create new channel types
+by subclassing \cclass{cChannel} or any other channel class.
+
+The following inheritance diagram illustrates the relationship
+of the classes mentioned above.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/component-inheritance}
+    \caption{Inheritance of component, module and channel classes}
+  \end{center}
+\end{figure}
+
+Simple modules and channels can be programmed by redefining certain
+member functions, and providing your own code in them. Some of those
+member functions are declared on \cclass{cComponent}, the common base
+class of channels and modules.
+
+\cclass{cComponent} has the following member functions meant for
+redefining in subclasses:
+
+\begin{itemize}
+  \item \ffunc{initialize()}. This method gets invoked after {\opp} has
+    set up the network (i.e. created modules and connected them according
+    to the definitions), and provides a place for initialization code;
+  \item \ffunc{finish()} gets called when the simulation has terminated
+    successfully, and its recommended use is the recording of summary
+    statistics.
+\end{itemize}
+
+\ffunc{initialize()} and \ffunc{finish()}, together with \ffunc{initialize()}'s
+variants for multi-stage initialization, will be covered in detail in
+section \ref{sec:simple-modules:initialize-and-finish}.
+
 
 In {\opp}, events occur inside simple modules\index{module!simple}.
 Simple modules encapsulate C++ code that generates events and reacts to events,
 in other words, implements the behaviour of the model.
 
-The user creates simple module types by subclassing the \cclass{cSimpleModule}
-class, which is part of the {\opp} class library.
-\cclass{cSimpleModule}, just as \cclass{cCompoundModule}, is derived
-from a common base class, \cclass{cModule}.
+To define the dynamic behavior of a simple module, you need to redefine one
+of the following member functions:
 
-\cclass{cSimpleModule}, although packed with simulation-related
-functionality, doesn't do anything useful by itself -- you have
-to redefine some virtual member functions to make it do useful work.
-
-
-These member functions are the following:
 \begin{itemize}
-  \item{void \ffunc{initialize()}}
-  \item{void \ffunc[handleMessage()]{handleMessage(cMessage *msg)}}
-  \item{void \ffunc{activity()}}
-  \item{void \ffunc{finish()}}
+  \item \ffunc[handleMessage()]{handleMessage(cMessage *msg)}. It
+     gets invoked with the message as parameter whenever the
+     module receives a message. \ffunc{handleMessage()} is
+     expected to \textit{process} the message, and then return.
+     No simulation time never elapses during \ffunc{handleMessage()}
+     calls, only between them.
+  \item \ffunc{activity()} is started as a coroutine\footnote{Cooperatively
+     scheduled thread, see later.} at the beginning of the simulation, and
+     then it keeps running until the end of simulation (or until the function
+     returns or otherwise terminates). Messages are obtained with
+     \ffunc{receive()} calls. Simulation time elapses inside the
+     \ffunc{receive()} calls.
 \end{itemize}
 
-In the initialization step, {\opp} builds the network: it creates the
-necessary simple\index{module!simple} and compound modules and
-connects them according to the NED definitions. {\opp} also calls the
-\ffunc{initialize()} functions of all modules.
+Modules written with \ffunc{activity()} and \ffunc{handleMessage()} can be
+freely mixed within a simulation model. Generally, \ffunc{handleMessage()}
+should be preferred to \ffunc{activity()}, due to scalability and other
+practical reasons. The two functions will be described in detail in sections
+\ref{sec:simple-modules:handlemessage} and \ref{sec:simple-modules:activity},
+including their advantages and disadvantages.
 
-The \ffunc{handleMessage()} and \ffunc{activity()} functions are
-called during event processing. This means that the user will
-implement the model's behavior in these functions.
-\ffunc{handleMessage()} and \ffunc{activity()} implement
-different event processing strategies: for each simple module, the user
-has to redefine exactly one of these functions.
-
-\ffunc{handleMessage()} is a method that is called
-by the simulation kernel when the module receives a message.
-\ffunc{activity()} is a coroutine-based\index{coroutine} solution
-which implements the process interaction approach (coroutines are
-non-preemptive (i.e. cooperative) threads). Generally, it is recommended
-that you prefer \ffunc{handleMessage()} to \ffunc{activity()} --
-mainly because \ffunc{activity()} doesn't scale well.
-Later in this chapter we'll discuss both methods including their advantages
-and disadvantages.
-
-Modules written with \ffunc{activity()} and \ffunc{handleMessage()}
-can be freely mixed within a simulation model.
-
-The \ffunc{finish()} functions are called when the simulation
-terminates successfully. The most typical use of \ffunc{finish()}
-is the recording of statistics collected during simulation.
-
+The behavior of channels can also be modified by redefining member functions.
+However, the channel API is slightly more complicated than that of simple
+modules, so we'll describe it in a later section (\ref{sec:simple-modules:channels}).
 
 
 \subsection{Events in {\opp}}
@@ -322,9 +357,6 @@ to define its behavior.
 The class has to be registered with {\opp} via the \fmac{Define\_Module()} macro.
 The \fmac{Define\_Module()} line should always be put into \ttt{.cc} or \ttt{.cpp}
 files and not header file (\ttt{.h}), because the compiler generates code from it.
-      \footnote{For completeness, there is also a \fmac{Define\_Module\_Like()}
-                macro, but its use is discouraged and might even be removed in
-                future {\opp} releases.}
 
 The following \ttt{HelloModule} is about the simplest simple module one could write.
 (We could have left out the \ttt{initialize()} method as well to make it even smaller,
@@ -2718,6 +2750,16 @@ The channel API:
 %     * getNextGate(), getPathStartGate(), getPathEndGate()).
 %     */
 %    virtual bool isTransmissionChannel() const = 0;
+
+%    /**
+%     * For transmission channels: Returns the simulation time
+%     * the sender gate will finish transmitting. If the gate is not
+%     * currently transmitting, the result is unspecified but less or equal
+%     * the current simulation time.
+%     *
+%     * @see isTransmissionChannel(), isBusy(), cDatarateChannel
+%     */
+%    virtual simtime_t getTransmissionFinishTime() const = 0;
 %    //@}
 %
 %    /** @name Channel functionality */
@@ -2743,15 +2785,6 @@ The channel API:
 %     */
 %    virtual void process(cMessage *msg, simtime_t t, result_t& result) = 0;
 %
-%    /**
-%     * For transmission channels: Returns the simulation time
-%     * the sender gate will finish transmitting. If the gate is not
-%     * currently transmitting, the result is unspecified but less or equal
-%     * the current simulation time.
-%     *
-%     * @see isTransmissionChannel(), isBusy(), cDatarateChannel
-%     */
-%    virtual simtime_t getTransmissionFinishTime() const = 0;
 
 TODO explain step by step:
 
