@@ -2617,9 +2617,17 @@ just like simple module classes need \fmac{Define\_Module()}.
 
 \subsection{The Channel API}
 
+XXX
+
 Channel is a component: initialize(), finish() etc.
 
 The channel API:
+
+\begin{itemize}
+  \item \ffunc[isTransmissionChannel()]{bool isTransmissionChannel() const}
+  \item \ffunc[getTransmissionFinishTime()]{simtime\_t getTransmissionFinishTime() const}
+  \item \ffunc[process()]{void process(cMessage *msg, simtime\_t t, result\_t\& result)}
+\end{itemize}
 
 %    /**
 %     * Returns true if the channel models a nonzero-duration transmission,
@@ -2815,14 +2823,8 @@ While a message is under transmission, other messages have to wait
 until the transmission is completed. The module sends another message while the
 gate is busy, a runtime error will be thrown.
 
-The {\opp} class library provides functions to check
-whether a certain output gate is transmitting and find out when when
-it finishes transmission.
-
-If the connection with a data rate is not directly connected
-to the simple module's output gate but is the second
-one in the path, you have to check the second gate's busy
-condition\index{gate!busy condition}.
+The {\opp} class library provides functions to check whether a certain
+output gate is transmitting and find out when when it finishes transmission.
 
 \begin{note}
    In {\opp} versions prior to 4.0, sending on a busy gate was permitted, and
@@ -2852,61 +2854,6 @@ run-time efficiency.
    into the path to ensure strict scheduling.
 \end{note}
 
-
-\subsubsection{The Approach of Some Other Simulators}
-
-Note that some simulators (e.g. OPNET) assign \textit{packet queues}
-to input gates (ports), and messages sent are buffered at the
-destination module (or the remote end of the link) until they are
-received by the destination module. With that approach, events and
-messages are separate entities, that is, a \textit{send} operation
-includes placing the message in the packet queue \textit{and} scheduling
-an event, which signals the arrival of the packet. In some implementations,
-output gates also have packet queues where packets will be buffered until
-the channel is ready (available for transmission).
-
-{\opp} gates\index{gate} don't have associated queues. The place
-where sent but not yet received messages are buffered in the
-FES\index{FES}.  {\opp}'s approach is potentially faster
-than the solution mentioned above because it doesn't have the
-enqueue/dequeue overhead and also spares an event creation. The
-drawback is, that changes to channel parameters do not take effect
-immediately.
-
-In {\opp} one can implement \textit{point-to-point transmitter} modules
-with packet queues if needed. For example, the INET Framework
-follows this approach.
-
-
-
-
-%%--------------------------
-%% FIXME TODO
-
-Connection attributes (propagation delay, transmission data rate,
-bit error rate) are represented by the channel object, which
-is available via the source gate of the connection.
-
-\begin{cpp}
-cChannel *chan = outgate->getChannel();
-\end{cpp}
-
-\cclass{cChannel} is a small base class. All interesting attributes are
-part of its subclass \cclass{cDatarateChannel}, so you have to cast the pointer
-before getting to the delay, error and data rate values.
-
-\begin{cpp}
-cDatarateChannel *chan = check_and_cast<cDatarateChannel *>(outgate->getChannel());
-double d = chan->getDelay();
-double e = chan->getBitErrorRate();
-double r = chan->getDatarate();
-\end{cpp}
-
-You can also change the channel attributes with the corresponding
-\ttt{setXXX()} functions. Note, however, that (as it was explained in
-section \ref{sec:simple-modules:packet-transmission})
-changes will not affect messages already sent, even if they have not
-begun transmission yet.
 
 
 
