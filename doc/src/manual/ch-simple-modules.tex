@@ -117,98 +117,6 @@ accuracy. At this time, before the program exits, the user
 will typically want to record statistics into output files.
 
 
-
-\subsection{Simple Modules and Channels}
-\label{sec:simple-modules-in-opp}
-
-{\opp} simulation models are composed of modules and connections. Modules
-may be simple (atomic) modules or compound modules; simple modules are the
-active components in a model, and their behaviour is defined by the user as
-C++ code. Connections may have associated channel objects. Channel objects
-encapsulate channel behavior: propagation and transmission time modeling,
-error modeling, and possibly others. Channels are also programmable in C++
-by the user.
-
-Modules and channels are called \textit{components}. Components are
-represented with the C++ class \cclass{cComponent}. The abstract module
-class \cclass{cModule} and the abstract channel class \cclass{cChannel}
-both subclass from \cclass{cComponent}.
-
-\cclass{cModule} has two subclasses: \cclass{cSimpleModule} and
-\cclass{cCompoundModule}. The user defines simple module types by
-subclassing \cclass{cSimpleModule}.
-
-The \cclass{cChannel}'s subclasses include the three built-in channel
-types: \cclass{cIdealChannel}, \cclass{cDelayChannel} and
-\cclass{cDatarateChannel}. The user can create new channel types
-by subclassing \cclass{cChannel} or any other channel class.
-
-The following inheritance diagram illustrates the relationship
-of the classes mentioned above.
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics{figures/component-inheritance}
-    \caption{Inheritance of component, module and channel classes}
-  \end{center}
-\end{figure}
-
-Simple modules and channels can be programmed by redefining certain
-member functions, and providing your own code in them. Some of those
-member functions are declared on \cclass{cComponent}, the common base
-class of channels and modules.
-
-\cclass{cComponent} has the following member functions meant for
-redefining in subclasses:
-
-\begin{itemize}
-  \item \ffunc{initialize()}. This method gets invoked after {\opp} has
-    set up the network (i.e. created modules and connected them according
-    to the definitions), and provides a place for initialization code;
-  \item \ffunc{finish()} gets called when the simulation has terminated
-    successfully, and its recommended use is the recording of summary
-    statistics.
-\end{itemize}
-
-\ffunc{initialize()} and \ffunc{finish()}, together with \ffunc{initialize()}'s
-variants for multi-stage initialization, will be covered in detail in
-section \ref{sec:simple-modules:initialize-and-finish}.
-
-
-In {\opp}, events occur inside simple modules\index{module!simple}.
-Simple modules encapsulate C++ code that generates events and reacts to events,
-in other words, implements the behaviour of the model.
-
-To define the dynamic behavior of a simple module, you need to redefine one
-of the following member functions:
-
-\begin{itemize}
-  \item \ffunc[handleMessage()]{handleMessage(cMessage *msg)}. It
-     gets invoked with the message as parameter whenever the
-     module receives a message. \ffunc{handleMessage()} is
-     expected to \textit{process} the message, and then return.
-     No simulation time never elapses during \ffunc{handleMessage()}
-     calls, only between them.
-  \item \ffunc{activity()} is started as a coroutine\footnote{Cooperatively
-     scheduled thread, see later.} at the beginning of the simulation, and
-     then it keeps running until the end of simulation (or until the function
-     returns or otherwise terminates). Messages are obtained with
-     \ffunc{receive()} calls. Simulation time elapses inside the
-     \ffunc{receive()} calls.
-\end{itemize}
-
-Modules written with \ffunc{activity()} and \ffunc{handleMessage()} can be
-freely mixed within a simulation model. Generally, \ffunc{handleMessage()}
-should be preferred to \ffunc{activity()}, due to scalability and other
-practical reasons. The two functions will be described in detail in sections
-\ref{sec:simple-modules:handlemessage} and \ref{sec:simple-modules:activity},
-including their advantages and disadvantages.
-
-The behavior of channels can also be modified by redefining member functions.
-However, the channel API is slightly more complicated than that of simple
-modules, so we'll describe it in a later section (\ref{sec:simple-modules:channels}).
-
-
 \subsection{Events in {\opp}}
 \label{sec:simple-modules:events-in-opp}
 
@@ -341,6 +249,95 @@ cases. In case you are interested, the FES implementation is in the
 ever need to care about that.
 
 
+\section{Simple Modules and Channels}
+\label{sec:simple-modules-in-opp}
+
+{\opp} simulation models are composed of modules and connections. Modules
+may be simple (atomic) modules or compound modules; simple modules are the
+active components in a model, and their behaviour is defined by the user as
+C++ code. Connections may have associated channel objects. Channel objects
+encapsulate channel behavior: propagation and transmission time modeling,
+error modeling, and possibly others. Channels are also programmable in C++
+by the user.
+
+Modules and channels are called \textit{components}. Components are
+represented with the C++ class \cclass{cComponent}. The abstract module
+class \cclass{cModule} and the abstract channel class \cclass{cChannel}
+both subclass from \cclass{cComponent}.
+
+\cclass{cModule} has two subclasses: \cclass{cSimpleModule} and
+\cclass{cCompoundModule}. The user defines simple module types by
+subclassing \cclass{cSimpleModule}.
+
+The \cclass{cChannel}'s subclasses include the three built-in channel
+types: \cclass{cIdealChannel}, \cclass{cDelayChannel} and
+\cclass{cDatarateChannel}. The user can create new channel types
+by subclassing \cclass{cChannel} or any other channel class.
+
+The following inheritance diagram illustrates the relationship
+of the classes mentioned above.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/component-inheritance}
+    \caption{Inheritance of component, module and channel classes}
+  \end{center}
+\end{figure}
+
+Simple modules and channels can be programmed by redefining certain
+member functions, and providing your own code in them. Some of those
+member functions are declared on \cclass{cComponent}, the common base
+class of channels and modules.
+
+\cclass{cComponent} has the following member functions meant for
+redefining in subclasses:
+
+\begin{itemize}
+  \item \ffunc{initialize()}. This method gets invoked after {\opp} has
+    set up the network (i.e. created modules and connected them according
+    to the definitions), and provides a place for initialization code;
+  \item \ffunc{finish()} gets called when the simulation has terminated
+    successfully, and its recommended use is the recording of summary
+    statistics.
+\end{itemize}
+
+\ffunc{initialize()} and \ffunc{finish()}, together with \ffunc{initialize()}'s
+variants for multi-stage initialization, will be covered in detail in
+section \ref{sec:simple-modules:initialize-and-finish}.
+
+
+In {\opp}, events occur inside simple modules\index{module!simple}.
+Simple modules encapsulate C++ code that generates events and reacts to events,
+in other words, implements the behaviour of the model.
+
+To define the dynamic behavior of a simple module, you need to redefine one
+of the following member functions:
+
+\begin{itemize}
+  \item \ffunc[handleMessage()]{handleMessage(cMessage *msg)}. It
+     gets invoked with the message as parameter whenever the
+     module receives a message. \ffunc{handleMessage()} is
+     expected to \textit{process} the message, and then return.
+     No simulation time never elapses during \ffunc{handleMessage()}
+     calls, only between them.
+  \item \ffunc{activity()} is started as a coroutine\footnote{Cooperatively
+     scheduled thread, see later.} at the beginning of the simulation, and
+     then it keeps running until the end of simulation (or until the function
+     returns or otherwise terminates). Messages are obtained with
+     \ffunc{receive()} calls. Simulation time elapses inside the
+     \ffunc{receive()} calls.
+\end{itemize}
+
+Modules written with \ffunc{activity()} and \ffunc{handleMessage()} can be
+freely mixed within a simulation model. Generally, \ffunc{handleMessage()}
+should be preferred to \ffunc{activity()}, due to scalability and other
+practical reasons. The two functions will be described in detail in sections
+\ref{sec:simple-modules:handlemessage} and \ref{sec:simple-modules:activity},
+including their advantages and disadvantages.
+
+The behavior of channels can also be modified by redefining member functions.
+However, the channel API is slightly more complicated than that of simple
+modules, so we'll describe it in a later section (\ref{sec:simple-modules:channels}).
 
 
 
