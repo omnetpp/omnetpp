@@ -2754,7 +2754,7 @@ the modeling of communication networks, but can be useful for
 other models too:
 \begin{itemize}
   \item{propagation delay (sec)\index{channel!delay}}
-  \item{bit error rate (errors/bit)\index{channel!error}}
+  \item{bit error rate (errors/bit)\index{channel!ber}}
   \item{data rate (bits/sec)\index{channel!datarate}}
 \end{itemize}
 
@@ -3475,9 +3475,8 @@ bit about how normally {\opp} instantiates modules. Each module type
 (class) has a corresponding factory object of the class
 \cclass{cModuleType}. This object is created under the hood by the
 \fmac{Define\_Module()} macro, and it has a factory
-function\index{factory function} which can instantiate the module
-class (this function basically only consists of a \ttt{return new
-\textit{module-class}(...)} statement).
+method which can instantiate the module class (this function basically
+only consists of a \ttt{return new \textit{<moduleclass>}(...)} statement).
 
 The \cclass{cModuleType} object can be looked up by its name
 string (which is the same as the module class name). Once you have its
@@ -3488,7 +3487,7 @@ into your source file.
 
 The \cclass{cModuleType} object also knows what gates and
 parameters the given module type has to have. (This info comes from
-compiled NED code.)
+NED files.)
 
 Simple modules can be created in one step. For a compound module, the
 situation is more complicated, because its internal structure
@@ -3509,77 +3508,76 @@ starter messages, because the initializing code may insert new messages
 into the FES\index{FES}, and these messages should be processed
 \textit{after} the starter message.
 
-%
-% TBD
-%
-
 
 \subsection{Creating Modules}
 
-The first step, finding the factory object:
+The first step is to find the factory object. The \ttt{cModuleType::get()}
+function expects a fully qualified NED type name, and returns the factory
+object:
 
 \begin{cpp}
-cModuleType *moduleType = cModuleType::get("WirelessNode");
+cModuleType *moduleType = cModuleType::get("foo.nodes.WirelessNode");
 \end{cpp}
 
+The return value does not need to be checked for \ttt{NULL}, because
+the function raises an error if the requested NED type was not found.
+(If this behavior is not what you need, you can use the similar
+\ttt{cModuleType::find()} function, which returns \ttt{NULL} if the type
+was not found.)
 
-\subsubsection{Simplified Form}
+\subsubsection{The All-in-One Method}
 
-\cclass{cModuleType} has a
-\ttt{createScheduleInit(const char *name, cModule *parentmod)}
-convenience function to get a module up and running in one step.
+\cclass{cModuleType} has a \ffunc[createScheduleInit()]{createScheduleInit(const
+char *name, cModule *parentmod)} convenience function to get a module up
+and running in one step.
 
 \begin{cpp}
-mod = modtype->createScheduleInit("node",this);
+cModule *mod = moduleType->createScheduleInit("node", this);
 \end{cpp}
 
-It does \ffunc{create()} + \ffunc{buildInside()} +
-\ffunc[scheduleStart()]{scheduleStart(now)} + \ffunc{callInitialize()}.
+\ffunc{createScheduleInit()} performs the following steps: \ffunc{create()},
+\ffunc{finalizeParameters()}, \ffunc{buildInside()},
+\ffunc[scheduleStart()]{scheduleStart(now)} and \ffunc{callInitialize()}.
 
-This method can be used for both simple and compound modules.
-Its applicability is somewhat limited, however:
-because it does everything in one step, you do not have the chance to
-set parameters or gate sizes, and to connect gates before
-\ffunc{initialize()} is called.
-(\ffunc{initialize()} expects all parameters and gates to
-be in place and the network fully built when it is called.)
-Because of the above limitation, this function is mainly useful
-for creating basic simple modules.
-
-%
-% Example:
-% TBD
-%
-
-\subsubsection{Expanded Form}
+This method can be used for both simple and compound modules. Its
+applicability is somewhat limited, however: because it does everything in
+one step, you do not have the chance to set parameters or gate sizes, and
+to connect gates before \ffunc{initialize()} is called.
+(\ffunc{initialize()} expects all parameters and gates to be in place and
+the network fully built when it is called.) Because of the above
+limitation, this function is mainly useful for creating basic simple
+modules.
 
 
-If the previous simple form cannot be used. There are 5 steps:
+\subsubsection{The Detailed Procedure}
+
+If the \ffunc{createScheduleInit()} all-in-one method is not applicable,
+one needs to use the full procedure. It consists of five steps:
+
 \begin{enumerate}
-  \item{find factory object}
-  \item{create module}
-  \item{set up parameters and gate sizes (if needed)}
-  \item{call function that builds out submodules and finalizes the
-    module}
-  \item{call function that creates activation message(s) for the new
-    simple module(s)}
+  \item Find the factory object;
+  \item Create the module;
+  \item Set up its parameters and gate sizes as needed;
+  \item Tell the (possibly compound) module to recursively create
+        its internal submodules and connections;
+  \item Schedule activation message(s) for the new simple module(s).
 \end{enumerate}
+
 Each step (except for Step 3.) can be done with one line of code.
-
-
 
 See the following example, where Step 3 is omitted:
 
 \begin{cpp}
 // find factory object
-cModuleType *moduleType = cModuleType::get("WirelessNode");
+cModuleType *moduleType = cModuleType::get("foo.nodes.WirelessNode");
 
 // create (possibly compound) module and build its submodules (if any)
 cModule *module = moduleType->create("node", this);
+module->finalizeParameters();
 module->buildInside();
 
 // create activation message
-module->scheduleStart( simTime() );
+module->scheduleStart(simTime());
 \end{cpp}
 
 If you want to set up parameter values or gate vector sizes (Step 3.),
@@ -3588,11 +3586,13 @@ the code goes between the \ffunc{create()} and
 
 \begin{cpp}
 // create
-cModuleType *moduleType = cModuleType::get("WirelessNode");
+cModuleType *moduleType = cModuleType::get("foo.nodes.WirelessNode");
 cModule *module = moduleType->create("node", this);
 
 // set up parameters and gate sizes before we set up its submodules
 module->par("address") = ++lastAddress;
+module->finalizeParameters();
+
 module->setGateSize("in", 3);
 module->setGateSize("out", 3);
 
@@ -3604,39 +3604,37 @@ module->scheduleStart(simTime());
 
 \subsection{Deleting Modules}
 
-
-To delete a module dynamically\index{module!dynamic deletion}:
+To delete a module dynamically\index{module!dynamic deletion}, use
+\cclass{cModule}'s \ffunc{deleteModule()} member function:
 
 \begin{cpp}
 module->deleteModule();
 \end{cpp}
 
 If the module was a compound module, this involves recursively
-destroying all its submodules. A simple module can also delete itself;
+deleting all its submodules. A simple module can also delete itself;
 in this case, the \ffunc{deleteModule()} call does not return to the
 caller.
 
-Currently, you cannot safely delete a
-compound\index{module!compound!deletion} module from a simple module
+Currently, you cannot safely delete a compound module from a simple module
 in it; you must delegate the job to a module outside the compound
 module.
 
 
 \subsection{Module Deletion and finish()}
 
-When you delete a module \textit{during simulation}, its \ffunc{finish()}
-function is not called automatically (\ffunc{deleteModule()} doesn't do it.)
-How the module was created doesn't play any role here:
-\ffunc{finish()} gets called for \textit{all} modules -- at the end of the
-simulation. If a module doesn't live that long, \ffunc{finish()} is not
-invoked, but you can still manually invoke it.
+\ffunc{finish()} gets called for \textit{all} modules at the end of the
+simulation, no matter how the modules were created. If a module gets
+dynamically deleted before that, \ffunc{finish()} will not get invoked
+(\ffunc{deleteModule()} does not do it). However, you can still manually
+invoke it before \ffunc{deleteModule()}.
 
-You can use the \ffunc{callFinish()} function to arrange \ffunc{finish()}
-to be called. It is usually not a good idea to invoke \ffunc{finish()}
-directly. If you are deleting a compound module, \ffunc{callFinish()} will
-recursively invoke \ffunc{finish()} for all submodules, and if you are deleting
-a simple module from another module, \ffunc{callFinish()} will do the context
-switch for the duration of the call.
+You can use the \ffunc{callFinish()} function to invoke \ffunc{finish()}
+(It is not a good idea to invoke \ffunc{finish()} directly). If you are
+deleting a compound module, \ffunc{callFinish()} will recursively invoke
+\ffunc{finish()} for all submodules, and if you are deleting a simple
+module from another module, \ffunc{callFinish()} will do the context switch
+for the duration of the call.
   \footnote{The \ffunc{finish()} function has even been made \ttt{protected}
   in \cclass{cSimpleModule}, in order to discourage its invocation from
   other modules.}
@@ -3679,31 +3677,40 @@ a->gate("out")->connectTo(b->gate("in"));
 b->gate("out")->connectTo(a->gate("in"));
 \end{cpp}
 
-\ffunc{connectTo()} also accepts a channel object as an
-additional, optional argument. Channels are subclassed from
-\cclass{cChannel}. Almost always you'll want use an instance of
-\cclass{cDatarateChannel} as channel -- this is the one that supports
-delay\index{channel!delay}, bit error rate \index{channel!error}
-and data rate\index{channel!datarate}.
+\ffunc{connectTo()} also accepts a channel object (\ttt{cChannel*}) as an
+additional, optional argument. Similarly to modules, channels can be
+created using their factory object of the type \cclass{cChannelType}:
 
-FIXME XXX TODO and PER! and why always dataratechannel?
+\begin{cpp}
+cGate *outg=..., *ing=...;
+
+// find factory object and create a channel
+cChannelType *channelType = cChannelType::get("foo.util.Channel");
+cChannel *channel = channelType->create("channel");
+
+// create connecting
+outg->connectTo(ing, channel);
+\end{cpp}
 
 The channel object will be owned by the source gate of the connection, and
 you cannot reuse the same channel object with several connections.
 
-\cclass{cDatarateChannel} has \ffunc{setDelay()}, \ffunc{setBitErrorRate()}
-and \ffunc{setDatarate()} methods to set up the channel attributes.
+If you need one of the built-in channel types (\cclass{cIdealChannel},
+\cclass{cDelayChannel} or \cclass{cDatarateChannel}), the step to find the
+factory object can be spared, as those classes have static \ffunc{create()}
+functions to create a channel instance.
 
-FIXME XXX TODO update! channel objects should NEVER be created directly! use cChannelType::create etc! or cIdealChannel *cIdealChannel::create(const char *name) and other static utility functions!
-
+\cclass{cDatarateChannel} also has member functions to set up its
+parameters: \ffunc{setDelay()}, \ffunc{setBitErrorRate()},
+\ffunc{setPacketErrorRate()} and \ffunc{setDatarate()}.
 
 An example that sets up a channel with a delay:
 
 \begin{cpp}
-cDatarateChannel *channel = new cDatarateChannel("channel");
+cDatarateChannel *channel = cDatarateChannel::create("channel");
 channel->setDelay(0.001);
 
-a->gate("out")->connectTo(b->gate("in"), channel); // a,b are modules
+a->gate("out")->connectTo(b->gate("in"), channel); // a, b are modules
 \end{cpp}
 
 

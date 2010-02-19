@@ -114,14 +114,14 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Sets the bit error rate (BER) of the channel.
      *
-     * @see cMessage::hasBitError()
+     * @see cPacket::hasBitError()
      */
     virtual void setBitErrorRate(double d);
 
     /**
      * Sets the packet error rate (PER) of the channel.
      *
-     * @see cMessage::hasBitError()
+     * @see cPacket::hasBitError()
      */
     virtual void setPacketErrorRate(double d);
 
