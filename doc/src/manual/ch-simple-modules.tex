@@ -346,10 +346,9 @@ modules, so we'll describe it in a later section (\ref{sec:simple-modules:channe
 
 \subsection{Overview}
 
-As mentioned before \ref{sec:simple-modules-in-opp}, a simple module\index{module!simple}
-is nothing more than a C++ class which has to be subclassed from
-\cclass{cSimpleModule}, with one or more virtual member functions redefined
-to define its behavior.
+As mentioned before, a simple module\index{module!simple} is nothing more
+than a C++ class which has to be subclassed from \cclass{cSimpleModule},
+with one or more virtual member functions redefined to define its behavior.
 
 The class has to be registered with {\opp} via the \fmac{Define\_Module()} macro.
 The \fmac{Define\_Module()} line should always be put into \ttt{.cc} or \ttt{.cpp}
@@ -452,10 +451,10 @@ HelloModule::HelloModule() : cSimpleModule(16384) {...}
 \end{note}
 
 
-\subsection{initialize() and finish()}
+\subsection{Initialization and finalization}
 \label{sec:simple-modules:initialize-and-finish}
 
-\subsubsection{Overview}
+\subsubsection{Basic Usage}
 
 The \ffunc{initialize()} and \ffunc{finish()} method are declared
 as part of \cclass{cComponent}, and provide the user the opportunity
@@ -466,7 +465,63 @@ The reason \ffunc{initialize()} exists is that usually you cannot put
 simulation-related code into the simple module
 constructor\index{module!constructor}, because the simulation model is still
 being setup when the constructor runs, and many required objects are not yet
-avaiable.
+avaiable. In contrast, \ffunc{initialize()} gets called just before the
+simulation starts executing, when everything else has been set up
+already.
+
+\ffunc{finish()} is for recording statistics, and it only gets called
+when the simulation has terminated normally. It does not get called when
+the simulations stops with an error message. The destructor always
+gets called at the end, no matter how the simulation stopped, but
+at that time it is fair to assume that the simulation model has been
+halfway demolished already.
+
+Based on the above considerations, the following usage conventions exist
+for these four methods:
+
+\begin{description}
+
+\item Constructor:
+
+Set pointer members of the module class to \ttt{NULL}; postpone all other
+initialization tasks to \ffunc{initialize()}.
+
+\item \ffunc{initialize()}:
+
+Perform all initialization tasks: read module parameters, initialize
+class variables, allocate dynamic data structures with \ttt{new};
+also allocate and initialize self-messages (timers) if needed.
+
+\item \ffunc{finish()}:
+
+Record statistics. Do \tbf{not} \ttt{delete} anything or cancel timers --
+all cleanup must be done in the destructor.
+
+\item Destructor:
+
+Delete everything which was allocated by \ttt{new} and is still held
+by the module class. With self-messages (timers), use the
+\ffunc{cancelAndDelete(msg)} function! It is almost always wrong
+to just delete a self-message from the destructor, because it might be
+in the scheduled events list. The \ffunc{cancelAndDelete(msg)} function
+checks for that first, and cancels the message before deletion if necessary.
+
+\end{description}
+
+{\opp} prints the list of unreleased objects at the end of the simulation.
+Simulation models that dump \textit{"undisposed object ..."} messages need
+to get their module destructors fixed. As a temporary measure, these
+messages may be hidden by setting \ttt{print-undisposed=false} in the
+configuration.
+
+\begin{note}
+    The \ttt{perform-gc} configuration option has been removed in {\opp} 4.0.
+    Automatic garbage collection cannot be implemented reliably, due to the
+    limitations of the C++ language.
+\end{note}
+
+
+\subsubsection{Invocation Order}
 
 The \ffunc{initialize()} functions of the modules are invoked \textit{before}
 the first event is processed, but \textit{after} the initial events (starter
@@ -584,66 +639,6 @@ this has led to awkward programming in many cases, so for PARSEC
 end-of-simulation events were dropped in favour of \ffunc{finish()}
 (called \ffunc{finalize()} in PARSEC).
 
-
-\subsubsection{Using initialize() and finish()}
-\label{sec:simple-modules:ctor-dtor-init-finish}
-
-The constructor gets called when the module is created, as part of the
-model setup process. At that time, everything is just being built,
-so there isn't a lot things one can do from the constructor.
-In contrast, \ffunc{initialize()} gets called just before the
-simulation starts executing, when everything else has been set up
-already.
-
-\ffunc{finish()} is for recording statistics, and it only gets called
-when the simulation has terminated normally. It does not get called when
-the simulations stops with an error message. The destructor always
-gets called at the end, no matter how the simulation stopped, but
-at that time it is fair to assume that the simulation model has been
-halfway demolished already.
-
-Based on the above, the following conventions exist for these four methods:
-
-\begin{description}
-
-\item Constructor:
-
-Set pointer members of the module class to \ttt{NULL}; postpone all other
-initialization tasks to \ffunc{initialize()}.
-
-\item \ffunc{initialize()}:
-
-Perform all initialization tasks: read module parameters, initialize
-class variables, allocate dynamic data structures with \ttt{new};
-also allocate and initialize self-messages (timers) if needed.
-
-\item \ffunc{finish()}:
-
-Record statistics. Do \tbf{not} \ttt{delete} anything or cancel timers --
-all cleanup must be done in the destructor.
-
-\item Destructor:
-
-Delete everything which was allocated by \ttt{new} and is still held
-by the module class. With self-messages (timers), use the
-\ffunc{cancelAndDelete(msg)} function! It is almost always wrong
-to just delete a self-message from the destructor, because it might be
-in the scheduled events list. The \ffunc{cancelAndDelete(msg)} function
-checks for that first, and cancels the message before deletion if necessary.
-
-\end{description}
-
-{\opp} prints the list of unreleased objects at the end of the simulation.
-Simulation models that dump \textit{"undisposed object ..."} messages need
-to get their module destructors fixed. As a temporary measure, these
-messages may be hidden by setting \ttt{print-undisposed=false} in the
-configuration.
-
-\begin{note}
-    The \ttt{perform-gc} configuration option has been removed in {\opp} 4.0.
-    Automatic garbage collection cannot be implemented reliably, due to the
-    limitations of the C++ language.
-\end{note}
 
 \subsection{A Complete Simple Module Example}
 
