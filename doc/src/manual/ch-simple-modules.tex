@@ -1346,20 +1346,36 @@ The code of simple modules can be reused via subclassing, and redefining
 virtual member functions. An example:
 
 \begin{cpp}
-class ModifiedTransportProtocol : public TransportProtocol
+class TransportProtocolExt : public TransportProtocol
 {
   protected:
     virtual void recalculateTimeout();
 };
 
-Define_Module(ModifiedTransportProtocol);
+Define_Module(TransportProtocolExt);
 
-void ModifiedTransportProtocol::recalculateTimeout()
+void TransportProtocolExt::recalculateTimeout()
 {
     //...
 }
 \end{cpp}
 
+The corresponding NED declaration:
+
+\begin{ned}
+simple TransportProtocolExt extends TransportProtocol
+{
+    @class(TransportProtocolExt);  // Important!
+}
+\end{ned}
+
+\begin{note}
+  Note the \ttt{@class()} property, which tells {\opp} to use the
+  \ttt{TransportProtocolExt} C++ class for the module type! It is needed
+  because NED inheritance is NED inheritance \textit{only}, so without \ttt{@class()}
+  the \ttt{TransportProtocolExt} NED type would inherit the C++ class from
+  its base NED type.
+\end{note}
 
 
 
@@ -1398,7 +1414,7 @@ If you use the \ttt{par("foo")} parameter in expressions (such as
 between overloaded operators and report ambiguity. In that case
 you have to clarify by adding either an explicit cast
 (\ttt{(double)par("foo")} or \ttt{(long)par("foo")}) or use
-the \ttt{doubleValue()} or \ttt{longValue()} methods.
+the \ffunc{doubleValue()} or \ffunc{longValue()} methods.
 
 
 \subsection{Volatile and Non-Volatile Parameters}
@@ -2891,34 +2907,6 @@ You can also change the channel attributes with the corresponding
 section \ref{sec:simple-modules:packet-transmission})
 changes will not affect messages already sent, even if they have not
 begun transmission yet.
-
-\subsubsection{Channel Transmission State}
-\label{sec:simple-modules:cgate-transmission-state}
-
-The \ffunc{isBusy()} member function returns whether the gate
-is currently transmitting, and if so, the
-\ffunc{getTransmissionFinishTime()} member function
-returns the simulation time when the gate is going to finish
-transmitting. (If the gate in not currently transmitting,
-\ffunc{getTransmissionFinishTime()} returns the simulation time
-when it finished its last transmission.)
-
-If the connection with a data rate is not directly connected
-to the simple module's output gate but is the second
-one in the path, you have to check the second gate's busy
-condition\index{gate!busy condition}. You could use the following
-code:
-
-\begin{cpp}
-if (gate("out")->getNextGate()->isBusy())
-  //...
-\end{cpp}
-
-Note that if data rates change\index{data rate change} during the
-simulation, the changes will affect only the messages that are
-\textit{sent} after the change.
-
-
 
 
 
