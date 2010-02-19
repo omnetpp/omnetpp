@@ -249,7 +249,7 @@ cases. In case you are interested, the FES implementation is in the
 ever need to care about that.
 
 
-\section{Simple Modules and Channels}
+\section{Components, Simple Modules, Channels}
 \label{sec:simple-modules-in-opp}
 
 {\opp} simulation models are composed of modules and connections. Modules
@@ -452,14 +452,141 @@ HelloModule::HelloModule() : cSimpleModule(16384) {...}
 \end{note}
 
 
+\subsection{initialize() and finish()}
+\label{sec:simple-modules:initialize-and-finish}
 
-\subsection{Constructor and Destructor vs initialize() and finish()}
+\subsubsection{Overview}
+
+The \ffunc{initialize()} and \ffunc{finish()} method are declared
+as part of \cclass{cComponent}, and provide the user the opportunity
+of running code at the beginning and at successful termination of the
+simulation.
+
+The reason \ffunc{initialize()} exists is that usually you cannot put
+simulation-related code into the simple module
+constructor\index{module!constructor}, because the simulation model is still
+being setup when the constructor runs, and many required objects are not yet
+avaiable.
+
+The \ffunc{initialize()} functions of the modules are invoked \textit{before}
+the first event is processed, but \textit{after} the initial events (starter
+messages\index{starter messages}) have been placed into the FES\index{FES} by
+the simulation kernel.
+
+Both simple and compound modules have \ffunc{initialize()} functions. A
+compound module's \ffunc{initialize()} function runs \textit{before} that of
+its submodules.
+
+The \ffunc{finish()} functions are called when the event loop\index{event loop}
+has terminated, and only if it terminated normally.
+
+\begin{note}
+\ffunc{finish()} is not called if the simulation has terminated
+with a runtime error.
+\end{note}
+
+The calling order is the reverse of the order of \ffunc{initialize()}: first
+submodules, then the encompassing compound module. (The bottom line is that at
+the moment there is no ``official'' possibility to redefine
+\ffunc{initialize()} and \ffunc{finish()} for compound modules; the unofficial
+way is to write into the nedtool-generated C++ code. Future versions of {\opp}
+will support adding these functions to compound modules.)
+
+This is summarized in the following pseudocode:
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\textit{perform simulation run:}
+    build network
+      (i.e. the system module and its submodules recursively)
+    insert starter messages for all submodules using activity()
+    do callInitialize() on system module
+        \textit{enter event loop // (described earlier)}
+    if (event loop terminated normally) // i.e. no errors
+        do callFinish() on system module
+    clean up
+
+callInitialize()
+\{
+    call to user-defined initialize() function
+    if (module is compound)
+        for (each submodule)
+            do callInitialize() on submodule
+\}
+
+callFinish()
+\{
+    if (module is compound)
+        for (each submodule)
+            do callFinish() on submodule
+    call to user-defined finish() function
+\}
+\end{Verbatim}
+
+Keep in mind that \ffunc{finish()} is not always called, so it isn't a
+good place for cleanup code which should run every time the module is
+deleted. \ffunc{finish()} is only a good place for writing statistics,
+result post-processing and other operations  which are supposed to run only on
+successful completion. Cleanup code should go into the
+destructor\index{module!destructor}.
+
+
+\subsubsection{Multi-Stage Initialization}
+\label{sec:simple-modules:multi-stage-init}
+
+
+In simulation models, when one-stage
+initialization\index{initialization} provided by \ffunc{initialize()}
+is not sufficient, one can use multi-stage
+initialization\index{initialization!multi-stage}.  Modules have two
+functions which can be redefined by the user:
+
+\begin{cpp}
+void initialize(int stage);
+int numInitStages() const;
+\end{cpp}
+
+At the beginning of the simulation, \ttt{initialize(0)}
+is called for \textit{all} modules, then \ttt{initialize(1)},
+\ttt{initialize(2)}, etc. You can think of it like
+initialization takes place in several ``waves''. For each module,
+\ffunc{numInitStages()} must be redefined to return the number of init
+stages required, e.g. for a two-stage init, \ffunc{numInitStages()}
+should return 2, and \ffunc{initialize(int stage)} must be implemented to
+handle the \textit{stage=0} and \textit{stage=1} cases.
+  \footnote{Note \ttt{const} in the \ttt{numInitStages()} declaration.
+  If you forget it, by C++ rules you create a \textit{different} function
+  instead of redefining the existing one in the base class, thus the
+  existing one will remain in effect and return 1.}
+
+The \ffunc{callInitialize()} function performs the full multi-stage initialization
+for that module and all its submodules.
+
+If you do not redefine the multi-stage initialization functions, the
+default behavior is single-stage initialization: the default
+\ffunc{numInitStages()} returns 1, and the default \ttt{initialize(int stage)}
+simply calls \ffunc{initialize()}.
+
+
+\subsubsection{``End-of-Simulation'' Event}
+
+The task of \ffunc{finish()} is solved in several simulators
+by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event.
+This is not a very good practice because the simulation programmer has to
+code the models (often represented as FSMs) so that they can \textit{always}
+properly respond to end-of-simulation events, in whichever state they are. This
+often makes program code unnecessarily complicated.
+
+This can also be witnessed in the design of the PARSEC\index{PARSEC}
+simulation language (UCLA). Its predecessor Maisie used
+end-of-simulation events, but -- as documented in the PARSEC manual --
+this has led to awkward programming in many cases, so for PARSEC
+end-of-simulation events were dropped in favour of \ffunc{finish()}
+(called \ffunc{finalize()} in PARSEC).
+
+
+\subsubsection{Using initialize() and finish()}
 \label{sec:simple-modules:ctor-dtor-init-finish}
-
-The \ffunc{initialize()} and \ffunc{finish()} methods will be discussed
-in a later section in detail, but because their apparent similarity
-to the constructor and the destructor is prone to cause some confusion,
-we'll briefly cover them here.
 
 The constructor gets called when the module is created, as part of the
 model setup process. At that time, everything is just being built,
@@ -518,7 +645,7 @@ configuration.
     limitations of the C++ language.
 \end{note}
 
-\subsection{An Example}
+\subsection{A Complete Simple Module Example}
 
 The following code is a bit longer but actually useful simple module
 implementation. It demonstrates several of the above concepts, plus
@@ -1316,155 +1443,6 @@ Coroutines are used by a number of other simulation packages:
 \item{Many Java-based simulation libraries are based on Java
     threads.}
 \end{itemize}
-
-
-
-
-\subsection{initialize() and finish()}
-\label{sec:simple-modules:initialize-and-finish}
-
-\subsubsection{Purpose}
-
-
-\ffunc{initialize()} -- to provide place for any user setup code
-
-\ffunc{finish()} -- to provide place where the user can record statistics
-after the simulation has completed
-
-
-\subsubsection{When and How They Are Called}
-
-
-The \ffunc{initialize()} functions of the modules are invoked
-\textit{before} the first event is processed, but \textit{after} the
-initial events (starter messages\index{starter messages}) have been
-placed into the FES\index{FES} by the simulation kernel.
-
-
-Both simple and compound modules have \ffunc{initialize()} functions.
-A compound module's \ffunc{initialize()} function runs
-\textit{before} that of its submodules.
-
-
-The \ffunc{finish()} functions are called when the event
-loop\index{event loop} has terminated, and only if it terminated
-normally (i.e. not with a runtime error).  The calling order is the
-reverse of the order of \ffunc{initialize()}: first submodules, then the
-encompassing compound module. (The bottom line is that at the moment
-there is no ``official'' possibility to redefine \ffunc{initialize()}
-and \ffunc{finish()} for compound modules; the unofficial way is to
-write into the nedtool-generated C++ code. Future versions of {\opp} will
-support adding these functions to compound modules.)
-
-This is summarized in the following pseudocode:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\textit{perform simulation run:}
-    build network
-      (i.e. the system module and its submodules recursively)
-    insert starter messages for all submodules using activity()
-    do callInitialize() on system module
-        \textit{enter event loop // (described earlier)}
-    if (event loop terminated normally) // i.e. no errors
-        do callFinish() on system module
-    clean up
-
-callInitialize()
-\{
-    call to user-defined initialize() function
-    if (module is compound)
-        for (each submodule)
-            do callInitialize() on submodule
-\}
-
-callFinish()
-\{
-    if (module is compound)
-        for (each submodule)
-            do callFinish() on submodule
-    call to user-defined finish() function
-\}
-\end{Verbatim}
-
-
-
-\subsubsection{initialize() vs. Constructor}
-
-
-Usually you should not put simulation-related code into the
-simple module constructor\index{module!constructor}. This is because
-modules often need to investigate their surroundings (maybe
-the whole network) at the beginning of the simulation and save the
-collected info into internal tables.  Code like that cannot be placed
-into the constructor since the network is still being set up when the
-constructor is called.
-
-
-\subsubsection{finish() vs. Destructor}
-
-
-Keep in mind that \ffunc{finish()} is not always called, so it isn't a
-good place for cleanup code which should run every time the module is
-deleted. \ffunc{finish()} is only a good place for writing statistics,
-result post-processing and other operations  which are supposed to run only on
-successful completion. Cleanup code should go into the
-destructor\index{module!destructor}.
-
-
-\subsubsection{Multi-Stage Initialization}
-\label{sec:simple-modules:multi-stage-init}
-
-
-In simulation models, when one-stage
-initialization\index{initialization} provided by \ffunc{initialize()}
-is not sufficient, one can use multi-stage
-initialization\index{initialization!multi-stage}.  Modules have two
-functions which can be redefined by the user:
-
-\begin{cpp}
-void initialize(int stage);
-int numInitStages() const;
-\end{cpp}
-
-At the beginning of the simulation, \ttt{initialize(0)}
-is called for \textit{all} modules, then \ttt{initialize(1)},
-\ttt{initialize(2)}, etc. You can think of it like
-initialization takes place in several ``waves''. For each module,
-\ffunc{numInitStages()} must be redefined to return the number of init
-stages required, e.g. for a two-stage init, \ffunc{numInitStages()}
-should return 2, and \ffunc{initialize(int stage)} must be implemented to
-handle the \textit{stage=0} and \textit{stage=1} cases.
-  \footnote{Note \ttt{const} in the \ttt{numInitStages()} declaration.
-  If you forget it, by C++ rules you create a \textit{different} function
-  instead of redefining the existing one in the base class, thus the
-  existing one will remain in effect and return 1.}
-
-The \ffunc{callInitialize()} function performs the full multi-stage initialization
-for that module and all its submodules.
-
-If you do not redefine the multi-stage initialization functions, the
-default behavior is single-stage initialization: the default
-\ffunc{numInitStages()} returns 1, and the default \ttt{initialize(int stage)}
-simply calls \ffunc{initialize()}.
-
-
-\subsubsection{``End-of-Simulation'' Event}
-
-
-The task of \ffunc{finish()} is solved in several simulators
-by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event.
-This is not a very good practice because the simulation programmer has to
-code the models (often represented as FSMs) so that they can \textit{always}
-properly respond to end-of-simulation events, in whichever state they are. This
-often makes program code unnecessarily complicated.
-
-This can also be witnessed in the design of the PARSEC\index{PARSEC}
-simulation language (UCLA). Its predecessor Maisie used
-end-of-simulation events, but -- as documented in the PARSEC manual --
-this has led to awkward programming in many cases, so for PARSEC
-end-of-simulation events were dropped in favour of \ffunc{finish()}
-(called \ffunc{finalize()} in PARSEC).
 
 
 
