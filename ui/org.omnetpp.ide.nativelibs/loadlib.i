@@ -35,6 +35,22 @@ import org.eclipse.swt.widgets.Display;
           throw e;
       }
       testExceptionHandling();
+      testThreads();
+  }
+
+  private static void testThreads() {
+      // test that exception handling is thread-safe in our shared lib (gcc -mthreads)
+      for (int i=0; i<3; i++) {
+          Thread t = new Thread() {
+              @Override
+              public void run() {
+                  long start = System.currentTimeMillis();
+                  while (System.currentTimeMillis() - start < 50)
+                      testExceptionHandling();
+              }
+          };
+          t.start();
+      }
   }
 
   private static void displayError(final UnsatisfiedLinkError e) {
