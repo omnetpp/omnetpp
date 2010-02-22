@@ -15,24 +15,21 @@ on how to design and code simple modules.
 \section{Simulation Concepts}
 \label{sec:simple-modules:simulation-concepts}
 
-This section contains a very brief introduction into how Discrete
-Event Simulation (DES) works, in order to introduce terms we'll use
-when explaining {\opp} concepts\index{simulation!concepts} and
-implementation.
+This section contains a very brief introduction into how discrete
+event simulation (DES) works, in order to introduce terms.
 
 
 \subsection{Discrete Event Simulation}
 \label{sec:simple-modules:discrete-event-simulation}
 
-A \textit{Discrete Event System} is a system where state changes
+A \textit{discrete event system} is a system where state changes
 (events\index{events}) happen at discrete instances in time, and events take zero time
 to happen. It is assumed that nothing (i.e. nothing interesting)
 happens between two consecutive events, that is, no state change takes
-place in the system between the events (in contrast to
-\textit{continuous} systems where state changes are continuous). Those
-systems that can be viewed as Discrete Event Systems can be modeled
-using Discrete Event Simulation\index{discrete event simulation}.
-(Other systems can be modelled e.g. with continuous simulation models.)
+place in the system between the events. This is in contrast to
+\textit{continuous} systems where state changes are continuous.
+Systems that can be viewed as discrete event systems can be modeled
+using discrete event simulation\index{discrete event simulation}, DES.
 
 For example, computer networks are usually viewed as discrete
 event systems. Some of the events are:
@@ -43,12 +40,11 @@ event systems. Some of the events are:
   \item{expiry of a retransmission timeout}
 \end{itemize}
 
-
 This implies that between two events such as \textit{start of a packet
 transmission} and \textit{end of a packet transmission}, nothing
 interesting happens. That is, the packet's state remains \textit{being
 transmitted}. Note that the definition of ``interesting'' events and states always
-depends on the intent and purposes of the person doing the modeling.
+depends on the intent and purposes of the modeler.
 If we were interested in the transmission of individual bits, we would
 have included something like \textit{start of bit transmission} and
 \textit{end of bit transmission} among our events.
@@ -94,7 +90,7 @@ The first, initialization step usually builds the data structures
 representing the simulation model, calls any user-defined
 initialization code, and inserts initial events\index{initial events}
 into the FES\index{FES} to ensure that the simulation can start. Initialization
-strategy can differ considerably from one simulator to another.
+strategies can differ considerably from one simulator to another.
 
 
 The subsequent loop consumes events from the FES\index{FES} and processes
@@ -1039,7 +1035,7 @@ a transport layer protocol might look like this:
             continue // loop back to while()
         \}
 
-        while(there's more to do)
+        while (there is more to do)
         \{
             send data on network connection
             if (connection broken)
@@ -1071,7 +1067,7 @@ Dynamic module creation will be discussed later.
 There are situations when you certainly \textit{do not want} to use \ffunc{activity()}.
 If your \ffunc{activity()} function contains no \ffunc{wait()} and it has
 only one \ffunc{receive()} call at the top of an infinite loop,
-there's no point in using \ttt{activity()} and the code should be written
+there is no point in using \ttt{activity()} and the code should be written
 with \ttt{handleMessage()}.
 The body of the infinite loop would then become the body to \ffunc{handleMessage()},
 state variables inside \ffunc{activity()} would become data members in
