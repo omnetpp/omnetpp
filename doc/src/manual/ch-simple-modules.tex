@@ -2614,14 +2614,23 @@ three predefined NED channel types:
 Channel classes need to be registered with the \fmac{Define\_Channel()} macro,
 just like simple module classes need \fmac{Define\_Module()}.
 
+The channel base class \cclass{cChannel} inherits from \cclass{cComponent},
+so channels participate in the initialization and finalization protocol
+(\ffunc{initialize()} and \ffunc{finish()}) described in
+\ref{sec:simple-modules:initialize-and-finish}.
+
+The parent module of a channel (as returned by the
+\ffunc{getParentModule()}) is the module that contains
+the connection. If a connection connects two modules that are children of
+the same compound module, the channel's parent is the compound module. If
+the connection connects a compound module to one of its submodules, the
+channel's parent is the compound module.
+
 
 \subsection{The Channel API}
 
-XXX
-
-Channel is a component: initialize(), finish() etc.
-
-The channel API:
+When subclassing \cclass{Channel}, you have to redefine and provide
+implementations for the following pure virtual member functions:
 
 \begin{itemize}
   \item \ffunc[isTransmissionChannel()]{bool isTransmissionChannel() const}
@@ -2629,50 +2638,98 @@ The channel API:
   \item \ffunc[process()]{void process(cMessage *msg, simtime\_t t, result\_t\& result)}
 \end{itemize}
 
-%    /**
-%     * Returns true if the channel models a nonzero-duration transmission,
-%     * that is, sets the duration field of cPacket. Only one transmission
-%     * channel is allowed per connection path (see cGate methods getPreviousGate(),
-%     * getNextGate(), getPathStartGate(), getPathEndGate()).
-%     */
-%    virtual bool isTransmissionChannel() const = 0;
+The first two functions are usually one-liners; the channel behavior is
+encapsulated in the third function, \ffunc{process()}.
 
-%    /**
-%     * For transmission channels: Returns the simulation time
-%     * the sender gate will finish transmitting. If the gate is not
-%     * currently transmitting, the result is unspecified but less or equal
-%     * the current simulation time.
-%     *
-%     * @see isTransmissionChannel(), isBusy(), cDatarateChannel
-%     */
-%    virtual simtime_t getTransmissionFinishTime() const = 0;
-%    //@}
-%
-%    /** @name Channel functionality */
-%    //@{
-%    /**
-%     * This method encapsulates the channel's functionality. The method should
-%     * model the transmission of the given message starting at the given t time,
-%     * and store the results (propagation delay, transmission duration,
-%     * deleteMessage flag) in the result object. Only the relevant fields
-%     * in the result object need to be changed, others can be left untouched.
-%     *
-%     * Transmission duration and bit error modeling only applies to packets
-%     * (i.e. to instances of cPacket, where cMessage's isPacket() returns true),
-%     * it should be skipped for non-packet messages.
-%     *
-%     * If the transmission duration is nonzero, it is the method's responsibility
-%     * to call <tt>setDuration(duration)</tt> on the packet. As a result of bit
-%     * error modeling, the method may set the packet's bit error flag.
-%     *
-%     * If the method sets the deleteMessage flag in the result object, that
-%     * means that the message object should be deleted by the caller; this
-%     * facility can be used to model that the message gets lost in the channel.
-%     */
-%    virtual void process(cMessage *msg, simtime_t t, result_t& result) = 0;
-%
+\subsubsection{Transmission Channels}
 
-TODO explain step by step:
+The first function, \ffunc{isTransmissionChannel()}, should tell whether
+the channel is a \textit{transmission channel}, i.e. one that models
+transmission duration. Transmission channels sets the duration field of
+packets sent through them (see the \ffunc{setDuration()} field of
+\cclass{cPacket}).
+
+The \ffunc{getTransmissionFinishTime()} function is only used with
+transmission channels, and it should return the simulation time the sender
+will finish (or has finished) transmitting. This method is called by
+modules that send on a transmission channel to find out when the channel
+becomes available. The channel's \ffunc{isBusy()} method is implemented
+simply as \ttt{return getTransmissionFinishTime() < simTime()}. For
+non-transmission channels, the \ffunc{getTransmissionFinishTime()} return
+value may be any simulation time which is less than or equals the current
+simulation time.
+
+\subsubsection{The process() Function}
+
+The third function, \ffunc{process()} encapsulates the channel's
+functionality. However, before going into the details of this function
+we need to understand how {\opp} handles message sending on connections.
+
+What happens inside the \ffunc{send()} call is this. {\opp} follows the
+connection path denoted by the \ffunc{getNextGate()} functions of gates,
+until it reaches the target module. At each ``hop'', the corresponding
+connection's channel (if the connection has one) gets a chance to add to
+the message's arrival time (\textit{propagation time modeling}), calculate a
+\textit{transmission duration}, and to modify the message object in various
+ways, such as set the bit error flag in it (\textit{bit error modeling}).
+After processing all hops that way, {\opp} inserts the message object
+into the Future Events Set (FES\index{FES}, see section
+\ref{sec:simple-modules:event-loop}), and the \ffunc{send()} call returns.
+Then {\opp} continues to process events in increasing timestamp order.
+The message will be delivered to the target module's \ffunc{handleMessage()}
+(or \ffunc{receive()}) function when it gets to the front of the FES.
+
+A few more details: a channel may instruct {\opp} to delete the message
+instead of inserting it into the FES; this can be useful to model
+disabled channels, or to model that the message has been lost altogether.
+The \ffunc{getDeliverOnReceptionStart()} flag of the final gate in the path
+will determine whether the transmission duration will be added to the
+arrival time or not. Packet transmissions have been described in section
+\ref{sec:simple-modules:packet-transmission}.
+
+Now, back to the \ffunc{process()} method.
+
+The method gets called as part of the above process, when the message
+is processed at the given hop. The method's arguments are the message
+object, the simulation time the beginning of the message will reach
+the channel (i.e. the sum of all previous propagation delays),
+and a struct in which the method can return the results.
+
+The \cclass{result\_t} struct is an inner type of \cclass{cChannel},
+and looks like this:
+
+\begin{cpp}
+struct result_t {
+    simtime_t delay;     //< propagation delay
+    simtime_t duration;  //< transmission duration
+    bool deleteMessage;  //< whether the channel is losing the message
+};
+\end{cpp}
+
+Plus it has a constructor that initializes all fields to zero; it is left
+out for brevity.
+
+The method should model the transmission of the given message starting at
+the given \textit{t} time, and store the results (propagation delay,
+transmission duration, deletion flag) in the result object. Only the
+relevant fields in the result object need to be changed, others can be left
+untouched.
+
+Transmission duration and bit error modeling only applies to packets (i.e.
+to instances of \cclass{cPacket}, where \cclass{cMessage}'s
+\ffunc{isPacket()} returns true), it should be skipped for non-packet
+messages. If the transmission duration is nonzero, it is the method's
+responsibility to call \ttt{setDuration(duration)} on the packet. As a
+result of bit error modeling, the method may set the packet's bit error
+flag.
+
+If the method sets the \ttt{deleteMessage} flag in the result object, that
+means that the message object should be deleted by the caller; this
+facility can be used to model that the message gets lost in the channel.
+
+\subsection{Channel Examples}
+
+TODO explain
 
 \begin{cpp}
 void cIdealChannel::process(cMessage *msg, simtime_t t, result_t& result)
