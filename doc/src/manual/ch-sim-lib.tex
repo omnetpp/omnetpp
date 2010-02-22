@@ -556,7 +556,7 @@ generates a number with normal distribution and if the result is
 negative, it keeps generating other numbers until the outcome is
 nonnegative.
 
-If the above distributions do not suffice, you can write your own
+If the above distributions don't suffice, you can write your own
 functions\index{distribution!custom}. If you register your functions
 with the \fmac{Register\_Function()} macro, you can use them in NED
 files and ini files too.
@@ -626,7 +626,7 @@ while(!queue.empty())
 
 
 The \ffunc{length()} member function returns the number of items in the
-queue, and \ffunc{empty()} tells whether there's anything in the queue.
+queue, and \ffunc{empty()} tells whether there is anything in the queue.
 
 There are other functions dealing with insertion and removal.  The
 \ffunc{insertBefore()} and \ffunc{insertAfter()} functions insert a
@@ -730,7 +730,7 @@ int index = array.add( p );
 
 
 Adding an object at a given index (if the index is occupied,
-you'll get an error message):
+you will get an error message):
 
 \begin{cpp}
 cPar *p = new cMsgPar("par");
@@ -834,7 +834,7 @@ network in graph form:
 You can specify which modules (either simple or compound) you want to
 include in the graph. The graph will include all connections among the
 selected modules. In the graph, all nodes are at the same level,
-there's no submodule nesting.  Connections which span across compound
+there is no submodule nesting.  Connections which span across compound
 module boundaries are also represented as one graph edge. Graph edges
 are directed, just as module gates are.
 
@@ -1609,7 +1609,7 @@ Detecting the end of the period:
 
 
 Currently one transient detection\index{transient detection} algorithm
-is implemented, i.e.  there's one class derived from
+is implemented, i.e.  there is one class derived from
 \cclass{cTransientDetection}. The \cclass{cTDExpandingWindows} class
 uses the sliding window approach with two windows, and checks the
 difference of the two averages to see if the transient period is over.
@@ -1625,7 +1625,7 @@ void setParameters(int reps=3,
 
 
 Currently one accuracy detection\index{accuracy detection} algorithm
-is implemented, i.e.  there's one class derived from
+is implemented, i.e.  there is one class derived from
 \cclass{cAccuracyDetection}. The algorithm implemented in the
 \cclass{cADByStddev} class is: divide the standard deviation by the
 square of the number of values and check if this is small enough.
@@ -1728,7 +1728,7 @@ value per simulation run. You can use output scalars
 \end{itemize}
 
 Output scalars are recorded with the \ffunc{record()} method of
-\cclass{cSimpleModule}, and you'll usually want to insert this code
+\cclass{cSimpleModule}, and you will usually want to insert this code
 into the \ffunc{finish()} function. An example:
 
 \begin{cpp}
@@ -1816,7 +1816,7 @@ WATCH(config.maxRetries);
 \end{cpp}
 
 When you open an inspector for the simple module in Tkenv and click
-the Objects/Watches tab in it, you'll see your watched variables
+the Objects/Watches tab in it, you will see your watched variables
 and their values there. Tkenv also lets you change the value of a
 watched variable.
 
@@ -1915,7 +1915,7 @@ also have structured watches, available via the following macros:
 \fmac{WATCH\_MAP()}, \fmac{WATCH\_PTRMAP()}.
 
 The \ttt{PTR}-less versions expect the data items ("T") to have
-stream output operators (\ttt{operator <<}), because that's how
+stream output operators (\ttt{operator <<}), because that is how
 they will display them. The \ttt{PTR} versions assume that
 data items are pointers to some type which has \ttt{operator <<}.
 \fmac{WATCH\_PTRMAP()} assumes that only the value type (``second'')
@@ -2126,7 +2126,7 @@ your particular purpose or not. Subclassing \cclass{cOwnedObject}
 generally means you have more code to write (as you \textit{have to}
 redefine certain virtual functions and adhere to conventions)
 and your class will be a bit more heavy-weight.
-However, if you need to store your objects in {\opp} objects like \cclass{cQueue},
+However, if you need to store your objects in {\opp} objects like \cclass{cQueue}
 or you'll want to store {\opp} classes in your object,
 then you \textit{must} subclass from \cclass{cOwnedObject}.
   \footnote{For simplicity, in the these sections ``{\opp} object''
@@ -2155,7 +2155,7 @@ Most classes in the simulation class library are descendants of
 \cclass{cOwnedObject} or a \cclass{cOwnedObject} descendant, you must redefine
 some member functions so that objects of the new type can fully
 co-operate with other parts of the simulation system. A more or less
-complete list of these functions is presented here. You do not need to
+complete list of these functions is presented here. You don't need to
 worry about the length of the list: most functions are not
 absolutely necessary to implement. For example, you do not need to
 redefine \ffunc{forEachChild()} unless your class is a container class.
@@ -2224,10 +2224,10 @@ is used by the Envir library to implement \ffilename{omnetpp.ini} options
 such as \ttt{rng-class="..."} or \ttt{scheduler-class="..."}.
 (see Chapter \ref{cha:plugin-exts})
 
-For example, an omnetpp.ini entry such as
+For example, an \ffilename{omnetpp.ini} entry such as
 
 \begin{inifile}
-rng-class="cMersenneTwister"
+rng-class = "cMersenneTwister"
 \end{inifile}
 
 would result in something like the following code to be executed
@@ -2290,7 +2290,7 @@ class NewClass : public cOwnedObject
 \end{cpp}
 
 We'll discuss the implementation method by method.
-Here's the top of the \ttt{.cc} file:
+Here is the top of the \ttt{.cc} file:
 
 \begin{cpp}
 //
@@ -2403,7 +2403,7 @@ The assignment operator copies contents of the \ttt{other} object
 to this one, except the name string. It should always return
 \ttt{*this}.
 
-First, we should make sure we're not trying to copy the object
+First, we should make sure we are not trying to copy the object
 to itself, because it might be disastrous. If so (that is,
 \ttt{\&other==this}), we return immediately without doing anything.
 
@@ -2411,7 +2411,7 @@ The base class part is copied via invoking the assignment operator of
 the base class.
 
 New data members are copied in the normal C++ way. If the class
-contains pointers, you'll most probably want to make a deep copy of
+contains pointers, you will most probably want to make a deep copy of
 the data where they point, and not just copy the pointer values.
 
 If the class contains pointers to {\opp} objects, you need
@@ -2562,7 +2562,7 @@ The default behaviour of \cclass{cQueue} and \cclass{cArray} is
 to take ownership of the objects inserted.
 This behavior can be changed via the \textit{takeOwnership} flag.
 
-Here's what the \textit{insert} operation of \cclass{cQueue} (or \cclass{cArray}) does:
+Here is what the \textit{insert} operation of \cclass{cQueue} (or \cclass{cArray}) does:
 \begin{itemize}
     \item{insert the object into the internal array/list data structure}
 
@@ -2588,7 +2588,7 @@ void cQueue::insert(cOwnedObject *obj)
 
 \subsubsection{Removal}
 
-Here's what the \textit{remove} family of operations in \cclass{cQueue}
+Here is what the \textit{remove} family of operations in \cclass{cQueue}
 (or \cclass{cArray}) does:
 
 \begin{itemize}

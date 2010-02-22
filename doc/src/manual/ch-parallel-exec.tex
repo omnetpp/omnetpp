@@ -36,7 +36,7 @@ above:
     LPs until $t+\Delta t$ simulation time, it may advance until
     $t+\Delta t$ without the need for external synchronization.
     Conservative simulation tends to converge to sequential simulation
-    (slowed down by communication between LPs) if there's not
+    (slowed down by communication between LPs) if there is not
     enough parallelism in the model, or parallelism is not exploited
     by sending a sufficient number of `null' messages.}
 
@@ -412,7 +412,7 @@ fname-append-host = true
 \end{inifile}
 
 It will cause the host names to be appended to the names of
-all output vector files, so that partitions do not overwrite each other's
+all output vector files, so that partitions don't overwrite each other's
 output files. (See section \ref{sec:run-sim:using-shared-filesystems})
 
 

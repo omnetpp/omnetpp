@@ -92,7 +92,7 @@ other system like SQL databases, and so on.
 In this section we introduce the NED language via a complete and
 reasonably real-life example: a communication network.
 
-Our hypothetical network consists of nodes. One each node there's an
+Our hypothetical network consists of nodes. One each node there is an
 application running which generates packets at random intervals.
 The nodes are routers themselves as well. We assume that the application
 uses datagram-based communication, so that we can leave out the
@@ -391,7 +391,7 @@ simple Queue
 \end{ned}
 
 Both the \fkeyword{parameters} and \fkeyword{gates} sections are optional, that is,
-they can be left out if there's no parameter or gate. In addition, the
+they can be left out if there is no parameter or gate. In addition, the
 \fkeyword{parameters} keyword itself is optional too, it can be left out
 even if there are parameters or properties.
 
@@ -540,7 +540,7 @@ channel with the connection; the channel type may also come from a
 parameter.
 
 Module and channel types only used locally can be defined in the
-\ttt{types} section as inner types, so that they don't pollute the
+\ttt{types} section as inner types, so that they do not pollute the
 namespace.
 
 Compound modules may be extended via subclassing. Inheritance may add new
@@ -1953,7 +1953,7 @@ import inet.**.RoutingTable;
 \end{ned}
 
 If an import explicitly names a type with its exact fully qualified name,
-then that type must exist, otherwise it's an error. Imports containing
+then that type must exist, otherwise it is an error. Imports containing
 wildcards are more permissive, it is allowed for them not to match any
 existing NED type (although that might generate a warning.)
 
@@ -1976,7 +1976,7 @@ to be resolved differently. What NED does is this: it determines which
 interface the module or channel type must implement (i.e. \ttt{... like INode}),
 and then collects the types that have the given simple name AND implement
 the given interface. There must be exactly one such type, which is then used.
-If there's none or there's more than one, it will be reported as an error.
+If there is none or there are more than one, it will be reported as an error.
 
 Let us see the following example:
 
@@ -1993,14 +1993,14 @@ module MobileHost
 
 and suppose that the following modules implement the \ttt{IMobility} module
 interface: \ttt{inet.mo\-bility.Random\-Walk}, \ttt{inet.adhoc.RandomWalk},
-\ttt{inet.mobility.MassMobility}; and suppose that there's also a type
+\ttt{inet.mobility.MassMobility}; and suppose that there is also a type
 called \ttt{inet.examples.adhoc.MassMobility} but it does not implement the
 interface.
 
 So if \ttt{mobilityType="MassMobility"}, then
 \ttt{inet.mobility.MassMobility} will be selected; the other
 \ttt{MassMobility} doesn't interfere. However, if
-\ttt{mobilityType="RandomWalk"}, then it's an error because there're two
+\ttt{mobilityType="RandomWalk"}, then it is an error because there are two
 matching \ttt{RandomWalk} types. Both \ttt{RandomWalk}'s can still be used,
 but one must explicitly choose one of them by providing a package name:
 \ttt{mobility\-Type="inet.ad\-hoc.Random\-Walk"}.

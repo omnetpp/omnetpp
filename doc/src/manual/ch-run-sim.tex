@@ -62,10 +62,11 @@ The NED path can be specified in several ways:
 \end{itemize}
 
 NED path resolution rules are as follows:
+
 \begin{itemize}
   \item {\opp} checks for NED path specified on the command line with the \ttt{-n} option
   \item if not found on the command line, it checks for the NEDPATH environment variable
-  \item the \fconfig{ned-path} entry from the ini file gets appended to the result of the above steps
+  \item the \fconfig{ned-path} option value from the ini file gets appended to the result of the above steps
   \item if the result is still empty, it falls back to "." (the current directory)
 \end{itemize}
 
@@ -380,7 +381,7 @@ The second line displays info about simulation performance:
    \item{\ttt{ev/simsec} is the \textit{event density}: how many events are
      there per simulated second. Event density only depends on the simulation model,
      regardless of the hardware used to simulate it: in a cell-level ATM simulation
-     you'll have very hight values ($10^9$), while in a bank teller simulation
+     you will have very hight values ($10^9$), while in a bank teller simulation
      this value is probably well under 1. It also depends on the size of your
      model: if you double the number of modules in your model, you can expect
      the event density double, too.}
@@ -473,7 +474,7 @@ Appendix \ref{cha:config-options} for the list of possible configuration options
 \section{Batch Execution}
 \label{sec:ch-run-sim:batch-execution}
 
-Once your model works reliably, you'll usually want to run several
+Once your model works reliably, you will usually want to run several
 simulations. You may want to run the model with various
 parameter settings, or you may want \textit{(should want?)} to
 run the same model with the same parameter settings but with
@@ -487,7 +488,7 @@ a natural language choice to write the control script in,
 but other languages like Perl, Matlab/Octave, Tcl, Ruby might also have
 justification for this purpose.
 
-Of course before running simulation batches you must set a condition to
+Before running simulation batches, you must set a condition to
 stop your simulation. This is usually a time limit set by the
 \fconfig{sim-time-limit} configuration option, but you can limit your simulation
 by using wall clock time (\fconfig{cpu-time-limit}) or by directly ending a
@@ -495,16 +496,16 @@ simulation with an API call if some condition is true.
 
 \subsection{Using Cmdenv}
 
-  To execute more than one run using the Cmdenv use the \ttt{-r} option
-  and specify the runs in a comma separated format 1,2,4,9..11 or you may leave
-  out the \ttt{-r} option to execute all runs in the experiment.
+To execute more than one run using the Cmdenv use the \ttt{-r} option
+and specify the runs in a comma separated format \ttt{1,2,4,9..11} or you may leave
+out the \ttt{-r} option to execute all runs in the experiment.
 
 \begin{warning}
-  Although it is very convenient, we do not recommended to use this method for
-  running simulation batches. Specifying more than one runnumber
-  would run these simulations in the same process. This method is more prone to C++ programming
+  Although it is very convenient, we do not recommend thay you use this method for
+  running simulation batches. Specifying more than one run number
+  would run those simulations in the same process. This method is more prone to C++ programming
   errors. A failure in a single run may stop and kill all the runs following it. If you want
-  to execute more than one run we recommend to run each of them in a separate process.
+  to execute more than one run, we recommend to run each of them in a separate process.
   Use the \fprog{opp\_runall} for this purpose.
 \end{warning}
 
@@ -620,7 +621,7 @@ one has to carefully consider the following:
 
 \begin{itemize}
   \item{When is the initial transient over, when can we start
-    collecting data? We usually do not want to include the
+    collecting data? We usually don't want to include the
     initial transient when the simulation is still ``warming up.''}
   \item{When can we stop the simulation? We want to wait long enough
     so that the statistics we are collecting can ``stabilize'',
@@ -900,7 +901,7 @@ $ ulimit -s
 262144
 \end{commandline}
 
-If you do not want to go through the above process at each login, you
+If you don't want to go through the above process at each login, you
 can change the limit in the PAM configuration files. In Redhat Linux
 (maybe other systems too), add the following line to
 \ttt{/etc/pam.d/login}:
@@ -997,7 +998,7 @@ Check the following if you think your simulation is running too slow.
 \begin{itemize}
   \item Turn on express mode with the \ttt{cmdenv-express-mode=true} configuration option.
   \item Be sure that event logging is turned off (\ttt{record-eventlog=false} configuration option).
-  \item Turn of vector file recording if you do not absolutely need it (\ttt{**.vector-recording=false}).
+  \item Turn of vector file recording if you don't absolutely need it (\ttt{**.vector-recording=false}).
   \item If you are running under Tkenv disable animation features, close inspectors,
         hide the timeline, hide object tree, turn off log filtering.
   \item Compile your code as release instead of debug (in some cases this can give you 5x speedup)

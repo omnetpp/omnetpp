@@ -101,7 +101,7 @@ program from scratch, i.e. starting from a \ffunc{main()} function.
 
 \subsection{The main() Function}
 
-Here's an minimalistic program that initializes the simulation library,
+Here is an minimalistic program that initializes the simulation library,
 and runs two simulations. In later sections we'll go through details
 of the code and discuss how to elaborate it.
 
@@ -267,7 +267,7 @@ pure virtual methods, with either an empty body, or with a body that throws
 an \ttt{"unsupported method called"} exception. You can redefine methods
 to be more sophisticated later on, as you are progressing with the development.
 
-One method that you surely want to redefine is \ffunc{readParameter()}; that's
+One method that you surely want to redefine is \ffunc{readParameter()}; that is
 how module parameters get their values. For debugging purposes, you may also
 redefine \ffunc{sputn()} where module log messages are written.
 \cclass{cNullEnvir} only provides one random number generator, so your
@@ -278,7 +278,7 @@ and/or the output vector related methods. Other \cclass{cEnvir} methods
 are invoked from the simulation kernel to inform the environment about
 messages being sent, events scheduled and cancelled, modules created and so on.
 
-The following example shows a minimalistic environment class that's enough
+The following example shows a minimalistic environment class that is enough
 to get started:
 
 \begin{cpp}
@@ -588,7 +588,7 @@ against concurrent access.
 
 % --------------------
 %
-% What you'll absolutely need for a simulation to run is the Sim library. You
+% What you will absolutely need for a simulation to run is the Sim library. You
 % probably do not want to keep the appearance of the simulation program, so
 % you do not want Cmdenv and Tkenv. You may or may not want to keep Envir.
 % You can keep Envir if its philosophy and the infrastructure it provides

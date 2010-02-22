@@ -98,7 +98,7 @@ simulation run, one of the \textit{named configurations} get
 activated, and from then on, all queries into the configuration
 operate on the \textit{active named configuration} only.
 
-It practice, you'll probably use the \cclass{SectionBasedConfiguration}
+It practice, you will probably use the \cclass{SectionBasedConfiguration}
 class (in \ttt{src/envir}) or subclass from it, because it already
 implements a lot of functionality that otherwise you would have to.
 
@@ -344,7 +344,7 @@ and so on.
 
 User interfaces must implement (i.e. subclass from) \cclass{cRunnableEnvir},
 and must be registered to {\opp} with the \fmac{Register\_OmnetApp()} macro.
-In practice, you'll almost always want to subclass \cclass{EnvirBase}
+In practice, you will almost always want to subclass \cclass{EnvirBase}
 instead of \cclass{cRunnableEnvir}, because \cclass{EnvirBase} already
 implements lots of functionality that otherwise you'd have to.
 
@@ -379,7 +379,7 @@ activated), and a description string (for help and other purposes).
 
 The C++ class should implement all methods left pure virtual in
 \cclass{EnvirBase}, and possibly others if you want to customize
-their behaviour. One method that you'll surely want to reimplement is
+their behaviour. One method that you will surely want to reimplement is
 \ttt{run()} -- this is where your user interface runs. When this method
 exits, the simulation program exits.
 

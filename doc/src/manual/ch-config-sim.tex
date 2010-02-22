@@ -205,11 +205,11 @@ ini files.
 
 Simulations get input via module parameters, which can be assigned a
 value in NED files or in \ffilename{omnetpp.ini} -- in this order. Since parameters
-assigned in NED files cannot be overridden in omnetpp.ini, one can
+assigned in NED files cannot be overridden in \ffilename{omnetpp.ini}, one can
 think about them as being ``hardcoded''. In contrast, it is easier
-and more flexible to maintain module parameter settings in omnetpp.ini.
+and more flexible to maintain module parameter settings in \ffilename{omnetpp.ini}.
 
-In omnetpp.ini, module parameters are referred to by their full paths
+In \ffilename{omnetpp.ini}, module parameters are referred to by their full paths
 or hierarchical names. This name consists of the dot-separated list of
 the module names (from the top-level module down to the module containing
 the parameter), plus the parameter name
@@ -379,7 +379,7 @@ simulation program in each iteration.
 {\opp} 4.0 largely automates this process, and eliminates the need for
 writing batch execution scripts. It is the ini file where the user can
 specify iterations over various parameter settings.
-Here's an example:
+Here is an example:
 
 \begin{inifile}
 [Config AlohaStudy]
@@ -395,7 +395,7 @@ interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
 How does it get run? First of all, Cmdenv with the '-x' option will tell you how many
-simulation runs a given section expands to. (You'll of course use Cmdenv for batch runs,
+simulation runs a given section expands to. (You will of course use Cmdenv for batch runs,
 not Tkenv.)
 
 \begin{commandline}
@@ -519,7 +519,7 @@ the left brace with a backslash: \ttt{\${\textbackslash}\{..\}}.
 \subsection{Named Iteration Variables}
 
 You can assign names to iteration variables, which has the advantage
-that you'll see meaningful names instead of \ttt{\$0} and
+that you will see meaningful names instead of \ttt{\$0} and
 \ttt{\$1} in the Cmdenv output, and also lets you refer to the variables at
 more than one place in the ini file. The syntax is
 \ttt{\$\{<varname>=<iteration>\}}, and variables can be referred to simply as
@@ -641,7 +641,7 @@ seed-set = ${5,6,8..11}
 \end{inifile}
 
 In this case, the \ttt{repeat=} key should be left out, as \ttt{seed-set=}
-already defines an iteration and there's no need for an extra loop.
+already defines an iteration and there is no need for an extra loop.
 
 It is of course also possible to manually specify individual seeds for
 simulations. This is rarely necessary, but we can use it here to
@@ -856,8 +856,8 @@ This mapping allows variance reduction techniques to be applied to
 
 \subsection{Automatic Seed Selection}
 
-Automatic seed selection gets used for an RNG if you don't explicitly
-specify seeds in omnetpp.ini. Automatic and manual seed selection can
+Automatic seed selection gets used for an RNG if you do not explicitly
+specify seeds in \ffilename{omnetpp.ini}. Automatic and manual seed selection can
 co-exist: for a particular simulation, some RNGs can be configured
 manually, and some automatically.
 
@@ -868,8 +868,8 @@ If the run number or the RNG number is different, {\opp} does its best
 to choose different seeds which are also sufficiently apart in the RNG's sequence
 so that the generated sequences don't overlap.
 
-The run number can be specified either in in omnetpp.ini (e.g. via the
-\ttt{cmdenv-runs-to-execute=} entry) or on the command line:
+The run number can be specified either in in \ffilename{omnetpp.ini} (e.g. via the
+\ttt{cmdenv-runs-to-execute=} option) or on the command line:
 
 \begin{commandline}
 ./mysim -r 1
