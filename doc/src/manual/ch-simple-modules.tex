@@ -2758,6 +2758,10 @@ facility can be used to model that the message gets lost in the channel.
 
 XXX why no timers: efficiency. one can program simple modules that act like channels.
 
+XXX cGate: getTransmissionFinishTime() just delegates to the similar
+method of cChannel, so caution: if there's a delay before the transmission
+channel in the path, the delay should be manually deduced! or better,
+avoid delay channels in front of a transmission channel in a path.
 
 \subsection{Channel Examples}
 
@@ -2811,6 +2815,16 @@ simtime_t cDatarateChannel::getTransmissionFinishTime() const
     return txfinishtime;
 }
 \end{cpp}
+
+\cclass{cDatarateChannel}'s \ffunc{process()} method makes use of
+the \ttt{isDisabled}, \ttt{datarate}, \ttt{ber} and \ttt{per} data
+members, which are also kept up to date with the help of
+\ffunc{handleParameterChange()}. It ensures that no packet gets
+transmitted while a previous one is still being transmitted.
+It also sets the packet's \textit{duration} field, making sure
+that it has not been set before.
+
+FIXME XXX TODO ez igy egy eleg szar design. cGate-nek kellene lecsekkelnie, hogy ez a channel transmissionchannel-e, es minden boilerplate-et megcsinalni sajat maga. (pl packet->setDuration()-t is!)
 
 \begin{cpp}
 void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
