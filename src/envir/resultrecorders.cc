@@ -97,7 +97,7 @@ void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signal
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
+    cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
     if (v)
         maybeCollect(v->getSignalTime(signalID), v->getSignalValue(signalID));
     else
@@ -125,7 +125,7 @@ void VectorRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
 void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
     // copied from base class to add monotonicity check
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
+    cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
     if (v) {
         simtime_t t = v->getSignalTime(signalID);
         if (t < lastTime) {
@@ -157,9 +157,9 @@ void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cons
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    // if it is a cISignalValue, we should use its time for checking warm-up period;
+    // if it is a cITimestampedValue, we should use its time for checking warm-up period;
     // base class method overridden to spare call to getSignalValue()
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
+    cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
     if (v)
         maybeCollect(v->getSignalTime(signalID), 0.0); // dummy value
     else

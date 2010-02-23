@@ -42,10 +42,10 @@ typedef int simsignal_t;
  *
  * @ingroup Signals
  */
-class SIM_API cISignalValue
+class SIM_API cITimestampedValue
 {
     public:
-        virtual ~cISignalValue() {}
+        virtual ~cITimestampedValue() {}
 
         /**
          * The signal value to be recorded. The signalID argument allows
@@ -68,14 +68,14 @@ class SIM_API cISignalValue
  *
  * @ingroup Signals
  */
-class SIM_API cSignalValue : public cObject, cISignalValue, noncopyable
+class SIM_API cTimestampedValue : public cObject, cITimestampedValue, noncopyable
 {
     public:
         simtime_t time;
         double value;
     public:
-        cSignalValue() {}
-        cSignalValue(simtime_t t, double v) {time = t; value = v;}
+        cTimestampedValue() {}
+        cTimestampedValue(simtime_t t, double v) {time = t; value = v;}
         virtual simtime_t getSignalTime(simsignal_t) {return time;}
         virtual double getSignalValue(simsignal_t) {return value;}
 };

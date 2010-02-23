@@ -4256,14 +4256,14 @@ timestamps.
 To emit a value with a different timestamp, an object containing
 a $(timestamp, value)$ pair needs to be filled in, and emitted using
 the \ffunc{emit(simsignal\_t, cObject *)} method. The class is called
-\cclass{cSignalValue}, and it simply has two public data members called
+\cclass{cTimestampedValue}, and it simply has two public data members called
 \ttt{time} and \ttt{value}, with types \ttt{simtime\_t} and \ttt{double}.
 It also has a convenience constructor taking these two values.
 
 \begin{note}
-\cclass{cSignalValue} is not part of the signal mechanism. Instead,
+\cclass{cTimestampedValue} is not part of the signal mechanism. Instead,
 the result recording listeners provided by {\opp} have been written
-in a way so that they understand \cclass{cSignalValue}, and know how
+in a way so that they understand \cclass{cTimestampedValue}, and know how
 to handle it.
 \end{note}
 
@@ -4272,11 +4272,11 @@ An example usage:
 \begin{cpp}
 simtime_t frameReceptionStartTime = ...;
 double receivePower = ...;
-cSignalValue tmp(frameReceptionStartTime, receivePower);
+cTimestampedValue tmp(frameReceptionStartTime, receivePower);
 emit(recvPowerSignal, &tmp);
 \end{cpp}
 
-If performance is critical, the \cclass{cSignalValue} object may be
+If performance is critical, the \cclass{cTimestampedValue} object may be
 made a class member or a static variable to eliminate object
 construction/destruction time.\footnote{It is safe to use a static
 variable here because the simulation program is single-threaded,
@@ -4295,20 +4295,20 @@ listeners:
 
 \begin{itemize}
   \item Strings are recorded as 1.0, except for \ttt{NULL} which is recorded as 0.0;
-  \item Objects that can be cast to \cclass{cISignalValue} are recorded
+  \item Objects that can be cast to \cclass{cITimestampedValue} are recorded
      using the \ffunc{getSignalTime()} and \ffunc{getSignalValue()}
      methods of the class;
   \item Other objects are recorded as 1.0, except for \ttt{NULL} pointers which
      are recorded as 0.0.
 \end{itemize}
 
-\cclass{cISignalValue} is a C++ interface that may be used as an additional
+\cclass{cITimestampedValue} is a C++ interface that may be used as an additional
 base class for any class. It is declared like this:
 
 \begin{cpp}
-class cISignalValue {
+class cITimestampedValue {
     public:
-        virtual ~cISignalValue() {}
+        virtual ~cITimestampedValue() {}
         virtual double getSignalValue(simsignal_t signalID) = 0;
         virtual simtime_t getSignalTime(simsignal_t signalID);
 };
