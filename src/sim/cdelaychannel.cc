@@ -72,7 +72,7 @@ void cDelayChannel::setDisabled(bool d)
 void cDelayChannel::process(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
-    result.deleteMessage = (flags & FL_ISDISABLED);
+    result.discard = (flags & FL_ISDISABLED);
 
     // propagation delay modeling
     result.delay = delay;

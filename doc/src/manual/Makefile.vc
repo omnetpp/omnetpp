@@ -54,9 +54,8 @@ SVGPICS = \
         figures\simple-gates.svg \
         figures\over-modules.svg \
         figures\simlib-histogramcells.svg \
-        figures\simple-messagesend.svg \
         figures\simlib-histogramrange.svg \
-        figures\simple-transmission.svg \
+        figures\transmission.svg \
         figures\parsim-arch.svg \
         figures\simlib-histogramsetup.svg
 

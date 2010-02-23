@@ -2450,6 +2450,11 @@ be used to get notified about topology changes.
 
 \subsubsection{Receiving a Packet}
 
+As a result of error modeling in the channel, the packet may arrive
+with the \textit{bit error} flag set (\ffunc{hasBitError() method}.
+It is the receiver module's responsibility to examine this flag
+and take appropriate action (i.e. discard the packet).
+
 Normally the packet object gets delivered to the destination module
 at the simulation time that corresponds to finishing the reception
 of the message (ie. the arrival of its last bit). However, the receiver
@@ -2466,6 +2471,14 @@ that gate at the simulation time that corresponds to the
 beginning of the reception process.
 \ffunc{getDeliverOnReceptionStart()} only needs to be called once,
 so it is usually done in the \ffunc{initialize()} method of the module.
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics{figures/transmission}
+\caption{Packet transmission}
+\label{fig:ch-simple-modules:transmission}
+\end{center}
+\end{figure}
 
 When a packet gets delivered to the module, the packet's
 \ffunc{isReceptionStart()} method can be called to determine
@@ -2497,6 +2510,26 @@ Note that this works with wireless connections (\ffunc{sendDirect()})
 as well; there, the duration is an argument to the \ffunc{sendDirect()}
 call.
 
+
+\subsubsection{Implementation of Message Sending}
+
+Message sending is implemented like this: the arrival time\index{arrival time}
+and the bit error\index{bit error} flag of a message are calculated right inside
+the \ffunc{send()} call, then the message gets inserted into the FES\index{FES}
+with the calculated arrival time. The message does \textit{not} get scheduled
+individually for each link. This implementation was chosen because of its
+run-time efficiency.
+
+\begin{note}
+   The consequence of this implementation is that any change in the
+   channel's parameters (delay, data rate, bit error rate, etc.) will only affect
+   messages \textit{sent} after the change. Messages already underway will not
+   be influenced by the change.
+
+   This is not a huge problem in practice, but if it is important to model
+   channels with changing parameters, the solution is to insert simple modules
+   into the path to ensure strict scheduling.
+\end{note}
 
 
 \subsection{Receiving Messages with activity()}
@@ -2696,9 +2729,9 @@ and looks like this:
 
 \begin{cpp}
 struct result_t {
-    simtime_t delay;     //< propagation delay
-    simtime_t duration;  //< transmission duration
-    bool deleteMessage;  //< whether the channel is losing the message
+    simtime_t delay;     // propagation delay
+    simtime_t duration;  // transmission duration
+    bool discard;        // whether the channel has lost the message
 };
 \end{cpp}
 
@@ -2719,13 +2752,22 @@ responsibility to call \ttt{setDuration(duration)} on the packet. As a
 result of bit error modeling, the method may set the packet's bit error
 flag.
 
-If the method sets the \ttt{deleteMessage} flag in the result object, that
-means that the message object should be deleted by the caller; this
+If the method sets the \ttt{discard} flag in the result object, that
+means that the message object should be deleted by {\opp}; this
 facility can be used to model that the message gets lost in the channel.
+
+XXX why no timers: efficiency. one can program simple modules that act like channels.
+
 
 \subsection{Channel Examples}
 
-TODO explain
+To illustrate writing channels, we look at how the built-in channel
+types are implemented.
+
+\cclass{cIdealChannel} lets through messages and packets without
+any delay or change. Its \ffunc{isTransmissionChannel()} method returns
+\ttt{false}, \ffunc{getTransmissionFinishTime()} returns $0s$, and the
+body of its \ffunc{process()} method is empty:
 
 \begin{cpp}
 void cIdealChannel::process(cMessage *msg, simtime_t t, result_t& result)
@@ -2733,16 +2775,40 @@ void cIdealChannel::process(cMessage *msg, simtime_t t, result_t& result)
 }
 \end{cpp}
 
-TODO simplify: read params in-place, and explain that the normal implementations cache param values, and override paramChanged() to track changes
+\cclass{cDelayChannel} implements propagation delay, and it can be
+disabled; in disabled state, messages sent though it will be discarded.
+This class still models zero transmission duration, so its
+\ffunc{isTransmissionChannel()} and \ffunc{getTransmissionFinishTime()}
+methods still return \ttt{false} and $0s$. The \ffunc{process()} method
+sets the appropriate fields in the \cclass{result\_t} struct:
 
 \begin{cpp}
 void cDelayChannel::process(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
-    result.deleteMessage = (flags & FL_ISDISABLED);
+    result.discard = isDisabled;
 
     // propagation delay modeling
     result.delay = delay;
+}
+\end{cpp}
+
+The \ffunc{handleParameterChange()} method is also redefined, so that
+the channel can update its internal \ttt{delay} and \ttt{isDisabled}
+data members if the corresponding channel parameters change during simulation.
+\footnote{This code is a little simplified; the actual code uses a bit
+in a bitfield to store the value of \ttt{isDisabled}.}
+
+\cclass{cDatarateChannel} is different. It performs model packet duration
+(duration is calculated from the data rate and the length of the packet),
+so \ffunc{isTransmissionChannel()} returns \ttt{true}.
+\ffunc{getTransmissionFinishTime()} returns the value of a \ttt{txfinishtime}
+data member, which gets updated after every packet.
+
+\begin{cpp}
+simtime_t cDatarateChannel::getTransmissionFinishTime() const
+{
+    return txfinishtime;
 }
 \end{cpp}
 
@@ -2750,30 +2816,20 @@ void cDelayChannel::process(cMessage *msg, simtime_t t, result_t& result)
 void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
-    if (flags & FL_ISDISABLED)
-    {
-        result.deleteMessage = true;
+    if (isDisabled) {
+        result.discard = true;
         return;
     }
 
     // channel must be idle
     if (txfinishtime > t)
-        throw cRuntimeError("Error sending message (%s)%s on gate %s: gate is currently "
-                            "busy with an ongoing transmission -- please rewrite the sender "
-                            "simple module to only send when the previous transmission has "
-                            "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "
-                            "and possibly a cQueue for storing messages waiting to be transmitted",
-                            msg->getClassName(), msg->getFullName(), getSourceGate()->getFullPath().c_str());
+        throw cRuntimeError(this, "Channel is currently busy...");
 
     // datarate modeling
-    if ((flags & FL_DATARATE_NONZERO) && msg->isPacket())
-    {
+    if (datarate!=0 && msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
-        if (pkt->getDuration() != SIMTIME_ZERO)
-            throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
-                "may be more than one channel with data rate in the connection path, or "
-                "it was sent with a sendDirect() call that specified duration as well",
-                pkt->getClassName(), pkt->getName());
+        if (pkt->getDuration() != 0)
+            throw cRuntimeError(this, "Packet already has a duration set...");
         simtime_t duration = pkt->getBitLength() / datarate;
         pkt->setDuration(duration);
         result.duration = duration;
@@ -2787,127 +2843,16 @@ void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
     result.delay = delay;
 
     // bit error modeling
-    if ((flags & (FL_BER_NONZERO | FL_PER_NONZERO)) && msg->isPacket())
+    if ((ber!=0 || per!=0) && msg->isPacket())
     {
         cPacket *pkt = (cPacket *)msg;
-        if (flags & FL_BER_NONZERO)
-            if (dblrand() < 1.0 - pow(1.0-ber, (double)pkt->getBitLength()))
-                pkt->setBitError(true);
-        if (flags & FL_PER_NONZERO)
-            if (dblrand() < per)
-                pkt->setBitError(true);
+        if (ber!=0 && dblrand() < 1.0 - pow(1.0-ber, (double)pkt->getBitLength())
+            pkt->setBitError(true);
+        if (per!=0 && dblrand() < per)
+            pkt->setBitError(true);
     }
 }
 \end{cpp}
-
-why no timers: then it would become a simple module
-
-
-\subsection{Junk}  XXX FIXME
-
-
-\subsubsection{Delay, Data Rate, Bit Error Rate, Packet Error Rate}
-
-%% FIXME revise!
-
-Connections can be assigned three parameters, which facilitate
-the modeling of communication networks, but can be useful for
-other models too:
-\begin{itemize}
-  \item{propagation delay (sec)\index{channel!delay}}
-  \item{bit error rate (errors/bit)\index{channel!ber}}
-  \item{data rate (bits/sec)\index{channel!datarate}}
-\end{itemize}
-
-
-Each of these parameters is optional. One can specify link parameters
-individually for each connection, or define link types (also
-called \textit{channel} \textit{types}) once and use them throughout the
-whole model.
-
-The \textit{propagation delay} is the amount of time the arrival of
-the message is delayed by when it travels through the channel.
-Propagation delay is specified in seconds.
-
-The \textit{bit error rate} has influence on the transmission of messages
-through the channel. The bit error rate (\textit{ber}) is the probability that
-a bit is incorrectly transmitted. Thus, the probability that
-a message of \textit{n} bits length is transferred without bit errors is:\\
-
-$P_{no bit error} = (1 - {ber})^{length}$
-
-The message has an error flag which is set in case of transmission
-errors.
-
-The \textit{data rate} is specified in bits/second, and it is used
-for transmission delay calculation. The sending time of the message
-normally corresponds to the transmission of the first bit, and
-the arrival time of the message corresponds to the reception
-of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=4.301in, height=2.417in]{figures/simple-transmission}
-\caption{Message transmission}
-\label{fig:ch-overview:message-transm}
-\end{center}
-\end{figure}
-
-XXX ?
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=3.330in, height=2.692in]{figures/simple-messagesend}
-\caption{Message sending over multiple channels}
-\label{fig:ch-overview:msg-multiple-ch}
-\end{center}
-\end{figure}
-
-
-\subsubsection{Multiple Transmissions on Links}
-
-If a data rate\index{data rate} is specified for a connection, a message
-will have a certain nonzero transmission time\index{transmission
-  time}, depending on the length of the connection. This implies that
-a message that is passsing through an output gate, ``reserves'' the gate
-for a given period (``it is being transmitted'').
-
-While a message is under transmission, other messages have to wait
-until the transmission is completed. The module sends another message while the
-gate is busy, a runtime error will be thrown.
-
-The {\opp} class library provides functions to check whether a certain
-output gate is transmitting and find out when when it finishes transmission.
-
-\begin{note}
-   In {\opp} versions prior to 4.0, sending on a busy gate was permitted, and
-   messages got implicitly queued up. The behaviour of the simulation kernel
-   was changed because in practice, sending on a busy gate was more often result
-   of a programming error than calculated behaviour.
-\end{note}
-
-
-\subsubsection{Implementation of Message Sending}
-
-Message sending is implemented like this: the arrival time\index{arrival time}
-and the bit error\index{bit error} flag of a message are calculated right inside
-the \ffunc{send()} call, then the message gets inserted into the FES\index{FES}
-with the calculated arrival time. The message does \textit{not} get scheduled
-individually for each link. This implementation was chosen because of its
-run-time efficiency.
-
-\begin{note}
-   The consequence of this implementation is that any change in the
-   channel's parameters (delay, bit rate, bit error rate) will only affect
-   messages \textit{sent} after the change. Messages already under way will not
-   be influenced by the change.
-
-   This is not a huge problem in practice, but if it is important to model
-   channels with changing parameters, the solution is to insert simple modules
-   into the path to ensure strict scheduling.
-\end{note}
-
-
 
 
 

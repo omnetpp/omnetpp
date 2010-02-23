@@ -427,7 +427,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
                                               "a dynamically created compound module that contains it?)");
             cChannel::result_t tmp;
             channelp->process(msg, t, tmp);
-            if (tmp.deleteMessage)
+            if (tmp.discard)
                 return false;
             EVCB.messageSendHop(msg, this, tmp.delay, tmp.duration);
             return nextgatep->deliver(msg, t + tmp.delay);

@@ -61,10 +61,10 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * The constructor initializes all fields to zero.
      */
     struct result_t {
-        result_t() : delay(SIMTIME_ZERO), duration(SIMTIME_ZERO), deleteMessage(false) {}
+        result_t() : delay(SIMTIME_ZERO), duration(SIMTIME_ZERO), discard(false) {}
         simtime_t delay;     //< propagation delay
         simtime_t duration;  //< transmission duration
-        bool deleteMessage;  //< whether the channel is losing the message
+        bool discard;        //< whether the channel has lost the message
     };
 
   public:
@@ -172,7 +172,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * This method encapsulates the channel's functionality. The method should
      * model the transmission of the given message starting at the given t time,
      * and store the results (propagation delay, transmission duration,
-     * deleteMessage flag) in the result object. Only the relevant fields
+     * discard flag) in the result object. Only the relevant fields
      * in the result object need to be changed, others can be left untouched.
      *
      * Transmission duration and bit error modeling only applies to packets
@@ -183,7 +183,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * to call <tt>setDuration(duration)</tt> on the packet. As a result of bit
      * error modeling, the method may set the packet's bit error flag.
      *
-     * If the method sets the deleteMessage flag in the result object, that
+     * If the method sets the discard flag in the result object, that
      * means that the message object should be deleted by the caller; this
      * facility can be used to model that the message gets lost in the channel.
      */

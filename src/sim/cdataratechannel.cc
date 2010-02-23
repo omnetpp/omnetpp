@@ -123,7 +123,7 @@ void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)
     {
-        result.deleteMessage = true;
+        result.discard = true;
         return;
     }
 
