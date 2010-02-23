@@ -447,7 +447,7 @@ HelloModule::HelloModule() : cSimpleModule(16384) {...}
 \end{note}
 
 
-\subsection{Initialization and finalization}
+\subsection{Initialization and Finalization}
 \label{sec:simple-modules:initialize-and-finish}
 
 \subsubsection{Basic Usage}
@@ -1616,8 +1616,22 @@ parameter, and update the module's state if needed.
 
 To get notified, redefine the \ffunc{handleParameterChange()} method
 of the module class. This method method will be called back by the
-simulation kernel when a module parameter changes. The method signature
-is the following:
+simulation kernel when a module parameter changes, \textit{except during
+initialization and finalization}.
+
+\begin{note}
+  Notifications are disabled during initialization and finalization,
+  because they would make it very difficult to write modules
+  that work reliably under all conditions.
+  \ffunc{handleParameterChange()} is usually triggered from another
+  module (it does not make much sense for a module to change
+  its own parameters), so the relative order of
+  \ffunc{initialize()} / \ffunc{finish()} and \ffunc{handleParameterChange()}
+  would be effectively determined by the initialization order
+  of modules, which generally cannot be relied upon.
+\end{note}
+
+The method signature is the following:
 
 \begin{cpp}
 void handleParameterChange(const char *parameterName);
@@ -1633,6 +1647,22 @@ void Queue::handleParameterChange(const char *parname)
         serviceTime = par("serviceTime"); // refresh data member
 }
 \end{cpp}
+
+If your code heavily depends on notifications and you would like to
+receive notifications during initialization or finalization as well, one
+workaround is to explicitly call \ffunc{handleParameterChange()}
+from the \ffunc{initialize()} or \ffunc{finish()} function:
+
+\begin{cpp}
+for (int i=0; i<getNumParams(); i++)
+    handleParameterChange(par(i).getName());
+\end{cpp}
+
+\begin{note}
+  Be extremely careful when changing parameters from inside
+  \ffunc{handleParameterChange()}, because it is easy to accidentally
+  create an infinite notification loop.
+\end{note}
 
 
 \section{Accessing Gates and Connections}
@@ -2038,7 +2068,7 @@ usually calculated as \ffunc{simTime()}+\textit{delta}:
 
 \begin{cpp}
 scheduleAt(absoluteTime, msg);
-scheduleAt(simtime()+delta, msg);
+scheduleAt(simTime()+delta, msg);
 \end{cpp}
 
 Self-messages are delivered to the module in the same way as other
@@ -2198,9 +2228,10 @@ delete msg;
 
 You might have noticed that copying the message for the last gate is
 redundant: we can just send out the original message there.
-Also, we can utilize gate IDs to spare looking up the gate by name
-for each send operation. The optimized version of the code looks
-like this:
+To spare looking up the gate by name for each send operation,
+we can use gate IDs and exploit the fact that the ID of gate
+$k$ in a gate vector can be produced as ${baseID} + k$.
+The optimized version of the code looks like this:
 
 \begin{cpp}
 int outGateBaseId = gateBaseId("out");
