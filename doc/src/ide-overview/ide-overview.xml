@@ -68,7 +68,7 @@
       analyzed and errors/warnings are displayed in real time.</para>
     <para>
       The editor considers all NED declarations (simple modules, compound modules, channels, etc.) and can
-      fully exploit this information to provide diagnostics and assistance to the user. Looking at the 
+      fully exploit this information to provide diagnostics and assistance to the user. Looking at the 
       <emphasis>network=</emphasis>
       configuration key, it knows the top-level compound module NED type, and internally builds a static picture
       of the network by recursively enumerating the top-level module's submodules, sub-submodules,
