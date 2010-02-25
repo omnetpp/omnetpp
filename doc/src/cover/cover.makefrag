@@ -1,7 +1,9 @@
 ifneq ($(what),omnest)
   PRODUCT = OMNeT++
+  what = omnetpp
 else
   PRODUCT = OMNEST
+  what = omnest
 endif
 
 ifneq ($(VERSION),)
@@ -11,7 +13,7 @@ else
 endif
 
 cover:
-	cp ../cover/cover.svg .
+	cp ../cover/cover-$(what).svg cover.svg
 	perl -i~ -pe "s/\@product\@/$(PRODUCT)/g" cover.svg
 	perl -i~ -pe "s/\@title\@/$(TITLE)/g" cover.svg
 	perl -i~ -pe "s/\@version\@/$(VERSION_TEXT)/g" cover.svg
