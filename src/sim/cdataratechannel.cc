@@ -127,26 +127,11 @@ void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
         return;
     }
 
-    // channel must be idle
-    if (txfinishtime > t)
-        throw cRuntimeError("Error sending message (%s)%s on gate %s: gate is currently "
-                            "busy with an ongoing transmission -- please rewrite the sender "
-                            "simple module to only send when the previous transmission has "
-                            "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "
-                            "and possibly a cQueue for storing messages waiting to be transmitted",
-                            msg->getClassName(), msg->getFullName(), getSourceGate()->getFullPath().c_str());
-
     // datarate modeling
     if ((flags & FL_DATARATE_NONZERO) && msg->isPacket())
     {
         cPacket *pkt = (cPacket *)msg;
-        if (pkt->getDuration() != SIMTIME_ZERO)
-            throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
-                "may be more than one channel with data rate in the connection path, or "
-                "it was sent with a sendDirect() call that specified duration as well",
-                pkt->getClassName(), pkt->getName());
         simtime_t duration = pkt->getBitLength() / datarate;
-        pkt->setDuration(duration);
         result.duration = duration;
         txfinishtime = t + duration;
     }

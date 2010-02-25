@@ -453,7 +453,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
 }
 
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t transmdelay, cGate *togate)
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration, cGate *togate)
 {
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.
@@ -462,8 +462,8 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
     if (togate->getPreviousGate())
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
                             " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->getFullPath().c_str());
-    if (propdelay<0 || transmdelay<0)
-        throw cRuntimeError("sendDirect(): propagation and transmission delay cannot be negative");
+    if (propdelay<0 || duration<0)
+        throw cRuntimeError("sendDirect(): the propagation and duration parameters cannot be negative");
     if (msg==NULL)
         throw cRuntimeError("sendDirect(): message pointer is NULL");
     if (msg->getOwner()!=this)
@@ -502,11 +502,11 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
 
     EVCB.beginSend(msg);
     if (msg->isPacket())
-        ((cPacket *)msg)->setDuration(transmdelay);
-    else if (transmdelay!=SIMTIME_ZERO)
+        ((cPacket *)msg)->setDuration(duration);
+    else if (duration!=SIMTIME_ZERO)
         throw cRuntimeError("sendDirect(): cannot send non-packet message (%s)%s when nonzero duration is specified",
                             msg->getClassName(), msg->getName());
-    EVCB.messageSendDirect(msg, togate, propdelay, transmdelay);
+    EVCB.messageSendDirect(msg, togate, propdelay, duration);
     bool keepit = togate->deliver(msg, simTime() + propdelay);
     if (!keepit)
     {

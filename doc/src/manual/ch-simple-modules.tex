@@ -94,7 +94,7 @@ strategies can differ considerably from one simulator to another.
 
 
 The subsequent loop consumes events from the FES\index{FES} and processes
-them. Events are processed in strict timestamp order 
+them. Events are processed in strict timestamp order
 to maintain causality, that is, to ensure that no current event may have
 an effect on earlier events.
 
@@ -241,7 +241,7 @@ widely used data structure for this purpose. Heap is generally considered the be
 algorithm, although exotic data structures like
 \textit{skiplist}\index{skiplist} may perform better than heap in some
 cases. In case you are interested, the FES implementation is in the
-\cclass{cMessageHeap} class, but knowledge of the FES implementation is 
+\cclass{cMessageHeap} class, but knowledge of the FES implementation is
 not necessary for the typical simulation programmer.
 
 
@@ -536,7 +536,7 @@ has terminated, and only if it terminated normally.
 with a runtime error.
 \end{note}
 
-The calling order for \ffunc{finish()} is the reverse of the order of 
+The calling order for \ffunc{finish()} is the reverse of the order of
 \ffunc{initialize()}: first submodules, then the encompassing compound module.
   \footnote{The way you can provide an \ffunc{initialize()} function
   for a compound module is to subclass \cclass{cCompoundModule}, and tell
@@ -2016,7 +2016,7 @@ Channels are covered in more detail in section \ref{sec:simple-modules:channels}
 On an abstract level, an {\opp} simulation model is a set of
 simple modules that communicate with each other via message passing.
 The essence of simple modules is that they create, send, receive,
-store, modify, schedule and destroy messages -- the rest of {\opp} exists 
+store, modify, schedule and destroy messages -- the rest of {\opp} exists
 to facilitate this task, and collect statistics
 about what was going on.
 
@@ -2228,7 +2228,7 @@ delete msg;
 
 You might have noticed that copying the message for the last gate is
 redundant: we can just send out the original message there.
-Also, we can utilize gate IDs to avoid looking up the gate by name 
+Also, we can utilize gate IDs to avoid looking up the gate by name
 for each send operation. We can exploit the fact that the ID of gate
 $k$ in a gate vector can be produced as ${baseID} + k$.
 The optimized version of the code looks like this:
@@ -2464,10 +2464,22 @@ else
 
 Note that the above code invokes \ttt{getTransmissionFinishTime()} on the
 output gate, not on the channel. \cclass{cGate}'s
-\ffunc{getTransmissionFinishTime()} and \ffunc{isBusy()} methods are just
+\ffunc{getTransmissionFinishTime()} and \ffunc{isBusy()} methods are
 shortcuts to \ttt{getDatarate\-Channel()->isBusy()} and
 \ttt{getDatarate\-Channel()->\-getTrans\-mission\-FinishTime()}, provided for
 convenience.
+
+\begin{note}
+  \cclass{cGate}'s \ffunc{getTransmissionFinishTime()} function just
+  delegates to the same method of the transmission channel in the path, so
+  one should be careful: if there is a channel with a propagation delay in
+  the path before the transmission channel, the delay should be manually
+  substracted from the value returned by \ffunc{getTransmissionFinishTime()}!
+  The same applies to \ffunc{isBusy()}: it tells whether the channel is
+  currently busy, and not whether it will be busy when a packet that you send
+  gets there. It is therefore advisable that you never use propagation delays
+  in front of a transmission channel in a path.
+\end{note}
 
 The \ttt{getDatarateChannel()} method searches the connection path each
 time it is called, so the performance of the gate's
@@ -2778,21 +2790,33 @@ untouched.
 Transmission duration and bit error modeling only applies to packets (i.e.
 to instances of \cclass{cPacket}, where \cclass{cMessage}'s
 \ffunc{isPacket()} returns true); it should be skipped for non-packet
-messages. If the transmission duration is nonzero, it is the method's
-responsibility to call \ttt{setDuration(duration)} on the packet. As a
-result of bit error modeling, the method may set the packet's bit error
-flag.
+messages. \ffunc{process()} does not need to call the \ffunc{setDuration()}
+method on the packet; this is done by the simulation kernel. However,
+it should call \ffunc[setBitError()]{setBitError(true)} on the packet
+if error modeling results in bit errors.
 
 If the method sets the \ttt{discard} flag in the result object, that
-means that the message object should be deleted by {\opp}; this
-facility can be used to model that the message gets lost in the channel.
+means that the message object will be deleted by {\opp}; this facility
+can be used to model that the message gets lost in the channel.
 
-%XXX why no timers: efficiency. one can program simple modules that act like channels.
+The \ffunc{process()} method does not need to throw error on overlapping
+transmissions, or if the packet's duration field is already set; these
+checks are done by the simulation kernel before \ffunc{process()} is called.
 
-%XXX cGate: getTransmissionFinishTime() just delegates to the similar
-%method of cChannel, so caution: if there's a delay before the transmission
-%channel in the path, the delay should be manually deduced! or better,
-%avoid delay channels in front of a transmission channel in a path.
+% TODO:
+%
+% \subsection{Active Channels}
+%
+% You may have noticed that channels subclasses from \cclass{cChannel} are
+% passive in the sense that they cannot schedule events and cannot react
+% to scheduled events. If you need such channels, use modules. Modules
+% intented for use as channels should implement the \ttt{ned.IBidirectionalChannel}
+% and \ttt{ned.IUnidirectionalChannel} NED interfaces. In future versions,
+% {\opp} will be updated so that it handles such modules transparently
+% as channels.
+%
+% XXX why no timers: efficiency. one can program simple modules that act like channels.
+
 
 \subsection{Channel Examples}
 
@@ -2850,12 +2874,7 @@ simtime_t cDatarateChannel::getTransmissionFinishTime() const
 \cclass{cDatarateChannel}'s \ffunc{process()} method makes use of
 the \ttt{isDisabled}, \ttt{datarate}, \ttt{ber} and \ttt{per} data
 members, which are also kept up to date with the help of
-\ffunc{handleParameterChange()}. It ensures that no packet gets
-transmitted while a previous one is still being transmitted.
-It also sets the packet's \textit{duration} field, making sure
-that it has not been set before.
-
-%FIXME XXX TODO ez igy egy eleg szar design. cGate-nek kellene lecsekkelnie, hogy ez a channel transmissionchannel-e, es minden boilerplate-et megcsinalni sajat maga. (pl packet->setDuration()-t is!)
+\ffunc{handleParameterChange()}.
 
 \begin{cpp}
 void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
@@ -2866,17 +2885,9 @@ void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
         return;
     }
 
-    // channel must be idle
-    if (txfinishtime > t)
-        throw cRuntimeError(this, "Channel is currently busy...");
-
     // datarate modeling
     if (datarate!=0 && msg->isPacket()) {
-        cPacket *pkt = (cPacket *)msg;
-        if (pkt->getDuration() != 0)
-            throw cRuntimeError(this, "Packet already has a duration set...");
-        simtime_t duration = pkt->getBitLength() / datarate;
-        pkt->setDuration(duration);
+        simtime_t duration = ((cPacket *)msg)->getBitLength() / datarate;
         result.duration = duration;
         txfinishtime = t + duration;
     }
@@ -3910,7 +3921,7 @@ then you don't need to write a copy constructor, assignment operator, and
 can create a temporary object, and pass its pointer to the \ffunc{emit()}
 function.
 
-An example of custom notification classes is the firing of model change notifications 
+An example of custom notification classes is the firing of model change notifications
 (see \ref{sec:ch-simple-modules:model-change}). The data class
 that accompanies a signal that announces that a gate or gate vector is
 about to be created looks like this:

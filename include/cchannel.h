@@ -177,15 +177,20 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      *
      * Transmission duration and bit error modeling only applies to packets
      * (i.e. to instances of cPacket, where cMessage's isPacket() returns true),
-     * it should be skipped for non-packet messages.
+     * it should be skipped for non-packet messages. The method does not need
+     * to call the <tt>setDuration(duration)</tt> method on the packet; this is
+     * done by the simulation kernel. However, the method should call
+     * <tt>setBitError(true)</tt> on the packet if error modeling results
+     * in bit errors.
      *
-     * If the transmission duration is nonzero, it is the method's responsibility
-     * to call <tt>setDuration(duration)</tt> on the packet. As a result of bit
-     * error modeling, the method may set the packet's bit error flag.
+     * If the method sets the discard flag in the result object, it means
+     * that the message object should be deleted by the simulation kernel;
+     * this facility can be used to model that the message gets lost in the
+     * channel.
      *
-     * If the method sets the discard flag in the result object, that
-     * means that the message object should be deleted by the caller; this
-     * facility can be used to model that the message gets lost in the channel.
+     * The method does not need to throw error on overlapping transmissions,
+     * or if the packet's duration field is already set; these checks are
+     * done by the simulation kernel before process() is called.
      */
     virtual void process(cMessage *msg, simtime_t t, result_t& result) = 0;
 
