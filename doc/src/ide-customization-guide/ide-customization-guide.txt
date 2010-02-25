@@ -29,7 +29,7 @@ anything to deploy the wizards.
 To facilitate the creation of wizards, we have also added a 'New Wizard' wizard to
 the 'File|New' menu.
 
-
+image::pictures/new-wizard.png[title="The New Wizard wizard",align="center",scaledwidth="75%"]
 
 === Overview
 
@@ -42,6 +42,8 @@ templating engine, we will also refer to custom wizards as "content templates."
 The IDE offers several OMNeT\++ related wizard dialogs: 'New OMNeT++ Project',
 'New NED File', 'New Simple Module', and so on. Every content template can
 contribute to one or more of those wizard dialogs.
+
+image::pictures/new-menu.png[title="The File | New menu",align="center",scaledwidth="75%"]
 
 In the `templates/` folder, every subfolder that contains a `template.properties`
 file is treated as a content template (other folders are ignored). Every
@@ -123,6 +125,8 @@ you can access it via the 'Window|Show View...' menu item.
 
 Some (custom) widgets may not appear in the Preview; this is because the
 Preview does not load jar files from the projects.
+
+image::pictures/xswt-editor.png[title="Editing an XSWT file",align="center",scaledwidth="75%"]
 
 ==== Editing Template Files
 
