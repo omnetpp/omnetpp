@@ -7,14 +7,14 @@
 The user describes the structure of a simulation model in the NED language. NED
 stands for Network Description. NED lets the user declare simple modules, and
 connect and assemble them into compound modules. The user can label some compound
-modules as \textit{networks}, self-contained simulation models. Channels are
+modules as \textit{networks}; that is, self-contained simulation models. Channels are
 another component type, whose instances can also be used in compound modules.
 
 The NED language has several features which let it scale well to large projects:
 
 \begin{description}
 
-\item[Hierarchical] The traditional way to deal with complexity is via
+\item[Hierarchical] The traditional way to deal with complexity is by
 introducing hierarchies. In {\opp}, any module which would be too complex as
 a single entity can be broken down into smaller modules, and used as a
 compound module.
@@ -75,9 +75,9 @@ parameter are already specified as metadata annotations.
 The NED language has an equivalent tree representation which can be
 serialized to XML; that is, NED files can be converted to XML and back
 without loss of data, including comments. This lowers the barrier for
-programmatic manipulation of NED files, for example extracting information,
+programmatic manipulation of NED files; for example extracting information,
 refactoring and transforming NED, generating NED from information stored in
-other system like SQL databases, and so on.
+other systems like SQL databases, and so on.
 
 \begin{note}
     This chapter is going to explain the NED language gradually, via examples.
@@ -92,7 +92,7 @@ other system like SQL databases, and so on.
 In this section we introduce the NED language via a complete and
 reasonably real-life example: a communication network.
 
-Our hypothetical network consists of nodes. One each node there is an
+Our hypothetical network consists of nodes. On each node there is an
 application running which generates packets at random intervals.
 The nodes are routers themselves as well. We assume that the application
 uses datagram-based communication, so that we can leave out the
@@ -141,7 +141,7 @@ comments.
 
 \begin{note}
     Comments in NED not only make the source code more readable, but in the
-    {\opp} IDE they also get displayed at various places (tooltips, content
+    {\opp} IDE they also are displayed at various places (tooltips, content
     assist, etc), and become part of the documentation extracted from the NED
     files. The NED documentation system, not unlike \textit{JavaDoc} or
     \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
@@ -171,7 +171,7 @@ a convention to put every NED definition into its own file and to name the
 file accordingly, but it is not mandatory to do so.
 
 One can define any number of networks in the NED files, and for every
-simulation the user has to specify which network he wants to set up.
+simulation the user has to specify which network to set up.
 The usual way of specifying the network is to put the \fconfig{network}
 option into the configuration (by default the \ffilename{omnetpp.ini} file):
 
@@ -215,13 +215,13 @@ network Network
 \end{ned}
 
 Later sections will cover the concepts used (inner types, channels, the
-\ttt{DatarateChannel} built-in type, inheritance) in details.
+\ttt{DatarateChannel} built-in type, inheritance) in detail.
 
 
-\subsection{The App, Routing and Queue Simple Modules}
-
-Simple modules are the basic building blocks for other (compound) modules.
-All active behavior in the model is encapsulated in simple modules.
+\subsection{The App, Routing, and Queue Simple Modules}
+Simple modules are the basic building blocks for other (compound) modules, 
+denoted by the \fkeyword{simple} keyword.
+All active behavior in the model is encapsulated in \fkeyword{simple} modules.
 Behavior is defined with a C++ class; NED files only declare the externally
 visible interface of the module (gates, parameters).
 
@@ -266,7 +266,7 @@ By convention, the above simple module declarations go into the
     matters because the language is case sensitive.
 \end{note}
 
-Let us see the first simple module type declaration. \ttt{App} has a
+Let us look at the first simple module type declaration. \ttt{App} has a
 parameter called \ttt{destAddress} (others have been omitted for now),
 and two gates named \ttt{out} and \ttt{in} for sending and receiving
 application packets.
@@ -345,19 +345,19 @@ corresponding port of the enclosing module.
 
 \subsection{Putting It Together}
 
-We have seen all NED definitions, but how does it get used by {\opp}? When
+We have created the NED definitions for this example, but how are they used by {\opp}? When
 the simulation program is started, it loads the NED files. The program
 should already contain the C++ classes that implement the needed simple
 modules, \ttt{App}, \ttt{Routing} and \ttt{Queue}; their C++ code is either
-part if the executable or gets loaded from shared library. The simulation
+part of the executable or is loaded from a shared library. The simulation
 program also loads the configuration (\ffilename{omnetpp.ini}), and determines
 from it that the simulation model to be run is the \ttt{Network} network.
-Then the network gets instantiated for simulation.
+Then the network is instantiated for simulation.
 
 The simulation model is built in a top-down preorder fashion. This means
 that starting from an empty system module, all submodules are created,
-their parameters and gate vector sizes get assigned and they get fully connected
-before proceeding to go into the submodules to build their internals.
+their parameters and gate vector sizes are assigned, and they are fully connected
+before the submodule internals are built.
 
 \bigskip
 \begin{center}
@@ -366,7 +366,7 @@ before proceeding to go into the submodules to build their internals.
 \bigskip
 
 In the following sections we'll go through the elements of the NED
-language and look at them in more details.
+language and look at them in more detail.
 
 
 
@@ -392,7 +392,7 @@ simple Queue
 
 Both the \fkeyword{parameters} and \fkeyword{gates} sections are optional, that is,
 they can be left out if there is no parameter or gate. In addition, the
-\fkeyword{parameters} keyword itself is optional too, it can be left out
+\fkeyword{parameters} keyword itself is optional too; it can be left out
 even if there are parameters or properties.
 
 Note that the NED definition doesn't contain any code to define the
@@ -438,7 +438,7 @@ simple Queue {
 }
 \end{ned}
 
-As you've seen, \fprop{@namespace} can be specified on file level. Moreover,
+As you've seen, \fprop{@namespace} can be specified at the file level. Moreover,
 when placed in a file called \ttt{package.ned}, the namespace will apply to
 all files in the same directory and all directories below.
 
@@ -450,7 +450,7 @@ Simple modules can be extended (or specialized) via subclassing. The
 motivation for subclassing can be to set some open parameters or gate sizes
 to a fixed value (see \ref{sec:ch-ned-lang:parameters} and
 \ref{sec:ch-ned-lang:gates}), or to replace the C++ class with a different
-one. Now, by default the derived NED module type will \textit{inherit} the
+one. Now, by default, the derived NED module type will \textit{inherit} the
 C++ class from its base, so it is important to remember that you need to
 write out \fprop{@class} if you want it to use the new class.
 
@@ -544,12 +544,12 @@ Module and channel types only used locally can be defined in the
 namespace.
 
 Compound modules may be extended via subclassing. Inheritance may add new
-submodules and new connections as well, not only parameters and gates;
-also, one may refer to inherited submodules, to inherited types etc. What
+submodules and new connections as well, not only parameters and gates.
+Also, one may refer to inherited submodules, to inherited types etc. What
 is not possible is to "de-inherit" submodules or connections, or to modify
 inherited ones.
 
-In the following example, we show how one can assemble common protocols
+In the following example, we show how to assemble common protocols
 into a "stub" for wireless hosts, and add user agents via
 subclassing.\footnote{Module types, gate names, etc. used in the example
 are fictional, not based on an actual {\opp}-based model framework}
@@ -608,7 +608,7 @@ Channels are like simple modules, in the sense that there are C++ classes
 behind them. The rules for finding the C++ class for a NED channel type is
 the same as with simple modules: the default class name is the NED type
 name unless there is a \fprop{@class} property (\fprop{@namespace} is also
-observed), and the C++ class is inherited when the channel is subclassed.
+recognized), and the C++ class is inherited when the channel is subclassed.
 
 Thus, the following channel type would expect a \ttt{CustomChannel} C++ class
 to be present:
@@ -619,8 +619,8 @@ channel CustomChannel  // needs a CustomChannel C++ class
 }
 \end{ned}
 
-The practical difference to modules is that you rarely need to write you own
-channel C++ class, because there are predefined channel types that you can
+The practical difference compared to modules is that you rarely need to write you own
+channel C++ class because there are predefined channel types that you can
 subclass from, inheriting their C++ code. The predefined types are:
 \ttt{ned.IdealChannel}, \ttt{ned.Delay\-Channel} and \ttt{ned.Datarate\-Channel}.
 (``\ttt{ned}'' is the package name; you can get rid of it if you import the types
@@ -658,7 +658,7 @@ going to be read by other parts of the simulation model.
     \item \ttt{ber} and \ttt{per} stand for Bit Error Rate and Packet Error Rate,
           and allow basic error modelling. They expect a \ttt{double}
           in the $[0,1]$ range. When the channel decides (based on random
-          numbers) that an error occurred during transmission a packet,
+          numbers) that an error occurred during transmission of a packet,
           it sets an error flag in the packet object. The receiver
           module is expected to check the flag, and discard the packet
           as corrupted if it is set. The default \ttt{ber} and \ttt{per}
@@ -666,7 +666,7 @@ going to be read by other parts of the simulation model.
 \end{itemize}
 
 \begin{note}
-    There is no channel parameter that would decide whether the channel
+    There is no channel parameter that specifies whether the channel
     delivers the message object to the destination module at the end or
     at the start of the reception; that is decided by the C++ code
     of the target simple module. See the \ffunc{setDeliverOn\-Reception\-Start()}
@@ -687,7 +687,7 @@ channel C extends ned.DatarateChannel
 
 \begin{note}
     The three built-in channel types are also used for connections where
-    the channel type not explicitly specified.
+    the channel type is not explicitly specified.
 \end{note}
 
 You may add parameters and properties to channels via subclassing, and
@@ -735,7 +735,7 @@ type safety.
 
 Parameters can get their value from NED files or from the configuration
 (\ffilename{omnetpp.ini}). A default value can also be given (\ttt{default(}...\ttt{)}),
-which gets used if the parameter is not assigned otherwise.
+which is used if the parameter is not assigned otherwise.
 
 Let us see an example before we go into details:
 
@@ -777,11 +777,11 @@ module Node
 \end{ned}
 
 After the above definition, the \ttt{app} submodule's parameters cannot
-be changed from \ffilename{omnetpp.ini} any more.
+be changed from \ffilename{omnetpp.ini}.
 
 \begin{important}
     A value assigned in NED cannot be overwritten from ini files; they
-    count as "hardcoded" as far as ini files are concerned.
+    become "hardcoded" as far as ini files are concerned.
 \end{important}
 
 Provided that the value isn't set in the NED file, a parameter can be assigned
@@ -818,7 +818,7 @@ be useful):
 \end{inifile}
 
 Finally, one can explicitly ask the simulator to prompt the user interactively
-for the value (again, provided that interactivity is enabled, otherwise
+for the value (again, provided that interactivity is enabled; otherwise
 this will result in an error):
 
 \begin{inifile}
@@ -827,10 +827,10 @@ this will result in an error):
 
 \begin{note}
     How do you decide whether to assign a parameter from NED or from an ini
-    file? The point of ini files is a cleaner separation of the \textit{model}
+    file? The advantage of ini files is that they allow a cleaner separation of the \textit{model}
     and \textit{experiments}. NED files (together with C++ code) are considered
     to be part of the model, and to be more or less constant. Ini files, on
-    the other hand, are for experimenting with the model, by running it
+    the other hand, are for experimenting with the model by running it
     several times with different parameters. Thus, parameters that are expected
     to change (or make sense to be changed) during experimentation should be
     put into ini files.
@@ -848,7 +848,7 @@ numeric, string, stochastic and other functions (\ttt{fabs()}, \ttt{toUpper()},
 \ttt{uniform()}, \ttt{erlang\_k()}, etc.).
 
 \begin{note}
-    The list of NED functions can be read in Appendix \ref{cha:ned-functions}.
+    The list of NED functions can be found in Appendix \ref{cha:ned-functions}.
     The user can also extend NED with new functions.
 \end{note}
 
@@ -860,7 +860,7 @@ in a submodule vector (\fkeyword{index}).
 
 %% XXX note: fullPath() etc functions!
 
-A Expressions may refer to parameters of the compound module being defined,
+Expressions may refer to parameters of the compound module being defined,
 of the current module (with the \ttt{this.} prefix), and to parameters
 of already defined submodules, with the syntax \ttt{submodule.parametername}
 (or \ttt{submodule[index].parametername}).
@@ -916,7 +916,7 @@ simple App
 }
 \end{ned}
 
-The \ttt{@unit(s)} and \ttt{@unit(byte)} bits declare the measurement unit
+The \ttt{@unit(s)} and \ttt{@unit(byte)} declarations specify the measurement unit
 for the parameter. Values assigned to parameters must have the same or
 compatible unit, i.e. \ttt{@unit(s)} accepts milliseconds, nanoseconds,
 minutes, hours, etc., and \ttt{@unit(byte)} accepts kilobytes, megabytes,
@@ -940,21 +940,21 @@ in subclasses or in submodule declarations.
 \subsubsection{XML Parameters}
 
 Sometimes modules need more complex input than simple module parameters
-can describe. Then you'd put these parameters into an external config file,
-and let the modules read and process the file. You'd pass the file name
+can describe. In that case, you could put these parameters into an external config file,
+and let the modules read and process the file. The file name is passed 
 to the modules in a string parameter.
 
-These days, XML is increasingly becoming a standard format for configuration
-files as well, so you might as well describe your configuration in XML.
+XML is increasingly becoming a standard format for configuration
+files, so it is possible to describe the configuration in XML.
 From the 3.0 version, {\opp} contains built-in support for XML config files.
 
 {\opp} wraps the XML parser (LibXML, Expat, etc.), reads and DTD-validates
 the file (if the XML document contains a DOCTYPE), caches the file
-(so that if you refer to it from several modules, it'll still be loaded
-only once), lets you pick parts of the document via an XPath-subset notation,
-and presents the contents to you in a DOM-like object tree.
+(so that references to it from several modules will result in the file being loaded
+only once), allows selection of parts of the document using an XPath-subset notation,
+and presents the contents in a DOM-like object tree.
 
-This machinery can be accessed via the NED parameter type \ttt{xml}, and the
+This capability can be accessed via the NED parameter type \ttt{xml}, and the
 \ttt{xmldoc()} operator. You can point \ttt{xml}-type module parameters
 to a specific XML file (or to an element inside an XML file) via the
 \ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
@@ -1018,8 +1018,8 @@ Gates are the connection points of modules.  {\opp} has three types of
 gates: \textit{input}, \textit{output} and \textit{inout}, the latter being
 essentially an input and an output gate glued together.
 
-A gate, whether input or output, cannot be connected to two or more other
-gates. (For compound module gates, this means one connection "outside" and
+A gate, whether input or output, can only be connected to one other
+gate. (For compound module gates, this means one connection "outside" and
 one "inside".)  It is possible, though generally not recommended, to
 connect the input and output sides of an inout gate separately.
 
@@ -1029,7 +1029,7 @@ to leave it open by just writing a pair of empty brackets ("\ttt{[]}").
 
 When the gate vector size is left open, one can still specify it later,
 when subclassing the module, or when using the module for a submodule in a
-compound module. However, it does not need to be specified, because
+compound module. However, it does not need to be specified because
 one can create connections with the \ttt{$gate$++} operator that
 automatically expands the gate vector.
 
@@ -1038,11 +1038,11 @@ The gate size can be queried from various NED expressions with the
 
 NED normally requires that all gates be connected. To relax this
 requirement, you can annotate selected gates with the \fprop{@loose}
-property, which turns off connectivity check for that gate. Also, input
+property, which turns off the connectivity check for that gate. Also, input
 gates that solely exist so that the module can receive messages via
 \ffunc{sendDirect()} (see \ref{sec:simple-modules:direct-sending}) should
-be annotated with \fprop{@directIn}. It is also possible to turn off connectivity
-check for all gates within a compound module, by specifying the
+be annotated with \fprop{@directIn}. It is also possible to turn off the connectivity
+check for all gates within a compound module by specifying the
 \fkeyword{allowunconnected} keyword in the module's connections section.
 
 Let us see some examples.
@@ -1062,7 +1062,7 @@ simple Classifier {
 \end{ned}
 
 The following \ttt{Sink} module also has its \ttt{in[]} gate defined
-as vector, so that it can be connected to several modules:
+as a vector, so that it can be connected to several modules:
 
 \begin{ned}
 simple Sink {
@@ -1071,7 +1071,7 @@ simple Sink {
 }
 \end{ned}
 
-A node for building a square grid. Gates around the edges of the grid are
+The following defines a node for building a square grid. Gates around the edges of the grid are
 expected to remain unconnected, hence the \fprop{@loose} annotation:
 
 \begin{ned}
@@ -1223,10 +1223,10 @@ subclassing; this has been described in the section
 \label{sec:ch-ned-lang:connections}
 
 Connections are defined in the \fkeyword{connections} section of compound
-modules. Connections cannot span across hierarchy levels: one can connect
+modules. Connections cannot span across hierarchy levels; one can connect
 two submodule gates, a submodule gate and the "inside" of the parent
 (compound) module's gates, or two gates of the parent module (though this
-is rarely useful). It is not possible to connect to any gate outside the
+is rarely useful), but it is not possible to connect to any gate outside the
 parent module, or inside compound submodules.
 
 Input and output gates are connected with a normal arrow, and inout gates
@@ -1235,7 +1235,7 @@ with a channel, use two arrows and put the channel specification in between.
 The same syntax is used to add properties such as \fprop{@display} to the
 connection.
 
-Some examples have already been shown in the Warmup section
+Some examples have already been shown in the NED Quickstart section
 (\ref{sec:ch-ned-lang:warmup}); let's see some more.
 
 %% XXX examples
@@ -1261,7 +1261,7 @@ The \textit{gatename}\ttt{++} notation causes the first unconnected gate index
 to be used. If all gates of the given gate vector are connected, the behavior
 is different for submodules and for the enclosing compound module.
 For submodules, the gate vector expands by one. For a compound module,
-after the last gate is connected, \ttt{++} will stop with on error.
+after the last gate is connected, \ttt{++} will stop with an error.
 
 \begin{note}
     Why is it not possible to expand a gate vector of the compound
@@ -1301,7 +1301,7 @@ used, based on the parameters assigned in the connection. If
 \ttt{ned.DatarateChannel} will be chosen. Otherwise, if \ttt{delay} or
 \ttt{disabled} is present, it will be \ttt{ned.DelayChannel}; otherwise it
 is \ttt{ned.IdealChannel}. Naturally, if other parameter names are
-assigned in an connection without an explicit channel type, it will be an error
+assigned in a connection without an explicit channel type, it will be an error
 (with \textit{``ned.DelayChannel has no such parameter''} or similar message).
 
 %% XXX channel type as parameter; here or later?
@@ -1370,7 +1370,7 @@ an unconnected gate produces a run-time error message when the
 simulation is started, but this error message is turned off here with
 the \fkeyword{allowunconnected} modifier.
 Consequently, it is the simple modules' responsibility not to send
-on a gate which is not leading anywhere.
+on an unconnected gate.
 
 
 
@@ -1400,7 +1400,7 @@ module RandomGraph {
 \end{ned}
 
 Note the use of the \fkeyword{allowunconnected} modifier
-here too, to turn off error messages given by the network setup code
+here too, to turn off error messages produced by the network setup code
 for unconnected gates.
 
 
@@ -1432,11 +1432,11 @@ this pattern, but the pattern can generate any graph where an
 appropriate $condition(i,j)$ can be formulated. For example,
 when generating a tree\index{topology!tree} structure, the condition
 would return whether node $j$ is a child of node $i$ or
-vica versa.
+vice versa.
 
 Though this pattern is very general, its usage can be prohibitive if
-the $N$ number of nodes is high and the graph is sparse (it has
-much fewer connections that $N^2$). The following
+the number of nodes $N$ is high and the graph is sparse (it has
+much less than $N^2$ connections). The following
 two patterns do not suffer from this drawback.
 
 
@@ -1471,7 +1471,7 @@ for i=0..Nconnections-1 {
 }
 \end{ned}
 
-The pattern can be used if $leftNodeIndex(i)$ and $rightNodeIndex(i)$
+This pattern can be used if $leftNodeIndex(i)$ and $rightNodeIndex(i)$
 mapping functions can be sufficiently formulated.
 
 The \ttt{Chain} module is an example of this approach where the mapping
@@ -1510,10 +1510,8 @@ network Net6
 
 It creates a submodule vector whose module type will come from the
 \ttt{nodeType} parameter. For example, if \ttt{nodeType="SensorNode"},
-then the module vector will consist of sensor nodes (provided such module
-type exists and it qualifies -- the latter will be explained right now).
-
-The missing piece is the \ttt{like INode} bit. \ttt{INode} must be
+then the module vector will consist of sensor nodes, provided such module
+type exists and it qualifies. What this means is that the \ttt{INode} must be
 an existing \textit{module interface}, which the \ttt{SensorNode}
 module type must implement (more about this later).
 
@@ -1562,8 +1560,8 @@ properties are interpreted by NED, by the simulation kernel; other
 properties may be read and used from within the simulation model, or
 provide hints for NED editing tools.
 
-Properties are attached to the type, so you cannot have properties
-per-instance different properties. All instances of modules, connections,
+Properties are attached to the type, so you cannot have different properties defined
+per-instance. All instances of modules, connections,
 parameters, etc. created from any particular location in the NED files have
 identical properties.
 
@@ -1685,10 +1683,10 @@ as \ttt{@prop()}.
 Value items may contain words, numbers, string constants and some other
 characters, but not arbitrary strings.
 Whenever the syntax does not permit some value, it should be enclosed in
-quotes. This quoting does not make any difference in the value, because
+quotes. This quoting does not affect the value because
 the parser automatically drops one layer of quotes; thus, \ttt{@class(TCP)}
 and \ttt{@class("TCP")} are exactly the same. If you want the quotes
-to be part of the value, use double quoting:
+to be part of the value, use escaping:
 \ttt{@foo("{\textbackslash}"some string{\textbackslash}"")}.
 
 There are also some conventions. One can use properties to tag some NED element
@@ -1712,7 +1710,7 @@ When you subclass a NED type, use a module type as submodule or use a channel
 type for a connection, you may add new properties to the module or channel,
 or to its parameters and gates, and you can also modify existing properties.
 
-When modifying a property, the new property gets merged with the old one,
+When modifying a property, the new property is merged with the old one,
 with a few simple rules. New keys simply get added. If a key already
 exists in the old property, items in its valuelist overwrite items on
 the same position in the old property. A single hyphen ($-$) as
@@ -1802,12 +1800,12 @@ module interfaces and channel interfaces \ref{sec:ch-ned-lang:submodule-like}).
 \section{Packages}
 \label{sec:ch-ned-lang:packages}
 
-Small simulation projects are fine to have all NED files in a single
-directory. When a project grows, however, it sooner or later becomes
-inevitable to introduce a directory structure, and sort the NED files into
+Having all NED files in a single directory is fine for small simulation projects. 
+When a project grows, however, it sooner or later becomes
+necessary to introduce a directory structure, and sort the NED files into
 them. NED natively supports directory trees with NED files, and calls
 directories \textit{packages}. Packages are also useful for reducing
-name clashes, because names can be qualified with the package name.
+name conflicts, because names can be qualified with the package name.
 
 \begin{note}
     NED packages are based on the Java package concept, with minor
@@ -1826,7 +1824,7 @@ folders) should be given to the simulation kernel in the NEDPATH
 variable. NEDPATH can be specified in several ways: as an environment
 variable (\ttt{NEDPATH}), as a configuration option (\fconfig{ned-path}),
 or as a command-line option to the simulation runtime. NEDPATH is
-described in details in chapter \ref{cha:run-sim}.
+described in detail in chapter \ref{cha:run-sim}.
 
 Directories in a NED source tree correspond to packages. If you have
 NED files in a \ttt{<root>/a/b/c} directory (where \ttt{<root>}
@@ -1993,7 +1991,7 @@ module MobileHost
 
 and suppose that the following modules implement the \ttt{IMobility} module
 interface: \ttt{inet.mo\-bility.Random\-Walk}, \ttt{inet.adhoc.RandomWalk},
-\ttt{inet.mobility.MassMobility}; and suppose that there is also a type
+\ttt{inet.mobility.MassMobility}. Also suppose that there is a type
 called \ttt{inet.examples.adhoc.MassMobility} but it does not implement the
 interface.
 

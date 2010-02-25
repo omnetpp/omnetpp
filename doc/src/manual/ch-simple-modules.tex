@@ -50,8 +50,8 @@ have included something like \textit{start of bit transmission} and
 \textit{end of bit transmission} among our events.
 
 
-The time when events occur is often called \textit{event timestamp}
-\index{event timestamp}; with {\opp} we'll say
+The time when events occur is often called \textit{event timestamp};
+\index{event timestamp} with {\opp} we use the term
 \textit{arrival time}\index{arrival time} (because in the class
 library, the word ``timestamp'' is reserved for a user-settable
 attribute in the event class). Time within the model is often called
@@ -86,7 +86,7 @@ Such simulators usually work according to the following pseudocode:
 \end{Verbatim}
 
 
-The first, initialization step usually builds the data structures
+The initialization step usually builds the data structures
 representing the simulation model, calls any user-defined
 initialization code, and inserts initial events\index{initial events}
 into the FES\index{FES} to ensure that the simulation can start. Initialization
@@ -94,8 +94,8 @@ strategies can differ considerably from one simulator to another.
 
 
 The subsequent loop consumes events from the FES\index{FES} and processes
-them. Events are processed in strict timestamp order in order
-to maintain causality, that is, to ensure that no event may have
+them. Events are processed in strict timestamp order 
+to maintain causality, that is, to ensure that no current event may have
 an effect on earlier events.
 
 Processing an event involves calls to user-supplied code. For example,
@@ -151,7 +151,7 @@ Simulation time in {\opp} is represented by the C++ type \fvar{simtime\_t},
 which is by default a typedef to the \ttt{SimTime} class.
 \ttt{SimTime} class stores simulation time in a 64-bit integer,
 using decimal fixed-point representation. The resolution is controlled
-by the \textit{scale exponent} global configuration variable, that is,
+by the \textit{scale exponent} global configuration variable; that is,
 \ttt{SimTime} instances have the same resolution. The exponent can be
 between chosen between -18 (attosecond resolution) and 0 (seconds).
 Some exponents with the ranges they provide are shown in the following table.
@@ -193,11 +193,11 @@ that directly accept \ttt{SimTime}, for example \ffunc{fabs()}, \ffunc{fmod()},
    \ttt{double} only has a 52-bit mantissa.
 \end{note}
 
-Other useful methods of \ttt{SimTime} include \ffunc{str()}
-which returns the value as a string; \ffunc{parse()} which converts a
-string to \ttt{SimTime}; \ffunc{raw()} which returns the
-underlying \ttt{int64} value; \ffunc{getScaleExp()} which returns the
-global scale exponent; and \ffunc{getMaxTime} which returns the
+Other useful methods of \ttt{SimTime} include \ffunc{str()},
+which returns the value as a string; \ffunc{parse()}, which converts a
+string to \ttt{SimTime}; \ffunc{raw()}, which returns the
+underlying \ttt{int64} value; \ffunc{getScaleExp()}, which returns the
+global scale exponent; and \ffunc{getMaxTime}, which returns the
 maximum simulation time that can be represented at the current
 scale exponent.
 
@@ -237,12 +237,12 @@ also defined correctly for both \ttt{simtime\_t} types.
 The implementation of the FES\index{FES} is a crucial factor in the
 performance of a discrete event simulator. In {\opp}, the FES is
 implemented with \textit{binary heap}\index{binary heap}, the most
-widely used data structure for this purpose. Heap is also the best
-algorithm we know, although exotic data structures like
+widely used data structure for this purpose. Heap is generally considered the best
+algorithm, although exotic data structures like
 \textit{skiplist}\index{skiplist} may perform better than heap in some
 cases. In case you are interested, the FES implementation is in the
-\cclass{cMessageHeap} class, but as a simulation programmer you won't
-ever need to care about that.
+\cclass{cMessageHeap} class, but knowledge of the FES implementation is 
+not necessary for the typical simulation programmer.
 
 
 \section{Components, Simple Modules, Channels}
@@ -289,10 +289,10 @@ class of channels and modules.
 redefining in subclasses:
 
 \begin{itemize}
-  \item \ffunc{initialize()}. This method gets invoked after {\opp} has
+  \item \ffunc{initialize()}. This method is invoked after {\opp} has
     set up the network (i.e. created modules and connected them according
     to the definitions), and provides a place for initialization code;
-  \item \ffunc{finish()} gets called when the simulation has terminated
+  \item \ffunc{finish()} is called when the simulation has terminated
     successfully, and its recommended use is the recording of summary
     statistics.
 \end{itemize}
@@ -311,14 +311,14 @@ of the following member functions:
 
 \begin{itemize}
   \item \ffunc[handleMessage()]{handleMessage(cMessage *msg)}. It
-     gets invoked with the message as parameter whenever the
+     is invoked with the message as parameter whenever the
      module receives a message. \ffunc{handleMessage()} is
      expected to \textit{process} the message, and then return.
      Simulation time never elapses inside \ffunc{handleMessage()}
      calls, only between them.
   \item \ffunc{activity()} is started as a coroutine\footnote{Cooperatively
-     scheduled thread, see later.} at the beginning of the simulation, and
-     then it keeps running until the end of simulation (or until the function
+     scheduled thread, explained later.} at the beginning of the simulation, and
+     it runs until the end of simulation (or until the function
      returns or otherwise terminates). Messages are obtained with
      \ffunc{receive()} calls. Simulation time elapses inside
      \ffunc{receive()} calls.
@@ -452,7 +452,7 @@ HelloModule::HelloModule() : cSimpleModule(16384) {...}
 
 \subsubsection{Basic Usage}
 
-The \ffunc{initialize()} and \ffunc{finish()} method are declared
+The \ffunc{initialize()} and \ffunc{finish()} methods are declared
 as part of \cclass{cComponent}, and provide the user the opportunity
 of running code at the beginning and at successful termination of the
 simulation.
@@ -461,7 +461,7 @@ The reason \ffunc{initialize()} exists is that usually you cannot put
 simulation-related code into the simple module
 constructor\index{module!constructor}, because the simulation model is still
 being setup when the constructor runs, and many required objects are not yet
-avaiable. In contrast, \ffunc{initialize()} gets called just before the
+avaiable. In contrast, \ffunc{initialize()} is called just before the
 simulation starts executing, when everything else has been set up
 already.
 
@@ -505,8 +505,8 @@ checks for that first, and cancels the message before deletion if necessary.
 \end{description}
 
 {\opp} prints the list of unreleased objects at the end of the simulation.
-Simulation models that dump \textit{"undisposed object ..."} messages need
-to get their module destructors fixed. As a temporary measure, these
+When a simulation model dumps \textit{"undisposed object ..."} messages, this indicates
+that the corresponding module destructors should be fixed. As a temporary measure, these
 messages may be hidden by setting \ttt{print-undisposed=false} in the
 configuration.
 
@@ -536,8 +536,8 @@ has terminated, and only if it terminated normally.
 with a runtime error.
 \end{note}
 
-The calling order is the reverse of the order of \ffunc{initialize()}: first
-submodules, then the encompassing compound module.
+The calling order for \ffunc{finish()} is the reverse of the order of 
+\ffunc{initialize()}: first submodules, then the encompassing compound module.
   \footnote{The way you can provide an \ffunc{initialize()} function
   for a compound module is to subclass \cclass{cCompoundModule}, and tell
   {\opp} to use the new class for the compound module. The latter is done
@@ -586,7 +586,7 @@ destructor\index{module!destructor}.
 \label{sec:simple-modules:multi-stage-init}
 
 
-In simulation models, when one-stage
+In simulation models where one-stage
 initialization\index{initialization} provided by \ffunc{initialize()}
 is not sufficient, one can use multi-stage
 initialization\index{initialization!multi-stage}.  Modules have two
@@ -621,12 +621,13 @@ simply calls \ffunc{initialize()}.
 
 \subsubsection{``End-of-Simulation'' Event}
 
-The task of \ffunc{finish()} is solved in several simulators
+The task of \ffunc{finish()} is implemented in several other simulators
 by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event.
 This is not a very good practice because the simulation programmer has to
 code the models (often represented as FSMs) so that they can \textit{always}
 properly respond to end-of-simulation events, in whichever state they are. This
 often makes program code unnecessarily complicated.
+ For this reason {\opp} does not use the end of simulation event.
 
 This can also be witnessed in the design of the PARSEC\index{PARSEC}
 simulation language (UCLA). Its predecessor Maisie used
@@ -768,9 +769,9 @@ accumulated in data members of the class at the end of the simulation.
   \item{Other good candidates are modules with a large state space and
       many arbitrary state transition possibilities (i.e. where there
       are many possible subsequent states for any state). Such algorithms
-      are difficult to program with \ffunc{activity()}, or the result is code
-      which is better suited for \ffunc{handleMessage()} (see rule of thumb
-      below). Most communication protocols are like this.}
+      are difficult to program with \ffunc{activity()}, and
+      better suited for \ffunc{handleMessage()} (see rule of thumb
+      below). This is the case for most communication protocols.}
 \end{enumerate}
 
 
@@ -821,7 +822,7 @@ methods to process separate packet types and separate timers.
 
 
 The code for simple packet generators and sinks programmed with \ffunc{handleMessage()} might
-be as simple as the following pseoudocode:
+be as simple as the following pseudocode:
 
 \begin{cpp}
 PacketGenerator::handleMessage(msg)
@@ -949,7 +950,7 @@ Cons:
   \item{need to redefine \ffunc{initialize()}}
 \end{itemize}
 
-Usually, \ffunc{handleMessage()} should be preferred to \ffunc{activity()}.
+Usually, \ffunc{handleMessage()} should be preferred over \ffunc{activity()}.
 
 
 \subsubsection{Other Simulators}
@@ -1101,7 +1102,7 @@ void Sink::handleMessage(cMessage *msg)
 
 
 \ffunc{activity()} is run in a coroutine\index{coroutine}.
-Coroutines are a sort of threads which are scheduled
+Coroutines are similar to threads, but are scheduled
 non-preemptively (this is also called cooperative
 multitasking\index{multitasking!cooperative}). From one coroutine you
 can switch to another coroutine by a
@@ -1141,7 +1142,7 @@ this (simplified):
 
 
 
-That is, when the module has an event\index{event}, the simulation
+That is, when a module has an event\index{event}, the simulation
 kernel transfers the control to the module's coroutine. It is expected
 that when the module ``decides it has finished the processing of the
 event'', it will transfer the control back to the simulation kernel by
@@ -1399,9 +1400,9 @@ long numJobs = par("numJobs").longValue();
 double processingDelay = par("processingDelay"); // using operator double()
 \end{cpp}
 
-Note that \cclass{cPar} has two methods for returning string value:
-\ffunc{stringValue()} which returns \ttt{const char *}, and
-\ffunc{stdstringValue()} which returns \ttt{std::string}.
+Note that \cclass{cPar} has two methods for returning a string value:
+\ffunc{stringValue()}, which returns \ttt{const char *}, and
+\ffunc{stdstringValue()}, which returns \ttt{std::string}.
 For volatile parameters, only \ffunc{stdstringValue()} may be used,
 but otherwise the two are interchangeable.
 
@@ -1419,12 +1420,12 @@ the \ffunc{doubleValue()} or \ffunc{longValue()} methods.
 A parameter can be declared \ttt{volatile} in the NED file. The \ttt{volatile}
 modifier indicates that a parameter is re-read every time a value is needed
 during simulation. Volatile parameters typically are used for things like
-random packet generation interval, and get values like \ttt{exponential(1.0)}
+random packet generation interval, and are assigned values like \ttt{exponential(1.0)}
 (numbers drawn from the exponential distribution with mean 1.0).
 
 In contrast, non-volatile NED parameters are constants, and reading their
 values multiple times is guaranteed to yield the same value. When a non-volatile
-parameter is assigned a random value like \ttt{exponential(1.0)}, it gets
+parameter is assigned a random value like \ttt{exponential(1.0)}, it is
 evaluated once at the beginning of the simulation and replaced with the result,
 so all reads will get same (randomly generated) value.
 
@@ -1462,7 +1463,7 @@ void Source::handleMessage(cMessage *msg)
 \end{cpp}
 
 This code looks up the the parameter by name every time. This lookup
-can be spared by storing the parameter object's pointer in a class variable,
+can be avoided by storing the parameter object's pointer in a class variable,
 resulting in the following code:
 
 \begin{cpp}
@@ -1509,7 +1510,7 @@ overloaded assignment operators for various types including \ttt{bool},
 \ttt{int}, \ttt{long}, \ttt{double}, \ttt{const char *}, and
 \ttt{cXMLElement *}.
 
-To let a module get notified about parameter changes, override
+To allow a module to be notified about parameter changes, override
 its \ffunc{handleParameterChange()} method, see
 \ref{sec:simple-modules:handleParameterChange}.
 
@@ -1529,7 +1530,7 @@ type is double or long.
 
 The \ffunc{str()} method returns the parameter's value in a string form.
 If the parameter contains an expression, then the string representation
-of the expression gets returned.
+of the expression is returned.
 
 An example usage of the above methods:
 
@@ -1552,7 +1553,7 @@ the unit of measurement associated with the parameter (\fprop{@unit} property in
 Further \cclass{cPar} methods and related classes like \cclass{cExpression} and
 \cclass{cDynamicExpression} are used by the NED infrastructure to set up and
 assign parameters. They are documented in the \tbf{API Reference}, but
-they are normally of little interest for users.
+they are normally of little interest to users.
 
 
 \subsection{Emulating Parameter Arrays}
@@ -1609,13 +1610,13 @@ while (tokenizer.hasMoreTokens())
 \subsection{handleParameterChange()}
 \label{sec:simple-modules:handleParameterChange}
 
-It is possible for modules to get notified when the value of a
+It is possible for modules to be notified when the value of a
 parameter changes at runtime, possibly due to another module
 dynamically changing it. A typical use is to re-read the changed
 parameter, and update the module's state if needed.
 
-To get notified, redefine the \ffunc{handleParameterChange()} method
-of the module class. This method method will be called back by the
+To enable notification, redefine the \ffunc{handleParameterChange()} method
+of the module class. This method will be called back by the
 simulation kernel when a module parameter changes, \textit{except during
 initialization and finalization}.
 
@@ -1746,7 +1747,7 @@ for (int i=0; i<gateSize("out"); i++) {
 }
 \end{cpp}
 
-A gate vector cannot have ``holes'' in it, that is, \ffunc{gate()}
+A gate vector cannot have ``holes'' in it; that is, \ffunc{gate()}
 never returns \ttt{NULL} or throws an error if the gate vector exists
 and the index is within bounds.
 
@@ -1813,11 +1814,11 @@ then gate vectors can be enumerated by index. Also, for inout
 gates \ffunc{getGateNames()} returns the base name without the
 \ttt{"\$i"}/\ttt{"\$o"} suffix, so the two directions
 need to be handled separately. The \ffunc{gateType(name)} method
-can be used to test whether a gate is inout, output or inout
+can be used to test whether a gate is inout, input or output
 (it returns \ttt{cGate::INOUT}, \ttt{cGate::INPUT}, or
 \ttt{cGate::OUTPUT}).
 
-Clearly, the above solution can be quite hairy. An alternative is to use
+Clearly, the above solution can be quite difficult. An alternative is to use
 the \cclass{GateIterator} class provided by \cclass{cModule}.
 It goes like this:
 
@@ -2006,8 +2007,7 @@ you find a channel whose \ffunc{isTransmissionChannel()} method returns
 cChannel *txchan = gate("ppp$o")->getTransmissionChannel();
 \end{cpp}
 
-Channels are covered in more detail in the \ref{sec:simple-modules:channels}
-section.
+Channels are covered in more detail in section \ref{sec:simple-modules:channels}.
 
 
 \section{Sending and Receiving Messages}
@@ -2016,8 +2016,8 @@ section.
 On an abstract level, an {\opp} simulation model is a set of
 simple modules that communicate with each other via message passing.
 The essence of simple modules is that they create, send, receive,
-store, modify, schedule and destroy messages -- everything else
-is supposed to facilitate this task, and collect statistics
+store, modify, schedule and destroy messages -- the rest of {\opp} exists 
+to facilitate this task, and collect statistics
 about what was going on.
 
 Messages in {\opp} are instances of the \cclass{cMessage} class or one of
@@ -2099,7 +2099,7 @@ There is also a convenience method called \ffunc{cancelAndDelete()}
 implemented as \ttt{if (msg!=NULL) delete cancelEvent(msg)};
 this method is primarily useful for writing destructors.
 
-The following example shows how to implement timeout in a simple
+The following example shows how to implement a timeout in a simple
 imaginary stop-and-wait protocol. The code utilizes a \ttt{timeoutEvent}
 module class data member that stores the pointer of the \cclass{cMessage} used
 as self-message, and compares it to the pointer of the received message
@@ -2228,8 +2228,8 @@ delete msg;
 
 You might have noticed that copying the message for the last gate is
 redundant: we can just send out the original message there.
-To spare looking up the gate by name for each send operation,
-we can use gate IDs and exploit the fact that the ID of gate
+Also, we can utilize gate IDs to avoid looking up the gate by name 
+for each send operation. We can exploit the fact that the ID of gate
 $k$ in a gate vector can be produced as ${baseID} + k$.
 The optimized version of the code looks like this:
 
@@ -2247,7 +2247,7 @@ When implementing retransmissions, you cannot just hold a pointer
 to the same message object and send it again and again -- you'd get
 the \textit{not owner of message} error on the first resend.
 
-Instead, whenever it comes to (re)transmission, you should create and
+Instead, for (re)transmission, you should create and
 send copies of the message, and retain the original.
 When you are sure there will not be any more retransmission,
 you can delete the original message.
@@ -2270,7 +2270,7 @@ delete packet;
 \subsection{Delayed Sending}
 \label{sec:simple-modules:delayed-sending}
 
-Sometimes it is needed for module to hold a message for some time interval,
+Sometimes it is necessary for module to hold a message for some time interval,
 and then send it. This can be achieved with self-messages, but there is a
 more straightforward method: delayed sending\index{delayed sending}. The
 following methods are provided for delayed sending:
@@ -2299,7 +2299,7 @@ The \ffunc{sendDelayed()} function does not internally perform a
 everything about the message sending up front, including the arrival time
 and the target module. This has two consequences. First,
 \ffunc{sendDelayed()} is more efficient than a \ffunc{scheduleAt()}
-followed by a \ffunc{send()} because it spares one event. The second, less
+followed by a \ffunc{send()} because it eliminates one event. The second, less
 pleasant consequence is that changes in the connection path during the
 delay will \textit{not} be taken into account (because everything is
 calculated in advance, before the changes take place).
@@ -2347,7 +2347,7 @@ sendDirect(new cMessage("msg"), targetModule, "in");
 At the target module, there is no difference between messages received
 directly and those received over connections.
 
-The target gate must be unconnected gate; in other words,
+The target gate must be an unconnected gate; in other words,
 modules must have dedicated gates to be able to receive messages
 sent via \ffunc{sendDirect()}. You cannot have a gate which receives
 messages via both connections and \ffunc{sendDirect()}.
@@ -2477,7 +2477,7 @@ transmission channel pointer once, and then call \ffunc{isBusy()} and
 \ffunc{getTransmissionFinishTime()} on the channel. When the network topology
 changes, the cached channel pointer needs to be updated; section
 \ref{sec:ch-simple-modules:model-change} describes the mechanism that can
-be used to get notified about topology changes.
+be used to get notifications about topology changes.
 
 \subsubsection{Receiving a Packet}
 
@@ -2511,7 +2511,7 @@ so it is usually done in the \ffunc{initialize()} method of the module.
 \end{center}
 \end{figure}
 
-When a packet gets delivered to the module, the packet's
+When a packet is delivered to the module, the packet's
 \ffunc{isReceptionStart()} method can be called to determine
 whether it corresponds to the start or end of the reception
 process (it should be the same as the \ffunc{getDeliverOnReceptionStart()}
@@ -2546,7 +2546,7 @@ call.
 
 Message sending is implemented like this: the arrival time\index{arrival time}
 and the bit error\index{bit error} flag of a message are calculated right inside
-the \ffunc{send()} call, then the message gets inserted into the FES\index{FES}
+the \ffunc{send()} call, then the message is inserted into the FES\index{FES}
 with the calculated arrival time. The message does \textit{not} get scheduled
 individually for each link. This implementation was chosen because of its
 run-time efficiency.
@@ -2653,7 +2653,7 @@ if (!queue.empty())
 
 \subsection{Overview}
 
-Channels encapsulate parameters and behaviour associated with connections.
+Channels encapsulate parameters and behavior associated with connections.
 Channel types are like simple modules, in the sense that they are declared
 in NED, and there are C++ implementation classes behind them. Section
 \ref{sec:ch-ned-lang:channels} describes NED language support for channels,
@@ -2684,7 +2684,7 @@ The parent module of a channel (as returned by the
 the connection. If a connection connects two modules that are children of
 the same compound module, the channel's parent is the compound module. If
 the connection connects a compound module to one of its submodules, the
-channel's parent is the compound module.
+channel's parent is also the compound module.
 
 
 \subsection{The Channel API}
@@ -2703,10 +2703,10 @@ encapsulated in the third function, \ffunc{process()}.
 
 \subsubsection{Transmission Channels}
 
-The first function, \ffunc{isTransmissionChannel()}, should tell whether
+The first function, \ffunc{isTransmissionChannel()}, determines whether
 the channel is a \textit{transmission channel}, i.e. one that models
-transmission duration. Transmission channels sets the duration field of
-packets sent through them (see the \ffunc{setDuration()} field of
+transmission duration. A transmission channel sets the duration field of
+packets sent through it (see the \ffunc{setDuration()} field of
 \cclass{cPacket}).
 
 The \ffunc{getTransmissionFinishTime()} function is only used with
@@ -2716,7 +2716,7 @@ modules that send on a transmission channel to find out when the channel
 becomes available. The channel's \ffunc{isBusy()} method is implemented
 simply as \ttt{return getTransmissionFinishTime() < simTime()}. For
 non-transmission channels, the \ffunc{getTransmissionFinishTime()} return
-value may be any simulation time which is less than or equals the current
+value may be any simulation time which is less than or equal to the current
 simulation time.
 
 \subsubsection{The process() Function}
@@ -2725,7 +2725,7 @@ The third function, \ffunc{process()} encapsulates the channel's
 functionality. However, before going into the details of this function
 we need to understand how {\opp} handles message sending on connections.
 
-What happens inside the \ffunc{send()} call is this. {\opp} follows the
+Inside the \ffunc{send()} call, {\opp} follows the
 connection path denoted by the \ffunc{getNextGate()} functions of gates,
 until it reaches the target module. At each ``hop'', the corresponding
 connection's channel (if the connection has one) gets a chance to add to
@@ -2766,7 +2766,7 @@ struct result_t {
 };
 \end{cpp}
 
-Plus it has a constructor that initializes all fields to zero; it is left
+It also has a constructor that initializes all fields to zero; it is left
 out for brevity.
 
 The method should model the transmission of the given message starting at
@@ -2777,7 +2777,7 @@ untouched.
 
 Transmission duration and bit error modeling only applies to packets (i.e.
 to instances of \cclass{cPacket}, where \cclass{cMessage}'s
-\ffunc{isPacket()} returns true), it should be skipped for non-packet
+\ffunc{isPacket()} returns true); it should be skipped for non-packet
 messages. If the transmission duration is nonzero, it is the method's
 responsibility to call \ttt{setDuration(duration)} on the packet. As a
 result of bit error modeling, the method may set the packet's bit error
@@ -2787,16 +2787,16 @@ If the method sets the \ttt{discard} flag in the result object, that
 means that the message object should be deleted by {\opp}; this
 facility can be used to model that the message gets lost in the channel.
 
-XXX why no timers: efficiency. one can program simple modules that act like channels.
+%XXX why no timers: efficiency. one can program simple modules that act like channels.
 
-XXX cGate: getTransmissionFinishTime() just delegates to the similar
-method of cChannel, so caution: if there's a delay before the transmission
-channel in the path, the delay should be manually deduced! or better,
-avoid delay channels in front of a transmission channel in a path.
+%XXX cGate: getTransmissionFinishTime() just delegates to the similar
+%method of cChannel, so caution: if there's a delay before the transmission
+%channel in the path, the delay should be manually deduced! or better,
+%avoid delay channels in front of a transmission channel in a path.
 
 \subsection{Channel Examples}
 
-To illustrate writing channels, we look at how the built-in channel
+To illustrate coding channel behavior, we look at how the built-in channel
 types are implemented.
 
 \cclass{cIdealChannel} lets through messages and packets without
@@ -2811,7 +2811,7 @@ void cIdealChannel::process(cMessage *msg, simtime_t t, result_t& result)
 \end{cpp}
 
 \cclass{cDelayChannel} implements propagation delay, and it can be
-disabled; in disabled state, messages sent though it will be discarded.
+disabled; in its disabled state, messages sent though it will be discarded.
 This class still models zero transmission duration, so its
 \ffunc{isTransmissionChannel()} and \ffunc{getTransmissionFinishTime()}
 methods still return \ttt{false} and $0s$. The \ffunc{process()} method
@@ -2855,7 +2855,7 @@ transmitted while a previous one is still being transmitted.
 It also sets the packet's \textit{duration} field, making sure
 that it has not been set before.
 
-FIXME XXX TODO ez igy egy eleg szar design. cGate-nek kellene lecsekkelnie, hogy ez a channel transmissionchannel-e, es minden boilerplate-et megcsinalni sajat maga. (pl packet->setDuration()-t is!)
+%FIXME XXX TODO ez igy egy eleg szar design. cGate-nek kellene lecsekkelnie, hogy ez a channel transmissionchannel-e, es minden boilerplate-et megcsinalni sajat maga. (pl packet->setDuration()-t is!)
 
 \begin{cpp}
 void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
@@ -2958,7 +2958,7 @@ The key points are:
 \begin{itemize}
 \item{There are two kinds of states:
     \textit{transient}\index{transient states} and
-    \textit{steady}\index{steady states}. At each event (that is, at
+    \textit{steady}\index{steady states}. On each event (that is, at
     each call to \ffunc{handleMessage()}), the FSM transitions out of
     the current (\textit{steady}) state, undergoes a series of state
     changes (runs through a number of \textit{transient} states), and
@@ -2980,14 +2980,14 @@ The key points are:
 that any state (or rather, its entry or exit code) may contain a
 further full-fledged \fmac{FSM\_Switch()} (see below). This allows you
 to introduce sub-states and thereby bring some structure into the
-state space if it would become too large.
+state space if it becomes too large.
 
 
 \subsubsection{The FSM API}
 
 
 FSM state is stored in an object of type \cclass{cFSM}. The possible states
-are defined by an enum; the enum is also a place to define, which
+are defined by an enum; the enum is also a place to define which
 state is transient and which is steady. In the following example, SLEEP
 and ACTIVE are steady states and SEND is transient (the numbers
 in parentheses must be unique within the state type and they are used
@@ -3098,7 +3098,7 @@ state, the simulation will terminate with an error message.
 \subsubsection{An Example}
 
 
-Let us write another bursty generator. It will have two
+Let us write another bursty traffic generator. It will have two
 states, SLEEP and ACTIVE. In the SLEEP state, the module does
 nothing. In the ACTIVE state, it sends messages with a given
 inter-arrival time. The code was taken from the Fifo2 sample
@@ -3292,7 +3292,7 @@ a submodule nested deeper than one level below. For example,
 compoundmod->getModuleByRelativePath("child[5].grandchild");
 \end{cpp}
 
-would give the same results as
+would give the same result as
 
 \begin{cpp}
 compoundmod->getSubmodule("child",5)->getSubmodule("grandchild");
@@ -3397,13 +3397,13 @@ and checks the result: if it is NULL, \ttt{check\_and\_cast} raises an {\opp} er
 Using \ttt{check\_and\_cast} saves you from writing error checking
 code: if \ttt{calleeModule} from the first line is NULL because
 the submodule named \ttt{"callee"} was not found, or if that
-module is actually not of type \ttt{Callee}, an error gets thrown
+module is actually not of type \ttt{Callee}, an error is thrown
 from \ttt{check\_and\_cast}.
 
 The second issue is how to let the simulation kernel know that
 a method call across modules is taking place. Why is this necessary
 in the first place? First, the simulation kernel always has to know which
-module's code is currently executing, in order to several internal
+module's code is currently executing, in order for several internal
 mechanisms to work correctly. (One such mechanism is ownership handling.)
 Second, the Tkenv simulation GUI can animate method calls,
 but to be able to do that, it has to know about them.
@@ -3461,7 +3461,7 @@ during simulation (though it is rarely useful.)
 
 
 To understand how dynamic module creation works, you have to know a
-bit about how normally {\opp} instantiates modules. Each module type
+bit about how {\opp} normally instantiates modules. Each module type
 (class) has a corresponding factory object of the class
 \cclass{cModuleType}. This object is created under the hood by the
 \fmac{Define\_Module()} macro, and it has a factory
@@ -3613,9 +3613,9 @@ module.
 
 \subsection{Module Deletion and finish()}
 
-\ffunc{finish()} gets called for \textit{all} modules at the end of the
-simulation, no matter how the modules were created. If a module gets
-dynamically deleted before that, \ffunc{finish()} will not get invoked
+\ffunc{finish()} is called for \textit{all} modules at the end of the
+simulation, no matter how the modules were created. If a module is
+dynamically deleted before that, \ffunc{finish()} will not be invoked
 (\ffunc{deleteModule()} does not do it). However, you can still manually
 invoke it before \ffunc{deleteModule()}.
 
@@ -3727,7 +3727,7 @@ Simulation signals can be used for:
 \begin{itemize}
   \item exposing statistical properties of the model, without specifying
         whether and how to record them
-  \item getting notified about simulation model changes at runtime, and
+  \item receiving notifications about simulation model changes at runtime, and
         acting upon them
   \item implementing a publish-subscribe style communication among modules;
         this is advantageous when the producer and consumer of the information
@@ -3739,7 +3739,7 @@ Simulation signals can be used for:
 
 Signals are emitted by components (modules and channels). Signals propagate
 on the module hierarchy up to the root. At any level, one can register
-listeners (callback objects); these listeners will get notified (called
+listeners (callback objects); these listeners will be notified (called
 back) whenever a signal value is emitted. The result of upwards propagation
 is that listeners registered at a compound module can receive signals from
 all components in that submodule tree. A listener registered at the system
@@ -3756,7 +3756,7 @@ typedef'd as \ttt{simsignal\_t}). The mapping of signal names to signal IDs is
 global, so all modules and channels asking to resolve a particular signal name
 will get back the same numeric signal ID.
 
-Listeners can subscribe for signal names or IDs, regardless of their
+Listeners can subscribe to signal names or IDs, regardless of their
 source. For example, if two different and unrelated module types, say
 \ttt{Queue} and \ttt{Buffer}, both emit a signal named \ttt{"length"}, then
 a listener that subscribes to \ttt{"length"} at some higher compound module
@@ -3910,8 +3910,8 @@ then you don't need to write a copy constructor, assignment operator, and
 can create a temporary object, and pass its pointer to the \ffunc{emit()}
 function.
 
-An example of custom notification classes is how model change notifications
-are fired (see \ref{sec:ch-simple-modules:model-change}). The data class
+An example of custom notification classes is the firing of model change notifications 
+(see \ref{sec:ch-simple-modules:model-change}). The data class
 that accompanies a signal that announces that a gate or gate vector is
 about to be created looks like this:
 
@@ -3957,7 +3957,7 @@ subscribe(lengthSignalId, listener);
 
 For convenience, the \ffunc{subscribe()} method has a variant
 that takes the signal name directly, so the \ffunc{registerSignal()}
-call can be spared:
+call can be omitted:
 
 \begin{cpp}
 cIListener *listener = ...;
@@ -3966,7 +3966,7 @@ subscribe("length", listener);
 
 One can also subscribe at other modules, not only the local one.
 For example, in order to get signals from all parts of the model,
-one can subscribe at the system module:
+one can subscribe at the system module level:
 
 \begin{cpp}
 cIListener *listener = ...;
@@ -4011,7 +4011,7 @@ if (isSubscribed(lengthSignalId, listener))
 For completeness, there are methods for getting the list of signals
 that the component has subscribed to (\ffunc{getLocalListenedSignals()}),
 and the list of listeners for a given signal (\ffunc{getLocalSignalListeners()}).
-The former returns \ttt{std::vector<simsignal\_t>}, the latter takes
+The former returns \ttt{std::vector<simsignal\_t>}; the latter takes
 a signal ID (\ttt{simsignal\_t}) and returns \ttt{std::vector<cIListener*>}.
 
 The following example prints the number of listeners for each signal:
@@ -4054,13 +4054,13 @@ This class has a number of virtual methods:
     data type. Whenever a signal is emitted (via \ffunc{emit()}),
     the matching \ffunc{receiveSignal()} methods of subscribed listeners
     are invoked.
-  \item \ffunc{finish()}: Gets called by a component on its local listeners
+  \item \ffunc{finish()} is called by a component on its local listeners
     after the component's \ffunc{finish()} method was called. If the listener
     is subscribed to multiple signals or at multiple components, the method
     will be called multiple times. Note that \ffunc{finish()} methods in general
     are not invoked if the simulation terminates with an error, so this method
     is not a place for doing cleanup.
-  \item \ffunc{listenerAdded()}, \ffunc{listenerRemoved()}. They are called
+  \item \ffunc{listenerAdded()}, \ffunc{listenerRemoved()} are called
     when this listener object is subscribed/unsubscribed to (from) a signal.
     These methods give the opportunity for listeners to track whether
     and where they are subscribed. It is also OK for a listener to delete
@@ -4069,11 +4069,11 @@ This class has a number of virtual methods:
     is still subscribed.
 \end{itemize}
 
-Since \cclass{cIListener} has too many pure virtual methods, it is more
+Since \cclass{cIListener} has a large number of pure virtual methods, it is more
 convenient to subclass from \cclass{cListener}, a do-nothing implementation
 instead. It defines \ffunc{finish()}, \ffunc{listenerAdded()} and
 \ffunc{listenerRemoved()} with an empty body, and the \ffunc{receiveSignal()}
-methods with a bodies that throw a \ttt{"Data type not supported"} error.
+methods with bodies that throw a \ttt{"Data type not supported"} error.
 You can redefine the \ffunc{receiveSignal()} method(s) whose data type
 you want to support, and signals emitted with other (unexpected) data
 types will result in an error instead of going unnoticed.
@@ -4086,14 +4086,14 @@ the same order in which listeners were subscribed.)
 
 When a component (module or channel) is deleted, it automatically
 unsubscribes (but does not delete) the listeners it has. When a
-module gets deleted, it first unsubscribes all listeners from all
+module is deleted, it first unsubscribes all listeners from all
 modules and channels in its submodule tree before starting
 to recursively delete the modules and channels themselves.
 
-If a listener gets deleted, it must already be unsubscribed from all
+If a listener is deleted, it must already be unsubscribed from all
 components at that point. If it is not unsubscribed, pointers to the dead
 listener object will be left in the components' listener lists, and the
-components will crash inside an \ffunc{emit()} call, or latest when they
+components will crash inside an \ffunc{emit()} call, or when they
 try to invoke \ffunc{listenerRemoved()} on the dead listener from their
 destructors. The \cclass{cIListener} class contains a subscription count,
 and prints a warning message when it is not zero in the destructor.
@@ -4114,7 +4114,7 @@ In simulation models it is often useful to hold references to other
 modules, a connecting channel or other objects, or to cache information
 derived from the model topology. However, such pointers or data may
 become invalid when the model changes at runtime, and need to be updated
-or recalculated. The problem is how to get notified that something has
+or recalculated. The problem is how to get notification that something has
 changed in the model.
 
 \begin{note}
@@ -4125,7 +4125,7 @@ changed in the model.
 
 The solution is, of course, signals. {\opp} has two built-in signals,
 \fmac{PRE\_MODEL\_CHANGE} and \fmac{POST\_MODEL\_CHANGE} (these macros
-are \ttt{simsignal\_t} values, not names) that get emitted before and
+are \ttt{simsignal\_t} values, not names) that are emitted before and
 after each model change.
 
 Pre/post model change notifications are emitted with data objects that
@@ -4155,7 +4155,7 @@ out what notification arrived.
   when exactly they get fired, and what one needs to be careful about when using them.
 \end{note}
 
-An example listener that prints a message when a module gets deleted:
+An example listener that prints a message when a module is deleted:
 
 \begin{cpp}
 class MyListener : public cListener
@@ -4238,7 +4238,7 @@ With the signals approach the above goals can be fulfilled.
 
 Emitting signals for statistical purposes does not differ much from
 emitting signals for any other purpose. Statistic signals are primarily
-expected to emit numeric values, so the overloaded \ffunc{emit()} functions
+expected to contain numeric values, so the overloaded \ffunc{emit()} functions
 that take \ttt{long}, \ttt{double} and \ttt{simtime\_t} are going to be the
 most useful ones.
 
@@ -4317,7 +4317,7 @@ class cITimestampedValue {
 \ffunc{getSignalValue()} is pure virtual (it must return some value),
 but \ffunc{getSignalTime()} has a default implementation that
 returns the current simulation time. Note the \ttt{signalID} argument
-that allow the same class to serve multiple signals (i.e. to return
+that allows the same class to serve multiple signals (i.e. to return
 different values for each).
 
 
@@ -4374,7 +4374,7 @@ their time avarage, minimum, maximum, a histogram, etc. The list of
 listeners are added depends on the configuration; or if the configuration
 does not specify it, the \ttt{modeHint=} property key will be used.
 
-The keys and values in the property will get recorded into the output files
+The keys and values in the property will be recorded into the output files
 as result attributes, and will be available for result processing.
 
 The following property keys (result attributes) are supported:
@@ -4400,7 +4400,7 @@ by the {\opp} runtime or tools.
 
 Possible values for \ttt{modeHint} include \ttt{count}, \ttt{last},
 \ttt{sum}, \ttt{mean}, \ttt{min}, \ttt{max}, \ttt{timeavg}, \ttt{stats},
-\ttt{histogram}; the complete list is \ref{sec:ana-sim:scalar-results}.
+\ttt{histogram}; the complete list is given in \ref{sec:ana-sim:scalar-results}.
 
 
 %
