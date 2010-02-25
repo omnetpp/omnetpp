@@ -1852,8 +1852,8 @@ to remove one half of an inout gate (e.g. \ttt{"gate\$o"}), or to set
 different gate vector sizes on the two halves of an inout gate vector.
 
 The \cclass{cModule} methods for adding and removing gates are
-\ffunc{addGate(name,type,isvector=false)} and \ffunc{deleteGate(name)}.
-Gate vector size can be changed by using \ffunc{setGateSize(name,size)}.
+\ffunc[addGate()]{addGate(name,type,isvector=false)} and \ffunc[deleteGate()]{deleteGate(name)}.
+Gate vector size can be changed by using \ffunc[setGateSize()]{setGateSize(name,size)}.
 None of these methods accept \ttt{"\$i"} / \ttt{"\$o"} suffix in gate names.
 
 \begin{note}
@@ -4381,7 +4381,7 @@ records emitted values to an output vector. If scalar recording is enabled,
 the runtime adds appropriate listeners that compute a single value from the
 emitted ones and record it in the \ffunc{finish()} phase. There are various
 listeners that compute and record the count, the sum of values, their mean,
-their time avarage, minimum, maximum, a histogram, etc. The listeners that are 
+their time avarage, minimum, maximum, a histogram, etc. The listeners that are
 added to the list depend on the configuration; or if the configuration
 does not specify it, the \ttt{modeHint=} property key will be used.
 

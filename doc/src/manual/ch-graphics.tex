@@ -167,9 +167,8 @@ The following example colorizes the \ttt{block/source} icon, 20\% red
 
 If you want to show state information about your module, you can use the \ttt{i2} tag to
 add a small status icon to your main icon. This icon is displayed in the upper right corner
-of your main icon. In most cases the \ttt{i2} tag is specified at runtime using
-the \ffunc{setDisplayString()} method, so the icon can be changed dynamically based on the
-module's internal state.
+of your main icon. Since display strings can be changed at runtime,
+the \ttt{i2} icon can be used to dynamically display the module's current state.
 
 \begin{ned}
 @display("i=block/queue;i2=status/busy")

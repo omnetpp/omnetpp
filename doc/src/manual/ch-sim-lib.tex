@@ -45,8 +45,9 @@ This chapter discusses the rest of the simulation library:
 \label{sec:ch-sim-lib:cobject}
 
 
-Classes in the {\opp} simulation library are derived from \cclass{cOwnedObject}.
-Functionality and conventions that come from \cclass{cOwnedObject}:
+Most classes in the {\opp} simulation library are derived from \cclass{cObject}
+or its subclass \cclass{cOwnedObject}. Functionality and conventions that
+come from \cclass{cObject}:
 \begin{itemize}
   \item{name attribute}
   \item{\ffunc{getClassName()} member and other member functions giving textual
@@ -57,8 +58,7 @@ Functionality and conventions that come from \cclass{cOwnedObject}:
   \item{support for inspecting the object in graphical user interfaces (Tkenv)}
 \end{itemize}
 
-
-Classes inherit and redefine several \cclass{cOwnedObject} member functions;
+Classes inherit and redefine several \cclass{cObject} member functions;
 in the following we'll discuss some of the practically important
 ones.
 
@@ -100,13 +100,13 @@ const char *className = msg->getClassName(); // returns "cMessage"
 \label{sec:sim-lib:name}
 
 Gates, parameters and modules all have names in the NED files. At runtime,
-those names are stored in the corresponding C++ objects, and are available 
+those names are stored in the corresponding C++ objects, and are available
 for the code with the \ffunc{getName()} method. Other objects such as messages,
-queues, result collection objects, etc. may also have names. 
-  \footnote{Object name is inherited from \cclass{cObject} (which defines 
-  \ffunc{getName()}), and from its subclass \cclass{cNamedObject} (which
-  defines \ffunc{setName()} and actually stores the name string).}
-Object names are generally very useful when you are tracing, debugging or 
+queues, result collection objects, etc. may also have names.
+  \footnote{Object name is inherited from \cclass{cObject}, which defines
+  \ffunc{getName()}; and from its subclass \cclass{cNamedObject}, which
+  defines \ffunc{setName()} and actually stores the name string.}
+Object names are generally very useful when you are tracing, debugging or
 demonstrating a simulation model.
 
 For example, you can get the name of a message object like this:
@@ -118,9 +118,9 @@ const char *name = msg->getName();
 The \ffunc{getName()} method will never return \ttt{NULL}, the absence
 of name string is always returned as the empty string (\ttt{""}).
 
-By convention, the object name is the first argument to the constructor 
-of every class, and it defaults to the empty string. To create an object with 
-a name, pass the name string (a \ttt{const char *} pointer) as the first 
+By convention, the object name is the first argument to the constructor
+of every class, and it defaults to the empty string. To create an object with
+a name, pass the name string (a \ttt{const char *} pointer) as the first
 argument of the constructor:
 
 \begin{cpp}
@@ -138,8 +138,8 @@ and not just store the pointer passed to them.
   \footnote{In a simulation, there are usually many objects with the same name:
   modules, parameters, gates, etc. To conserve memory, several classes
   keep names in a shared, reference-counted \textit{name pool} instead of
-  making separate copies for each object. The runtime cost of looking up an 
-  existing string in the name pool and incrementing its reference count 
+  making separate copies for each object. The runtime cost of looking up an
+  existing string in the name pool and incrementing its reference count
   also compares favourably to the cost of allocation and copying.}
 
 For convenience and efficiency reasons, the empty string \ttt{""}
@@ -487,8 +487,8 @@ double p = dblrand();      // dblrand() produces numbers in [0,1)
 They also have a counterparts that use generator \textit{k}:
 
 \begin{cpp}
-int dice = 1 + genk_intrand(k,6); // uses generator k
-double prob = genk_dblrand(k);    // ""
+int dice = 1 + intrand(k,6); // uses generator k
+double prob = dblrand(k);    // ""
 \end{cpp}
 
 The underlying RNG objects are subclassed from \cclass{cRNG},
@@ -584,7 +584,7 @@ the statistical classes.
 
 
 \cclass{cQueue} is a container class that acts as a queue.
-\cclass{cQueue} can hold objects of type derived from \cclass{cOwnedObject}
+\cclass{cQueue} can hold objects of type derived from \cclass{cObject}
 (almost all classes from the {\opp} library), such as
 \cclass{cMessage}, \cclass{cPar}, etc. Internally, \cclass{cQueue}
 uses a double-linked list to store the elements.
@@ -652,16 +652,14 @@ queue.remove(msg);
 By default, \cclass{cQueue} implements a FIFO, but it can also act as
 a priority queue, that is, it can keep the inserted objects
 ordered\index{queue!order}.  If you want to use this feature, you have
-to provide a function that takes two \cclass{cOwnedObject} pointers,
+to provide a function that takes two \cclass{cObject} pointers,
 compares the two objects and returns -1, 0 or 1 as the result (see the
 reference for details).  An example of setting up an ordered
 \cclass{cQueue}:
 
 \begin{cpp}
-cQueue sortedqueue("sortedqueue", cOwnedObject::cmpbyname, true );
-                        // sorted by object name, ascending
+cQueue queue("queue", someCompareFunc);
 \end{cpp}
-
 
 If the queue object is set up as an ordered queue, the \ffunc{insert()}
 function uses the ordering function: it searches the queue contents
@@ -704,7 +702,7 @@ for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 
 
 \cclass{cArray} is a container class that holds objects derived from
-\cclass{cOwnedObject}. \cclass{cArray} stores the pointers of the objects
+\cclass{cObject}. \cclass{cArray} stores the pointers of the objects
 inserted instead of making copies. \cclass{cArray} works as an array,
 but it grows automatically when it gets full. Internally,
 \cclass{cArray} is implemented with an array of pointers; when the array
@@ -787,11 +785,11 @@ returns the largest index plus one.
 \begin{cpp}
 for (int i=0; i<array.size(); i++)
 {
-  if (array[i]) // is this position used?
-  {
-    cOwnedObject *obj = array[i];
-    ev << obj->getName() << endl;
-  }
+    if (array[i]) // is this position used?
+    {
+        cObject *obj = array[i];
+        ev << obj->getName() << endl;
+    }
 }
 \end{cpp}
 
@@ -1943,7 +1941,7 @@ or selected objects of the simulation (including the objects created
 in module functions by the user) into the snapshot file\index{snapshot file}.
 
 \begin{cpp}
-bool snapshot(cOwnedObject *obj = &simulation, const char *label = NULL);
+bool snapshot(cObject *obj = &simulation, const char *label = NULL);
 \end{cpp}
 
 The function can be called from module functions, like this:

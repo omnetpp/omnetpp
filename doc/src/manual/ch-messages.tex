@@ -25,7 +25,7 @@ of the simulation programmer:
     which can be freely used by the simulation programmer. The message
     name gets displayed at many places in the graphical runtime interface,
     so it is generally useful to choose a descriptive name. Message name
-    is inherited from \cclass{cOwnedObject} (see section
+    is inherited from \cclass{cObject} (see section
     \ref{sec:ch-sim-lib:cobject}).
   \item \textit{Message kind} is an integer field.
     Some negative values are reserved by the simulation library, but zero
@@ -441,7 +441,7 @@ way to do that is via message definitions, described in chapter
 
 The \cclass{cMessage} class has an internal \cclass{cArray} object which can
 carry objects\index{message!attaching objects}. Only objects
-that are derived from \cclass{cOwnedObject} (most {\opp} classes are so) can be attached.
+that are derived from \cclass{cObject} (most {\opp} classes are so) can be attached.
 The \ffunc{addObject()}, \ffunc{getObject()}, \ffunc{hasObject()},
 \ffunc{removeObject()} methods use the object name
 as the key to the array. An example:
@@ -465,7 +465,7 @@ If you do not attach anything to the message and do not call the
 \ffunc{getParList()} function, the internal \cclass{cArray} object
 will not be created. This saves both storage and execution time.
 
-You can attach non-object types (or non-\cclass{cOwnedObject} objects) to
+You can attach non-object types (or non-\cclass{cObject} objects) to
 the message\index{message!attaching non-object types} by using
 \cclass{cMsgPar}'s \ttt{void*} pointer 'P') type (see later in the description
 of \cclass{cMsgPar}). An example:
@@ -947,7 +947,7 @@ Until now we have used the \fkeyword{message} keyword to define classes, which
 implies that the base class is \cclass{cMessage}, either directly or indirectly.
 
 But as part of complex messages, you will need structs and other classes
-(rooted or not rooted in \cclass{cOwnedObject}) as building blocks.
+(rooted or not rooted in \cclass{cObject}) as building blocks.
 Classes can be created with the \fkeyword{class} class keyword;
 structs we'll cover in the next section.
 
@@ -955,12 +955,12 @@ The syntax for defining classes is almost the same as defining messages,
 only the \fkeyword{class} keyword is used instead of \fkeyword{message}.
 
 Slightly different code is generated for classes that are rooted in
-\cclass{cOwnedObject} than for those which are not.
+\cclass{cObject} than for those which are not.
 If there is no \ttt{extends}, the generated class will not be
-derived from \cclass{cOwnedObject}, thus it will not have \ffunc{getName()},
+derived from \cclass{cObject}, thus it will not have \ffunc{getName()},
 \ffunc{getClassName()}, etc. methods.
 To create a class with those methods, you have to explicitly write
-\ttt{extends cOwnedObject}.
+\ttt{extends cObject} or \ttt{extends cOwnedObject}.
 
 \begin{msg}
 class MyClass extends cOwnedObject
@@ -1124,7 +1124,7 @@ is important because the generated code differs at places.
 The generated code is set up so that if you incidentally
 forget the \fkeyword{noncobject} keyword (and thereby mislead the
 message compiler into thinking that your class is rooted in
-\cclass{cOwnedObject} when in fact it is not), you will get a C++ compiler
+\cclass{cObject} when in fact it is not), you will get a C++ compiler
 error in the generated header file.
 
 
@@ -1411,9 +1411,9 @@ This section attempts to summarize the possibilities.
 You can generate:
 
 \begin{itemize}
-  \item  classes rooted in \cclass{cOwnedObject}
+  \item  classes rooted in \cclass{cObject}
   \item  messages (default base class is \cclass{cMessage})
-  \item  classes not rooted in \cclass{cOwnedObject}
+  \item  classes not rooted in \cclass{cObject}
   \item  plain C structs
 \end{itemize}
 
@@ -1425,7 +1425,7 @@ The following data types are supported for fields:
     \ttt{unsigned long}, \ttt{double}
   \item  \ttt{string}, a dynamically allocated string, presented as \ttt{const char *}
   \item  fixed-size arrays of the above types
-  \item  structs, classes (both rooted and not rooted in \cclass{cOwnedObject}),
+  \item  structs, classes (both rooted and not rooted in \cclass{cObject}),
     declared with the message syntax or externally in C++ code
   \item  variable-sized arrays of the above types (stored as a dynamically
     allocated array plus an integer for the array size)
