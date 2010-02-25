@@ -48,6 +48,8 @@ To install the required packages, type in the terminal:
 At the confirmation questions ('Do you want to continue? [Y/N]'), answer 'Y'.
 The installer will also require you to accept the 'sun-java6' agreement.
 
+image::pictures/terminal-package-install.png[title="Synaptic Package Manager",align="center",scaledwidth="75%"]
+
 [NOTE]
 ===============================================================
 You may get the following error message:
@@ -84,6 +86,8 @@ blt, libxml2-dev, zlib1g-dev, sun-java6-jre, xulrunner, graphviz, doxygen,
 openmpi-bin, libopenmpi-dev
 
 'sun-java6-jre' will require you accept the license agreement.
+
+image::pictures/ubuntu-synaptic.png[title="Synaptic Package Manager",align="center",scaledwidth="75%"]
 
 Click 'Apply', then in the 'Apply the following changes?' window, click 'Apply' again.
 In the 'Changes applied' window, click 'Close'.

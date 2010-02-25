@@ -220,6 +220,9 @@ The `configure` script detects installed software and configuration of your
 system. It writes the results into the `Makefile.inc` file, which will be
 read by the makefiles during the build process.
 
+image::pictures/terminal-configuration.png[title="Configuring @OMNETPP@",align="center",scaledwidth="75%"]
+
+
 Normally, the `configure` script needs to be running under the graphical
 environment (X11) in order to test for `wish`, the Tcl/Tk shell. If you are logged in
 via an ssh session, or there is some other reason why X is not running,
@@ -252,6 +255,8 @@ When `./configure` has finished, you can compile @OMNETPP@.
 Type in the terminal:
 
   $ make
+
+image::pictures/terminal-make.png[title="Building @OMNETPP@",align="center",scaledwidth="75%"]
 
 [TIP]
 ===============================================================
@@ -298,6 +303,8 @@ The IDE is supported only on Windows, Mac OS X (x86) and Linux (x86,x64).
 You can run the IDE by typing the following command in the terminal:
 
   $ @omnetpp@
+
+image::pictures/ide-initial.png[title="Integrated Development Environment",align="center",scaledwidth="75%"]
 
 If you would like to be able to access the IDE from the application launcher or via
 a desktop shortcut, run one or both of the commands below:
