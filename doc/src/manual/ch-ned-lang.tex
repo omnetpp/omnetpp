@@ -86,7 +86,7 @@ other systems like SQL databases, and so on.
 \end{note}
 
 
-\section{Warmup}
+\section{NED Quickstart}
 \label{sec:ch-ned-lang:warmup}
 
 In this section we introduce the NED language via a complete and
@@ -546,8 +546,7 @@ namespace.
 Compound modules may be extended via subclassing. Inheritance may add new
 submodules and new connections as well, not only parameters and gates.
 Also, one may refer to inherited submodules, to inherited types etc. What
-is not possible is to "de-inherit" submodules or connections, or to modify
-inherited ones.
+is not possible is to "de-inherit" or modify submodules or connections.
 
 In the following example, we show how to assemble common protocols
 into a "stub" for wireless hosts, and add user agents via
@@ -1686,7 +1685,7 @@ Whenever the syntax does not permit some value, it should be enclosed in
 quotes. This quoting does not affect the value because
 the parser automatically drops one layer of quotes; thus, \ttt{@class(TCP)}
 and \ttt{@class("TCP")} are exactly the same. If you want the quotes
-to be part of the value, use escaping:
+to be part of the value, use escaped quotes:
 \ttt{@foo("{\textbackslash}"some string{\textbackslash}"")}.
 
 There are also some conventions. One can use properties to tag some NED element

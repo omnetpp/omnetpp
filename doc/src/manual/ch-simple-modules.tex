@@ -461,7 +461,7 @@ The reason \ffunc{initialize()} exists is that usually you cannot put
 simulation-related code into the simple module
 constructor\index{module!constructor}, because the simulation model is still
 being setup when the constructor runs, and many required objects are not yet
-avaiable. In contrast, \ffunc{initialize()} is called just before the
+available. In contrast, \ffunc{initialize()} is called just before the
 simulation starts executing, when everything else has been set up
 already.
 
@@ -2471,7 +2471,7 @@ convenience.
 
 \begin{note}
   \cclass{cGate}'s \ffunc{getTransmissionFinishTime()} function just
-  delegates to the same method of the transmission channel in the path, so
+  delegates to the similar method of the transmission channel in the path, so
   one should be careful: if there is a channel with a propagation delay in
   the path before the transmission channel, the delay should be manually
   substracted from the value returned by \ffunc{getTransmissionFinishTime()}!
@@ -3109,7 +3109,7 @@ state, the simulation will terminate with an error message.
 \subsubsection{An Example}
 
 
-Let us write another bursty traffic generator. It will have two
+Let us write another bursty packet generator. It will have two
 states, SLEEP and ACTIVE. In the SLEEP state, the module does
 nothing. In the ACTIVE state, it sends messages with a given
 inter-arrival time. The code was taken from the Fifo2 sample
@@ -4111,8 +4111,8 @@ and prints a warning message when it is not zero in the destructor.
 
 \begin{note}
   If your module has added listeners to other modules (e.g. the toplevel
-  module), these listeners must be unsubscribed latest in the module
-  destructor. Remember to make sure the modules still exist before you
+  module), these listeners must be unsubscribed in the module
+  destructor at latest. Remember to make sure the modules still exist before you
   call \ffunc{unsubscribe()} on them, unless they are an ancestor
   of your module in the module tree.
 \end{note}
@@ -4381,8 +4381,8 @@ records emitted values to an output vector. If scalar recording is enabled,
 the runtime adds appropriate listeners that compute a single value from the
 emitted ones and record it in the \ffunc{finish()} phase. There are various
 listeners that compute and record the count, the sum of values, their mean,
-their time avarage, minimum, maximum, a histogram, etc. The list of
-listeners are added depends on the configuration; or if the configuration
+their time avarage, minimum, maximum, a histogram, etc. The listeners that are 
+added to the list depend on the configuration; or if the configuration
 does not specify it, the \ttt{modeHint=} property key will be used.
 
 The keys and values in the property will be recorded into the output files
