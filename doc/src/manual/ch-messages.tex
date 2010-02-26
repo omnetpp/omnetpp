@@ -16,14 +16,14 @@ datagrams, transport packets, etc.) in a communication network, and
 both \cclass{cMessage} and \cclass{cPacket} to create new types and to
 add data.
 
-\cclass{cMessage} has the following fields. Some are used by
-the simulation kernel, others are provided for the convenience
+\cclass{cMessage} has the following fields; some are used by
+the simulation kernel, and others are provided for the convenience
 of the simulation programmer:
 
 \begin{itemize}
   \item The \textit{name} field is a string (\ttt{const char *}),
     which can be freely used by the simulation programmer. The message
-    name gets displayed at many places in the graphical runtime interface,
+    name is displayed at many places in the graphical runtime interface,
     so it is generally useful to choose a descriptive name. Message name
     is inherited from \cclass{cObject} (see section
     \ref{sec:ch-sim-lib:cobject}).
@@ -41,7 +41,7 @@ of the simulation programmer:
     and should not be modified from the model. These fields are primarily
     used internally by the simulation kernel while the message is in the
     future events set (FES)\index{FES}, but the information is still in
-    the message object when the message gets delivered to a module.
+    the message object when the message is delivered to a module.
   \item \textit{Time stamp} (not to be confused with \textit{arrival time})
     is a utility field, which the programmer can freely use for any purpose.
     The time stamp is not examined or changed by the simulation kernel at all.
@@ -124,7 +124,7 @@ flag\index{message!error flag} and the time stamp\index{message!time
   stamp}. The \ffunc{setTimeStamp()} function without any argument
 sets the time stamp to the current simulation time.
 \ffunc{setByteLength()} sets the same field as \ffunc{setBitLength()},
-only the parameters gets internally multiplied by 8.
+except that the parameter is internally multiplied by 8.
 
 The values can be obtained by the following functions:
 
@@ -164,9 +164,9 @@ including message parameters and encapsulated messages.
 \subsubsection{Using a Message as Self-Message}
 
 Messages are often used to represent events internal to a module,
-such as a periodically firing timer on expiry of a timeout.
+such as a periodically firing timer to represent expiry of a timeout.
 A message is termed \textit{self-message} when it is used
-in such a scenario -- otherwise self-messages are normal messages,
+in such a scenario -- otherwise self-messages are normal messages
 of class \cclass{cMessage} or a class derived from it.
 
 When a message is delivered to a module by the simulation kernel,
@@ -271,7 +271,7 @@ additional information to be attached to packets. For example,
 a TCP implementation sending down a TCP packet to IP will want
 to specify the destination IP address and possibly
 other parameters. When IP passes up a packet to TCP after
-decapsulation from the IP header, it'll want to let TCP know
+decapsulation from the IP header, it will want to let TCP know
 at least the source IP address.
 
 This additional information is represented by \textit{control info}
@@ -337,10 +337,10 @@ TCPSegment *tcpseg = new TCPSegment("tcp"); // subclassed from cPacket
 tcpseg->setByteLength(24);
 
 tcpseg->encapsulate(data);
-ev << tcpseg->getByteLength() << endl; // --> 1024+24 = 1028
+ev << tcpseg->getByteLength() << endl; // --> 1024+24 = 1048
 \end{cpp}
 
-A packet can only hold one encapsulated packet at a time, the
+A packet can only hold one encapsulated packet at a time; the
 second \ffunc{encapsulate()} call will result in an error. It is also
 an error if the packet to be encapsulated is not owned by the
 module.
@@ -367,16 +367,16 @@ encapsulated packets, meaning that if you \ffunc{dup()} a packet
 that contains an encapsulated packet, then the encapsulated packet will
 not be duplicated, only a reference count incremented. Duplication of
 the encapsulated packet is deferred until \ffunc{decapsulate()}
-actually gets called. If the outer packet gets deleted without its
+actually gets called. If the outer packet is deleted without its
 \ffunc{decapsulate()} method ever being called, then the reference
-count of the encapsulated packet simply gets decremented. The
+count of the encapsulated packet is simply decremented. The
 encapsulated packet is deleted when its reference count reaches
 zero.
 
 Reference counting can significantly improve performance, especially
 in LAN and wireless scenarios. For example, in the simulation of a
 broadcast LAN or WLAN, the IP, TCP and higher layer packets won't
-get duplicated (and then discarded without being used) if the
+be duplicated (and then discarded without being used) if the
 MAC address doesn't match in the first place.
 
 The reference counting mechanism works transparently. However, there
@@ -425,7 +425,7 @@ You will also have to provide an \ffunc{operator=()} method to
 make sure your message objects can be copied and duplicated
 properly -- this is something often needed in simulations
 (think of broadcasts and retransmissions!). Section
-\ref{sec:ch-sim-lib:deriving-new-classes} contains more info
+\ref{sec:ch-sim-lib:deriving-new-classes} contains more 
 about the things you need to take care of when deriving new classes.
 
 
@@ -459,7 +459,7 @@ if (msg->hasObject("pklenDistr"))
 \end{cpp}
 
 You should take care that names of the attached objects don't
-clash with each other or with \cclass{cMsgPar} parameter names
+conflict with each other or with \cclass{cMsgPar} parameter names
 (see next section).
 If you do not attach anything to the message and do not call the
 \ffunc{getParList()} function, the internal \cclass{cArray} object
@@ -491,10 +491,10 @@ large memory and execution time overhead. \cclass{cMsgPar}'s are
 heavy-weight and fairly complex objects themselves.
 It has been reported that using \cclass{cMsgPar} message parameters
 might account for a large part of execution time, sometimes as much as 80\%.
-Using \cclass{cMsgPar}s is also error-prone because \cclass{cMsgPar} objects
+Using \cclass{cMsgPar} is also error-prone because \cclass{cMsgPar} objects
 have to be added dynamically and individually to each message object.
 In contrast, subclassing benefits from static type checking:
-if you mistype the name of a field in the C++ code, already the compiler
+if you mistype the name of a field in the C++ code, the compiler
 can detect the mistake.
 
 If you still need \cclass{cMsgPar}s for some reason, here is a short summary.
@@ -553,9 +553,9 @@ message contents. C++ code is automatically generated from message
 definitions, saving you a lot of typing.
 
 A common source of complaint about code generators in general is
-lost flexibility: if you have a different idea how the generated
-code should look like, there is little you can do about it.
-In {\opp}, however, there is nothing to worry about: you can
+lack of flexibility: if you have a different idea how the generated
+code should look, there is little you can do about it.
+In {\opp}, however, you can
 customize the generated class to any extent you like.
 Even if you decide to heavily customize the generated class,
 message definitions still save you a great deal of manual work.
@@ -588,7 +588,7 @@ Tkenv to inspect these data structures.
 If you process \ttt{mypacket.msg} with the message subclassing compiler, it will
 create the following files for you: \ttt{mypacket\_m.h} and \ttt{mypacket\_m.cc}.
 \ttt{mypacket\_m.h} contains the declaration of the \ttt{MyPacket} C++ class, and
-it should be included into your C++ sources where you need to handle
+it should be included with your C++ sources where you need to handle
 \ttt{MyPacket} objects.
 
 The generated \ttt{mypacket\_m.h} will contain the following class declaration:
@@ -624,7 +624,7 @@ to generate your makefiles, the latter will be automatically taken care of.)
 
 There can be some confusion about the purpose and
 concept of message definitions, so it might be a good idea
-to deal with them right here.
+to deal with that right here.
 
 It is \textit{\textbf{not:}}
 
@@ -790,7 +790,7 @@ Initialization code will be placed in the constructor of the generated class.
 \subsubsection{Enum Declarations}
 
 You can declare that an \fkeyword{int} (or other integral type) field
-takes values from an enum. The message compiler can than generate code
+takes values from an enum. The message compiler can then generate code
 that allows Tkenv display the symbolic value of the field.
 
 Example:
@@ -948,7 +948,7 @@ implies that the base class is \cclass{cMessage}, either directly or indirectly.
 
 But as part of complex messages, you will need structs and other classes
 (rooted or not rooted in \cclass{cObject}) as building blocks.
-Classes can be created with the \fkeyword{class} class keyword;
+Classes can be created with the \fkeyword{class} keyword;
 structs we'll cover in the next section.
 
 The syntax for defining classes is almost the same as defining messages,
@@ -1002,8 +1002,8 @@ struct MyStruct
 };
 \end{cpp}
 
-A struct can have primitive types or other structs as fields. It cannot
-have string or class as field.
+A struct can have primitive types or other structs as fields, but it cannot
+have string or class fields.
 
 Inheritance is supported for structs:
 
@@ -1030,7 +1030,7 @@ But because a struct has no member functions, there are limitations:
 
 \subsubsection{Using Structs and Classes as Fields}
 
-In addition to primitive types, you can also use other structs or objects
+In addition to primitive types, you can also use another struct or object
 as a field. For example, if you have a struct named \ttt{IPAddress},
 you can write the following:
 
@@ -1059,7 +1059,7 @@ virtual void setSrc(const IPAddress& src);
 
 \subsubsection{Pointers}
 
-Not supported yet.
+Pointers are not supported yet.
 
 
 
@@ -1137,7 +1137,7 @@ error in the generated header file.
 Sometimes you need the generated code to do something
 more or do something differently than the version generated
 by the message compiler.
-For example, when setting a integer field named \ttt{payloadLength},
+For example, when setting an integer field named \ttt{payloadLength},
 you might also need to adjust the packet length. That is,
 the following default (generated) version of the
 \ttt{setPayloadLength()} method is not suitable:
@@ -1259,7 +1259,7 @@ the way the value is stored inside the class,
 and still benefit from inspectability in Tkenv.
 
 For example, this is the situation when you want to store a bitfield
-in a single \fkeyword{int} or \fkeyword{short}, and still you want
+in a single \fkeyword{int} or \fkeyword{short}, and yet you want
 to present bits as individual packet fields.
 It is also useful for implementing computed fields.
 
@@ -1351,7 +1351,8 @@ class STLMessage : public STLMessage_Base
 
   public:
     STLMessage(const char *name=NULL, int kind=0) : STLMessage_Base(name,kind) {}
-    STLMessage(const STLMessage& other) : STLMessage_Base(other.getName()) {operator=(other);}
+    STLMessage(const STLMessage& other) : STLMessage_Base(other.getName()) 
+        { operator=(other); }
     STLMessage& operator=(const STLMessage& other) {
         if (&other==this) return *this;
         STLMessage_Base::operator=(other);
@@ -1372,7 +1373,8 @@ class STLMessage : public STLMessage_Base
     virtual void setBarArraySize(unsigned int size) {}
     virtual unsigned int getBarArraySize() const {return bar.size();}
     virtual Item& getBar(unsigned int k) {throw cRuntimeException("sorry");}
-    virtual void setBar(unsigned int k, const Item& bar) {throw cRuntimeException("sorry");}
+    virtual void setBar(unsigned int k, const Item& bar) 
+        { throw cRuntimeException("sorry"); }
     virtual void barPush(const Item& abar) {bar.push(abar);}
     virtual void barPop() {bar.pop();}
     virtual Item& barTop() {return bar.top();}
@@ -1406,7 +1408,7 @@ for internal representation of data.
 
 \subsection{Summary}
 
-This section attempts to summarize the possibilities.
+This section attempts to summarize the possibilities that message definitions present.
 
 You can generate:
 
@@ -1435,7 +1437,7 @@ Further features:
 
 \begin{itemize}
   \item  fields initialize to zero (except struct members)
-  \item  fields initializers can be specified (except struct members)
+  \item  field initializers can be specified (except struct members)
   \item  assigning \ttt{enum}s to variables of integral types.
   \item  inheritance
   \item  customizing the generated class via subclassing (\textit{Generation Gap} pattern)
