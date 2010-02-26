@@ -4,17 +4,17 @@
   <title>Graphical Runtime Environment</title>
   <sect1>
     <title>Features</title>
-    <para> Tkenv is a portable graphical windowing user interface. Tkenv supports interactive execution of the
+    <para> Tkenv is a portable graphical windowing user interface. Tkenv supports interactive execution of
       simulation, tracing and debugging. Tkenv is recommended in the development stage of a simulation or for
-      presentation and educational purposes, since it allows one to get a detailed picture of the state of
-      simulation at any point of execution and to follow what happens inside the network. The most important
+      presentation and educational purposes since it allows the user to get a detailed picture of the state of the
+      simulation at any point in its execution and to follow what happens inside the network. The most important
       feaures are:</para>
     <itemizedlist>
       <listitem>
         message flow animation
       </listitem>
       <listitem>
-        graphical display of statistics (histograms etc.) and output vectors during simulation execution
+        graphical display of statistics (histograms, etc.) and output vectors during simulation execution
       </listitem>
       <listitem>
         separate window for each module's text output
@@ -35,15 +35,15 @@
         simulation can be restarted
       </listitem>
       <listitem>
-        snapshots (detailed report about the model: objects, variables etc.)
+        snapshots (detailed report about the model: objects, variables, etc.)
       </listitem>
     </itemizedlist>
-    <para> Tkenv makes it possible to view simulation results (output vectors etc.) during execution. Results
+    <para> Tkenv makes it possible to view simulation results (output vectors, etc.) during execution. Results
       can be displayed as histograms and time-series diagrams. This can speed up the process of verifying the
       correct operation of the simulation program and provides a good environment for experimenting with the
-      model during execution. When used together with gdb or xxgdb, Tkenv can speed up debugging a lot.</para>
-    <para> Tkenv is built with Tcl/Tk, and it works on all platforms where Tcl/Tk has been ported to: Unix/X,
-      Windows, Macintosh. You can get more information about Tcl/Tk on the Web pages listed in the Reference.
+      model during execution. When used together with gdb or xxgdb, Tkenv can significantly speed up debugging.</para>
+    <para> Tkenv is built with Tcl/Tk. It works on all platforms where Tcl/Tk has been ported to: Unix/X,
+      Windows, and Macintosh. You can get more information about Tcl/Tk on the Web pages listed in the Reference section.
     </para>
   </sect1>
   <sect1>
@@ -54,36 +54,36 @@
         [[-h]] : The program prints a help message and exits.
       </listitem>
       <listitem>
-        [[-f fileName]] : Specify the name of the configuration file. The default is [[omnetpp.ini]]. Multiple -f
+        [[-f fileName]] : Specifies the name of the configuration file. The default is [[omnetpp.ini]]. Multiple -f
         switches can be given; this allows you to partition your configuration file. For example, one file can
-        contain your general settings, another one most of the module parameters, another one the module
-        parameters you change often. The -f switch is optional and can be omitted.
+        contain your general settings, another one most of the module parameters, and a third one the module
+        parameters you change frequently. The -f switch is optional and can be omitted.
       </listitem>
       <listitem>
-        [[-l fileName]] : Load a shared object (.so file on Unix). Multiple -l switches are accepted. Your .so
-        files may contain module code etc.
+        [[-l fileName]] : Loads a shared object (.so file on Unix). Multiple -l switches are accepted. Your .so
+        files may contain module code, etc.
       </listitem>
       <listitem>
-        [[-n filePath]] : When present, overrides the NEDPATH environment variable and sets where the
-        simulation NED files are load from.
+        [[-n filePath]] : When present, overrides the NEDPATH environment variable and sets the source location for
+        simulation NED files.
       </listitem>
       <listitem>
-        [[-c configname]] : Select a configuration for execution.
+        [[-c configname]] : Selects a configuration for execution.
       </listitem>
       <listitem>
-        [[-r run-number]] : It has the same effect as (but takes priority over) the tkenv-default-run= ini
-        file configuration.
+        [[-r run-number]] : It has the same effect as (but takes priority over) the ``tkenv-default-run='' 
+        INI file configuration.
       </listitem>
     </itemizedlist>
   </sect1>
   <sect1>
     <title>Configuration options</title>
-    <para> Tkenv accepts the following configuration options in the ini file.</para>
+    <para> Tkenv accepts the following configuration options in the INI file.</para>
     <itemizedlist>
       <listitem>
         [[tkenv-extra-stack]] : Specifies the extra amount of stack (in kilobytes) that is reserved for each
         [[activity()]] simple module when the simulation is run under Tkenv. This value is significantly
-        higher than the similar one for Cmdenv -- handling GUI events requires a large amount of stack space.
+        higher than the similar one for Cmdenv (handling GUI events requires a large amount of stack space).
       </listitem>
       <listitem>
         [[tkenv-default-config]] : Specifies which configuration Tkenv should set up automatically after
@@ -91,16 +91,16 @@
       </listitem>
       <listitem>
         [[tkenv-default-run]] : Specifies which run Tkenv should set up for the selected configuration after
-        startup. If there's no default-run = entry or the value is 0, Tkenv will ask which run to set up.
+        startup. If there is no default-run = entry or the value is 0, Tkenv will ask which run to set up.
       </listitem>
       <listitem>
         [[tkenv-image-path]] : Specifies which directories should be scanned when Tkenv wants to load an
-        image. This is a semicolon separated list of directories. This setting can be overridden by the
+        image. This is a semicolon-separated list of directories. This setting can be overridden by the
         OMNETPP_IMAGE_PATH environment variable.
       </listitem>
       <listitem>
         [[tkenv-plugin-path]] : Specifies which directories should be scanned when Tkenv wants to load an
-        extension plugin. Plugins are small TCL script fragments that contribute additional behaviour to
+        extension plugin. Plugins are small TCL script fragments that contribute additional behavior to
         Tkenv.
       </listitem>
     </itemizedlist>
@@ -112,7 +112,7 @@
     <para>In case of nonstandard installation, it may be necessary to set the [[OMNETPP_TKENV_DIR]]
       environment variable so that Tkenv can find its parts written in Tcl script.</para>
     <para> The default path from where the icons are loaded can be changed with the [[OMNETPP_IMAGE_PATH]]
-      variable, which is a semicolon-separated list of directories and defaults to
+      variable, which is a semicolon-separated list of directories that defaults to
       omnetpp-dir/images;./images.</para>
   </sect1>
   <sect1>
@@ -122,32 +122,32 @@
     <para>The main window of the simulation environment contains:</para>
     <itemizedlist>
       <listitem>
-        ``Toolbar'': you may access the main functions of the runtime environment. The toolbar is displayed
+        ``Toolbar'': You may access the main functions of the runtime environment. The toolbar is displayed
         directly below the main window's menu. It is possible to step, run,
-        stop, re-start or finish the simulation and configure the visual appearance and logging behaviour.
+        stop, restart or finish the simulation and configure the visual appearance and logging behavior.
       </listitem>
       <listitem>
-        ``Status bar'': contains information about the current state of the simulation. On the upper line it
+        ``Status bar'': Contains information about the current state of the simulation. On the upper line, it
         displays the current run number and network name, the current event number, the simulation time and
-        the module name where the next simulation event will be delivered to. The middle line displays the
+        the module name to where the next simulation event will be delivered. The middle line displays the
         number of messages in the FES, the total number of messages created during the simulation and finally
         the number of messages currently present in the whole simulation model. The last line contains
         performance data: How many events are processed in a real and in a simulated second along with the
         relative speed between the simulation-time and real-time.
       </listitem>
       <listitem>
-        ``Timeline'': displays the content of the FES on a logarithmic time scale. Double clicking on a dot will
+        ``Timeline'': Displays the content of the FES on a logarithmic time scale. Double-clicking on a dot will
         display the message inspector window. You can set what events are displayed on the timeline by setting
-        message filters on the main configuration dialog's timeline tab (Tip: right click on the timeline to
+        message filters on the main configuration dialog's timeline tab (Tip: right-click on the timeline to
         go directly to the timeline configuration dialog).
       </listitem>
       <listitem>
-        ``Object tree'': displays all inspectable objects currently present in the memory. You may double click on
+        ``Object tree'': Displays all inspectable objects currently present in the memory. You may double click on
         nodes to further inspect the given object in a separate window.
       </listitem>
       <listitem>
-        ``Log Window'': contains the output of the simulation. You can filter the content of the window to include
-        messages only from specific modules. Open the log window's context menu and select [[Filter window
+        ``Log Window'': Contains the output of the simulation. You can filter the content of the window to only include
+        messages from specific modules. Open the log window's context menu and select [[Filter window
         contents ]]. Note that the whole content of the log window will be filtered including all previous
         messages.
       </listitem>
@@ -160,20 +160,20 @@
     <sect2>
       <title>Networks, Modules</title>
       <picture file="pictures/Tkenv-network.png">Top level network</picture>
-      <para>You can start exploring the component hierarchy by browsing the Object tree and double clicking
+      <para>You can start exploring the component hierarchy by browsing the Object tree and double-clicking
         on a node or by clicking the [[Inspect network]] icon on the toolbar. Once you open a node, an
-        inspector window will be opened. Networks and compound modules are represented by a graphical
-        inspectors displaying their internal structure. Simple modules are represented by object inspectors
-        displaying their content as a list. Items in these lists can also be opened and some of them in the
-        tree indicated by [...], can be changed during runtime. Double click on the item and edit it in place.
+        inspector window will be opened. Networks and compound modules are represented by graphical
+        inspectors that display their internal structures. Simple modules are represented by object inspectors
+        that display their content as lists. Items in these lists can also be opened and some of them in the
+        tree indicated by [...] can be changed during runtime. Double-click on the item and edit it in place.
       </para>
       <para> If you intend to watch some variables in your modules, add the [[WATCH(varName)]] macro to your
-        module's [[initialize()]] method. The watched variables will be displayed on the the object
+        module's [[initialize()]] method. The watched variables will be displayed on the object
         inspector's content page.</para>
       <para>The toolbar on the module inspector window contains several useful commands that can be used
         related to this module. It is possible to directly inspect the parent module, or the type definition
-        for this module, show the current module's log output or search for an objects inside the module. It
-        is also possible to step or run a simulation until the next event happening inside this module.</para>
+        for this module, show the current module's log output or search for objects inside the module. It
+        is also possible to step or run a simulation until the next event occurs in the module.</para>
       <note>
         Tkenv uses reflection information provided by the [[Register_ClassDescriptor(class)]] macro to display
         the object tree. If you want to include your own classes in the tree, you need to register it with the
@@ -184,7 +184,7 @@
       <title>Future Event Set (FES)</title>
       <picture file="pictures/Tkenv-fes.png">The content of the Future Event Set</picture>
       <para> You can peek into the Future Event Set by clicking on ``Inspect | Scheduled events'' . The FES
-        contains all messages already scheduled. Double clicking on any message will show the message object's
+        contains all messages already scheduled. Double-clicking on any message will show the message object's
         inspector window for further investigation.</para>
       <note>
         The future event set is also displayed on the main window's timeline.
@@ -193,31 +193,30 @@
     <sect2>
       <title>Output vectors, histograms, queues</title>
       <picture file="pictures/Tkenv-outvector.png">An output vector displayed in a window</picture>
-      <para> Output vectors have also representation in the model. Double clicking on an output vector object
+      <para> You can view graphical representations of output vectors . Double-clicking on an output vector object
         displays the content graphically. You may set the display properties by clicking on the ``Options...''
         button.</para>
       <note>
-        To save memory, output vector windows start gathering data only when you open them. No data prior to
-        the opening will be displayed.
+        To save memory, output vector windows start gathering data only when you open them. No pre-opening data will be displayed.
       </note>
       <picture file="pictures/Tkenv-histogram.png">A real-time histogram window</picture>
-      <para> Histogram inspectors provide a real-time display for the registered histograms.</para>
+      <para> Histogram inspectors provide a real-time display of the registered histograms.</para>
       <note>
-        Histograms may not be available right after the simulation start, because the simulation kernel must
-        gather some statistics to determine the histogram properties (number of cells, cell size, etc.) before
+        Histograms may not be available right after the simulation starts because the simulation kernel must
+        gather some statistics to determine a histogram's properties (number of cells, cell size, etc.) before
         it can actually start collecting the data.
       </note>
       <picture file="pictures/Tkenv-queue.png">Peeking into a queue</picture>
       <para> If your simulation contains queue objects, you can peek into them any time. All messages
-        currently waiting in the queue are displayed in the queue inspector window. Double click on any
+        currently waiting in the queue are displayed in the queue inspector window. Double-click on any
         message to further inspect it.</para>
     </sect2>
   </sect1>
   <sect1>
     <title>Browsing your registered components</title>
-    <picture file="pictures/Tkenv-registration.png">Display registered functions, classes etc.</picture>
+    <picture file="pictures/Tkenv-registration.png">Display registered functions, classes, etc.</picture>
     <para> Registered components (NED Types, classes, functions, enums) can be displayed with the ``Inspect |
-      Available components'' . If your simulation complains about missing types or classes, it is a good
+      Available components'' . If an error message reports missing types or classes, it is a good
       practice to check whether everything is loaded and registered correctly.</para>
   </sect1>
   <sect1>
@@ -235,7 +234,7 @@
       <para>In Run mode, the simulation runs with all tracing aids on. Message animation is active and
         inspector windows are updated after each event. Output messages are displayed in the main window and
         module output windows. You can stop the simulation with the ``Stop'' button on the toolbar. You can
-        fully interact with the user interface while the simulation is running: you can open inspectors etc.
+        fully interact with the user interface while the simulation is running (e.g. you can open inspectors, etc.).
       </para>
       <note>
         If you find this mode too slow or distracting, you may switch off animation features in
@@ -245,14 +244,14 @@
     <sect2>
       <title>Fast mode</title>
       <para> In Fast mode, animation is turned off. The inspectors and the message output windows are updated
-        after in every 500ms (the actual number can be set in ``Options|Simulation options...'' and also in
-        the INI file). Fast mode is several times faster than the Run mode; the speedup can get close to 10
-        (or the configured event count).</para>
+        every 500 milliseconds (the actual number can be set in ``Options|Simulation options...'' and also in
+        the INI file). Fast mode is several times faster than the Run mode; the speed can increase by up to 10 times
+        (or up to the configured event count).</para>
     </sect2>
     <sect2>
       <title>Express mode</title>
       <para> In Express mode, the simulation runs at about the same speed as with Cmdenv, all tracing
-        disabled. Module output is not recorded in the output windows any more. You can interact with the
+        disabled. Module output is not recorded in the output windows. You can interact with the
         simulation only once in a while, thus the run-time overhead of the user interface is minimal. You have
         to explicitly push the ``Update inspectors'' button if you want an update.</para>
     </sect2>
@@ -260,89 +259,89 @@
       <title>Run until</title>
       <para>You can run the simulation until a specified simulation time, event number or
         until a specific message has been delivered or canceled. This is
-        an invaluable tool during debugging sessions. Just select ``Simulate | Run until...''.
-        It is also possible to right click on an event in the simulation time-line and choose
+        a valuable tool during debugging sessions (select ``Simulate | Run until...'').
+        It is also possible to right-click on an event in the simulation timeline and choose
         the ``Run until this event'' menu item.</para>
     </sect2>
     <sect2>
       <title>Run until next event</title>
-      <para> It is also possible run until an event is received in a specified module. Just browse for the
-        module and choose ``Run until next event in this module.'' Simulation will stop once an event arrives
-        to this module.</para>
+      <para> It is also possible to run until an event occurs in a specified module. Browse for the
+        module and choose ``Run until next event in this module.'' Simulation will stop once an event occurs
+        in this module.</para>
     </sect2>
     <para> Tkenv has a status bar which is regularly updated while the simulation is running. Global
-      simulation statistics like simulation speed, event density, current event number and simulation time is
+      simulation statistics like simulation speed, event density, current event number and simulation time are
       displayed on the status bar.</para>
     <para> Simulations are created when Tkenv is started and the user has selected a network to simulate (or
-      the user clicked the ``New Network'' button to select a new one). First the simulation kernel loads all
+      the user clicks the ``New Network'' button to select a new one). First, the simulation kernel loads all
       necessary NED files and registers the loaded modules with the kernel. Object constructors are called at
-      this point. The next phase is the initialization when all module's [[initialize()]] method is called.
-      Once initialization is completed Tkenv returns the control to the user and allows stepping or running
-      the simulation. If you choose to quit Tkenv while the simulation is not finished (or try to restart the
+      this point. The next phase is initialization when all module's [[initialize()]] methods are called.
+      Once initialization is complete, Tkenv returns the control to the user and allows stepping or running
+      the simulation. If you choose to quit Tkenv before the simulation finishes (or try to restart the
       simulation), Tkenv will ask you whether to call the [[finish()]] method for all modules. This will allow
-      the modules to correctly free up resources and save statistics. Before the simulation program exits
-      modules are destructed and their destructor is called.</para>
+      the modules to correctly free up resources and save their statistics. Before the simulation program exits,
+      the modules are deleted and their destructor is called.</para>
   </sect1>
   <sect1>
     <title>Finding objects</title>
     <picture file="pictures/Tkenv-find.png">Finding a specific object</picture>
-    <para>There are times when you don't exactly know the location of the object you are looking for.
-      For example you want to know where all your messages are.
+    <para>There are times when you do not know the exact location of the object for which you are looking.
+      For example, you may want to know the locations for all your messages.
       Invoke the ``Find/inspect objects'' window and search for your object. The window allows you to set the
-      start of the search and the type, class and name of the object. The results will be presented as a
+      start of the search along with the type, class and name of the object. The results will be presented as a
       clickable list.</para>
     <note>
-      The checkboxes can be used to select the object category you are interested in. If you
+      The checkboxes can be used to select the object category that interests you. If you
       select a category, all objects with that type (and any type derived from it) will be included in the search.
-      On the other hand, if you specify object class as a class filter expression, the search
-      dialog will try to match the objects class name with the given string. This means that only objects exactly
-      the given type will be included in the search (derived types will not be included as they have different
+      Alternatively, if you specify object class as a class filter expression, the search
+      dialog will try to match the object's class name with the given string. This means that only those types of objects
+      will be included in the search (derived types will not be included as they have different
       non-matching classnames).
     </note>
-    <para>You can provide a generic filter expression which matches the object full path by default.
-      Wildcards ([["?"]], [["*"]]) are allowed. [["{a-exz}"]] matches any character in the range [["a".."e"]], plus [["x"]] and
+    <para>You can provide a generic filter expression, which matches the object's full path by default.
+      Wildcards ([["?"]], [["*"]]) are allowed. [["{a-exz}"]] matches any character in the range [["a".."e"]] plus [["x"]] and
       [["z"]]. You can match numbers: [["*.job{128..191}"]] will match objects named [["job128"]], [["job129"]], ...,
       "job191". "job{128..}" and "job{..191}" are also understood. You can combine patterns with [[AND]], [[OR]] and
-      [[NOT]] and parentheses (lowercase and, or, not are also OK). You can match against other object fields such
+      [[NOT]] and parentheses (lowercase and, or, not are also OK). You can match other object fields such
       as queue length, message kind, etc., with the syntax [["fieldname(pattern)"]]. Put quotation marks around a
-      pattern if it contains parentheses. (HINT: You'll want to start the pattern with [["*."]] in most cases, to
-      match objects anywhere in the network!)</para>
+      pattern if it contains parentheses (HINT: You will want to start the pattern with [["*."]] in most cases to
+      match objects anywhere in the network!).</para>
     <itemizedlist>
       <listitem>
-        [[*.destAddr]] : matches all objects whose name is [["destAddr"]] (likely module parameters)
+        [[*.destAddr]] : Matches all objects with the name [["destAddr"]] (likely module parameters).
       </listitem>
-      [[*.subnet2.*.destAddr]] : matches objects named [["destAddr"]] inside [["subnet2"]]
+      [[*.subnet2.*.destAddr]] : Matches objects named [["destAddr"]] inside [["subnet2"]].
       <listitem>
-        [[*.node[8..10].*]] : matches anything inside module [[node[8], node[9] ]]and [[node[10] ]]
-      </listitem>
-      <listitem>
-        [[className(cQueue) and not length(0)]] : matches non-empty queue objects
+        [[*.node[8..10].*]] : Matches anything inside module [[node[8], node[9] ]]and [[node[10] ]].
       </listitem>
       <listitem>
-        [[className(cQueue) and length({10..})]] : matches queue objects with length>=10
+        [[className(cQueue) and not length(0)]] : Matches non-empty queue objects.
       </listitem>
       <listitem>
-        [[kind(3) or kind({7..9})]] : matches messages with message kind equal to 3, 7, 8 or 9 (Only messages have
-        a [["kind"]] attribute.)
+        [[className(cQueue) and length({10..})]] : Matches queue objects with length>=10.
       </listitem>
       <listitem>
-        [[className(IP*) and *.data-*]] : matches objects whose class name begins with [["IP"]] and name begins with
-        [["data-"]]
+        [[kind(3) or kind({7..9})]] : Matches messages with message kind equal to 3, 7, 8 or 9 (only messages have
+        a [["kind"]] attribute).
       </listitem>
       <listitem>
-        [[not className(cMessage) and byteLength({1500..})]] : matches messages whose class is not cMessage, and
-        byteLength is at least 1500. (Only messages have a [["byteLength"]] attribute.)
+        [[className(IP*) and *.data-*]] : Matches objects whose class name begins with [["IP"]] and name begins with
+        [["data-."]]
       </listitem>
       <listitem>
-        [["*(*" or "*.msg(ACK)"]] : quotation marks needed when pattern is a reserved word or contains
-        parentheses. (Note: *.msg(ACK) without parens would be interpreted as some object having a "*.msg"
-        attribute with the value "ACK"!)
+        [[not className(cMessage) and byteLength({1500..})]] : Matches messages whose class is not cMessage and
+        byteLength is at least 1500 (only messages have a [["byteLength"]] attribute).
+      </listitem>
+      <listitem>
+        [["*(*" or "*.msg(ACK)"]] : Quotation marks needed when pattern is a reserved word or contains
+        parentheses (note: *.msg(ACK) without parentheses would be interpreted as some object having a "*.msg"
+        attribute with the value "ACK"!).
       </listitem>
     </itemizedlist>
     <note>
-      Tkenv uses the [[cObject::forEachChild]] method to collect all object from a tree recursively. If you
-      have your own objects derived from [[cObject]] you should redefine the [[cObject::forEachChild]] to
-      participate correctly in the object search.
+      Tkenv uses the [[cObject::forEachChild]] method to collect all objects from a tree recursively. If you
+      have your own objects derived from [[cObject]], you should redefine the [[cObject::forEachChild]] to
+      function correctly with an object search.
     </note>
     <note>
       If you are debugging your simulation with a source level debugger and happen to know the value of the
@@ -355,32 +354,32 @@
     <title>Logging and module output</title>
     <picture file="pictures/Tkenv-module-out-menu.png">Opening the log of a single module</picture>
     <para> Good log output is your best friend during debugging. The main window displays the output of the
-      whole simulation, however in some cases you may be interested only how a selected module
+      whole simulation; however, in some cases you may be only interested in how a selected module
       and its submodules are working. Choose ``Module output'' from the module's context menu and select
       your module of interest.</para>
     <picture file="pictures/Tkenv-module-out.png">Module output</picture>
-    <para>Module output window displays only messages generated by the selected module and its submodules.
-      You can open several module output window and place them side by side to follow the workings of
-      several module at the same time.</para>
+    <para>The module output window only displays messages generated by the selected module and its submodules.
+      You can open several module output windows and place them side by side to follow the workings of
+      several modules at the same time.</para>
     <para> It is possible to filter the content of the output windows by opening the log window's context menu
-      and selecting ``Filter window contents'' menu item. Individual modules can be selected/deselected.
-      General logging behaviour can be controlled in the ``Simulation Options'' dialog.</para>
-    <picture file="pictures/Tkenv-output-filter.png">Filtering of the output of a compound module</picture>
+      and selecting the ``Filter window contents'' menu item. Individual modules can be selected/deselected.
+      General logging behavior can be controlled in the ``Simulation Options'' dialog.</para>
+    <picture file="pictures/Tkenv-output-filter.png">Filtering the output of a compound module</picture>
     <note>
-      All message lines in the log window are filtered according to the filter settings (older ones too).
+      All message lines in the log window are filtered according to the filter settings (older ones, too).
     </note>
   </sect1>
   <sect1>
     <title>Simulation options</title>
     <para> Open ``Options | Simulation options...'' to display the runtime environment's preference dialog.
-      You may set global parameters for the simulations here. It is possible also to disable various animation
+      You may set global parameters for the simulations here. It is also possible to disable various animation
       primitives to speed up the simulation.</para>
     <sect2>
       <title>General</title>
       <picture file="pictures/Tkenv-sim-opts1.png">General Tkenv options</picture>
-      <para>The General options tab can be used to set default layouting and logging behaviour. It is
-        possible to set how often the user interface will be updated during the simulation run. Default font
-        size and family can be configured also here.</para>
+      <para>The General options tab can be used to set default layouting and logging behavior. It is
+        possible to set how often the user interface will be updated during the simulation run. The user can also configure default font
+        size and family here.</para>
     </sect2>
     <sect2>
       <title>Configuring animations</title>
@@ -390,52 +389,52 @@
         feedback Tkenv provides, you can selectively turn off some of the features:</para>
       <itemizedlist>
         <listitem>
-          Animate messages : turn on/off the visualization of message passing between modules.
+          Animate messages : Turns on/off the visualization of messages passing between modules.
         </listitem>
         <listitem>
-          Broadcast animation : handle message broadcasts specially. (Messages that are sent at the same
-          simulation time will be animated concurrently.
+          Broadcast animation : Handles message broadcasts in a special way (messages sent at the same
+          simulation time will be animated concurrently).
         </listitem>
         <listitem>
-          Show next event maker : Highlight the module which will receive the next event.
+          Show next event maker : Highlights the module which will receive the next event.
         </listitem>
         <listitem>
-          Show a flashing arrow when a [[sendDirect()]] method call was executed.
+          Show a flashing arrow when a [[sendDirect()]] method call is executed.
         </listitem>
         <listitem>
           Direct method calls are also animated by default with flashing arrows if you have added the
           [[Enter_Method()]] macro to your method body.
         </listitem>
         <listitem>
-          The display of message names, classes also can be turned off if needed.
+          The display of message names and classes can also be turned off, if needed.
         </listitem>
       </itemizedlist>
     </sect2>
     <sect2>
       <title>Configuring the timeline</title>
-      <para>On the ``timeline'' tab you can control which messages and events will be displayed on the timeline view
+      <para>On the ``timeline'' tab, you can control which messages and events will be displayed on the Timeline View
         in the main window.
-        Self/non-self messages can be disabled, and filter expressions can be specified based on message class
+        Self/non-self messages can be disabled and filter expressions can be specified based on message class
         or name.</para>
-      <para> For object names wildcards ([["?"]], [["*"]]) are allowed. [["{a-exz}"]] matches any character in the range
-        [["a".."e"]], plus [["x"]] and [["z"]]. You can match numbers: [["job{128..191}"]] will match [["job128"]], [["job129"]], ...,
+      <para> For object names, wildcards ([["?"]], [["*"]]) are allowed. [["{a-exz}"]] matches any character in the range
+        [["a".."e"]] plus [["x"]] and [["z"]]. You can match numbers: [["job{128..191}"]] will match [["job128"]], [["job129"]], ...,
         "job191". "job{128..}" and "job{..191}" are also understood. You can combine patterns with [[AND]], [[OR]] and
-        [[NOT]] and parentheses (lowercase and, or, not are also OK). You can match against other object fields
-        such as message length, message kind, etc., with the syntax [["fieldname(pattern)"]]. Put quotation marks
+        [[NOT]] and parentheses (lowercase and, or, not are also acceptable). You can match against other object fields
+        such as message length, message kind, etc. with the syntax [["fieldname(pattern)"]]. Put quotation marks
         around a pattern if it contains parentheses.</para>
       <itemizedlist>
         <listitem>
           [[m*]] : matches any object whose name begins with "m"
         </listitem>
         <listitem>
-          [[m* AND *-{0..250}]] : matches any object whose name begins with "m" and ends with dash and a
+          [[m* AND *-{0..250}]] : matches any object whose name begins with "m" and ends with a dash and a
           number between 0 and 250
         </listitem>
         <listitem>
-          [[not *timer*]] : matches any object whose name doesn't contain the substring "timer"
+          [[not *timer*]] : matches any object whose name does not contain the substring "timer"
         </listitem>
         <listitem>
-          [[not (*timer* or *timeout*)]] : matches any object whose name doesn't contain either "timer" or
+          [[not (*timer* or *timeout*)]] : matches any object whose name does not contain either "timer" or
           "timeout"
         </listitem>
         <listitem>
@@ -446,21 +445,21 @@
           with "data-"
         </listitem>
         <listitem>
-          [[not className(cMessage) and byteLength({1500..}) ]]: matches objects whose class is not cMessage,
-          and byteLength is at least 1500
+          [[not className(cMessage) and byteLength({1500..}) ]]: matches objects whose class is not cMessage
+          and whose byteLength is at least 1500
         </listitem>
         <listitem>
           [["or" or "and" or "not" or "*(*" or "msg(ACK)" ]]: quotation marks needed when pattern is a
-          reserved word or contains parentheses. (Note: msg(ACK) without parens would be interpreted as some
-          object having a "msg" attribute with the value "ACK"!)
+          reserved word or contains parentheses (note: msg(ACK) without parentheses would be interpreted as an
+          object having an "msg" attribute with the value "ACK"!).
         </listitem>
       </itemizedlist>
     </sect2>
     <sect2>
       <title>.tkenvrc file</title>
       <para> Options in the Tkenv runtime are stored in the [[.tkenvrc]] file. There are two [[.tkenvrc]]
-        file. One is stored in the current directory and contains project specific settings like the open
-        inspector's position, size etc. The other [[.tkenvrc]] can be found in the user's home directory and
+        files. One is stored in the current directory and contains project-specific settings like the open
+        inspector's position, size, etc. The other [[.tkenvrc]] can be found in the user's home directory and
         contains global settings like font size and family.</para>
       <note>
         Inspectors are identified by their object name. If you have several components that share the same

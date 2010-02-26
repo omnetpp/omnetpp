@@ -15,9 +15,9 @@
   <sect1>
     <title>The Message File Editor</title>
     <para>The message file editor is a basic text editor with syntax highlight support.</para>
-    <picture file="pictures/MSG-TextEditor.png">Message file editor</picture>
+    <picture file="pictures/MSG-TextEditor.png">Message File Editor</picture>
     <note>
-      Currently the editor does not support advanced features like content assistance or syntax aware foldig.
+      Currently the editor does not support advanced features like content assistance or syntax aware folding.
     </note>
   </sect1>
 </chapter>

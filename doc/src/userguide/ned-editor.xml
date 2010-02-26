@@ -6,14 +6,14 @@
     <title>Overview</title>
     <para>
       When you double-click a [[.ned]] file in the IDE, it will open in the NED editor.
-      The new NED editor is a dual-mode editor: in the graphical mode you can edit the network using the
-      mouse, and the textual mode allows you to work directly on the NED source.
+      The new NED editor is a dual-mode editor. In the editor's graphical mode, you can edit the network using the
+      mouse. The textual mode allows you to work directly on the NED source.
     </para>
     <para>
       The syntax of NED files has changed significantly from the 3.x version.
-      The NED editor primarily supports the new syntax: it is still possible
-      to read and display NED files with the old syntax, many of the advanced features, however (syntax
-      highlighting, content assistance, etc.), will not work. There is automatic conversion from the old syntax
+      The NED editor primarily supports the new syntax. However, it is still possible
+      to read and display NED files with the old syntax. It is important to note that many of the advanced features (syntax
+      highlighting, content assistance, etc.) will not work. There is automatic conversion from the old syntax
       to the new, available both from the NED editor and as an external utility program (
       <command>nedtool</command>
       ).
@@ -24,71 +24,71 @@
       program from &Omnetpp;
       3.x viewed NED files in isolation. In contrast, the &Omnetpp;
       IDE gathers information from all [[.ned]] files in all open &Omnetpp;
-      projects, and makes this information available to the NED editor. This is necessary because in &Omnetpp;
-      4.x, modules may inherit parameters, visual appearance or even submodules and connections from other
+      projects and makes this information available to the NED editor. This is necessary because &Omnetpp;
+      4.x modules may inherit parameters, visual appearance or even submodules and connections from other
       modules, so it is only possible to display a compound module correctly if all related NED definitions
       are available.
     </para>
     <para> When the IDE detects errors in a NED file, the problem will be flagged with an error marker in the
-      ``Project Explorer'', and the ``Problems View'' will be updated to show the description and location of the
-      problem. Also error markers will appear in the text window or on the graphical representation of the
+      ``Project Explorer'' and the ``Problems View'' will be updated to show the description and location of the
+      problem. In addition, error markers will appear in the text window or on the graphical representation of the
       problematic component. Opening a NED file which contains an error will open the file in text mode.
       Switching to graphical mode is possible only if the NED file is syntactically correct.
     </para>
     <note>
-      As a side effect, currently if there are two modules with the same name and package in related projects,
-      they will collide, and both will be marked with an error. Furthermore, the name will be treated as undefined,
-      and any other modules depending on it will also generate an error. (Thus, a "no such module type" error
-      may mean that actually there are more than one definitions which nullify each other.)
+      As a side effect, if there are two modules with the same name and package in related projects,
+      they will collide and both will be marked with an error. Furthermore, the name will be treated as undefined
+      and any other modules depending on it will also generate an error (thus, a "no such module type" error
+      may mean that there are actually multiple definitions which nullify each other).
     </note>
   </sect1>
   <sect1>
-    <title>Creating new NED files</title>
+    <title>Creating New NED Files</title>
     <para>
       Once you have an empty &Omnetpp;
       project, you can create new NED files. Choosing ``File|New|Network Description File'' from the menu will
       bring up a wizard where you can specify the target directory and the file/module name. You may choose to
-      create an empty NED file, or a simple/compound module, or a network. Once you press the ``Finish''
+      create an empty NED file, a simple/compound module, or a network. Once you press the ``Finish''
       button, a new NED file will be created with the requested content.
       <picture file="pictures/NED-NewWizard.png">Creating a new NED file</picture>
     </para>
     <tip>
-      It is a good practice that the NED file and the contained module have the same name. For example, a
+      Make sure that the NED file and the contained module have the same name. For example, a
       compound module named [[Wireless42]] should be defined within its own [[Wireless42.ned]] file.
     </tip>
     <sect2>
       <title>NED Source Folders</title>
       <para>
-        It is possible to specify which folders the IDE should scan for NED files and will use as the base
+        It is possible to specify which folders the IDE should scan for NED files and that the IDE will use as the base
         directory for your NED package hierarchy. The IDE will not use any NED files outside the specified NED
         Source Folders and those files will be opened in a standard text editor. To specify the directory
-        where the NED files will be stored right click on the project in the ``Project Explorer'' and choose
+        where the NED files will be stored, right-click on the project in the ``Project Explorer'' and choose
         ``Properties''. Select the ``&Omnetpp; | Ned
         Source Folders'' page and click on the folders where you store your NED files. The default value is the
         project root.
       </para>
-      <picture file="pictures/NED-SourceFolders.png"> Specifying which folder will hold our NED files</picture>
+      <picture file="pictures/NED-SourceFolders.png"> Specifying which folder will hold your NED files</picture>
     </sect2>
   </sect1>
   <sect1>
-    <title>Using the NED editor</title>
-    <para> If you want to open a NED file, just double-click its icon in the ``Project Explorer''. If the NED file
-      can be parsed without an error, the graphical representation of the file will be opened, otherwise
-      (errors in the file) the text view will be opened, and the text will be annotated
+    <title>Using the NED Editor</title>
+    <para> If you want to open an Ned file, just double-click its icon in the ``Project Explorer''. If the NED file
+      can be parsed without an error, the graphical representation of the file will be opened; otherwise,
+      the text view will be opened and the text will be annotated
       with error markers.</para>
     <warning>
-      Only files contained in NED Source Folders will be opened with the graphical editor. If a NED file is
+      Only files located in NED Source Folders will be opened with the graphical editor. If a NED file is
       not in the NED Source Folders, it will be opened in a standard text editor.
     </warning>
     <para>
       You can switch between graphical and source editing mode by clicking the tabs at
-      the bottom of the editor, or using the
+      the bottom of the editor, or by using the
       <keycap>Ctrl+PGUP/PGDN</keycap>
-      key combinations. The editor will try to keep the selection during the switch: selecting an element in a
+      key combinations. The editor will try to keep the selection during the switch. Selecting an element in a
       graphical view and then switching to text view will move the cursor to the related element in the NED
       file. When switching back to graphical view, the graphical editor will try to select the element that
-      corresponds to the cursor location in the NED source. This allows you to keep the context even if you
-      switch back and forth regularly.
+      corresponds to the cursor location in the NED source. This allows you to keep the context, even when
+      switching back and forth.
     </para>
     <sect2>
       <title>Editing in graphical mode</title>
@@ -97,61 +97,61 @@
         one module or network. In that case, the corresponding figures will appear in the same order as they
         are found in the NED file.</para>
       <tip>
-        It is a good practice to place only a single module or network into a NED file, and name the file
+        Place only a single module or network into an Ned file and name the file
         according to the module name.
       </tip>
       <para> Simple modules and submodules are represented as icons while compound modules and networks are
         displayed as rectangles where other submodules can be dropped. Connections between submodules are represented
-        either by lines or arrows depending whether the connection was uni- or bi-directional. Submodules can
-        be dragged or resized by the mouse and connected by using the Connection Tool in the palette.</para>
+        either by lines or arrows depending on whether the connection was uni- or bi-directional. Submodules can
+        be dragged or resized using the mouse and connected by using the Connection Tool in the palette.</para>
       <picture file="pictures/NED-GraphEditor.png">Graphical NED Editor</picture>
-      <para> The palette is normally at the right of the editor area. The upper part of the palette contains
+      <para> The palette is normally to the right of the editor area. The upper part of the palette contains
         the basic tools: selector, connection selector, and the connection creator tool. To use a palette
-        item, click it then click into the module where you want to place/activate it. The mouse pointer will give
-        you feedback whether the requested operation is allowed. The middle part of the toolbox contains the
+        item, simply click on it. Then, click in the module where you want to place/activate it. The mouse pointer will give
+        you feedback as to whether the requested operation is allowed. The middle part of the toolbox contains the
         basic elements that can be placed at the top level in a NED file (simple module, compound module,
-        interface, channel etc.), and a "generic" submodule. Click on any of these and then click into the
+        interface, channel, etc.) and a "generic" submodule. Click on any of these and then click into the
         editor area to create an instance. The bottom part of the palette contains all module types that can
         be instantiated as a submodule. They are shortcuts for creating a generic submodule and then modifying
-        its type. They will display the default icon (if any) and a short documentation if you hover the mouse
-        over them. You may configure the palette by right clicking on a button and selecting ``Settings...''
+        its type. They will display the default icon (if any) and a short description if you hover the mouse
+        over them. You may configure the palette by right-clicking on a button and selecting ``Settings...''
         or filter its content by selecting ``Select Packages...''</para>
       <para> Right-clicking any element in the edited NED file will bring up a context menu that allows several
         actions like changing the icon, pinning/unpinning a submodule, re-layouting a compound module, or
-        deleting/renaming the element. There are also items to activate various views, for example the
-        ``Properties View'' where you can edit properties of the element.</para>
+        deleting/renaming the element. There are also items to activate various views. For example, the
+        ``Properties View'' allows you to edit properties of the element.</para>
       <para>
         Hovering over an element will display its documentation (the comment in the NED source above the
-        definition) in a "tooltip". Pressing
+        definition) as a tooltip. Pressing
         <keycap>F2</keycap>
         will make the tooltip window persistent, so it can be resized and scrolled for more convenient
         reading.
       </para>
       <sect3>
         <title>Creating modules</title>
-        <para> To create a module or a submodule, click on the appropriate palette item, and then click where
+        <para> To create a module or a submodule, click on the appropriate palette item and then click where
           you want to place the new element. Submodules can be placed only inside compound modules or networks,
-          while other types can be dropped directly in the editor window.</para>
+          while other types can be dropped directly into the editor window.</para>
       </sect3>
       <sect3>
         <title>Creating and changing connections</title>
         <para> Select the ``connection tool'' (if there are channels defined in the project, you can use the
-          drop down to select which channel type the connection should have). First click the source module,
-          then the destination. A pop-up menu will appear, asking which gates should be connected on the two
-          selected modules. The tool will offer only valid connections (for example, it will not offer
-          connecting two output gates).</para>
+          dropdown to select the connection channel type). First, click the source module and
+          then, the destination. A popup menu will appear, asking which gates should be connected on the two
+          selected modules. The tool will offer only valid connections (e.g. it will not offer to
+          connect two output gates).</para>
       </sect3>
       <sect3>
         <title>Reconnecting modules</title>
-        <para>Clicking and dragging a connection end point to another module will reconnect it optionally
-          asking which gate should be connected. If you want to change only the gate, drag the
+        <para>Clicking and dragging a connection end point to another module will reconnect it (optionally,
+          asking which gate should be connected). If you want to change only the gate, drag the
           connection end point and drop it over the original module. A popup will appear asking for the source
           or destination gate.</para>
       </sect3>
       <sect3>
         <title>Selecting elements</title>
         <para>
-          Selecting an element is done by clicking on it or by dragging out a rectangle over the target modules.
+          Selecting an element is done by clicking on it or by dragging a rectangle over the target modules.
           A compound module can be selected by clicking on its border or title. If you want to select only
           connections within a selection rectangle, use the ``connection selector'' tool in the dropdown menu
           of the ``connection tool'' . The
@@ -167,10 +167,10 @@
         <title>Undo, redo, deleting elements</title>
         <para>
           Use
-          <keycap>Ctrl+Z</keycap>
-          ,
+          <keycap>Ctrl+Z</keycap> and
+
           <keycap>Ctrl+Y</keycap>
-          for undo/redo, and the DEL key for deletion. These functions are also available in the ``Edit'' menu
+          for undo and redo respectively, and the DEL key for deletion. These functions are also available in the ``Edit'' menu
           and in the context menu of the selected element.
         </para>
       </sect3>
@@ -185,8 +185,8 @@
           <keycap>SHIFT</keycap>
           + resize will keep the aspect ratio of the element.
         </para>
-        <para> If you turn on ``Snap to Geometry'' in the ``View'' menu, helper lines will appear to allow you
-          to align to other modules. Selecting more than one submodule activates the ``Alignment'' menu (found
+        <para> If you turn on ``Snap to Geometry'' in the ``View'' menu, helper lines will appear to help you
+          align with other modules. Selecting more than one submodule activates the ``Alignment'' menu (found
           both in the ``View'' menu and in the context menu).</para>
       </sect3>
       <sect3>
@@ -194,7 +194,7 @@
         <para>
           Holding down
           <keycap>CTRL</keycap>
-          while dragging will clone the module(s). Copy/Paste can be also used both on single modules and with
+          while dragging will clone the module(s). Copy/Paste can also be used both on single modules and with
           group selection.
         </para>
       </sect3>
@@ -203,7 +203,7 @@
         <para>
           Zooming in and out is possible from the ``View'' menu, or using
           <keycap>Ctrl+-</keycap>
-          or
+          ,
           <keycap>Ctrl+=,</keycap>
           or holding down
           <keycap>CTRL</keycap>
@@ -215,15 +215,15 @@
         <para> A submodule display string may or may not contain explicit coordinates for the submodule; if it
           does not, then the location of the submodule will be determined by the layouting algorithm. A
           submodule with explicit coordinates is pinned; one without is unpinned. The Pin action inserts the
-          current coordinates into the display string, and the Unpin action removes them. Moving a submodule
-          also automatically pins it. The position of an unpinned module is undetermined, and may change every
+          current coordinates into the display string and the Unpin action removes them. Moving a submodule
+          also automatically pins it. The position of an unpinned module is undetermined and may change every
           time the layouting algorithm runs. For convenience, the layouter does not run when a submodule gets
           unpinned (so that the submodule does not jump away on unpinning), but this also means that unpinned
-          submodules may appear at different locations next time the same NED file gets opened.</para>
+          submodules may appear at different locations next time the same NED file is opened.</para>
       </sect3>
       <sect3>
-        <title>Choosing icon for a module</title>
-        <para> To choose an icon for a module right click on it and select the ``Choose an Icon...'' menu item
+        <title>Choosing an icon for a module</title>
+        <para> To choose an icon for a module, right-click on it and select the ``Choose an Icon...'' menu item
           from the context menu or select the module and modify the icon property in the ``Properties View''.
         </para>
       </sect3>
@@ -235,17 +235,17 @@
         <para> Navigating inside a longer NED file is much easier if you open the ``Outline View'' to see the
           internal structure of the file. Selecting an element in the outline will select the same element in
           the graphical editor.</para>
-        <para> If you want to see the selected element in a different view select the element and right click
+        <para> If you want to see the selected element in a different view, select the element and right-click
           on it. Choose ``Show In'' from the context menu and select the desired view.</para>
       </sect3>
       <sect3>
         <title>Opening a NED type</title>
         <para>
-          If you know only the name of a type of a module or other NED element, you can use the ``Open NED
+          If you know only the name of a module type or other NED element, you can use the ``Open NED
           Type'' dialog by pressing
           <keycap>Ctrl+SHIFT+N</keycap>
           . Type the name, or search with wildcards. The requested type will be opened in an editor. This
-          feature is not tied to the graphical editor: the Open NED Type dialog is available from anywhere in
+          feature is not tied to the graphical editor. The Open NED Type dialog is available from anywhere in
           the IDE.
         </para>
       </sect3>
@@ -253,12 +253,12 @@
         <title>Setting properties</title>
         <para>
           Elements of the display string and other properties associated with the selected elements can be
-          edited in the ``Properties View''. The property view is grouped and hierarchically organized however
+          edited in the ``Properties View''. The Property View is grouped and hierarchically organized; however,
           you can switch off this behavior on the view toolbar. Most properties can be edited directly in the
-          view but some has also specific editors that can be activated by pressing the ellipsis button at the
-          end of the field. Fields marked with a small light bulb support content assist. Try the
+          ``Properties View'', but some also have specific editors that can be activated by pressing the ellipsis button at the
+          end of the field. Fields marked with a small light bulb support content assist. Use the
           <keycap>CTRL+SPACE</keycap>
-          key combination to get a list of posible values.
+          key combination to get a list of possible values.
         </para>
       </sect3>
       <note>
@@ -292,7 +292,7 @@
       <title>Editing in source mode</title>
       <para> The NED source editor supports all functionality that one can expect from an Eclipse-based text
         editor, such as syntax highlighting (for the new NED syntax), clipboard cut/copy/paste and unlimited
-        undo/redo. A summary of these features:</para>
+        undo/redo. Here is a summary of these features:</para>
       <itemizedlist>
         <listitem>
           <para>
@@ -350,9 +350,9 @@
         .
       </para>
       <sect3>
-        <title>Converting from old to new NED format</title>
-        <para> If you have a NED file with older syntax, you still can open it. A context menu item allows you
-          to convert it to the new syntax. If the NED file is already using the new syntax the ``Convert to
+        <title>Converting to the new NED format</title>
+        <para> If you have an NED file with older syntax, you can still open it. A context menu item allows you
+          to convert it to the new syntax. If the NED file is already using the new syntax, the ``Convert to
           4.x Format'' menu item is disabled.</para>
       </sect3>
       <sect3>
@@ -361,7 +361,7 @@
           If you need help, just press
           <keycap>Ctrl+SPACE</keycap>
           . The editor will offer possible words or templates. This is context sensitive, so it will offer
-          only valid ones. Content assist is also a good way of exploring the new NED syntax and features.
+          only valid suggestions. Content assist is also a good way of exploring the new NED syntax and features.
         </para>
         <picture file="pictures/NED-TextEditorCA.png"> NED Source Editor with content assist activated</picture>
       </sect3>
@@ -378,18 +378,18 @@
       <sect3>
         <title>Organizing imports</title>
         <para>
-          Sometimes it is very inconvenient to add the necessary import statements to the beginning of the NED
+          Sometimes, it is very inconvenient to add the necessary import statements to the beginning of the NED
           file by hand. The IDE can do it for you (almost) automatically. Pressing
           <keycap>CTRL+SHIFT+O</keycap>
-          will try to insert all needed import statement and asks you to specify the used packages in case of
+          will cause the IDE to try to insert all necessary import statements. You will be prompted to specify the used packages in case of
           ambiguity.
         </para>
       </sect3>
       <sect3>
         <title>Cleaning up NED files</title>
-        <para> This function does a general repair on all selected NED files. Throws out or adds import
-          statements as needed, checks (and fixes) whether the file's package declaration is correct and
-          reformats the source code. It can be activated by clicking on the ``Project | Clean Up NED Files''
+        <para> This function does a general repair on all selected NED files by throwing out or adding import
+          statements as needed, checking (and fixing) the file's package declaration, and
+          reformatting the source code. It can be activated by clicking on the ``Project | Clean Up NED Files''
           menu item from the main menu.</para>
       </sect3>
       <sect3>
@@ -402,7 +402,7 @@
         </para>
         <note>
           Using the graphical editor and switching to source mode automatically re-formats the NED source
-          code as well.
+          code, as well.
         </note>
       </sect3>
       <sect3>
@@ -446,7 +446,7 @@
     <sect2>
       <title>Outline View</title>
       <para> The ``Outline View'' allows an overview of the current NED file. Clicking on an element will
-        focus the corresponding element in the text or graphical view. It has limited editing functionality;
+        select the corresponding element in the text or graphical view. It has limited editing functionality;
         you can copy/cut/paste and delete an object.</para>
       <picture file="pictures/NED-OutlineView.png">Outline View</picture>
     </sect2>
@@ -454,19 +454,19 @@
       <title>Property View</title>
       <para>
         The ``Property View'' contains all properties of the selected graphical element. Visual appearance,
-        name, type and other properties can be changed in this view. Some fields has specialized editors that
+        name, type and other properties can be changed in this view. Some fields have specialized editors that
         can be activated by clicking on the ellipsis button in the field editor. Fields marked with a small
-        light bulb icon has content assist support. Pressing
+        light bulb icon have content assist support. Pressing
         <keycap>CTRL+SPACE</keycap>
-        will offer the possible values the field can hold.
+        will display the possible values the field can hold.
       </para>
       <picture file="pictures/NED-PropertiesView.png">Properties View</picture>
     </sect2>
     <sect2>
       <title>Palette View</title>
-      <para> The Palette is normally displayed on the left or right side of the editor area, and contains
-        tools to create various NED elements. It is possible to hide it by clicking on the little arrow in the
-        corner, and to detach it from the editor and display it as a normal Eclipse view (``Window | Show View
+      <para> The Palette is normally displayed on the left or right side of the editor area and contains
+        tools to create various NED elements. It is possible to hide the Palette by clicking on the little arrow in the
+        corner. You can also detach it from the editor and display it as a normal Eclipse View (``Window | Show View
         | Other... | General | Palette'').</para>
     </sect2>
     <sect2>
@@ -492,10 +492,10 @@
     </sect2>
     <sect2>
       <title>Parameters View</title>
-      <para> The ``Parameters View'' shows parameters of the selected module, including inherited parameters.
+      <para> The ``Parameters View'' shows the parameters of the selected module including inherited parameters.
       </para>
       <picture file="pictures/NED-ParametersView.png">Outline View</picture>
     </sect2>
-    <para>The latter two views have their main uses with the Inifile Editor.</para>
+    <para>The latter two views are used mainly with the INI File Editor.</para>
   </sect1>
 </chapter>
