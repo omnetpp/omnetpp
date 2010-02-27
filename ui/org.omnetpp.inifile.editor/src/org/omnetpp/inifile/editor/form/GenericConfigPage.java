@@ -69,7 +69,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_DIR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RUNNUMBER_WIDTH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING_MODE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_RECORDING_MODE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
@@ -260,7 +260,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
 			addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
 			addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording");
-            addTextFieldEditor(group2, CFGID_SCALAR_RECORDING_MODE, "Recording mode");
+            addTextFieldEditor(group2, CFGID_RESULT_RECORDING_MODE, "Recording mode");
 			addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars");
 
 			addSpacer(form);

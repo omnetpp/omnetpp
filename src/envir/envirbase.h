@@ -23,6 +23,7 @@
 #define __ENVIRBASE_H
 
 #include "carray.h"
+#include "ccomponent.h"
 #include "globals.h"
 #include "cenvir.h"
 #include "cexception.h"
@@ -257,9 +258,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     /**
      * Factory method: create a corresponding result recorder object
-     * for the given scalar recording mode ("sum", "timeavg" etc).
+     * for the given recording mode ("sum", "timeavg" etc).
      */
-    virtual cIListener *createScalarResultRecorder(const char *mode);
+    virtual cIListener *createResultRecorder(const char *mode);
 
   public:
     // Utility function: optionally appends host name to fname
@@ -268,6 +269,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
   protected:
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
+
+    // Utility function for addResultRecorders()
+    void addResultRecorder(cComponent *component, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled);
 
     /**
      * Original command-line args.

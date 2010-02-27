@@ -4244,6 +4244,8 @@ channel is created in the simulation, the {\opp} runtime examines the
 the property indices, and, interpreting them as signal names, adds one or
 more listeners for each.
 
+FIXME: to enable vector, also list it in modehint!
+
 The types of listeners added depend on the configuration. If output vector
 recording is enabled for the given signal, a listener is added which
 records emitted values to an output vector. If scalar recording is enabled,
@@ -4278,7 +4280,7 @@ The following property keys (result attributes) are supported:
 It is allowed to use other keys/attributes, but they won't be interpreted
 by the {\opp} runtime or tools.
 
-Possible values for \ttt{modehint} include \ttt{count}, \ttt{last},
+Possible values for \ttt{modehint} include \ttt{vector}, \ttt{count}, \ttt{last},
 \ttt{sum}, \ttt{mean}, \ttt{min}, \ttt{max}, \ttt{timeavg}, \ttt{stats},
 \ttt{histogram}; the complete list is \ref{sec:ana-sim:scalar-results}.
 
