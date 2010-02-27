@@ -159,7 +159,7 @@ class SIM_API cIListener
     virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
 
     /**
-     * Returns the number of listener lists containing this listener.
+     * Returns the number of listener lists that contain this listener.
      */
     int getSubscribeCount() const  { return subscribecount; }
 };

@@ -495,7 +495,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     SignalData *data = findOrCreateSignalData(signalID);
     checkNotFiring(signalID, data->listeners);
     if (!data->addListener(listener))
-        return; // was already there
+        throw cRuntimeError(this, "subscribe(): listener already subscribed, signalID=%d", signalID);
     setBit(signalHasLocalListeners, signalID, true);
 
     // update hasAncestorListener flag in the whole subtree.

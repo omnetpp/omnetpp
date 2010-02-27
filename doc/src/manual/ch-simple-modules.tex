@@ -3868,9 +3868,8 @@ or
 unsubscribe("length", listener);
 \end{cpp}
 
-\ffunc{subscribe()} has no effect if the same listener is already
-subscribed, and similarly, \ffunc{unsubscribe()} does nothing
-if the listener is not subscribed.
+It is an error to subscribe the same listener to the same
+signal twice.
 
 \begin{note}
   When a listener is deleted, it must already be unsubscribed from

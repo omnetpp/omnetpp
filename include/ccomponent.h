@@ -475,10 +475,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     //@{
     /**
      * Adds a listener (callback object) that will be notified when a given
-     * signal is emitted (see emit() methods). It has no effect if the same
-     * listener is already subscribed. The order in which listeners will be
-     * notified is undefined, so it is not necessarily the same order in which
-     * listeners were subscribed.
+     * signal is emitted (see emit() methods). It is an error to subscribe
+     * the same listener twice to the same signal. The order in which listeners
+     * will be notified is undefined, so it is not necessarily the same order
+     * in which listeners were subscribed.
      */
     void subscribe(simsignal_t signalID, cIListener *listener);
 
