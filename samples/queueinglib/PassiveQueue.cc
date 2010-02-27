@@ -29,7 +29,7 @@ void PassiveQueue::initialize()
     droppedSignal = registerSignal("dropped");
     queueingTimeSignal = registerSignal("queueingTime");
     queueLengthSignal = registerSignal("queueLength");
-    emit(queueLengthSignal, 0l);
+    emit(queueLengthSignal, 0);
 
     capacity = par("capacity");
     queue.setName("queue");
@@ -51,7 +51,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
     {
         EV << "Queue full! Job dropped.\n";
         if (ev.isGUI()) bubble("Dropped!");
-        emit(droppedSignal, 1l);
+        emit(droppedSignal, 1);
         delete msg;
         return;
     }
@@ -61,7 +61,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
     {
         // enqueue if no idle server found
         queue.insert(job);
-        emit(queueLengthSignal, (long)length());
+        emit(queueLengthSignal, length());
         job->setQueueCount(job->getQueueCount() + 1);
     }
     else if (length() == 0)
@@ -99,7 +99,7 @@ void PassiveQueue::request(int gateIndex)
         // FIXME this may have bad performance as remove uses linear search
         queue.remove(job);
     }
-    emit(queueLengthSignal, (long)length());
+    emit(queueLengthSignal, length());
 
     job->setQueueCount(job->getQueueCount()+1);
     simtime_t d = simTime() - job->getTimestamp();

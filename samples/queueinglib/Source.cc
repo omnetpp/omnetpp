@@ -35,7 +35,7 @@ Job *SourceBase::createJob()
 
 void SourceBase::finish()
 {
-	emit(createdSignal, (long)jobCounter);
+    emit(createdSignal, jobCounter);
 }
 
 //----

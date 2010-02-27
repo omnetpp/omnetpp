@@ -31,9 +31,9 @@ void Queue::initialize()
     droppedSignal = registerSignal("dropped");
     queueingTimeSignal = registerSignal("queueingTime");
     queueLengthSignal = registerSignal("queueLength");
-    emit(queueLengthSignal, 0l);
+    emit(queueLengthSignal, 0);
     busySignal = registerSignal("busy");
-    emit(busySignal, 0l);
+    emit(busySignal, 0);
 
     endServiceMsg = new cMessage("end-service");
     fifo = par("fifo");
@@ -49,12 +49,12 @@ void Queue::handleMessage(cMessage *msg)
         if (queue.empty())
         {
             jobServiced = NULL;
-            emit(busySignal, 0l);
+            emit(busySignal, 0);
         }
         else
         {
             jobServiced = getFromQueue();
-            emit(queueLengthSignal, (long)length());
+            emit(queueLengthSignal, length());
             simtime_t serviceTime = startService( jobServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }
@@ -68,7 +68,7 @@ void Queue::handleMessage(cMessage *msg)
         {
         // processor was idle
             jobServiced = job;
-            emit(busySignal, 1l);
+            emit(busySignal, 1);
             simtime_t serviceTime = startService( jobServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }
@@ -79,12 +79,12 @@ void Queue::handleMessage(cMessage *msg)
             {
                 EV << "Capacity full! Job dropped.\n";
                 if (ev.isGUI()) bubble("Dropped!");
-                emit(droppedSignal, 1l);
+                emit(droppedSignal, 1);
                 delete job;
                 return;
             }
             queue.insert( job );
-            emit(queueLengthSignal, (long)length());
+            emit(queueLengthSignal, length());
             job->setQueueCount(job->getQueueCount() + 1);
         }
     }

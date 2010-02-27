@@ -417,6 +417,33 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      */
     void emit(simsignal_t signalID, cObject *obj);
 
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, bool b) {emit(signalID,(long)b);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, char c) {emit(signalID,(long)c);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, unsigned char c) {emit(signalID,(long)c);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, short i) {emit(signalID,(long)i);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, unsigned short i) {emit(signalID,(long)i);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, int i) {emit(signalID,(long)i);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, unsigned int i) {emit(signalID,(long)i);}
+
+    /** Delegates to emit(simsignal_t, double) */
+    void emit(simsignal_t signalID, float f) {emit(signalID,(double)f);}
+
+    /** Delegates to emit(simsignal_t, double) */
+    void emit(simsignal_t signalID, long double d) {emit(signalID,(double)d);}
+
     /**
      * If producing a value for a signal has a significant runtime cost, this
      * method can be used to check beforehand whether the given signal possibly

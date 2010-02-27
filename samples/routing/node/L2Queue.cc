@@ -70,8 +70,8 @@ void L2Queue::initialize()
     txBytesSignal = registerSignal("txBytes");
     rxBytesSignal = registerSignal("rxBytes");
 
-    emit(qlenSignal, (long)queue.length());
-    emit(busySignal, (long)0);
+    emit(qlenSignal, queue.length());
+    emit(busySignal, 0);
 }
 
 void L2Queue::startTransmitting(cMessage *msg)
@@ -97,13 +97,13 @@ void L2Queue::handleMessage(cMessage *msg)
         if (ev.isGUI()) displayStatus(false);
         if (queue.empty())
         {
-            emit(busySignal, (long)0);
+            emit(busySignal, 0);
         }
         else
         {
             msg = (cMessage *) queue.pop();
             emit(queueingTimeSignal, simTime() - msg->getTimestamp());
-            emit(qlenSignal, (long)queue.length());
+            emit(qlenSignal, queue.length());
             startTransmitting(msg);
         }
     }
@@ -129,7 +129,7 @@ void L2Queue::handleMessage(cMessage *msg)
                 EV << "Received " << msg << " but transmitter busy: queueing up\n";
                 msg->setTimestamp();
                 queue.insert(msg);
-                emit(qlenSignal, (long)queue.length());
+                emit(qlenSignal, queue.length());
             }
         }
         else
@@ -138,7 +138,7 @@ void L2Queue::handleMessage(cMessage *msg)
             EV << "Received " << msg << endl;
             emit(queueingTimeSignal, 0.0);
             startTransmitting(msg);
-            emit(busySignal, (long)1);
+            emit(busySignal, 1);
         }
     }
 }

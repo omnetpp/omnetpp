@@ -33,11 +33,11 @@ void Sink::handleMessage(cMessage *msg)
     // gather statistics
     emit(lifeTimeSignal, simTime()- job->getCreationTime());
     emit(totalQueueingTimeSignal, job->getTotalQueueingTime());
-    emit(queuesVisitedSignal, (long)job->getQueueCount());
+    emit(queuesVisitedSignal, job->getQueueCount());
     emit(totalServiceTimeSignal, job->getTotalServiceTime());
     emit(totalDelayTimeSignal, job->getTotalDelayTime());
-    emit(delaysVisitedSignal, (long)job->getDelayCount());
-    emit(generationSignal, (long)job->getGeneration());
+    emit(delaysVisitedSignal, job->getDelayCount());
+    emit(generationSignal, job->getGeneration());
 
     if (!keepJobs)
         delete msg;

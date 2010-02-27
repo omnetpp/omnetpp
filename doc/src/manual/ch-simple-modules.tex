@@ -3693,7 +3693,7 @@ time for the first 64 signals whether the signal has listeners, so
 \ffunc{emit()} needs to examine the listener lists up to the root every
 time. Even if a simulation uses more than 64 signals, in
 performance-critical situations it is possible to arrange that frequently
-emitted signals (e.g. \ttt{"tx-begin"}) get the ``fast'' signal IDs, while
+emitted signals (e.g. \ttt{"txBegin"}) get the ``fast'' signal IDs, while
 infrequent signals (like e.g. \ttt{"routerDown"}) get the rest.
 
 The easiest way to ensure that frequently used signals get ``fast'' signal IDs

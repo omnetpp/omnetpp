@@ -97,7 +97,7 @@ Job *Allocate::dequeue()
         job = (Job *)queue.back();
         queue.remove(job);
     }
-    emit(queueLengthSignal, (long)queue.length());
+    emit(queueLengthSignal, queue.length());
 
     simtime_t dt = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + dt);
@@ -113,7 +113,7 @@ void Allocate::enqueueOrDrop(Job *job)
     {
         EV << "Capacity full! Job dropped.\n";
         if (ev.isGUI()) bubble("Dropped!");
-        emit(droppedSignal, 1l);
+        emit(droppedSignal, 1);
         delete job;
         return;
     }
@@ -122,7 +122,7 @@ void Allocate::enqueueOrDrop(Job *job)
         EV << "Job enqueued.\n";
         job->setTimestamp();
         queue.insert(job);
-        emit(queueLengthSignal, (long)queue.length());
+        emit(queueLengthSignal, queue.length());
     }
 }
 
