@@ -48,7 +48,7 @@ public final class NedCompletionHelper {
         makeShortTemplate("@contains(${label1});", "property"),
         makeShortTemplate("@labels(${label1});", "property"),
         makeShortTemplate("@signal[${name}];", "property"),
-        makeShortTemplate("@signal[${name}](title=\"${title}\";modeHint=${hints});", "property"),
+        makeShortTemplate("@signal[${name}](title=\"${title}\";modehint=${hints});", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
 
     public final static Template[] proposedNedComponentDisplayStringTempl;
@@ -160,7 +160,7 @@ public final class NedCompletionHelper {
         makeShortTemplate("unit=${unit};", "parameter"),
         makeShortTemplate("interpolationmode=${modes};", "parameter"),
         makeShortTemplate("enum=${value1, value2};", "parameter"),
-        makeShortTemplate("modeHint=${hints};", "parameter"),
+        makeShortTemplate("modehint=${hints};", "parameter"),
     };
 
     public final static Template[] proposedNedSignalPropertyInterpolationModeParameterValueTempl = {

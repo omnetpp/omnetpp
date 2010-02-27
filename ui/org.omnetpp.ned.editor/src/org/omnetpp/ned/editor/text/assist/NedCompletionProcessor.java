@@ -359,9 +359,9 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
             addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyParameterTempl, new NedPropertyTagDetector());
             if (line.matches(".*unit=\\w?"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
-            else if (line.matches(".*modeHint=(\\w\\,?)*"))
+            else if (line.matches(".*modehint=(\\w\\,?)*"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyModeHintParameterValueTempl, new NedPropertyTagValueDetector());
-            else if (line.matches(".*interpolationMode=\\w?"))
+            else if (line.matches(".*interpolationmode=\\w?"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyInterpolationModeParameterValueTempl, new NedPropertyTagValueDetector());
         }
 

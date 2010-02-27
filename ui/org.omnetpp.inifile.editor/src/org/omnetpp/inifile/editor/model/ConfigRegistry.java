@@ -483,7 +483,7 @@ public class ConfigRegistry {
         "scalar-recording-mode", CFG_STRING, "auto",
         "Defines how to calculate scalar results from the given signal. Example " +
         "values: count, lastval, sum, mean, min, max, timeavg, stddev, histogram, " +
-        "auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal " +
+        "auto. `auto' chooses `histogram', unless the `modehint' key in the @signal " +
         "property tells otherwise. More than one values are accepted, separated by " +
         "commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
     public static final ConfigOption CFGID_SCHEDULER_CLASS = addGlobalOption(
