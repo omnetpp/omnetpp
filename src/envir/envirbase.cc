@@ -848,7 +848,7 @@ cIListener *EnvirBase::createResultRecorder(const char *mode)
     // this should be extensible instead of hardcoded "if"-ladder
     cIListener *listener;
     if (!strcmp(mode, "histogram"))
-        listener = new StatisticsRecorder(new cDoubleHistogram()); // or cLongHistogram, we could decide from @signal property; or use an adaptive histogram that automatically chooses the best mode
+        listener = new StatisticsRecorder(new cHistogram());
     else if (!strcmp(mode, "vector"))
         listener = new VectorRecorder();
     else if (!strcmp(mode, "count"))

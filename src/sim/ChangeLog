@@ -1,3 +1,8 @@
+2010-02-27  Andras Varga
+
+	* created cHistogram class by merging cDoubleHistogram and cLongHistogram
+	functionality.
+
 2010-01-26  Andras Varga
 
 	* fix: cProperties::getNames() and getIndicesFor() were broken
