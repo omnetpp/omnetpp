@@ -14,7 +14,8 @@ It was tested on the following architectures:
 
 * Intel 32-bit and 64-bit
 
+////
 TODO
 
 TODO: make sure graphviz, doxygen and mpi covered
-
+////

@@ -2,6 +2,8 @@ FOP=fop
 DOCBOOK=/usr/share/xml/docbook/stylesheet/nwalsh
 export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
+TITLE=IDE Developers Guide
+
 ifneq ($(what),omnest)
   WHAT_REPL = OMNeT&\#x2060;+&\#x2060;+
   what_repl = omnetpp
@@ -20,6 +22,8 @@ else
 endif
 
 all: pdf html eclipse
+
+include ../cover/cover.makefrag
 
 docbook:
 	asciidoc -b docbook -d book -f asciidoc.conf $(DEFINE_OMNEST) ide-developersguide.txt
@@ -58,17 +62,17 @@ eclipse: docbook
 	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	rm tmp.xml
 
-pdf: docbook
+pdf: docbook cover
 	xsltproc --nonet --xinclude --stringparam output pdf --output tmp1.xml trans.xsl ide-developersguide.xml
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf ide-developersguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	cp ide-developersguide.pdf ../../IDE-DevelopersGuide.pdf
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=ide-developersguide.pdf cat C B D4-end output ../../IDE-DevelopersGuide.pdf
 
 clean:
-	rm -f ide-developersguide.pdf ide-developersguide.html ide-developersguide.xml tmp1.xml tmp.xml
+	rm -f ide-developersguide.pdf ide-developersguide.html ide-developersguide.xml tmp1.xml tmp.xml cover.svg cover.pdf
 	rm -rf eclipse
 	rm -rf ../../ide-developersguide ../../IDE-DevelopersGuide.pdf
 

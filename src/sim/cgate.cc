@@ -425,7 +425,12 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
                 throw cRuntimeError(channelp, "Channel not initialized (did you forget to invoke "
                                               "callInitialize() for a dynamically created channel or "
                                               "a dynamically created compound module that contains it?)");
-            return channelp->deliver(msg, t);
+            cChannel::result_t tmp;
+            channelp->process(msg, t, tmp);
+            if (tmp.deleteMessage)
+                return false;
+            EVCB.messageSendHop(msg, this, tmp.delay, tmp.duration);
+            return nextgatep->deliver(msg, t + tmp.delay);
         }
         else
         {
@@ -453,16 +458,6 @@ cChannel *cGate::getTransmissionChannel() const
         throw cRuntimeError(this, "getTransmissionChannel(): cannot be invoked on a "
                             "simple module input gate (or a compound module "
                             "input gate which is not connected on the inside)");
-}
-
-bool cGate::isBusy() const
-{
-    return getTransmissionChannel()->isBusy();
-}
-
-simtime_t cGate::getTransmissionFinishTime() const
-{
-    return getTransmissionChannel()->getTransmissionFinishTime();
 }
 
 bool cGate::pathContains(cModule *mod, int gate)

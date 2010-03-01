@@ -39,10 +39,10 @@ Register_Class(cDatarateChannel);
 cDatarateChannel::cDatarateChannel(const char *name) : cChannel(name)
 {
     txfinishtime = 0;
-    delayparam = 0;
-    datarateparam = 0;
-    berparam = 0;
-    perparam = 0;
+    delay = 0;
+    datarate = 0;
+    ber = 0;
+    per = 0;
 }
 
 cDatarateChannel::~cDatarateChannel()
@@ -67,25 +67,25 @@ void cDatarateChannel::finalizeParameters()
 
 void cDatarateChannel::rereadPars()
 {
-    delayparam = par("delay");
-    datarateparam = par("datarate");
-    berparam = par("ber");
-    perparam = par("per");
+    delay = par("delay");
+    datarate = par("datarate");
+    ber = par("ber");
+    per = par("per");
 
-    if (delayparam<0)
-        throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delayparam));
-    if (datarateparam<0)
-        throw cRuntimeError(this, "negative datarate %g", datarateparam);
-    if (berparam<0 || berparam>1)
-        throw cRuntimeError(this, "wrong bit error rate %g", berparam);
-    if (perparam<0 || perparam>1)
-        throw cRuntimeError(this, "wrong packet error rate %g", perparam);
+    if (delay < 0)
+        throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delay));
+    if (datarate < 0)
+        throw cRuntimeError(this, "negative datarate %g", datarate);
+    if (ber < 0 || ber > 1)
+        throw cRuntimeError(this, "wrong bit error rate %g", ber);
+    if (per < 0 || per > 1)
+        throw cRuntimeError(this, "wrong packet error rate %g", per);
 
     setFlag(FL_ISDISABLED, par("disabled"));
-    setFlag(FL_DELAY_NONZERO, delayparam!=0);
-    setFlag(FL_DATARATE_NONZERO, datarateparam!=0);
-    setFlag(FL_BER_NONZERO, berparam!=0);
-    setFlag(FL_PER_NONZERO, perparam!=0);
+    setFlag(FL_DELAY_NONZERO, delay!=0);
+    setFlag(FL_DATARATE_NONZERO, datarate!=0);
+    setFlag(FL_BER_NONZERO, ber!=0);
+    setFlag(FL_PER_NONZERO, per!=0);
 }
 
 void cDatarateChannel::handleParameterChange(const char *)
@@ -118,21 +118,16 @@ void cDatarateChannel::setDisabled(bool d)
     par("disabled").setBoolValue(d);
 }
 
-simtime_t cDatarateChannel::calculateDuration(cMessage *msg) const
-{
-    if (flags & FL_DATARATE_NONZERO && msg->isPacket())
-        return ((cPacket *)msg)->getBitLength() / datarateparam;
-    else
-        return SIMTIME_ZERO;
-}
-
-bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
+void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)
-        return false;
+    {
+        result.deleteMessage = true;
+        return;
+    }
 
-    // must wait until previous transmissions end
+    // channel must be idle
     if (txfinishtime > t)
         throw cRuntimeError("Error sending message (%s)%s on gate %s: gate is currently "
                             "busy with an ongoing transmission -- please rewrite the sender "
@@ -141,59 +136,37 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
                             "and possibly a cQueue for storing messages waiting to be transmitted",
                             msg->getClassName(), msg->getFullName(), getSourceGate()->getFullPath().c_str());
 
-    cGate *nextgate = getSourceGate()->getNextGate();
-
-    simtime_t duration = 0;
-
     // datarate modeling
-    if (flags & FL_DATARATE_NONZERO)
+    if ((flags & FL_DATARATE_NONZERO) && msg->isPacket())
     {
-        if (msg->isPacket())
-        {
-            cPacket *pkt = (cPacket *)msg;
-            if (pkt->getDuration() != SIMTIME_ZERO)
-                throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
-                    "may be more than one channel with data rate in the connection path, or "
-                    "it was sent with a sendDirect() call that specified duration as well",
-                    pkt->getClassName(), pkt->getName());
-            duration = pkt->getBitLength() / datarateparam;
-            pkt->setDuration(duration);
-            txfinishtime = t + duration;
-        }
-        else {
-            txfinishtime = t;
-        }
+        cPacket *pkt = (cPacket *)msg;
+        if (pkt->getDuration() != SIMTIME_ZERO)
+            throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
+                "may be more than one channel with data rate in the connection path, or "
+                "it was sent with a sendDirect() call that specified duration as well",
+                pkt->getClassName(), pkt->getName());
+        simtime_t duration = pkt->getBitLength() / datarate;
+        pkt->setDuration(duration);
+        result.duration = duration;
+        txfinishtime = t + duration;
     }
     else {
         txfinishtime = t;
     }
 
     // propagation delay modeling
-    if (flags & FL_DELAY_NONZERO)
-    {
-        t += delayparam;
-    }
+    result.delay = delay;
 
     // bit error modeling
-    if (flags & (FL_BER_NONZERO | FL_PER_NONZERO))
+    if ((flags & (FL_BER_NONZERO | FL_PER_NONZERO)) && msg->isPacket())
     {
-        if (msg->isPacket())
-        {
-            cPacket *pkt = (cPacket *)msg;
-            if (flags & FL_BER_NONZERO)
-                if (dblrand() < 1.0 - pow(1.0-berparam, (double)pkt->getBitLength()))
-                    pkt->setBitError(true);
-            if (flags & FL_PER_NONZERO)
-                if (dblrand() < perparam)
-                    pkt->setBitError(true);
-        }
+        cPacket *pkt = (cPacket *)msg;
+        if (flags & FL_BER_NONZERO)
+            if (dblrand() < 1.0 - pow(1.0-ber, (double)pkt->getBitLength()))
+                pkt->setBitError(true);
+        if (flags & FL_PER_NONZERO)
+            if (dblrand() < per)
+                pkt->setBitError(true);
     }
-
-    // FIXME: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
-    // i.e use template method...?
-    EVCB.messageSendHop(msg, getSourceGate(), delayparam, duration);
-
-    // hand over msg to next gate
-    return nextgate->deliver(msg, t);
 }
 

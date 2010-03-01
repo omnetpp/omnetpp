@@ -1,0 +1,23 @@
+INKSCAPE="C:\Program Files\inkscape\inkscape.exe"
+
+!if "$(what)" != "omnest"
+PRODUCT = OMNeT++
+what = omnetpp
+!else
+PRODUCT = OMNEST
+what = omnest
+!endif
+
+!if "$(VERSION)" != ""
+VERSION_TEXT = Version $(VERSION)
+!else
+VERSION_TEXT = Version 4.X
+!endif
+
+cover:
+	copy ..\cover\cover-$(what).svg cover.svg
+	perl -i~ -pe "s/\@product\@/$(PRODUCT)/g" cover.svg
+	perl -i~ -pe "s/\@title\@/$(TITLE)/g" cover.svg
+	perl -i~ -pe "s/\@version\@/$(VERSION_TEXT)/g" cover.svg
+	$(INKSCAPE) $(CWD)\cover.svg -A $(CWD)\cover.pdf
+	if not exist cover.pdf echo ERROR: cover.pdf not created && exit 1

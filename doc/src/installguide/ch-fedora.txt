@@ -39,6 +39,8 @@ then follow the instruction on the console.
 The graphical installer can be launched by choosing
 'System -> Administration -> Add/Remove Software' from the menu.
 
+image::pictures/fedora-packageman.png[title="Add/Remove Software",align="center",scaledwidth="75%"]
+
 Search for the following packages in the list. Select the checkboxes
 in front of the names, and pick the latest version of each package.
 

@@ -290,9 +290,11 @@ support Mac OS X. You may try to port it using the porting guide from the
 Akaroa distribution.
 
 ifdef::OMNEST[]
+////
 ==== SystemC
 
 TODO
+////
 endif::OMNEST[]
 
 

@@ -20,8 +20,8 @@
 
 #ifdef WITH_MPI
 
+#include <mpi.h> // Intel MPI wants <mpi.h> to precede <stdio.h>
 #include <stdio.h>
-#include <mpi.h>
 #include "cmpicomm.h"
 #include "cmpicommbuffer.h"
 #include "globals.h"

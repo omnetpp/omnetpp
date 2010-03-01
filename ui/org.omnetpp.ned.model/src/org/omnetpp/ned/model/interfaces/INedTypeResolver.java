@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
@@ -62,6 +63,11 @@ public interface INedTypeResolver {
 	public Set<IFile> getNedFiles();
 
 	/**
+	 * Returns the set of NED files in the given project.
+	 */
+	public Set<IFile> getNedFiles(IProject project);
+
+	/**
 	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree
 	 * if the file has parse errors; one can call containsNEDErrors() to find out
 	 * if that is the case. Return value is never null. It is an error to invoke
@@ -76,6 +82,18 @@ public interface INedTypeResolver {
      */
 	public IFile getNedFile(NedFileElementEx nedFileElement);
 
+	/**
+	 * Determines if the given file is a NED file that has been loaded.
+	 */
+    public boolean containsNedFileElement(IFile file);
+
+    /**
+     * Determines if a resource is a NED file. It checks the file extension 
+     * (".ned"), and whether the file is in one of the NED source folders 
+     * designated for the project.
+     */
+    public boolean isNedFile(IResource resource);
+	
     /**
      * Returns the NED source folders for the given project. This is
      * the list of folders in the ".nedfolders" file, or the project

@@ -84,7 +84,7 @@ void L2Queue::startTransmitting(cMessage *msg)
     emit(txBytesSignal, (long)check_and_cast<cPacket *>(msg)->getByteLength());
 
     // Schedule an event for the time when last bit will leave the gate.
-    simtime_t endTransmission = gate("line$o")->getTransmissionFinishTime();
+    simtime_t endTransmission = gate("line$o")->getTransmissionChannel()->getTransmissionFinishTime();
     scheduleAt(endTransmission, endTransmissionEvent);
 }
 

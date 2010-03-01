@@ -2,8 +2,15 @@ FOP=$(TOOLS_DIR)\fop\fop.bat
 XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
 DOCBOOK=$(TOOLS_DIR)\docbook
 PERL=perl
+PDFTK=$(TOOLS_DIR)\pdftk\pdftk
 
-all: pdf html eclipse
+CWD=C:\home\omnetpp40\omnetpp\doc\src\ide-customization-guide  # because Inkscape is broken and needs full paths; and nmake is also broken as there's no way to produce the current dir programmatically
+
+TITLE=IDE Customization Guide
+
+all: pdf html
+
+include ../cover/cover.makefrag.vc
 
 html: catalog
 	$(PERL) trans.pl <ide-customization-guide.xml >tmp0.xml
@@ -19,16 +26,17 @@ eclipse: catalog
 	cd eclipse && $(XSLTPROC) --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp0.xml
 	del tmp.xml tmp0.xml
 
-pdf: catalog
+pdf: catalog cover
 	$(PERL) trans.pl <ide-customization-guide.xml >tmp0.xml
 	$(XSLTPROC) --nonet --xinclude --stringparam output pdf --output tmp.xml trans.xsl tmp0.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
-	call $(FOP) -fo tmp.fo -c ..\fop.xconf -pdf ide-customization-guide.pdf
-	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml tmp0.xml
+	call $(FOP) -fo tmp.fo -c ..\fop.xconf -pdf tmp.pdf
+	$(PDFTK) C=cover.pdf B=../cover/copyright.pdf D=tmp.pdf cat C B D4-end output ide-customization-guide.pdf dont_ask
+	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml tmp0.xml tmp.pdf
 
 clean:
-	-del ide-customization-guide.pdf ide-customization-guide.html 2>nul
+	-del ide-customization-guide.pdf ide-customization-guide.html cover.svg cover.pdf 2>nul
 	-del /s /q eclipse 2>nul
 	-rmdir eclipse 2>nul
 

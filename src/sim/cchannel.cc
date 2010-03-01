@@ -189,11 +189,3 @@ cIdealChannel *cIdealChannel::create(const char *name)
     return dynamic_cast<cIdealChannel *>(cChannelType::getIdealChannelType()->create(name));
 }
 
-bool cIdealChannel::deliver(cMessage *msg, simtime_t t)
-{
-    // just hand over msg to next gate
-    EVCB.messageSendHop(msg, getSourceGate());
-    return getSourceGate()->getNextGate()->deliver(msg, t);
-}
-
-

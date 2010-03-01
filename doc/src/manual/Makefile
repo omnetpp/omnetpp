@@ -5,6 +5,8 @@ INKSCAPE=inkscape
 DOT=dot
 TEMPLATE=omnetpp
 
+TITLE=User Manual
+
 # --- generating pdf ---
 
 # FIXME
@@ -50,13 +52,15 @@ LOGFILTER =
 
 default: pdf html eclipse
 
-pdf: $(ALLTEX) $(PDFPICS) figures/*.png
+include ../cover/cover.makefrag
+
+pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 	pdflatex usman.tex $(LOGFILTER)
 	bibtex usman
 	makeindex usman
 	pdflatex usman.tex $(LOGFILTER)
 	pdflatex usman.tex $(LOGFILTER)
-	cp usman.pdf ../../Manual.pdf
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=usman.pdf cat C B D3-end output ../../Manual.pdf
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
 %.pdf: %.svg
@@ -108,7 +112,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs
 	cp figures/*.png ../../manual
 
 clean:
-	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
+	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf
 	rm -rf ../../manual
 	rm -rf eclipse
 	rm -f figures/*.pdf

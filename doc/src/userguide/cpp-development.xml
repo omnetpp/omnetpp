@@ -8,8 +8,8 @@
       The &Omnetpp;
       IDE contains CDT (C/C++ Development Tooling) to help you develop the C++ part of your simulation. We
       recommend reading the CDT documentation in the IDE help system (Help/Help Content) to get a better
-      understanding, how CDT is working in general. The &Omnetpp;
-      IDE adds several extensions to the standard CDT features to make your life easier:
+      general understanding of how CDT works. The &Omnetpp;
+      IDE adds several extensions to the standard CDT features for ease of use:
       <itemizedlist>
         <listitem>
           Customized project creation dialog
@@ -22,8 +22,8 @@
           Automatic makefile generation
         </listitem>
         <listitem>
-          &Omnetpp;
-          specific build configuration
+          &Omnetpp;-specific
+          build configuration
         </listitem>
         <listitem>
           Special launch configuration type for launching and debugging &Omnetpp;
@@ -32,8 +32,8 @@
       </itemizedlist>
     </para>
     <para>
-      CDT already supports "standard make" builds, i.e. it can invoke
-      "make"; and when you select "Build" in the IDE, we generate a makefile (via a built-in Java version of
+      CDT already supports "standard make" builds. It can invoke
+      "make" and when you select "Build" in the IDE, we generate a makefile (via a built-in Java version of
       opp_makemake) and then let CDT do a "standard make" build.
       <note>
         The &Omnetpp;
@@ -44,18 +44,18 @@
       project root directory (these files are normally hidden by the IDE in the ``Project Explorer View''):
       <itemizedlist>
         <listitem>
-          [[.project]] : Eclipse stores the general project properties in this file, including project name,
-          dependencies from other projects, project type (i.e. whether &Omnetpp;
-          specific features are supported at all)
+          [[.project]] : Eclipse stores the general project properties in this file including project name,
+          dependencies from other projects, and project type (i.e. whether &Omnetpp;-specific
+          features are supported at all).
         </listitem>
         <listitem>
           [[.cproject]] : This file contains settings specific to C++ development including toolchain
-          definition, configuration templates (i.e. debug / release), error parsers, debugger settings.
+          definition, configuration templates (i.e. debug / release), error parsers, and debugger settings.
         </listitem>
         <listitem>
           [[.buildspec]] : Contains all settings specific to &Omnetpp;.
-          Basically this file contains the settings passed to the makefile generator. You can configure all &Omnetpp;
-          specific settings in the ``Project Properties'' dialog, on the ``&Omnetpp;/Makemakepage''.
+          This file contains the settings passed to the makefile generator. You can configure all &Omnetpp;-specific
+          settings in the ``Project Properties'' dialog on the ``&Omnetpp;/Makemakepage''.
           Everything you set on this page will be stored in the [[.buildspec]] file.
         </listitem>
       </itemizedlist>
@@ -71,21 +71,21 @@
     <para>
       The &Omnetpp;
       IDE (and the &Omnetpp;
-      simulation framework itself) requires a pre-installed compiler toolchain to function properly.
+      simulation framework itself) requires a preinstalled compiler toolchain to function properly.
       <itemizedlist>
         <listitem>
           On Windows: The &Omnetpp;
-          distribution comes with a pre-configured MINGW compiler toolchain. You don't have to install or
+          distribution comes with a preconfigured MINGW compiler toolchain. You do not have to install or
           download anything. The IDE should be able to use the MINGW compiler without any problem.
         </listitem>
         <listitem>
           On Linux: The default GCC toolchain can be used. &Omnetpp;
-          4.1 was tested on GCC 4.4 although other version should work too. You have to install the gcc
+          4.1 was tested on GCC 4.4, although other versions should work, too. You have to install the GCC
           toolchain on your distribution before trying to compile a simulation with &Omnetpp;.
         </listitem>
         <listitem>
           On Mac OS X: Version 10.5 (i386) is supported. You should install XCode 3.x tools to get compiler
-          support, before trying to compile a simulation with &Omnetpp;.
+          support before trying to compile a simulation with &Omnetpp;.
         </listitem>
       </itemizedlist>
     </para>
@@ -102,18 +102,18 @@
     </picture>
     <para>
       This will show you the ``New &Omnetpp;
-      Project'' wizard, that lets you create a project supporting NED, MSG and INI file editing as well as
-      supporting C++ development for simple modules.
+      Project'' wizard that lets you create a project that supports NED, MSG and INI file editing as well as
+      C++ development for simple modules.
     </para>
-    <para> At the first page of the wizard you should specify the project name and ensure that the ``Support
+    <para> On the first page of the wizard, you should specify the project name and ensure that the ``Support
       C++ Development'' checkbox is selected.</para>
     <picture file="pictures/CPP-NewProjectWizard.png"> Setting project name and enabling C++ support</picture>
     <para> Select a project template.</para>
     <picture file="pictures/CPP-NewProjectWizard1.png">Selecting a project template</picture>
     <para>Select a toolchain which is supported on your platform. Usually you will see only a single
-      toolchain supported, so you don't need to select anything.</para>
+      toolchain supported, so you do not need to select anything.</para>
     <picture file="pictures/CPP-NewProjectWizard2.png">Selecting a toolchain</picture>
-    <para> Finally choose from the preset configurations. By default a debug and a release configuration can
+    <para> Finally, choose from the preset configurations. By default, a debug and release configuration can
       be created. A configuration is a set of options that are associated with the build process. It is
       used mainly to create debug and release builds. Pressing the ``Finish'' button
       will create the project.</para>
@@ -125,30 +125,30 @@
       The &Omnetpp;
       IDE adds several extensions to the standard CDT to make the building of simulations much easier. The
       project properties dialog is extended with a special page - ``&Omnetpp;
-      | Makemake'' - where you can configure the options used for automatically generate the makefile(s). A
+      | Makemake'' - where you can configure the options used for automatically generating the makefile(s). A
       separate makefile will be created according to the settings you specify in the dialog. On the ``C/C++
       Build'' page you can specify which makefile will be called by the IDE build process when you initiate a
-      Build action. By default the Build directory is specified as [[${ProjDirPath}]] which is the root
+      Build action. By default, the Build directory is specified as [[${ProjDirPath}]], which is the root
       directory of your project. You can set any directory for the build directory, but keep in mind that it
-      should contain an automatically generated makefile or you have to create a makefile manually there (not
-      recommended). If you have several source directories make sure that the primary makefile calls the
+      should contain an automatically generated makefile or you will have to create a makefile manually there (not
+      recommended). If you have several source directories, make sure that the primary makefile calls the
       sub-makefiles correctly.
     </para>
     <note>
-      The build configuration is done on the ``Makemake'' page. Usually you don't have to change anything on other
+      The build configuration is done on the ``Makemake'' page. Usually, you do not have to change anything on other
       C++ related property pages.
     </note>
     <tip>Use
       the project templates in the ``New &Omnetpp;
       Project'' wizard to start a new project. The templates are especially helpful if you have a project
-      where you need multiple source trees each with its own makefile.
+      where you need multiple source trees that have their own makefiles.
     </tip>
     <para>
-      You can open the the property dialog by right clicking on a folder or project and selecting the
-      ``Properties'' menu. Choose the ``&Omnetpp; | Makemake'' page from here.
+      You can open the property dialog by right-clicking on a folder or project and selecting the
+      ``Properties'' menu. Choose the ``&Omnetpp; | Makemake'' page.
     </para>
     <para> Before you start modifying the settings, make sure that you select the folder you want to
-      configure. If you want to convert the current folder to a source folder simply click on ``Source
+      configure. If you want to convert the current folder to a source folder, simply click on ``Source
       Location'' . It is also possible to selectively include or exclude a whole directory tree if it is
       already inside a source tree.</para>
     <note>
@@ -161,17 +161,17 @@
       -f makemakefiles]] from the command line.
     </note>
     <para> Press the ``Makemake'' button to turn on the automatic makefile generation in the selected folder.
-        Manually written makefiles can be used by selecting ``Custom Make''. This expects a
-        makefile to be already present in the selected directory. (It must be called [[Makefile]]
-        <commercial>or Makefile.vc</commercial>)
+        Manually written makefiles can be used by selecting ``Custom Make''. This expects that a
+        makefile will be already present in the selected directory (it must be called [[Makefile]]
+        <commercial>or Makefile.vc</commercial>).
     </para>
-    <para> To configure how the makefile will be generated press the ``Options'' button.</para>
+    <para> To configure how the makefile will be generated, press the ``Options'' button.</para>
     <para>
       On the first tab of the options dialog, you can specify how the final target of the makefile is created.
       <itemizedlist>
         <listitem>
           The target type can be either executable or a shared/static library. Libraries can be exported to be
-          used by other dependent projects that can link against them automatically. It is possible to compile
+          used by other dependent projects that can link to them automatically. It is possible to compile
           all the sources without linking them.
         </listitem>
         <listitem>
@@ -193,8 +193,8 @@
           Deep - will use all source files recursively in all subdirectories.
         </listitem>
         <listitem>
-          Recursive - will use source files only in the current directory. Invokes make in all subdirectory
-          (i.e. makefiles must exist in those directories)
+          Recursive - will use source files only in the current directory. Invokes make in all subdirectories
+          (i.e. makefiles must exist in those directories).
         </listitem>
       </itemizedlist>
       If you want to invoke additional makefiles from this makefile, click on the ``More >>'' button and
@@ -203,7 +203,7 @@
     <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
     <para> The ``Compile'' tab allows you to adjust the parameters passed to the compiler during the build
       process. You can specify where the system should look for input files. You can scan all subfolders in the source directory or
-      even allow to scan all directories in the project (and all other projects it depends on).</para>
+      even allow scanning of all directories in the project (and all other projects it depends on).</para>
     <warning>
       As a rule of thumb, the include file names must be unique (i.e. include files with the same name in
       different directories are not allowed) otherwise the builder cannot determine the correct location of
@@ -213,21 +213,21 @@
       Include files can be qualified with the parent directories to avoid this problem. If you have two
       include files with the same name (e.g. [[inc.h]]) in different directories, add the directory names
       before the filenames to make the include statements unique. Use [[#include "dir1/inc.h"]] and [[#include
-      "dir2/inc.h"]] in your C++ files. If the problematic file is located in the project root use the form
+      "dir2/inc.h"]] in your C++ files. If the problematic file is located in the project root, use the form
       [[#include "../projectname/inc.h"]] to make it unique.
     </tip>
-    <para> If needed, you can set the source file extensions ([[.cc]] or [[.cpp]]). In most cases
-      auto-detection works correctly, so you don't have to change this parameter.</para>
+    <para> If needed, you can set the source file extensions ([[.cc]] or [[.cpp]]). In most cases,
+      auto-detection works correctly, so you do not have to change this parameter.</para>
     <commercial>
       <note>
         The commercial version of &Omnetpp;
         supports the Microsoft Visual C++ toolchain. This compiler requires some special steps during DLL
-        linking. Please check the Windows DLL section and click on the help link to get further description
+        linking. Please check the Windows DLL section and click on the help link to get further information on
         how to use this feature.
       </note>
     </commercial>
     <para>
-      Link options allows to fine-tune the linking steps at the end of the build process.
+      Link options allows the user to fine-tune the linking steps at the end of the build process.
       <itemizedlist>
         <listitem>
           Link with libraries exported from referenced projects - if you are depending on an other project's
@@ -235,36 +235,36 @@
           those libraries. You must explicitly set your project dependencies (See Dependent Projects section).
         </listitem>
         <listitem>
-          Additional object files, libraries can be added by clicking on the ``More>>'' button.
+          Additional object files and libraries can be added by clicking on the ``More>>'' button.
         </listitem>
       </itemizedlist>
     </para>
     <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
     <para>The ``Custom'' tab allows the customization of the makefiles by inserting handwritten makefile
       fragments inside the automatically generated makefile. It is possible to add additional variables,
-      targets, rules. The fragment code entered here will be written into the Makefrag file.</para>
-    <para>The ``Preview'' tab just displays the final command line with all options that will be passed to
+      targets, and rules. The fragment code entered here will be written into the Makefrag file.</para>
+    <para>The ``Preview'' tab displays the final command line with all options that will be passed to
       [[opp_makemake]] to generate the makefile.</para>
   </sect1>
   <sect1>
     <title>Dependent Projects</title>
     <para> If your project uses code from other projects (i.e. you are using a library provided by an other
-      project like the INET Framework or the queuing library provided in the samples directory) you should
+      project like the INET Framework or the queuing library provided in the samples directory), you should
       make the project dependent on that code. This step ensures that your code is linked with the dependent
-      project's output, and the NED path can be correctly set. Include files are also automatically
+      project's output and that the NED path can be correctly set. Include files are also automatically
       used from dependent projects.</para>
-    <para> To set the project dependence, right click on your project and select ``Properties'' . In the
-      ``Properties'' dialog select ``Project References'' page and click on the projects you are depending on. If
-      those projects provide shared or static libraries as their output the linker will automatically include
+    <para> To set the project dependence, right-click on your project and select ``Properties'' . In the
+      ``Properties'' dialog, select the ``Project References'' page and click on the projects on which you are depending. If
+      those projects provide shared or static libraries as their output, the linker will automatically include
       those libraries during link phase. It is also possible to use executable files from other projects. In
-      this case your project should not have any code in it so no compilation or linking is necessary. Your
-      project should contain only INI and NED files and use the pre-built simulation executable from the other
+      this case, your project should not have any code so that compilation or linking is unnecessary. Your
+      project should contain only INI and NED files and use the prebuilt simulation executable from the other
       projects.</para>
     <picture file="pictures/CPP-ProjectReferences.png"> Setting project dependencies</picture>
     <note>
-      To see an example, how project dependency is working, check the queuenet and queueinglib examples in the
-      samples directory. Queuinglib provides a pre-built executable file containing all simple modules while
-      queuenet contains only network definitions and initialization files for the samples.
+      To see an example of how project dependency works, check the queuenet and queueinglib examples in the
+      samples' directory. Queuinglib provides a prebuilt executable file containing all simple modules while
+      queuenet contains only network definitions and initialization files as samples.
     </note>
   </sect1>
   <sect1>
@@ -272,19 +272,19 @@
     <para>
       The &Omnetpp;
       IDE comes with a C/C++ editor provided by the CDT component. In addition to the standard editor features
-      provided by the Eclipse environment the C/C++ editor provides syntax highlighting and content assistance
+      provided by the Eclipse environment, the C/C++ editor provides syntax highlighting and content assistance
       on the source code. Use
       <keycap>CTRL+SPACE</keycap>
       to activate the content assist window anywhere in your source code. An other useful key combination is
-      <keycap>CTRL+TAB</keycap>
+      <keycap>CTRL+TAB</keycap>,
       which switches between your C++ and header file. Press
       <keycap>CTRL+SHIFT+L</keycap>
-      to get a list of currently active key bindings. For further information about editing C++ files please
+      to get a list of currently active key bindings. For further information about editing C++ files, please
       visit the CDT section in the online help system.
     </para>
     <picture file="pictures/CPP-Editor.png">C++ source editor</picture>
     <note>
-      Content assistance is working only if the IDE can scan your header files in the background.
+      Content assistance works only if the IDE can scan your header files in the background.
     </note>
   </sect1>
   <sect1>
@@ -294,25 +294,25 @@
       project. Select ``Build Configurations | Set Active'' from the project context menu and choose which
       configuration should be built.</para>
     <picture file="pictures/CPP-BuildConfiguration.png">Activating a build configuration</picture>
-    <para> Once the correct configuration is active select ``Build Project'' from the ``Project'' menu or from
-      the project context menu. This should start the build process. First a makefile will be created in each
+    <para> Once the correct configuration is active, select ``Build Project'' from the ``Project'' menu or from
+      the project context menu. This should start the build process. First, a makefile will be created in each
       source folder (according to the project properties ``Makemake'' page) and then the primary makefile will
       be called to start the build process. You should switch to the console view to see the actual progress
       of the build.</para>
     <picture file="pictures/CPP-BuildProject.png">Building a project</picture>
     <tip>
-      If you have a multi core system, you may try to configure &Omnetpp;
+      If you have a multi-core system, you may try to configure &Omnetpp;
       to support parallel build. Open the Project properties dialog (Properties from the project context
       menu), and select the ``C/C++ Build'' page and the ``Behavior'' tab. Click the ``Use parallel build''
-      checkbox and specify the number of parallel jobs (usually do not set this higher than the number of CPUs
-      available in your system. (Warning: Never use the "Optimal jobs number" choice. It will start too many
-      jobs at once and you will run out of physical memory very quickly.)
+      checkbox and specify the number of parallel jobs. Do not set this higher than the number of CPUs
+      available in your system (Warning: Never use the "Optimal jobs number" choice as it will start too many
+      jobs at once and you will run out of physical memory very quickly).
     </tip>
   </sect1>
   <sect1>
     <title>Running or Debugging the Project</title>
-    <para> If you want to run or debug yor simulation open the ``Run'' menu and choose the ``Run/Debug
-      Configurations...'' dialog. For a more detailed discussion please visit the Launching and Debugging
+    <para> If you want to run or debug your simulation, open the ``Run'' menu and choose the ``Run/Debug
+      Configurations...'' dialog. For a more detailed discussion, please visit the Launching and Debugging
       chapter.</para>
     <picture file="pictures/CPP-RunProject.png">Running a project</picture>
   </sect1>
@@ -326,29 +326,28 @@
     <title>Outline View</title>
     <para>During source editing, the Outline View gives you an overview of the structure of your source
       file and can be used to quickly navigate inside the file.</para>
-    <picture file="pictures/CPP-OutlineView.png">Navigating with outline view</picture>
+    <picture file="pictures/CPP-OutlineView.png">Navigating with Outline View</picture>
   </sect1>
   <sect1>
     <title>Type Hierarchy View</title>
     <para>Displaying
-      the C++ type hierarchy may be a great help understanding the code and the inheritance relationship
-      between your (and &Omnetpp;)
-      classes.
+      the C++ type hierarchy may be a great help in understanding the code and the inheritance relationship
+      between your classes (and between &Omnetpp; classes).
     </para>
     <picture file="pictures/CPP-TypeHierarchy.png">C++ Type hierarchy</picture>
   </sect1>
   <sect1>
     <title>Problems View</title>
-    <para>``Problems View'' contains the errors and warning generated by the build process. You can
-      browse the problem list and double click any message to go to the problem location in the source file.
-      Ned file and Ini file problems are also reported in this view along with the C++ problems. The editors
-      are annotated with these markers too. Just hover over an error marker in the editor window to get the
+    <para>The ``Problems View'' contains the errors and warnings generated by the build process. You can
+      browse the problem list and double-click any message to go to the problem location in the source file.
+      NED file and INI file problems are also reported in this view along with C++ problems. The editors
+      are annotated with these markers, too. Hover over an error marker in the editor window to get the
       corresponding message as a tooltip.</para>
     <picture file="pictures/CPP-ProblemsView.png">C++ problems</picture>
   </sect1>
   <sect1>
     <title>Console View</title>
-    <para>You may use the console view see the results of a build process or an actual simulation run.
+    <para>You may use the ``Console View'' to see the results of a build process or an actual simulation run.
     </para>
     <picture file="pictures/CPP-ConsoleView.png">Build output in a console</picture>
   </sect1>
