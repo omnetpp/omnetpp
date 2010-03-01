@@ -359,26 +359,6 @@ class SIM_API cGate : public cObject, noncopyable
      * during simulation.)
      */
     cChannel *getTransmissionChannel() const;
-
-    /**
-     * Usually only meaningful on an output gate, this method returns
-     * whether the datarate channel in the connection path starting at
-     * this gate is currently transmitting. If there is no datarate channel
-     * in the path, this method throws an error.
-     *
-     * It is equivalent to <tt>getTransmissionChannel()->isBusy()</tt>.
-     */
-    bool isBusy() const;
-
-    /**
-     * Usually only meaningful on an output gate, this method returns
-     * when the datarate channel in the connection path starting at
-     * this gate will finish transmitting. If there is no datarate channel
-     * in the path, this method throws an error.
-     *
-     * It is equivalent to <tt>getTransmissionChannel()->getTransmissionFinishTime()</tt>.
-     */
-    simtime_t getTransmissionFinishTime() const;
     //@}
 
     /** @name Gate connectivity. */

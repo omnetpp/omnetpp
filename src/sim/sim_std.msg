@@ -204,9 +204,6 @@ class cGate extends cObject
     int index @group(general) @hint("If vector: index of this gate within its gate vector");
     bool deliverOnReceptionStart @group(general) @hint("Only for simple module input gates, and if message transmission duration is nonzero: whether messages arriving on this gate will be given to the module at the start or the end of the reception");
 
-    bool isBusy @getter(isBusy) @group(general) @hint("Only if the connection has a channel with nonzero datarate");
-    simtime_t transmissionFinishTime @group(general) @hint("Only if the connection has a channel with nonzero datarate");
-
     cChannel *channel @group(connection) @hint("Channel object associated with the connection");
     cGate *previousGate @group(connection) @hint("The gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside");
     cGate *nextGate @group(connection) @hint("The gate whose \"previousGate\" is this gate -- note that \"previous\" and \"next\" correspond to the direction of messages");
