@@ -207,7 +207,7 @@ public class SequenceChart
     private boolean showAxisLabels = true;
     private boolean showAxesWithoutEvents = false;
     private boolean showTransmissionDurations = true;
-    private boolean showModuleMethodCalls = true;
+    private boolean showModuleMethodCalls = false;
 
     private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of axes
 
