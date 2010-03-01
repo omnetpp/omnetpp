@@ -347,7 +347,7 @@ void cHistogram::setupRangeInteger()
 void cHistogram::setupRangeDouble()
 {
     if (num_cells==-1)
-        num_cells = 50;
+        num_cells = 60; // to allow merging every 2, 3, 4, 5, 6 adjacent cells in post-processing
     cellsize = (rangemax - rangemin) / num_cells;
 }
 
