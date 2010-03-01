@@ -149,6 +149,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOL_IMAGE_DIR + "reusearrows.png";
 
+    // TODO: colorize image to ColorFactory.ORANGE3 (205, 133, 0)
+    public final static String IMAGE_SHOW_MODULE_METHOD_CALLS = TOOL_IMAGE_DIR + "modulemethodcall.png";
+
     public final static String IMAGE_SHOW_ARROW_HEADS = TOOL_IMAGE_DIR + "arrowhead.png";
 
     public final static String IMAGE_INCREASE_SPACING = TOOL_IMAGE_DIR + "incr_spacing.png";
@@ -419,6 +422,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
         toolBarManager.add(showOtherMessageReusesAction);
+        toolBarManager.add(showModuleMethodCallsAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(increaseSpacingAction);
 		toolBarManager.add(decreaseSpacingAction);
@@ -942,7 +946,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createShowModuleMethodCallsAction() {
-        return new SequenceChartAction("Show Module Method Calls", Action.AS_CHECK_BOX) {
+        return new SequenceChartAction("Show Module Method Calls", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MODULE_METHOD_CALLS)) {
             @Override
             protected void doRun() {
                 sequenceChart.setShowModuleMethodCalls(!sequenceChart.getShowModuleMethodCalls());
