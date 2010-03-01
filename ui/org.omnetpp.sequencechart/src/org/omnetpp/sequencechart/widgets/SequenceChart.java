@@ -2553,7 +2553,7 @@ public class SequenceChart
                 graphics.setLineDash(DOTTED_LINE_PATTERN);
                 graphics.drawLine(x, fromY, x, toY);
 
-                if (showArrowHeads)
+                if (showArrowHeads && toY != fromY)
                     drawArrowHead(graphics, null, x, toY, 0, toY - fromY);
 
                 if (showMessageNames) {
