@@ -1,3 +1,12 @@
+2010-03-01  Andras Varga
+
+	* cGate: removed isBusy() and getTransmissionFinishTime(), as they
+	were confusing (they ignored any propagation delay up to the
+	transmission channel); they had bad performance characteristics
+	(they linerarly searched for the transmission channel every time);
+	and they threw an error if the path didn't contain a transmission
+	channel at all.
+
 2010-02-15  Andras Varga
 
 	* cChannel: deliver() method semantics changed, method renamed to 

@@ -460,16 +460,6 @@ cChannel *cGate::getTransmissionChannel() const
                             "input gate which is not connected on the inside)");
 }
 
-bool cGate::isBusy() const
-{
-    return getTransmissionChannel()->isBusy();
-}
-
-simtime_t cGate::getTransmissionFinishTime() const
-{
-    return getTransmissionChannel()->getTransmissionFinishTime();
-}
-
 bool cGate::pathContains(cModule *mod, int gate)
 {
     cGate *g;
