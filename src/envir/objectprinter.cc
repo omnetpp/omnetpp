@@ -28,32 +28,11 @@
 #include "matchableobject.h"
 #include "objectprinter.h"
 
-
 USING_NAMESPACE
 
-static bool defaultRecurseIntoCObject(void *object, cClassDescriptor *descriptor, int fieldIndex, cObject *fieldValue, int level)
-{
-    cArray *carray = dynamic_cast<cArray *>(fieldValue);
+#define MAXIMUM_OBJECT_PRINTER_LEVEL 20
 
-    return !((carray && !carray->size()) ||
-             dynamic_cast<cModule *>(fieldValue) ||
-             dynamic_cast<cGate *>(fieldValue));
-}
-
-static bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, int level)
-{
-    const char *fieldName = descriptor->getFieldName(object, fieldIndex);
-    bool isCObject = descriptor->getFieldIsCObject(object, fieldIndex);
-
-    return level < 5 &&
-        (fieldValue == NULL || !isCObject || defaultRecurseIntoCObject(object, descriptor, fieldIndex, (cObject *)fieldValue, level)) &&
-        strcmp(fieldName, "owner") &&
-        strcmp(fieldName, "className");
-}
-
-//----
-
-ObjectPrinter::ObjectPrinter(const char *objectFieldMatcherPattern, int indentSize)
+ObjectPrinter::ObjectPrinter(RecursePredicate recursePredicate, const char *objectFieldMatcherPattern, int indentSize)
 {
     std::vector<MatchExpression*> objectMatchExpressions;
     std::vector<std::vector<MatchExpression*> > fieldNameMatchExpressionsList;
@@ -86,16 +65,19 @@ ObjectPrinter::ObjectPrinter(const char *objectFieldMatcherPattern, int indentSi
     }
 
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
+    this->recursePredicate = recursePredicate;
     this->objectMatchExpressions = objectMatchExpressions;
     this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
     this->indentSize = indentSize;
 }
 
-ObjectPrinter::ObjectPrinter(const std::vector<MatchExpression*>& objectMatchExpressions,
+ObjectPrinter::ObjectPrinter(RecursePredicate recursePredicate,
+		                     const std::vector<MatchExpression*>& objectMatchExpressions,
                              const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
                              int indentSize)
 {
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
+    this->recursePredicate = recursePredicate;
     this->objectMatchExpressions = objectMatchExpressions;
     this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
     this->indentSize = indentSize;
@@ -114,9 +96,10 @@ ObjectPrinter::~ObjectPrinter()
 
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, cObject *object)
 {
+	void *parents[MAXIMUM_OBJECT_PRINTER_LEVEL];
     cClassDescriptor *descriptor = cClassDescriptor::getDescriptorFor(object);
     ostream << "class " << descriptor->getName() << " {\n";
-    printObjectToStream(ostream, object, descriptor, 1);
+    printObjectToStream(ostream, object, descriptor, parents, 0);
     ostream << "}\n";
 }
 
@@ -127,9 +110,21 @@ std::string ObjectPrinter::printObjectToString(cObject *object)
     return out.str();
 }
 
-void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cClassDescriptor *descriptor, int level)
+void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cClassDescriptor *descriptor, void **parents, int level)
 {
-    if (!descriptor) {
+	if (level == MAXIMUM_OBJECT_PRINTER_LEVEL) {
+        ostream << "<pruned>\n";
+		return;
+	}
+	else {
+		for (int i = 0; i < level; i++) {
+			if (parents[i] == object) {
+				ostream << "<recursion>\n";
+				return;
+			}
+		}
+	}
+	if (!descriptor) {
         printIndent(ostream, level);
         if (level == 0)
             ostream << "{...}\n";
@@ -137,11 +132,13 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
             ostream << "...\n";
     }
     else {
+    	parents[level] = object;
         for (int fieldIndex = 0; fieldIndex < descriptor->getFieldCount(object); fieldIndex++) {
             bool isArray = descriptor->getFieldIsArray(object, fieldIndex);
             bool isPointer = descriptor->getFieldIsPointer(object, fieldIndex);
             bool isCompound = descriptor->getFieldIsCompound(object, fieldIndex);
-            bool isCObject = descriptor->getFieldIsCObject(object, fieldIndex);
+			// NOTE: this call is supposed to be done to getFieldIsCObject, but the renaming is not yet finished
+            bool isCObject = descriptor->getFieldIsCPolymorphic(object, fieldIndex);
             const char *fieldType = descriptor->getFieldTypeString(object, fieldIndex);
             const char *fieldName = descriptor->getFieldName(object, fieldIndex);
 
@@ -149,11 +146,11 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
                 void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;
 
-                if (!defaultRecurseInto(object, descriptor, fieldIndex, fieldValue, level) ||
+                if (!recursePredicate(object, descriptor, fieldIndex, fieldValue, parents, level) ||
                     (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldIndex)))
                     continue;
 
-                printIndent(ostream, level);
+                printIndent(ostream, level + 1);
                 ostream << fieldType << " ";
 
                 if (isPointer)
@@ -176,8 +173,8 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                                 ostream << "struct " << descriptor->getFieldStructName(object, fieldIndex) << " ";
 
                             ostream << "{\n";
-                            printObjectToStream(ostream, fieldValue, fieldDescriptor, level + 1);
-                            printIndent(ostream, level);
+                            printObjectToStream(ostream, fieldValue, fieldDescriptor, parents, level + 1);
+                            printIndent(ostream, level + 1);
                             ostream << "}\n";
                         }
                         else {
@@ -186,7 +183,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                         }
                     }
                     else
-                        ostream << "<NULL>\n";
+                        ostream << "NULL\n";
                 }
                 else {
                     std::string value = descriptor->getFieldAsString(object, fieldIndex, elementIndex);
