@@ -187,9 +187,9 @@ being at the top, and \ttt{[General]} at the bottom. Lookups always start at
 the top, and stop at the first matching entry.
 
 The concept is similar to inheritance in object-oriented languages,
-and benefits are similar too: you can factor out the common parts of
+and benefits are similar too; you can factor out the common parts of
 several configurations into a "base"
-configuration, and the other way round, you can reuse existing
+configuration, and additionally you can reuse existing
 configurations (as opposed to copying them) by using them as a base. In
 practice you will often have "abstract"
 configurations too (in the C++/Java sense), which assign only a subset
@@ -197,7 +197,7 @@ of parameters and leave the others open, to be assigned in derived
 configurations.
 
 If you are experimenting a lot with different parameter settings of a
-simulation model, these techniques will make it a lot easier to manage
+simulation model, these techniques will make it much easier to manage
 ini files.
 
 \section{Assigning Module Parameters}
@@ -231,8 +231,8 @@ net.server.transactionsPerSecond = 100
 
 Models can have a large number of parameters to be configured, and it would
 be tedious to set them one-by-one in \ffilename{omnetpp.ini}. {\opp} supports
-\textit{wildcards patterns} which allow for setting several model parameters
-at once. The same pattern syntax is used for per-object configuration options,
+\textit{wildcard patterns} which allow for setting several model parameters
+at once. The same pattern syntax is used for per-object configuration options;
 for example \ttt{<object-path-pattern>.record-scalar=}, or \ttt{<module-path-pattern>.rng-<N>=}.
 
 The pattern syntax is a variation on the usual \textit{glob}-style
@@ -248,7 +248,7 @@ Pattern syntax:
 \begin{itemize}
   \item \ttt{?} : matches any character except dot (.)
   \item \ttt{*} : matches zero or more characters except dot (.)
-  \item \ttt{**} : matches zero or more character (any character)
+  \item \ttt{**} : matches zero or more characters (any character)
   \item \ttt{\{a-f\}} : \textit{set}: matches a character in the range a-f
   \item \ttt{\{{\textasciicircum}a-f\}}: \textit{negated set}: matches a character
     NOT in the range a-f
@@ -262,8 +262,8 @@ Pattern syntax:
 
 \subsubsection{Precedence}
 
-If you use wildcards, the order of entries is important: if a parameter
-name matches several wildcards-patterns, the \textit{first} matching occurrence
+If you use wildcards, the order of entries is important; if a parameter
+name matches several wildcard-patterns, the \textit{first} matching occurrence
 is used. This means that you need to list specific settings first, and
 more general ones later. Catch-all settings should come last.
 
@@ -373,7 +373,7 @@ run several times with different parameter settings, and the results
 are analyzed in relation to the input parameters. {\opp} 3.x had no
 direct support for batch runs, and users had to resort to writing shell
 (or Python, Ruby, etc.) scripts that iterated over the required
-parameter space, and generated a (partial) ini file and run the
+parameter space, to generate a (partial) ini file and run the
 simulation program in each iteration.
 
 {\opp} 4.0 largely automates this process, and eliminates the need for
@@ -394,7 +394,7 @@ each host count three simulation runs will be done, with the generation
 interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
-How does it get run? First of all, Cmdenv with the '-x' option will tell you how many
+How does it work? First of all, Cmdenv with the '-x' option will tell you how many
 simulation runs a given section expands to. (You will of course use Cmdenv for batch runs,
 not Tkenv.)
 
@@ -575,7 +575,7 @@ double and string. The expression must evaluate to a boolean.
 \begin{note}
     It is not supported to refer to other iteration variables
     in the definition of an iteration variable (i.e. you cannot write
-    things like \ttt{\$\{j=\$i..10\}}), although it might get implemented in
+    things like \ttt{\$\{j=\$i..10\}}), although it might be implemented in
     future {\opp} releases.
 \end{note}
 
@@ -584,7 +584,7 @@ double and string. The expression must evaluate to a boolean.
 It is directly supported to perform several runs with the same
 parameters but different random number seeds. There are two
 configuration keys related to this: \ttt{repeat=} and \ttt{seed-set=}. The first
-one simple specifies how many times a run needs to be repeated. For
+one simply specifies how many times a run needs to be repeated. For
 example,
 
 \begin{inifile}
@@ -622,7 +622,7 @@ with exactly the same seeds. It is more practical to set it to either
 seed-set = ${runnumber}   # this is the default
 \end{inifile}
 
-This makes every simulation run to execute with a unique seed set. The
+This causes every simulation run to execute with a unique seed set. The
 second option is:
 
 \begin{inifile}
@@ -680,13 +680,13 @@ We have introduced three concepts that are useful for organizing
 simulation results generated by batch executions or several batches of
 executions.
 
-During a simulation study, a person prepares several
+During a simulation study, a user prepares several
 \textit{experiments}. The purpose of an experiment is to find out the
 answer to questions like \textit{"how does the number of
 nodes affect response times in the network?"} For an
 experiment, several \textit{measurements} are performed on the
 simulation model, and each measurement runs the simulation model with a
-different parameter settings. To eliminate the bias introduced by the
+different set of parameters. To eliminate the bias introduced by the
 particular random number stream used for the simulation, several
 \textit{replications} of every measurement are run with different
 random number seeds, and the results are averaged.
@@ -856,16 +856,16 @@ This mapping allows variance reduction techniques to be applied to
 
 \subsection{Automatic Seed Selection}
 
-Automatic seed selection gets used for an RNG if you do not explicitly
+Automatic seed selection is used for an RNG if you do not explicitly
 specify seeds in \ffilename{omnetpp.ini}. Automatic and manual seed selection can
-co-exist: for a particular simulation, some RNGs can be configured
+co-exist; for a particular simulation, some RNGs can be configured
 manually, and some automatically.
 
 The automatic seed selection mechanism uses two inputs: the \textit{run number}
  and the \textit{RNG number}. For the same run number and RNG number,
 {\opp} always selects the same seed value for any simulation model.
 If the run number or the RNG number is different, {\opp} does its best
-to choose different seeds which are also sufficiently apart in the RNG's sequence
+to choose different seeds which are also sufficiently separated in the RNG's sequence
 so that the generated sequences don't overlap.
 
 The run number can be specified either in in \ffilename{omnetpp.ini} (e.g. via the
@@ -900,7 +900,7 @@ at all -- \ttt{cMersenneTwister} is superior in every respect.
 
 \subsection{Manual Seed Configuration}
 
-In some cases you may want manually configure seed values.
+In some cases you may want to manually configure seed values.
 Reasons for doing that may be that you want to use variance reduction
 techniques, or you may want to use the same seeds for several simulation
 runs.
@@ -921,7 +921,7 @@ seed-2-mt = 7
 For the now obsolete cLCG32 RNG, the name of the corresponding option is
 \ttt{seed-}\textit{k}\ttt{-lcg32}, and {\opp} provides a standalone program
 called \fprog{opp\_lcg32\_seedtool} to generate good seed values that
-are sufficiently apart in the RNG's sequence.
+are sufficiently separated in the RNG's sequence.
 
 %%% Local Variables:
 %%% mode: latex

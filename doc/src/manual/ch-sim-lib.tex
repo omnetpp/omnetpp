@@ -45,7 +45,7 @@ This chapter discusses the rest of the simulation library:
 \label{sec:ch-sim-lib:cobject}
 
 
-Most classes in the {\opp} simulation library are derived from \cclass{cObject}
+Classes in the {\opp} simulation library are derived from \cclass{cObject}
 or its subclass \cclass{cOwnedObject}. Functionality and conventions that
 come from \cclass{cObject}:
 \begin{itemize}
@@ -66,7 +66,7 @@ ones.
 \subsection{Setting and Getting Attributes}
 
 Member functions that set and query object attributes follow
-a naming convention: the setter member function begins with
+a naming convention; the setter member function begins with
 \ttt{set}, and the getter begins with \ttt{get} (or in the case of
 boolean attributes, with \ttt{is} or \ttt{has}, whichever is more
 appropriate). For example, the \textit{length} attribute of the
@@ -103,9 +103,9 @@ Gates, parameters and modules all have names in the NED files. At runtime,
 those names are stored in the corresponding C++ objects, and are available
 for the code with the \ffunc{getName()} method. Other objects such as messages,
 queues, result collection objects, etc. may also have names.
-  \footnote{Object name is inherited from \cclass{cObject}, which defines
-  \ffunc{getName()}; and from its subclass \cclass{cNamedObject}, which
-  defines \ffunc{setName()} and actually stores the name string.}
+  \footnote{Object name is inherited from \cclass{cObject} (which defines 
+  \ffunc{getName()}), and from its subclass \cclass{cNamedObject} (which
+  defines \ffunc{setName()} and actually stores the name string).}
 Object names are generally very useful when you are tracing, debugging or
 demonstrating a simulation model.
 
@@ -134,19 +134,19 @@ timeoutMsg->setName("timeout");
 \end{cpp}
 
 Both the constructor and \ffunc{setName()} make an internal copy of the string,
-and not just store the pointer passed to them.
+instead of just storing the pointer passed to them.
   \footnote{In a simulation, there are usually many objects with the same name:
   modules, parameters, gates, etc. To conserve memory, several classes
   keep names in a shared, reference-counted \textit{name pool} instead of
   making separate copies for each object. The runtime cost of looking up an
   existing string in the name pool and incrementing its reference count
-  also compares favourably to the cost of allocation and copying.}
+  also compares favorably to the cost of allocation and copying.}
 
 For convenience and efficiency reasons, the empty string \ttt{""}
 and \ttt{NULL} are treated as interchangeable by library objects.
 That is, \ttt{""} is stored as \ttt{NULL} but returned as \ttt{""}.
 If you create a message object with either \ttt{NULL}
-or \ttt{""} as name string, it will be stored as \ttt{NULL}
+or \ttt{""} as its name string, it will be stored as \ttt{NULL}
 and \ffunc{getName()} will return a pointer to a static \ttt{""}.
 
 \begin{cpp}
@@ -209,8 +209,8 @@ cMessage *copy = msg->dup();
 \ffunc{dup()} delegates to the copy constructor, which in
 turn relies on the assignment operator between objects.
 \ffunc{operator=()} can be used to copy contents of an object into
-another object of the same type. This is a deep copy: object
-contained in the object will also be duplicated if necessary.
+another object of the same type. This is a deep copy: objects
+contained in the copied object will also be duplicated if necessary.
 \ffunc{operator=()} does not copy the name string -- this task is done
 by the copy constructor\index{copy constructor}.
 
@@ -276,7 +276,7 @@ if (msg->getControlInfo()==NULL)
 
 \section{Logging from Modules}
 
-The logging feature will be used extensively in the code examples,
+The logging feature will be used extensively in the code examples, so
 we introduce it here.
 
 The \ttt{ev}\index{ev} object represents the user interface of the
@@ -296,16 +296,16 @@ ev.printf("packet received, sequence number is %d\n", seqNum);
 
 The exact way messages are displayed to the user depends on the user
 interface. In the command-line user interface (Cmdenv\index{Cmdenv}),
-it is simply dumped to the standard output. (This output can also be
+the message is simply dumped to the standard output. (This output can also be
 disabled from \ffilename{omnetpp.ini} so that it doesn't slow down simulation
 when it is not needed.) In Tkenv, the runtime GUI, you can open
 a text output window for every module.
 It is not recommended that you use \ffunc{printf()} or \ffunc{cout}
-to print messages -- \ttt{ev} output can be controlled much better
+to print messages -- \ttt{ev} output can be controlled more easily
 from \ffilename{omnetpp.ini} and it is more convenient to view, using Tkenv.
 
 One can save CPU cycles by making logging statements conditional
-on whether the output actually gets displayed or recorded anywhere.
+on whether the output is actually being displayed or recorded anywhere.
 The \ttt{ev.isDisabled()} call returns true when \ttt{ev<<} output is disabled,
 such as in Tkenv or Cmdenv ``express'' mode. Thus, one can write code like
 this:
@@ -324,7 +324,7 @@ EV << "Packet " << msg->getName() << " received\n";
 \end{cpp}
 
 \ttt{EV}'s implementation makes use of the fact that the \ttt{<<} operator
-binds looser than the conditional operator (\ttt{?:}).
+is bound more loosely than the conditional operator (\ttt{?:}).
 
 %FIXME add tale about debug channels etc.
 
@@ -332,7 +332,8 @@ binds looser than the conditional operator (\ttt{?:}).
 \section{Simulation Time Conversion}
 
 Simulation time is represented by the type \ttt{simtime\_t}
-which is a typedef to \ttt{double}.
+which is a typedef to a class that stores simulation time in a 64-bit integer, using
+decimal ﬁxed-point representation.
 {\opp} provides utility functions, which convert \ttt{simtime\_t}
 to a printable string (\ttt{"3s 130ms 230us"}) and vica versa.
 
@@ -541,7 +542,7 @@ which one to be used.
 \ffunc{bernoulli(p, \textit{rng=0})} & result of a Bernoulli trial with probability 0<=p<=1 (1 with probability p and 0 with probability (1-p)) \\\hline
 \ffunc{binomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>=0 and 0<=p<=1 \\\hline
 \ffunc{geometric(p, \textit{rng=0})} & geometric distribution with parameter 0<=p<=1 \\\hline
-\ffunc{negbinomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>0 and 0<=p<=1\\\hline
+\ffunc{negbinomial(n, p, \textit{rng=0})} & negative binomial distribution with parameters n>0 and 0<=p<=1\\\hline
 \ffunc{poisson(lambda, \textit{rng=0})} & Poisson distribution with parameter lambda \\\hline
 
 \end{longtable}
@@ -630,7 +631,7 @@ queue, and \ffunc{empty()} tells whether there is anything in the queue.
 
 There are other functions dealing with insertion and removal.  The
 \ffunc{insertBefore()} and \ffunc{insertAfter()} functions insert a
-new item exactly before and after a specified one, regardless of the
+new item exactly before or after a specified one, regardless of the
 ordering function.
 
 The \ffunc{front()} and \ffunc{back()} functions return pointers to the objects
@@ -661,6 +662,7 @@ reference for details).  An example of setting up an ordered
 cQueue queue("queue", someCompareFunc);
 \end{cpp}
 
+
 If the queue object is set up as an ordered queue, the \ffunc{insert()}
 function uses the ordering function: it searches the queue contents
 from the head until it reaches the position where the new item
@@ -674,10 +676,10 @@ Normally, you can only access the objects at the head or tail of the
 queue. However, if you use an iterator class, \cclass{cQueue::Iterator},
 you can examine each object in the queue\index{queue!iteration}.
 
-The \cclass{cQueue::Iterator} constructor takes two arguments, the first
-is the queue object and the second one specifies the initial position
+The \cclass{cQueue::Iterator} constructor takes two arguments; the first
+is the queue object and the second argument specifies the initial position
 of the iterator: 0=tail, 1=head. Otherwise it acts as any other
-{\opp} iterator class: you can use the ++ and -- operators to advance
+{\opp} iterator class: you can use the \texttt{++} and \texttt{--} operators to advance
 it, the () operator to get a pointer to the current item, and the
 \ffunc{end()} member function to examine if you are at the end (or the
 beginning) of the queue.
@@ -704,7 +706,7 @@ for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 \cclass{cArray} is a container class that holds objects derived from
 \cclass{cObject}. \cclass{cArray} stores the pointers of the objects
 inserted instead of making copies. \cclass{cArray} works as an array,
-but it grows automatically when it gets full. Internally,
+but it grows automatically when it becomes full. Internally,
 \cclass{cArray} is implemented with an array of pointers; when the array
 fills up, it is reallocated.
 
@@ -831,7 +833,7 @@ network in graph form:
 
 You can specify which modules (either simple or compound) you want to
 include in the graph. The graph will include all connections among the
-selected modules. In the graph, all nodes are at the same level,
+selected modules. In the graph, all nodes are at the same level;
 there is no submodule nesting.  Connections which span across compound
 module boundaries are also represented as one graph edge. Graph edges
 are directed, just as module gates are.
@@ -964,7 +966,7 @@ cModule *module = node->getModule();
 The \ffunc{getNodeFor()} member function returns a pointer to the graph
 node for a given module. (If the module is not in the graph, it
 returns \ttt{NULL}). \ffunc{getNodeFor()} uses binary search within the
-\cclass{cTopology} object so it is fast enough.
+\cclass{cTopology} object so it is relatively fast.
 
 
 \cclass{cTopology::Node}'s other member functions let you determine the
@@ -997,8 +999,8 @@ from \textit{all} nodes \textit{to} a target node. The algorithm is
 computationally inexpensive. In the simplest case, all edges are
 assumed to have the same weight.
 
-A real-life example when we have the target module pointer, finding
-the shortest path looks like this:
+A real-life example assumes we have the target module pointer; finding
+the shortest path to the target looks like this:
 
 \begin{cpp}
 cModule *targetmodulep =...;
@@ -1140,7 +1142,7 @@ There are several statistic and result collection classes:
 One can insert an observation into a statistic object with the
 \ffunc{collect()} function or the \texttt{+=} operator (they are
 equivalent).  \cclass{cStdDev} has the following methods for getting
-statistics out of the object: \ffunc{getCount()}, \ffunc{getMin()},
+statistics from the object: \ffunc{getCount()}, \ffunc{getMin()},
 \ffunc{getMax()}, \ffunc{getMean()}, \ffunc{getStddev()}, \ffunc{getVariance()},
 \ffunc{getSum()}, \ffunc{getSqrSum()} with the obvious meanings. An example
 usage for \cclass{cStdDev}:
@@ -1248,7 +1250,7 @@ as a histogram.
 
 
 There are three member functions to explicitly return cell boundaries
-and the number of observations is each cell. \ffunc{getNumCells()} returns
+and the number of observations in each cell. \ffunc{getNumCells()} returns
 the number of cells, \ffunc[getBasepoint()]{getBasepoint(int k)} returns the
 \textit{k}th base point, \ffunc[getCellValue()]{getCellValue(int k)} returns the
 number of observations in cell \textit{k}, and
@@ -1256,7 +1258,7 @@ number of observations in cell \textit{k}, and
 (i.e. between \ffunc[getBasepoint()]{getBasepoint(k)} and
 \ffunc[getBasepoint()]{getBasepoint(k+1)}).
 The \ffunc[getCellInfo()]{getCellInfo(k)} method returns multiple data
-(cell bounds, counter, relatile frequency) packed together in a struct.
+(cell bounds, counter, relative frequency) packed together in a struct.
 These functions work for all histogram types, plus \cclass{cPSquare}
 and \cclass{cKSplit}.
 
@@ -1559,7 +1561,7 @@ the performance after the system has reached a stable state)
 is of interest. The initial part of the simulation is called
 the transient period. After the model has entered steady state,
 simulation must proceed until enough statistical data has been
-collected to compute result with the required accuracy.
+collected to compute a result with the required accuracy.
 
 
 Detection of the end of the transient period and a certain result
@@ -1567,8 +1569,8 @@ accuracy is supported by {\opp}. The user can attach transient
 detection\index{transient detection} and result accuracy\index{result
   accuracy} objects to a result object (\cclass{cStatistic}'s
 descendants). The transient detection and result accuracy objects will
-do the specific algorithms on the data fed into the result object and
-tell if the transient period is over or the result accuracy has been
+perform the specific algorithms on the data fed into the result object and
+determine if the transient period is over or the result accuracy has been
 reached.
 
 The base classes for classes implementing specific transient
@@ -1737,7 +1739,7 @@ void Transmitter::finish()
 }
 \end{cpp}
 
-You can record whole statistics objects by calling their \ffunc{record()}
+You can record whole statistic objects by calling their \ffunc{record()}
 methods, declared as part of \cclass{cStatistic}. In the following example
 we create a \ttt{Sink} module which calculates the mean, standard
 deviation, minimum and maximum values of a variable, and records them at the
@@ -1778,7 +1780,7 @@ void Sink::finish()
 The above calls record the data into an \textit{output scalar file},
 a line-oriented text file that has the file extension \ttt{.sca}.
 The format and processing of output vector files is described in section
-\ref{sec:ch-ana-sim:output-scalars}.
+\ref{sec:ch-ana-sim:scalar-results}.
 
 
 
@@ -1786,17 +1788,17 @@ The format and processing of output vector files is described in section
 
 \subsection{Basic Watches}
 
-It would be nice, but variables of type \ttt{int}, \ttt{long}, \ttt{double}
+Unfortunately, variables of type \ttt{int}, \ttt{long}, \ttt{double}
 do not show up by default in Tkenv; neither do STL classes
 (\ttt{std::string}, \ttt{std::vector}, etc.) or your own structs and
 classes. This is because the simulation kernel, being a library, knows
 nothing about types and variables in your source code.
 
-{\opp} provides \fmac{WATCH()} and set of other macros to come to your rescue,
-and make variable to be inspectable in Tkenv and to be output into the snapshot
+{\opp} provides \fmac{WATCH()} and a set of other macros to 
+allow variables to be inspectable in Tkenv and to be output into the snapshot
 file\index{snapshot file}. \fmac{WATCH()} macros are usually placed into
 \ffunc{initialize()} (to watch instance variables) or to the top of the
-\ffunc{activity()} function (to watch its local variables), the point being
+\ffunc{activity()} function (to watch its local variables); the point being
 that they should only be executed once.
 
 \begin{cpp}
@@ -1870,10 +1872,10 @@ WATCH_RW(currentClientInfo);
 
 \subsection{Structured Watches}
 
-\ttt{WATCH()} and \ttt{WATCH\_RW()} are basic watches: they allow one
+\ttt{WATCH()} and \ttt{WATCH\_RW()} are basic watches; they allow one
 line of (unstructured) text to be displayed. However, if you have a
 data structure generated from message definitions (see Chapter \ref{cha:messages}),
-then one can do better. The message compiler automatically generates
+then there is a better approach. The message compiler automatically generates
 meta-information describing individual fields of the class or struct,
 which makes it possible to display the contents on field level.
 
@@ -1894,7 +1896,7 @@ CAUTION: With \fmac{WATCH\_PTR()}, the pointer variable must point to a valid
 object or be \ttt{NULL} at all times, otherwise the GUI may crash
 while trying to display the object. This practically means that
 the pointer should be initialized to \ttt{NULL} even if not used, and
-should be set to \ttt{NULL} when the object to which it points gets deleted.
+should be set to \ttt{NULL} when the object to which it points is deleted.
 
 \begin{cpp}
 delete watchedPtr;
@@ -2070,7 +2072,8 @@ modules\index{module!stack size}\index{stack!size}.  If the stack is
 too large, it unnecessarily consumes memory; if it is too small, stack
 violation occurs.
 
-From the Feb99 release, {\opp} contains a mechanism that detects stack
+%From the Feb99 release, 
+{\opp} contains a mechanism that detects stack
 overflows\index{stack!overflow}. It checks the intactness of a
 predefined byte pattern (\texttt{0xdeadbeef}) at the stack boundary,
 and reports ``stack violation''\index{stack!violation} if it was
@@ -2125,21 +2128,21 @@ generally means you have more code to write (as you \textit{have to}
 redefine certain virtual functions and adhere to conventions)
 and your class will be a bit more heavy-weight.
 However, if you need to store your objects in {\opp} objects like \cclass{cQueue}
-or you'll want to store {\opp} classes in your object,
+or you want to store {\opp} classes in your object,
 then you \textit{must} subclass from \cclass{cOwnedObject}.
-  \footnote{For simplicity, in the these sections ``{\opp} object''
+  \footnote{For simplicity, in these sections ``{\opp} object''
   should be understood as ``object of a class subclassed from
   \cclass{cOwnedObject}''}
 
-The most significant features \cclass{cOwnedObject} has is
+The most significant features of \cclass{cOwnedObject} are
 the name string (which has to be stored somewhere, so it has
 its overhead) and ownership management (see section
-\ref{sec:ch-sim-lib:ownership-management}) which
-also has the advantages but also some costs.
+\ref{sec:ch-sim-lib:ownership-management}), which
+also provides advantages at some cost.
 
 As a general rule, small \ttt{struct}-like classes like \ttt{IPAddress},
 \ttt{MACAddress}, \ttt{RoutingTableEntry}, \ttt{TCPConnectionDescriptor}, etc.
-are better \textit{not} sublassed from \cclass{cOwnedObject}.
+are better \textit{not} subclassed from \cclass{cOwnedObject}.
 If your class has at least one virtual member function, consider
 subclassing from \cclass{cObject}, which does not impose any
 extra cost because it doesn't have data members at all, only
@@ -2184,20 +2187,20 @@ The following methods \textbf{must} be implemented:
 \end{itemize}
 
 If your class contains other objects subclassed from \cclass{cOwnedObject},
-either via pointers or as data member, the following function \textbf{should}
+either via pointers or as a data member, the following function \textbf{should}
 be implemented:
 
 \begin{itemize}
   \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor *v)}.
         The implementation should call the function passed
-        for each object it contains via pointer or as data member;
+        for each object it contains via pointer or as a data member;
         see the API Reference on \cclass{cOwnedObject} on how to implement
         \ttt{forEachChild()}. \ffunc{forEachChild()} makes it possible
         for Tkenv to display the object tree to you, to perform searches on it, etc.
         It is also used by \ffunc{snapshot()} and some other library functions.}
 \end{itemize}
 
-The following methods are \textbf{recommended} to implement:
+Implementation of the following methods is \textbf{recommended}:
 
 \begin{itemize}
   \item{\textit{Object info,} \ffunc{std::string info()}. The \ttt{info()} function
@@ -2359,7 +2362,7 @@ NewClass *NewClass::dup() const
 }
 \end{cpp}
 
-The \ttt{dup()} functions is usually just one line, like the one above.
+The \ttt{dup()} function  is usually just one line, like the one above.
 
 \begin{cpp}
 NewClass& NewClass::operator=(const NewClass& other)
@@ -2431,7 +2434,7 @@ void NewClass::forEachChild(cVisitor *v)
 
 The \ffunc{forEachChild()} function should call \ttt{v->visit(obj)}
 for each \ttt{obj} member of the class. See the API Reference for more
-information of \ffunc{forEachChild()}.
+information about \ffunc{forEachChild()}.
 
 \begin{cpp}
 std::string NewClass::info()
@@ -2463,7 +2466,7 @@ is used for sanity checks, and as part of the infrastructure
 supporting Tkenv inspectors.
 
 Container classes like \cclass{cQueue} own the objects inserted
-into them. But this is not limited to objects inserted into a container:
+into them, but this is not limited to objects inserted into a container:
 \textit{every \cclass{cOwnedObject}-based object has an owner all the time}.
 From the user's point of view, ownership is managed transparently.
 For example, when you create a new \cclass{cMessage},
@@ -2521,20 +2524,20 @@ by the ownership facility:
 \end{itemize}
 
 For example, the \ffunc{send()} and \ffunc{scheduleAt()} functions check
-that the message being sent/scheduled \textit{must} is owned by the module.
+that the message being sent/scheduled is owned by the module.
 If it is not, then it signals a programming error: the message is probably
 owned by another module (already sent earlier?), or currently scheduled, or
 inside a queue, a message or some other object -- in either case, the
 module does not have any authority over it. When you get the error message
 (\ttt{"not owner of object"}), you need to carefully examine the error
-message: which object has the ownership of the message, why's that, and
-then probably you'll need to fix the logic somewhere in your program.
+message to determine which object has ownership of the message, and correct
+the logic that caused the error.
 
 The above errors are easy to make in the code, and if not detected
 automatically, they could cause random crashes which are usually very
 difficult to track down. Of course, some errors of the same kind still
 cannot be detected automatically, like calling member functions of a
-message object which has been sent to (and so currently kept by) another
+message object which has been sent to (and so is currently owned by) another
 module.
 
 

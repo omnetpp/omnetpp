@@ -3,8 +3,8 @@
 
 \section{Architecture}
 
-{\opp} has a modular architecture. The following diagram shows the
-high-level architecture of {\opp} simulations:
+{\opp} has a modular architecture. The following diagram illustrates  the
+high-level architecture of the {\opp} simulations:
 
 \begin{figure}[htbp]
   \begin{center}
@@ -13,48 +13,48 @@ high-level architecture of {\opp} simulations:
   \end{center}
 \end{figure}
 
-The rectangles in the picture represent components:
+The rectangles in the picture represent the following components:
 
 \begin{itemize}
   \item{\textbf{Sim} is the simulation kernel and class
-    library\index{simulation!kernel}. Sim exists as a library you link
-    your simulation program with.}
-  \item{\textbf{Envir} is another library which contains all code
-    that is common to all user interfaces. \ffunc{main()} is also in Envir.
-    Envir provides services like ini file handling for specific user interface
+    library\index{simulation!kernel}. Sim is a library linked to
+    your simulation program.}
+  \item{\textbf{Envir} is another library containing all the code
+    that is common to all the user interfaces. \ffunc{main()} also exists in the Envir library.
+    Envir provides services, like ini file handling for specific user interface
     implementations. Envir presents itself towards Sim and the executing model
     via the \ttt{ev} facade object, hiding all other user interface internals.
-    Some aspects of Envir can be customized\index{customization} via plugin
+    Some aspects of the Envir library can be customized\index{customization} using plugin
     interfaces. Embedding {\opp} into applications\index{embedding} can
     be achieved by implementing a new user interface in addition to Cmdenv
     and Tkenv, or by replacing Envir with another implementation of \ttt{ev}
     (see sections \ref{sec:plugin-exts:userinterface} and
     \ref{sec:ch-embedding:embedding}.)}
   \item{\textbf{Cmdenv and Tkenv} are specific user interface
-    implementations. A simulation is linked with Cmdenv, Tkenv, or both.}
-  \item{The \textbf{Model Component Library} consists of simple module definitions and
+    implementations. The simulation is linked either to the  Cmdenv or Tkenv user interfaces, or to both.}
+  \item{The \textbf{Model Component Library} includes simple module definitions and 
     their C++ implementations, compound module types, channels, networks,
-    message types and in general everything that belongs to models and
-    has been linked into the simulation program. A simulation program is
-    able to run any model that has all necessary components linked in.}
-  \item{The \textbf{Executing Model} is the model that has been set up
-    for simulation. It contains objects (modules, channels, etc.) that
-    are all instances of components in the model component library.}
+    message types and everything belonging to that models that
+    have been linked to the simulation program. A simulation program can
+    run any model that contains all the required linked components.}
+  \item{The \textbf{Executing Model} is the model that is set up
+    for simulation. This model contains objects (modules, channels, and so on) that
+    are all instances of the components in the model component library.}
 \end{itemize}
 
-The arrows in the figure show how components interact with
+The arrows in the figure describe how components interact with
 each other:
 
 \begin{itemize}
   \item{\textbf{Executing Model $\Leftrightarrow$ Sim}. The simulation kernel
-    manages the future events and invokes modules in the executing model
+    manages the future events and activates modules in the executing model
     as events occur. The modules of the executing model are stored
     in the main object of Sim, \fvar{simulation} (of class \cclass{cSimulation}).
     In turn, the executing model calls functions in the
     simulation kernel and uses classes in the Sim library.}
   \item{\textbf{Sim $\Leftrightarrow$ Model Component Library}. The simulation kernel
     instantiates simple modules and other components when the simulation model
-    is set up at the beginning of the simulation run. It also refers
+    is set up at the beginning of the simulation run. In addition, it refers
     to the component library when dynamic module creation is used.
     The machinery for registering and looking up components in the model
     component library is implemented as part of Sim.}
@@ -92,18 +92,18 @@ each other:
 
 This section discusses the issues of embedding the simulation kernel
 or a simulation model into a larger application. We assume that you
-don't just want to change one or two aspects of the simulator
-(like event scheduling or result recording) or create a new user interface
-a'la Cmdenv or Tkenv -- if so, see chapter \ref{cha:plugin-exts}.
+do not just want to change one or two aspects of the simulator
+(such as , event scheduling or result recording) or create a new user interface
+such as Cmdenv or Tkenv -- if so, see chapter \ref{cha:plugin-exts}.
 
-For the following discussion, we assume that you write the embedding
-program from scratch, i.e. starting from a \ffunc{main()} function.
+For the following section, we assume that you write the embedding
+program from scratch. Meaning, starting from a \ffunc{main()} function.
 
 \subsection{The main() Function}
 
-Here is an minimalistic program that initializes the simulation library,
-and runs two simulations. In later sections we'll go through details
-of the code and discuss how to elaborate it.
+The minimalistic program described below, initializes the simulation library,
+and runs two simulations. In later sections we will review the details
+of the code and discuss how to improve it.
 
 \begin{cpp}
 #include <omnetpp.h>
@@ -134,30 +134,30 @@ The first few lines of the code initialize the simulation library. The
 purpose of \cclass{cStaticFlag} is to set a global variable to \ttt{true}
 for the duration of the \ttt{main()} function, to help the simulation
 library handle exceptions correctly in extreme cases.
-\ttt{ExecuteOnStartup::executeAll()} does various startup tasks such as
+\ttt{ExecuteOnStartup::executeAll()} performs various startup tasks such as,
 building registration tables out of the \fmac{Define\_Module()},
 \fmac{Register\_Class()} and similar entries throughout the code.
-\ttt{SimTime::setScaleExp(-12)} sets simulation time resolution to
+\ttt{SimTime::setScaleExp(-12)} sets the simulation time resolution to
 picoseconds; other values can be used as well, but it is mandatory to
 choose one.
 
 \begin{note}
-It is not allowed to change the simulation time exponent later, because
-as the exponent is a global variable, existing \ttt{simtime\_t} instances
-would change their values.
+The simulation time exponent cannot be changed at a later stage, since it is
+a global variable, and the values of the existing \ttt{simtime\_t} instances
+would change.
 \end{note}
 
 The code then loads the NED files from the \ttt{foodir} and
 \ttt{bardir} subdirectories of the working directory (as if the NED path
-was \ttt{./foodir;./bardir}), and goes on to run two simulations.
+was \ttt{./foodir;./bardir}), and runs two simulations.
 
 
 \subsection{The simulate() Function}
 
 A minimalistic version of the \ttt{simulate()} function is shown below.
-For conciseness, we omitted exception handling code (\ttt{try}/\ttt{catch} blocks)
-except for the event loop, but marked every line with ``\ttt{E!}'' where various
-problems with the simulation model can manifest as exceptions.
+In order to shorten the code, the exception handling code has been ommited (\ttt{try}/\ttt{catch} blocks)
+apart from the event loop. However, every line is marked with ``\ttt{E!}'' where various
+problems with the simulation model can occur and can be thrown as exceptions.
 
 \begin{cpp}
 void simulate(const char *networkName, simtime_t limit)
@@ -209,68 +209,70 @@ void simulate(const char *networkName, simtime_t limit)
 }
 \end{cpp}
 
-The function accepts a network type name (which must be fully qualified,
-i.e. with package name), and a simulation time limit.
+The function accepts a network type name (which must be fully qualified
+with a package name), and a simulation time limit.
 
-In the first few lines we look up the network name among the modules that
-have been loaded from NED files, and print an error message if not found.
+In the first few lines the system looks up the network name among the modules that
+have been loaded from the  NED files, and an error message is printed if it is not found.
 
-Then we need to create and activate a simulation manager object
-(\cclass{cSimulation}). The simulation manager needs an environment object
-to take the configuration from, write simulation results to, and so on.
-The environment object (\ttt{CustomSimulationEnv} in the above code) has to
-be provided by the programmer; this is discussed in detail in a later section.
+Then it is required to create and activate a simulation manager object
+(\cclass{cSimulation}).
+The simulation manager requires another object, called the environment object. This environment object is used by the simulation manager
+to read the configuration. In addition, the results produced by the sim. manager are written to this environment object.
+
+The environment object (\ttt{CustomSimulationEnv} in the above code) must
+be provided by the programmer; this is described in detail in a later section.
 
 \begin{note}
-Before the 4.0 version, \ttt{simulation} and \ttt{ev} were global variables;
-now they are macros that resolve to \ttt{*cSimulation::getActiveSimulation()}
+Before version 4.0, \ttt{simulation} and \ttt{ev} were global variables;
+In the current version they are macros that refer to  \ttt{*cSimulation::getActiveSimulation()}
 and \ttt{*cSimulation::getActiveSimulation()->getEnvir()}.
 \end{note}
 
-Then we set up the network in the simulation manager. The
+The network is then set up in the simulation manager. The
 \ttt{sim->}\ffunc{setupNetwork()} method creates the system module and
 recursively all modules and their interconnections; module parameters are
-also read from the configuration (where needed) and assigned. If there is
-an error (e.g. module type not found), an exception will be thrown. The
+also read from the configuration (where required) and assigned. If there is
+an error (for example, module type not found), an exception will be thrown. The
 exception object is some kind of \cclass{std::exception}, usually a
 \cclass{cRuntimeError}.
 
-If network setup was successful, we call \ttt{sim->}\ffunc{startRun()}, one
-side effect of which is that the \ffunc{initialize()} methods of modules
-and channels get invoked. This step also results in an exception if
-something goes wrong in an \ffunc{initialize()}.
+If the network setup was successful, the \ttt{sim->}\ffunc{startRun()} function is called,
+the \ffunc{initialize()} methods of modules
+and channels are then activated. In addition, an exception is thrown if
+something goes wrong in the \ffunc{initialize()}.
 
-The following lines actually run the simulation, by calling
+The following lines run the simulation, by calling
 \ttt{sim->}\ffunc{selectNextModule()} and \ttt{sim->}\ffunc{doOneEvent()}
-in an event loop, until the simulation time limit is reached or some
-exception occurs. Exceptions subclassed from \cclass{cTerminationException}
-signal the normal termination of the simulation; other exceptions signal
+in an event loop, until the simulation time limit is reached or an
+exception occurs. Exceptions that are subclassed from \cclass{cTerminationException}
+signify the normal termination of the simulation process; other exceptions indicate
 various errors.
 
 If the simulation has completed successfully (\ttt{ok==true}), the code
 goes on to call the \ffunc{finish()} methods of modules and channels. Then,
-regardless of whether there was an error, \ttt{sim->}\ffunc{endRun()} has
-to be called, and the network is torn down with
+regardless of whether there was an error, \ttt{sim->}\ffunc{endRun()} is 
+called, and the network is shut down using
 \ttt{sim->}\ffunc{deleteNetwork()}.
 
-Finally, we deallocate the simulation manager object, but the active
-simulation manager is not allowed to be deleted, so we first deactivate it
-with \ffunc{setActiveSimulation(NULL)}.
+Finally, the simulation manager object is deallocated, but the active
+simulation manager is not allowed to be deleted, therefore it is deactivated 
+using \ffunc{setActiveSimulation(NULL)}.
 
 
 \subsection{Providing an Environment Object}
 
 The environment object needs to be subclassed from the \cclass{cEnvir} class,
-but since it has quite a number of pure virtual methods, it is easier
-to start by subclassing \cclass{cNullEnvir}. \cclass{cNullEnvir} defines all
+but since it has many pure virtual methods, it is easier
+to begin by subclassing \cclass{cNullEnvir}. \cclass{cNullEnvir} defines all
 pure virtual methods, with either an empty body, or with a body that throws
 an \ttt{"unsupported method called"} exception. You can redefine methods
-to be more sophisticated later on, as you are progressing with the development.
+to be more sophisticated later on, as you progress with the development.
 
-One method that you surely want to redefine is \ffunc{readParameter()}; that is
-how module parameters get their values. For debugging purposes, you may also
-redefine \ffunc{sputn()} where module log messages are written.
-\cclass{cNullEnvir} only provides one random number generator, so your
+You must redefine is \ffunc{readParameter()} method. This enables 
+module parameters to obtain their values. For debugging purposes, you can also
+redefine \ffunc{sputn()} where module log messages are written to.
+\cclass{cNullEnvir} only provides one random number generator, so if your
 simulation model uses more than one, you also need to redefine the
 \ffunc{getNumRNGs()} and \ffunc{getRNG(k)} methods. To print or store
 simulation records, redefine \ffunc{recordScalar()}, \ffunc{recordStatistic()}
@@ -347,29 +349,29 @@ class EmptyConfig : public cConfiguration
 
 NED files can be loaded with any of the following static methods of
 \cclass{cSimulation}: \ffunc{loadNedSourceFolder()}, \ffunc{loadNedFile()},
-and \ffunc{loadNedText()}. The first one loads a whole subdirectory tree,
-the second one loads a single NED file, and the third takes a literal
-string containing NED code and parses that one.
+and \ffunc{loadNedText()}. The first method loads an entire subdirectory tree,
+the second method loads a single NED file, and the third method takes a literal
+string containing NED code and parses it.
 
 \begin{note}
 One use of \ffunc{loadNedText()} is to parse NED sources previously converted
-to C++ string constants and linked into the executable. This allows for
-creating executables that are self-contained, and do not need NED files
+to C++ string constants and linked into the executable. This enables
+creating executables that are self-contained, and do not require NED files
 to be distributed with them.
 \end{note}
 
-The above functions can be mixed as well, but after the last call,
+The above functions can also be mixed, but after the last call,
 \ffunc{doneLoadingNedFiles()} must be invoked (it checks for unresolved
 NED types).
 
-Loading NED files has global effect, and they cannot be unloaded.
+Loading NED files has a global effect, therefore they cannot be unloaded.
 
 
 \subsection{How to Eliminate NED Files}
 
 It is possible to get rid of NED files altogether. This would also
 remove the dependency on the \ttt{oppnedxml} library and the code in
-\ttt{sim/netbuilder} as well, albeit at the cost of additional coding.
+\ttt{sim/netbuilder}, although at the cost of additional coding.
 
 \begin{note}
 When the only purpose is to get rid of NED files as external dependency
@@ -388,7 +390,7 @@ be similar to C++ files generated by \fprog{nedtool} of {\opp} 3.x.
 
 \subsection{Assigning Module Parameters}
 
-As already mentioned, modules get values for their input parameters
+As already mentioned, modules obtain values for their input parameters
 by calling the \ffunc{readParameter()} method of the environment object
 (\cclass{cEnvir}).
 
@@ -397,15 +399,15 @@ by calling the \ffunc{readParameter()} method of the environment object
 been set to a fixed (i.e. non-\ttt{default}) value in the NED files.
 \end{note}
 
-The \ffunc{readParameter()} method should be written so that it can assign
-the parameter. For doing so, it can recognize the parameter from its name
+The \ffunc{readParameter()} method should be written in a manner that enables it to assign
+the parameter. When doing so, it can recognize the parameter from its name
 (\ttt{par->getName()}), from its full path (\ttt{par->getFullPath()}),
 from the owner module's class (\ttt{par->getOwner()->getClassName()})
 or NED type name (\ttt{((cComponent *)par->getOwner())->getNedTypeName()}).
 Then it can set the parameter using one of the typed setter methods
 (\ffunc{setBoolValue()}, \ffunc{setLongValue()}, etc.), or set it
 to an expression provided in string form (\ffunc{parse()} method).
-It can also accept the default value if there is one (\ffunc{acceptDefault()}).
+It can also accept the default value if it exists (\ffunc{acceptDefault()}).
 
 The following code is a straightforward example that answers parameter
 value requests from a pre-filled table.
@@ -459,11 +461,11 @@ if modules come from external projects.
 \subsubsection{Via \cclass{cEnvir} Callbacks}
 
 A more general way is to catch \ffunc{recordScalar()} method calls in the
-simulation model. \cclass{cModule}'s \ffunc{recordScalar()} method
+simulation model. The \cclass{cModule}'s \ffunc{recordScalar()} method
 delegates to the similar function in \cclass{cEnvir}. You may define the
-latter function such that it stores all recorded scalars (for example in an
+latter function so that it stores all recorded scalars (for example in an
 \ttt{std::map}), where the main program can find them later.
-Values from output vectors can be captured in a similar way.
+Values from output vectors can be captured in a similar manner.
 
 A draft implementation:
 
@@ -490,7 +492,7 @@ double avgReplyTime = results["Network.client[2].app.avgReplyTime"];
 \end{cpp}
 
 A drawback is that compile-time checking of statistics names is lost, but
-definite advantages include that any simulation model can now be used
+the advantages are that any simulation model can now be used
 without changes, and that capturing additional statistics does not require
 code modification in the main program.
 
@@ -508,19 +510,19 @@ while (sim->getSimTime() < limit)
 }
 \end{cpp}
 
-It depends on the concrete scheduler class whether
+Depending on the concrete scheduler class, the 
 \ffunc{selectNextModule()} may return \ttt{NULL}. The default
 \cclass{cSequentialScheduler} never returns \ttt{NULL}.
 
-Execution may terminate in various ways. Runtime errors cause a
+The execution may terminate in various ways. Runtime errors cause a
 \cclass{cRuntimeError} (or other kind of \cclass{std::exception}) to be
 thrown. \cclass{cTerminationException} is thrown on normal termination
 conditions, such as when the simulation runs out of events to process.
 
 You may customize the loop to exit on other termination conditions as well,
-such as on a simulation time limit (see above), on CPU time limit, or when
+such as on a simulation time limit (see above), on a CPU time limit, or when
 results reach a required accuracy. It is relatively straightforward to
-build in progress reporting and interactivity (start/stop) as well.
+build in progress reporting and interactivity (start/stop).
 
 Animation can be hooked up to the appropriate callback methods of
 \cclass{cEnvir}: \ffunc{beginSend()}, \ffunc{sendHop()}, \ffunc{endSend()},
@@ -534,32 +536,32 @@ and also to set up and simulate a network in each instance. However, this
 requires frequent use of \ffunc{cSimulation::set\-Active\-Simulation()}:
 before invoking any \cclass{cSimulation} method or module method,
 the corresponding \cclass{cSimulation} instance needs to be designated
-as the active simulation manager. This is necessary because several models
+as the active simulation manager. This is necessary since several models
 and simulation kernel methods refer to the active simulation manager
 instance via the \fmac{simulation} macro, and it is similar with the
 \fmac{ev} macro.
 
 \begin{note}
 Before the 4.0 version, \ttt{simulation} and \ttt{ev} were global variables;
-now they are macros that resolve to \ttt{*cSimulation::getActiveSimulation()}
+in the current version they are macros that refer to \ttt{*cSimulation::getActiveSimulation()}
 and \ttt{*cSimulation::getActiveSimulation()->getEnvir()}.
 \end{note}
 
 Every \cclass{cSimulation} instance should have its own associated
 environment object (\cclass{cEnvir}). Environment objects may not be
-shared among several \cclass{cSimulation} instances.
-\cclass{cSimulation}'s destructor deletes the associated
-\cclass{cEnvir} instance as well.
+shared among several \cclass{cSimulation} instances. The
+\cclass{cSimulation}'s destructor also removes the associated
+\cclass{cEnvir} instance.
 
 \cclass{cSimulation} instances may be reused from one simulation to another,
-but it is also possible to make a new instance for each simulation run.
+but it is also possible to create a new instance for each simulation run.
 
 \begin{note}
 It is not possible to run different simulations concurrently from
 different theads, due to the use of global variables which are not easy
-to get rid of, like the active simulation manager pointer and the active
+to get rid of, such as the active simulation manager pointer and the active
 environment object pointer. Static buffers and objects (like string pools)
-are also used for efficiency reasons at some places inside the simulation
+are also used for efficiency reasons in some places inside the simulation
 kernel.
 \end{note}
 
@@ -576,13 +578,13 @@ simulation.setScheduler(scheduler);
 \end{cpp}
 
 It is usually not a good idea to change schedulers in the middle of
-a simulation, so \ffunc{setScheduler()} may only be called when
+a simulation, therefore  \ffunc{setScheduler()} may only be called when
 no network is set up.
 
 
 \subsection{Multi-Threaded Programs}
 
-The {\opp} simulation kernel is not reentrant, so it must be protected
+The {\opp} simulation kernel is not reentrant, therefore it must be protected
 against concurrent access.
 
 

@@ -5,23 +5,22 @@
 \label{sec:ch-graphics:display-strings}
 
 Display strings\index{display strings} specify the arrangement and
-appearance of modules in graphical user interfaces (currently only
-Tkenv): they control how the objects (compound modules, their
-submodules and connections) are displayed. Display strings occur in
-NED description's \fpar[ned!keywords!display]{@display}
-property.
+appearance of representations of modules in graphical user interfaces (currently only
+Tkenv); they control how the objects (compound modules, their
+submodules and connections) are displayed. Display strings are specified in
+NED's \fpar[ned!keywords!display]{@display} property.
 
 Display strings can be used in the following contexts:
 \begin{itemize}
-  \item \textit{submodules} -- display string may contain position, arrangement
+  \item \textit{submodules} -- display strings may contain position, arrangement
         (for module vectors), icon, icon color, auxiliary icon, status text,
         communication range (as circle or filled circle), tooltip, etc.
-  \item \textit{compound modules, networks} -- display string can specify
+  \item \textit{compound modules, networks} -- display strings can specify
         background color, border color, border width,
         background image, scaling, grid, unit of measurement, etc.
-  \item \textit{connections} -- display string can specify positioning, color,
+  \item \textit{connections} -- display strings can specify positioning, color,
         line width, line style, text and tooltip
-  \item \textit{messages} -- display string can specify icon, icon color, etc.
+  \item \textit{messages} -- display strings can specify icon, icon color, etc.
 \end{itemize}
 
 
@@ -36,7 +35,7 @@ arguments:
 \end{ned}
 
 Tag arguments may be omitted both at the end and inside the
-parameter list:
+parameter list. If an argument is omitted, a sensible default value is used.
 
 \begin{ned}
 @display("p=100,100;b=,,rect,blue")
@@ -74,7 +73,7 @@ Every module and channel object has one single display string object,
 which controls its appearance in various contexts. The initial value of
 this display string object comes from merging the \fprop{@display}
 properties occurring at various places in NED files.
-This section describes the rules \fprop{@display} properties are merged
+This section describes the rules for merging \fprop{@display} properties 
 to create the module or channel's display string.
 
 \begin{itemize}
@@ -93,7 +92,7 @@ using the following rules:
   \item If a tag is present both in the base and in the current display string
         only tag arguments present in the base, but not in the current display string
         will be copied.
-        (e.g. base: \ttt{"b=40,20"} current: \ttt{"b=,,oval"} result: \ttt{"b=40,20,oval"})
+        (e.g. base: \ttt{"b=40,20"} current: \ttt{"b=,30,oval"} result: \ttt{"b=40,30,oval"})
   \item If the current display string contains a tag argument with value "-" (hyphen)
         that argument is treated as empty and will not be inherited from other
         display strings. Requesting the value of this argument will return its the
@@ -116,7 +115,8 @@ simple Derived extends Base {
 network SimpleQueue {
     submodules:
         submod: Derived {
-            @display("i=,yellow,-;p=273,101;r=70");  // ==> "i=block/queue,yellow;p=273,101;r=70"
+            @display("i=,yellow,-;p=273,101;r=70");  
+                     // ==> "i=block/queue,yellow;p=273,101;r=70"
         }
         ...
 }
@@ -132,7 +132,7 @@ if it is used as a submodule:
   \item{\ttt{i} -- icon}
   \item{\ttt{is} -- icon size}
   \item{\ttt{i2} -- alternate (status) icon placed at the upper right corner of the main icon}
-  \item{\ttt{p} -- positioning and layouting}
+  \item{\ttt{p} -- positioning and layout}
   \item{\ttt{r} -- range indicator}
   \item{\ttt{q} -- queue information text}
   \item{\ttt{t} -- text}
@@ -140,7 +140,7 @@ if it is used as a submodule:
 \end{itemize}
 
 \subsubsection{Icons}
-By default modules are represented by simple icons.
+By default, modules are represented by simple icons.
 Using images for the modules is possible with the \ttt{i} tag.
 See the \ttt{images} subfolder of your {\opp} installation for possible
 icons. The stock images installed with {\opp} have several size variants.
@@ -167,8 +167,9 @@ The following example colorizes the \ttt{block/source} icon, 20\% red
 
 If you want to show state information about your module, you can use the \ttt{i2} tag to
 add a small status icon to your main icon. This icon is displayed in the upper right corner
-of your main icon. Since display strings can be changed at runtime,
-the \ttt{i2} icon can be used to dynamically display the module's current state.
+of your main icon. In most cases the \ttt{i2} tag is specified at runtime using
+the \ffunc{setDisplayString()} method, so the icon can be changed dynamically based on the
+module's internal state.
 
 \begin{ned}
 @display("i=block/queue;i2=status/busy")
@@ -197,7 +198,7 @@ is supported:
 
 To define the position of a module inside an other one use the \ttt{p} tag.
 If you do not specify a \ttt{p} tag for your module, the parent module will
-automatically choose a position based on a layouting algorithm.
+automatically choose a position based on a layout algorithm.
 The following example will place the module at the given position:
 \begin{ned}
 @display("p=50,79");
@@ -211,9 +212,9 @@ You can specify the ratio between 1 pixel and 1 unit with the \ttt{bgs} tag.
 \end{note}
 
 The \ttt{p} tag allows the automatic arrangement of module vectors. They can be
-arranged in a row, a column, a matrix or a ring or you may specify their positions
+arranged in a row, a column, a matrix or a ring, or you may specify their positions
 later at runtime using the \ffunc{setDisplayString()} method. The rest of the arguments
-in the \ttt{p} tag depends on the layout type:
+in the \ttt{p} tag depend on the layout type:
 
 \begin{itemize}
   \item \ttt{row -- p=100,100,r,$deltaX$} (A row of modules with $deltaX$ units between the modules)
@@ -280,8 +281,8 @@ named "procqueue". It will display the length of the queue object along the modu
 
 You can add a text description to any module using the \ttt{t}
 (displayed along the module) or \ttt{tt} tag (displayed as a tooltip).
-The following example displays a short text along with the module
-and adds a tooltip text too that can be seen by hovering over
+The following example displays a short text string along with the module
+and adds a tooltip text string that can be seen by hovering over
 them module with the mouse.
 
 \begin{ned}
@@ -317,7 +318,7 @@ Tkenv. They mostly deal with the module background.
   \item \ttt{bgi} -- background image
   \item \ttt{bgtt} -- tooltip above the background
   \item \ttt{bgg} -- background grid
-  \item \ttt{bgl} -- control child layouting
+  \item \ttt{bgl} -- child layout
   \item \ttt{bgb} -- background size, color, border
   \item \ttt{bgs} -- scaling of background coordinates
   \item \ttt{bgp} -- background coordinate offset
@@ -393,7 +394,7 @@ Appendix \ref{cha:display-string-tags}.
 
 \subsection{Message Display Strings}
 
-Message display string affects how messages are shown during animation.
+Message display strings affect how messages are shown during animation.
 By default, they are displayed as a small filled circle, in one of
 8 basic colors (the color is determined as \textit{message kind modulo 8}),
 and with the message class and/or name displayed under it.
@@ -501,7 +502,7 @@ It will map to a color depending on the message kind.
 The \ttt{"i="} display string tag allows for colorization of icons.
 It accepts a target color and a percentage as the degree of colorization.
 Percentage has no effect if the target color is missing.
-Brightness of icon is also affected -- to keep the original brightness,
+Brightness of the icon is also affected -- to keep the original brightness,
 specify a color with about 50\% brightness (e.g. \#808080 mid-grey,
 \#008000 mid-green).
 
@@ -531,7 +532,7 @@ The default image path is compiled into Tkenv with the value
 \ttt{"\textit{omnetpp-dir}/images; ./images;./bitmaps"} -- which will work fine
 as long as you don't move the directory, and you will also be able to
 load more icons from the \ttt{images/} subdirectory of the current
-directory. As people usually run simulation models from the model's
+directory. As users typically run simulation models from the model's
 directory, this practically means that custom icons placed in the
 \ttt{images/} subdirectory of the model's directory are automatically
 loaded.
@@ -544,11 +545,11 @@ specific: in Unix, if you are using the bash shell, adding a line
 export OMNETPP_IMAGE_PATH="/home/you/images;./images"
 \end{commandline}
 
-to \ttt{~/.bashrc} or \ttt{~/.bash\_profile} will do; on Windows, environment variables
+to \ttt{\~/.bashrc} or \ttt{\~/.bash\_profile} will do; on Windows, environment variables
 can be set via the \textit{My Computer --> Properties} dialog.
 
 You can extend the image path from \ffilename{omnetpp.ini} with the
-\ttt{tkenv-image-path} option, which gets prepended to the environment
+\ttt{tkenv-image-path} option, which is prepended to the environment
 variable's value.
 
 \begin{inifile}
@@ -577,8 +578,8 @@ of the image path, and these icons can be referenced from display strings
 by naming the subdirectory (subdirectories) as well:
 \ttt{"subdir/icon"}, \ttt{"subdir/subdir2/icon"}, etc.
 
-For compatibility, if the display string contains a icon without
-a category (i.e. subdirectory) name, {\opp} tries it as "old/icon" as well.
+For compatibility, if the display string contains an icon without
+a category (i.e. subdirectory) name, {\opp} attempts to load it from "old/icon" as well.
 
 \subsection{Icon Size}
 
@@ -588,6 +589,10 @@ In display strings, one can either use the suffix (\ttt{"i=device/router\_l"}),
 or the \ttt{"is}" (\textit{icon size}) display string tag (\ttt{"i=device/router;is=l"}),
 but not both at the same time (we recommend using the \ttt{is} tag whenever possible).
 
+%The word "layouting" doesn't appear in the English dictionary, although it seems to appear
+%  commonly in technical articles, etc. on the web. Up to this point, I have changed all
+%  uses of layouting to layout, but I will leave it up to you to decide which one to use.
+%  It sounds wrong to me, but it may be an acceptable usage in your particular domain.
 
 \section{Layouting}
 \label{sec:ch-graphics:layouting}
@@ -598,19 +603,19 @@ not been assigned explicit positions via the \ttt{"p="} tag will be
 automatically placed by the algorithm.
 
 SpringEmbedder is a graph layouting algorithm based on a physical model.
-Graph nodes (modules) repent each other like electric charges
+Graph nodes (modules) repel each other like electric charges
 of the same sign, and connections are sort of springs which try
-to contract and pull the nodes they're attached to. There is also friction
+to contract and pull the nodes they're attached to together. There is also friction
 built in, in order to prevent oscillation of the nodes. The layouting algorithm
 simulates this physical system until it reaches equilibrium
 (or times out). The physical rules above have been slightly tweaked
-to get better results.
+to achieve better results.
 
 The algorithm doesn't move any module which has fixed coordinates.
 Predefined row, matrix, ring or other arrangements (defined
 via the 3rd and further args of the \ttt{"p="} tag) will be preserved --
 you can think about them as if those modules were attached
-to a wooden framework so that they can only move as one unit.
+to a rigid framework so that they can only move as one unit.
 
 Caveats:
 

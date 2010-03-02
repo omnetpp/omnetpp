@@ -20,10 +20,11 @@ which user interface to activate, where to load NED files from, and so on.
 
 The following sections describe the most frequently used command-line
 options. To get a complete list of supported command line options, run
-a simulation executable (or \fprog{opp\_run}) with the \ttt{-h} option.
+the \fprog{opp\_run} command (or any other simulation executable) with  
+the \ttt{-h} option.
 
 \begin{commandline}
-$ ./fifo -h
+$ opp_run -h
 \end{commandline}
 
 \subsubsection{Specifying Ini Files}
@@ -39,7 +40,7 @@ $ ./fifo experiment.ini common.ini
 $ ./fifo -f experiment.ini -f common.ini
 \end{commandline}
 
-Multiple ini files can be given, and their contents will get merged. This
+Multiple ini files can be given, and their contents will be merged. This
 allows for partitioning the configuration into separate files, for example
 to simulation options, module parameters and result recording options.
 
@@ -66,7 +67,7 @@ NED path resolution rules are as follows:
 \begin{itemize}
   \item {\opp} checks for NED path specified on the command line with the \ttt{-n} option
   \item if not found on the command line, it checks for the NEDPATH environment variable
-  \item the \fconfig{ned-path} option value from the ini file gets appended to the result of the above steps
+  \item the \fconfig{ned-path} option value from the ini file is appended to the result of the above steps
   \item if the result is still empty, it falls back to "." (the current directory)
 \end{itemize}
 
@@ -100,7 +101,7 @@ Cmdenv} or \ttt{-u Tkenv} option on the \fprog{opp\_makemake} command line.
 This can be useful if you intend to run your simulations on a machine where
 Tcl/Tk is not installed.
 
-By default, Tkenv will be used if both runtime environment is present in
+By default, Tkenv will be used if both runtime environments are present in
 your executable. You explicitly select a user interface by adding the
 \ttt{user-interface=Cmdenv} (or \ttt{=Tkenv}) option in your ini file, or
 by specifying \ttt{-u Cmdenv} or \ttt{-u Tkenv} on the command line. If
@@ -220,7 +221,7 @@ There are several useful configuration options that control how a simulation is 
 \end{itemize}
 
 \begin{note}
-  It is possible to specify a configuration option also on command line (in which case the
+  It is possible to specify a configuration option also on the command line (in which case the
   command line takes precedence). You should prefix the option name with a double
   dash (-{}-) and should not put any spaces around the equal sign
   (e.g. \ttt{-{}-debug-on-errors=true})
@@ -246,7 +247,7 @@ passed via command-line argument or in the ini file.
 
 \subsection{Example Run}
 
-When run the Fifo example under Cmdenv, you should see
+When you run the Fifo example under Cmdenv, you should see
 something like this:
 
 \begin{commandline}
@@ -286,12 +287,12 @@ Calling finish() at end of Run #0...
 End.
 \end{commandline}
 
-As Cmdenv runs the simulation, periodically it prints the sequence number
+As Cmdenv runs the simulation, it periodically prints the sequence number
 of the current event, the simulation time, the elapsed (real) time,
 and the performance of the simulation (how many events are processed per
 second; the first two values are 0 because there wasn't enough data
 for it to calculate yet). At the end of the simulation, the \ffunc{finish()}
-methods of the simple modules are run, and the output from them are displayed.
+methods of the simple modules are run, and the outputs from them are displayed.
 On my machine this run took 34 seconds. This Cmdenv output can be
 customized via \ffilename{omnetpp.ini} entries. The output file \ffilename{results/Fifo1-0.vec}
 contains vector data recorded during simulation (here, queueing times),
@@ -317,11 +318,11 @@ Cmdenv can be executed in two modes, selected by the \fconfig{cmdenv-express-mod
 ini file option:
 
 \begin{itemize}
-    \item \tbf{Normal} (non-express) mode is for debugging: detailed information
+    \item \tbf{Normal} (non-express) mode is for debugging; detailed information
         will be written to the standard output (event banners, module output,
         etc).
-    \item \tbf{Express} mode can be used for long simulation runs: only
-        periodical status update is displayed about the progress of the
+    \item \tbf{Express} mode can be used for long simulation runs; only
+        periodical status updates are displayed about the progress of the
         simulation.
 \end{itemize}
 
@@ -330,7 +331,7 @@ whether to print performance information. Turning it on results in a 3-line
 entry printed on each update, containing ev/sec, simsec/sec, ev/simsec,
 number of messages created/still present/currently scheduled in FES\index{FES}.
 
-For a full list of options, see the ones beginning with \ttt{cmdenv} in
+For a full list of options, see the options beginning with \ttt{cmdenv-} in
 Appendix \ref{cha:config-options}.
 
 
@@ -339,7 +340,7 @@ Appendix \ref{cha:config-options}.
 
 When the simulation is running in ``express'' mode with detailed
 performance display enabled, Cmdenv periodically outputs a three-line
-status info about the progress of the simulation.
+status report about the progress of the simulation.
 The output looks like this:
 
 \begin{commandline}
@@ -406,8 +407,8 @@ because it may indicate the `health' of your simulation.
 \end{itemize}
 
 
-The second value, the number of messages present is more useful than
-perhaps one would initially think. It can be an indicator of the `health' of the simulation:
+The second value, the number of messages present, is more useful than
+perhaps one would initially think. It can be an indicator of the `health' of the simulation;
 if it is growing steadily, then either you have a memory leak and losing
 messages (which indicates a programming error), or the network you simulate is
 overloaded and queues are steadily filling up (which might indicate wrong input
@@ -439,8 +440,8 @@ inside the network.
 \subsection{Command-Line and Configuration Options}
 
 A simulation program built with Tkenv accepts all the general command line
-options \index{command line options}. Additionally, the \ttt{-c configname}
-and \ttt{-r runnumber} options can be used to preselect a single run for execution,
+options. \index{command line options} Additionally, the \ttt{-c configname}
+and \ttt{-r runnumber} options can be used to preselect a single run for execution;
 that is, these options suppress the initial run selection dialog.
 
 Tkenv configuration options:
@@ -496,8 +497,8 @@ simulation with an API call if some condition is true.
 
 \subsection{Using Cmdenv}
 
-To execute more than one run using the Cmdenv use the \ttt{-r} option
-and specify the runs in a comma separated format \ttt{1,2,4,9..11} or you may leave
+To execute more than one run using Cmdenv, use the \ttt{-r} option
+and specify the runs in a comma separated format \ttt{1,2,4,9..11}, or you may leave
 out the \ttt{-r} option to execute all runs in the experiment.
 
 \begin{warning}
@@ -516,7 +517,7 @@ The following script executes a simulation named \ttt{wireless}
 several times, with parameters for the different runs
 given in the \ttt{runs.ini} file.
 
-Before you are executing your simulation batch, you may check how many
+Before you execute your simulation batch, you may check how many
 runs are available in the configuration you are using. Use the
 \ttt{-x config} command line option to print the number of runs or
 add the \ttt{-g} to get more details.
@@ -568,14 +569,14 @@ done
 {\opp} has a utility program called \fprog{opp\_runall} which
 allows you to execute a simulation batch in command line mode.
 You must specify the whole command line you would use to run
-your batch in Cmdenv. There are advantages running your batches
+your batch in Cmdenv. There are advantages to running your batches
 this way:
 \begin{itemize}
   \item Each simulation run executes in a separate operating system process.
         This means that a crash because of a programming error does not affect
         the outcome of the other runs. They are totally independent of each other.
   \item If you happen to have a multi core/processor machine, you can take advantage
-        of the processing power by running sevaral runs parallel.
+        of the processing power by running sevaral runs in parallel.
 \end{itemize}
 
 The command basically creates a makefile which contains
@@ -586,9 +587,9 @@ of parallel runs allowed.
 
 \begin{warning}
   Use the parallel execution option only if you have enough memory to run several simulations
-  side by side. If you run out of memory your operating system will start swapping and the overall
+  side by side. If you run out of memory your operating system will start swapping, and the overall
   performance of the system will be greatly reduced. Always specify the number of processes
-  after the \ttt{-j} option otherwise the \fprog{make} program will try to start \textit{all}
+  after the \ttt{-j} option, otherwise the \fprog{make} program will try to start \textit{all}
   runs at the same time. As a rule of thumb: if you have 4 cores (and enough memory), use \ttt{-j4}.
 \end{warning}
 
@@ -620,15 +621,15 @@ For the simulation to produce statistically reliable results,
 one has to carefully consider the following:
 
 \begin{itemize}
-  \item{When is the initial transient over, when can we start
+  \item{When the initial transient is over, when can we start
     collecting data? We usually don't want to include the
     initial transient when the simulation is still ``warming up.''}
   \item{When can we stop the simulation? We want to wait long enough
     so that the statistics we are collecting can ``stabilize'',
-    can reach the required sample size to be statistically trustable.}
+    or reach the required sample size to be statistically trustable.}
 \end{itemize}
 
-Neither questions are trivial to answer. One might just suggest
+Neither question is trivial to answer. One might just suggest
 to wait ``very long'' or ``long enough''. However, this is neither
 simple (how do you know what is ``long enough''?) nor practical
 (even with today's high speed processors simulations of modest complexity
@@ -642,7 +643,7 @@ collected for the results to have reached the required accuracy.
 One possible criterion is given by the confidence level,
 more precisely, by its width relative to the mean.
 But ex ante it is unknown how many observations have to be collected
-to achieve this level -- it must be determined runtime.
+to achieve this level -- it must be determined at runtime.
 
 
 \subsection{What Is Akaroa}
@@ -836,9 +837,9 @@ the \ttt{editbin} Microsoft utility. You can use the \ttt{opp\_stacktool}
 program (which relies on another Microsoft utility called \ttt{dumpbin})
 to display reserved stack size for executables.
 
-You need a low reserved stack size because the Win32 Fiber API
-which is the mechanism underlying \ffunc{activity()} uses
-this number as coroutine stack size, and with 1MB being the default,
+You need a low reserved stack size because the Win32 Fiber API,
+which is the mechanism underlying \ffunc{activity()}, uses
+this number as the coroutine stack size, and with 1MB being the default,
 it is easy to run out of the 2GB possible address space (2GB/1MB=2048).
 
 A more detailed explanation follows.
@@ -861,8 +862,8 @@ which can be set
 via the STACKSIZE .def file parameter, via the /stack linker option,
 or on an existing executable using the editbin /stack utility.
 This parameter specifies a common RSS for the main program stack,
-fiber and thread stacks. 64K should be enough. This is the way
-simulation executable should be created: linked with the /stack:65536
+fiber and thread stacks. 64K should be enough. This is the way the
+simulation executable should be created; linked with the /stack:65536
 option, or the /stack:65536 parameter applied using editbin later.
 For example, after applying the editbin /stacksize:65536 command to
 dyna.exe, I was able to successfully run the Dyna sample with 8000
@@ -874,7 +875,7 @@ modules at runtime, including about 4000 dynamically created modules.)
 
 On Unix, if you set the total stack size higher, you may get a
 segmentation fault during network setup\index{segmentation fault} (or
-during execution if you use dynamically created modules) for exceeding
+during execution if you use dynamically created modules), for exceeding
 the operating system limit for maximum stack size. For example, in
 Linux 2.4.x, the default stack limit is 8192K (that is, 8MB). The
 \fprog{ulimit} shell command can be used to modify the
@@ -989,17 +990,17 @@ Most of the above tools support tracking down memory leaks as well as
 detecting double deletion, writing past the end of an allocated block, etc.
 
 A proven commercial tool is \textit{Rational Purify}. It has
-a good reputation and proved its usefulness many times.
+a good reputation and has proved its usefulness many times.
 
 \subsection{Simulation Executes Slowly}
 
-Check the following if you think your simulation is running too slow.
+Check the following if you think your simulation is running too slowly:
 
 \begin{itemize}
   \item Turn on express mode with the \ttt{cmdenv-express-mode=true} configuration option.
   \item Be sure that event logging is turned off (\ttt{record-eventlog=false} configuration option).
   \item Turn of vector file recording if you don't absolutely need it (\ttt{**.vector-recording=false}).
-  \item If you are running under Tkenv disable animation features, close inspectors,
+  \item If you are running under Tkenv, disable animation features, close inspectors,
         hide the timeline, hide object tree, turn off log filtering.
   \item Compile your code as release instead of debug (in some cases this can give you 5x speedup)
 \end{itemize}
@@ -1020,7 +1021,7 @@ A great profiler on Linux is the \textit{Valgrind}-based
 \textit{callgrind}, and its visualizer \textit{KCachegrind}.
 Unfortunately it won't be ported to Windows anytime soon.
 On Windows, you are out of luck -- commercial products may help, or,
-port your simulation to Linux. The latter goes usually much smoother
+port your simulation to Linux. The latter goes usually much more smoothly
 than one would expect.
 
 
