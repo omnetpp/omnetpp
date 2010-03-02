@@ -4117,7 +4117,7 @@ public class SequenceChart
     		longestLineLength = Math.max(longestLineLength, line.length());
     	// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
     	outSizeConstraint.minimumWidth = longestLineLength * 8;
-    	return "<br/><pre>" + detail + "</pre>";
+    	return "<br/><pre>" + StringUtils.quoteForHtml(detail) + "</pre>";
     }
 
     private String getMessageDependencyEventNumbersText(IMessageDependency messageDependency) {
