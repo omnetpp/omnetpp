@@ -32,7 +32,7 @@ USING_NAMESPACE
 
 #define MAXIMUM_OBJECT_PRINTER_LEVEL 20
 
-ObjectPrinter::ObjectPrinter(RecursePredicate recursePredicate, const char *objectFieldMatcherPattern, int indentSize)
+ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate, const char *objectFieldMatcherPattern, int indentSize)
 {
     std::vector<MatchExpression*> objectMatchExpressions;
     std::vector<std::vector<MatchExpression*> > fieldNameMatchExpressionsList;
@@ -65,19 +65,19 @@ ObjectPrinter::ObjectPrinter(RecursePredicate recursePredicate, const char *obje
     }
 
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
-    this->recursePredicate = recursePredicate;
+    this->recursionPredicate = recursionPredicate;
     this->objectMatchExpressions = objectMatchExpressions;
     this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
     this->indentSize = indentSize;
 }
 
-ObjectPrinter::ObjectPrinter(RecursePredicate recursePredicate,
+ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
 		                     const std::vector<MatchExpression*>& objectMatchExpressions,
                              const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
                              int indentSize)
 {
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
-    this->recursePredicate = recursePredicate;
+    this->recursionPredicate = recursionPredicate;
     this->objectMatchExpressions = objectMatchExpressions;
     this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
     this->indentSize = indentSize;
@@ -146,7 +146,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
                 void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;
 
-                RecurseResult result = recursePredicate(object, descriptor, fieldIndex, fieldValue, parents, level);
+                ObjectPrinterRecursionControl result = recursionPredicate(object, descriptor, fieldIndex, fieldValue, parents, level);
                 if (result == SKIP || (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldIndex)))
                     continue;
 

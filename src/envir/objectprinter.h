@@ -28,14 +28,24 @@ class MatchExpression;
 class cClassDescriptor;
 class cObject;
 
-enum RecurseResult {
-	SKIP,
-	RECURSE,
-	FULL_NAME,
-	FULL_PATH
+/**
+ *
+ */
+enum ObjectPrinterRecursionControl {
+	SKIP,      // don't print this field
+	RECURSE,   // print this field in detail by recursing down
+	FULL_NAME, // print the full name only (applicable to cObject)
+	FULL_PATH  // print the full Path only (applicable to cObject)
 };
 
-typedef RecurseResult (*RecursePredicate)(void *, cClassDescriptor *, int, void *, void **, int);
+/**
+ * This is function type that controls recursion during printing an object.
+ * It will be asked what to do whenever recursion occurs at a compound object's field.
+ *
+ * Parameters: object that has the field, object's class descriptor, field index, field value,
+ * parent objects collected during recursion, recursion level.
+ */
+typedef ObjectPrinterRecursionControl (*ObjectPrinterRecursionPredicate)(void *, cClassDescriptor *, int, void *, void **, int);
 
 /**
  * A utility class to serialize an object in text form. It is currently used
@@ -44,11 +54,11 @@ typedef RecurseResult (*RecursePredicate)(void *, cClassDescriptor *, int, void 
 class ENVIR_API ObjectPrinter
 {
 	protected:
-		RecursePredicate recursePredicate;
         int indentSize;
         char buffer[1024];
         std::vector<MatchExpression*> objectMatchExpressions;
         std::vector<std::vector<MatchExpression*> > fieldNameMatchExpressionsList;
+		ObjectPrinterRecursionPredicate recursionPredicate;
 
     public:
         /**
@@ -70,14 +80,14 @@ class ENVIR_API ObjectPrinter
          * not declaredOn(cObject))":
          *     records user-defined fields from all objects
          */
-        ObjectPrinter(RecursePredicate recursePredicate, const char *pattern="*", int indentSize=4);
+        ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate, const char *pattern="*", int indentSize=4);
 
         /**
          * Accepts the parsed form of the pattern string. The two vectors
          * must be of the same size. The contained MatchExpression objects
          * will be deallocated by this ObjectPrinter.
          */
-        ObjectPrinter(RecursePredicate recursePredicate,
+        ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
         		      const std::vector<MatchExpression*>& objectMatchExpressions,
                       const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
                       int indentSize=4);
