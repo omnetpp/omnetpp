@@ -28,7 +28,14 @@ class MatchExpression;
 class cClassDescriptor;
 class cObject;
 
-typedef bool (*RecursePredicate)(void *, cClassDescriptor *, int, void *, void **, int);
+enum RecurseResult {
+	SKIP,
+	RECURSE,
+	FULL_NAME,
+	FULL_PATH
+};
+
+typedef RecurseResult (*RecursePredicate)(void *, cClassDescriptor *, int, void *, void **, int);
 
 /**
  * A utility class to serialize an object in text form. It is currently used

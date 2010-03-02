@@ -244,13 +244,13 @@ class cMessage extends cOwnedObject
 
     int senderModuleId @group(sending) @hint("ID of the module performing the current or last send/schedule operation");
     int senderGateId @group(sending) @hint("Module-local ID of the gate on which the message was sent out -- -1==none for self-messages and after \"sendDirect\"");
-    cModule *senderModule @group(sending) @hint("ID of the module performing the current or last send/schedule operation") @eventlog(skip);
-    cGate *senderGate @group(sending) @hint("The gate on which the message was sent out -- NULL for self-messages and after \"sendDirect\"") @eventlog(skip);
+    cModule *senderModule @group(sending) @hint("ID of the module performing the current or last send/schedule operation") @eventlog(fullPath);
+    cGate *senderGate @group(sending) @hint("The gate on which the message was sent out -- NULL for self-messages and after \"sendDirect\"") @eventlog(fullName);
 
     int arrivalModuleId @group(sending) @hint("ID of the arrival module of the current or last sending/scheduling");
     int arrivalGateId @group(sending) @hint("Module-local ID of arrival gate for current or last sending -- -1==none for self-messages");
-    cModule *arrivalModule @group(sending) @hint("Arrival module for current or last sending/scheduling") @eventlog(skip);
-    cGate *arrivalGate @group(sending) @hint("Arrival gate for current or last sending -- NULL for self-messages") @eventlog(skip);
+    cModule *arrivalModule @group(sending) @hint("Arrival module for current or last sending/scheduling") @eventlog(fullPath);
+    cGate *arrivalGate @group(sending) @hint("Arrival gate for current or last sending -- NULL for self-messages") @eventlog(fullName);
 
     //XXX various IDs
 }

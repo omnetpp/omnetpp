@@ -146,8 +146,8 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
                 void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;
 
-                if (!recursePredicate(object, descriptor, fieldIndex, fieldValue, parents, level) ||
-                    (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldIndex)))
+                RecurseResult result = recursePredicate(object, descriptor, fieldIndex, fieldValue, parents, level);
+                if (result == SKIP || (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldIndex)))
                     continue;
 
                 printIndent(ostream, level + 1);
@@ -166,7 +166,11 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                         cClassDescriptor *fieldDescriptor = isCObject ? cClassDescriptor::getDescriptorFor((cObject *)fieldValue) :
                                                                         cClassDescriptor::getDescriptorFor(descriptor->getFieldStructName(object, fieldIndex));
 
-                        if (fieldDescriptor) {
+						if (isCObject && result == FULL_NAME)
+							ostream << ((cObject *)fieldValue)->getFullName() << "\n";
+						else if (isCObject && result == FULL_PATH)
+							ostream << ((cObject *)fieldValue)->getFullPath() << "\n";
+                        else if (fieldDescriptor) {
                             if (isCObject)
                                 ostream << "class " << ((cObject *)fieldValue)->getClassName() << " ";
                             else
