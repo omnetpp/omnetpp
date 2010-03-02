@@ -226,7 +226,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
                     if {$iscompound} {
                         # return children on this class/struct
-                        set ispoly [opp_classdescriptor $obj $sd fieldiscpolymorphic $fieldid]
+                        set ispoly [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid]
                         if [opp_isnull $fieldptr] {return ""}
                         if {$ispoly} {
@@ -247,7 +247,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
                     if {$iscompound} {
                         # return children on this class/struct
-                        set ispoly [opp_classdescriptor $obj $sd fieldiscpolymorphic $fieldid]
+                        set ispoly [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
                         if [opp_isnull $fieldptr] {return ""}
                         if {$ispoly} {
@@ -344,8 +344,8 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
     set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
     set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
-    set ispoly [opp_classdescriptor $obj $sd fieldiscpolymorphic $fieldid]
-    set isobject [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
+    set ispoly [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
+    set isobject [opp_classdescriptor $obj $sd fieldiscownedobject $fieldid]
     set iseditable [opp_classdescriptor $obj $sd fieldiseditable $fieldid]
 
     # field name can be overridden with @label property
@@ -437,7 +437,7 @@ proc getFieldNodeInfo_resolveObject {keyargs} {
         set sd [lindex $keyargs 3]
         set fieldid [lindex $keyargs 4]
         set index [lindex $keyargs 5]
-        set isobject [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
+        set isobject [opp_classdescriptor $obj $sd fieldiscownedobject $fieldid]
         set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
 
         if {$isobject && (!$isarray || $index!="")} {

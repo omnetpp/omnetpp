@@ -58,28 +58,28 @@ Register_PerRunConfigOption(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-record
 Register_PerObjectConfigOption(CFGID_MODULE_EVENTLOG_RECORDING, "module-eventlog-recording", CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.module-eventlog-recording = true\n **.module-eventlog-recording = false");
 
 static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level) {
-	const char* propertyValue = descriptor->getFieldProperty(object, fieldIndex, "eventlog");
+    const char* propertyValue = descriptor->getFieldProperty(object, fieldIndex, "eventlog");
 
-	if (propertyValue) {
-		if (!strcmp(propertyValue, "skip"))
-			return SKIP;
-		else if (!strcmp(propertyValue, "fullName"))
-			return FULL_NAME;
-		else if (!strcmp(propertyValue, "fullPath"))
-			return FULL_PATH;
-	}
-	// NOTE: this call is supposed to be done to getFieldIsCObject, but the renaming is not yet finished
-	bool isCObject = descriptor->getFieldIsCPolymorphic(object, fieldIndex);
-	if (!isCObject)
-		return RECURSE;
-	else {
-		if (!fieldValue)
-			return RECURSE;
-		else {
-			cArray *array = dynamic_cast<cArray *>((cObject *)fieldValue);
-			return !array || array->size() != 0 ? RECURSE : SKIP;
-		}
-	}
+    if (propertyValue) {
+        if (!strcmp(propertyValue, "skip"))
+            return SKIP;
+        else if (!strcmp(propertyValue, "fullName"))
+            return FULL_NAME;
+        else if (!strcmp(propertyValue, "fullPath"))
+            return FULL_PATH;
+    }
+
+    bool isCObject = descriptor->getFieldIsCObject(object, fieldIndex);
+    if (!isCObject)
+        return RECURSE;
+    else {
+        if (!fieldValue)
+            return RECURSE;
+        else {
+            cArray *array = dynamic_cast<cArray *>((cObject *)fieldValue);
+            return !array || array->size() != 0 ? RECURSE : SKIP;
+        }
+    }
 }
 
 EventlogFileManager::EventlogFileManager()

@@ -72,7 +72,7 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
 }
 
 ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
-		                     const std::vector<MatchExpression*>& objectMatchExpressions,
+                             const std::vector<MatchExpression*>& objectMatchExpressions,
                              const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
                              int indentSize)
 {
@@ -96,7 +96,7 @@ ObjectPrinter::~ObjectPrinter()
 
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, cObject *object)
 {
-	void *parents[MAXIMUM_OBJECT_PRINTER_LEVEL];
+    void *parents[MAXIMUM_OBJECT_PRINTER_LEVEL];
     cClassDescriptor *descriptor = cClassDescriptor::getDescriptorFor(object);
     ostream << "class " << descriptor->getName() << " {\n";
     printObjectToStream(ostream, object, descriptor, parents, 0);
@@ -112,19 +112,19 @@ std::string ObjectPrinter::printObjectToString(cObject *object)
 
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cClassDescriptor *descriptor, void **parents, int level)
 {
-	if (level == MAXIMUM_OBJECT_PRINTER_LEVEL) {
+    if (level == MAXIMUM_OBJECT_PRINTER_LEVEL) {
         ostream << "<pruned>\n";
-		return;
-	}
-	else {
-		for (int i = 0; i < level; i++) {
-			if (parents[i] == object) {
-				ostream << "<recursion>\n";
-				return;
-			}
-		}
-	}
-	if (!descriptor) {
+        return;
+    }
+    else {
+        for (int i = 0; i < level; i++) {
+            if (parents[i] == object) {
+                ostream << "<recursion>\n";
+                return;
+            }
+        }
+    }
+    if (!descriptor) {
         printIndent(ostream, level);
         if (level == 0)
             ostream << "{...}\n";
@@ -132,13 +132,12 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
             ostream << "...\n";
     }
     else {
-    	parents[level] = object;
+        parents[level] = object;
         for (int fieldIndex = 0; fieldIndex < descriptor->getFieldCount(object); fieldIndex++) {
             bool isArray = descriptor->getFieldIsArray(object, fieldIndex);
             bool isPointer = descriptor->getFieldIsPointer(object, fieldIndex);
             bool isCompound = descriptor->getFieldIsCompound(object, fieldIndex);
-			// NOTE: this call is supposed to be done to getFieldIsCObject, but the renaming is not yet finished
-            bool isCObject = descriptor->getFieldIsCPolymorphic(object, fieldIndex);
+            bool isCObject = descriptor->getFieldIsCObject(object, fieldIndex);
             const char *fieldType = descriptor->getFieldTypeString(object, fieldIndex);
             const char *fieldName = descriptor->getFieldName(object, fieldIndex);
 
@@ -166,10 +165,10 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                         cClassDescriptor *fieldDescriptor = isCObject ? cClassDescriptor::getDescriptorFor((cObject *)fieldValue) :
                                                                         cClassDescriptor::getDescriptorFor(descriptor->getFieldStructName(object, fieldIndex));
 
-						if (isCObject && result == FULL_NAME)
-							ostream << ((cObject *)fieldValue)->getFullName() << "\n";
-						else if (isCObject && result == FULL_PATH)
-							ostream << ((cObject *)fieldValue)->getFullPath() << "\n";
+                        if (isCObject && result == FULL_NAME)
+                            ostream << ((cObject *)fieldValue)->getFullName() << "\n";
+                        else if (isCObject && result == FULL_PATH)
+                            ostream << ((cObject *)fieldValue)->getFullPath() << "\n";
                         else if (fieldDescriptor) {
                             if (isCObject)
                                 ostream << "class " << ((cObject *)fieldValue)->getClassName() << " ";

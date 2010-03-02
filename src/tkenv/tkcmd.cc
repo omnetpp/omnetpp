@@ -2179,21 +2179,21 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
 
-   // 'opp_classdescriptor <object> <classdescr> fieldiscpolymorphic <fieldindex>'
-   if (strcmp(cmd,"fieldiscpolymorphic")==0)
-   {
-      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-      int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCPolymorphic(object, fld) ? "1" : "0"), TCL_STATIC);
-      return TCL_OK;
-   }
-
    // 'opp_classdescriptor <object> <classdescr> fieldiscobject <fieldindex>'
    if (strcmp(cmd,"fieldiscobject")==0)
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCObject(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldiscownedobject <fieldindex>'
+   if (strcmp(cmd,"fieldiscownedobject")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCOwnedObject(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 
