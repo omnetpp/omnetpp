@@ -10,23 +10,23 @@ import org.omnetpp.common.util.StringUtils.IRegexpReplacementProvider;
 
 /**
  * Formatting of NEDDOC comments.
- * 
+ *
  * @author Levy, Andras
  */
 public class NedCommentFormatter {
     private static final String ANY_RECOGNIZED_HTML_TAG = StringUtils.join(Keywords.DOC_TAGS, "|");
-    
+
     public interface INeddocProcessor {
         String process(String comment);
     }
-    
+
     /**
-     * Renders a NEDDOC comment into HTML. The intended use of INeddocProcessor is 
+     * Renders a NEDDOC comment into HTML. The intended use of INeddocProcessor is
      * to add hyperlinks on NED types mentioned in the text.
-     * 
+     *
      * @param comment  The comment to be processed
      * @param brief    If true, only the first paragraph of the comment will be included
-     * @param processor When not null, it will be invoked in the middle of the creation process. 
+     * @param processor When not null, it will be invoked in the middle of the creation process.
      */
     public static String makeHtmlDocu(String comment, boolean brief, INeddocProcessor processor) {
         // add sentries to facilitate processing
@@ -109,7 +109,7 @@ public class NedCommentFormatter {
             }
         });
 
-        // escape html content
+        // escape html content, elements will be restored later, after processor has been called
         comment = StringEscapeUtils.escapeHtml(comment);
 
         // extract <nohtml> sections to prevent substituting inside them;
@@ -140,7 +140,7 @@ public class NedCommentFormatter {
         // restore " from &quot; (important for attributes of html tags, see below)
         comment = comment.replaceAll("&quot;","\"");
 
-        // restore html elements and leave other content untouched
+        // restore html elements (pre elements must be unescaped here) and leave other content untouched
         comment = comment.replaceAll("&lt;((" + ANY_RECOGNIZED_HTML_TAG + ")( [^\n]*?)?/?)&gt;", "<$1>");
         comment = comment.replaceAll("&lt;(/(" + ANY_RECOGNIZED_HTML_TAG + "))&gt;", "<$1>");
 
@@ -178,9 +178,9 @@ public class NedCommentFormatter {
         comment = comment.replaceAll("(?m)^\\s*//", "");          // remove "//"'s
         comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "");   // keep only first paragraph, or:
         comment = comment.replaceFirst("(?s)\\.\\s.*", ".");      // extract the first sentence only (up to the first period)
-        
+
         // throw out known HTML tags (and leave alone any XML fragments that the docu might contain)
-        comment = comment.replaceAll("<(" + ANY_RECOGNIZED_HTML_TAG + ")( [^\n]*?)?>", ""); 
+        comment = comment.replaceAll("<(" + ANY_RECOGNIZED_HTML_TAG + ")( [^\n]*?)?>", "");
         comment = comment.replaceAll("</(" + ANY_RECOGNIZED_HTML_TAG + ")>", "");
 
         comment = comment.replaceAll("(?s)\\s+", " ");  // make it one line, and normalize whitespace
@@ -203,12 +203,12 @@ public class NedCommentFormatter {
         comment = comment.replaceAll("(?m)^[ \t]*//+ ?", "");  // remove "//"'s
 
         // throw out known HTML tags (and leave alone any XML fragments that the docu might contain)
-        comment = comment.replaceAll("<(" + ANY_RECOGNIZED_HTML_TAG + ")( [^\n]*?)?>", ""); 
+        comment = comment.replaceAll("<(" + ANY_RECOGNIZED_HTML_TAG + ")( [^\n]*?)?>", "");
         comment = comment.replaceAll("</(" + ANY_RECOGNIZED_HTML_TAG + ")>", "");
-        
+
         comment = comment.replaceAll("(?s)[ \t]+\n","\n");     // remove whitespace from end of lines
         comment = comment.replaceAll("(?s)\n\n\n+","\n\n");    // remove multiple blank lines
         return comment.trim();
     }
-    
+
 }
