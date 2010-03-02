@@ -199,15 +199,16 @@ public class SequenceChart
 
 	private boolean showArrowHeads = true; // show or hide arrow heads
 	private boolean showMessageNames = true; // show or hide message names
+    private boolean showMessageSends = true; // show or hide message send arrows
     private boolean showSelfMessages = true; // show or hide self message arrows
     private boolean showSelfMessageReuses = false; // show or hide self message reuse arrows
 	private boolean showOtherMessageReuses = true; // show or hide reuse message arrows
+    private boolean showModuleMethodCalls = false; // show or hide module method call arrows
 	private boolean showEventNumbers = true;
     private boolean showZeroSimulationTimeRegions = true;
     private boolean showAxisLabels = true;
     private boolean showAxesWithoutEvents = false;
     private boolean showTransmissionDurations = true;
-    private boolean showModuleMethodCalls = false;
 
     private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of axes
 
@@ -513,6 +514,21 @@ public class SequenceChart
 	}
 
     /**
+     * Returns whether message sends are shown on the chart.
+     */
+	public boolean getShowMessageSends() {
+	    return showMessageSends;
+    }
+
+    /**
+     * Shows/Hides message sends.
+     */
+	public void setShowMessageSends(boolean showMessageSends) {
+        this.showMessageSends = showMessageSends;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /**
      * Returns whether self messages are shown on the chart.
      */
     public boolean getShowSelfMessages() {
@@ -554,6 +570,21 @@ public class SequenceChart
      */
     public void setShowSelfMessageReuses(boolean showSelfMessageReuses) {
         this.showSelfMessageReuses = showSelfMessageReuses;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /**
+     * Shows/hides module method calls.
+     */
+    public boolean getShowModuleMethodCalls() {
+        return showModuleMethodCalls;
+    }
+
+    /**
+     * Returns whether module method calls are shown on the chart.
+     */
+    public void setShowModuleMethodCalls(boolean showModuleMethodCalls) {
+        this.showModuleMethodCalls = showModuleMethodCalls;
         clearCanvasCacheAndRedraw();
     }
 
@@ -644,21 +675,6 @@ public class SequenceChart
      */
     public void setShowTransmissionDurations(boolean showTransmissionDurations) {
         this.showTransmissionDurations = showTransmissionDurations;
-        clearCanvasCacheAndRedraw();
-    }
-
-    /**
-     * Shows/hides module method calls.
-     */
-    public boolean getShowModuleMethodCalls() {
-        return showModuleMethodCalls;
-    }
-
-    /**
-     * Returns whether module method calls are shown on the chart.
-     */
-    public void setShowModuleMethodCalls(boolean showModuleMethodCalls) {
-        this.showModuleMethodCalls = showModuleMethodCalls;
         clearCanvasCacheAndRedraw();
     }
 
@@ -1283,12 +1299,16 @@ public class SequenceChart
 						setShowMessageNames(sequenceChartState.showMessageNames);
 					if (sequenceChartState.showEventNumbers != null)
 						setShowEventNumbers(sequenceChartState.showEventNumbers);
+                    if (sequenceChartState.showMessageSends != null)
+                        setShowMessageSends(sequenceChartState.showMessageSends);
 					if (sequenceChartState.showOtherMessageReuses != null)
 						setShowOtherMessageReuses(sequenceChartState.showOtherMessageReuses);
 					if (sequenceChartState.showSelfMessages != null)
                         setShowSelfMessages(sequenceChartState.showSelfMessages);
 					if (sequenceChartState.showSelfMessageReuses != null)
                         setShowSelfMessageReuses(sequenceChartState.showSelfMessageReuses);
+                    if (sequenceChartState.showModuleMethodCalls != null)
+                        setShowModuleMethodCalls(sequenceChartState.showModuleMethodCalls);
 					if (sequenceChartState.showArrowHeads != null)
                         setShowArrowHeads(sequenceChartState.showArrowHeads);
 					if (sequenceChartState.showZeroSimulationTimeRegions != null)
@@ -1299,8 +1319,6 @@ public class SequenceChart
                         setShowAxesWithoutEvents(sequenceChartState.showAxesWithoutEvents);
 					if (sequenceChartState.showTransmissionDurations != null)
                         setShowTransmissionDurations(sequenceChartState.showTransmissionDurations);
-					if (sequenceChartState.showModuleMethodCalls != null)
-                        setShowModuleMethodCalls(sequenceChartState.showModuleMethodCalls);
 
                     // restore timeline mode
                     if (sequenceChartState.timelineMode != null)
@@ -1373,15 +1391,16 @@ public class SequenceChart
                 sequenceChartState.axisSpacing = getAxisSpacing();
                 sequenceChartState.showMessageNames = getShowMessageNames();
                 sequenceChartState.showEventNumbers = getShowEventNumbers();
+                sequenceChartState.showMessageSends = getShowMessageSends();
                 sequenceChartState.showOtherMessageReuses = getShowOtherMessageReuses();
                 sequenceChartState.showSelfMessages = getShowSelfMessages();
                 sequenceChartState.showSelfMessageReuses = getShowSelfMessageReuses();
+                sequenceChartState.showModuleMethodCalls = getShowModuleMethodCalls();
                 sequenceChartState.showArrowHeads = getShowArrowHeads();
                 sequenceChartState.showZeroSimulationTimeRegions = getShowZeroSimulationTimeRegions();
                 sequenceChartState.showAxisLabels = getShowAxisLabels();
                 sequenceChartState.showAxesWithoutEvents = getShowAxesWithoutEvents();
                 sequenceChartState.showTransmissionDurations = getShowTransmissionDurations();
-                sequenceChartState.showModuleMethodCalls = getShowModuleMethodCalls();
 
 				manager.setProperty(resource, STATE_PROPERTY, sequenceChartState);
 			}
@@ -3176,7 +3195,10 @@ public class SequenceChart
 			}
 		}
 		else {
-			int y = (y2 + y1) / 2;
+            if (!showMessageSends)
+                return false;
+
+            int y = (y2 + y1) / 2;
 			Color arrowHeadFillColor = null;
 
 			// cause is too far away
@@ -4676,14 +4698,15 @@ class SequenceChartState implements Serializable {
 	public Boolean showOtherMessageReuses;
 	public Boolean showEventNumbers;
 	public Boolean showMessageNames;
+	public Boolean showMessageSends;
     public Boolean showSelfMessages;
     public Boolean showSelfMessageReuses;
+    public Boolean showModuleMethodCalls;
     public Boolean showArrowHeads;
     public Boolean showZeroSimulationTimeRegions;
     public Boolean showAxisLabels;
     public Boolean showAxesWithoutEvents;
     public Boolean showTransmissionDurations;
-    public Boolean showModuleMethodCalls;
 }
 
 /**
