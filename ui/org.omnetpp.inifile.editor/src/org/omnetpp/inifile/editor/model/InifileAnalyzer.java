@@ -1204,7 +1204,7 @@ public class InifileAnalyzer {
             public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
                 elementPath.push(element);
                 fullPathStack.push(element == null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
-                Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("signal");
+                Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("statistic");
                 String fullPath = StringUtils.join(fullPathStack, ".");
                 if (propertyMap != null)
                     for (PropertyElementEx property : propertyMap.values())
@@ -1233,7 +1233,7 @@ public class InifileAnalyzer {
 
     public static void resolveModuleSignals(List<SignalResolution> list, String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
         INedTypeInfo typeInfo = typeInfoPath.lastElement();
-        Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("signal");
+        Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("statistic");
         if (propertyMap != null)
             for (PropertyElementEx property : propertyMap.values())
                 list.add(new SignalResolution(fullPath + "." + property.getIndex(), elementPath, property, null));

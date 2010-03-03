@@ -252,7 +252,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     /**
      * Called from configure(component); adds result recording listeners
-     * for each declared signal (@signal property) in the component.
+     * for each declared signal (@statistic property) in the component.
      */
     virtual void addResultRecorders(cComponent *component);
 

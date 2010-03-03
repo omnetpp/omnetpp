@@ -483,7 +483,7 @@ public class ConfigRegistry {
         "result-recording-mode", CFG_STRING, "auto",
         "Defines how to calculate results from the given signal. Example " +
         "values: vector, count, lastval, sum, mean, min, max, timeavg, stddev, histogram, " +
-        "auto. `auto' chooses `histogram', unless the `record' key in the @signal " +
+        "auto. `auto' chooses `histogram', unless the `record' key in the @statistic " +
         "property tells otherwise. More than one values are accepted, separated by " +
         "commas. Example: **.queueLength.result-recording-mode=timeavg,max");
     public static final ConfigOption CFGID_SCHEDULER_CLASS = addGlobalOption(

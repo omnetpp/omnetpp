@@ -47,8 +47,8 @@ public final class NedCompletionHelper {
         makeShortTemplate("@class(${className});", "property"),
         makeShortTemplate("@contains(${label1});", "property"),
         makeShortTemplate("@labels(${label1});", "property"),
-        makeShortTemplate("@signal[${name}];", "property"),
-        makeShortTemplate("@signal[${name}](title=\"${title}\";record=${hints});", "property"),
+        makeShortTemplate("@statistic[${name}];", "property"),
+        makeShortTemplate("@statistic[${name}](title=\"${title}\";record=${hints});", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
 
     public final static Template[] proposedNedComponentDisplayStringTempl;
@@ -171,7 +171,7 @@ public final class NedCompletionHelper {
     };
 
     public final static Template[] proposedNedSignalPropertyRecordParameterValueTempl = {
-        makeShortTemplate("auto", "automatically select the best mode(s) for a signal, this mode currently selects histogram mode"),
+        makeShortTemplate("auto", "automatically select the best mode(s) for a statistic (currently selects histogram mode)"),
         makeShortTemplate("count", "record the number of values emitted; values are ignored"),
         makeShortTemplate("vector", "record all values"),
         makeShortTemplate("last", "record the last value"),

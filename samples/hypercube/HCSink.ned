@@ -16,9 +16,9 @@ simple HCSink
     parameters:
         int address;
         @display("i=block/sink");
-        @signal[endToEndDelay](title="end-to-end delay";unit=s;interpolationmode=none);
-        @signal[hopCount](title="hop count";interpolationmode=none);
-        @signal[hopRatio](title="hop count/shortest path hops";interpolationmode=none);
+        @statistic[endToEndDelay](title="end-to-end delay";unit=s;interpolationmode=none);
+        @statistic[hopCount](title="hop count";interpolationmode=none);
+        @statistic[hopRatio](title="hop count/shortest path hops";interpolationmode=none);
     gates:
         input in;
 }

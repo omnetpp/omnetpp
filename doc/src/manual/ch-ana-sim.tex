@@ -62,7 +62,7 @@ This approach utilizes NED properties (section
 results from their recording, thereby providing more flexibility in what to
 record and in which form.
 
-Statistics are declared in the NED files with the \ttt{@signal} property,
+Statistics are declared in the NED files with the \ttt{@statistic} property,
 and modules emit values using the signal mechanism. The simulation
 framework records data by adding result file writing listeners to modules.
 By being able to choose what listeners to add, the user can control what to
@@ -202,7 +202,7 @@ or maximum value or other properties. This can be configured using the
 \textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-mode=}
 configuration option. If \ttt{result-recording-mode=} is not defined
 in the configuration or it is set to \ttt{auto}, the \ttt{record} key
-from the \ttt{@signal} property is used.
+from the \ttt{@statistic} property is used.
 
 Several recording modes can be specified, separated by comma.
 Currently the following modes are supported:

@@ -355,7 +355,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
         }
         else if (line.matches(".*@unit\\(\\w?"))
             addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
-        else if (line.matches("@signal\\[.*?\\]\\(.*")) {
+        else if (line.matches("@statistic\\[.*?\\]\\(.*")) {
             addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyParameterTempl, new NedPropertyTagDetector());
             if (line.matches(".*unit=\\w?"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);

@@ -4214,9 +4214,9 @@ simple Fifo
 {
     parameters:
         volatile double serviceTime @unit(s);
-        @signal[qlen](title="queue length";record=timeavg,max);
-        @signal[busy](title="server busy state";record=timeavg);
-        @signal[queueingTime](title="queueing time at dequeue";unit=s);
+        @statistic[qlen](title="queue length";record=timeavg,max);
+        @statistic[busy](title="server busy state";record=timeavg);
+        @statistic[queueingTime](title="queueing time at dequeue";unit=s);
     gates:
         input in;
         output out;
@@ -4240,7 +4240,7 @@ for recording, and for result processing applications.
 
 \textbf{Recording.} Recording works in the following way. When a module or
 channel is created in the simulation, the {\opp} runtime examines the
-\ttt{@signal} properties on its NED declaration. The runtime iterates on
+\ttt{@statistic} properties on its NED declaration. The runtime iterates on
 the property indices, and, interpreting them as signal names, adds one or
 more listeners for each.
 
@@ -4299,7 +4299,7 @@ Possible values for \ttt{record} include \ttt{vector}, \ttt{count}, \ttt{last},
 % what happened (message removed from queue and started service), and what
 % the signal value represents (time spent in queue). Recommendation:
 % signal name should express the event ("dequeue"), and the signal title
-% should describe the value (@signal[dequeue](title="Queueing time at dequeue")) ???
+% should describe the value (@statistic[dequeue](title="Queueing time at dequeue")) ???
 %
 
 

@@ -48,7 +48,7 @@ void ResultRecorder::extractSignalAttributes(cComponent *component, simsignal_t 
 
 void ResultRecorder::extractSignalAttributes(cComponent *component, const char *signalName, opp_string_map& result)
 {
-    cProperty *property = component->getProperties()->get("signal", signalName);
+    cProperty *property = component->getProperties()->get("statistic", signalName);
     if (!property)
         return;
 
