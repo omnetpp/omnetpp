@@ -7,12 +7,17 @@
 
 package org.omnetpp.scave.charting;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -24,6 +29,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.export.SvgFormat;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
@@ -39,68 +45,89 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 public class ChartFactory {
 
-	public static ChartCanvas createChart(Composite parent, Chart chart, ResultFileManager manager) {
+
+    public static IChartView createChart(Composite parent, Chart chart, ResultFileManager manager) {
+        return createChart(parent, chart, manager, null);
+    }
+
+	public static IChartView createChart(Composite parent, Chart chart, ResultFileManager manager, IJobChangeListener datasetJobListener) {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (chart instanceof BarChart)
-			return createScalarChart(parent, (BarChart)chart, dataset, manager);
+			return createScalarChart(parent, (BarChart)chart, dataset, manager, datasetJobListener);
 		if (chart instanceof LineChart)
-			return createVectorChart(parent, (LineChart)chart, dataset, manager);
+			return createVectorChart(parent, (LineChart)chart, dataset, manager, datasetJobListener);
 		if (chart instanceof HistogramChart)
-			return createHistogramChart(parent, (HistogramChart)chart, dataset, manager);
+			return createHistogramChart(parent, (HistogramChart)chart, dataset, manager, datasetJobListener);
 		if (chart instanceof ScatterChart)
-			return createScatterChart(parent, (ScatterChart)chart, dataset, manager);
+			return createScatterChart(parent, (ScatterChart)chart, dataset, manager, datasetJobListener);
 		throw new RuntimeException("unknown chart type");
 	}
 
-	public static void populateChart(ChartCanvas chartCanvas, Chart chart, ResultFileManager manager) {
+	public static void populateChart(IChartView chartView, Chart chart, ResultFileManager manager, IJobChangeListener datasetJobListener) {
 		if (chart instanceof BarChart)
-			populateScalarChart((BarChart)chart, manager, (ScalarChart)chartCanvas);
+			populateScalarChart((BarChart)chart, manager, (ScalarChart)chartView, datasetJobListener);
 		else if (chart instanceof LineChart)
-			populateVectorChart((LineChart)chart, manager, (VectorChart)chartCanvas);
+			populateVectorChart((LineChart)chart, manager, (VectorChart)chartView, datasetJobListener);
 		else if (chart instanceof HistogramChart)
-			populateHistogramChart((HistogramChart)chart, manager, (HistogramChartCanvas)chartCanvas);
+			populateHistogramChart((HistogramChart)chart, manager, (HistogramChartCanvas)chartView, datasetJobListener);
 		else if (chart instanceof ScatterChart)
-			populateScatterChart((ScatterChart)chart, manager, (VectorChart)chartCanvas);
+			populateScatterChart((ScatterChart)chart, manager, (VectorChart)chartView, datasetJobListener);
 		else
 			throw new RuntimeException("unknown chart type");
 	}
 
-	public static ScalarChart createScalarChart(Composite parent, BarChart chart, Dataset dataset, ResultFileManager manager) {
+    public static ScalarChart createScalarChart(Composite parent, BarChart chart, Dataset dataset, ResultFileManager manager) {
+        return createScalarChart(parent, chart, dataset, manager, null);
+    }
+
+	public static ScalarChart createScalarChart(Composite parent, BarChart chart, Dataset dataset, ResultFileManager manager, IJobChangeListener datasetJobListener) {
 		ScalarChart scalarChart = new ScalarChart(parent, SWT.DOUBLE_BUFFERED);
 		setChartProperties(chart, scalarChart);
 
-		populateScalarChart(chart, manager, scalarChart);
+		populateScalarChart(chart, manager, scalarChart, datasetJobListener);
 
 		return scalarChart;
 	}
 
-	public static VectorChart createVectorChart(Composite parent, LineChart chart, Dataset dataset, ResultFileManager manager) {
+    public static VectorChart createVectorChart(Composite parent, LineChart chart, Dataset dataset, ResultFileManager manager) {
+        return createVectorChart(parent, chart, dataset, manager, null);
+    }
+
+	public static VectorChart createVectorChart(Composite parent, LineChart chart, Dataset dataset, ResultFileManager manager, IJobChangeListener datasetJobListener) {
 		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setChartProperties(chart, vectorChart);
 
-		populateVectorChart(chart, manager, vectorChart);
+		populateVectorChart(chart, manager, vectorChart, datasetJobListener);
 
 		return vectorChart;
 	}
 
-	public static ChartCanvas createHistogramChart(Composite parent, HistogramChart chart, Dataset dataset, ResultFileManager manager) {
+    public static HistogramChartCanvas createHistogramChart(Composite parent, HistogramChart chart, Dataset dataset, ResultFileManager manager) {
+        return createHistogramChart(parent, chart, dataset, manager, null);
+    }
+
+	public static HistogramChartCanvas createHistogramChart(Composite parent, HistogramChart chart, Dataset dataset, ResultFileManager manager, IJobChangeListener datasetJobListener) {
 		final HistogramChartCanvas histogramChart = new HistogramChartCanvas(parent, SWT.DOUBLE_BUFFERED);
 		histogramChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setChartProperties(chart, histogramChart);
-		populateHistogramChart(chart, manager, histogramChart);
+		populateHistogramChart(chart, manager, histogramChart, datasetJobListener);
 		return histogramChart;
 	}
 
-	public static VectorChart createScatterChart(Composite parent, ScatterChart chart, Dataset dataset, ResultFileManager manager) {
+    public static VectorChart createScatterChart(Composite parent, ScatterChart chart, Dataset dataset, ResultFileManager manager) {
+        return createScatterChart(parent, chart, dataset, manager, null);
+    }
+
+	public static VectorChart createScatterChart(Composite parent, ScatterChart chart, Dataset dataset, ResultFileManager manager, IJobChangeListener datasetJobListener) {
 		final VectorChart scatterChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		scatterChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setChartProperties(chart, scatterChart);
-		populateScatterChart(chart, manager, scatterChart);
+		populateScatterChart(chart, manager, scatterChart, datasetJobListener);
 		return scatterChart;
 	}
 
-	public static void populateScalarChart(final BarChart chart, final ResultFileManager manager, ScalarChart scalarChart) {
+    public static void populateScalarChart(final BarChart chart, final ResultFileManager manager, ScalarChart scalarChart, IJobChangeListener datasetJobListener) {
 		// perform:
 		// scalarChart.setDataset(DatasetManager.createScalarDataset(chart, dataset, manager, null));
 		// but as a background job:
@@ -113,10 +140,10 @@ public class ChartFactory {
 					}
 				});
 			}
-		});
+		}, datasetJobListener);
 	}
 
-	public static void populateVectorChart(final LineChart chart, final ResultFileManager manager, final VectorChart vectorChart) {
+	public static void populateVectorChart(final LineChart chart, final ResultFileManager manager, final VectorChart vectorChart, IJobChangeListener datasetJobListener) {
 		// perform:
 		// vectorChart.setDataset(DatasetManager.createVectorDataset(chart, dataset, manager));
 		// but as a background job:
@@ -129,10 +156,10 @@ public class ChartFactory {
 					}
 				});
 			}
-		});
+		}, datasetJobListener);
 	}
 
-	public static void populateHistogramChart(final HistogramChart chart, final ResultFileManager manager, final HistogramChartCanvas histogramChart) {
+	public static void populateHistogramChart(final HistogramChart chart, final ResultFileManager manager, final HistogramChartCanvas histogramChart, IJobChangeListener datasetJobListener) {
 		// perform:
 		// vectorChart.setDataset(DatasetManager.createVectorDataset(chart, dataset, manager));
 		// but as a background job:
@@ -145,10 +172,10 @@ public class ChartFactory {
 					}
 				});
 			}
-		});
+		}, datasetJobListener);
 	}
 
-	public static void populateScatterChart(final ScatterChart chart, final ResultFileManager manager, final VectorChart scatterChart) {
+	public static void populateScatterChart(final ScatterChart chart, final ResultFileManager manager, final VectorChart scatterChart, IJobChangeListener datasetJobListener) {
 		// perform:
 		// scatterChart.setDataset(DatasetManager.createScatterPlotDataset(chart, dataset, manager));
 		// but as a background job:
@@ -157,28 +184,29 @@ public class ChartFactory {
 			public IDataset run(final IProgressMonitor progressMonitor) {
 				return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
 					public IDataset call() {
-						return DatasetManager.createScatterPlotDataset((org.omnetpp.scave.model.ScatterChart)chart, manager, progressMonitor);
+						return DatasetManager.createScatterPlotDataset(chart, manager, progressMonitor);
 					}
 				});
 			}
-		});
+		}, datasetJobListener);
 	}
 
 	interface IDatasetCalculation {
 		public IDataset run(IProgressMonitor progressMonitor);
 	}
 
-	protected static void startDatasetEvaluationJob(final ChartCanvas chartCanvas, final IDatasetCalculation calc) {
+	protected static void startDatasetEvaluationJob(final IChartView chartView, final IDatasetCalculation calc, IJobChangeListener datasetJobListener) {
 		//
 		// FIXME Handle concurrency issues! Model must be locked against modification while
 		// the background job is working with the dataset. Build locking into CommandStack.execute()?
 		// Making the model temporarily readonly could also be a solution, but I didn't find such
 		// method. (Andras)
 		//
-		chartCanvas.setStatusText("Please wait...");
+		chartView.setStatusText("Please wait...");
 		//chartCanvas.setDataset(null);
 		final Job job = new Job("Evaluating dataset...") {
-			protected IStatus run(IProgressMonitor monitor) {
+			@Override
+            protected IStatus run(IProgressMonitor monitor) {
 				try {
 					// calculate
 					long startTime = System.currentTimeMillis();
@@ -186,7 +214,7 @@ public class ChartFactory {
 					Debug.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
 
 					if (monitor.isCanceled()) {
-						setChartStatusText(chartCanvas, "Chart update cancelled.");
+						setChartStatusText(chartView, "Chart update cancelled.");
 						return Status.CANCEL_STATUS;
 					}
 
@@ -194,41 +222,43 @@ public class ChartFactory {
 					// Note that the chart page may have been close since, so we need to check isDisposed() too.
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							if (!chartCanvas.isDisposed()) {
-								chartCanvas.setStatusText(null);
-								chartCanvas.setDataset(data);
+							if (!chartView.getCanvas().isDisposed()) {
+								chartView.setStatusText(null);
+								chartView.setDataset(data);
 							}
 						}});
 					return Status.OK_STATUS;
 				}
 				catch (Throwable e) {
-					setChartStatusText(chartCanvas, "An error occurred during dataset processing.");
+					setChartStatusText(chartView, "An error occurred during dataset processing.");
 					return new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, 0, "An error occurred during dataset processing.", e);
 				}
 			}
 
-			private void setChartStatusText(final ChartCanvas chartCanvas, final String text) {
+			private void setChartStatusText(final IChartView chartCanvas, final String text) {
 				// we're a non-UI thread, so we need to use display.asyncExec()...
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						if (!chartCanvas.isDisposed())
+						if (!chartCanvas.getCanvas().isDisposed())
 							chartCanvas.setStatusText(text);
 					}});
 			}
 		};
 
-		chartCanvas.addDisposeListener(new DisposeListener() {
+		chartView.getCanvas().addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				job.cancel();
 			}
 		});
 
 		job.setPriority(Job.INTERACTIVE); // high priority
+		if (datasetJobListener != null)
+		    job.addJobChangeListener(datasetJobListener);
 		job.schedule();
 	}
 
-	private static void setChartProperties(Chart chart, ChartCanvas chartView) {
-		List<Property> properties = (List<Property>)chart.getProperties();
+	private static void setChartProperties(Chart chart, IChartView chartView) {
+		List<Property> properties = chart.getProperties();
 		for (Property property : properties) {
 			chartView.setProperty(property.getName(), property.getValue());
 		}

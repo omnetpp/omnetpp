@@ -34,7 +34,7 @@ public class ChartUpdater {
 	private static final int CHART_UPDATE_DELAY_MS = 200;
 
 	private final Chart chart;
-	private final ChartCanvas view;
+	private final IChartView view;
 	private final ResultFileManager manager;
 	private final DelayedJob startUpdateJob = new DelayedJob(CHART_UPDATE_DELAY_MS) {
 		public void run() {
@@ -42,7 +42,7 @@ public class ChartUpdater {
 		}
 	};
 
-	public ChartUpdater(Chart chart, ChartCanvas view, ResultFileManager manager) {
+	public ChartUpdater(Chart chart, IChartView view, ResultFileManager manager) {
 		this.chart = chart;
 		this.view = view;
 		this.manager = manager;
@@ -56,7 +56,7 @@ public class ChartUpdater {
 		return chart;
 	}
 
-	public ChartCanvas getChartView() {
+	public IChartView getChartView() {
 		return view;
 	}
 
@@ -169,7 +169,7 @@ public class ChartUpdater {
 	}
 
 	private void setChartProperty(String name, String value) {
-		if (!view.isDisposed())
+		if (!view.getCanvas().isDisposed())
 			view.setProperty(name, value);
 	}
 
@@ -181,6 +181,6 @@ public class ChartUpdater {
 	 * Starts a job that recalculates chart contents.
 	 */
 	public void updateDataset() {
-		ChartFactory.populateChart(view, chart, ChartUpdater.this.manager);
+		ChartFactory.populateChart(view, chart, ChartUpdater.this.manager, null);
 	}
 }

@@ -31,17 +31,21 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.ILayoutExtension;
+import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
+import org.omnetpp.scave.charting.IChartView;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ChartSheetProperties;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Property;
@@ -60,6 +64,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		initialize();
 	}
 
+    @Override
     @SuppressWarnings("unchecked")
     public void updatePage(Notification notification) {
 		Object notifier = notification.getNotifier();
@@ -119,7 +124,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		return chartsArea;
 	}
 
-	private void addChartUpdater(Chart chart, ChartCanvas view) {
+	private void addChartUpdater(Chart chart, IChartView view) {
 		updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
 	}
 
@@ -135,82 +140,99 @@ public class ChartSheetPage extends ScaveEditorPage {
 
 	private Chart findChart(Control view) {
 		for (ChartUpdater updater : updaters)
-			if (updater.getChartView().equals(view))
+			if (updater.getChartView().getCanvas().equals(view))
 				return updater.getChart();
 		return null;
 	}
 
-	private ChartCanvas findChartView(Chart chart) {
+    private IChartView findChartView(Control canvas) {
+        for (ChartUpdater updater : updaters)
+            if (updater.getChartView().getCanvas().equals(canvas))
+                return updater.getChartView();
+        return null;
+    }
+
+	private IChartView findChartView(Chart chart) {
 		for (ChartUpdater updater : updaters)
 			if (updater.getChart().equals(chart))
 				return updater.getChartView();
 		return null;
 	}
 
-
-
-	private ChartCanvas addChartView(final Chart chart) {
-		ChartCanvas view = ChartFactory.createChart(chartsArea, chart, scaveEditor.getResultFileManager());
+	private IChartView addChartView(final Chart chart) {
+		IChartView view = ChartFactory.createChart(chartsArea, chart, scaveEditor.getResultFileManager());
 		Assert.isNotNull(view);
 
+        Control viewControl = view.getCanvas();
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         gridData.minimumWidth = ChartSheetProperties.DEFAULT_MIN_CHART_WIDTH;
         gridData.minimumHeight = ChartSheetProperties.DEFAULT_MIN_CHART_HEIGHT;
-        view.setLayoutData(gridData);
-		chartsArea.configureChild(view);
+        viewControl.setLayoutData(gridData);
+        chartsArea.configureChild(viewControl);
 		addChartUpdater(chart, view);
 		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
-		view.setMenu(menuManager.createContextMenu(view));
-
+        viewControl.setMenu(menuManager.createContextMenu(viewControl));
 		// hide legend
 		view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
-		view.addMouseListener(new MouseAdapter() {
+
+        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+        if (contributor != null)
+            contributor.registerChart(view);
+
+        viewControl.addMouseListener(new MouseAdapter() {
 			// double click in the view opens the chart in a separate page
+			@Override
 			public void mouseDoubleClick(MouseEvent e) {
 				scaveEditor.openChart(chart);
 			}
 
 			// mouse click on the view selects the chart object in the model
+			@Override
 			public void mouseUp(MouseEvent e) {
 				scaveEditor.setSelection(new StructuredSelection(chart));
 			}
 		});
 
-		setDisplayChartDetails(view, ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS);
+        if (viewControl instanceof ChartCanvas)
+		setDisplayChartDetails((ChartCanvas)viewControl, ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS);
 		return view;
 	}
 
 	private void removeChartView(Chart chart) {
-		ChartCanvas view = findChartView(chart);
+		IChartView view = findChartView(chart);
 		removeChartUpdater(chart);
-		if (view != null && !view.isDisposed())
-			view.dispose();
+		if (view != null) {
+	        Canvas canvas = view.getCanvas();
+    		if (!canvas.isDisposed()) {
+    			canvas.dispose();
+    		}
+		}
 	}
 
 	private void synchronize() {
-		List<ChartCanvas> currentViews = new ArrayList<ChartCanvas>();
-		for (Object child : chartsArea.getChildren())
-			if (child instanceof ChartCanvas)
-				currentViews.add((ChartCanvas)child);
+		List<Control> currentChildren = new ArrayList<Control>();
+		for (Control child : chartsArea.getChildren())
+			if (child instanceof ZoomableCachingCanvas)
+				currentChildren.add(child);
 
 		List<Chart> charts = new ArrayList<Chart>(chartSheet.getCharts());
-		List<ChartCanvas> views = new ArrayList<ChartCanvas>(charts.size());
+		List<Control> children = new ArrayList<Control>(charts.size());
 
 		for (Chart chart : charts) {
-			ChartCanvas view = findChartView(chart);
+			IChartView view = findChartView(chart);
 			if (view == null)
 				view = addChartView(chart);
-			views.add(view);
+			children.add(view.getCanvas());
 		}
 
-		for (ChartCanvas view : currentViews) {
-			if (!views.contains(view)) {
-				Chart chart = findChart(view);
+		for (Control child : currentChildren) {
+			if (!children.contains(child)) {
+				Chart chart = findChart(child);
 				removeChartView(chart);
 			}
 		}
 
-		chartsArea.setChildOrder(views);
+		chartsArea.setChildOrder(children);
 		chartsArea.layout();
 		chartsArea.redraw();
 	}

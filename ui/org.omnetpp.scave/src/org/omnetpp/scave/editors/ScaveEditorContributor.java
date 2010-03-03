@@ -20,6 +20,8 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.SubToolBarManager;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
@@ -33,6 +35,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AddFilterToDatasetAction;
@@ -43,6 +46,7 @@ import org.omnetpp.scave.actions.CopyToClipboardAction;
 import org.omnetpp.scave.actions.CreateChartTemplateAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.EditAction;
+import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
@@ -56,6 +60,7 @@ import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
+import org.omnetpp.scave.charting.IChartView;
 import org.omnetpp.scave.editors.ui.DatasetPage;
 import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
@@ -93,6 +98,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IScaveAction deleteAction; // action handler of deleteRetargetAction
 	private IAction selectAllAction;
 	private IAction refreshComputedFilesAction;
+	private IAction exportChartsAction;
 
 	// ChartPage/ChartSheetPage actions
 	private IAction zoomInAction;
@@ -113,6 +119,18 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction createTempChartAction;
 	private IAction showOutputVectorViewAction;
 	private Map<String,IAction> exportActions;
+
+	IPropertyChangeListener zoomListener = new IPropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent event) {
+            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
+                    event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y) {
+                if (zoomOutAction instanceof ZoomChartAction)
+                    ((ZoomChartAction)zoomOutAction).updateEnabled();
+                if (zoomToFitAction instanceof ZoomChartAction)
+                    ((ZoomChartAction)zoomToFitAction).updateEnabled();
+            }
+        }
+    };
 
 	/**
 	 * This action opens the Dataset view.
@@ -146,6 +164,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         ungroupAction = registerAction(page, new UngroupAction());
         selectAllAction = registerAction(page, new SelectAllAction());
         refreshComputedFilesAction = registerAction(page, new RefreshComputedDataFileAction());
+        exportChartsAction = registerAction(page, new ExportChartsAction());
 
         // replacement of the inherited deleteAction
         ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
@@ -197,6 +216,13 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 			}
 		});
 		return action;
+	}
+
+	/**
+	 * Listen on zoom state changes of the chart.
+	 */
+	public void registerChart(final IChartView chartView) {
+	    chartView.addPropertyChangeListener(zoomListener);
 	}
 
 	public static ScaveEditorContributor getDefault() {
@@ -293,6 +319,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		menuManager.insertBefore("edit", ungroupAction);
 		menuManager.insertBefore("edit", new Separator());
 		menuManager.insertBefore("edit", createExportMenu());
+		menuManager.insertBefore("edit", exportChartsAction);
 	}
 
 	@Override

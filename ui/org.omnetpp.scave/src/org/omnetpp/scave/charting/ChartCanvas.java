@@ -73,7 +73,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
  *
  * @author tomi, andras
  */
-public abstract class ChartCanvas extends ZoomableCachingCanvas {
+public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChartView {
 
 	private static final boolean debug = false;
 
@@ -148,7 +148,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	/**
 	 * Sets the data to be visualized by the chart.
 	 */
-	void setDataset(IDataset dataset) {
+	public void setDataset(IDataset dataset) {
 		if (debug) Debug.println("setDataset()");
 		doSetDataset(dataset);
 		this.dataset = dataset;
@@ -604,4 +604,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 				String.format("%.3g\u00b1%.3g", value, halfInterval) :
 				String.format("%g", value);
 	}
+
+    public ZoomableCachingCanvas getCanvas() {
+        return this;
+    }
 }
