@@ -792,7 +792,7 @@ void EnvirBase::addResultRecorders(cComponent *component)
         std::string modeList = ev.getConfig()->getAsString(signalFullPath.c_str(), CFGID_RESULT_RECORDING_MODE, "");
         if (modeList == "auto")
         {
-            // obey mode-hint in @signal; example: @signal[queueLen](modehint=timeavg,max);
+            // obey mode-hint in @signal; example: @signal[queueLen](modehint=vector,timeavg,max);
             cProperty *prop = component->getProperties()->get("signal", signalName);
             ASSERT(prop!=NULL);
             int numModeHints = prop->getNumValues("modehint");
