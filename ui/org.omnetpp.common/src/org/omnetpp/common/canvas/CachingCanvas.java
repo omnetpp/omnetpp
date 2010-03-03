@@ -59,7 +59,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	private ITileCache tileCache = new XYTileCache();
 	private boolean debug = false;
 
-
 	/**
 	 * Constructor.
 	 */
@@ -150,9 +149,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
             g.setClip(0, 0, width, height);
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             graphics.setAntialias(SWT.ON);
-
-            paintCachableLayer(graphics);
-            paintNoncachableLayer(graphics);
+            paintWithoutCaching(graphics);
             writeXML(graphics, fileName);
         }
         catch (Exception e) {
@@ -189,16 +186,11 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * Paints the canvas, making use of the cache.
 	 */
 	protected void paint(Graphics graphics) {
-        Rectangle clip = GraphicsUtils.getClip(graphics);
-		if (!doCaching) {
-			// paint directly on the graphics
-			graphics.setClip(clip.intersect(new Rectangle(getViewportRectangle())));
-			paintCachableLayer(graphics);
-			graphics.setClip(new Rectangle(getClientArea()));
-			paintNoncachableLayer(graphics);
-		}
+		if (!doCaching)
+			paintWithoutCaching(graphics);
 		else {
 			Rectangle viewportRect = new Rectangle(getViewportRectangle());
+	        Rectangle clip = GraphicsUtils.getClip(graphics);
 			clip = clip.intersect(viewportRect);
 			graphics.setClip(clip);
 			LargeRect lclip = canvasToVirtualRect(clip);
@@ -250,6 +242,16 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		}
 	}
 
+	/**
+     * Paint directly on the graphics
+	 */
+    private void paintWithoutCaching(Graphics graphics) {
+        Rectangle clip = GraphicsUtils.getClip(graphics);
+        graphics.setClip(clip.intersect(new Rectangle(getViewportRectangle())));
+        paintCachableLayer(graphics);
+        graphics.setClip(new Rectangle(getClientArea()));
+        paintNoncachableLayer(graphics);
+    }
 
 	/**
 	 * Marks the tiles on the screen by drawing a border for them.
