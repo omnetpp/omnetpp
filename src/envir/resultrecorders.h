@@ -23,18 +23,23 @@
 #include "cstatistic.h"
 #include "ccomponent.h"
 #include "commonutil.h"
+#include "stringpool.h"
 
 /**
  * Abstract base class for result recording listeners
  */
 class ENVIR_API ResultRecorder : public cIListener
 {
+    private:
+        static CommonStringPool statisticNamesPool;
+        const char *statisticName;
     protected:
         simtime_t getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
-        std::string makeName(simsignal_t signalID, const char *opname);
-        void extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result);
-        void extractSignalAttributes(cComponent *component, const char *signalName, opp_string_map& result);
+        std::string makeName(const char *suffix);
+        void extractStatisticAttributes(cComponent *component, opp_string_map& result);
+        const char *getStatisticName() {return statisticName;}
     public:
+        virtual void init(const char *statisticName);
         virtual void listenerAdded(cComponent *component, simsignal_t signalID);
         virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
 };

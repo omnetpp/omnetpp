@@ -800,21 +800,21 @@ void EnvirBase::addResultRecorders(cComponent *component)
             int numModeHints = prop->getNumValues("record");
             if (numModeHints == 0)
             {
-                addResultRecorder(component, signalID, "auto", "", scalarsEnabled, vectorsEnabled);
+                addResultRecorder(component, statisticName, signalID, "auto", "", scalarsEnabled, vectorsEnabled);
             }
             else
             {
                 for (int j = 0; j < numModeHints; j++)
                 {
                     const char *modeHint = prop->getValue("record",j);
-                    addResultRecorder(component, signalID, modeHint, "in @statistic property", scalarsEnabled, vectorsEnabled);
+                    addResultRecorder(component, statisticName, signalID, modeHint, "in @statistic property", scalarsEnabled, vectorsEnabled);
                 }
             }
         }
         else if (!strchr(modeList.c_str(), ','))
         {
             // single value, no StringTokenizer needed
-            addResultRecorder(component, signalID, modeList.c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
+            addResultRecorder(component, statisticName, signalID, modeList.c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
         }
         else
         {
@@ -822,33 +822,35 @@ void EnvirBase::addResultRecorders(cComponent *component)
             while (tokenizer.hasMoreTokens())
             {
                 std::string mode = opp_trim(tokenizer.nextToken());
-                addResultRecorder(component, signalID, mode.c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
+                addResultRecorder(component, statisticName, signalID, mode.c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
             }
         }
     }
 }
 
-void EnvirBase::addResultRecorder(cComponent *component, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled)
+void EnvirBase::addResultRecorder(cComponent *component, const char *statisticName, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled)
 {
-    cIListener *listener = createResultRecorder(mode);
+    ResultRecorder *listener = createResultRecorder(mode);
     if (!listener)
-        throw cRuntimeError(component, "Unrecognized recording mode specified %s for signal %s: \"%s\"",
-                            where, cComponent::getSignalName(signalID), mode);
+        throw cRuntimeError(component, "Unrecognized recording mode specified %s for statistic %s: \"%s\"",
+                            where, statisticName, mode);
     bool recordsVector = !strcmp(mode, "vector");
-    bool enabled = recordsVector ? vectorsEnabled : scalarsEnabled;
-    if (enabled)
-        component->subscribe(signalID, listener);
-    else
+    if (recordsVector ? !vectorsEnabled : !scalarsEnabled) {
+        // disabled, return
         delete listener;
+        return;
+    }
+    listener->init(statisticName);
+    component->subscribe(signalID, listener);
 }
 
-cIListener *EnvirBase::createResultRecorder(const char *mode)
+ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
 {
     if (!strcmp(mode, "auto"))
         mode = "histogram";
 
     // this should be extensible instead of hardcoded "if"-ladder
-    cIListener *listener;
+    ResultRecorder *listener;
     if (!strcmp(mode, "histogram"))
         listener = new StatisticsRecorder(new cHistogram());
     else if (!strcmp(mode, "vector"))

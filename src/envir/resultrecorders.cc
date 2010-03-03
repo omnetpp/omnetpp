@@ -20,6 +20,13 @@
 #include "resultrecorders.h"
 
 
+CommonStringPool ResultRecorder::statisticNamesPool;
+
+void ResultRecorder::init(const char *statsName)
+{
+    statisticName = statisticNamesPool.get(statsName);
+}
+
 void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
 {
     ASSERT(getSubscribeCount() == 1);  // may only be subscribed once (otherwise results get mixed)
@@ -31,24 +38,14 @@ void ResultRecorder::listenerRemoved(cComponent *component, simsignal_t signalID
         delete this;
 }
 
-std::string ResultRecorder::makeName(simsignal_t signalID, const char *opname)
+std::string ResultRecorder::makeName(const char *suffix)
 {
-    const char *signalName = cComponent::getSignalName(signalID);
-    if (!signalName)
-        signalName = "<unnamed>";
-    return std::string(signalName) + ":" + opname;
+    return std::string(statisticName) + ":" + suffix;
 }
 
-void ResultRecorder::extractSignalAttributes(cComponent *component, simsignal_t signalID, opp_string_map& result)
+void ResultRecorder::extractStatisticAttributes(cComponent *component, opp_string_map& result)
 {
-    const char *signalName = cComponent::getSignalName(signalID);
-    if (signalName)
-        extractSignalAttributes(component, signalName, result);
-}
-
-void ResultRecorder::extractSignalAttributes(cComponent *component, const char *signalName, opp_string_map& result)
-{
-    cProperty *property = component->getProperties()->get("statistic", signalName);
+    cProperty *property = component->getProperties()->get("statistic", getStatisticName());
     if (!property)
         return;
 
@@ -57,6 +54,8 @@ void ResultRecorder::extractSignalAttributes(cComponent *component, const char *
     for (int i = 0; i < (int)keys.size(); i++)
     {
         const char *key = keys[i];
+        if (!strcmp(key, "record"))
+            continue; // no need to save record= key
         int numValues = property->getNumValues(key);
         if (numValues == 0)
             result[key] = "";
@@ -111,12 +110,10 @@ void VectorRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
     NumericResultRecorder::listenerAdded(component, signalID);
 
     // we can register the vector here, because base class ensures we are subscribed only at once place
-    const char *signalName = cComponent::getSignalName(signalID);
-    ASSERT(signalName != NULL);
     opp_string_map attributes;
-    extractSignalAttributes(component, signalName, attributes);
+    extractStatisticAttributes(component, attributes);
 
-    handle = ev.registerOutputVector(component->getFullPath().c_str(), signalName);
+    handle = ev.registerOutputVector(component->getFullPath().c_str(), getStatisticName());
     ASSERT(handle != NULL);
     for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
         ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
@@ -129,11 +126,10 @@ void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cOb
     if (v) {
         simtime_t t = v->getSignalTime(signalID);
         if (t < lastTime) {
-            const char *signalName = cComponent::getSignalName(signalID);
             throw cRuntimeError(
                     "%s: cannot record data with an earlier timestamp (t=%s) than "
-                    "the previously recorded value, for signal %s (id=%d)",
-                    opp_typename(typeid(*this)), SIMTIME_STR(t), signalName, (int)signalID);
+                    "the previously recorded value, for statistic %s (id=%d)",
+                    opp_typename(typeid(*this)), SIMTIME_STR(t), getStatisticName(), (int)signalID);
         }
         maybeCollect(t, v->getSignalValue(signalID));
     }
@@ -168,9 +164,9 @@ void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObj
 
 void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName(signalID, "count");
+    std::string scalarName = makeName("count");
     opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
+    extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), count, &attributes);
 }
 
@@ -178,9 +174,9 @@ void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 
 void LastValueRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName(signalID, "last");
+    std::string scalarName = makeName("last");
     opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
+    extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), lastValue, &attributes);
 }
 
@@ -188,9 +184,9 @@ void LastValueRecorder::finish(cComponent *component, simsignal_t signalID)
 
 void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName(signalID, "sum");
+    std::string scalarName = makeName("sum");
     opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
+    extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), sum, &attributes);
 }
 
@@ -198,9 +194,9 @@ void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 
 void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName(signalID, "mean");
+    std::string scalarName = makeName("mean");
     opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
+    extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes); // note: this is NaN if count==0
 }
 
@@ -208,9 +204,9 @@ void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
 
 void MinRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName(signalID, "min");
+    std::string scalarName = makeName("min");
     opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
+    extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
 }
 
@@ -218,9 +214,9 @@ void MinRecorder::finish(cComponent *component, simsignal_t signalID)
 
 void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName(signalID, "max");
+    std::string scalarName = makeName("max");
     opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
+    extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
 }
 
@@ -243,9 +239,9 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
     collect(t, 0.0); // to get the last interval counted in; value 0.0 is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
 
-    std::string scalarName = makeName(signalID, "timeavg");
+    std::string scalarName = makeName("timeavg");
     opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
+    extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), empty ? NaN : (weightedSum / interval), &attributes);
 }
 
@@ -253,9 +249,8 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
 
 void StatisticsRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    const char *signalName = cComponent::getSignalName(signalID);
     opp_string_map attributes;
-    extractSignalAttributes(component, signalID, attributes);
-    ev.recordStatistic(component, signalName, statistic, &attributes);
+    extractStatisticAttributes(component, attributes);
+    ev.recordStatistic(component, getStatisticName(), statistic, &attributes);
 }
 

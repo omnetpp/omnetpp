@@ -46,6 +46,7 @@ class cParsimCommunications;
 class cParsimPartition;
 class cParsimSynchronizer;
 // endif
+class ResultRecorder;
 
 // assumed maximum length for getFullPath() string.
 // note: this maximum actually not enforced anywhere
@@ -260,7 +261,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
      * Factory method: create a corresponding result recorder object
      * for the given recording mode ("sum", "timeavg" etc).
      */
-    virtual cIListener *createResultRecorder(const char *mode);
+    virtual ResultRecorder *createResultRecorder(const char *mode);
 
   public:
     // Utility function: optionally appends host name to fname
@@ -271,7 +272,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void checkFingerprint();
 
     // Utility function for addResultRecorders()
-    void addResultRecorder(cComponent *component, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled);
+    void addResultRecorder(cComponent *component, const char *statisticName, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled);
 
     /**
      * Original command-line args.
