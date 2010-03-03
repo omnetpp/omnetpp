@@ -14,8 +14,8 @@ simple Server
 {
     parameters:
         @display("i=device/antennatower_l");
-        @signal[beginRx](title="begin reception";modehint=vector,timeavg,max;interpolationmode=sample-hold);
-        @signal[channelUtilization](title="channel utilization";modehint=vector,last;interpolationmode=linear);
+        @signal[beginRx](title="begin reception";record=vector,timeavg,max;interpolationmode=sample-hold);
+        @signal[channelUtilization](title="channel utilization";record=vector,last;interpolationmode=linear);
     gates:
         input in @directIn;
 }

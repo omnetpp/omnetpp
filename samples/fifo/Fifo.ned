@@ -16,8 +16,8 @@ simple Fifo
     parameters:
         volatile double serviceTime @unit(s);
         @display("i=block/queue;q=queue");
-        @signal[qlen](title="queue length";modehint=vector,timeavg,max;interpolationmode=sample-hold);
-        @signal[busy](title="server busy state";modehint=vector,timeavg;interpolationmode=sample-hold);
+        @signal[qlen](title="queue length";record=vector,timeavg,max;interpolationmode=sample-hold);
+        @signal[busy](title="server busy state";record=vector,timeavg;interpolationmode=sample-hold);
         @signal[queueingTime](title="queueing time at dequeue";unit=s;interpolationmode=none);
     gates:
         input in;

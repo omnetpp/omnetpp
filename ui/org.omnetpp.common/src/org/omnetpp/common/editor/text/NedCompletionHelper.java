@@ -48,7 +48,7 @@ public final class NedCompletionHelper {
         makeShortTemplate("@contains(${label1});", "property"),
         makeShortTemplate("@labels(${label1});", "property"),
         makeShortTemplate("@signal[${name}];", "property"),
-        makeShortTemplate("@signal[${name}](title=\"${title}\";modehint=${hints});", "property"),
+        makeShortTemplate("@signal[${name}](title=\"${title}\";record=${hints});", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
 
     public final static Template[] proposedNedComponentDisplayStringTempl;
@@ -160,7 +160,7 @@ public final class NedCompletionHelper {
         makeShortTemplate("unit=${unit};", "parameter"),
         makeShortTemplate("interpolationmode=${modes};", "parameter"),
         makeShortTemplate("enum=${value1, value2};", "parameter"),
-        makeShortTemplate("modehint=${hints};", "parameter"),
+        makeShortTemplate("record=${hints};", "parameter"),
     };
 
     public final static Template[] proposedNedSignalPropertyInterpolationModeParameterValueTempl = {
@@ -170,11 +170,10 @@ public final class NedCompletionHelper {
         makeShortTemplate("backward-sample-hold", "interpolation mode"),
     };
 
-    public final static Template[] proposedNedSignalPropertyModeHintParameterValueTempl = {
+    public final static Template[] proposedNedSignalPropertyRecordParameterValueTempl = {
         makeShortTemplate("auto", "automatically select the best mode(s) for a signal, this mode currently selects histogram mode"),
-//        makeShortTemplate("none", "do not record anything"),
         makeShortTemplate("count", "record the number of values emitted; values are ignored"),
-//        makeShortTemplate("vector", "record all values"),
+        makeShortTemplate("vector", "record all values"),
         makeShortTemplate("last", "record the last value"),
         makeShortTemplate("sum", "record the sum of the values"),
         makeShortTemplate("mean", "record the mean of the values"),

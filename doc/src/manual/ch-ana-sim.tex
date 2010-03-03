@@ -201,7 +201,7 @@ in the final value, in the count of the values, in their mean, the minimum
 or maximum value or other properties. This can be configured using the
 \textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-mode=}
 configuration option. If \ttt{result-recording-mode=} is not defined
-in the configuration or it is set to \ttt{auto}, the \ttt{modehint} key
+in the configuration or it is set to \ttt{auto}, the \ttt{record} key
 from the \ttt{@signal} property is used.
 
 Several recording modes can be specified, separated by comma.
@@ -245,7 +245,7 @@ be recorded as \ttt{queueingTime:mean}.
 \subsection{Configuring Output Vectors}
 \label{sec:ana-sim:vector-config}
 
-FIXME: "vector" should be listed in modehint or in recording-mode
+FIXME: "vector" should be listed in record or in recording-mode
 
 The size of output vector files can easily reach the magnitude of several
 hundred megabytes, but very often, only some of the recorded statistics are

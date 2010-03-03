@@ -4214,8 +4214,8 @@ simple Fifo
 {
     parameters:
         volatile double serviceTime @unit(s);
-        @signal[qlen](title="queue length";modehint=timeavg,max);
-        @signal[busy](title="server busy state";modehint=timeavg);
+        @signal[qlen](title="queue length";record=timeavg,max);
+        @signal[busy](title="server busy state";record=timeavg);
         @signal[queueingTime](title="queueing time at dequeue";unit=s);
     gates:
         input in;
@@ -4244,7 +4244,7 @@ channel is created in the simulation, the {\opp} runtime examines the
 the property indices, and, interpreting them as signal names, adds one or
 more listeners for each.
 
-FIXME: to enable vector, also list it in modehint!
+FIXME: to enable vector, also list it in record!
 
 The types of listeners added depend on the configuration. If output vector
 recording is enabled for the given signal, a listener is added which
@@ -4254,7 +4254,7 @@ emitted ones and record it in the \ffunc{finish()} phase. There are various
 listeners that compute and record the count, the sum of values, their mean,
 their time avarage, minimum, maximum, a histogram, etc. The list of
 listeners are added depends on the configuration; or if the configuration
-does not specify it, the \ttt{modehint=} property key will be used.
+does not specify it, the \ttt{record=} property key will be used.
 
 The keys and values in the property will get recorded into the output files
 as result attributes, and will be available for result processing.
@@ -4273,14 +4273,14 @@ The following property keys (result attributes) are supported:
       The property value must be a string, containing \textit{name=value} pairs
       separated by comma. Example: \ttt{"IDLE=1,BUSY=2,DOWN=3"}.
 %XXX TODO implement:  \item[enumName]: xxx
-  \item[modehint]: Defines how to derive scalar values from the signal;
+  \item[record]: Defines how to derive scalar values from the signal;
      see values below. Several modes can be listed, separated by comma.
 \end{description}
 
 It is allowed to use other keys/attributes, but they won't be interpreted
 by the {\opp} runtime or tools.
 
-Possible values for \ttt{modehint} include \ttt{vector}, \ttt{count}, \ttt{last},
+Possible values for \ttt{record} include \ttt{vector}, \ttt{count}, \ttt{last},
 \ttt{sum}, \ttt{mean}, \ttt{min}, \ttt{max}, \ttt{timeavg}, \ttt{stats},
 \ttt{histogram}; the complete list is \ref{sec:ana-sim:scalar-results}.
 

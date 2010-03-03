@@ -17,10 +17,10 @@ simple Queue
     parameters:
         @group(Queueing);
         @display("i=block/queue;q=queue");
-        @signal[dropped](title="drop event";modehint=vector,count;interpolationmode=none);
-        @signal[queueLength](title="queue length";modehint=vector,timeavg,max;interpolationmode=sample-hold);
-        @signal[queueingTime](title="queueing time at dequeue";modehint=vector,mean,max;unit=s;interpolationmode=none);
-        @signal[busy](title="server busy state";modehint=vector,timeavg;interpolationmode=sample-hold);
+        @signal[dropped](title="drop event";record=vector,count;interpolationmode=none);
+        @signal[queueLength](title="queue length";record=vector,timeavg,max;interpolationmode=sample-hold);
+        @signal[queueingTime](title="queueing time at dequeue";record=vector,mean,max;unit=s;interpolationmode=none);
+        @signal[busy](title="server busy state";record=vector,timeavg;interpolationmode=sample-hold);
 
         int capacity = default(-1);    // negative capacity means unlimited queue
         bool fifo = default(true);     // whether the module works as a queue (fifo=true) or a stack (fifo=false)

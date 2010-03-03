@@ -16,8 +16,8 @@ simple Routing
 {
     parameters:
         @display("i=block/switch");
-        @signal[drop](title="dropped packet byte length";unit=bytes;modehint=vector,count,sum;interpolationmode=none);
-        @signal[outputIf](title="output interface for each routed packet";modehint=histogram;interpolationmode=none);
+        @signal[drop](title="dropped packet byte length";unit=bytes;record=vector,count,sum;interpolationmode=none);
+        @signal[outputIf](title="output interface for each routed packet";record=histogram;interpolationmode=none);
     gates:
         input in[];
         output out[];
