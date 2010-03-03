@@ -23,6 +23,7 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABEL
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_NAME;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_SIZE;
@@ -92,6 +93,7 @@ public class VectorChart extends ChartCanvas {
 		int series;
 		String lineId;
 		Boolean displayLine;
+        String displayName;
 		SymbolType symbolType;
 		Integer symbolSize;
 		LineType lineType;
@@ -118,7 +120,7 @@ public class VectorChart extends ChartCanvas {
 		public String getLineId() {
 			return lineId;
 		}
-
+		
 		public boolean getDisplayLine() {
 			if (displayLine == null && fallback != null)
 				return fallback.getDisplayLine();
@@ -131,6 +133,14 @@ public class VectorChart extends ChartCanvas {
 				displayLine = DEFAULT_DISPLAY_LINE;
 			this.displayLine = displayLine;
 		}
+
+        public String getDisplayName() {
+            return displayName != null ? displayName : lineId;
+        }
+        
+        public void setDisplayName(String name) {
+            this.displayName = name;
+        }
 
 		public SymbolType getSymbolType() {
 			SymbolType symbolType = this.symbolType;
@@ -377,9 +387,10 @@ public class VectorChart extends ChartCanvas {
 			for (String key : keys) {
 				LineProperties props = getLineProperties(key);
 				if (props.getDisplayLine()) {
+				    String name = props.getDisplayName();
 					Color color = props.getColor();
 					IChartSymbol symbol = props.getSymbol();
-					legend.addItem(color, key, symbol, true);
+					legend.addItem(color, name, symbol, true);
 				}
 			}
 		}
@@ -415,6 +426,8 @@ public class VectorChart extends ChartCanvas {
 		// Lines
 		else if (name.startsWith(PROP_DISPLAY_LINE))
 			setDisplayLine(getElementId(name), Converter.stringToBoolean(value));
+        else if (name.startsWith(PROP_DISPLAY_NAME))
+            setDisplayName(getElementId(name), value);
 		else if (name.startsWith(PROP_SYMBOL_TYPE))
 			setSymbolType(getElementId(name), Converter.stringToEnum(value, SymbolType.class));
 		else if (name.startsWith(PROP_SYMBOL_SIZE))
@@ -450,6 +463,13 @@ public class VectorChart extends ChartCanvas {
 		props.setDisplayLine(value);
 		updateLegends();
 		chartChanged();
+	}
+	
+	public void setDisplayName(String key, String name) {
+        LineProperties props = getOrCreateLineProperties(key);
+        props.setDisplayName(name);
+        updateLegends();
+        chartChanged();
 	}
 
 	public void setLineStyle(String key, LineType type) {

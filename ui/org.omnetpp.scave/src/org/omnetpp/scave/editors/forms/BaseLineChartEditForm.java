@@ -8,6 +8,7 @@
 package org.omnetpp.scave.editors.forms;
 
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_NAME;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_SIZE;
@@ -132,6 +133,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	// "Lines" page controls
 	private TableViewer linesTableViewer;
 	private TristateButton displayLineCheckbox;
+	private Text displayNameText;
 	private ColorEdit colorEdit;
 	private ImageCombo symbolTypeCombo;
 	private Combo symbolSizeCombo;
@@ -217,6 +219,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					updatePreview();
 				}
 			});
+			
+			displayNameText = createTextField("Display name:", subpanel);
 
 			lineTypeCombo = createImageComboField("Line type:", subpanel);
 			lineTypeCombo.add(NO_CHANGE, null);
@@ -323,6 +327,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		boolean applyToAll = (selection.size() == ((Object[])linesTableViewer.getInput()).length);
 
 		Boolean displayLine = displayLineCheckbox.getGrayed() ? null : displayLineCheckbox.getSelection();
+		String displayName = displayNameText.getText();
 		String symbolType = symbolTypeCombo.getText();
 		String symbolSize = symbolSizeCombo.getText();
 		String lineType = lineTypeCombo.getText();
@@ -336,6 +341,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			String value = property.getValue();
 			boolean copyIt =
 				(name.startsWith(PROP_DISPLAY_LINE) && (!applyToAll || displayLine == null)) ||
+				(name.startsWith(PROP_DISPLAY_NAME) && (!applyToAll || displayName == null)) ||
 				(name.startsWith(PROP_SYMBOL_TYPE) && (!applyToAll || symbolType.equals(NO_CHANGE))) ||
 				(name.startsWith(PROP_SYMBOL_SIZE) && (!applyToAll || symbolSize.equals(NO_CHANGE))) ||
 				(name.startsWith(PROP_LINE_TYPE)   && (!applyToAll || lineType.equals(NO_CHANGE))) ||
@@ -360,6 +366,12 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 				Line line = (Line)sel;
 				newProps.setProperty(PROP_DISPLAY_LINE+"/"+line.key, displayLine);
 			}
+		}
+		
+		// DisplayName is not editable if two or more line is selected
+		if (!StringUtils.isEmpty(displayName) && selection.size() == 1) {
+		    Line line = (Line)selection.get(0);
+		    newProps.setProperty(PROP_DISPLAY_NAME+"/"+line.key, displayName);
 		}
 	}
 
@@ -401,6 +413,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			LineProperties lineProps = props.getLineProperties(line.key);
 			displayLineCheckbox.setSelection(lineProps.getDisplayLine());
 			displayLineCheckbox.setGrayed(false);
+			displayNameText.setEnabled(true);
+			displayNameText.setText(lineProps.getDisplayName()==null ? "" : lineProps.getDisplayName());
 			symbolTypeCombo.setText(lineProps.getSymbolType()==null ? AUTO : lineProps.getSymbolType().toString());
 			symbolSizeCombo.setText(lineProps.getSymbolSize()==null ? AUTO : lineProps.getSymbolSize().toString());
 			lineTypeCombo.setText(lineProps.getLineType()==null ? AUTO : lineProps.getLineType().toString());
@@ -408,6 +422,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		}
 		else {
 			displayLineCheckbox.setGrayed(true);
+			displayNameText.setText("");
+			displayNameText.setEnabled(false);
 			symbolTypeCombo.setText(NO_CHANGE);
 			symbolSizeCombo.setText(NO_CHANGE);
 			lineTypeCombo.setText(NO_CHANGE);

@@ -13,6 +13,7 @@ import org.omnetpp.common.properties.PropertySource;
 public class LineProperties extends PropertySource {
 
 	public static final String
+	    PROP_DISPLAY_NAME       = "Line.Name",
 		PROP_DISPLAY_LINE		= "Line.Display",
 		PROP_SYMBOL_TYPE		= "Symbols.Type",
 		PROP_SYMBOL_SIZE		= "Symbols.Size",
@@ -84,7 +85,12 @@ public class LineProperties extends PropertySource {
 		return lineId == null ? baseName : baseName + "/" + lineId;
 	}
 
-	@org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_LINE,optional=true,
+    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_NAME,optional=true,
+            description="Display name of the line.")
+    public String getDisplayName() { return chartProps.getStringProperty(propertyName(PROP_DISPLAY_NAME)); }
+    public void setDisplayName(String name) { chartProps.setProperty(propertyName(PROP_DISPLAY_NAME), name); }
+
+    @org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_LINE,optional=true,
 			description="Displays the line.")
 	public boolean getDisplayLine() { return chartProps.getBooleanProperty(propertyName(PROP_DISPLAY_LINE)); }
 	public void setDisplayLine(boolean display) { chartProps.setProperty(propertyName(PROP_DISPLAY_LINE), display); }
