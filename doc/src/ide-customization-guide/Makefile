@@ -23,6 +23,7 @@ html: docbook
 	rm -rf ../../ide-customization-guide
 	mkdir ../../ide-customization-guide
 	mkdir ../../ide-customization-guide/images
+	mkdir ../../ide-customization-guide/pictures
 	cp ide-customization-guide.html ../../ide-customization-guide
 	cp images/* ../../ide-customization-guide/images
 	cp pictures/* ../../ide-customization-guide/pictures
@@ -34,9 +35,10 @@ eclipse: docbook
 	rm -rf eclipse
 	mkdir eclipse
 	mkdir eclipse/images
+	mkdir eclipse/pictures
 	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	cp images/* eclipse/images
-	cp pictures/* ../../ide-customization-guide/pictures
+	cp pictures/* eclipse/pictures
 	rm tmp.xml tmp0.xml
 
 pdf: cover docbook
