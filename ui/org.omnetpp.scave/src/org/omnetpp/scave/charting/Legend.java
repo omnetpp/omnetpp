@@ -85,7 +85,7 @@ public class Legend implements ILegend {
 	private Font font;
 	private LegendPosition position;
 	private LegendAnchor anchor;
-	private int horizontalSpacing = 5; // horizontal spacing between legend items
+	private int horizontalSpacing = 10; // horizontal spacing between legend items
 	private int verticalSpacing = 5;   // vertical spacing between legend items
 	private int horizontalPadding = 5; // horizontal space to the left and right of the legend, inside the border
 	private int verticalPadding = 5;   // vertical space above and below the the legend, inside the border

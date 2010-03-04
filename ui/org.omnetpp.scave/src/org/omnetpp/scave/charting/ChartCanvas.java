@@ -574,9 +574,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 
 	protected void paintInsets(Graphics graphics) {
+        Insets insets = getInsets();
         // do not draw insets border when exporting to SVG
 	    if (!GraphicsUtils.isSVGGraphics(graphics)) {
-    		Insets insets = getInsets();
     		Rectangle canvasRect = new Rectangle(getClientArea());
     		graphics.setForegroundColor(insetsBackgroundColor);
     		graphics.setBackgroundColor(insetsBackgroundColor);
@@ -585,8 +585,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
     		graphics.fillRectangle(0, 0, insets.left, canvasRect.height); // left
     		graphics.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
     		graphics.setForegroundColor(insetsLineColor);
-    		graphics.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
 	    }
+        graphics.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
 	}
 
 	protected void drawStatusText(Graphics graphics) {
