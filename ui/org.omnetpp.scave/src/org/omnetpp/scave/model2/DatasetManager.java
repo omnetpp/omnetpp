@@ -499,19 +499,19 @@ public class DatasetManager {
 
 	/**
 	 * Returns the default format string for names of the {@code items}.
-	 * It is "{file} {run} {run-number} {module} {name} {experiment} {measurement} {replication}",
+	 * It is "${file} ${run} ${run-number} ${module} ${name} ${experiment} ${measurement} ${replication}",
 	 * but fields that are the same for each item are omitted.
-	 * If all the fields has the same value in {@code items}, then the "{index}" is used as
+	 * If all the fields has the same value in {@code items}, then the "${index}" is used as
 	 * the format string.
 	 */
 	private static String defaultNameFormat(ResultItem[] items) {
 
 		if (items.length <= 1)
-			return "{module} {name}";
+			return "${module} ${name}";
 
 		List<ResultItemField> differentFields = complement(getCommonFields(items, FIELDS_OF_LINENAMES));
 		if (differentFields.isEmpty())
-			return "{module} {name} - {index}";
+			return "${module} ${name} - ${index}";
 		else
 			return nameFormatUsingFields(differentFields);
 	}
@@ -565,7 +565,7 @@ public class DatasetManager {
 		char separator = ' ';
 		int lastIndex = fields.size() - 1;
 		for (int i = 0; i < fields.size(); i++) {
-			sbFormat.append('{').append(fields.get(i).getName()).append('}');
+			sbFormat.append("${").append(fields.get(i).getName()).append('}');
 			if (i != lastIndex)
 				sbFormat.append(separator);
 		}

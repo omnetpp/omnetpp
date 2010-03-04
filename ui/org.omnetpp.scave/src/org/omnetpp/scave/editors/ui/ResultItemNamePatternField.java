@@ -37,7 +37,7 @@ public class ResultItemNamePatternField {
 
 		String[] proposals = new String[fieldNames.length];
 		for (int i = 0; i < proposals.length; ++i)
-			proposals[i] = "{" + fieldNames[i] + "}";
+			proposals[i] = "${" + fieldNames[i] + "}";
 		SimpleContentProposalProvider proposalProvider = new SimpleContentProposalProvider(proposals);
 
 		new ContentAssistCommandAdapter(text,
