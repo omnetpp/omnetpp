@@ -849,31 +849,10 @@ ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
     if (!strcmp(mode, "auto"))
         mode = "histogram";
 
-    // this should be extensible instead of hardcoded "if"-ladder
-    ResultRecorder *listener;
-    if (!strcmp(mode, "histogram"))
-        listener = new StatisticsRecorder(new cHistogram());
-    else if (!strcmp(mode, "vector"))
-        listener = new VectorRecorder();
-    else if (!strcmp(mode, "count"))
-        listener = new CountRecorder();
-    else if (!strcmp(mode, "last"))
-        listener = new LastValueRecorder();
-    else if (!strcmp(mode, "sum"))
-        listener = new SumRecorder();
-    else if (!strcmp(mode, "mean"))
-        listener = new MeanRecorder();
-    else if (!strcmp(mode, "min"))
-        listener = new MinRecorder();
-    else if (!strcmp(mode, "max"))
-        listener = new MaxRecorder();
-    else if (!strcmp(mode, "timeavg"))
-        listener = new TimeAverageRecorder();
-    else if (!strcmp(mode, "stats"))
-        listener = new StatisticsRecorder(new cStdDev());
-    else
-        listener = NULL;
-    return listener;
+    ResultRecorderDescriptor *desc = ResultRecorderDescriptor::find(mode);
+    if (!desc)
+        return NULL;
+    return desc->create();
 }
 
 void EnvirBase::readParameter(cPar *par)

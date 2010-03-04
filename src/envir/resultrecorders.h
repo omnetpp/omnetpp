@@ -25,6 +25,46 @@
 #include "commonutil.h"
 #include "stringpool.h"
 
+class ResultRecorder;
+
+#define Register_ResultRecorder(NAME, CLASSNAME) \
+  static ResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(resultRecorders.getInstance()->add(new ResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
+
+extern cGlobalRegistrationList resultRecorders;
+
+/**
+ * Registers a ResultRecorder.
+ */
+class ENVIR_API ResultRecorderDescriptor : public cNoncopyableOwnedObject
+{
+  private:
+    ResultRecorder *(*creatorfunc)();
+
+  public:
+    /**
+     * Constructor.
+     */
+    ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)());
+
+    /**
+     * Creates an instance of a particular class by calling the creator
+     * function.
+     */
+    ResultRecorder *create() const  {return creatorfunc();}
+
+    /**
+     * Finds the factory object for the given name. The class must have been
+     * registered previously with the Register_ResultRecorder() macro.
+     */
+    static ResultRecorderDescriptor *find(const char *name);
+
+    /**
+     * Like find(), but throws an error if the object was not found.
+     */
+    static ResultRecorderDescriptor *get(const char *name);
+};
+
 /**
  * Abstract base class for result recording listeners
  */
@@ -204,6 +244,18 @@ class ENVIR_API StatisticsRecorder : public NumericResultRecorder, private cObje
         StatisticsRecorder(cStatistic *stat) {statistic = stat; take(statistic);}
         ~StatisticsRecorder() {drop(statistic); delete statistic;}
         virtual void finish(cComponent *component, simsignal_t signalID);
+};
+
+class ENVIR_API StddevRecorder : public StatisticsRecorder
+{
+    public:
+        StddevRecorder();
+};
+
+class ENVIR_API HistogramRecorder : public StatisticsRecorder
+{
+    public:
+        HistogramRecorder();
 };
 
 #endif

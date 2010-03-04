@@ -18,9 +18,45 @@
 #include "cproperties.h"
 #include "cproperty.h"
 #include "resultrecorders.h"
+#include "chistogram.h"
 
+
+cGlobalRegistrationList resultRecorders("resultRecorders");
 
 CommonStringPool ResultRecorder::statisticNamesPool;
+
+Register_ResultRecorder("vector", VectorRecorder);
+Register_ResultRecorder("count", CountRecorder);
+Register_ResultRecorder("last", LastValueRecorder);
+Register_ResultRecorder("sum", SumRecorder);
+Register_ResultRecorder("mean", MeanRecorder);
+Register_ResultRecorder("min", MinRecorder);
+Register_ResultRecorder("max", MaxRecorder);
+Register_ResultRecorder("timeavg", TimeAverageRecorder);
+Register_ResultRecorder("histogram", HistogramRecorder);
+
+
+ResultRecorderDescriptor::ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)())
+  : cNoncopyableOwnedObject(name, false)
+{
+    creatorfunc = f;
+}
+
+ResultRecorderDescriptor *ResultRecorderDescriptor::find(const char *name)
+{
+    return dynamic_cast<ResultRecorderDescriptor *>(resultRecorders.getInstance()->lookup(name));
+}
+
+ResultRecorderDescriptor *ResultRecorderDescriptor::get(const char *name)
+{
+    ResultRecorderDescriptor *p = find(name);
+    if (!p)
+        throw cRuntimeError("Result recorder \"%s\" not found -- perhaps the name is wrong, "
+                            "or the recorder wasn't registered with Register_ResultRecorder()", name);
+    return p;
+}
+
+//----
 
 void ResultRecorder::init(const char *statsName)
 {
@@ -253,4 +289,13 @@ void StatisticsRecorder::finish(cComponent *component, simsignal_t signalID)
     extractStatisticAttributes(component, attributes);
     ev.recordStatistic(component, getStatisticName(), statistic, &attributes);
 }
+
+StddevRecorder::StddevRecorder() : StatisticsRecorder(new cStdDev())
+{
+}
+
+HistogramRecorder::HistogramRecorder() : StatisticsRecorder(new cHistogram())
+{
+}
+
 
