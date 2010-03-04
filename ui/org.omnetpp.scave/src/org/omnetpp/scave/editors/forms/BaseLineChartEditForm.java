@@ -371,9 +371,9 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		}
 		
 		// DisplayName is not editable if two or more line is selected
-		if (!StringUtils.isEmpty(displayName) && selection.size() == 1) {
+		if (selection.size() == 1) {
 		    Line line = (Line)selection.get(0);
-		    newProps.setProperty(PROP_DISPLAY_NAME+"/"+line.key, displayName);
+		    newProps.setProperty(PROP_DISPLAY_NAME+"/"+line.key, StringUtils.isEmpty(displayName) ? null : displayName);
 		}
 	}
 
