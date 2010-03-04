@@ -355,14 +355,19 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
         }
         else if (line.matches(".*@unit\\(\\w?"))
             addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
-        else if (line.matches("@statistic\\[.*?\\]\\(.*")) {
+        else if (line.matches("@signal\\[.*?\\]\\(.*")) {
             addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyParameterTempl, new NedPropertyTagDetector());
             if (line.matches(".*unit=\\w?"))
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
+        }
+        else if (line.matches("@statistic\\[.*?\\]\\(.*")) {
+            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedStatisticPropertyParameterTempl, new NedPropertyTagDetector());
+            if (line.matches(".*unit=\\w?"))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedUnitTempl);
             else if (line.matches(".*record=(\\w\\,?)*"))
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyRecordParameterValueTempl, new NedPropertyTagValueDetector());
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedStatisticPropertyRecordParameterValueTempl, new NedPropertyTagValueDetector());
             else if (line.matches(".*interpolationmode=\\w?"))
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSignalPropertyInterpolationModeParameterValueTempl, new NedPropertyTagValueDetector());
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedStatisticPropertyInterpolationModeParameterValueTempl, new NedPropertyTagValueDetector());
         }
 
 		// long millis = System.currentTimeMillis()-startMillis;

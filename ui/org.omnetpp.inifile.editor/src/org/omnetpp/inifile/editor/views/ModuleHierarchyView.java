@@ -226,11 +226,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			        // TODO: find/make a better icon
 			        return InifileUtils.ICON_PAR_GROUP;
                 else if (element instanceof SignalNode)
-                    // TODO: find/make a better icon
-                    return InifileUtils.ICON_KEY_EQUALS_ASK;
+                    return InifileUtils.ICON_SIGNAL;
                 else if (element instanceof StatisticNode)
-                    // TODO: find/make a better icon
-                    return InifileUtils.ICON_KEY_EQUALS_ASK;
+                    return InifileUtils.ICON_STATISTIC;
 			    else if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SubmoduleOrConnectionNode) {
@@ -654,22 +652,19 @@ public class ModuleHierarchyView extends AbstractModuleView {
             String type = signalResolution.propertyDeclaration.getValue("type");
             if (type != null)
                 label += " : " + type;
-            String title = signalResolution.propertyDeclaration.getValue("title");
-            if (title != null)
-                label += " (" + title + ")";
             node.addChild(new SignalNode(label));
         }
 	}
 
     protected void addStatisticResolutions(GenericTreeNode node, PropertyResolution[] statisticResolutions) {
         for (PropertyResolution statisticResolution : statisticResolutions) {
-            String label = statisticResolution.propertyDeclaration.getIndex();
+            String label = statisticResolution.propertyDeclaration.getIndex() + " : ";
+            String record = statisticResolution.propertyDeclaration.getValue("record");
+            if (record != null)
+                label += record;
             String source = statisticResolution.propertyDeclaration.getValue("source");
             if (source != null)
-                label += " : " + source;
-            String title = statisticResolution.propertyDeclaration.getValue("title");
-            if (title != null)
-                label += " (" + title + ")";
+                label += " of " + source;
             node.addChild(new StatisticNode(label));
         }
     }

@@ -47,8 +47,10 @@ public final class NedCompletionHelper {
         makeShortTemplate("@class(${className});", "property"),
         makeShortTemplate("@contains(${label1});", "property"),
         makeShortTemplate("@labels(${label1});", "property"),
+        makeShortTemplate("@signal[${name}];", "property"),
+        makeShortTemplate("@signal[${name}](type=\"${type}\");", "property"),
         makeShortTemplate("@statistic[${name}];", "property"),
-        makeShortTemplate("@statistic[${name}](title=\"${title}\";record=${hints});", "property"),
+        makeShortTemplate("@statistic[${name}](title=\"${title}\";record=${expression1},${expression2});", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
 
     public final static Template[] proposedNedComponentDisplayStringTempl;
@@ -156,21 +158,28 @@ public final class NedCompletionHelper {
     }
 
     public final static Template[] proposedNedSignalPropertyParameterTempl = {
+        makeShortTemplate("unit=${unit};", "parameter"),
+        makeShortTemplate("enum=${value1},${value2};", "parameter"),
+        makeShortTemplate("type=${type};", "parameter"),
+    };
+
+    public final static Template[] proposedNedStatisticPropertyParameterTempl = {
         makeShortTemplate("title=\"${title}\"", "parameter"),
         makeShortTemplate("unit=${unit};", "parameter"),
         makeShortTemplate("interpolationmode=${modes};", "parameter"),
-        makeShortTemplate("enum=${value1, value2};", "parameter"),
-        makeShortTemplate("record=${hints};", "parameter"),
+        makeShortTemplate("source=${source};", "parameter"),
+        makeShortTemplate("enum=${value1},${value2};", "parameter"),
+        makeShortTemplate("record=${expression1, expression2};", "parameter"),
     };
 
-    public final static Template[] proposedNedSignalPropertyInterpolationModeParameterValueTempl = {
+    public final static Template[] proposedNedStatisticPropertyInterpolationModeParameterValueTempl = {
         makeShortTemplate("none", "interpolation mode"),
         makeShortTemplate("linear", "interpolation mode"),
         makeShortTemplate("sample-hold", "interpolation mode"),
         makeShortTemplate("backward-sample-hold", "interpolation mode"),
     };
 
-    public final static Template[] proposedNedSignalPropertyRecordParameterValueTempl = {
+    public final static Template[] proposedNedStatisticPropertyRecordParameterValueTempl = {
         makeShortTemplate("auto", "automatically select the best mode(s) for a statistic (currently selects histogram mode)"),
         makeShortTemplate("count", "record the number of values emitted; values are ignored"),
         makeShortTemplate("vector", "record all values"),
