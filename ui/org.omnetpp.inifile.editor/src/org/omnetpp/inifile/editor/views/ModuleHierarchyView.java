@@ -52,8 +52,8 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.inifile.editor.model.PropertyResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
-import org.omnetpp.inifile.editor.model.SignalResolution;
 import org.omnetpp.ned.core.IModuleTreeVisitor;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.NedTreeTraversal;
@@ -67,9 +67,9 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
@@ -199,6 +199,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
         }
 	}
 
+    private static class StatisticNode extends GenericTreeNode {
+        public StatisticNode(Object payload) {
+            super(payload);
+        }
+    }
+
 	public ModuleHierarchyView() {
 	}
 
@@ -220,6 +226,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			        // TODO: find/make a better icon
 			        return InifileUtils.ICON_PAR_GROUP;
                 else if (element instanceof SignalNode)
+                    // TODO: find/make a better icon
+                    return InifileUtils.ICON_KEY_EQUALS_ASK;
+                else if (element instanceof StatisticNode)
                     // TODO: find/make a better icon
                     return InifileUtils.ICON_KEY_EQUALS_ASK;
 			    else if (element instanceof GenericTreeNode)
@@ -600,13 +609,17 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		    ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
 			InifileAnalyzer.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath);
 			addParamResolutions(treeNode, paramResolutions.toArray(new ParamResolution[0]));
-            ArrayList<SignalResolution> signalResolutions = new ArrayList<SignalResolution>();
-            InifileAnalyzer.resolveModuleSignals(signalResolutions, fullPath, typeInfoPath, elementPath);
-            addSignalResolutions(treeNode, signalResolutions.toArray(new SignalResolution[0]));
+            ArrayList<PropertyResolution> propertyResolutions = new ArrayList<PropertyResolution>();
+            InifileAnalyzer.resolveModuleProperties("signal", propertyResolutions, fullPath, typeInfoPath, elementPath);
+            addSignalResolutions(treeNode, propertyResolutions.toArray(new PropertyResolution[0]));
+            propertyResolutions = new ArrayList<PropertyResolution>();
+            InifileAnalyzer.resolveModuleProperties("statistic", propertyResolutions, fullPath, typeInfoPath, elementPath);
+            addStatisticResolutions(treeNode, propertyResolutions.toArray(new PropertyResolution[0]));
 		}
 		else {
 		    addParamResolutions(treeNode, analyzer.getParamResolutionsForModule(lastElement, activeSection));
-		    addSignalResolutions(treeNode, analyzer.getSignalResolutionsForModule(lastElement, activeSection));
+		    addSignalResolutions(treeNode, analyzer.getPropertyResolutionsForModule("signal", lastElement, activeSection));
+            addStatisticResolutions(treeNode, analyzer.getPropertyResolutionsForModule("statistic", lastElement, activeSection));
 		}
 
 		return treeNode;
@@ -635,10 +648,31 @@ public class ModuleHierarchyView extends AbstractModuleView {
         }
 	}
 
-	protected void addSignalResolutions(GenericTreeNode node, SignalResolution[] signalResolutions) {
-        for (SignalResolution signalResolution : signalResolutions)
-            node.addChild(new SignalNode(signalResolution.signalDeclaration.getIndex() + " : " + signalResolution.signalDeclaration.getValue("title")));
+	protected void addSignalResolutions(GenericTreeNode node, PropertyResolution[] signalResolutions) {
+        for (PropertyResolution signalResolution : signalResolutions) {
+            String label = signalResolution.propertyDeclaration.getIndex();
+            String type = signalResolution.propertyDeclaration.getValue("type");
+            if (type != null)
+                label += " : " + type;
+            String title = signalResolution.propertyDeclaration.getValue("title");
+            if (title != null)
+                label += " (" + title + ")";
+            node.addChild(new SignalNode(label));
+        }
 	}
+
+    protected void addStatisticResolutions(GenericTreeNode node, PropertyResolution[] statisticResolutions) {
+        for (PropertyResolution statisticResolution : statisticResolutions) {
+            String label = statisticResolution.propertyDeclaration.getIndex();
+            String source = statisticResolution.propertyDeclaration.getValue("source");
+            if (source != null)
+                label += " : " + source;
+            String title = statisticResolution.propertyDeclaration.getValue("title");
+            if (title != null)
+                label += " (" + title + ")";
+            node.addChild(new StatisticNode(label));
+        }
+    }
 
 	protected String getLabelFor(ParamResolution res, IInifileDocument doc, boolean includeName) {
 		String value = InifileAnalyzer.getParamValue(res, doc);

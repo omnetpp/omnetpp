@@ -56,9 +56,9 @@ import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
@@ -134,7 +134,7 @@ public class InifileAnalyzer {
 		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>();
 		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>(); // subset of allParamResolutions
 		List<ParamResolution> implicitlyAssignedParams = new ArrayList<ParamResolution>(); // subset of allParamResolutions
-		List<SignalResolution> signalResolutions = new ArrayList<SignalResolution>();
+		List<PropertyResolution> propertyResolutions = new ArrayList<PropertyResolution>();
 		List<IterationVariable> iterations = new ArrayList<IterationVariable>();
 		Map<String,IterationVariable> namedIterations = new HashMap<String, IterationVariable>();
 	}
@@ -891,13 +891,13 @@ public class InifileAnalyzer {
 		for (String activeSection : doc.getSectionNames()) {
 			// calculate param resolutions
 			List<ParamResolution> paramResoultions = collectParameters(activeSection);
-			List<SignalResolution> signalResolutions = collectSignalResolutions(activeSection);
+			List<PropertyResolution> propertyResolutions = collectSignalResolutions(activeSection);
 
 			// store with the section the list of all parameter resolutions (including unassigned params)
 			// store with every key the list of parameters it resolves
 			for (ParamResolution res : paramResoultions) {
 				SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
-				sectionData.signalResolutions = signalResolutions;
+				sectionData.propertyResolutions = propertyResolutions;
 				sectionData.allParamResolutions.add(res);
 				if (res.type == ParamResolutionType.UNASSIGNED)
 					sectionData.unassignedParams.add(res);
@@ -1182,7 +1182,7 @@ public class InifileAnalyzer {
         }
 	}
 
-	public List<SignalResolution> collectSignalResolutions(final String activeSection) {
+	public List<PropertyResolution> collectSignalResolutions(final String activeSection) {
         INedTypeResolver res = NedResourcesPlugin.getNedResources();
         final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
         String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
@@ -1190,12 +1190,12 @@ public class InifileAnalyzer {
             networkName = CFGID_NETWORK.getDefaultValue();
         INedTypeInfo network = resolveNetwork(res, networkName);
         if (networkName == null)
-            return new ArrayList<SignalResolution>();
+            return new ArrayList<PropertyResolution>();
         if (network == null )
-            return new ArrayList<SignalResolution>();
+            return new ArrayList<PropertyResolution>();
 
         // traverse the network and collect resolutions meanwhile
-        final ArrayList<SignalResolution> list = new ArrayList<SignalResolution>();
+        final ArrayList<PropertyResolution> list = new ArrayList<PropertyResolution>();
         IProject contextProject = doc.getDocumentFile().getProject();
         NedTreeTraversal treeTraversal = new NedTreeTraversal(res, new IModuleTreeVisitor() {
             protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
@@ -1204,11 +1204,13 @@ public class InifileAnalyzer {
             public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
                 elementPath.push(element);
                 fullPathStack.push(element == null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
-                Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("statistic");
-                String fullPath = StringUtils.join(fullPathStack, ".");
-                if (propertyMap != null)
-                    for (PropertyElementEx property : propertyMap.values())
-                        list.add(new SignalResolution(fullPath + "." + property.getIndex(), elementPath, property, activeSection));
+                for (String propertyName : new String[] {"signal", "statistic"}) {
+                    Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get(propertyName);
+                    String fullPath = StringUtils.join(fullPathStack, ".");
+                    if (propertyMap != null)
+                        for (PropertyElementEx property : propertyMap.values())
+                            list.add(new PropertyResolution(fullPath + "." + property.getIndex(), elementPath, property, activeSection));
+                }
                 return true;
             }
 
@@ -1231,12 +1233,12 @@ public class InifileAnalyzer {
         return list;
 	}
 
-    public static void resolveModuleSignals(List<SignalResolution> list, String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
+    public static void resolveModuleProperties(String propertyName, List<PropertyResolution> list, String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
         INedTypeInfo typeInfo = typeInfoPath.lastElement();
-        Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get("statistic");
+        Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get(propertyName);
         if (propertyMap != null)
             for (PropertyElementEx property : propertyMap.values())
-                list.add(new SignalResolution(fullPath + "." + property.getIndex(), elementPath, property, null));
+                list.add(new PropertyResolution(fullPath + "." + property.getIndex(), elementPath, property, null));
     }
 
     public boolean containsSectionCycles() {
@@ -1416,28 +1418,28 @@ public class InifileAnalyzer {
 		return remark;
 	}
 
-    public SignalResolution[] getSignalResolutions(String section) {
+    public PropertyResolution[] getPropertyResolutions(String section) {
         synchronized (lock) {
             analyzeIfChanged();
             SectionData sectionData = (SectionData) doc.getSectionData(section);
-            return sectionData.signalResolutions.toArray(new SignalResolution[]{});
+            return sectionData.propertyResolutions.toArray(new PropertyResolution[]{});
         }
     }
 
-    public SignalResolution[] getSignalResolutionsForModule(ISubmoduleOrConnection element, String section) {
+    public PropertyResolution[] getPropertyResolutionsForModule(String propertyName, ISubmoduleOrConnection element, String section) {
         synchronized (lock) {
             analyzeIfChanged();
             SectionData data = (SectionData)doc.getSectionData(section);
-            List<SignalResolution> signalResolutions = data==null ? null : data.signalResolutions;
-            if (signalResolutions == null || signalResolutions.isEmpty())
-                return new SignalResolution[0];
+            List<PropertyResolution> propertyResolutions = data == null ? null : data.propertyResolutions;
+            if (propertyResolutions == null || propertyResolutions.isEmpty())
+                return new PropertyResolution[0];
 
             // Note: linear search -- can be made more efficient with some lookup table if needed
-            ArrayList<SignalResolution> result = new ArrayList<SignalResolution>();
-            for (SignalResolution signalResolution : signalResolutions)
-                if (element == signalResolution.elementPath[signalResolution.elementPath.length - 1])
-                    result.add(signalResolution);
-            return result.toArray(new SignalResolution[]{});
+            ArrayList<PropertyResolution> result = new ArrayList<PropertyResolution>();
+            for (PropertyResolution propertyResolution : propertyResolutions)
+                if (propertyName.equals(propertyResolution.propertyDeclaration.getName()) && element == propertyResolution.elementPath[propertyResolution.elementPath.length - 1])
+                    result.add(propertyResolution);
+            return result.toArray(new PropertyResolution[]{});
         }
     }
 
