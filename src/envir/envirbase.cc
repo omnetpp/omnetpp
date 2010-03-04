@@ -770,6 +770,22 @@ void EnvirBase::configure(cComponent *component)
     addResultRecorders(component);
 }
 
+static int search_(std::vector<const char *>& v, const char *s)
+{
+    for (int i=0; i<(int)v.size(); i++)
+        if (opp_strcmp(v[i],s)==0)
+            return i;
+    return -1;
+}
+
+static int search_(std::vector<std::string>& v, std::string& s)
+{
+    for (int i=0; i<(int)v.size(); i++)
+        if (v[i] == s)
+            return i;
+    return -1;
+}
+
 void EnvirBase::addResultRecorders(cComponent *component)
 {
     std::vector<const char *> statisticNames = component->getProperties()->getIndicesFor("statistic");
@@ -786,45 +802,50 @@ void EnvirBase::addResultRecorders(cComponent *component)
         if (!scalarsEnabled && !vectorsEnabled)
             continue;
 
-        cProperty *prop = component->getProperties()->get("statistic", statisticName);
-        ASSERT(prop!=NULL);
-        bool hasSourceKey = prop->getNumValues("source") > 0;
-        const char *signalName = hasSourceKey ? prop->getValue("source",0) : statisticName;
+        cProperty *property = component->getProperties()->get("statistic", statisticName);
+        ASSERT(property!=NULL);
+        bool hasSourceKey = property->getNumValues("source") > 0;
+        const char *signalName = hasSourceKey ? property->getValue("source",0) : statisticName;
         simsignal_t signalID = cComponent::registerSignal(signalName);
 
         // add result recorders
-        std::string modeList = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODE, "");
-        if (modeList == "auto")
+        std::vector<const char *> modes1;
+        int n = property->getNumValues("record");
+        for (int j = 0; j < n; j++)
+            modes1.push_back(property->getValue("record",j));
+
+        std::vector<std::string> modes2;
+        std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODE, "");
+        if (modesOption != "auto")
         {
-            // obey mode-hint in @statistic; example: @statistic[queueLen](record=vector,timeavg,max);
-            int numModeHints = prop->getNumValues("record");
-            if (numModeHints == 0)
+            // +add,-remove,add,add,add
+            if (modesOption[0] != '+')
+                modes1.clear();
+            StringTokenizer tokenizer(modesOption.c_str(), ","); //XXX modulo commas within parens
+            while (tokenizer.hasMoreTokens())
             {
-                addResultRecorder(component, statisticName, signalID, "auto", "", scalarsEnabled, vectorsEnabled);
-            }
-            else
-            {
-                for (int j = 0; j < numModeHints; j++)
-                {
-                    const char *modeHint = prop->getValue("record",j);
-                    addResultRecorder(component, statisticName, signalID, modeHint, "in @statistic property", scalarsEnabled, vectorsEnabled);
+                std::string mode = tokenizer.nextToken();
+                if (mode[0]=='-') {
+                    // remove from modes1
+                    mode = mode.substr(1);
+                    int k = search_(modes1, mode.c_str());
+                    if (k!=-1)
+                        modes1.erase(modes1.begin()+k);
+                }
+                else {
+                    // add to modes2 if not yet in modes1 or in modes2
+                    if (mode[0]=='+')
+                        mode = mode.substr(1);
+                    if (search_(modes1, mode.c_str())==-1 && search_(modes2, mode)==-1)
+                        modes2.push_back(mode);
                 }
             }
         }
-        else if (!strchr(modeList.c_str(), ','))
-        {
-            // single value, no StringTokenizer needed
-            addResultRecorder(component, statisticName, signalID, modeList.c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
-        }
-        else
-        {
-            StringTokenizer tokenizer(modeList.c_str(), ",");
-            while (tokenizer.hasMoreTokens())
-            {
-                std::string mode = opp_trim(tokenizer.nextToken());
-                addResultRecorder(component, statisticName, signalID, mode.c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
-            }
-        }
+
+        for (int j = 0; j < (int)modes1.size(); j++)
+            addResultRecorder(component, statisticName, signalID, modes1[j], "in @statistic property", scalarsEnabled, vectorsEnabled);
+        for (int j = 0; j < (int)modes2.size(); j++)
+            addResultRecorder(component, statisticName, signalID, modes2[j].c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
     }
 }
 
