@@ -46,6 +46,11 @@ public interface IXYDataset extends IDataset {
      * @return The key for the series.
      */
     public String getSeriesKey(int series);
+    
+    /**
+     * Returns the display name of the series.
+     */
+    public String getSeriesTitle(int series, String format);
 
     /**
      * Returns the type of the y values in the specified series.

@@ -73,6 +73,7 @@ import org.omnetpp.scave.charting.properties.LineProperties;
 import org.omnetpp.scave.charting.properties.VectorChartProperties;
 import org.omnetpp.scave.charting.properties.LineProperties.LineType;
 import org.omnetpp.scave.charting.properties.LineProperties.SymbolType;
+import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
@@ -221,6 +222,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			});
 			
 			displayNameText = createTextField("Display name:", subpanel);
+			new ResultItemNamePatternField(displayNameText);
 
 			lineTypeCombo = createImageComboField("Line type:", subpanel);
 			lineTypeCombo.add(NO_CHANGE, null);

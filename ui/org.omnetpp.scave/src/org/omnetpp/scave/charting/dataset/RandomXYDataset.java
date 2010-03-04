@@ -50,6 +50,10 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 	public String getSeriesKey(int series) {
 		return seriesKeys[series];
 	}
+	
+	public String getSeriesTitle(int series, String format) {
+	    return getSeriesKey(series); // TODO
+	}
 
 	@Override
 	public InterpolationMode getSeriesInterpolationMode(int series) {

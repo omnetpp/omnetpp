@@ -135,7 +135,11 @@ public class VectorChart extends ChartCanvas {
 		}
 
         public String getDisplayName() {
-            return displayName != null ? displayName : lineId;
+            String format = StringUtils.isEmpty(displayName) ? "${title}" : displayName;
+            String name = "";
+            if (dataset != null && series != -1)
+                name = dataset.getSeriesTitle(series, format);
+            return StringUtils.isEmpty(name) ? lineId : name;
         }
         
         public void setDisplayName(String name) {

@@ -130,7 +130,7 @@ public class ResultItemFormatter {
 		}
 	}
 
-	private static Object[] parseFormatString(String format) {
+	public static Object[] parseFormatString(String format) {
 		List<Object> formatObjs = new ArrayList<Object>();
 		Matcher matcher = fsPattern.matcher(format);
 		int start = 0, len = format.length();

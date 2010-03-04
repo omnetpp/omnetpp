@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.charting.dataset;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.StringUtils;
@@ -43,7 +45,6 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	private ResultFileManager manager;
 	private SeriesData[] data;
 
-
 	/**
 	 * Creates an empty dataset.
 	 */
@@ -58,10 +59,11 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	 * Intended for accessing the series keys only
 	 * (property sheet, edit dialog).
 	 */
-	public VectorDataset(String title, IDList idlist, String lineNameFormat, ResultFileManager manager) {
+	public VectorDataset(String title, IDList idlist, String lineIdFormat, ResultFileManager manager) {
 		Assert.isLegal(idlist != null);
 		Assert.isLegal(manager != null);
-		String[] keys = DatasetManager.getResultItemNames(idlist, lineNameFormat, manager);
+		String[] keys = DatasetManager.getResultItemNames(idlist, lineIdFormat, manager);
+		
 		Assert.isTrue(idlist.size() == keys.length);
 		this.title = title;
 		this.idlist = idlist;
@@ -83,8 +85,8 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	 * The data of the vectors are loaded/computed.
 	 * Intended for displaying the dataset (e.g. charts).
 	 */
-	public VectorDataset(String title, IDList idlist, XYArray[] seriesData, String lineNameFormat, ResultFileManager manager) {
-		this(title, idlist, lineNameFormat, manager);
+	public VectorDataset(String title, IDList idlist, XYArray[] seriesData, String lineIdFormat, ResultFileManager manager) {
+		this(title, idlist, lineIdFormat, manager);
 		Assert.isTrue(seriesData != null && data.length == seriesData.length);
 		for (int i = 0; i < data.length; ++i) {
 			SeriesData series = data[i];
@@ -94,13 +96,17 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 		}
 	}
 
-	public String getTitle(String format) {
+	public String getTitle(final String format) {
 		if (StringUtils.isEmpty(format))
 			return title;
 		else {
-			ResultItem[] items = manager == null || ResultItemFormatter.isPlainFormat(format) ?
-									new ResultItem[0] : ScaveModelUtil.getResultItems(idlist, manager);
-			return ResultItemFormatter.formatMultipleResultItem(format, items);
+		    return ResultFileManager.callWithReadLock(manager, new Callable<String>() {
+                public String call() throws Exception {
+                    ResultItem[] items = manager == null || ResultItemFormatter.isPlainFormat(format) ?
+                            new ResultItem[0] : ScaveModelUtil.getResultItems(idlist, manager);
+                            return ResultItemFormatter.formatMultipleResultItem(format, items);
+                }
+		    });
 		}
 	}
 
@@ -111,6 +117,16 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	public String getSeriesKey(int series) {
 		return data[series].key;
 	}
+	
+    public String getSeriesTitle(final int series, final String format) {
+        return ResultFileManager.callWithReadLock(manager, new Callable<String>() {
+            public String call() throws Exception {
+                long id = data[series].id;
+                ResultItem item = manager.getItem(id);
+                return ResultItemFormatter.formatResultItem(format, item);
+            }
+        });
+    }
 
 	@Override
 	public Type getSeriesType(int series) {
