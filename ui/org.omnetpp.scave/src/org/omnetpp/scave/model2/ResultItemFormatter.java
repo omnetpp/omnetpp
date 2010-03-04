@@ -32,15 +32,15 @@ import org.omnetpp.scave.engine.ResultItemFields;
  * identifiers for result items.
  * <p>
  * Format string may contain to fields of the result item
- * by "{fieldname}" syntax. Use "\{" to quote a '{'.
+ * by "${fieldname}" syntax. Use "\$" to quote a '$' if needed.
  * Accepted field names are defined by {@link FilterUtil.getFieldNames()}.
- * Use {index} to refer to the index of the item in the collection.
+ * Use ${index} to refer to the index of the item in the collection.
  *
  * @author tomi
  */
 public class ResultItemFormatter {
 
-	private static final String fieldSpecifierRE = "(?<!\\\\)\\{([a-zA-Z-]+)\\}";
+	private static final String fieldSpecifierRE = "(?<!\\\\)\\$\\{([a-zA-Z-]+)\\}";
 	private static final Pattern fsPattern = Pattern.compile(fieldSpecifierRE);
 
 	private static final Map<String,IResultItemFormatter> formatters;
@@ -138,7 +138,7 @@ public class ResultItemFormatter {
 		    if (matcher.find(start)) {
 		    	// add previous characters as fixed string
 				if (matcher.start() != start)
-				    formatObjs.add(format.substring(start, matcher.start()));
+				    formatObjs.add(unquoteDollar(format.substring(start, matcher.start())));
 
 				String fieldName = matcher.group(1);
 				IResultItemFormatter formatter = getFormatter(fieldName);
@@ -146,16 +146,20 @@ public class ResultItemFormatter {
 					formatObjs.add(formatter);
 				else
 					formatObjs.add(format.substring(matcher.start(), matcher.end()));
-				start = matcher.end();
+                start = matcher.end();
 		    }
 		    else {
 				// No more valid format specifiers.
 				// The rest of the string is fixed text
-				formatObjs.add(format.substring(start));
+				formatObjs.add(unquoteDollar(format.substring(start)));
 				break;
 		    }
 		}
 		return formatObjs.toArray();
+	}
+	
+	private static String unquoteDollar(String str) {
+	    return str.replace("\\$", "$");
 	}
 
 	public static boolean isPlainFormat(String format) {
@@ -232,7 +236,7 @@ public class ResultItemFormatter {
         public String format(ResultItem item) {
             String value = item.getAttribute(attrName);
             if (value == null)
-                return attrName;
+                return "";
             else
                 return value;
         }
