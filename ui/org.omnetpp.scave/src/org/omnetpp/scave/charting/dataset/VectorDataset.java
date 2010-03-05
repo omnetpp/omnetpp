@@ -41,6 +41,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	}
 
 	private String title;
+	private String defaultLineTitleFormat;
 	private IDList idlist;
 	private ResultFileManager manager;
 	private SeriesData[] data;
@@ -59,13 +60,13 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	 * Intended for accessing the series keys only
 	 * (property sheet, edit dialog).
 	 */
-	public VectorDataset(String title, IDList idlist, String lineIdFormat, ResultFileManager manager) {
+	public VectorDataset(String title, IDList idlist, String lineIdFormat, String defaultLineTitleFormat, ResultFileManager manager) {
 		Assert.isLegal(idlist != null);
 		Assert.isLegal(manager != null);
 		String[] keys = DatasetManager.getResultItemNames(idlist, lineIdFormat, manager);
-		
 		Assert.isTrue(idlist.size() == keys.length);
 		this.title = title;
+		this.defaultLineTitleFormat = defaultLineTitleFormat;
 		this.idlist = idlist;
 		this.manager = manager;
 		this.data = new SeriesData[keys.length];
@@ -85,8 +86,8 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	 * The data of the vectors are loaded/computed.
 	 * Intended for displaying the dataset (e.g. charts).
 	 */
-	public VectorDataset(String title, IDList idlist, XYArray[] seriesData, String lineIdFormat, ResultFileManager manager) {
-		this(title, idlist, lineIdFormat, manager);
+	public VectorDataset(String title, IDList idlist, XYArray[] seriesData, String lineIdFormat, String defaultLineTitleFormat, ResultFileManager manager) {
+		this(title, idlist, lineIdFormat, defaultLineTitleFormat, manager);
 		Assert.isTrue(seriesData != null && data.length == seriesData.length);
 		for (int i = 0; i < data.length; ++i) {
 			SeriesData series = data[i];
@@ -123,7 +124,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
             public String call() throws Exception {
                 long id = data[series].id;
                 ResultItem item = manager.getItem(id);
-                return ResultItemFormatter.formatResultItem(format, item);
+                return ResultItemFormatter.formatResultItem(format == null ? defaultLineTitleFormat : format, item);
             }
         });
     }

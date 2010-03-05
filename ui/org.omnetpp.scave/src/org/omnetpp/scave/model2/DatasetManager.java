@@ -253,11 +253,13 @@ public class DatasetManager {
 		if (progressMonitor != null && progressMonitor.isCanceled())
 			return null;
 
-		String title = idlist.size() <= 1 ? null : defaultTitle(ScaveModelUtil.getResultItems(idlist, manager));
+		ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
+		String title = items.length <= 1 ? null : defaultTitle(items);
+		String lineTitleFormat = defaultResultItemTitleFormat(items);
 
 		return dataValues != null ?
-				new VectorDataset(title, idlist, dataValues, lineNameFormat, manager) :
-				new VectorDataset(title, idlist, lineNameFormat, manager);
+				new VectorDataset(title, idlist, dataValues, lineNameFormat, lineTitleFormat, manager) :
+				new VectorDataset(title, idlist, lineNameFormat, lineTitleFormat, manager);
 	}
 
 	public static Pair<IDList,XYArray[]> readAndComputeVectorData(Dataset dataset, DatasetItem target, ResultFileManager manager, IProgressMonitor monitor) {
@@ -514,6 +516,11 @@ public class DatasetManager {
 			return "${module} ${name} - ${index}";
 		else
 			return nameFormatUsingFields(differentFields);
+	}
+	
+	public static String defaultResultItemTitleFormat(ResultItem[] items) {
+	    String format = defaultNameFormat(items);
+        return format.replace("${name}", "${title_or_name}");
 	}
 
 	private static final ResultItemField[] titleFields = new ResultItemField[] {

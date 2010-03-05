@@ -49,6 +49,8 @@ public interface IXYDataset extends IDataset {
     
     /**
      * Returns the display name of the series.
+     * 
+     * @param format the format string of the series, or null if the user not specified it
      */
     public String getSeriesTitle(int series, String format);
 

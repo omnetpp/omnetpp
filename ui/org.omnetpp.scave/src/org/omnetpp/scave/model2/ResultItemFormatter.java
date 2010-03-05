@@ -40,13 +40,14 @@ import org.omnetpp.scave.engine.ResultItemFields;
  */
 public class ResultItemFormatter {
 
-	private static final String fieldSpecifierRE = "(?<!\\\\)\\$\\{([a-zA-Z-]+)\\}";
+	private static final String fieldSpecifierRE = "(?<!\\\\)\\$\\{([a-zA-Z-_]+)\\}";
 	private static final Pattern fsPattern = Pattern.compile(fieldSpecifierRE);
 
 	private static final Map<String,IResultItemFormatter> formatters;
 
 	static {
 		formatters = new HashMap<String,IResultItemFormatter>();
+		formatters.put("title_or_name", new TitleOrNameFormatter());
 		for (String field : ResultItemFields.getFieldNames().toArray()) {
 			IResultItemFormatter formatter = null;
 			if (field.equals(FILE))
@@ -250,4 +251,12 @@ public class ResultItemFormatter {
 			return String.valueOf(index++);
 		}
 	}
+
+    static class TitleOrNameFormatter implements IResultItemFormatter
+    {
+        public String format(ResultItem item) {
+            String title = item.getAttribute("title");
+            return title != null ? title : item.getName();
+        }
+    }
 }
