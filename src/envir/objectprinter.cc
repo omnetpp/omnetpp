@@ -145,7 +145,9 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
                 void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;
 
-                ObjectPrinterRecursionControl result = recursionPredicate(object, descriptor, fieldIndex, fieldValue, parents, level);
+                ObjectPrinterRecursionControl result = RECURSE;
+                if (recursionPredicate)
+                    result = recursionPredicate(object, descriptor, fieldIndex, fieldValue, parents, level);
                 if (result == SKIP || (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldIndex)))
                     continue;
 
