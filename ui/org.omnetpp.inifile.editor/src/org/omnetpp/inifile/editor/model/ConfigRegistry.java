@@ -479,13 +479,13 @@ public class ConfigRegistry {
         "Whether the matching output scalars should be recorded. Syntax: " +
         "<module-full-path>.<scalar-name>.scalar-recording=true/false. Example: " +
         "**.queue.packetsDropped.scalar-recording=true");
-    public static final ConfigOption CFGID_SCALAR_RECORDING_MODE = addPerObjectOption(
-        "scalar-recording-mode", CFG_STRING, "auto",
-        "Defines how to calculate scalar results from the given signal. Example " +
-        "values: count, lastval, sum, mean, min, max, timeavg, stddev, histogram, " +
-        "auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal " +
+    public static final ConfigOption CFGID_RESULT_RECORDING_MODE = addPerObjectOption(
+        "result-recording-mode", CFG_STRING, "auto",
+        "Defines how to calculate results from the given signal. Example " +
+        "values: vector, count, lastval, sum, mean, min, max, timeavg, stddev, histogram, " +
+        "auto. `auto' chooses `histogram', unless the `record' key in the @statistic " +
         "property tells otherwise. More than one values are accepted, separated by " +
-        "commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
+        "commas. Example: **.queueLength.result-recording-mode=timeavg,max");
     public static final ConfigOption CFGID_SCHEDULER_CLASS = addGlobalOption(
         "scheduler-class", CFG_STRING, "cSequentialScheduler",
         "Part of the Envir plugin mechanism: selects the scheduler class. This " +
@@ -590,7 +590,7 @@ public class ConfigRegistry {
         "Length of the initial warm-up period. When set, results belonging to the " +
         "first x seconds of the simulation will not be recorded into output vectors, " +
         "and will not be counted into output scalars (see option " +
-        "**.scalar-recording-mode). This option is useful for steady-state " +
+        "**.result-recording-mode). This option is useful for steady-state " +
         "simulations. The default is 0s (no warmup period). Note that models that " +
         "compute and record scalar results manually (via recordScalar()) will not " +
         "automatically obey this setting.");

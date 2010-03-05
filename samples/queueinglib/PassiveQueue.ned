@@ -20,9 +20,9 @@ simple PassiveQueue
 {
     parameters:
         @group(Queueing);
-        @signal[dropped](title="drop event";modeHint=count;interpolationmode=none);
-        @signal[queueLength](title="queue length";modeHint=timeavg,max;interpolationmode=sample-hold);
-        @signal[queueingTime](title="queueing time at dequeue";modeHint=mean,max;unit=s;interpolationmode=none);
+        @statistic[dropped](title="drop event";record=vector,count;interpolationmode=none);
+        @statistic[queueLength](title="queue length";record=vector,timeavg,max;interpolationmode=sample-hold);
+        @statistic[queueingTime](title="queueing time at dequeue";record=vector,mean,max;unit=s;interpolationmode=none);
         @display("i=block/passiveq;q=queue");
 
         int capacity = default(-1);  // negative capacity means unlimited queue

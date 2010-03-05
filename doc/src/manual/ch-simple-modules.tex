@@ -3693,7 +3693,7 @@ time for the first 64 signals whether the signal has listeners, so
 \ffunc{emit()} needs to examine the listener lists up to the root every
 time. Even if a simulation uses more than 64 signals, in
 performance-critical situations it is possible to arrange that frequently
-emitted signals (e.g. \ttt{"tx-begin"}) get the ``fast'' signal IDs, while
+emitted signals (e.g. \ttt{"txBegin"}) get the ``fast'' signal IDs, while
 infrequent signals (like e.g. \ttt{"routerDown"}) get the rest.
 
 The easiest way to ensure that frequently used signals get ``fast'' signal IDs
@@ -3868,9 +3868,8 @@ or
 unsubscribe("length", listener);
 \end{cpp}
 
-\ffunc{subscribe()} has no effect if the same listener is already
-subscribed, and similarly, \ffunc{unsubscribe()} does nothing
-if the listener is not subscribed.
+It is an error to subscribe the same listener to the same
+signal twice.
 
 \begin{note}
   When a listener is deleted, it must already be unsubscribed from
@@ -4215,9 +4214,9 @@ simple Fifo
 {
     parameters:
         volatile double serviceTime @unit(s);
-        @signal[qlen](title="queue length";modeHint=timeavg,max);
-        @signal[busy](title="server busy state";modeHint=timeavg);
-        @signal[queueingTime](title="queueing time at dequeue";unit=s);
+        @statistic[qlen](title="queue length";record=timeavg,max);
+        @statistic[busy](title="server busy state";record=timeavg);
+        @statistic[queueingTime](title="queueing time at dequeue";unit=s);
     gates:
         input in;
         output out;
@@ -4241,9 +4240,11 @@ for recording, and for result processing applications.
 
 \textbf{Recording.} Recording works in the following way. When a module or
 channel is created in the simulation, the {\opp} runtime examines the
-\ttt{@signal} properties on its NED declaration. The runtime iterates on
+\ttt{@statistic} properties on its NED declaration. The runtime iterates on
 the property indices, and, interpreting them as signal names, adds one or
 more listeners for each.
+
+FIXME: to enable vector, also list it in record!
 
 The types of listeners added depend on the configuration. If output vector
 recording is enabled for the given signal, a listener is added which
@@ -4253,7 +4254,7 @@ emitted ones and record it in the \ffunc{finish()} phase. There are various
 listeners that compute and record the count, the sum of values, their mean,
 their time avarage, minimum, maximum, a histogram, etc. The list of
 listeners are added depends on the configuration; or if the configuration
-does not specify it, the \ttt{modeHint=} property key will be used.
+does not specify it, the \ttt{record=} property key will be used.
 
 The keys and values in the property will get recorded into the output files
 as result attributes, and will be available for result processing.
@@ -4272,14 +4273,14 @@ The following property keys (result attributes) are supported:
       The property value must be a string, containing \textit{name=value} pairs
       separated by comma. Example: \ttt{"IDLE=1,BUSY=2,DOWN=3"}.
 %XXX TODO implement:  \item[enumName]: xxx
-  \item[modeHint]: Defines how to derive scalar values from the signal;
+  \item[record]: Defines how to derive scalar values from the signal;
      see values below. Several modes can be listed, separated by comma.
 \end{description}
 
 It is allowed to use other keys/attributes, but they won't be interpreted
 by the {\opp} runtime or tools.
 
-Possible values for \ttt{modeHint} include \ttt{count}, \ttt{last},
+Possible values for \ttt{record} include \ttt{vector}, \ttt{count}, \ttt{last},
 \ttt{sum}, \ttt{mean}, \ttt{min}, \ttt{max}, \ttt{timeavg}, \ttt{stats},
 \ttt{histogram}; the complete list is \ref{sec:ana-sim:scalar-results}.
 
@@ -4298,7 +4299,7 @@ Possible values for \ttt{modeHint} include \ttt{count}, \ttt{last},
 % what happened (message removed from queue and started service), and what
 % the signal value represents (time spent in queue). Recommendation:
 % signal name should express the event ("dequeue"), and the signal title
-% should describe the value (@signal[dequeue](title="Queueing time at dequeue")) ???
+% should describe the value (@statistic[dequeue](title="Queueing time at dequeue")) ???
 %
 
 

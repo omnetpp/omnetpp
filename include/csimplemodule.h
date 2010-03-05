@@ -76,7 +76,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     cCoroutine *coroutine;
 
     static bool stack_cleanup_requested; // 'true' value asks activity() to throw a cStackCleanupException
-    static cSimpleModule *after_cleanup_transfer_to; // transfer back to this getModule(or to main)
+    static cSimpleModule *after_cleanup_transfer_to; // transfer back to this module (or to main)
 
   private:
     // internal use

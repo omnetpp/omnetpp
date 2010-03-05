@@ -109,8 +109,8 @@ void App::handleMessage(cMessage *msg)
         Packet *pk = check_and_cast<Packet *>(msg);
         EV << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
         emit(endToEndDelaySignal, simTime() - pk->getCreationTime());
-        emit(hopCountSignal, (long)pk->getHopCount());
-        emit(sourceAddressSignal, (long)pk->getSrcAddr());
+        emit(hopCountSignal, pk->getHopCount());
+        emit(sourceAddressSignal, pk->getSrcAddr());
         delete pk;
 
         if (ev.isGUI())

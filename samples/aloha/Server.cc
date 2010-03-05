@@ -77,7 +77,7 @@ void Server::handleMessage(cMessage *msg)
         emit(channelUtilizationSignal, currentChannelUtilization);
 
         currentCollisionNumFrames = 0;
-        emit(beginRxSignal, (long)0);
+        emit(beginRxSignal, 0);
 
         // update network graphics
         if (ev.isGUI())
@@ -99,7 +99,7 @@ void Server::handleMessage(cMessage *msg)
             recvStartTime = simTime();
             channelBusy = true;
             scheduleAt(endReceptionTime, endRxEvent);
-            emit(beginRxSignal, (long)1);
+            emit(beginRxSignal, 1);
 
             if (ev.isGUI())
             {
@@ -124,7 +124,7 @@ void Server::handleMessage(cMessage *msg)
                 scheduleAt(endReceptionTime, endRxEvent);
             }
 
-            emit(beginRxSignal, (long)currentCollisionNumFrames);
+            emit(beginRxSignal, currentCollisionNumFrames);
 
             // update network graphics
             if (ev.isGUI())

@@ -109,7 +109,7 @@ Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, NULL, "The nam
 Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
 Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
 Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
-Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", NULL, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.scalar-recording-mode). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
+Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", NULL, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.result-recording-mode). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To calculate the initial fingerprint, enter any dummy string (such as \"none\"), and run the simulation.");
 Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
@@ -118,7 +118,7 @@ Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
-Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING_MODE, "scalar-recording-mode", CFG_STRING, "auto", "Defines how to calculate scalar results from the given signal. Example values: count, last, sum, mean, min, max, timeavg, stats, histogram, auto. `auto' chooses `histogram', unless the `modeHint' key in the @signal property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.scalar-recording-mode=timeavg,max");
+Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODE, "result-recording-mode", CFG_STRING, "auto", "Defines how to calculate results from the given signal. Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram, auto. `auto' chooses `histogram', unless the `record' key in the @statistic property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.result-recording-mode=timeavg,max");
 
 // the following options are declared in other files
 extern cConfigOption *CFGID_SCALAR_RECORDING;
@@ -770,105 +770,110 @@ void EnvirBase::configure(cComponent *component)
     addResultRecorders(component);
 }
 
+static int search_(std::vector<const char *>& v, const char *s)
+{
+    for (int i=0; i<(int)v.size(); i++)
+        if (opp_strcmp(v[i],s)==0)
+            return i;
+    return -1;
+}
+
+static int search_(std::vector<std::string>& v, std::string& s)
+{
+    for (int i=0; i<(int)v.size(); i++)
+        if (v[i] == s)
+            return i;
+    return -1;
+}
+
 void EnvirBase::addResultRecorders(cComponent *component)
 {
-    std::vector<const char *> signalNames = component->getProperties()->getIndicesFor("signal");
+    std::vector<const char *> statisticNames = component->getProperties()->getIndicesFor("statistic");
     std::string componentFullPath;
-    for (int i = 0; i < (int)signalNames.size(); i++)
+    for (int i = 0; i < (int)statisticNames.size(); i++)
     {
-        const char *signalName = signalNames[i];
+        const char *statisticName = statisticNames[i];
         if (componentFullPath.empty())
             componentFullPath = component->getFullPath();
-        std::string signalFullPath = componentFullPath + "." + signalName;
+        std::string statisticFullPath = componentFullPath + "." + statisticName;
 
-        // add scalar result recorders
-        if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_SCALAR_RECORDING))
+        bool scalarsEnabled = ev.getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_SCALAR_RECORDING);
+        bool vectorsEnabled = ev.getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_VECTOR_RECORDING);
+        if (!scalarsEnabled && !vectorsEnabled)
+            continue;
+
+        cProperty *property = component->getProperties()->get("statistic", statisticName);
+        ASSERT(property!=NULL);
+        bool hasSourceKey = property->getNumValues("source") > 0;
+        const char *signalName = hasSourceKey ? property->getValue("source",0) : statisticName;
+        simsignal_t signalID = cComponent::registerSignal(signalName);
+
+        // add result recorders
+        std::vector<const char *> modes1;
+        int n = property->getNumValues("record");
+        for (int j = 0; j < n; j++)
+            modes1.push_back(property->getValue("record",j));
+
+        std::vector<std::string> modes2;
+        std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODE, "");
+        if (modesOption != "auto")
         {
-            // add listener to record as output scalar
-            std::string modeList = ev.getConfig()->getAsString(signalFullPath.c_str(), CFGID_SCALAR_RECORDING_MODE, "");
-            if (modeList == "auto")
+            // +add,-remove,add,add,add
+            if (modesOption[0] != '+')
+                modes1.clear();
+            StringTokenizer tokenizer(modesOption.c_str(), ","); //XXX modulo commas within parens
+            while (tokenizer.hasMoreTokens())
             {
-                // obey mode-hint in @signal; example: @signal[queueLen](modeHint=timeavg,max);
-                cProperty *prop = component->getProperties()->get("signal", signalName);
-                ASSERT(prop!=NULL);
-                int numModeHints = prop->getNumValues("modeHint");
-                if (numModeHints == 0)
-                {
-                    cIListener *listener = createScalarResultRecorder("auto");
-                    ASSERT(listener != NULL);
-                    component->subscribe(signalName, listener);
+                std::string mode = tokenizer.nextToken();
+                if (mode[0]=='-') {
+                    // remove from modes1
+                    mode = mode.substr(1);
+                    int k = search_(modes1, mode.c_str());
+                    if (k!=-1)
+                        modes1.erase(modes1.begin()+k);
                 }
-                else
-                {
-                    for (int j = 0; j < numModeHints; j++)
-                    {
-                        const char *modeHint = prop->getValue("modeHint",j);
-                        cIListener *listener = createScalarResultRecorder(modeHint);
-                        if (!listener)
-                            throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the @signal[%s] property: \"%s\"", signalName, modeHint);
-                        component->subscribe(signalName, listener);
-                    }
-                }
-            }
-            else if (!strchr(modeList.c_str(), ','))
-            {
-                cIListener *listener = createScalarResultRecorder(modeList.c_str());
-                if (!listener)
-                    throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the configuration for signal %s: \"%s\"", signalName, modeList.c_str());
-                component->subscribe(signalName, listener);
-            }
-            else
-            {
-                StringTokenizer tokenizer(modeList.c_str(), ",");
-                while (tokenizer.hasMoreTokens())
-                {
-                    std::string mode = opp_trim(tokenizer.nextToken());
-                    cIListener *listener = createScalarResultRecorder(mode.c_str());
-                    if (!listener)
-                        throw cRuntimeError(component, "Unrecognized scalar recording mode specified in the configuration for signal %s: \"%s\"", signalName, mode.c_str());
-                    component->subscribe(signalName, listener);
+                else {
+                    // add to modes2 if not yet in modes1 or in modes2
+                    if (mode[0]=='+')
+                        mode = mode.substr(1);
+                    if (search_(modes1, mode.c_str())==-1 && search_(modes2, mode)==-1)
+                        modes2.push_back(mode);
                 }
             }
         }
 
-        // add vector result recorders
-        if (ev.getConfig()->getAsBool(signalFullPath.c_str(), CFGID_VECTOR_RECORDING))
-        {
-            // add listener to record as output vector
-            cIListener *listener = new VectorRecorder();
-            component->subscribe(signalName, listener);
-        }
+        for (int j = 0; j < (int)modes1.size(); j++)
+            addResultRecorder(component, statisticName, signalID, modes1[j], "in @statistic property", scalarsEnabled, vectorsEnabled);
+        for (int j = 0; j < (int)modes2.size(); j++)
+            addResultRecorder(component, statisticName, signalID, modes2[j].c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
     }
 }
 
-cIListener *EnvirBase::createScalarResultRecorder(const char *mode)
+void EnvirBase::addResultRecorder(cComponent *component, const char *statisticName, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled)
+{
+    ResultRecorder *listener = createResultRecorder(mode);
+    if (!listener)
+        throw cRuntimeError(component, "Unrecognized recording mode specified %s for statistic %s: \"%s\"",
+                            where, statisticName, mode);
+    bool recordsVector = !strcmp(mode, "vector");
+    if (recordsVector ? !vectorsEnabled : !scalarsEnabled) {
+        // disabled, return
+        delete listener;
+        return;
+    }
+    listener->init(statisticName);
+    component->subscribe(signalID, listener);
+}
+
+ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
 {
     if (!strcmp(mode, "auto"))
         mode = "histogram";
 
-    // this should be extensible instead of hardcoded "if"-ladder
-    cIListener *listener;
-    if (!strcmp(mode, "histogram"))
-        listener = new StatisticsRecorder(new cDoubleHistogram()); // or cLongHistogram, we could decide from @signal property; or use an adaptive histogram that automatically chooses the best mode
-    else if (!strcmp(mode, "count"))
-        listener = new CountRecorder();
-    else if (!strcmp(mode, "last"))
-        listener = new LastValueRecorder();
-    else if (!strcmp(mode, "sum"))
-        listener = new SumRecorder();
-    else if (!strcmp(mode, "mean"))
-        listener = new MeanRecorder();
-    else if (!strcmp(mode, "min"))
-        listener = new MinRecorder();
-    else if (!strcmp(mode, "max"))
-        listener = new MaxRecorder();
-    else if (!strcmp(mode, "timeavg"))
-        listener = new TimeAverageRecorder();
-    else if (!strcmp(mode, "stats"))
-        listener = new StatisticsRecorder(new cStdDev());
-    else
-        listener = NULL;
-    return listener;
+    ResultRecorderDescriptor *desc = ResultRecorderDescriptor::find(mode);
+    if (!desc)
+        return NULL;
+    return desc->create();
 }
 
 void EnvirBase::readParameter(cPar *par)

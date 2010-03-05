@@ -20,7 +20,7 @@ import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
-import org.omnetpp.inifile.editor.model.SignalResolution;
+import org.omnetpp.inifile.editor.model.PropertyResolution;
 
 /**
  * Generate proposals for inifile parameters.
@@ -66,8 +66,8 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 					fullPaths.add(res.fullPath + "." +res.paramDeclaration.getName());
 
 			// collect unique signals
-			SignalResolution[] signalResolutions = analyzer.getSignalResolutions(section);
-            for (SignalResolution signalResolution : signalResolutions)
+			PropertyResolution[] signalResolutions = analyzer.getPropertyResolutions(section);
+            for (PropertyResolution signalResolution : signalResolutions)
                 fullPaths.add(signalResolution.fullPath + ".");
 
 			Set<String> moduleProposals = new HashSet<String>();

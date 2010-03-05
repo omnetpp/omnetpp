@@ -303,7 +303,7 @@ class cHistogramBase extends cDensityEstBase
 {
 }
 
-class cEqdHistogramBase extends cHistogramBase
+class cHistogram extends cHistogramBase
 {
 }
 
@@ -311,11 +311,11 @@ class cVarHistogram extends cHistogramBase
 {
 }
 
-class cLongHistogram extends cEqdHistogramBase
+class cLongHistogram extends cHistogram
 {
 }
 
-class cDoubleHistogram extends cEqdHistogramBase
+class cDoubleHistogram extends cHistogram
 {
 }
 

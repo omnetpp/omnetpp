@@ -1607,21 +1607,21 @@ property name, such as \ttt{eed} and \ttt{jitter} in the following example:
 
 \begin{ned}
 simple App {
-    @signal[eed](title="end-to-end delay of received packets";unit=s);
-    @signal[jitter](title="jitter of received packets");
+    @statistic[eed](title="end-to-end delay of received packets";unit=s);
+    @statistic[jitter](title="jitter of received packets");
 }
 \end{ned}
 
-This example declares two statistics as \ttt{@signal} properties,
-\ttt{@signal[eed]} and \ttt{@signal[jitter]}. Property values within
+This example declares two statistics as \ttt{@statistic} properties,
+\ttt{@statistic[eed]} and \ttt{@statistic[jitter]}. Property values within
 the parentheses are used to supply additional info, like a more
 descriptive name (\ttt{title="..."} or a unit (\ttt{unit=s}).
 Property indices can be conveniently accessed from the C++ API as
 well; for example it is possible to ask what indices exist for the
-\ttt{"signal"} property, and it will return a list containing
+\ttt{"statistic"} property, and it will return a list containing
 \ttt{"eed"} and \ttt{"jitter"}).
 
-In the \ttt{@signal} example the index was textual and meaningful,
+In the \ttt{@statistic} example the index was textual and meaningful,
 but neither is actually required. The following dummy example
 shows the use of numeric indices which may be ignored altogether
 by the code that interprets the properties:

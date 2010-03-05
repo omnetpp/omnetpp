@@ -7,7 +7,7 @@
 //
 //  Declaration of the following classes:
 //    cHistogramBase        : common base class for histogram classes
-//      cEqdHistogramBase   : Equi-distant histograms
+//      cHistogram          : equi-distant histogram
 //        cLongHistogram    : long int distribution
 //        cDoubleHistogram  : double distribution
 //
@@ -134,14 +134,130 @@ class SIM_API cHistogramBase : public cDensityEstBase
 //==========================================================================
 
 /**
- * Base class for equal cell size histograms.
+ * Equidistant histogram.
+ *
+ * Functionality in DOUBLE mode:
+ *
+ *   - the number of cells is exactly <i>num_cells</i>, if specified
+ *     using setNumCells() or as an argument to the constructor;
+ *   - if the number of cells is not specified, it will default to 10.
+ *   - the histogram range can be specified explicitly (via setRange()),
+ *     or can be determined automatically, after collecting a number of
+ *     initial observations (setRangeAuto(), setRangeAutoUpper(),
+ *     setRangeAutoLower()).
+ *   - the number of inition observations to collect for range determination
+ *     can be set via setNumFirstVals().
+ *
+ * Examples:
+ *
+ * The following histogram will determine the range from the first few
+ * observations, then it set up 10 equal-size cells on it:
+ *
+ * \code
+ * cDoubleHistogram hist("hist");
+ * \endcode
+ *
+ * This one will create 30 cells, after determining the range from the
+ * first few observations:
+ *
+ * \code
+ * cDoubleHistogram hist("hist");
+ * hist.setNumCells(30);
+ * \endcode
+ *
+ * To explicitly control the cells, you can use the following:
+ *
+ * \code
+ * cDoubleHistogram hist("hist");
+ * hist.setRange(0,3);
+ * hist.setNumCells(30);
+ * \endcode
+ *
+ * If you only know that the numbers will be nonnegative, but you don't
+ * know their ranges, you can use the following (which will set up 20
+ * cells, between 0 and an auto-determined limit):
+ *
+ * \code
+ * cDoubleHistogram hist("hist");
+ * hist.setRangeAutoUpper(0);
+ * hist.setNumCells(20);
+ * \endcode
+ *
+ * Functionality in INTEGER mode:
+ *
+ * The histogram will be set up in the following way:
+ *   - the cell size is - by definition - always integer.
+ *   - currently, cell boundaries are at halves (for example 9.5, 10.5);
+ *     this may change in further releases.
+ *   - the number of cells is exactly <i>num_cells</i>, if specified
+ *     using setNumCells() or as an argument to the constructor;
+ *   - if the number of cells is not specified, there will be one cell
+ *     for every integer in the histogram range, but maximum 10,000 cells.
+ *     Above 10,000, a >1 integer cell size will be chosen so that
+ *     <i>num_cells</i> gets below 10,000.
+ *   - the histogram range can be specified explicitly (via setRange()),
+ *     or can be determined automatically, after collecting a number of
+ *     initial observations (setRangeAuto(), setRangeAutoUpper(),
+ *     setRangeAutoLower()).
+ *   - the number of inition observations to collect for range determination
+ *     can be set via setNumFirstVals().
+ *   - if both <i>num_cells</i> and a histogram range (explicit or auto) was
+ *     specified, the histogram range will be inflated to be an integer
+ *     multiple of <i>num_cells</i> (so that cell size can be integer).
+ *
+ * Examples:
+ *
+ * This histogram will determine the range from the first few observations,
+ * then it will try to keep maintain 1 cell for each integer value in the
+ * range. If there would be more than 10,000 cells that way, it will make
+ * 2 or 3 or 4 etc. wide cells to reduce the number of cells below 10,000.
+ *
+ * \code
+ * cLongHistogram hist("hist");
+ * \endcode
+ *
+ * The following histogram will maintain one cell for every integer 0,1,...500.
+ *
+ * \code
+ * cLongHistogram hist("hist");
+ * hist.setRange(0,500);
+ * \endcode
+ *
+ * The next one will set up 100 cells, and the range will be auto-determined from
+ * the first few observations. If the range is <100 wide, every cell will be
+ * 1 wide; with the range width in 100..200, cells will be 2 wide, etc.
+ *
+ * \code
+ * cLongHistogram hist("hist");
+ * hist.setNumCells(100);
+ * \endcode
+ *
+ * If you know that the numbers will be nonnegative, but you don't
+ * know their ranges, you can use the following (which will set up 20
+ * cells, with the range 0..20, or 0..40, or 0..60 etc, depending on
+ * the range of the initial observations):
+ *
+ * \code
+ * cLongHistogram hist("hist");
+ * hist.setRangeAutoUpper(0);
+ * hist.setNumCells(20);
+ * \endcode
  *
  * @ingroup Statistics
  */
-class SIM_API cEqdHistogramBase : public cHistogramBase
+class SIM_API cHistogram : public cHistogramBase
 {
+  public:
+    enum Mode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES};
+
   protected:
+    Mode mode;
     double cellsize;  // cell/category sizes; <=0 if unset
+
+  protected:
+    virtual void setupRangeInteger();
+    virtual void setupRangeDouble();
+    virtual void getAttributesToRecord(opp_string_map& attributes);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -150,18 +266,18 @@ class SIM_API cEqdHistogramBase : public cHistogramBase
     /**
      * Copy constructor.
      */
-    cEqdHistogramBase(const cEqdHistogramBase& r) : cHistogramBase(r)
+    cHistogram(const cHistogram& r) : cHistogramBase(r)
         {setName(r.getName());operator=(r);}
 
     /**
      * Constructor.
      */
-    explicit cEqdHistogramBase(const char *name=NULL, int numcells=-1);
+    explicit cHistogram(const char *name=NULL, int numcells=-1, Mode mode=MODE_AUTO);
 
     /**
      * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
      */
-    cEqdHistogramBase& operator=(const cEqdHistogramBase& res);
+    cHistogram& operator=(const cHistogram& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -222,6 +338,15 @@ class SIM_API cEqdHistogramBase : public cHistogramBase
     virtual double getCDF(double x) const;
 
     /**
+     * Returns a random number based on the distribution collected. If
+     * no values have been collected, it returns 0; when in initial collection
+     * phase, it returns one of the stored observations; after the histogram
+     * has been set up, a random integer or double is returned, depending on
+     * mode.
+     */
+    virtual double random() const;
+
+    /**
      * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *) const;
@@ -232,8 +357,20 @@ class SIM_API cEqdHistogramBase : public cHistogramBase
     virtual void loadFromFile(FILE *);
     //@}
 
-    /** @name Cell size. */
+    /** @name Misc. */
     //@{
+    /**
+     * Sets the histogram mode: MODE_AUTO, MODE_INTEGERS or MODE_DOUBLES.
+     * Cannot be called when the cells have been set up already.
+     */
+    virtual void setMode(Mode mode);
+
+    /**
+     * Returns the histogram mode, which is MODE_AUTO, MODE_INTEGERS or
+     * MODE_DOUBLES.
+     */
+    virtual Mode getMode() const {return mode;}
+
     /**
      * Sets the cell size. Cannot be called when the cells have been
      * set up already.
@@ -252,94 +389,32 @@ class SIM_API cEqdHistogramBase : public cHistogramBase
 //==========================================================================
 
 /**
- * Equidistant histogram for integers. cLongHistogram is derived from
- * cEqdHistogramBase, which contains most of the functionality.
- *
- * The histogram will be set up in the following way:
- *   - the cell size is - by definition - always integer.
- *   - currently, cell boundaries are at halves (for example 9.5, 10.5);
- *     this may change in further releases.
- *   - the number of cells is exactly <i>num_cells</i>, if specified
- *     using setNumCells() or as an argument to the constructor;
- *   - if the number of cells is not specified, there will be one cell
- *     for every integer in the histogram range, but maximum 10,000 cells.
- *     Above 10,000, a >1 integer cell size will be chosen so that
- *     <i>num_cells</i> gets below 10,000.
- *   - the histogram range can be specified explicitly (via setRange()),
- *     or can be determined automatically, after collecting a number of
- *     initial observations (setRangeAuto(), setRangeAutoUpper(),
- *     setRangeAutoLower()).
- *   - the number of inition observations to collect for range determination
- *     can be set via setNumFirstVals().
- *   - if both <i>num_cells</i> and a histogram range (explicit or auto) was
- *     specified, the histogram range will be inflated to be an integer
- *     multiple of <i>num_cells</i> (so that cell size can be integer).
- *
- * Examples:
- *
- * This histogram will determine the range from the first few observations,
- * then it will try to keep maintain 1 cell for each integer value in the
- * range. If there would be more than 10,000 cells that way, it will make
- * 2 or 3 or 4 etc. wide cells to reduce the number of cells below 10,000.
- *
- * \code
- * cLongHistogram hist("hist");
- * \endcode
- *
- * The following histogram will maintain one cell for every integer 0,1,...500.
- *
- * \code
- * cLongHistogram hist("hist");
- * hist.setRange(0,500);
- * \endcode
- *
- * The next one will set up 100 cells, and the range will be auto-determined from
- * the first few observations. If the range is <100 wide, every cell will be
- * 1 wide; with the range width in 100..200, cells will be 2 wide, etc.
- *
- * \code
- * cLongHistogram hist("hist");
- * hist.setNumCells(100);
- * \endcode
- *
- * If you know that the numbers will be nonnegative, but you don't
- * know their ranges, you can use the following (which will set up 20
- * cells, with the range 0..20, or 0..40, or 0..60 etc, depending on
- * the range of the initial observations):
- *
- * \code
- * cLongHistogram hist("hist");
- * hist.setRangeAutoUpper(0);
- * hist.setNumCells(20);
- * \endcode
- *
+ * Equidistant histogram for integers. This class is just a cHistogram
+ * preconfigured for collecting integers (MODE_INTEGERS).
  *
  * @ingroup Statistics
  */
-class SIM_API cLongHistogram : public cEqdHistogramBase
+class SIM_API cLongHistogram : public cHistogram
 {
-  protected:
-    virtual void getAttributesToRecord(opp_string_map& attributes);
-
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
-
     /**
      * Copy constructor.
      */
-    cLongHistogram(const cLongHistogram& r) : cEqdHistogramBase(r)
+    cLongHistogram(const cLongHistogram& r) : cHistogram(r)
         {setName(r.getName());operator=(r);}
 
     /**
      * Constructor.
      */
-    explicit cLongHistogram(const char *name=NULL, int numcells=-1);
+    explicit cLongHistogram(const char *name=NULL, int numcells=-1) :
+        cHistogram(name, numcells, MODE_INTEGERS) {}
 
     /**
      * Destructor.
      */
-    virtual ~cLongHistogram();
+    virtual ~cLongHistogram() {}
 
     /**
      * Assignment is not supported by this class: this method throws a cRuntimeError when called.
@@ -357,100 +432,32 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     virtual cLongHistogram *dup() const  {return new cLongHistogram(*this);}
     //@}
 
-  protected:
-    /**
-     * Called internally by transform(), this method should determine and set up
-     * the histogram range.
-     */
-    virtual void setupRange();
-
   public:
     /** @name Redefined member functions from cStatistic and its subclasses. */
     //@{
 
     /**
-     * Collects one value. Internally, the double value is converted to a long
-     * using floor() before any processing.
+     * Collects one value. Internally, the double value is converted to an
+     * integer using floor() before any processing.
      */
-    virtual void collect(double value);
+    virtual void collect(double value) {cHistogram::collect(floor(value));}
 
     /**
      * Convenience method, delegates to collect(double).
      */
     virtual void collect(SimTime value) {collect(value.dbl());}
-
-    /**
-     * Returns a random number based on the distribution collected. If
-     * no values have been collected, it returns 0; when in initial collection
-     * phase, it returns one of the stored observations; after the histogram
-     * has been set up, a random integer is returned.
-     */
-    virtual double random() const;
-    //@}
 };
 
 //==========================================================================
 
 /**
- * Equidistant histogram for doubles. cDoubleHistogram is derived from
- * cEqdHistogramBase which contains most of the functionality.
- *
- *   - the number of cells is exactly <i>num_cells</i>, if specified
- *     using setNumCells() or as an argument to the constructor;
- *   - if the number of cells is not specified, it will default to 10.
- *   - the histogram range can be specified explicitly (via setRange()),
- *     or can be determined automatically, after collecting a number of
- *     initial observations (setRangeAuto(), setRangeAutoUpper(),
- *     setRangeAutoLower()).
- *   - the number of inition observations to collect for range determination
- *     can be set via setNumFirstVals().
- *
- * Examples:
- *
- * The following histogram will determine the range from the first few
- * observations, then it set up 10 equal-size cells on it:
- *
- * \code
- * cDoubleHistogram hist("hist");
- * \endcode
- *
- * This one will create 30 cells, after determining the range from the
- * first few observations:
- *
- * \code
- * cDoubleHistogram hist("hist");
- * hist.setNumCells(30);
- * \endcode
- *
- * To explicitly control the cells, you can use the following:
- *
- * \code
- * cDoubleHistogram hist("hist");
- * hist.setRange(0,3);
- * hist.setNumCells(30);
- * \endcode
- *
- * If you only know that the numbers will be nonnegative, but you don't
- * know their ranges, you can use the following (which will set up 20
- * cells, between 0 and an auto-determined limit):
- *
- * \code
- * cDoubleHistogram hist("hist");
- * hist.setRangeAutoUpper(0);
- * hist.setNumCells(20);
- * \endcode
+ * Equidistant histogram for doubles. This class is just a cHistogram
+ * preconfigured for collecting doubles (MODE_DOUBLES).
  *
  * @ingroup Statistics
  */
-class SIM_API cDoubleHistogram : public cEqdHistogramBase
+class SIM_API cDoubleHistogram : public cHistogram
 {
-  protected:
-    /**
-     * Called internally by transform(), this method should determine and set up
-     * the histogram range. It also calculates the cell size.
-     */
-    virtual void setupRange();
-
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -458,18 +465,19 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     /**
      * Copy constructor
      */
-    cDoubleHistogram(const cDoubleHistogram& r) : cEqdHistogramBase(r)
-          {setName(r.getName());operator=(r);}
+    cDoubleHistogram(const cDoubleHistogram& r) : cHistogram(r)
+        {setName(r.getName());operator=(r);}
 
     /**
      * Constructor.
      */
-    explicit cDoubleHistogram(const char *name=NULL, int numcells=-1);
+    explicit cDoubleHistogram(const char *name=NULL, int numcells=-1) :
+        cHistogram(name, numcells, MODE_DOUBLES) {}
 
     /**
      * Destructor.
      */
-    virtual ~cDoubleHistogram();
+    virtual ~cDoubleHistogram() {}
 
     /**
      * Assignment is not supported by this class: this method throws a cRuntimeError when called.
@@ -485,18 +493,6 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * See cObject for more details.
      */
     virtual cDoubleHistogram *dup() const  {return new cDoubleHistogram(*this);}
-    //@}
-
-    /** @name Redefined member functions from cStatistic and its subclasses. */
-    //@{
-
-    /**
-     * Returns a random number based on the distribution collected. If
-     * no values have been collected, it returns 0; when in initial collection
-     * phase, it returns one of the stored observations; after the histogram
-     * has been set up, a random integer is returned.
-     */
-    virtual double random() const;
     //@}
 };
 

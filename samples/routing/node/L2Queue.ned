@@ -29,12 +29,12 @@ simple L2Queue
     parameters:
         int frameCapacity = default(0); // max number of packets; 0 means no limit
         @display("i=block/queue;q=queue");
-        @signal[qlen](title="queue length";modeHint=timeavg,max);
-        @signal[busy](title="server busy state";modeHint=timeavg);
-        @signal[queueingTime](title="queueing time at dequeue";unit=s;interpolationmode=none);
-        @signal[drop](title="dropped packet byte length";unit=bytes;modeHint=count,sum;interpolationmode=none);
-        @signal[txBytes](title="transmitting packet byte length";unit=bytes;modeHint=count,sum,histogram;interpolationmode=none);
-        @signal[rxBytes](title="received packet byte length";unit=bytes;modeHint=count,sum,histogram;interpolationmode=none);
+        @statistic[qlen](title="queue length";record=vector,timeavg,max);
+        @statistic[busy](title="server busy state";record=vector,timeavg);
+        @statistic[queueingTime](title="queueing time at dequeue";unit=s;interpolationmode=none);
+        @statistic[drop](title="dropped packet byte length";unit=bytes;record=vector,count,sum;interpolationmode=none);
+        @statistic[txBytes](title="transmitting packet byte length";unit=bytes;record=vector,count,sum,histogram;interpolationmode=none);
+        @statistic[rxBytes](title="received packet byte length";unit=bytes;record=vector,count,sum,histogram;interpolationmode=none);
     gates:
         input in;
         output out;

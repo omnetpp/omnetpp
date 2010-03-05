@@ -6,7 +6,7 @@
 //
 //   Member functions of
 //    cHistogramBase    : common base class for histogram classes
-//    cEqdHistogramBase : Equi-distant histograms
+//    cHistogram        : equi-distant histogram
 //    cLongHistogram    : long integer histogram
 //    cDoubleHistogram  : double histogram
 //
@@ -173,15 +173,16 @@ void cHistogramBase::setNumCells(int numcells)
 
 
 //----
-// cEqdHistogramBase - member functions
+// cHistogram - member functions
 
-cEqdHistogramBase::cEqdHistogramBase(const char *name, int numcells) :
-cHistogramBase(name,numcells)
+cHistogram::cHistogram(const char *name, int numcells, Mode mode) :
+cHistogramBase(name, numcells)
 {
     cellsize = 0;
+    this->mode = mode;
 }
 
-void cEqdHistogramBase::parsimPack(cCommBuffer *buffer)
+void cHistogram::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
@@ -191,7 +192,7 @@ void cEqdHistogramBase::parsimPack(cCommBuffer *buffer)
 #endif
 }
 
-void cEqdHistogramBase::parsimUnpack(cCommBuffer *buffer)
+void cHistogram::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
@@ -201,117 +202,63 @@ void cEqdHistogramBase::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cEqdHistogramBase& cEqdHistogramBase::operator=(const cEqdHistogramBase& res)
+cHistogram& cHistogram::operator=(const cHistogram& res)
 {
     if (this==&res) return *this;
 
     cHistogramBase::operator=(res);
     cellsize = res.cellsize;
+    mode = res.mode;
     return *this;
 }
 
-void cEqdHistogramBase::setCellSize(double d)
+void cHistogram::setMode(Mode mode)
+{
+    if (isTransformed())
+        throw cRuntimeError(this,"setMode() cannot be called when cells have been set up already");
+    this->mode = mode;
+}
+
+void cHistogram::setCellSize(double d)
 {
     if (isTransformed())
         throw cRuntimeError(this,"setCellSize() cannot be called when cells have been set up already");
     cellsize = d;
 }
 
-void cEqdHistogramBase::setupRange()
+void cHistogram::getAttributesToRecord(opp_string_map& attributes)
+{
+    cHistogramBase::getAttributesToRecord(attributes);
+
+    if (mode == MODE_INTEGERS)
+        attributes["isDiscrete"] = "1";
+}
+
+void cHistogram::setupRange()
 {
     cHistogramBase::setupRange();
 
-    //
-    // This method has to be redefined in subclasses, and:
-    // - num_cells (if unspecified) has to be set there
-    // - cellsize has to be calculated there, as (rangemax - rangemin) / num_cells
-    //
-}
+    // the following code sets num_cells, and cellsize as (rangemax - rangemin) / num_cells
 
-void cEqdHistogramBase::collectTransformed (double val)
-{
-    int k = (int)floor((val-rangemin)/cellsize);
-    if (k<0 || val<rangemin)
-        cell_under++;
-    else if (k>=num_cells || val>=rangemax)
-        cell_over++;
+    if (mode == MODE_AUTO)
+    {
+        // if all precollected numbers are integers, go for integer mode
+        bool allints = true;
+        for (int i = 0; i < num_firstvals; i++)
+            if (firstvals[i] != floor(firstvals[i]))
+                {allints = false; break;}
+
+        mode = (num_firstvals > 0 && allints) ? MODE_INTEGERS : MODE_DOUBLES;
+    }
+
+    if (mode == MODE_INTEGERS)
+        setupRangeInteger();
     else
-        cellv[k]++;
+        setupRangeDouble();
 }
 
-double cEqdHistogramBase::getPDF(double x) const
+void cHistogram::setupRangeInteger()
 {
-    if (!isTransformed())
-        throw cRuntimeError(this,"getPDF(x) cannot be called before histogram is transformed");
-
-    int k = (int)floor((x-rangemin)/cellsize);
-    if (k<0 || x<rangemin || k>=num_cells || x>=rangemax)
-        return 0.0;
-
-    return cellv[k] / cellsize / num_vals;
-}
-
-double cEqdHistogramBase::getCDF(double) const
-{
-    throw cRuntimeError(this,"getCDF() not implemented");
-}
-
-// return kth basepoint
-double cEqdHistogramBase::getBasepoint(int k) const
-{
-    //   k=0           : rangemin
-    //   k=1,2,...     : rangemin + k*cellsize
-    //   k=num_cells   : rangemax
-
-    if (k<0 || k>num_cells)
-        throw cRuntimeError(this,"invalid basepoint index %u",k);
-
-    if (k==num_cells)
-        return rangemax;
-    else
-        return rangemin + k*cellsize;
-}
-
-double cEqdHistogramBase::getCellValue(int k) const
-{
-    if (k<0 || k>num_cells)
-        throw cRuntimeError(this,"invalid cell index %u",k);
-    return cellv[k];
-}
-
-void cEqdHistogramBase::saveToFile(FILE *f) const
-{
-    cHistogramBase::saveToFile(f);
-    fprintf(f,"%g\t #= cellsize\n", cellsize);
-}
-
-void cEqdHistogramBase::loadFromFile(FILE *f)
-{
-    cHistogramBase::loadFromFile(f);
-    freadvarsf(f,"%g\t #= cellsize", &cellsize);
-}
-
-//----
-// cLongHistogram - member functions
-
-cLongHistogram::cLongHistogram(const char *name, int numcells) :
-cEqdHistogramBase(name,numcells)
-{
-}
-
-cLongHistogram::~cLongHistogram()
-{
-}
-
-void cLongHistogram::collect(double val)
-{
-    cEqdHistogramBase::collect(floor(val));
-}
-
-void cLongHistogram::setupRange()
-{
-    cHistogramBase::setupRange();
-
     // set up the missing ones of: rangemin, rangemax, num_cells, cellsize;
     // throw error if not everything can be set up consistently
 
@@ -397,81 +344,109 @@ void cLongHistogram::setupRange()
     this->cellsize = cellsize;
 }
 
-void cLongHistogram::getAttributesToRecord(opp_string_map& attributes)
+void cHistogram::setupRangeDouble()
 {
-    attributes["isDiscrete"] = "1";
-}
-
-double cLongHistogram::random() const
-{
-    if (num_vals==0)
-    {
-        return 0L;
-    }
-    else if (num_vals<num_firstvals)
-    {
-        // randomly select a sample from the stored ones
-        return firstvals[genk_intrand(genk,num_vals)];
-    }
-    else
-    {
-        // min_vals, max_vals: integer-valued doubles (e.g.: -3.0, 5.0)
-        // rangemin, rangemax: doubles like -1.5, 4.5 (integer+0.5)
-        // cellsize: integer-valued double, >0
-        double m = genk_intrand(genk,num_vals-cell_under-cell_over);
-
-        // select a random interval (k-1) and return a random number from
-        // that interval generated according to uniform distribution.
-        int k;
-        for (k=0; m>=0; k++)
-            m -= cellv[k];
-
-        return ceil(rangemin) + (k-1)*(long)cellsize + genk_intrand(genk, (long)cellsize);
-    }
-}
-
-//----
-// cDoubleHistogram - member functions
-
-cDoubleHistogram::cDoubleHistogram(const char *name, int numcells) :
-cEqdHistogramBase(name,numcells)
-{
-}
-
-cDoubleHistogram::~cDoubleHistogram()
-{
-}
-
-void cDoubleHistogram::setupRange()
-{
-    cHistogramBase::setupRange();
-
     if (num_cells==-1)
-        num_cells = 50;
+        num_cells = 60; // to allow merging every 2, 3, 4, 5, 6 adjacent cells in post-processing
     cellsize = (rangemax - rangemin) / num_cells;
 }
 
-double cDoubleHistogram::random() const
+double cHistogram::random() const
 {
     if (num_vals==0)
     {
         return 0L;
     }
-    else if (num_vals<num_firstvals)
+    else if (num_vals < num_firstvals)
     {
         // randomly select a sample from the stored ones
         return firstvals[genk_intrand(genk,num_vals)];
     }
     else
     {
-        double m = genk_intrand(genk,num_vals-cell_under-cell_over);
+        long m = genk_intrand(genk, num_vals - cell_under - cell_over);
 
-        // select a random interval (k-1) and return a random number from
-        // that interval generated according to uniform distribution.
+        // select a random cell (k-1) and return a random number from it
         int k;
-        for (k=0; m>=0; k++)
+        for (k = 0; m >= 0; k++)
            m -= cellv[k];
-        return rangemin + (k-1)*cellsize + genk_dblrand(genk)*cellsize;
+
+        if (mode == MODE_INTEGERS)
+        {
+            // min_vals, max_vals: integer-valued doubles (e.g.: -3.0, 5.0)
+            // rangemin, rangemax: doubles like -1.5, 4.5 (integer+0.5)
+            // cellsize: integer-valued double, >0
+            return ceil(rangemin) + (k-1)*(long)cellsize + genk_intrand(genk, (long)cellsize);
+        }
+        else
+        {
+            // return an uniform double from the given cell
+            return rangemin + (k-1)*cellsize + genk_dblrand(genk)*cellsize;
+        }
     }
 }
+
+void cHistogram::collectTransformed (double val)
+{
+    int k = (int)floor((val-rangemin)/cellsize);
+    if (k<0 || val<rangemin)
+        cell_under++;
+    else if (k>=num_cells || val>=rangemax)
+        cell_over++;
+    else
+        cellv[k]++;
+}
+
+double cHistogram::getPDF(double x) const
+{
+    if (!isTransformed())
+        throw cRuntimeError(this,"getPDF(x) cannot be called before histogram is transformed");
+
+    int k = (int)floor((x-rangemin)/cellsize);
+    if (k<0 || x<rangemin || k>=num_cells || x>=rangemax)
+        return 0.0;
+
+    return cellv[k] / cellsize / num_vals;
+}
+
+double cHistogram::getCDF(double) const
+{
+    throw cRuntimeError(this,"getCDF() not implemented");
+}
+
+// return kth basepoint
+double cHistogram::getBasepoint(int k) const
+{
+    //   k=0           : rangemin
+    //   k=1,2,...     : rangemin + k*cellsize
+    //   k=num_cells   : rangemax
+
+    if (k<0 || k>num_cells)
+        throw cRuntimeError(this,"invalid basepoint index %u",k);
+
+    if (k==num_cells)
+        return rangemax;
+    else
+        return rangemin + k*cellsize;
+}
+
+double cHistogram::getCellValue(int k) const
+{
+    if (k<0 || k>num_cells)
+        throw cRuntimeError(this,"invalid cell index %u",k);
+    return cellv[k];
+}
+
+void cHistogram::saveToFile(FILE *f) const
+{
+    cHistogramBase::saveToFile(f);
+    fprintf(f,"%g\t #= cellsize\n", cellsize);
+}
+
+void cHistogram::loadFromFile(FILE *f)
+{
+    cHistogramBase::loadFromFile(f);
+    freadvarsf(f,"%g\t #= cellsize", &cellsize);
+}
+
 

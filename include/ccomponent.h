@@ -417,6 +417,33 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      */
     void emit(simsignal_t signalID, cObject *obj);
 
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, bool b) {emit(signalID,(long)b);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, char c) {emit(signalID,(long)c);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, unsigned char c) {emit(signalID,(long)c);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, short i) {emit(signalID,(long)i);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, unsigned short i) {emit(signalID,(long)i);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, int i) {emit(signalID,(long)i);}
+
+    /** Delegates to emit(simsignal_t, long) */
+    void emit(simsignal_t signalID, unsigned int i) {emit(signalID,(long)i);}
+
+    /** Delegates to emit(simsignal_t, double) */
+    void emit(simsignal_t signalID, float f) {emit(signalID,(double)f);}
+
+    /** Delegates to emit(simsignal_t, double) */
+    void emit(simsignal_t signalID, long double d) {emit(signalID,(double)d);}
+
     /**
      * If producing a value for a signal has a significant runtime cost, this
      * method can be used to check beforehand whether the given signal possibly
@@ -448,10 +475,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     //@{
     /**
      * Adds a listener (callback object) that will be notified when a given
-     * signal is emitted (see emit() methods). It has no effect if the same
-     * listener is already subscribed. The order in which listeners will be
-     * notified is undefined, so it is not necessarily the same order in which
-     * listeners were subscribed.
+     * signal is emitted (see emit() methods). It is an error to subscribe
+     * the same listener twice to the same signal. The order in which listeners
+     * will be notified is undefined, so it is not necessarily the same order
+     * in which listeners were subscribed.
      */
     void subscribe(simsignal_t signalID, cIListener *listener);
 

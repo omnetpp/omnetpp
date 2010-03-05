@@ -13,21 +13,21 @@ import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 /**
- * Value object, stores the result of a parameter resolution.
+ * Value object, stores the result of a property resolution.
  */
-public class SignalResolution {
+public class PropertyResolution {
 	public String fullPath;
 	public ISubmoduleOrConnection[] elementPath;
-	public PropertyElementEx signalDeclaration;
+	public PropertyElementEx propertyDeclaration;
 
 	// during analysis of which section
 	public String activeSection;
 
 	// for convenience
-	public SignalResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath, PropertyElementEx signalDeclaration, String activeSection) {
+	public PropertyResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath, PropertyElementEx signalDeclaration, String activeSection) {
 		this.fullPath = fullPath;
 		this.elementPath = elementPath.toArray(new ISubmoduleOrConnection[0]);
-		this.signalDeclaration = signalDeclaration;
+		this.propertyDeclaration = signalDeclaration;
 		this.activeSection = activeSection;
 	}
 }

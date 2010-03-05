@@ -204,8 +204,8 @@ void BurstyApp::processPacket(Packet *pk)
     // update statistics and delete message
     EV << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
     emit(endToEndDelaySignal, simTime() - pk->getCreationTime());
-    emit(hopCountSignal, (long)pk->getHopCount());
-    emit(sourceAddressSignal, (long)pk->getSrcAddr());
+    emit(hopCountSignal, pk->getHopCount());
+    emit(sourceAddressSignal, pk->getSrcAddr());
     numReceived++;
     delete pk;
 }

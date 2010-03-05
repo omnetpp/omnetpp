@@ -43,7 +43,7 @@ void HCSink::handleMessage(cMessage *msg)
     int minHops = hammingDistance(pkt->getSrcAddress(), pkt->getDestAddress());
 
     emit(endToEndDelaySignal, eed);
-    emit(hopCountSignal, (long)actualHops);
+    emit(hopCountSignal, actualHops);
     emit(hopRatioSignal, actualHops / (double)minHops );
 
 #ifdef TRACE_MSG

@@ -7,6 +7,11 @@
 	and they threw an error if the path didn't contain a transmission
 	channel at all.
 
+2010-02-27  Andras Varga
+
+	* created cHistogram class by merging cDoubleHistogram and cLongHistogram
+	functionality.
+
 2010-02-15  Andras Varga
 
 	* cChannel: deliver() method semantics changed, method renamed to 

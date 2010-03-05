@@ -18,7 +18,7 @@ void Delay::initialize()
 {
     currentlyStored = 0;
     delayedJobsSignal = registerSignal("delayedJobs");
-    emit(delayedJobsSignal, 0l);
+    emit(delayedJobsSignal, 0);
     WATCH(currentlyStored);
 }
 
@@ -43,7 +43,7 @@ void Delay::handleMessage(cMessage *msg)
         currentlyStored--;
         send(job, "out");
     }
-    emit(delayedJobsSignal, (long)currentlyStored);
+    emit(delayedJobsSignal, currentlyStored);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i",1, currentlyStored==0 ? "" : "cyan4");

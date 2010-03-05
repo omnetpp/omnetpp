@@ -86,7 +86,7 @@ void Routing::handleMessage(cMessage *msg)
     {
         EV << "local delivery of packet " << pk->getName() << endl;
         send(pk, "localOut");
-        emit(outputIfSignal, -1L); // -1: local
+        emit(outputIfSignal, -1); // -1: local
         return;
     }
 
@@ -102,8 +102,8 @@ void Routing::handleMessage(cMessage *msg)
     int outGateIndex = (*it).second;
     EV << "forwarding packet " << pk->getName() << " on gate index " << outGateIndex << endl;
     pk->setHopCount(pk->getHopCount()+1);
-    emit(outputIfSignal, (long)outGateIndex);
+    emit(outputIfSignal, outGateIndex);
 
-    send(pk, "out", (long)outGateIndex);
+    send(pk, "out", outGateIndex);
 }
 

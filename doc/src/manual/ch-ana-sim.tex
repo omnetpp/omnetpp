@@ -62,7 +62,7 @@ This approach utilizes NED properties (section
 results from their recording, thereby providing more flexibility in what to
 record and in which form.
 
-Statistics are declared in the NED files with the \ttt{@signal} property,
+Statistics are declared in the NED files with the \ttt{@statistic} property,
 and modules emit values using the signal mechanism. The simulation
 framework records data by adding result file writing listeners to modules.
 By being able to choose what listeners to add, the user can control what to
@@ -199,18 +199,19 @@ When recording signals as scalars, one has to define how to derive the
 scalar value from the sequence of values emitted. One may be interested
 in the final value, in the count of the values, in their mean, the minimum
 or maximum value or other properties. This can be configured using the
-\textit{<module-full-path>.<scalar-name>.}\ttt{scalar-recording-mode=}
-configuration option. If \ttt{scalar-recording-mode=} is not defined
-in the configuration or it is set to \ttt{auto}, the \ttt{modeHint} key
-from the \ttt{@signal} property is used.
+\textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-mode=}
+configuration option. If \ttt{result-recording-mode=} is not defined
+in the configuration or it is set to \ttt{auto}, the \ttt{record} key
+from the \ttt{@statistic} property is used.
 
-Several scalar recording modes can be specified, separated by comma.
+Several recording modes can be specified, separated by comma.
 Currently the following modes are supported:
 
 \begin{itemize}
   \item\tbf{auto}: automatically select the best mode(s) for a signal. This mode
       currently selects \ttt{histogram} mode (because it records the most
       information), but this may change in future versions.
+  \item\tbf{vector}: record all values into an output vector
   \item\tbf{count}: record the number of values emitted; values are ignored
   \item\tbf{last}: record the last value
   \item\tbf{sum}: record the sum of the values
@@ -230,7 +231,7 @@ New ones cannot be defined at the moment; this feature is planned for future ver
 An example:
 
 \begin{inifile}
-**.queueLength.scalar-recording-mode = timeavg,max
+**.queueLength.result-recording-mode = timeavg,max
 \end{inifile}
 
 In the result file, the recorded scalars will be suffixed with the name
@@ -243,6 +244,8 @@ be recorded as \ttt{queueingTime:mean}.
 
 \subsection{Configuring Output Vectors}
 \label{sec:ana-sim:vector-config}
+
+FIXME: "vector" should be listed in record or in recording-mode
 
 The size of output vector files can easily reach the magnitude of several
 hundred megabytes, but very often, only some of the recorded statistics are
