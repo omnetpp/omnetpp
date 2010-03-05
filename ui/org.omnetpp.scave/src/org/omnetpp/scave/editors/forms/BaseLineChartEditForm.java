@@ -317,6 +317,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 
 			selectLine(getSelectedLineKey());
 			updateLinePropertyEditFields((VectorChartProperties)properties);
+			updateLineTitlesFromProperties((VectorChartProperties)properties);
 		}
 	}
 	

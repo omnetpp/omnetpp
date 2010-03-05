@@ -19,7 +19,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
