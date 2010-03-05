@@ -658,13 +658,14 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
     protected void addStatisticResolutions(GenericTreeNode node, PropertyResolution[] statisticResolutions) {
         for (PropertyResolution statisticResolution : statisticResolutions) {
-            String label = statisticResolution.propertyDeclaration.getIndex() + " : ";
+            String label = statisticResolution.propertyDeclaration.getIndex();
             String record = statisticResolution.propertyDeclaration.getValue("record");
-            if (record != null)
-                label += record;
-            String source = statisticResolution.propertyDeclaration.getValue("source");
-            if (source != null)
-                label += " of " + source;
+            if (record != null) {
+                label += " : " + record;
+                String source = statisticResolution.propertyDeclaration.getValue("source");
+                if (source != null)
+                    label += " of " + source;
+            }
             node.addChild(new StatisticNode(label));
         }
     }

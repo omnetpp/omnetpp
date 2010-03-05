@@ -113,6 +113,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
+import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 import org.w3c.dom.Node;
@@ -1083,7 +1084,7 @@ public class DocumentationGenerator {
                         out("<br/>");
 
                         if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
-                            generateCppDefinitionReference(typeElement);
+                            generateNedTypeCppDefinitionReference(typeElement);
 
                         String comment = typeElement.getComment();
                         if (comment == null)
@@ -1103,10 +1104,10 @@ public class DocumentationGenerator {
                             generateUsedInTables(nedTypeElement);
                             generateParametersTable(nedTypeElement);
                             generatePropertiesTable(nedTypeElement);
-
                             if (typeElement instanceof IModuleTypeElement)
                                 generateGatesTable(nedTypeElement);
-
+                            generateSignalsTable(nedTypeElement);
+                            generateStatisticsTable(nedTypeElement);
                             if (typeElement instanceof CompoundModuleElementEx)
                                 generateUnassignedParametersTable(nedTypeElement);
                         }
@@ -1190,15 +1191,17 @@ public class DocumentationGenerator {
             {
                 PropertyElementEx property = properties.get(name).get(PropertyElementEx.DEFAULT_PROPERTY_INDEX);
 
-            	out("<tr>\r\n" +
-            		"   <td width=\"150\">" + name + "</td>\r\n" +
-            		"   <td width=\"100\"><i>");
-            	generatePropertyLiteralValues(property);
-            	out("</i></td>\r\n" +
-            		"   <td>");
-            	generateTableComment(property.getComment());
-        		out("</td>\r\n" +
-            		"</tr>\r\n");
+                if (property != null) {
+                	out("<tr>\r\n" +
+                		"   <td width=\"150\">" + name + "</td>\r\n" +
+                		"   <td width=\"100\"><i>");
+                	generatePropertyLiteralValues(property);
+                	out("</i></td>\r\n" +
+                		"   <td>");
+                	generateTableComment(property.getComment());
+            		out("</td>\r\n" +
+                		"</tr>\r\n");
+                }
             }
 
             out("</table>\r\n");
@@ -1274,13 +1277,66 @@ public class DocumentationGenerator {
             		"   <td width=\"100\">\r\n" +
             		"      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
             		"   </td>\r\n" +
-            		"   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>" +
+            		"   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
                     "   <td>");
                 generateTableComment(paramDeclaration.getComment());
-        		out("</td>\r\n" +
+        		out("   </td>\r\n" +
             		"</tr>\r\n");
             }
 
+            out("</table>\r\n");
+        }
+    }
+
+    protected void generateSignalsTable(INedTypeElement typeElement) throws IOException {
+        Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("signal");
+        if (propertyMap != null) {
+            out("<h3 class=\"subtitle\">Signals:</h3>\r\n" +
+                    "<table class=\"signaltable\">\r\n" +
+                    "   <tr>\r\n" +
+                    "      <th>Name</th>\r\n" +
+                    "      <th>Type</th>\r\n" +
+                    "      <th>Unit</th>\r\n" +
+                    "   </tr>\r\n");
+            for (String name : propertyMap.keySet()) {
+                PropertyElementEx propertyElement = propertyMap.get(name);
+                out("<tr class=\"local\">\r\n" +
+                    "   <td width=\"100\">" + name + "</td>\r\n" +
+                    "   <td width=\"100\"><i>\r\n");
+                String cppType = getPropertyElementValue(propertyElement, "type");
+                generateCppReference(cppType, cppType);
+                out("   </i></td>\r\n" +
+                    "   <td width=\"30\">" + getPropertyElementValue(propertyElement, "unit") + "</td>\r\n");
+                out("</tr>\r\n");
+            }
+            out("</table>\r\n");
+        }
+    }
+
+    protected void generateStatisticsTable(INedTypeElement typeElement) throws IOException {
+        Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("statistic");
+        if (propertyMap != null) {
+            out("<h3 class=\"subtitle\">Statistics:</h3>\r\n" +
+                    "<table class=\"statistictable\">\r\n" +
+                    "   <tr>\r\n" +
+                    "      <th>Name</th>\r\n" +
+                    "      <th>Title</th>\r\n" +
+                    "      <th>Source</th>\r\n" +
+                    "      <th>Record</th>\r\n" +
+                    "      <th>Unit</th>\r\n" +
+                    "      <th>Interpolation Mode</th>\r\n" +
+                    "   </tr>\r\n");
+            for (String name : propertyMap.keySet()) {
+                PropertyElementEx propertyElement = propertyMap.get(name);
+                out("<tr class=\"local\">\r\n" +
+                    "   <td width=\"100\">" + name + "</td>\r\n" +
+                    "   <td width=\"200\">" + getPropertyElementValue(propertyElement, "title") + "</td>\r\n" +
+                    "   <td width=\"100\">" + getPropertyElementValue(propertyElement, "source") + "</td>\r\n" +
+                    "   <td width=\"160\">" + getPropertyElementValue(propertyElement, "record") + "</td>\r\n" +
+                    "   <td width=\"30\">" + getPropertyElementValue(propertyElement, "unit") + "</td>\r\n" +
+                    "   <td width=\"120\">" + getPropertyElementValue(propertyElement, "interpolationmode") + "</td>\r\n");
+                out("</tr>\r\n");
+            }
             out("</table>\r\n");
         }
     }
@@ -1418,19 +1474,28 @@ public class DocumentationGenerator {
     		"</tr>\r\n");
     }
 
-    protected void generateCppDefinitionReference(ITypeElement typeElement) throws IOException {
-        String className;
+    protected void generateNedTypeCppDefinitionReference(ITypeElement typeElement) throws IOException {
+        String cppClassName;
 
         if (typeElement instanceof INedTypeElement)
-            className = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedCppClassName();
+            cppClassName = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedCppClassName();
         else if (typeElement instanceof IMsgTypeElement)
-            className = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
+            cppClassName = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
         else
             throw new RuntimeException("Unknown type element: " + typeElement);
 
-        if (doxyMap.containsKey(className)) {
-            out("<p><b>C++ definition: <a href=\"" + getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(className)) + "\" target=\"mainframe\">click here</a></b></p>\r\n");
+        if (doxyMap.containsKey(cppClassName)) {
+            out("<p>");
+            generateCppReference(cppClassName, "<b>C++ definition</b>");
+            out("</p>\r\n");
         }
+    }
+
+    protected void generateCppReference(String cppClassName, String label) throws IOException {
+        if (doxyMap.containsKey(cppClassName))
+            out("<a href=\"" + getRelativePath(rootRelativeNeddocPath, rootRelativeDoxyPath).append(doxyMap.get(cppClassName)) + "\" target=\"mainframe\">" + label + "</a>");
+        else
+            out(label);
     }
 
     protected void generateFileReference(IFile file) throws IOException {
@@ -1990,6 +2055,20 @@ public class DocumentationGenerator {
             return "numeric";
         else
             return type;
+    }
+
+    protected String getPropertyElementValue(PropertyElementEx propertyElement, String key) {
+        StringBuffer result = new StringBuffer();
+        for (PropertyKeyElement propertyKey = propertyElement.getFirstPropertyKeyChild(); propertyKey != null; propertyKey = propertyKey.getNextPropertyKeySibling()) {
+            if (propertyKey.getName().equals(key)) {
+                for (LiteralElement literal = propertyKey.getFirstLiteralChild(); literal != null; literal = literal.getNextLiteralSibling()) {
+                    if (result.length() != 0)
+                        result.append(", ");
+                    result.append(literal.getValue());
+                }
+            }
+        }
+        return result.toString();
     }
 
     protected void out(String string) throws IOException {

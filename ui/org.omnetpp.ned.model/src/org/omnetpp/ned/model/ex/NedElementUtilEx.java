@@ -411,8 +411,12 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
             return propertyMap.get(index == null ? PropertyElementEx.DEFAULT_PROPERTY_INDEX : index);
     }
 
-    public static ArrayList<String> getPropertyValues(IHasProperties element, String propertyName) {
-        PropertyElementEx propertyElement = getProperty(element, propertyName, null);
+    public static ArrayList<String> getPropertyValues(IHasProperties element, String name) {
+        return getPropertyValues(element, name, null);
+    }
+
+    public static ArrayList<String> getPropertyValues(IHasProperties element, String name, String index) {
+        PropertyElementEx propertyElement = getProperty(element, name, index);
         ArrayList<String> properties = new ArrayList<String>();
 
         if (propertyElement != null)
