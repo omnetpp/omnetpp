@@ -62,6 +62,16 @@ class ENVIR_API ObjectPrinter
 
     public:
         /**
+         * Accepts the parsed form of the pattern string. The two vectors
+         * must be of the same size. The contained MatchExpression objects
+         * will be deallocated by this ObjectPrinter.
+         */
+        ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
+        		      const std::vector<MatchExpression*>& objectMatchExpressions,
+                      const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
+                      int indentSize=4);
+
+        /**
          * Pattern syntax is that of the "eventlog-message-detail-pattern"
          * configuration entry -- see documentation there.
          *
@@ -81,16 +91,6 @@ class ENVIR_API ObjectPrinter
          *     records user-defined fields from all objects
          */
         ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate=NULL, const char *pattern="*", int indentSize=4);
-
-        /**
-         * Accepts the parsed form of the pattern string. The two vectors
-         * must be of the same size. The contained MatchExpression objects
-         * will be deallocated by this ObjectPrinter.
-         */
-        ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
-        		      const std::vector<MatchExpression*>& objectMatchExpressions,
-                      const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
-                      int indentSize=4);
 
         /**
          * Destructor.
