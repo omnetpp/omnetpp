@@ -45,7 +45,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 	public LineChartEditForm(LineChart chart, EObject parent,
 			Map<String, Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
-		updateLineNames(getChart().getLineNameFormat());
+		updateDataset(getChart().getLineNameFormat());
 	}
 
 	private LineChart getChart() {
@@ -72,7 +72,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 			tabfolder.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					if (e.item == item && updateLineNames[0]) {
-						updateLineNames(lineNamePattern.getText());
+						updateDataset(lineNamePattern.getText());
 						updateLineNames[0] = false;
 					}
 				}
@@ -80,15 +80,15 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 		}
 	}
 
-	protected void updateLineNames(String formatString) {
+	protected void updateDataset(String formatString) {
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
-		IXYDataset xydataset = DatasetManager.createVectorDataset((LineChart)chart, dataset, formatString, false, manager, null);
+		xydataset = DatasetManager.createVectorDataset((LineChart)chart, dataset, formatString, false, manager, null);
 		Line[] lines = NO_LINES;
 		if (xydataset != null) {
 			int count = xydataset.getSeriesCount();
 			lines = new Line[count];
 			for (int i = 0; i < count; ++i) {
-				lines[i] = new Line(xydataset.getSeriesKey(i), xydataset.getSeriesInterpolationMode(i));
+				lines[i] = new Line(xydataset.getSeriesKey(i), xydataset.getSeriesInterpolationMode(i), i);
 			}
 			Arrays.sort(lines);
 		}

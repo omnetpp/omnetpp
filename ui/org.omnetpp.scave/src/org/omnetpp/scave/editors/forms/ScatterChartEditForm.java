@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
@@ -63,7 +63,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 
 	public ScatterChartEditForm(ScatterChart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
-		updateLineNames(null);
+		updateDataset(null);
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		if (dataset != null) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
@@ -73,10 +73,8 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		}
 	}
 
-	protected void updateLineNames(String formatString) {
+	protected void updateDataset(String formatString) {
 		Line[] lines = NO_LINES;
-		IXYDataset xydataset;
-
 		try {
 			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 			xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
@@ -89,7 +87,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		if (xydataset != null) {
 			lines = new Line[xydataset.getSeriesCount()];
 			for (int i = 0; i < xydataset.getSeriesCount(); ++i)
-				lines[i] = new Line(xydataset.getSeriesKey(i));
+				lines[i] = new Line(xydataset.getSeriesKey(i), InterpolationMode.Unspecified, i);
 			Arrays.sort(lines);
 		}
 

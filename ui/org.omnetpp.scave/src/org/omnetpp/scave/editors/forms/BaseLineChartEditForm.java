@@ -26,7 +26,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -50,10 +49,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.ImageCombo;
+import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TristateButton;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
@@ -94,16 +95,17 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		String key;
 		InterpolationMode interpolationMode;
 		int series;
+		String title;
 
-		public Line(String key) {
-			this(key, InterpolationMode.Unspecified);
+		private Line(String key) {
+			this(key, InterpolationMode.Unspecified, -1);
 		}
 
-		public Line(String key, InterpolationMode interpolationMode) {
+		public Line(String key, InterpolationMode interpolationMode, int series) {
 			Assert.isNotNull(key);
 			this.key = key;
 			this.interpolationMode = interpolationMode;
-			this.series = -1;
+			this.series = series;
 		}
 
 		public int compareTo(Line other) {
@@ -127,6 +129,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 
 
 	private Line[] lines = NO_LINES;
+	protected IXYDataset xydataset;
 
 	// "Axes" page controls
 	private Text xAxisMinText;
@@ -153,6 +156,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			linesTableViewer.setInput(lines);
 		if (previewCanvas != null)
 			previewCanvas.setLines(lines);
+		if (properties instanceof VectorChartProperties)
+		    updateLineTitlesFromProperties((VectorChartProperties)properties);
 	}
 
 	@Override
@@ -187,15 +192,25 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			});
 
 			linesTableViewer = new TableViewer(panel, SWT.BORDER | SWT.MULTI);
+			Table table = linesTableViewer.getTable();
+			addTableColumn(table, "Line Id", 300);
+			addTableColumn(table, "Display name", 300);
+            table.setHeaderVisible(true);
 			GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 			int itemsVisible = Math.max(Math.min(lines.length, 15), 3);
 			gridData.heightHint =  itemsVisible * linesTableViewer.getTable().getItemHeight();
-			linesTableViewer.getTable().setLayoutData(gridData);
-			linesTableViewer.setLabelProvider(new LabelProvider() {
+			table.setLayoutData(gridData);
+			linesTableViewer.setLabelProvider(new TableLabelProvider() {
 				@Override
-				public String getText(Object element) {
-					String key = element instanceof Line ? ((Line)element).key : "";
-					return StringUtils.defaultString(key);
+				public String getColumnText(Object element, int columnIndex) {
+				    if (!(element instanceof Line))
+				        return "";
+				    Line line = (Line)element;
+				    switch (columnIndex) {
+				    case 0:	return StringUtils.defaultString(line.key);
+				    case 1: return StringUtils.defaultString(line.title);
+				    default: return "";
+				    }
 				}
 			});
 			linesTableViewer.setContentProvider(new ArrayContentProvider());
@@ -221,9 +236,35 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 				}
 			});
 			
-			displayNameText = createTextField("Display name:", subpanel);
+			Composite subsubpanel = new Composite(subpanel, SWT.NONE);
+			subsubpanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+			subsubpanel.setLayout(new GridLayout(3, false));
+			
+			displayNameText = createTextField("Display name:", subsubpanel);
 			new ResultItemNamePatternField(displayNameText);
-
+			displayNameText.addModifyListener(new ModifyListener() {
+                public void modifyText(ModifyEvent e) {
+                    IStructuredSelection selection = (IStructuredSelection)linesTableViewer.getSelection();
+                    if (selection.size() == 1) {
+                        Line line = (Line)selection.getFirstElement();
+                        updateLineTitle(line, displayNameText.getText());
+                    }
+                }
+            });
+			
+			Button expandButton = new Button(subsubpanel, SWT.PUSH);
+			expandButton.setText("Expand");
+			expandButton.addSelectionListener(new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    IStructuredSelection selection = (IStructuredSelection)linesTableViewer.getSelection();
+                    if (selection.size() == 1) {
+                        Line line = (Line)selection.getFirstElement();
+                        String title = computeLineTitle(line, displayNameText.getText());
+                        displayNameText.setText(StringUtils.defaultString(title));
+                    }
+                }
+            });
+			
 			lineTypeCombo = createImageComboField("Line type:", subpanel);
 			lineTypeCombo.add(NO_CHANGE, null);
 			lineTypeCombo.add(AUTO, null);
@@ -278,7 +319,14 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			updateLinePropertyEditFields((VectorChartProperties)properties);
 		}
 	}
-
+	
+	private TableColumn addTableColumn(Table table, String text, int width) {
+	    TableColumn column = new TableColumn(table, SWT.NONE);
+	    column.setText(text);
+	    column.setWidth(width);
+	    return column;
+	}
+	
 	protected String getSelectedLineKey() {
 		if (formParameters != null) {
 			Object selection = formParameters.get(PARAM_SELECTED_OBJECT);
@@ -309,7 +357,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		return combo;
 	}
-
+	
 	@Override
 	protected void collectProperties(ChartProperties newProps) {
 		// fill newProps (initially empty) with the updated chart properties from the dialog;
@@ -404,6 +452,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		xAxisMaxText.setText(StringUtils.defaultString(Converter.doubleToString(properties.getXAxisMax())));
 		// Line properties
 		updateLinePropertyEditFields(properties);
+		updateLineTitlesFromProperties(properties);
 	}
 
 	private void updateLinePropertyEditFields(VectorChartProperties props) {
@@ -432,6 +481,31 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			colorEdit.setText(NO_CHANGE);
 		}
 	}
+	
+	private void updateLineTitlesFromProperties(VectorChartProperties properties) {
+	    if (xydataset != null) {
+    	    for (Line line : lines) {
+    	        LineProperties lineProps = properties.getLineProperties(line.key);
+    	        updateLineTitle(line, lineProps.getDisplayName());
+    	    }
+	    }
+	}
+	
+	private void updateLineTitle(Line line, String titleFormat) {
+	    if (linesTableViewer != null) {
+            line.title = computeLineTitle(line, titleFormat);
+            linesTableViewer.update(line, new String[] {"title"});
+	    }
+	}
+	
+	private String computeLineTitle(Line line, String titleFormat) {
+        if (xydataset != null) {
+            String format = StringUtils.isEmpty(titleFormat) ? null : titleFormat;
+            return xydataset.getSeriesTitle(line.series, format);
+        }
+        else
+            return null;
+	}
 
 	private void updatePreview() {
 		previewCanvas.redraw();
@@ -457,7 +531,6 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			for (int i = 0; i < lines.length; ++i) {
 				lineNames[i] = lines[i].key;
 				interpolationModes[i] = lines[i].interpolationMode;
-				lines[i].series = i;
 			}
 			dataset = new RandomXYDataset(0, lineNames, interpolationModes, 4);
 		}
