@@ -126,6 +126,22 @@ class SIM_API opp_string
      * Concatenation
      */
     opp_string& operator+=(const std::string& s) {operator+=(s.c_str()); return *this;}
+
+    /**
+     * Concatenation
+     */
+    opp_string operator+(const char *s) {return opp_string((std::string(str)+s).c_str());}
+
+    /**
+     * Concatenation
+     */
+    opp_string operator+(const opp_string& s) {return operator+(s.c_str());}
+
+    /**
+     * Concatenation
+     */
+    opp_string operator+(const std::string& s) {return operator+(s.c_str());}
+
 };
 
 inline std::ostream& operator<<(std::ostream& out, const opp_string& s)
