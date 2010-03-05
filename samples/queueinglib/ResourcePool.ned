@@ -19,6 +19,7 @@ simple ResourcePool
 {
     parameters:
         @group(Queueing);
+        @signal[amount](type="long");
         @statistic[amount](title="available resource";record=vector,timeavg,min;interpolationmode=sample-hold);
         @display("i=block/buffer;t=,r,black");
         int amount = default(1);        // the amount of resource units

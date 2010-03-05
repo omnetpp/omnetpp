@@ -17,6 +17,13 @@ simple Sink
     parameters:
         @group(Queueing);
         @display("i=block/sink");
+        @signal[lifeTime](type="simtime_t");
+        @signal[totalQueueingTime](type="simtime_t");
+        @signal[totalDelayTime](type="simtime_t");
+        @signal[totalServiceTime](type="simtime_t");
+        @signal[queuesVisited](type="int");
+        @signal[delaysVisited](type="int");
+        @signal[generation](type="int");
         @statistic[lifeTime](title="lifetime of arrived jobs";unit=s;interpolationmode=none);
         @statistic[totalQueueingTime](title="the total time spent in queues by arrived jobs";unit=s;interpolationmode=none);
         @statistic[totalDelayTime](title="the total time spent in delay nodes by arrived jobs";unit=s;interpolationmode=none);

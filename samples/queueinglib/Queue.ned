@@ -17,6 +17,10 @@ simple Queue
     parameters:
         @group(Queueing);
         @display("i=block/queue;q=queue");
+        @signal[dropped](type="int");
+        @signal[queueLength](type="int");
+        @signal[queueingTime](type="simtime_t");
+        @signal[busy](type="bool");
         @statistic[dropped](title="drop event";record=vector,count;interpolationmode=none);
         @statistic[queueLength](title="queue length";record=vector,timeavg,max;interpolationmode=sample-hold);
         @statistic[queueingTime](title="queueing time at dequeue";record=vector,mean,max;unit=s;interpolationmode=none);
