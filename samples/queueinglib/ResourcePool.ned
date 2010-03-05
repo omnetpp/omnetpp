@@ -11,7 +11,7 @@ package org.omnetpp.queueing;
 
 //
 // A resource object representing a single type of resource.
-// More than one ResourceBasedQueue block can specify this bolck as a resource.
+// More than one ResourceBasedQueue block can specify this block as a resource.
 // In this case unstatisfied resource requests are queued (with priority) and the
 // requestor will be notified once the resource gets available.
 //

@@ -10,7 +10,7 @@
 package org.omnetpp.queueing;
 
 //
-// Waits until all sub-jobs created by a Split module arrive, then
+// Waits until all sub-jobs created by a Fork module arrive, then
 // replaces them with the original job on the output.
 //
 simple Join
