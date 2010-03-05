@@ -719,9 +719,22 @@ public class DataTable extends Table implements IDataControl {
 		return null;
 	}
 
-	public void setSelectionByID(long id) {
+	public void setSelectedID(long id) {
 		int index = idList.indexOf(id);
-		if (index >= 0)
+		if (index != -1)
 			setSelection(index);
+	}
+
+	public void setSelectedIDs(IDList selectedIDList) {
+	    ArrayList<Integer> indicesList = new ArrayList<Integer>();
+	    for (int i = 0; i < selectedIDList.size(); i++) {
+	        int index = idList.indexOf(selectedIDList.get(i));
+	        if (index != -1)
+	            indicesList.add(index);
+	    }
+	    int[] indices = new int[indicesList.size()];
+	    for (int i = 0; i < indices.length; i++)
+	        indices[i] = indicesList.get(i);
+	    setSelection(indices);
 	}
 }

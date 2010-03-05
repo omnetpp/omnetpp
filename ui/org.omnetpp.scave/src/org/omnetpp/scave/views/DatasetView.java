@@ -370,7 +370,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		if (panel != null && !panel.isDisposed()) {
 			IDataControl control = panel.getDataControl();
 			if (!control.isDisposed()) {
-				control.setSelectionByID(item.getID());
+				control.setSelectedID(item.getID());
 			}
 		}
 	}

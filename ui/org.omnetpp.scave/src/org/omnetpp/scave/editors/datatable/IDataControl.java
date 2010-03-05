@@ -45,7 +45,9 @@ public interface IDataControl {
 
     public void selectAll();
 
-    public void setSelectionByID(long id);
+    public void setSelectedID(long id);
+
+    public void setSelectedIDs(IDList idList);
 
     public void copySelectionToClipboard();
 

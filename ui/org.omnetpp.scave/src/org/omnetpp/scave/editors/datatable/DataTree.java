@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -99,9 +100,11 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void setLevels(Class[] levels) {
+        IDList idList = getSelectedIDs();
         contentProvider.setLevels(levels);
         savePreferences();
         refresh();
+        setSelectedIDs(idList);
     }
 
     public ResultFileManagerEx getResultFileManager() {
@@ -189,13 +192,53 @@ public class DataTree extends Tree implements IDataControl {
         clipboard.dispose();
     }
 
-    public void setSelectionByID(long id) {
+    public void setSelectedID(long id) {
         if (idList.indexOf(id) != -1) {
-            ResultItem resultItem = manager.getItem(id);
-            // TODO:
+            TreeItem treeItem = getTreeItem(id);
+            if (treeItem != null)
+                setSelection(treeItem);
         }
         else
             setSelection(new TreeItem[0]);
+    }
+
+    public void setSelectedIDs(IDList idList) {
+        ArrayList<TreeItem> treeItems = new ArrayList<TreeItem>();
+        for (int i = 0; i < idList.size(); i++) {
+            TreeItem treeItem = getTreeItem(idList.get(i));
+            if (treeItem != null) {
+                treeItems.add(treeItem);
+                showItem(treeItem);
+            }
+        }
+        setSelection(treeItems.toArray(new TreeItem[0]));
+    }
+
+    protected TreeItem getTreeItem(long id) {
+        for (TreeItem treeItem : getItems()) {
+            TreeItem foundTreeItem = getTreeItem(treeItem, id);
+            if (foundTreeItem != null)
+                return foundTreeItem;
+        }
+        return null;
+    }
+
+    protected TreeItem getTreeItem(TreeItem treeItem, long id) {
+        // items must be queried first, because getData does not fill up the item
+        TreeItem[] childTreeItems = treeItem.getItems();
+        Node node = (Node)treeItem.getData();
+        if (node != null && (node.ids == null || ArrayUtils.indexOf(node.ids, id) == -1))
+            return null;
+        else if (node != null && node.ids.length == 1)
+            return treeItem;
+        else {
+            for (TreeItem childTreeItem : childTreeItems) {
+                TreeItem foundTreeItem = getTreeItem(childTreeItem, id);
+                if (foundTreeItem != null)
+                    return foundTreeItem;
+            }
+            return null;
+        }
     }
 
     public void addDataListener(IDataListener listener) {
