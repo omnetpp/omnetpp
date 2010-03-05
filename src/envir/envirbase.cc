@@ -819,9 +819,9 @@ void EnvirBase::addResultRecorders(cComponent *component)
         if (modesOption != "auto")
         {
             // +add,-remove,add,add,add
-            if (modesOption[0] != '+')
+            if (modesOption[0] != '+' && modesOption[0] != '-')
                 modes1.clear();
-            StringTokenizer tokenizer(modesOption.c_str(), ","); //XXX modulo commas within parens
+            StringTokenizer tokenizer(modesOption.c_str(), ","); //XXX we should ignore commas within parens
             while (tokenizer.hasMoreTokens())
             {
                 std::string mode = tokenizer.nextToken();

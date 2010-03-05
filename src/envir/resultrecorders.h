@@ -75,8 +75,9 @@ class ENVIR_API ResultRecorder : public cIListener
         const char *statisticName;
     protected:
         simtime_t getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
-        std::string makeName(const char *suffix);
-        void extractStatisticAttributes(cComponent *component, opp_string_map& result);
+        virtual std::string makeName(const char *suffix);
+        virtual void extractStatisticAttributes(cComponent *component, opp_string_map& result);
+        virtual void tweakTitle(opp_string& title) {}
         const char *getStatisticName() {return statisticName;}
     public:
         virtual void init(const char *statisticName);
@@ -135,6 +136,7 @@ class ENVIR_API CountRecorder : public NumericResultRecorder
     protected:
         long count;
     protected:
+        virtual void tweakTitle(opp_string& title);
         virtual void collect(simtime_t t, double value) {count++;}
     public:
         CountRecorder() {count = 0;}
@@ -151,6 +153,7 @@ class ENVIR_API LastValueRecorder : public NumericResultRecorder
     protected:
         double lastValue;
     protected:
+        virtual void tweakTitle(opp_string& title);
         virtual void collect(simtime_t t, double value) {lastValue = value;}
     public:
         LastValueRecorder() {lastValue = NaN;}
@@ -165,6 +168,7 @@ class ENVIR_API SumRecorder : public NumericResultRecorder
     protected:
         double sum;
     protected:
+        virtual void tweakTitle(opp_string& title);
         virtual void collect(simtime_t t, double value) {sum += value;}
     public:
         SumRecorder() {sum = 0;}
@@ -180,6 +184,7 @@ class ENVIR_API MeanRecorder : public NumericResultRecorder
         long count;
         double sum;
     protected:
+        virtual void tweakTitle(opp_string& title);
         virtual void collect(simtime_t t, double value) {count++; sum += value;}
     public:
         MeanRecorder() {count = 0; sum = 0;}
@@ -194,6 +199,7 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
     protected:
         double min;
     protected:
+        virtual void tweakTitle(opp_string& title);
         virtual void collect(simtime_t t, double value) {if (value < min) min = value;}
     public:
         MinRecorder() {min = POSITIVE_INFINITY;}
@@ -208,6 +214,7 @@ class ENVIR_API MaxRecorder : public NumericResultRecorder
     protected:
         double max;
     protected:
+        virtual void tweakTitle(opp_string& title);
         virtual void collect(simtime_t t, double value) {if (value > max) max = value;}
     public:
         MaxRecorder() {max = NEGATIVE_INFINITY;}
@@ -225,6 +232,7 @@ class ENVIR_API TimeAverageRecorder : public NumericResultRecorder
         double lastValue;
         double weightedSum;
     protected:
+        virtual void tweakTitle(opp_string& title);
         virtual void collect(simtime_t t, double value);
     public:
         TimeAverageRecorder() {startTime = lastTime = -1; lastValue = weightedSum = 0;}

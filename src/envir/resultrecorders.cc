@@ -105,6 +105,9 @@ void ResultRecorder::extractStatisticAttributes(cComponent *component, opp_strin
             }
             result[key] = buf;
         }
+
+        if (strcmp(key,"title")==0)
+            tweakTitle(result[key]);
     }
 }
 
@@ -182,6 +185,11 @@ void VectorRecorder::collect(simtime_t t, double value)
 
 //---
 
+void CountRecorder::tweakTitle(opp_string& title)
+{
+    title = opp_string("count of ") + title;
+}
+
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
     maybeCollect(0.0); // dummy value
@@ -208,6 +216,11 @@ void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 
 //---
 
+void LastValueRecorder::tweakTitle(opp_string& title)
+{
+    title = opp_string("last value of ") + title;
+}
+
 void LastValueRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     std::string scalarName = makeName("last");
@@ -217,6 +230,11 @@ void LastValueRecorder::finish(cComponent *component, simsignal_t signalID)
 }
 
 //---
+
+void SumRecorder::tweakTitle(opp_string& title)
+{
+    title = opp_string("sum of ") + title;
+}
 
 void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 {
@@ -228,6 +246,11 @@ void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 
 //---
 
+void MeanRecorder::tweakTitle(opp_string& title)
+{
+    title = opp_string("mean of ") + title;
+}
+
 void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     std::string scalarName = makeName("mean");
@@ -237,6 +260,11 @@ void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
 }
 
 //---
+
+void MinRecorder::tweakTitle(opp_string& title)
+{
+    title = opp_string("minimum of ") + title;
+}
 
 void MinRecorder::finish(cComponent *component, simsignal_t signalID)
 {
@@ -248,6 +276,11 @@ void MinRecorder::finish(cComponent *component, simsignal_t signalID)
 
 //---
 
+void MaxRecorder::tweakTitle(opp_string& title)
+{
+    title = opp_string("maximum of ") + title;
+}
+
 void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     std::string scalarName = makeName("max");
@@ -257,6 +290,11 @@ void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
 }
 
 //---
+
+void TimeAverageRecorder::tweakTitle(opp_string& title)
+{
+    title = opp_string("time average of ") + title;
+}
 
 void TimeAverageRecorder::collect(simtime_t t, double value)
 {
