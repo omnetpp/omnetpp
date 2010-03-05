@@ -574,17 +574,19 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChar
 	}
 
 	protected void paintInsets(Graphics graphics) {
-		// draw insets border
-		Insets insets = getInsets();
-		Rectangle canvasRect = new Rectangle(getClientArea());
-		graphics.setForegroundColor(insetsBackgroundColor);
-		graphics.setBackgroundColor(insetsBackgroundColor);
-		graphics.fillRectangle(0, 0, canvasRect.width, insets.top); // top
-		graphics.fillRectangle(0, canvasRect.bottom()-insets.bottom, canvasRect.width, insets.bottom); // bottom
-		graphics.fillRectangle(0, 0, insets.left, canvasRect.height); // left
-		graphics.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
-		graphics.setForegroundColor(insetsLineColor);
-		graphics.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
+        Insets insets = getInsets();
+        // do not draw insets border when exporting to SVG
+	    if (!GraphicsUtils.isSVGGraphics(graphics)) {
+    		Rectangle canvasRect = new Rectangle(getClientArea());
+    		graphics.setForegroundColor(insetsBackgroundColor);
+    		graphics.setBackgroundColor(insetsBackgroundColor);
+    		graphics.fillRectangle(0, 0, canvasRect.width, insets.top); // top
+    		graphics.fillRectangle(0, canvasRect.bottom()-insets.bottom, canvasRect.width, insets.bottom); // bottom
+    		graphics.fillRectangle(0, 0, insets.left, canvasRect.height); // left
+    		graphics.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
+    		graphics.setForegroundColor(insetsLineColor);
+	    }
+        graphics.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
 	}
 
 	protected void drawStatusText(Graphics graphics) {

@@ -32,9 +32,9 @@ import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
@@ -409,7 +409,6 @@ public class NedValidator extends AbstractNedValidatorEx {
     @SuppressWarnings("unchecked")
     protected void validateParamAssignment(Object[] result, ParamElementEx paramAssignment, ParamElementEx paramDeclaration) {
         ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration((Vector<INedTypeInfo>)result[1], (Vector<ISubmoduleOrConnection>)result[2], paramDeclaration);
-
         validateParamValue(paramDeclaration, paramAssignment);
 
         if (paramAssignments.indexOf(paramAssignment) == -1) {
@@ -420,7 +419,7 @@ public class NedValidator extends AbstractNedValidatorEx {
                 }
             }
 
-            if (paramAssignments.indexOf(paramAssignment) == -1)
+            if (!StringUtils.isEmpty(paramAssignment.getValue()) && paramAssignments.indexOf(paramAssignment) == -1)
                 errors.addError(paramAssignment, "Cannot override already fixed parameter value");
         }
     }

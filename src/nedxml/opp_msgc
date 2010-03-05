@@ -1731,8 +1731,8 @@ sub generateDescriptorClass
             push(@flags, "FD_ISARRAY") if ($fisarray{$fieldname});
             push(@flags, "FD_ISCOMPOUND") if ($fkind{$fieldname} eq 'struct');
             push(@flags, "FD_ISPOINTER") if ($fispointer{$fieldname});
-            push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldname}} eq 'cobject' || $classtype{$ftype{$fieldname}} eq 'cnamedobject');
-            push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
+            push(@flags, "FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cobject' || $classtype{$ftype{$fieldname}} eq 'cnamedobject');
+            push(@flags, "FD_ISCOBJECT | FD_ISCOWNEDOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
 
             my $editable = propertyAsBool($fprops{$fieldname}->{editable});
             push(@flags, "FD_ISEDITABLE") if ($editable || ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic'));

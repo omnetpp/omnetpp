@@ -3,7 +3,7 @@ XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
 DOCBOOK=$(TOOLS_DIR)\docbook
 PDFTK=$(TOOLS_DIR)\pdftk\pdftk
 
-CWD=C:\home\omnetpp40\omnetpp\doc\src\ide-developersguide  # because Inkscape is broken and needs full paths; and nmake is also broken as there's no way to produce the current dir programmatically
+CWD=$(OMNETPP_ROOT)\doc\src\ide-developersguide  # because Inkscape is broken and needs full paths
 
 TITLE=IDE Developers Guide
 

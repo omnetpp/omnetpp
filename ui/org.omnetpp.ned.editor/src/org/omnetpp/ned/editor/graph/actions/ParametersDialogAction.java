@@ -41,9 +41,7 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     protected boolean calculateEnabled() {
         if (getSelectedObjects().size() == 1 && getSelectedObjects().get(0) instanceof INedModelProvider) {
            INedElement element = ((INedModelProvider)getSelectedObjects().get(0)).getNedModel();
-           return element instanceof IHasParameters &&
-               element.getConsistencyProblemMaxCumulatedSeverity() == NedElement.SEVERITY_NONE &&
-               element.getSyntaxProblemMaxCumulatedSeverity() == NedElement.SEVERITY_NONE;
+           return element instanceof IHasParameters && element.getSyntaxProblemMaxCumulatedSeverity() == NedElement.SEVERITY_NONE;
         }
         else
             return false;

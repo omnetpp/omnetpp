@@ -12,11 +12,10 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 
 
@@ -87,14 +86,17 @@ public class Title {
 		textLayout.setWidth(bounds.width);
 		textLayout.setAlignment(SWT.CENTER);
 		textLayout.setStyle(new TextStyle(font, color, null), 0, Integer.MAX_VALUE);
-        Image image = new Image(Display.getDefault(), bounds.width, bounds.height);
-        GC gc = new GC(image);
-        gc.setBackground(ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR);
-        gc.fillRectangle(0, 0, bounds.width, bounds.height);
-		textLayout.draw(gc, bounds.x, bounds.y);
-		graphics.drawImage(image, 0, 0);
+        if (!GraphicsUtils.isSVGGraphics(graphics)) {
+            graphics.setBackgroundColor(ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR);
+            graphics.fillRectangle(0, 0, bounds.width, bounds.height);
+        }
+        graphics.setFont(font);
+        graphics.setForegroundColor(color);
+        int[] lineOffsets = textLayout.getLineOffsets();
+        for (int i = 0; i < textLayout.getLineCount(); i++) {
+            Rectangle lineBounds = new Rectangle(textLayout.getLineBounds(i));
+            graphics.drawText(text.substring(lineOffsets[i], lineOffsets[i + 1]), lineBounds.x, lineBounds.y);
+        }
         textLayout.dispose();
-		gc.dispose();
-		image.dispose();
 	}
 }

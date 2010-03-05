@@ -145,9 +145,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOL_IMAGE_DIR + "eventnumbers.png";
 
+    public final static String IMAGE_SHOW_MESSAGE_SENDS = TOOL_IMAGE_DIR + "messagesends.png";
+
     public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOL_IMAGE_DIR + "messagenames.png";
 
     public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOL_IMAGE_DIR + "reusearrows.png";
+
+    public final static String IMAGE_SHOW_MODULE_METHOD_CALLS = TOOL_IMAGE_DIR + "modulemethodcall.png";
 
     public final static String IMAGE_SHOW_ARROW_HEADS = TOOL_IMAGE_DIR + "arrowhead.png";
 
@@ -178,6 +182,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	protected SequenceChartAction showEventNumbersAction;
 
 	protected SequenceChartAction showMessageNamesAction;
+
+    protected SequenceChartAction showMessageSendsAction;
 
     protected SequenceChartAction showSelfMessagesAction;
 
@@ -238,6 +244,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.filterAction = createFilterAction();
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
+		this.showMessageSendsAction = createShowMessageSendsAction();
         this.showSelfMessagesAction = createShowSelfMessagesAction();
 		this.showOtherMessageReusesAction = createShowOtherMessageReusesAction();
 		this.showSelfMessageReusesAction = createShowSelfMessageReusesAction();
@@ -370,6 +377,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 menuManager.add(subMenuManager);
                 subMenuManager.add(showEventNumbersAction);
                 subMenuManager.add(showMessageNamesAction);
+                subMenuManager.add(showMessageSendsAction);
                 subMenuManager.add(showSelfMessagesAction);
                 subMenuManager.add(showOtherMessageReusesAction);
                 subMenuManager.add(showSelfMessageReusesAction);
@@ -418,7 +426,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(separatorAction);
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
+        toolBarManager.add(showMessageSendsAction);
         toolBarManager.add(showOtherMessageReusesAction);
+        toolBarManager.add(showModuleMethodCallsAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(increaseSpacingAction);
 		toolBarManager.add(decreaseSpacingAction);
@@ -821,6 +831,21 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 
+    private SequenceChartAction createShowMessageSendsAction() {
+        return new SequenceChartAction("Show Message Sends", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MESSAGE_SENDS)) {
+            @Override
+            protected void doRun() {
+                sequenceChart.setShowMessageSends(!sequenceChart.getShowMessageSends());
+                update();
+            }
+
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowMessageSends());
+            }
+        };
+    }
+
 	private SequenceChartAction createShowSelfMessagesAction() {
 		return new SequenceChartAction("Show Self Messages", Action.AS_CHECK_BOX) {
 			@Override
@@ -942,7 +967,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createShowModuleMethodCallsAction() {
-        return new SequenceChartAction("Show Module Method Calls", Action.AS_CHECK_BOX) {
+        return new SequenceChartAction("Show Module Method Calls", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MODULE_METHOD_CALLS)) {
             @Override
             protected void doRun() {
                 sequenceChart.setShowModuleMethodCalls(!sequenceChart.getShowModuleMethodCalls());

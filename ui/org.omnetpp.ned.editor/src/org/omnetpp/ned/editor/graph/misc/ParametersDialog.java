@@ -80,6 +80,7 @@ import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.NedTreeUtil;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
@@ -88,6 +89,8 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
@@ -248,7 +251,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 this.originalParamDeclaration = null;
                 this.originalParamLocal = null;
 
-                this.type = DEFAULT_TYPE;
+                this.type = (parameterProvider instanceof SubmoduleElementEx) ? "" : DEFAULT_TYPE;
                 this.name = generateDefaultName();
                 this.unit = "";
                 this.value = "";
@@ -357,7 +360,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
         protected String generateDefaultName() {
             for (int i = 0;; i++) {
-                String name = "unnamed" + i;
+                String name = (parameterProvider instanceof SubmoduleElementEx ? "deep.unnamed" : "unnamed") + i;
 
                 if (getParamLine(name) != null)
                     continue;
@@ -404,6 +407,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
         protected void setName(ParamElementEx paramElement, String name) {
             paramElement.setName(name);
+            paramElement.setIsPattern(name.contains("."));
         }
 
         protected String getUnit(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
@@ -429,7 +433,8 @@ public class ParametersDialog extends TitleAreaDialog {
         }
 
         protected String getUnit(ParamElementEx paramElement) {
-            return paramElement.getUnit();
+            String value = paramElement.getUnit();
+            return value == null ? "" : value;
         }
 
         protected void setUnit(ParamElementEx paramElement, String unit) {
@@ -709,15 +714,17 @@ public class ParametersDialog extends TitleAreaDialog {
                 INedElement paramOwner = parentElement == null ? parameterProvider : parentElement.getParent();
                 if (paramOwner instanceof SubmoduleElementEx) {
                     buffer.append("Submodule <b>");
-                    buffer.append(((SubmoduleElementEx)paramOwner).getCompoundModule().getName());
+                    SubmoduleElementEx submoduleElement = (SubmoduleElementEx)paramOwner;
+                    buffer.append(submoduleElement.getCompoundModule().getName());
                     buffer.append(".");
-                    buffer.append(((IHasName)paramOwner).getName());
+                    buffer.append(submoduleElement.getName());
                     buffer.append("</b>");
                 }
-                else {
+                else if (paramOwner instanceof IHasName){
+                    IHasName nameElement = (IHasName)paramOwner;
                     buffer.append(StringUtils.capitalize(paramOwner.getReadableTagName()));
                     buffer.append(" <b>");
-                    buffer.append(((IHasName)paramOwner).getName());
+                    buffer.append(nameElement.getName());
                     buffer.append("</b>");
                 }
                 buffer.append("<br/><li>");
@@ -749,7 +756,11 @@ public class ParametersDialog extends TitleAreaDialog {
 
         // add button
         Button addButton = createButton(buttonComposite, BUTTON_ADD_ID, "Add", false);
-        addButton.setEnabled(!(parameterProvider instanceof SubmoduleElementEx) && !(parameterProvider instanceof ConnectionElementEx));
+        INedTypeElement nedTypeElement = null;
+        if (parameterProvider instanceof ISubmoduleOrConnection) {
+            nedTypeElement = ((ISubmoduleOrConnection)parameterProvider).getEffectiveTypeRef();
+            addButton.setEnabled(nedTypeElement instanceof CompoundModuleElementEx);
+        }
         addButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -780,7 +791,6 @@ public class ParametersDialog extends TitleAreaDialog {
                     if (paramLine.isOriginallyLocalDeclaration())
                         paramLines.remove(paramLine);
                     else {
-                        paramLine.setCurrentUnit("");
                         paramLine.setCurrentValue("");
                         paramLine.setCurrentComment("");
                     }
@@ -791,6 +801,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 else
                     listViewer.setSelection(null);
 
+                validateDialogContent();
                 listViewer.refresh();
             }
         });
@@ -890,11 +901,11 @@ public class ParametersDialog extends TitleAreaDialog {
                 ParamLine paramLine = (ParamLine)element;
 
                 if (COLUMN_TYPE.equals(property))
-                    return paramLine.isOriginallyLocalDeclaration();
+                    return !(parameterProvider instanceof SubmoduleElementEx) && paramLine.isOriginallyLocalDeclaration();
                 else if (COLUMN_NAME.equals(property))
                     return paramLine.isOriginallyLocalDeclaration();
                 else if (COLUMN_UNIT.equals(property))
-                    return paramLine.isOriginallyLocalDeclaration() && mayTypeHasUnit(paramLine.type);
+                    return !(parameterProvider instanceof SubmoduleElementEx) && paramLine.isOriginallyLocalDeclaration() && mayTypeHasUnit(paramLine.type);
                 else if (COLUMN_VALUE.equals(property))
                     return true;
                 else if (COLUMN_COMMENT.equals(property))
@@ -1019,7 +1030,8 @@ public class ParametersDialog extends TitleAreaDialog {
         for (ParamLine paramLine : paramLines) {
             if (ArrayUtils.indexOf(org.omnetpp.common.editor.text.Keywords.NED_RESERVED_WORDS, paramLine.name) != -1)
                 errorMessages.append("The provided parameter name \"" + paramLine.name + "\" is a reserved NED keyword\n");
-
+            if (parameterProvider instanceof ISubmoduleOrConnection && paramLine.isOriginallyLocalDeclaration() && !paramLine.currentParamLocal.getIsPattern())
+                errorMessages.append("The provided parameter name \"" + paramLine.name + "\" is not a valid deep parameter name.\n");
             String value = paramLine.removeDefaultAroundValue(paramLine.value);
             if (!StringUtils.isEmpty(value) && !NedTreeUtil.isExpressionValid(value))
                 errorMessages.append("The provided parameter value \"" + value + "\" is not a valid expression\n");

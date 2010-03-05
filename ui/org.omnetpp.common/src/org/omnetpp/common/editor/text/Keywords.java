@@ -18,7 +18,7 @@ public class Keywords {
 
 	public final static String[] DOC_TAGS = { "a", "b", "body", "br", "center", "caption", "code",
 			"dd", "dfn", "dl", "dt", "em", "form", "font", "hr", "h1", "h2", "h3", "i", "input",
-			"img", "li", "meta", "multicol", "ol", "p", "small", "span", "strong", "sub", "sup",
+			"img", "li", "meta", "multicol", "ol", "p", "pre", "small", "span", "strong", "sub", "sup",
 			"table", "td", "th", "tr", "tt", "kbd", "ul", "var" };
 
 	public final static String[] DOC_KEYWORDS = { "author", "bug", "date", "see", "since", "todo",

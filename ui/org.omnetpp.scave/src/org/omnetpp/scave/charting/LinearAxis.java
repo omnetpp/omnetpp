@@ -143,7 +143,7 @@ public class LinearAxis {
 		ITicks ticks = createTicks(rect, mapping);
 		if (ticks != null) {
 		    graphics.pushState();
-			graphics.setLineStyle(Graphics.LINE_DOT);
+	        graphics.setLineStyle(Graphics.LINE_DOT);
 			graphics.setForegroundColor(DEFAULT_GRID_COLOR);
 			for (BigDecimal tick : ticks) {
 				if (showGrid == ShowGrid.All || ticks.isMajorTick(tick)) {
@@ -176,8 +176,7 @@ public class LinearAxis {
 
 		Point titleSize = GraphicsUtils.getTextExtent(graphics, title);
 		if (vertical) {
-			if (drawAxisToPlot && !logarithmic &&
-					mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
+			if (drawAxisToPlot && !logarithmic && mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
 				graphics.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
 			graphics.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
 			graphics.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
@@ -187,10 +186,9 @@ public class LinearAxis {
                 if (!isSVGGraphics) {
                     graphics.pushState();
 			        graphics.rotate(-90);
-                }
-				graphics.drawText(title, -(plotArea.y + plotArea.height / 2 + titleSize.x / 2), bounds.x);
-                if (!isSVGGraphics)
+	                graphics.drawText(title, -(plotArea.y + plotArea.height / 2 + titleSize.x / 2), bounds.x);
                     graphics.popState();
+                }
 			}
 		}
 		else {

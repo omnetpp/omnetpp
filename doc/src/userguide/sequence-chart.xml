@@ -157,38 +157,49 @@
 	      <entry>message reuse</entry>
 	    </row>
 	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-MethodCall.png"/>
+            (brown dotted arrow)</entry>
+	      <entry>method call</entry>
+	    </row>
+	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-SplitArrow.png"/> 
-	        (arrow with a dashed segment)</entry>
+	        <para>(arrow with a dashed segment)</para></entry>
 	      <entry>message send that goes far away; split arrow</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/> 
-	        (arrow with zigzag)</entry>
+	        <para>(arrow with zigzag)</para></entry>
 	      <entry>virtual message send; zigzag arrow</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-TransmissionDuration-ReceptionAtStart.png"/> 
-	        (blue parallelogram)</entry>
+	        <para>(blue parallelogram)</para></entry>
 	      <entry>transmission duration; reception at start</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-TransmissionDuration-ReceptionAtEnd.png"/> 
-	        (blue parallelogram)</entry>
+	        <para>(blue parallelogram)</para></entry>
 	      <entry>transmission duration; reception at end</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-SplitTransmissionDuration-ReceptionAtStart.png"/> 
-	        (blue strips)</entry>
+	        <para>(blue strips)</para></entry>
 	      <entry>split transmission duration; reception at start</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-SplitTransmissionDuration-ReceptionAtEnd.png"/> 
-	        (blue strips)</entry>
+	        <para>(blue strips)</para></entry>
 	      <entry>split transmission duration; reception at end</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-MessageName.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageName.png"/>
+            (blue letters)</entry>
 	      <entry>message name</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-MethodName.png"/>
+            (brown letters)</entry>
+	      <entry>method name</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-ZeroSimulationTimeRegion.png"/> 

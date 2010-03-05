@@ -30,6 +30,7 @@
 #include "csimplemodule.h"
 #include "ccompoundmodule.h"
 #include "cdisplaystring.h"
+#include "cclassdescriptor.h"
 
 USING_NAMESPACE
 
@@ -56,6 +57,30 @@ Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mes
 Register_PerRunConfigOption(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Simulation time interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, 233.3..");
 Register_PerObjectConfigOption(CFGID_MODULE_EVENTLOG_RECORDING, "module-eventlog-recording", CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.module-eventlog-recording = true\n **.module-eventlog-recording = false");
 
+static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level) {
+    const char* propertyValue = descriptor->getFieldProperty(object, fieldIndex, "eventlog");
+
+    if (propertyValue) {
+        if (!strcmp(propertyValue, "skip"))
+            return SKIP;
+        else if (!strcmp(propertyValue, "fullName"))
+            return FULL_NAME;
+        else if (!strcmp(propertyValue, "fullPath"))
+            return FULL_PATH;
+    }
+
+    bool isCObject = descriptor->getFieldIsCObject(object, fieldIndex);
+    if (!isCObject)
+        return RECURSE;
+    else {
+        if (!fieldValue)
+            return RECURSE;
+        else {
+            cArray *array = dynamic_cast<cArray *>((cObject *)fieldValue);
+            return !array || array->size() != 0 ? RECURSE : SKIP;
+        }
+    }
+}
 
 EventlogFileManager::EventlogFileManager()
 {
@@ -82,7 +107,7 @@ void EventlogFileManager::setup()
     const char *eventLogMessageDetailPattern = ev.getConfig()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
 
     if (eventLogMessageDetailPattern) {
-        objectPrinter = new ObjectPrinter(eventLogMessageDetailPattern, 3);
+        objectPrinter = new ObjectPrinter(recurseIntoMessageFields, eventLogMessageDetailPattern, 3);
     }
 
     // setup eventlog recording intervals

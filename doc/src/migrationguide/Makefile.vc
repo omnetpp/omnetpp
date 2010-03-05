@@ -4,7 +4,7 @@ DOCBOOK=$(TOOLS_DIR)\docbook
 PERL=perl
 PDFTK=$(TOOLS_DIR)\pdftk\pdftk
 
-CWD=C:\home\omnetpp40\omnetpp\doc\src\migrationguide  # because Inkscape is broken and needs full paths; and nmake is also broken as there's no way to produce the current dir programmatically
+CWD=$(OMNETPP_ROOT)\doc\src\migrationguide  # because Inkscape is broken and needs full paths
 
 TITLE=Migration Guide
 

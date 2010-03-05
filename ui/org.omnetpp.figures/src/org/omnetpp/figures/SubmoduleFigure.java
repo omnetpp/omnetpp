@@ -247,7 +247,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		Assert.isNotNull(color);
 		this.text = text;
 		if (!StringUtils.isEmpty(pos))
-			pos = IDisplayString.Prop.TEXTPOS.getEnumSpec().getNameFor(pos);
+			pos = StringUtils.nullToEmpty(IDisplayString.Prop.TEXTPOS.getEnumSpec().getNameFor(pos));
 		this.textPos = pos.equals("left") ? TEXTPOS_LEFT : pos.equals("right") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
 		this.textColor = color;
 	}
