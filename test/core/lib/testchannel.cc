@@ -6,7 +6,7 @@ class TestChannel : public cIdealChannel
     int numPackets;
   protected:
     virtual void initialize();
-    virtual bool deliver(cMessage *msg, simtime_t at);
+    virtual void process(cMessage *msg, simtime_t at, result_t& result);
     virtual void finish();
 };
 
@@ -19,11 +19,11 @@ void TestChannel::initialize()
     numPackets = 0;
 }
 
-bool TestChannel::deliver(cMessage *msg, simtime_t at)
+void TestChannel::process(cMessage *msg, simtime_t at, result_t& result)
 {
     numPackets++;
     ev << "TestChannel delivering msg: " << msg->getName() << "\n";
-    return cIdealChannel::deliver(msg, at);
+    cIdealChannel::process(msg, at, result);
 }
 
 void TestChannel::finish()

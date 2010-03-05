@@ -332,7 +332,11 @@ void cSimpleModule::deleteModule()
     // another coroutine (i.e. from main). Control is passed there by
     // throwing an exception that gets transferred to the main coroutine
     // by activate(), and handled in cSimulation::transferTo().
-    if (simulation.getActivityModule()==this)
+    // execution must be immediately suspended in activity() and handleMessage() 
+    // if deleteModule() is called (i.e. we are deleting ourselves)
+    // the exception will be handled in the doOneEvent loop and the module 
+    // will be deleted from the globalContext
+    if (simulation.getContextModule()==this)
         throw cDeleteModuleException();
 
     // else fall back to the base class implementation
