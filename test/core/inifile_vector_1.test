@@ -13,7 +13,7 @@ for (int i = 0; i < 10; i++) {
 %inifile: omnetpp.ini
 [General]
 network = Test
-**.vector-recording-interval = ..1, 3..5, 7..
+**.vector-recording-intervals = ..1, 3..5, 7..
 
 %contains: results/General-0.vec
 vector 0  Test  test  ETV

@@ -40,15 +40,15 @@ class ChannelWithNamespace: public cIdealChannel
 {
   public:
     ChannelWithNamespace() { }
-    virtual bool deliver(cMessage *msg, simtime_t t);
+    virtual void process(cMessage *msg, simtime_t t, result_t& result);
 };
 
 Define_Channel(ChannelWithNamespace);
 
-bool ChannelWithNamespace::deliver(cMessage *msg, simtime_t t)
+void ChannelWithNamespace::process(cMessage *msg, simtime_t t, result_t& result)
 {
     ev << "ChannelWithNamespace\n";
-    return cIdealChannel::deliver(msg, t);
+    cIdealChannel::process(msg, t, result);
 }
 
 class Simple : public cSimpleModule

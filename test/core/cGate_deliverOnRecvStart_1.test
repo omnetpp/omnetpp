@@ -24,17 +24,17 @@ gate("in")->setDeliverOnReceptionStart(true);
     pkt->setBitLength(1500);  // so duration=1.5s
 
     send(pkt, "out");
-    ev << "after sending, t=" << simTime() << ": output gate busy=" << gate("out")->isBusy()
-       << " txFinishTime=" << gate("out")->getTransmissionFinishTime() << "\n";
+    ev << "after sending, t=" << simTime() << ": output gate busy=" << gate("out")->getTransmissionChannel()->isBusy()
+       << " txFinishTime=" << gate("out")->getTransmissionChannel()->getTransmissionFinishTime() << "\n";
 
     cPacket *pkt2 = check_and_cast<cPacket *>(receive());
     ev << "after receive, t=" << simTime() << ": pkt: duration=" << pkt2->getDuration()
        << " isRecStart=" << pkt2->isReceptionStart() << "\n";
-    ev << "  output gate: busy=" << gate("out")->isBusy()
-       << " txFinishTime=" << gate("out")->getTransmissionFinishTime() << "\n";
+    ev << "  output gate: busy=" << gate("out")->getTransmissionChannel()->isBusy()
+       << " txFinishTime=" << gate("out")->getTransmissionChannel()->getTransmissionFinishTime() << "\n";
 }
 
-wait(gate("out")->getTransmissionFinishTime() - simTime());
+wait(gate("out")->getTransmissionChannel()->getTransmissionFinishTime() - simTime());
 
 //
 // Experiment 2: sending with deliverOnStart flag cleared
@@ -47,14 +47,14 @@ gate("in")->setDeliverOnReceptionStart(false);
     pkt->setBitLength(1500);  // so duration=1.5s
 
     send(pkt, "out");
-    ev << "after sending, t=" << simTime() << ": output gate busy=" << gate("out")->isBusy()
-       << " txFinishTime=" << gate("out")->getTransmissionFinishTime() << "\n";
+    ev << "after sending, t=" << simTime() << ": output gate busy=" << gate("out")->getTransmissionChannel()->isBusy()
+       << " txFinishTime=" << gate("out")->getTransmissionChannel()->getTransmissionFinishTime() << "\n";
 
     cPacket *pkt2 = check_and_cast<cPacket *>(receive());
     ev << "after receive, t=" << simTime() << ": pkt: duration=" << pkt2->getDuration()
        << " isRecStart=" << pkt2->isReceptionStart() << "\n";
-    ev << "  output gate: busy=" << gate("out")->isBusy()
-       << " txFinishTime=" << gate("out")->getTransmissionFinishTime() << "\n";
+    ev << "  output gate: busy=" << gate("out")->getTransmissionChannel()->isBusy()
+       << " txFinishTime=" << gate("out")->getTransmissionChannel()->getTransmissionFinishTime() << "\n";
 }
 
 ev << ".\n";

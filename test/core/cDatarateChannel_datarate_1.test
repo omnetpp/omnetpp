@@ -46,7 +46,7 @@ class Node1 : public cSimpleModule
 
 Define_Module(Node1);
 
-#define PRINTGATESTATE()  ev << "t=" << simTime() << ": busy:" << g->isBusy() << ", finishes:" << g->getTransmissionFinishTime() << endl;
+#define PRINTGATESTATE()  ev << "t=" << simTime() << ": busy:" << g->getTransmissionChannel()->isBusy() << ", finishes:" << g->getTransmissionChannel()->getTransmissionFinishTime() << endl;
 
 void Node1::activity()
 {

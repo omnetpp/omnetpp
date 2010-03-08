@@ -32,6 +32,23 @@ USING_NAMESPACE
 
 #define MAXIMUM_OBJECT_PRINTER_LEVEL 20
 
+static ObjectPrinterRecursionControl defaultRecurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level) {
+    const char *fieldName = descriptor->getFieldName(object, fieldIndex);
+    return strcmp(fieldName, "owner") ? RECURSE : SKIP;
+}
+
+ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
+                             const std::vector<MatchExpression*>& objectMatchExpressions,
+                             const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
+                             int indentSize)
+{
+    Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
+    this->recursionPredicate = recursionPredicate ? recursionPredicate : defaultRecurseIntoMessageFields;
+    this->objectMatchExpressions = objectMatchExpressions;
+    this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
+    this->indentSize = indentSize;
+}
+
 ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate, const char *objectFieldMatcherPattern, int indentSize)
 {
     std::vector<MatchExpression*> objectMatchExpressions;
@@ -65,19 +82,7 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
     }
 
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
-    this->recursionPredicate = recursionPredicate;
-    this->objectMatchExpressions = objectMatchExpressions;
-    this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
-    this->indentSize = indentSize;
-}
-
-ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
-                             const std::vector<MatchExpression*>& objectMatchExpressions,
-                             const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
-                             int indentSize)
-{
-    Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
-    this->recursionPredicate = recursionPredicate;
+    this->recursionPredicate = recursionPredicate ? recursionPredicate : defaultRecurseIntoMessageFields;
     this->objectMatchExpressions = objectMatchExpressions;
     this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
     this->indentSize = indentSize;
@@ -113,12 +118,14 @@ std::string ObjectPrinter::printObjectToString(cObject *object)
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cClassDescriptor *descriptor, void **parents, int level)
 {
     if (level == MAXIMUM_OBJECT_PRINTER_LEVEL) {
+        printIndent(ostream, level);
         ostream << "<pruned>\n";
         return;
     }
     else {
         for (int i = 0; i < level; i++) {
             if (parents[i] == object) {
+                printIndent(ostream, level);
                 ostream << "<recursion>\n";
                 return;
             }
@@ -145,7 +152,9 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
                 void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;
 
-                ObjectPrinterRecursionControl result = recursionPredicate(object, descriptor, fieldIndex, fieldValue, parents, level);
+                ObjectPrinterRecursionControl result = RECURSE;
+                if (recursionPredicate)
+                    result = recursionPredicate(object, descriptor, fieldIndex, fieldValue, parents, level);
                 if (result == SKIP || (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldIndex)))
                     continue;
 
