@@ -34,9 +34,9 @@ The rectangles in the picture represent the following components:
     implementations. The simulation is linked either to the  Cmdenv or Tkenv user interfaces, or to both.}
   \item{The \textbf{Model Component Library} includes simple module definitions and 
     their C++ implementations, compound module types, channels, networks,
-    message types and everything belonging to that models that
+    message types, and everything belonging to models that
     have been linked to the simulation program. A simulation program can
-    run any model that contains all the required linked components.}
+    run any model that contains all of the required linked components.}
   \item{The \textbf{Executing Model} is the model that is set up
     for simulation. This model contains objects (modules, channels, and so on) that
     are all instances of the components in the model component library.}
@@ -56,8 +56,8 @@ each other:
     instantiates simple modules and other components when the simulation model
     is set up at the beginning of the simulation run. In addition, it refers
     to the component library when dynamic module creation is used.
-    The machinery for registering and looking up components in the model
-    component library is implemented as part of Sim.}
+    The mechanisms for registering and looking up components in the model
+    component library are implemented as part of Sim.}
   \item{\textbf{Executing Model $\Leftrightarrow$ Envir}. The \ttt{ev} object,
     logically part of Envir, is the facade of the user interface towards the
     executing model. The model uses \ttt{ev} to write debug logs (\ttt{ev<<},
@@ -96,12 +96,12 @@ do not just want to change one or two aspects of the simulator
 (such as , event scheduling or result recording) or create a new user interface
 such as Cmdenv or Tkenv -- if so, see chapter \ref{cha:plugin-exts}.
 
-For the following section, we assume that you write the embedding
+For the following section, we assume that you will write the embedding
 program from scratch. Meaning, starting from a \ffunc{main()} function.
 
 \subsection{The main() Function}
 
-The minimalistic program described below, initializes the simulation library,
+The minimalistic program described below initializes the simulation library
 and runs two simulations. In later sections we will review the details
 of the code and discuss how to improve it.
 
@@ -210,7 +210,7 @@ void simulate(const char *networkName, simtime_t limit)
 \end{cpp}
 
 The function accepts a network type name (which must be fully qualified
-with a package name), and a simulation time limit.
+with a package name) and a simulation time limit.
 
 In the first few lines the system looks up the network name among the modules that
 have been loaded from the  NED files, and an error message is printed if it is not found.
@@ -218,7 +218,7 @@ have been loaded from the  NED files, and an error message is printed if it is n
 Then it is required to create and activate a simulation manager object
 (\cclass{cSimulation}).
 The simulation manager requires another object, called the environment object. This environment object is used by the simulation manager
-to read the configuration. In addition, the results produced by the sim. manager are written to this environment object.
+to read the configuration. In addition, the results produced by the simulation manager are written to this environment object.
 
 The environment object (\ttt{CustomSimulationEnv} in the above code) must
 be provided by the programmer; this is described in detail in a later section.
@@ -238,11 +238,11 @@ exception object is some kind of \cclass{std::exception}, usually a
 \cclass{cRuntimeError}.
 
 If the network setup was successful, the \ttt{sim->}\ffunc{startRun()} function is called,
-the \ffunc{initialize()} methods of modules
-and channels are then activated. In addition, an exception is thrown if
-something goes wrong in the \ffunc{initialize()}.
+and the \ffunc{initialize()} methods of modules
+and channels are then activated. An exception is thrown if
+something goes wrong in any of the \ffunc{initialize()} methods.
 
-The following lines run the simulation, by calling
+The following lines run the simulation by calling
 \ttt{sim->}\ffunc{selectNextModule()} and \ttt{sim->}\ffunc{doOneEvent()}
 in an event loop, until the simulation time limit is reached or an
 exception occurs. Exceptions that are subclassed from \cclass{cTerminationException}
@@ -256,7 +256,7 @@ called, and the network is shut down using
 \ttt{sim->}\ffunc{deleteNetwork()}.
 
 Finally, the simulation manager object is deallocated, but the active
-simulation manager is not allowed to be deleted, therefore it is deactivated 
+simulation manager is not allowed to be deleted; therefore it is deactivated 
 using \ffunc{setActiveSimulation(NULL)}.
 
 
@@ -265,11 +265,11 @@ using \ffunc{setActiveSimulation(NULL)}.
 The environment object needs to be subclassed from the \cclass{cEnvir} class,
 but since it has many pure virtual methods, it is easier
 to begin by subclassing \cclass{cNullEnvir}. \cclass{cNullEnvir} defines all
-pure virtual methods, with either an empty body, or with a body that throws
+pure virtual methods with either an empty body or with a body that throws
 an \ttt{"unsupported method called"} exception. You can redefine methods
 to be more sophisticated later on, as you progress with the development.
 
-You must redefine is \ffunc{readParameter()} method. This enables 
+You must redefine the \ffunc{readParameter()} method. This enables 
 module parameters to obtain their values. For debugging purposes, you can also
 redefine \ffunc{sputn()} where module log messages are written to.
 \cclass{cNullEnvir} only provides one random number generator, so if your
@@ -278,7 +278,7 @@ simulation model uses more than one, you also need to redefine the
 simulation records, redefine \ffunc{recordScalar()}, \ffunc{recordStatistic()}
 and/or the output vector related methods. Other \cclass{cEnvir} methods
 are invoked from the simulation kernel to inform the environment about
-messages being sent, events scheduled and cancelled, modules created and so on.
+messages being sent, events scheduled and cancelled, modules created, and so on.
 
 The following example shows a minimalistic environment class that is enough
 to get started:
@@ -364,7 +364,7 @@ The above functions can also be mixed, but after the last call,
 \ffunc{doneLoadingNedFiles()} must be invoked (it checks for unresolved
 NED types).
 
-Loading NED files has a global effect, therefore they cannot be unloaded.
+Loading NED files has a global effect; therefore they cannot be unloaded.
 
 
 \subsection{How to Eliminate NED Files}
@@ -437,7 +437,7 @@ class CustomSimulationEnv : public cNullEnvir
 There are several ways you can extract statistics from the
 simulation.
 
-\subsubsection{Via C++ Calls into the Model}
+\subsubsection{C++ Calls into the Model}
 
 Modules in the simulation are C++ objects. If you add the appropriate
 public getter methods to the module classes, you can call them from your
@@ -455,10 +455,10 @@ double avgReplyTime = appMod->getAvgReplyTime();
 \end{cpp}
 
 The drawback of this approach is that getters need to be added manually
-to all affected module classes which might not be practical, especially
+to all affected module classes, which might not be practical, especially
 if modules come from external projects.
 
-\subsubsection{Via \cclass{cEnvir} Callbacks}
+\subsubsection{\cclass{cEnvir} Callbacks}
 
 A more general way is to catch \ffunc{recordScalar()} method calls in the
 simulation model. The \cclass{cModule}'s \ffunc{recordScalar()} method
@@ -467,7 +467,7 @@ latter function so that it stores all recorded scalars (for example in an
 \ttt{std::map}), where the main program can find them later.
 Values from output vectors can be captured in a similar manner.
 
-A draft implementation:
+An example implementation:
 
 \begin{cpp}
 class CustomSimulationEnv : public cNullEnvir
@@ -491,7 +491,7 @@ int numRequestsSent = results["Network.client[2].app.numRequestsSent"];
 double avgReplyTime = results["Network.client[2].app.avgReplyTime"];
 \end{cpp}
 
-A drawback is that compile-time checking of statistics names is lost, but
+A drawback of this approach is that compile-time checking of statistics names is lost, but
 the advantages are that any simulation model can now be used
 without changes, and that capturing additional statistics does not require
 code modification in the main program.
@@ -533,10 +533,10 @@ and others.
 
 It is possible for several instances of \cclass{cSimulation} to coexist,
 and also to set up and simulate a network in each instance. However, this
-requires frequent use of \ffunc{cSimulation::set\-Active\-Simulation()}:
-before invoking any \cclass{cSimulation} method or module method,
+requires frequent use of \ffunc{cSimulation::set\-Active\-Simulation()}.
+Before invoking any \cclass{cSimulation} method or module method,
 the corresponding \cclass{cSimulation} instance needs to be designated
-as the active simulation manager. This is necessary since several models
+as the active simulation manager. This is necessary because several models
 and simulation kernel methods refer to the active simulation manager
 instance via the \fmac{simulation} macro, and it is similar with the
 \fmac{ev} macro.
@@ -559,7 +559,7 @@ but it is also possible to create a new instance for each simulation run.
 \begin{note}
 It is not possible to run different simulations concurrently from
 different theads, due to the use of global variables which are not easy
-to get rid of, such as the active simulation manager pointer and the active
+to eliminate, such as the active simulation manager pointer and the active
 environment object pointer. Static buffers and objects (like string pools)
 are also used for efficiency reasons in some places inside the simulation
 kernel.
@@ -584,7 +584,7 @@ no network is set up.
 
 \subsection{Multi-Threaded Programs}
 
-The {\opp} simulation kernel is not reentrant, therefore it must be protected
+The {\opp} simulation kernel is not reentrant; therefore it must be protected
 against concurrent access.
 
 

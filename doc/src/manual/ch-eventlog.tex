@@ -3,22 +3,22 @@
 
 \section{Introduction}
 The eventlog feature and the related tools are completely new in {\opp} 4.0. They aim to
-help understanding complex simulation models and to help correctly implementing the
+help in understanding complex simulation models and to help correctly implement the
 desired component behaviors. Using these tools you will be able to easily examine every
-minute detail of the simulation back and forth in terms of simulation time or step-by-step
+minute detail of the simulation back and forth in terms of simulation time, or step-by-step,
 focusing on the behavior instead of the statistical results of your model.
 
 The eventlog file is created automatically during a simulation run upon explicit request
 configurable in the ini file. The resulting file can be viewed in the {\opp} IDE using
 the Sequence Chart and the Eventlog Table or can be processed by the command line Eventlog
-Tool. These tools support filtering the collected data to show you only the relevant parts
-focusing on what you are looking for. They allow examining causality relationships and
+Tool. These tools support filtering the collected data to allow you to focus on events
+relevant to what you are looking for. They allow examining causality relationships and
 provide filtering based on simulation times, event numbers, modules and messages.
 
 The simulation kernel records into the eventlog among others: user level messages,
 creation and deletion of modules, gates and connections, scheduling of self messages,
-sending of messages to other modules either through gates or directly and processing of
-messages (that is events). Optionally detailed message data can also be automatically
+sending of messages to other modules either through gates or directly, and processing of
+messages (that is events). Optionally, detailed message data can also be automatically
 recorded based on a message filter. The result is an eventlog file which contains detailed
 information of the simulation run and later can be used for various purposes.
 
@@ -136,7 +136,7 @@ specify what should be present in the result file.
 \subsection{Echo}
 
 Since the eventlog file format is text based and users are encouraged to implement their
-own filters therefore there needs to be a way to check whether an eventlog file is
+own filters, a way is needed to check whether an eventlog file is
 correct. The echo command provides a way to check this and help users creating custom
 filters. Anything not echoed back by the eventlog tool will not be taken into
 consideration by the other tools found in the {\opp} IDE.
