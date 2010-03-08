@@ -82,7 +82,7 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
       case OP:       return other.op - op;
       case CONSTSUBEXPR: return constexpr->compare(other.constexpr);
       default:   throw cRuntimeError("internal error: bad Elem type");
-#undef PTRCMP
+#undef CMP
     }
 }
 
@@ -221,7 +221,6 @@ bool cDynamicExpression::boolValue(cComponent *context)
     return v.bl;
 }
 
-//FIXME rename these methods!!! evaluateToLong() etc
 long cDynamicExpression::longValue(cComponent *context, const char *expectedUnit)
 {
     Value v = evaluate(context);

@@ -171,7 +171,7 @@ class cCompoundModule extends cModule
     @icon(compound);
 }
 
-//FIXME TODO: use @icon(placeholder) for cPlaceholderModule
+//TODO: use @icon(placeholder) for cPlaceholderModule
 
 //----
 
