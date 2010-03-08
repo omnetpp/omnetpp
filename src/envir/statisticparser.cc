@@ -53,14 +53,27 @@ class XResolver : public Expression::Resolver
 {
   protected:
     cComponent *component;
+    bool needWarmupPeriodFilter;
+
   public:
-    XResolver(cComponent *component) {this->component = component;}
+    XResolver(cComponent *comp, bool needWarmupFilter)
+    {
+        component = comp;
+        needWarmupPeriodFilter = needWarmupFilter;
+    }
 
     virtual Expression::Functor *resolveVariable(const char *varname)
     {
         // interpret varname as signal name
         simsignal_t signalID = cComponent::registerSignal(varname);
-        return new SignalSourceReference(SignalSource(component, signalID));
+        if (!needWarmupPeriodFilter)
+            return new SignalSourceReference(SignalSource(component, signalID));
+        else
+        {
+            WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
+            component->subscribe(signalID, warmupFilter);
+            return new SignalSourceReference(SignalSource(warmupFilter));
+        }
     }
 
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount)
@@ -90,15 +103,15 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
 {
     // parse expression
     Expression expr;
-    XResolver resolver(component);
+    XResolver resolver(component, needWarmupFilter);
     expr.parse(sourceSpec, &resolver);
-    printf("EXPR: %s --> %s\n", sourceSpec, expr.str().c_str());
 
     int exprLen = expr.getExpressionLength();
     const Expression::Elem *elems = expr.getExpression();
 
-    for (int i=0; i<exprLen; i++)
-        printf("    %d: %s\n", i, elems[i].str().c_str());
+    //printf("Source spec expression %s was parsed as:\n", sourceSpec);
+    //for (int i=0; i<exprLen; i++)
+    //    printf("  [%d] %s\n", i, elems[i].str().c_str());
 
     std::vector<Expression::Elem> stack;
     SignalSource prev(NULL);
@@ -121,7 +134,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
            // on the stack.
            // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
            FilterOrRecorderReference *filterRef = (FilterOrRecorderReference *) e.getFunctor();
-           SignalSource signalSource = createFilter(filterRef, stack, len, component, needWarmupFilter);
+           SignalSource signalSource = createFilter(filterRef, stack, len, component);
            stack.erase(stack.end()-len, stack.end());
            stack.push_back(Expression::Elem());
            stack.back() = new SignalSourceReference(signalSource);
@@ -137,7 +150,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
         // install it, and replace top 'len' elements with a SignalSourceReference
         // on the stack.
         // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
-        SignalSource signalSource = createFilter(NULL, stack, len, component, needWarmupFilter);
+        SignalSource signalSource = createFilter(NULL, stack, len, component);
         stack.erase(stack.end()-len, stack.end());
         stack.push_back(Expression::Elem());
         stack.back() = new SignalSourceReference(signalSource);
@@ -153,7 +166,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
     return signalSourceReference->getSignalSource();
 }
 
-SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len, cComponent *component, bool needWarmupFilter)
+SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len, cComponent *component)
 {
     Assert(len >= 1);
     int stackSize = stack.size();
@@ -181,13 +194,6 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
         else
             throw cRuntimeError("expression inside %s() may only refer to one signal", filterRef->getName());
     }
-
-    //FIXME TODO add WarmupFilter!!! maybe already in XResolver??
-    //if (needWarmupFilter) {
-    //   WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
-    //   component->subscribe(signalID, warmupFilter);
-    //   ... SignalSource(warmupFilter);
-    //}
 
     // Note: filterRef==NULL is also valid input, need to be prepared for it!
     ResultFilter *filter = NULL;
@@ -244,7 +250,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
 void StatisticRecorderParser::parse(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where)
 {
     Expression expr;
-    XResolver resolver(component);  //FIXME need a different resolver, because plain names should be interpreted as ResultFilters or ResultRecorders
+    XResolver resolver(component, false);  //FIXME need a different resolver, because plain names should be interpreted as ResultFilters or ResultRecorders
     expr.parse(mode, &resolver);
     printf("EXPR: %s --> %s\n", mode, expr.str().c_str());
     int len = expr.getExpressionLength();

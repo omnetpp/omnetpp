@@ -102,11 +102,12 @@ class ValueVariable : public Expression::Variable
   public:
     ValueVariable(ExpressionFilter *filter) {owner = filter;}
     virtual Functor *dup() const {return new ValueVariable(owner);}
-    virtual const char *getName() const {return "$value";}
-    virtual char getReturnType() const {return 'D';}
+    virtual const char *getName() const {return "<signalvalue>";}
+    virtual char getReturnType() const {return Expression::Value::DBL;}
     virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return owner->currentValue;}
 };
 
+//XXX currently unused
 class TimeVariable : public Expression::Variable
 {
   private:
@@ -114,8 +115,8 @@ class TimeVariable : public Expression::Variable
   public:
     TimeVariable(ExpressionFilter *filter) {owner = filter;}
     virtual Functor *dup() const {return new TimeVariable(owner);}
-    virtual const char *getName() const {return "$time";}
-    virtual char getReturnType() const {return 'D';}
+    virtual const char *getName() const {return "<signaltime>";}
+    virtual char getReturnType() const {return Expression::Value::DBL;}
     virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return SIMTIME_DBL(owner->currentTime);}
 };
 

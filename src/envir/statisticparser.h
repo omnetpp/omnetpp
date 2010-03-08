@@ -29,7 +29,7 @@ class ENVIR_API StatisticSourceParser
   protected:
     // create and install a ResultFilter; its input is the expression at the top of the stack (length 'len').
     // filterRef may be NULL; in that case, only the expression needs to be created
-    SignalSource createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len, cComponent *component, bool needWarmupFilter);
+    SignalSource createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len, cComponent *component);
   public:
     StatisticSourceParser() {}
     SignalSource parse(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
