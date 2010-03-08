@@ -19,14 +19,13 @@
 #define __ENVIR_RESULTRECORDERS_H
 
 #include "envirdefs.h"
-#include "clistener.h"
+#include "resultfilters.h"
 #include "cstatistic.h"
 #include "ccomponent.h"
 #include "commonutil.h"
 #include "stringpool.h"
 #include "onstartup.h"
 #include "cregistrationlist.h"
-#include "resultfilters.h"
 
 class ResultRecorder;
 
@@ -35,21 +34,6 @@ class ResultRecorder;
   EXECUTE_ON_STARTUP(resultRecorders.getInstance()->add(new ResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
 
 extern cGlobalRegistrationList resultRecorders;
-
-/**
- * Data structure used when setting up chains of ResultFilters and ResultRecorders
- */
-class SignalSource
-{
-  private:
-    ResultFilter *filter;
-    cComponent *component;
-    simsignal_t signalID;
-  public:
-    SignalSource(ResultFilter *prevFilter) {filter=prevFilter; component=NULL; signalID=-1;}
-    SignalSource(cComponent *comp, simsignal_t sigID) {filter=NULL; component=comp; signalID=sigID;}
-    void subscribe(ResultProcessor *listener) const;
-};
 
 /**
  * Registers a ResultRecorder.
@@ -86,7 +70,7 @@ class ENVIR_API ResultRecorderDescriptor : public cNoncopyableOwnedObject
 /**
  * Abstract base class for result recording listeners
  */
-class ENVIR_API ResultRecorder : public ResultProcessor
+class ENVIR_API ResultRecorder : public ResultListener
 {
     private:
         static CommonStringPool statisticNamesPool;

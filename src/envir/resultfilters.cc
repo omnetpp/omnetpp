@@ -18,12 +18,12 @@
 #include "resultfilters.h"
 
 
-void ResultFilter::addDelegate(ResultProcessor *delegate)
+void ResultFilter::addDelegate(ResultListener *delegate)
 {
     // reallocate each time
     int n = getNumDelegates();
-    ResultProcessor **v = new ResultProcessor*[n+2];
-    memcpy(v, delegates, n*sizeof(ResultProcessor*));
+    ResultListener **v = new ResultListener*[n+2];
+    memcpy(v, delegates, n*sizeof(ResultListener*));
     v[n] = delegate;
     v[n+1] = NULL;
     delete [] delegates;
@@ -42,9 +42,9 @@ int ResultFilter::getNumDelegates() const
     return k;
 }
 
-std::vector<ResultProcessor*> ResultFilter::getDelegates() const
+std::vector<ResultListener*> ResultFilter::getDelegates() const
 {
-    std::vector<ResultProcessor*> result;
+    std::vector<ResultListener*> result;
     for (int i = 0; delegates[i]; i++)
         result.push_back(delegates[i]);
     return result;

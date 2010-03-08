@@ -19,7 +19,7 @@
 #define __ENVIR_RESULTFILTERS_H
 
 #include "envirdefs.h"
-#include "clistener.h"
+#include "resultlistener.h"
 #include "cstatistic.h"
 #include "ccomponent.h"
 #include "csimulation.h"
@@ -28,38 +28,11 @@
 #include "stringpool.h"
 #include "cregistrationlist.h"
 
-//XXX maybe we could get rid of the (component,signalID) parameters in all functions...
-// - component is needed for: recordScalar()/recordStatistic() calls and for collecting
-//   result attributes (extractStatisticAttributes(component, attributes)) in ResultRecorders;
-//     *** this is now SOLVED, as ResultRecorder stores the component ptr
-//
-// - signalID is needed for: getSignalTime(signalID) and getSignalValue(signalID) calls
-//   in cObject* signals, in both recorders and filters
-//     *** this is ONLY needed in the first listener; then it could convert to fire(simtime_t,double) pair!
-//
-//  FUNCTIONS:
-//        virtual void listenerAdded();
-//        virtual void listenerRemoved();
-//        virtual void finish();
-//        virtual void receiveSignal(double d);
-//        virtual void receiveSignal(simtime_t, double d);
-//  and existing functions would delegate to these.
-//
-//  problem (?): how to handle filters that accept objects or anything, like count(), byteLength(), etc!!
-//  maybe that's not a problem at all; re-think!
-//
 
-class ENVIR_API ResultProcessor : public cIListener
-{
-    public:
-        virtual std::string str() const {return opp_typename(typeid(*this));}
-        //TODO delegate cListener API to simplified API (w/o component and signalID)
-};
-
-class ENVIR_API ResultFilter : public ResultProcessor
+class ENVIR_API ResultFilter : public ResultListener
 {
     private:
-        ResultProcessor **delegates; // NULL-terminated array
+        ResultListener **delegates; // NULL-terminated array
     protected:
         void fire(cComponent *source, simsignal_t signalID, long l);
         void fire(cComponent *source, simsignal_t signalID, double d);
@@ -69,9 +42,9 @@ class ENVIR_API ResultFilter : public ResultProcessor
     public:
         ResultFilter() {delegates = NULL;}
         ~ResultFilter();
-        virtual void addDelegate(ResultProcessor *delegate);
+        virtual void addDelegate(ResultListener *delegate);
         virtual int getNumDelegates() const;
-        std::vector<ResultProcessor*> getDelegates() const;
+        std::vector<ResultListener*> getDelegates() const;
         virtual void listenerAdded(cComponent *component, simsignal_t signalID);
         virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
         virtual void finish(cComponent *component, simsignal_t signalID);

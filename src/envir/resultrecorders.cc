@@ -35,16 +35,6 @@ Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
 
 
-void SignalSource::subscribe(ResultProcessor *listener) const
-{
-    if (filter)
-        filter->addDelegate(listener);
-    else if (component && signalID!=SIMSIGNAL_NULL)
-        component->subscribe(signalID, listener);
-    else
-        throw opp_runtime_error("subscribe() called on blank SignalSource");
-}
-
 ResultRecorderDescriptor::ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)())
   : cNoncopyableOwnedObject(name, false)
 {

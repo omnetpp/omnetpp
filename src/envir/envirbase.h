@@ -278,7 +278,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where);
     // Utility function for addResultRecorders()
     void dumpResultRecorders(cComponent *component);
-    void dumpResultRecorderChain(cComponent *component, simsignal_t signalID, ResultProcessor *listener);
+    void dumpResultRecorderChain(cComponent *component, simsignal_t signalID, ResultListener *listener);
 
     /**
      * Original command-line args.

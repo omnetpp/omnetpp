@@ -31,7 +31,7 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/main.obj $O/envirbase.obj $O/f
       $O/speedometer.obj $O/matchableobject.obj $O/matchablefield.obj \
       $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj \
       $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj \
-      $O/statisticparser.obj $O/resultfilters.obj $O/resultrecorders.obj
+      $O/statisticparser.obj $O/resultlistener.obj $O/resultfilters.obj $O/resultrecorders.obj
 
 
 !if "$(LIB_SUFFIX)"==".dll"
@@ -182,6 +182,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   runattributes.h \
+  resultlistener.h \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
@@ -295,6 +296,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
   ../../include/cpar.h \
+  resultlistener.h \
   ../../include/cproperty.h \
   ../../include/ccoroutine.h \
   appreg.h \
@@ -354,6 +356,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  resultlistener.h \
   objectprinter.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
@@ -438,6 +441,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   runattributes.h \
+  resultlistener.h \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
@@ -485,6 +489,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   runattributes.h \
+  resultlistener.h \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
@@ -528,6 +533,7 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/platdep/platdefs.h \
   filesnapshotmgr.h \
   ../../include/cpar.h \
+  resultlistener.h \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
@@ -593,6 +599,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   runattributes.h \
+  resultlistener.h \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
@@ -647,6 +654,7 @@ $O/intervals.obj: intervals.cc \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  resultlistener.h \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
@@ -754,8 +762,8 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   envirdefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -769,16 +777,44 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
-  ../../include/platdep/platdefs.h \
   ../../include/clistener.h \
+  ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  resultlistener.h \
+  ../../include/ccomponent.h \
+  ../../include/regmacros.h
+$O/resultlistener.obj: resultlistener.cc \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/cenvir.h \
+  ../../include/csimulation.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  envirdefs.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cdefaultlist.h \
+  ../../include/opp_string.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/cexpression.h \
+  ../../include/clistener.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpar.h \
+  resultlistener.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/cregistrationlist.h \
   resultrecorders.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/cenvir.h \
   resultfilters.h \
   ../../include/onstartup.h \
@@ -786,11 +822,11 @@ $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   envirdefs.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cdensityestbase.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
   ../../include/cclassfactory.h \
@@ -802,11 +838,12 @@ $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/cstatistic.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
   ../../include/cexpression.h \
-  ../../include/clistener.h \
+  ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
+  ../../include/clistener.h \
   ../../include/cpar.h \
+  resultlistener.h \
   ../../include/cproperty.h \
   ../../include/cproperties.h \
   ../../include/chistogram.h \
@@ -851,6 +888,7 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  resultlistener.h \
   runattributes.h \
   objectprinter.h \
   ../../include/ccomponent.h \
@@ -965,8 +1003,8 @@ $O/startup.obj: startup.cc \
 $O/statisticparser.obj: statisticparser.cc \
   ../../include/cregistrationlist.h \
   resultrecorders.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
   ../../include/cenvir.h \
   statisticparser.h \
   resultfilters.h \
@@ -975,10 +1013,10 @@ $O/statisticparser.obj: statisticparser.cc \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   envirdefs.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
-  ../../include/cmessageheap.h \
+  ../../include/simkerneldefs.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -987,11 +1025,12 @@ $O/statisticparser.obj: statisticparser.cc \
   ../../include/cstatistic.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
-  ../../include/platdep/platdefs.h \
+  ../../include/cexpression.h \
   ../../include/clistener.h \
+  ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  resultlistener.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/valueiterator.obj: valueiterator.cc \
@@ -1044,6 +1083,7 @@ $O/xgridspec.obj: xgridspec.cc \
   ../../include/platdep/platdefs.h \
   ../../include/clistener.h \
   ../../include/cpar.h \
+  resultlistener.h \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h

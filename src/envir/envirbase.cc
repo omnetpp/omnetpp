@@ -945,18 +945,18 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
         simsignal_t signalID = signals[i];
         std::vector<cIListener*> listeners = component->getLocalSignalListeners(signalID);
         for (unsigned int j = 0; j < listeners.size(); j++)
-            if (dynamic_cast<ResultProcessor*>(listeners[j]))
-                dumpResultRecorderChain(component, signalID, (ResultProcessor *)listeners[j]);
+            if (dynamic_cast<ResultListener*>(listeners[j]))
+                dumpResultRecorderChain(component, signalID, (ResultListener *)listeners[j]);
     }
 }
 
-void EnvirBase::dumpResultRecorderChain(cComponent *component, simsignal_t signalID, ResultProcessor *listener)
+void EnvirBase::dumpResultRecorderChain(cComponent *component, simsignal_t signalID, ResultListener *listener)
 {
 //FIXME refine format!!!!
     ev << listener->str() << "\n";
     if (dynamic_cast<ResultFilter *>(listener))
     {
-        std::vector<ResultProcessor *> delegates = ((ResultFilter*)listener)->getDelegates();
+        std::vector<ResultListener *> delegates = ((ResultFilter*)listener)->getDelegates();
         for (unsigned int i=0; i < delegates.size(); i++)
             dumpResultRecorderChain(component, signalID, delegates[i]);
     }
