@@ -33,6 +33,7 @@
 #include "eventlogfilemgr.h"
 #include "cconfiguration.h"
 #include "timeutil.h"
+#include "resultrecorders.h" //XXX split up that header!
 
 NAMESPACE_BEGIN
 
@@ -272,7 +273,12 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void checkFingerprint();
 
     // Utility function for addResultRecorders()
-    void addResultRecorder(cComponent *component, const char *statisticName, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled);
+    SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
+    // Utility function for addResultRecorders()
+    void doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where);
+    // Utility function for addResultRecorders()
+    void dumpResultRecorders(cComponent *component);
+    void dumpResultRecorderChain(cComponent *component, simsignal_t signalID, ResultProcessor *listener);
 
     /**
      * Original command-line args.

@@ -47,6 +47,7 @@
 #include "enumstr.h"
 #include "simtime.h"
 #include "resultrecorders.h"
+#include "statisticparser.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -805,10 +806,10 @@ void EnvirBase::addResultRecorders(cComponent *component)
         cProperty *property = component->getProperties()->get("statistic", statisticName);
         ASSERT(property!=NULL);
         bool hasSourceKey = property->getNumValues("source") > 0;
-        const char *signalName = hasSourceKey ? property->getValue("source",0) : statisticName;
-        simsignal_t signalID = cComponent::registerSignal(signalName);
+        const char *sourceSpec = hasSourceKey ? property->getValue("source",0) : statisticName;
+        SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
 
-        // add result recorders
+        // collect the list of result recorders
         std::vector<const char *> modes1;
         int n = property->getNumValues("record");
         for (int j = 0; j < n; j++)
@@ -842,27 +843,87 @@ void EnvirBase::addResultRecorders(cComponent *component)
             }
         }
 
+        // add result recorders
         for (int j = 0; j < (int)modes1.size(); j++)
-            addResultRecorder(component, statisticName, signalID, modes1[j], "in @statistic property", scalarsEnabled, vectorsEnabled);
+            doResultRecorder(source, modes1[j], scalarsEnabled, vectorsEnabled, component, statisticName, "in @statistic property");
         for (int j = 0; j < (int)modes2.size(); j++)
-            addResultRecorder(component, statisticName, signalID, modes2[j].c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
+            doResultRecorder(source, modes2[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName, "in the configuration");
+    }
+
+    dumpResultRecorders(component); //XXX if debug
+}
+
+static bool opp_isidentifier(const char *s)
+{
+    if (!opp_isalpha(s[0]) && s[0]!='_')
+        return false;
+    while (*++s)
+        if (!opp_isalnum(*s))
+            return false;
+    return true;
+}
+
+SignalSource EnvirBase::doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter)
+{
+    try
+    {
+        if (opp_isidentifier(sourceSpec))
+        {
+            // simple case: just a signal name
+            simsignal_t signalID = cComponent::registerSignal(sourceSpec);
+            if (!needWarmupFilter)
+                return SignalSource(component, signalID);
+            else
+            {
+                WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
+                component->subscribe(signalID, warmupFilter);
+                return SignalSource(warmupFilter);
+            }
+        }
+        else
+        {
+            StatisticSourceParser parser;
+            return parser.parse(component, statisticName, sourceSpec, needWarmupFilter);
+        }
+    }
+    catch (std::exception& e)
+    {
+        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): error in source=%s: %s",
+            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec, e.what());
     }
 }
 
-void EnvirBase::addResultRecorder(cComponent *component, const char *statisticName, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled)
+void EnvirBase::doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where)
 {
-    ResultRecorder *listener = createResultRecorder(mode);
-    if (!listener)
-        throw cRuntimeError(component, "Unrecognized recording mode specified %s for statistic %s: \"%s\"",
-                            where, statisticName, mode);
-    bool recordsVector = !strcmp(mode, "vector");
-    if (recordsVector ? !vectorsEnabled : !scalarsEnabled) {
-        // disabled, return
-        delete listener;
-        return;
+    try
+    {
+        if (opp_isidentifier(mode))
+        {
+            // simple case: just a plain recorder
+            ResultRecorder *listener = createResultRecorder(mode);
+            if (!listener)
+                throw opp_runtime_error("unrecognized recording mode \"%s\"", mode);
+            bool recordsVector = !strcmp(mode, "vector");
+            if (recordsVector ? !vectorsEnabled : !scalarsEnabled) {
+                // disabled, return
+                delete listener;  //FIXME it shouldn't have been created in the first place then!
+                return;
+            }
+            listener->init(component, statisticName);  //FIXME or whatever name
+            source.subscribe(listener);
+        }
+        else
+        {
+            // something more complicated: use parser
+            StatisticRecorderParser parser;
+            parser.parse(source, mode, scalarsEnabled, vectorsEnabled, component, statisticName, where);
+        }
     }
-    listener->init(statisticName);
-    component->subscribe(signalID, listener);
+    catch (std::exception& e)
+    {
+        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s' specified %s: %s",
+            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), mode, where, e.what());
+    }
 }
 
 ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
@@ -874,6 +935,31 @@ ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
     if (!desc)
         return NULL;
     return desc->create();
+}
+
+void EnvirBase::dumpResultRecorders(cComponent *component)
+{
+    std::vector<simsignal_t> signals = component->getLocalListenedSignals();
+    for (unsigned int i = 0; i < signals.size(); i++)
+    {
+        simsignal_t signalID = signals[i];
+        std::vector<cIListener*> listeners = component->getLocalSignalListeners(signalID);
+        for (unsigned int j = 0; j < listeners.size(); j++)
+            if (dynamic_cast<ResultProcessor*>(listeners[j]))
+                dumpResultRecorderChain(component, signalID, (ResultProcessor *)listeners[j]);
+    }
+}
+
+void EnvirBase::dumpResultRecorderChain(cComponent *component, simsignal_t signalID, ResultProcessor *listener)
+{
+//FIXME refine format!!!!
+    ev << listener->str() << "\n";
+    if (dynamic_cast<ResultFilter *>(listener))
+    {
+        std::vector<ResultProcessor *> delegates = ((ResultFilter*)listener)->getDelegates();
+        for (unsigned int i=0; i < delegates.size(); i++)
+            dumpResultRecorderChain(component, signalID, delegates[i]);
+    }
 }
 
 void EnvirBase::readParameter(cPar *par)

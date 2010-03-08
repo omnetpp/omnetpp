@@ -93,6 +93,7 @@ class SIM_API cSignalValue : public cObject, cISignalValue, noncopyable
 class SIM_API cIListener
 {
     friend class cComponent; // for subscribecount
+    friend class ResultFilter; // for subscribecount
   private:
     int subscribecount;
   public:

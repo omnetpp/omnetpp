@@ -268,6 +268,8 @@ bool cComponent::SignalData::addListener(cIListener *l)
 {
     if (findListener(l) != -1)
         return false; // already subscribed
+
+    // reallocate each time (subscribe operations are rare, so we optimize for memory footprint)
     int n = countListeners();
     cIListener **v = new cIListener*[n+2];
     memcpy(v, listeners, n*sizeof(cIListener*));

@@ -15,9 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cproperties.h"
-#include "cproperty.h"
 #include "resultrecorders.h"
+#include "cproperty.h"
 #include "chistogram.h"
 
 
@@ -35,6 +34,16 @@ Register_ResultRecorder("max", MaxRecorder);
 Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
 
+
+void SignalSource::subscribe(ResultProcessor *listener) const
+{
+    if (filter)
+        filter->addDelegate(listener);
+    else if (component && signalID!=SIMSIGNAL_NULL)
+        component->subscribe(signalID, listener);
+    else
+        throw opp_runtime_error("subscribe() called on blank SignalSource");
+}
 
 ResultRecorderDescriptor::ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)())
   : cNoncopyableOwnedObject(name, false)
@@ -58,8 +67,9 @@ ResultRecorderDescriptor *ResultRecorderDescriptor::get(const char *name)
 
 //----
 
-void ResultRecorder::init(const char *statsName)
+void ResultRecorder::init(cComponent *comp, const char *statsName)
 {
+    component = comp;
     statisticName = statisticNamesPool.get(statsName);
 }
 
@@ -115,44 +125,44 @@ void ResultRecorder::extractStatisticAttributes(cComponent *component, opp_strin
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, long l)
 {
-    maybeCollect(l);
+    collect(l);
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, double d)
 {
-    maybeCollect(d);
+    collect(d);
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t d)
 {
-    maybeCollect(SIMTIME_DBL(d));
+    collect(SIMTIME_DBL(d));
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
-    maybeCollect(s!=NULL); // record 0 or 1
+    throw cRuntimeError("cannot convert const char * to double"); //FIXME better message
 }
 
 void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
     cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (v)
-        maybeCollect(v->getSignalTime(signalID), v->getSignalValue(signalID));
-    else
-        maybeCollect(obj!=NULL); // record 0 or 1
+    if (!v)
+        throw cRuntimeError("cannot convert cObject * to double"); //FIXME better message
+
+    collect(v->getSignalTime(signalID), v->getSignalValue(signalID));
 }
 
 //---
 
-void VectorRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
+void VectorRecorder::listenerAdded(cComponent *x, simsignal_t signalID)
 {
-    NumericResultRecorder::listenerAdded(component, signalID);
+    NumericResultRecorder::listenerAdded(x, signalID);
 
     // we can register the vector here, because base class ensures we are subscribed only at once place
     opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
+    extractStatisticAttributes(getComponent(), attributes);
 
-    handle = ev.registerOutputVector(component->getFullPath().c_str(), getStatisticName());
+    handle = ev.registerOutputVector(getComponent()->getFullPath().c_str(), getStatisticName());
     ASSERT(handle != NULL);
     for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
         ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
@@ -170,10 +180,10 @@ void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cOb
                     "the previously recorded value, for statistic %s (id=%d)",
                     opp_typename(typeid(*this)), SIMTIME_STR(t), getStatisticName(), (int)signalID);
         }
-        maybeCollect(t, v->getSignalValue(signalID));
+        collect(t, v->getSignalValue(signalID));
     }
     else {
-        maybeCollect(obj!=NULL); // record 0 or 1
+        collect(obj!=NULL); // record 0 or 1
     }
 }
 
@@ -192,7 +202,7 @@ void CountRecorder::tweakTitle(opp_string& title)
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
-    maybeCollect(0.0); // dummy value
+    collect(0.0); // dummy value
 }
 
 void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
@@ -201,9 +211,9 @@ void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObj
     // base class method overridden to spare call to getSignalValue()
     cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
     if (v)
-        maybeCollect(v->getSignalTime(signalID), 0.0); // dummy value
+        collect(v->getSignalTime(signalID), 0.0); // dummy value
     else
-        maybeCollect(0.0); // dummy value
+        collect(0.0); // dummy value
 }
 
 void CountRecorder::finish(cComponent *component, simsignal_t signalID)
@@ -298,7 +308,7 @@ void TimeAverageRecorder::tweakTitle(opp_string& title)
 
 void TimeAverageRecorder::collect(simtime_t t, double value)
 {
-    if (startTime < SIMTIME_ZERO)
+    if (startTime < SIMTIME_ZERO) // uninitialized
         startTime = t;
     else
         weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
@@ -310,7 +320,7 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     bool empty = (startTime < SIMTIME_ZERO);
     simtime_t t = simulation.getSimTime();
-    collect(t, 0.0); // to get the last interval counted in; value 0.0 is just a dummy
+    collect(t, NaN); // to get the last interval counted in; the value is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
 
     std::string scalarName = makeName("timeavg");
