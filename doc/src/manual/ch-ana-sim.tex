@@ -26,9 +26,9 @@ Results may be collected and recorded in two ways:
     signal mechanism.
 \end{enumerate}
 
-The first one is the traditional way of recording results. The second way
+The first method is the traditional way of recording results. The second method
 was introduced in {\opp} 4.1, and it is preferable because it allows you
-to record the results always in the form you need, without requiring heavy
+to always record the results in the form you need, without requiring heavy
 instrumentation or continuous tweaking of the simulation model.
 
 \subsection{Using the C++ API}
@@ -50,7 +50,7 @@ up recording intervals for vectors.
 
 The drawback of recording results directly from modules is that result
 recording is hardcoded in modules, and even simple requirement changes
-(e.g. record the average delay instead of each delay value, or vica versa)
+(e.g. record the average delay instead of each delay value, or vice versa)
 requires code change or an excessive amount of result collection code
 in the modules.
 
@@ -67,7 +67,7 @@ and modules emit values using the signal mechanism. The simulation
 framework records data by adding result file writing listeners to modules.
 By being able to choose what listeners to add, the user can control what to
 record in the result files and what computations to apply before recording.
-The section \label{sec:ch-simple-modules:statistic-signals} explains how to
+This section \label{sec:ch-simple-modules:statistic-signals} explains how to
 instrument simple modules and channels for signals-based result recording.
 
 The signals approach allows for calculation of aggregate statistics (such as the
@@ -226,7 +226,7 @@ Currently the following modes are supported:
       of the values (bins are set up automatically)
 \end{itemize}
 
-New ones cannot be defined at the moment; this feature is planned for future versions.
+New modes cannot be defined at this time; this feature is planned for future versions.
 
 An example:
 
@@ -256,6 +256,7 @@ Output vectors can be configured with the \ttt{vector-recording=} and
 \ttt{vector-recording-intervals=} per-object options. The syntax of the
 configuration options are
 \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording=}\textit{true/false},
+%line is outside the margins
 and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-intervals=}\textit{<intervals>},
 where both \textit{<module-full-path>} and \textit{<vector-name>} may
 contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
@@ -291,7 +292,7 @@ A third per-vector configuration option is \ttt{vector-record-eventnumbers=},
 which specifies whether to record event numbers for an output vector.
 (Simulation time and value are always recorded. Event numbers are needed
 by the Sequence Chart Tool, for example.) Event number recording is enabled
-by default; it may be turned off to spare disk space.
+by default; it may be turned off to save disk space.
 
 \begin{inifile}
 **.vector-record-eventnumbers = false
@@ -342,7 +343,7 @@ identifies the parameter, plus \ttt{.save-as-scalar}. An example:
 **.host[*].networkLoad.save-as-scalar = true
 \end{inifile}
 
-This looks simple enough. However, there are three pitfalls:
+This looks simple enough, however there are three pitfalls:
 non-numeric parameters, too many matching parameters, and
 random-valued volatile parameters.
 
@@ -403,7 +404,7 @@ pretty much random garbage which should be ignored. However, when you
 convert the decimal representation back into a \ttt{double} for result
 processing, an additional small error will occur, because 0.1, 0.01, etc.
 cannot be accurately represented in binary. This conversion error is
-usually smaller than the one that the \ttt{double} variable already had
+usually smaller than what that the \ttt{double} variable already had
 before recording into the file. However, if it is important, you can
 eliminate this error by setting the recording precision to 16 digits or
 more (but again, be aware that the last digits are garbage). The practical
@@ -438,7 +439,7 @@ upper limit is 17 digits, setting it higher doesn't make any difference in
 % For the complexity of the issue, see "What Every Computer Scientist
 % Should Know About Floating-Point Arithmetic" by David Goldberg.
 
-Errors coming from converting to/from decimal representation can be
+Errors resulting from converting to/from decimal representation can be
 eliminated by choosing an output vector/output scalar manager class
 which stores \ttt{double}s in their native binary form.
 The appropriate configuration options are \ttt{outputvectormanager-class=}
@@ -447,11 +448,10 @@ and \ttt{outputvectormanager-class=}. For example,
 provided in \ttt{samples/database} fulfill this requirement.
 
 However, before worrying too much about rounding and conversion errors,
-think what is the \textit{real} accuracy of your results.
-Some things to consider:
+consider the \textit{real} accuracy of your results:
 
 \begin{itemize}
-  \item{in real life, it is very hard to measure quantities (weight, distance,
+  \item{in real life, it is very difficult to measure quantities (weight, distance,
      even time) with more than a few digits of precision. What precision
      are your input data? For example, if you approximate inter-arrival
      time as \textit{exponential(0.153)} when the mean is really
@@ -479,7 +479,7 @@ documented in detail in Appendix \ref{cha:result-file-formats}.
 
 By default, each file contains data from one run only.
 
-Result files start with a header that contain several attributes of the
+Result files start with a header that contains several attributes of the
 simulation run: a reasonably globally unique run ID, the network NED type
 name, the experiment-measurement-replication labels, the values of
 iteration variables and the repetition counter, the date and time, the host
@@ -490,7 +490,7 @@ increase the reproducibility of the results.
 %%FIXME example header!
 
 Vectors are recorded into a separate file for practical reasons: vector
-data usually consume several magnitudes more disk space than others.
+data usually consume several magnitudes more disk space than scalars.
 
 \subsection{Output Vector Files}
 
@@ -679,7 +679,7 @@ scavetool summary Aloha-1.vec
 \section{Alternative Statistical Analysis and Plotting Tools}
 \label{sec:ana-sim:alt-tools}
 
-There are several programs and packages that can also be used to analyse
+There are several programs and packages that can also be used to analyze
 result files, and create various plots and charts from them.
 
 
@@ -692,7 +692,7 @@ or other formats, exported with \fprog{scavetool} (see
 \ref{sec:ana-sim:scavetool}).
 
 Spreadsheets have good charting and statistical features. A useful
-functionality spreadsheets offer for analysing scalar files is
+functionality spreadsheets offer for analyzing scalar files is
 \textit{PivotTable} (Excel) or \textit{DataPilot} (OpenOffice). The
 drawback of using spreadsheets is limited automation, leading to tedious
 and repetitive tasks; also, the number of rows is usually limited to about
@@ -711,8 +711,8 @@ The program uses a command line interface, though several graphical user
 interfaces are available.
 
 Several {\opp}-related packages such as SimProcTC and Syntony already
-use R for data analysis and plotting. In the future, {\opp} is going
-to be extended with features that further facilitate using it with R.
+use R for data analysis and plotting. In the future, {\opp} will 
+be extended with features that further facilitate using it with R.
 
 
 \subsection{MATLAB or Octave}
@@ -747,11 +747,11 @@ ROOT was developed at CERN, and is distributed under a BSD-like license.
 ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
 aimed at processing C/C++ scripts. It is probably harder to get started
 using ROOT than with either Gnuplot or Grace, but if you are serious
-about analysing simulation results, you will find that ROOT provides
-power and flexibility that would be unattainable the other two programs.
+about analyzing simulation results, you will find that ROOT provides
+power and flexibility that would be unattainable with the other two programs.
 
-Curt Brune's page at Stanford (http://www.slac.stanford.edu/~curt/omnet++/)
-shows examples what you can achieve using ROOT with {\opp}.
+Curt Brune's page at Stanford (http://www.slac.stanford.edu/\~curt/omnet++/)
+shows examples of what you can achieve using ROOT with {\opp}.
 
 
 \subsection{Gnuplot}

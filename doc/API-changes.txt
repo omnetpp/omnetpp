@@ -147,7 +147,6 @@ OMNeT++ 4.0
           (cComponent) with cModule, they participate in the initialize()/
           finish() protocol, and so on.
         - cBasicChannel renamed to cDatarateChannel
-        - added calculateDuration(cMessage *msg) method into channels
         - removed delay(), setDelay(), error(), setError(), dataRate(),
           setDataRate() methods from cGate: please use methods from the gate's
           channel instead:
@@ -167,12 +166,9 @@ OMNeT++ 4.0
           gate->transmissionFinishTime()) results in an error. Thus, using a
           special transmitter module (with an internal queue) is now sort of
           mandatory when channels with data rate are in use.
-        - setting channel parameters from the ini file:
-           (1) make the parameter input, e.g.:
-                 a.out --> { delay=default(0); } --> b.in;
-           (2) add <fromgate-fullpath>.channel.<paramname> = <value> into
-               the ini file, e.g.:
-                 **.a.out.channel.delay = 10ms
+        - setting channel parameters from the ini file: add 
+            <fromgate-fullpath>.channel.<paramname> = <value>, e.g.:
+            **.a.out.channel.delay = 10ms
         - now a connection path may only contain one cDatarateChannel (more
           precisely, only one channel whose isTransmissionChannel() method
           returns true)

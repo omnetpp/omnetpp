@@ -22,6 +22,7 @@
 \usepackage{fancyhdr}   %% custom headers and footers
 \usepackage{multicol}
 \usepackage{listings}   %% source code listings with syntax highlight (lstxxx commands)
+\usepackage[tight]{shorttoc}   %% for generating a second table of contents, only containing chapter titles
 
 \usepackage{tocbibind}  %% makes Bibliography and Index show up in TOC
 \settocbibname{References}
@@ -310,7 +311,7 @@
 %\setcounter{secnumdepth}{4}
 
 % limit the depth of TOC
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 
 %%
 %% Start of document
@@ -328,6 +329,10 @@
 %%\setcounter{page}{1}
 %\newpage
 %%\pagenumbering{roman}
+
+\shorttableofcontents{Chapters}{0}
+\cleardoublepage
+
 \tableofcontents
 \cleardoublepage
 

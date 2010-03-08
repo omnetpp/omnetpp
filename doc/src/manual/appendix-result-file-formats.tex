@@ -7,7 +7,7 @@ entries occurring into them are different. This unified format also
 means that they can be read with a common routine.
 
 Result files are \textit{line oriented}. A line consists of one or more
-tokens, separated by whitespace. Tokens either don't
+tokens, separated by whitespace. Tokens either do not
 contain whitespace, or whitespace is escaped using a backslash, or
 are quoted using double quotes. Escaping within quotes using
 backslashes is also permitted.
@@ -168,8 +168,8 @@ identify the load for a ``throughput vs load'' plot).
 
 It may not be practical to simply store all parameters of all modules in the
 result file, because there may be too many. We assume that NED files are
-invariant and don't store parameters defined in them. However, we store
-parameter assignments that come from omnetpp.ini, in their original
+invariant and do not store parameters defined in them. However, we store
+parameter assignments that come from \ffilename{omnetpp.ini}, in their original
 wildcard form (i.e. not expanded) to conserve space. Parameter values
 entered interactively by the user are also stored.
 

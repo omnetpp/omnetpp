@@ -7,7 +7,7 @@
 \section{Introduction to Parallel Discrete Event Simulation}
 
 {\opp} supports parallel execution\index{parallel simulation} of large
-simulations. The following paragraphs provide a brief picture
+simulations. This section provides a brief picture
 of the problems and methods of parallel
 discrete event simulation (PDES\index{PDES}). Interested readers are
 strongly encouraged to look into the literature.
@@ -15,8 +15,8 @@ strongly encouraged to look into the literature.
 For parallel execution, the model is to be partitioned into several
 LPs (logical processes) that will be simulated independently on
 different hosts or processors. Each LP will have its own local
-Future Event Set, thus they will maintain their own local simulation
-times. The main issue with parallel simulations is keeping LPs
+Future Event Set, and thus will maintain its own local simulation
+time. The main issue with parallel simulations is keeping LPs
 synchronized in order to avoid violating the causality of events.
 Without synchronization, a message sent by one LP could arrive in
 another LP when the simulation time in the receiving LP has already
@@ -36,7 +36,7 @@ above:
     LPs until $t+\Delta t$ simulation time, it may advance until
     $t+\Delta t$ without the need for external synchronization.
     Conservative simulation tends to converge to sequential simulation
-    (slowed down by communication between LPs) if there's not
+    (slowed down by communication between LPs) if there is not
     enough parallelism in the model, or parallelism is not exploited
     by sending a sufficient number of `null' messages.}
 
@@ -114,7 +114,7 @@ $\lambda = (LE) / (\tau P)$
 
 Without going into the details: if the resulting $\lambda$ value is at
 minimum larger than one, but rather in the range 10..100, there is
-a good change that the simulation will perform well when run in
+a good chance that the simulation will perform well when run in
 parallel. With $\lambda < 1$, poor performance is guaranteed.
 For details see the paper \cite{ParsimCrit03}.
 
@@ -138,7 +138,7 @@ The {\opp} design places a big emphasis on
 is that usually a large number of simulation experiments need to be done
 on a single model before a conclusion can be drawn about the real system.
 Experiments tend to be ad-hoc and change much faster than simulation
-models, thus it is a natural requirement to be able to
+models; thus it is a natural requirement to be able to
 carry out experiments without disturbing the simulation model itself.
 
 Following the above principle, {\opp} allows simulation models
@@ -205,7 +205,7 @@ The implementation of the Null Message Algorithm is also
 modular in itself in that the lookahead discovery can be plugged
 in via a defined API. Currently implemented lookahead
 discovery uses link delays, but it is possible to
-implement more sophisticated ones and select them in the
+implement more sophisticated approaches and select them in the
 configuration.
 
 
@@ -245,8 +245,8 @@ by delays on the marked links.
 \end{figure}
 
 To run the CQN model in parallel, we have to configure it for parallel
-execution. In {\opp}, the configuration is in a text file called
-\texttt{omnetpp.ini}. For configuration, first we have to specify
+execution. In {\opp}, the configuration is in the
+\texttt{omnetpp.ini} file. For configuration, first we have to specify
 partitioning, that is, assign modules to processors. This is done
 by the following lines:
 
@@ -290,7 +290,7 @@ configuration options.)
 
 The graphical user interface of {\opp} can also be used
 (as evidenced by Figure \ref{fig:parsim-screenshot}),
-independent of the selected communication mechanism.
+independently of the selected communication mechanism.
 The GUI interface can be useful for educational or demonstration purposes.
 {\opp} displays debugging output about the Null Message Algorithm,
 EITs and EOTs can be inspected, etc.
@@ -412,7 +412,7 @@ fname-append-host = true
 \end{inifile}
 
 It will cause the host names to be appended to the names of
-all output vector files, so that partitions do not overwrite each other's
+all output vector files, so that partitions don't overwrite each other's
 output files. (See section \ref{sec:run-sim:using-shared-filesystems})
 
 
@@ -421,7 +421,7 @@ output files. (See section \ref{sec:run-sim:using-shared-filesystems})
 
 \subsection{Design of PDES Support in {\opp}}
 
-Design of PDES support in {\opp} follows a layered approach,
+The design of PDES support in {\opp} follows a layered approach,
 with a modular and extensible architecture. The overall
 architecture is depicted in Figure \ref{fig:parsim-arch}.
 
@@ -477,7 +477,7 @@ by classes, subclassed from the \texttt{cParsimSynchronizer} abstract class.
 The parallel simulation algorithm is invoked on the following hooks:
 event scheduling, processing model messages outgoing from the LP,
 and messages (model messages or internal messages) arriving
-from other LPs. The first hook, event scheduling is a function
+from other LPs. The first hook, event scheduling, is a function
 invoked by the simulation kernel to determine the next simulation
 event; it also has full access to the future event set (FES\index{FES}) and
 can add/remove events for its own use.
@@ -495,14 +495,14 @@ parallel simulation algorithm to process its own internal messages
 from other partitions; the null message algorithm processes
 incoming null messages here.
 
-The Null Message Protocol implementation itself is modular,
+The Null Message Protocol implementation itself is modular;
 it employs a separate, configurable lookahead discovery object.
 Currently only link delay based lookahead discovery has been
 implemented, but it is possible to implement more sophisticated
-ones.
+types.
 
 The Ideal Simulation Protocol (ISP; see \cite{bagrodia00})
-implementation consists in fact of two parallel simulation
+implementation consists of two parallel simulation
 protocol implementations:
 the first one is based on the null message algorithm and
 additionally records the external events (events received

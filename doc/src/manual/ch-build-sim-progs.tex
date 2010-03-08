@@ -3,7 +3,7 @@
 
 \section{Overview}
 
-As it was already mentioned, an {\opp} model physically consists of
+As has already been mentioned, an {\opp} model consists of
 the following parts:
 
 \begin{itemize}
@@ -11,7 +11,7 @@ the following parts:
       are files with the \ttt{.ned} extension.}
   \item{Message definitions\index{message definitions}, in files
       with \ttt{.msg} extension.}
-  \item{Simple modules implementations and other C++ code, in \ttt{.cc}
+  \item{Simple module implementations and other C++ code, in \ttt{.cc}
         files (or \ttt{.cpp}, on Windows)}
 \end{itemize}
 
@@ -31,23 +31,29 @@ Compiling NED files directly to C++ code is no longer supported in
 {\opp} 4.0. NED files are always dynamically loaded.
 \end{note}
 
-File names for libraries differ for Unix/Linux and for Windows,
-and also different for static and shared libraries.
-Let us suppose you have a library called Tkenv.
-If you are compiling with gcc or mingw, the file name for the static library
-would be something like \ttt{libopptkenv[d].a},
-and the shared library would be called \ttt{libopptkenv[d].so}.
-(libopptkenvd.so would be used for the debug version while libopptkenv.so
-is for the release build.)
+File names for libraries differ depending on the platform, whether it is 
+a static or shared library, and whether it is a debug or release version.
+Let us suppose you have a library called \ttt{common}: 
+\begin{itemize}
+  \item{The \ttt{opp} prefix is always prepended to all library names to avoid name clashes with other programs.}
+  \item{For all platforms, where the gcc (or mingw) compiler is used the static library filename has a ".a" extension 
+         and the \ttt{lib} prefix is prepended to the name (e.g. \ttt{liboppfoo[d].a}).}
+  \item{For all platforms, the debug version filename has a "d" inserted 
+            at the end of the library name  (e.g. \ttt{liboppcommond.ext}).}
+  \item{For the Unix/Linux platform, the shared library filename has a ".so"  
+         extension (e.g. \ttt{liboppcommon[d].so}).}
+  \item{For the Mac OS X platform, the shared library filename has a ".dylib"  
+         extension (e.g. \ttt{liboppcommon[d].dylib}).}
+  \item{For the Windows platform, the shared library filename has a ".dll"  
+         extension (e.g. \ttt{liboppfoo[d].dll}).}
+  \ifcommercial 
+     \item{With Microsoft Visual C++, the \ttt{lib} prefix is not prepended to the name
+     and the static library filename has a ".lib" extension. (e.g. \ttt{oppcommon.lib} and \ttt{oppcommon.dll}).} 
+  \fi
+\end{itemize}
 
-\begin{note}
-\ifcommercial With MSVC, the corresponding filenames will be \ttt{opptkenv.lib} and \ttt{opptkenv.dll}.\fi
-On Windows, shared libraries have the \ttt{.dll} extension instead of \ttt{.so}
-On Mac OS X, shared libraries have the \ttt{.dylib} extension instead of \ttt{.so}.
-\end{note}
-
-In {\opp} 4.0 we recommend to use shared libraries whenever it is possible.
-You'll need to link with the following libraries:
+In {\opp} 4.0 we recommend that you use shared libraries whenever it is possible.
+You will need to link with the following libraries:
 
 \begin{itemize}
   \item{The simulation kernel and class library\index{simulation!kernel},
@@ -75,7 +81,7 @@ and running simulation programs.
 \end{figure}
 
 
-This section discusses how to use the simulation system on the
+This chapter discusses how to use the simulation system on the
 following platforms:
 \begin{itemize}
   \item{Unix (Linux/Mac OS X) with gcc}
@@ -134,7 +140,7 @@ The most important options are:
 \subsection{Basic Use}
 
 Once you have the source files (\ttt{*.ned}, \ttt{*.msg}, \ttt{*.cc},
-\ttt{*.h}) in a directory, change there and type:
+\ttt{*.h}) in a directory, change the working directory to there and type:
 
 \begin{commandline}
 $ opp_makemake
@@ -176,7 +182,7 @@ clean &  Deletes all files that were produced by the make process\\\hline
 \subsection{Debug and Release Builds}
 
 \fprog{opp\_makemake} generates a makefile that can create both release and debug builds.
-By default it creates debug version, but it is easy to override this behaviour.
+By default it creates debug version, but it is easy to override this behavior.
 Just define the \ttt{MODE} variable on the \fprog{make} command line.
 
 \begin{commandline}
@@ -194,7 +200,7 @@ $ opp_makemake --mode release ...
 
 If you are using external libraries you should specify the include path for the header files
 with the \ttt{-I} \textit{includedir} option. You should specify this option if you are using
-anything outside from the source directory tree (except the system and {\opp} headers which are
+anything outside of the source directory tree (except the system and {\opp} headers which are
 always included automatically)
 
 To define an external library to be linked with, use \ttt{-Ldir} to specify
@@ -209,7 +215,7 @@ A source tree will generate a single output file (executable or library).
 A source directory tree will always have a \ttt{Makefile} in its root,
 and source files may be placed anywhere in the tree.
 
-To turns on this option, use the \ttt{opp\_makemake -{}-deep} option.
+To turn on this option, use the \ttt{opp\_makemake -{}-deep} option.
 \ttt{opp\_makemake} will collect all \ttt{.cc} and \ttt{.msg} files from
 the whole subdirectory tree, and generate a makefile that covers all.
 If you need to exclude a specific directory, use the \ttt{-X exclude/dir/path}
@@ -225,7 +231,7 @@ $ opp_makemake -f --deep -X experimental -X obsolete
 \subsection{Automatic Include Dirs}
 
 If your source tree contains several subdirectories (maybe several levels
-deep), it can be annoying that you should specify relative paths for your
+deep), it can be annoying to have to specify relative paths for your
 header files in your \ttt{.cc} files or you should specify the include path
 explicitly by the \ttt{-I includepath} option. \ttt{opp\_makemake} has a
 command line option, which adds all directories in the current source tree
@@ -266,9 +272,9 @@ files are always added to the file's dependency list.
 
 \subsection{Out-of-Directory Build}
 
-The build system creates object and executable files in a separate directory, called
-\textit{output directory}. The structure of the output folder will be the same as your
-sourcefolder structure except that it will be placed in the \ttt{out/configname} directory.
+The build system creates object and executable files in a separate directory, called the
+\textit{output directory}. The structure of the output directory will be the same as your
+source directory structure except that it will be placed in the \ttt{out/configname} directory.
 The \ttt{configname} part will mirror your compiler toolchain and build mode settings.
 (i.e. The result of a debug build with gcc will be placed in \ttt{out/gcc-debug})
 
@@ -313,7 +319,7 @@ You must choose a \ttt{<symbol>} for your project and annotate each class
 and dll-public declaration with \ttt{<symbol>\_API}. If you generate your makefiles
 with the \ttt{-p <symbol>} option, \ttt{<symbol>\_EXPORT} macro will be passed to
 the compiler causing <symbol>\_API to be defined as \_\_declspec(dllexport) in
-your sources. This step allows to correctly generate DLL exports in windows.
+your sources. This step allows Visual C++ to correctly generate DLL exports in Windows.
 \end{note}
 \fi
 
@@ -321,8 +327,8 @@ your sources. This step allows to correctly generate DLL exports in windows.
 \subsection{Recursive Builds}
 
 
-The \ttt{-{}-recurse} option enables recursive make: when you build the simulation, make
-will descend into the subdirectories and runs make in them too.
+The \ttt{-{}-recurse} option enables recursive make; when you build the simulation, make
+descends into the subdirectories and runs make in them too.
 By default, \ttt{-{}-recurse} decends into all subdirectories; the -X directory option
 can be used to make it ignore certain subdirectories. This option is especially useful
 for top level makefiles.
@@ -331,7 +337,7 @@ for top level makefiles.
 The \ttt{-{}-recurse} option automatically discovers subdirectories, but this
 is sometimes inconvenient. Your source directory tree may contain
 parts which need their own hand written \ttt{Makefile}. This can happen if
-you include source files from an other non {\opp} project.With the \ttt{-d dir}
+you include source files from an other non {\opp} project. With the \ttt{-d dir}
 or \ttt{-{}-subdir dir} option, you can explicitly specify which directories to
 recurse into, and also, the directories need not be direct children of the
 current directory.
@@ -374,7 +380,7 @@ ones, and also to override the default target.
 
 \ttt{makefrag} can be useful if some of your source files are generated
 from other files (for example, you use generated NED files), or you need
-additional targets in your makefile or just simply wants to override the
+additional targets in your makefile or just simply want to override the
 default target in the makefile.
 
 
@@ -392,8 +398,8 @@ recursively in the source directory trees.
 
 \subsection{A Multi-Directory Example}
 
-For a complex example of using \fprog{opp\_makemake}, we will check how to create
-the makefiles for the mobility-framework. First take a look at the
+For a complex example of using \fprog{opp\_makemake}, we will show how to create
+the makefiles for the Mobility Framework. First, take a look at the
 project's directory structure and find the directories that should be used as
 source trees:
 
@@ -408,20 +414,20 @@ mobility-framework
     testSuite <-- source tree (build testSuite executable from this dir)
 \end{verbatim}
 
-Additionally there are dependencies between these output files: \ttt{mfcontrib}
+Additionally, there are dependencies between these output files: \ttt{mfcontrib}
 requires \ttt{mfcore} and \ttt{testSuite} requires \ttt{mfcontrib} (and indirectly
-\ttt{mfcore} of course).
+\ttt{mfcore}).
 
-First create the makefile for the core directory (build a shared lib from all .cc files
-found in the core subtree and name it 'mfcore'):
+First, we create the makefile for the core directory. The makefile will build
+a shared lib from all .cc files in the \ttt{core} subtree, and will name it \ttt{mfcore}):
 
 \begin{commandline}
 $ cd core && opp_makemake -f --deep --make-so -o mfcore -O out
 \end{commandline}
 
-The contrib directory is depending on \ttt{mfcore} so we use the -L and -l options
+The \ttt{contrib} directory depends on \ttt{mfcore} so we use the \ttt{-L} and \ttt{-l} options
 to specify the library we should link with. Note that we must also add
-the include directories manually from the core source tree, because autodiscovery works only
+the include directories manually from the \ttt{core} source tree, because autodiscovery works only
 in the same source tree:
 
 \begin{commandline}
@@ -429,7 +435,7 @@ $ cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out \\
   -I../core/basicModules -I../core/utils -L../out/$(CONFIGNAME)/core -lmfcore
 \end{commandline}
 
-The testSuite will be created as an executable file which depends on both
+The \ttt{testSuite} will be created as an executable file which depends on both
 \ttt{mfcontrib} and \ttt{mfcore}.
 
 \begin{commandline}
@@ -438,22 +444,24 @@ $ cd testSuite && opp_makemake -f --deep -o testSuite -O out
     -I../contrib/applLayer -L../out/$(CONFIGNAME)/contrib -lmfcontrib
 \end{commandline}
 
-Now the last step is to create a top-level makefile in the root of the project that
-calls the previously created makefiles in the correct order. We will use the
-\ttt{-{}-nolink} option, exclude every subdirectory from the build (-X.) and explicitly call
-the above makefiles (-d dirname).
-
-\begin{commandline}
-$ opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.
-\end{commandline}
-
-Finally we have to specify the dependencies between the above directories. Add the lines below
-to the \ttt{makefrag} file in the project directory root.
+Now let us specify the dependencies between the above directories. 
+Add the lines below to the \ttt{makefrag} file in the project directory root.
 
 \begin{filelisting}
 contrib_dir: core_dir
 testSuite_dir: contrib_dir
 \end{filelisting}
+
+Now the last step is to create a top-level makefile in the root of the project that
+calls the previously created makefiles in the correct order. We will use the
+\ttt{-{}-nolink} option, exclude every subdirectory from the build (\ttt{-X.}), and explicitly call
+the above makefiles using \ttt{-d dirname}. \ttt{opp\_makemake} will automatically include
+the above created \ttt{makefrag} file.
+
+\begin{commandline}
+$ opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.
+\end{commandline}
+
 
 \ifcommercial
 \section{Using Windows and Microsoft Visual C++}

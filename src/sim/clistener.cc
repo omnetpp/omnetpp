@@ -22,7 +22,7 @@
 
 USING_NAMESPACE
 
-simtime_t cISignalValue::getSignalTime(simsignal_t signalID)
+simtime_t cITimestampedValue::getSignalTime(simsignal_t signalID)
 {
     return simulation.getSimTime();
 }

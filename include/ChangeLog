@@ -255,7 +255,6 @@
 	  (cComponent) with cModule, they participate in the initialize()/
 	  finish() protocol, and so on.
 	- cBasicChannel renamed to cDatarateChannel
-	- added calculateDuration(cMessage *msg) method into channels
 	- removed delay(), setDelay(), error(), setError(), dataRate(),
 	  setDataRate() methods from cGate: please use methods from the gate's channel
 	  instead: check_and_cast<cDatarateChannel *>(gate->channel())->setDelay(0.1);

@@ -51,18 +51,16 @@ SVGPICS = \
         figures\parsim-placeholders2.svg \
         figures\simlib-queue.svg \
         figures\parsim-placeholders.svg \
-        figures\simple-conndatarate.svg \
         figures\simple-gates.svg \
         figures\over-modules.svg \
         figures\simlib-histogramcells.svg \
-        figures\simple-messagesend.svg \
         figures\simlib-histogramrange.svg \
-        figures\simple-transmission.svg \
+        figures\transmission.svg \
         figures\parsim-arch.svg \
         figures\simlib-histogramsetup.svg
 
 
-DOTPICS = figures\build-workflow.dot figures\ned-net6-topology.dot
+DOTPICS = figures\build-workflow.dot figures\ned-net6-topology.dot figures\component-inheritance.dot
 
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 

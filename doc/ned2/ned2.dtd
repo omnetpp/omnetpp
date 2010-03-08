@@ -170,8 +170,8 @@
      name                NMTOKEN   #REQUIRED>
 
 <!-- Ident is either a parameter reference or an identifier for 'sizeof' operator
-     format is 'name' or 'module.name' or 'module[n].name'. If there's a child,
-     that's the module index n.
+     format is 'name' or 'module.name' or 'module[n].name'. If there is a child,
+     it represents the module index n.
 -->
 <!ELEMENT ident (comment*, (operator|function|ident|literal)?)>
 <!ATTLIST ident

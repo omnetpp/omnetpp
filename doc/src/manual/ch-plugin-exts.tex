@@ -49,7 +49,7 @@ To actually implement and select a plug-in for use:
      the code of your class! Over-optimizing linkers (esp. on Unix)
      tend to leave out code to which there seem to be no external reference.
    \item Add an entry to \ffilename{omnetpp.ini} to tell Envir use your class
-     instead of the default one. For RNGs, this setting is \ttt{rng-class}
+     instead of the default class. For RNGs, this setting is \ttt{rng-class}
      in the \ttt{[General]} section.
 \end{enumerate}
 
@@ -92,20 +92,20 @@ The configuration provider C++ class must implement the
 the \fpar{configuration-class} configuration option.
 
 The \cclass{cConfigurationEx} interface abstracts the inifile-based
-data model a little. It assumes that the configuration data
+data model to some degree. It assumes that the configuration data
 consists of several \textit{named configurations}. Before every
-simulation run, one of the \textit{named configurations} get
+simulation run, one of the \textit{named configurations} is
 activated, and from then on, all queries into the configuration
 operate on the \textit{active named configuration} only.
 
-It practice, you'll probably use the \cclass{SectionBasedConfiguration}
+It practice, you will probably use the \cclass{SectionBasedConfiguration}
 class (in \ttt{src/envir}) or subclass from it, because it already
-implements a lot of functionality that otherwise you would have to.
+implements a lot of functionality that you would otherwise have to.
 
 \cclass{SectionBasedConfiguration} does not assume ini files or
 any other particular storage format; instead, it accepts
 an object that implements the \cclass{cConfigurationReader}
-interface to provides the data in raw form to it.
+interface to provide the data in raw form to it.
 The default implementation of \cclass{cConfigurationReader} is
 \cclass{InifileReader}.
 
@@ -119,7 +119,7 @@ looks like the following (see \ttt{src/envir/startup.cc} in the source code):
      \textit{boot-time configuration object}. The boot-time configuration
      is always a \cclass{SectionBasedConfiguration} with
      \cclass{InifileReader}.
-  \item Shared libraries get loaded (see the \ttt{-l} command-line option,
+  \item Shared libraries are loaded (see the \ttt{-l} command-line option,
      and the \ttt{load-libs} configuration option). This allows
      configuration classes to come from shared libraries.
   \item The \ttt{configuration-class} configuration option is examined.
@@ -191,7 +191,7 @@ Register_Class(DatabaseConfigurationReader);
 \subsection{Defining a New Output Scalar Manager}
 \label{sec:plugin-exts:outputscalarmanager}
 
-cOutputScalarManager handles recording the scalar output data.
+\cclass{cOutputScalarManager} handles recording the scalar output data.
 The default output scalar manager is \cclass{cFileOutputScalarManager},
 defined in the Envir library.
 
@@ -202,7 +202,7 @@ configuration option.
 \subsection{Defining a New Output Vector Manager}
 \label{sec:plugin-exts:outputvectormanager}
 
-cOutputVectorManager handles recording the output from \cclass{cOutVector} objects.
+\cclass{cOutputVectorManager} handles recording the output from \cclass{cOutVector} objects.
 The default output vector manager is \cclass{cIndexedFileOutputVectorManager},
 defined in the Envir library.
 
@@ -213,7 +213,7 @@ configuration option.
 \subsection{Defining a New Snapshot Manager}
 \label{sec:plugin-exts:snapshotmanager}
 
-cSnapshotManager provides an output stream to which snapshots are written
+\cclass{cSnapshotManager} provides an output stream to which snapshots are written
 (see section \ref{sec:ch-sim-lib:snapshots}). The default snapshot manager
 is \cclass{cFileSnapshotManager}, defined in the Envir library.
 
@@ -238,7 +238,7 @@ Register_PerObjectConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_PerObjectConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
 \end{cpp}
 
-Config options come in three flavours, as indicated by the macro names:
+Config options come in three flavors, as indicated by the macro names:
 
 \begin{itemize}
   \item \textit{Global} options affect all configurations (i.e. they are
@@ -265,8 +265,8 @@ The macro arguments are as follows:
         \ttt{CFG\_BOOL}, \ttt{CFG\_INT}, \ttt{CFG\_DOUBLE}, \ttt{CFG\_STRING},
         \ttt{CFG\_FILENAME}, \ttt{CFG\_FILENAMES}, \ttt{CFG\_PATH}, \ttt{CFG\_CUSTOM}.
         The most significant difference between filesystem-related types
-        (filename, filenames, path) and plain string is that relative
-        filenames and paths get automatically converted to absolute
+        (filename, filenames, path) and plain strings is that relative
+        filenames and paths are automatically converted to absolute
         when the configuration is read, with the base directory being the
         location of the ini file where the configuration entry was read from.
   \item \textit{UNIT} is a string that names the measurement unit in which
@@ -305,7 +305,7 @@ cConfiguration *config = ev.getConfig();
 \cclass{cConfiguration} provides several methods for querying the configuration.
 
 \begin{note}
-The configuration object provides a flattened view of the INI file. Sections
+The configuration object provides a flattened view of the ini file. Sections
 inheriting from each other are merged for you. Configuration options provided
 on the command line in the form \ttt{--option=value} are added first to the object.
 This ensures that the command line options take precedence over the values specified
@@ -335,7 +335,7 @@ bool debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 \label{sec:plugin-exts:userinterface}
 
 It is possible to extend {\opp} with a new user interface. The new
-user interface will have fully equal rights to Cmdenv and Tkenv, that is,
+user interface will have fully equal rights to Cmdenv and Tkenv; that is,
 it can be activated by starting the simulation executable with the
 \ttt{-u} \textit{<name>} command-line or the \ttt{user-interface}
 configuration option, it can be made the default user interface,
@@ -344,13 +344,13 @@ and so on.
 
 User interfaces must implement (i.e. subclass from) \cclass{cRunnableEnvir},
 and must be registered to {\opp} with the \fmac{Register\_OmnetApp()} macro.
-In practice, you'll almost always want to subclass \cclass{EnvirBase}
+In practice, you will almost always want to subclass \cclass{EnvirBase}
 instead of \cclass{cRunnableEnvir}, because \cclass{EnvirBase} already
 implements lots of functionality that otherwise you'd have to.
 
 \begin{note}
 If you want something completely different from what \cclass{EnvirBase}
-provides, such as when embedding the simulation kernel into another
+provides, such as embedding the simulation kernel into another
 application, then you should be reading section \ref{sec:ch-embedding:embedding},
 not this one.
 \end{note}
@@ -374,12 +374,12 @@ so it is necessary to add it to the include path (\ttt{-I}).
 The arguments to \fmac{Register\_OmnetApp()} include the user interface name
 (for use with the \ttt{-u} and \fconfig{user-interface} options),
 the C++ class that implements it, a weight for default user interface selection
-(if \ttt{-u} is missing, the user interface with the largest weight will get
+(if \ttt{-u} is missing, the user interface with the largest weight will be
 activated), and a description string (for help and other purposes).
 
 The C++ class should implement all methods left pure virtual in
 \cclass{EnvirBase}, and possibly others if you want to customize
-their behaviour. One method that you'll surely want to reimplement is
+their behavior. One method that you will surely want to reimplement is
 \ttt{run()} -- this is where your user interface runs. When this method
 exits, the simulation program exits.
 
