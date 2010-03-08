@@ -18,7 +18,6 @@
 #include "statisticparser.h"
 #include "resultfilters.h"
 
-//FIXME TODO: in envirbase, dump the filter/recorder chain attached to the components' signals!!!
 
 class SignalSourceReference : public Expression::Variable
 {
@@ -191,7 +190,12 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
     //}
 
     // Note: filterRef==NULL is also valid input, need to be prepared for it!
-    ResultFilter *filter = filterRef ? new MeanFilter() : NULL; //FIXME lookup from filterRef->getName()!!!
+    ResultFilter *filter = NULL;
+    if (filterRef)
+    {
+        const char *filterName = filterRef->getName();
+        filter = ResultFilterDescriptor::get(filterName)->create();
+    }
 
     SignalSource result(NULL);
 

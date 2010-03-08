@@ -18,6 +18,9 @@
 #include "commonutil.h"
 #include "resultfilter.h"
 
+cGlobalRegistrationList resultFilters("resultFilters");
+
+
 ResultFilter::ResultFilter()
 {
     delegates = new ResultListener*[1];
@@ -151,6 +154,28 @@ void NumericResultFilter::receiveSignal(cComponent *source, simsignal_t signalID
         cSignalValue tmp(t,d);
         fire(source, signalID, &tmp);
     }
+}
+
+//---
+
+ResultFilterDescriptor::ResultFilterDescriptor(const char *name, ResultFilter *(*f)())
+  : cNoncopyableOwnedObject(name, false)
+{
+    creatorfunc = f;
+}
+
+ResultFilterDescriptor *ResultFilterDescriptor::find(const char *name)
+{
+    return dynamic_cast<ResultFilterDescriptor *>(resultFilters.getInstance()->lookup(name));
+}
+
+ResultFilterDescriptor *ResultFilterDescriptor::get(const char *name)
+{
+    ResultFilterDescriptor *p = find(name);
+    if (!p)
+        throw cRuntimeError("Result filter \"%s\" not found -- perhaps the name is wrong, "
+                            "or the filter was not registered with Register_ResultFilter()", name);
+    return p;
 }
 
 

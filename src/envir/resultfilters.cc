@@ -17,6 +17,15 @@
 
 #include "resultfilters.h"
 
+// note: we don't register WarmupPeriodFilter and ExpressionFilter
+Register_ResultFilter("count", CountFilter);
+Register_ResultFilter("last", LastValueFilter);
+Register_ResultFilter("sum", SumFilter);
+Register_ResultFilter("mean", MeanFilter);
+Register_ResultFilter("min", MinFilter);
+Register_ResultFilter("max", MaxFilter);
+Register_ResultFilter("timeavg", TimeAverageFilter);
+
 
 void WarmupPeriodFilter::receiveSignal(cComponent *source, simsignal_t signalID, long l)
 {

@@ -25,28 +25,6 @@ cGlobalRegistrationList resultRecorders("resultRecorders");
 CommonStringPool ResultRecorder::statisticNamesPool;
 
 
-ResultRecorderDescriptor::ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)())
-  : cNoncopyableOwnedObject(name, false)
-{
-    creatorfunc = f;
-}
-
-ResultRecorderDescriptor *ResultRecorderDescriptor::find(const char *name)
-{
-    return dynamic_cast<ResultRecorderDescriptor *>(resultRecorders.getInstance()->lookup(name));
-}
-
-ResultRecorderDescriptor *ResultRecorderDescriptor::get(const char *name)
-{
-    ResultRecorderDescriptor *p = find(name);
-    if (!p)
-        throw cRuntimeError("Result recorder \"%s\" not found -- perhaps the name is wrong, "
-                            "or the recorder wasn't registered with Register_ResultRecorder()", name);
-    return p;
-}
-
-//----
-
 void ResultRecorder::init(cComponent *comp, const char *statsName)
 {
     component = comp;
@@ -130,6 +108,28 @@ void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signal
         throw cRuntimeError("cannot convert cObject * to double"); //FIXME better message
 
     collect(v->getSignalTime(signalID), v->getSignalValue(signalID));
+}
+
+//----
+
+ResultRecorderDescriptor::ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)())
+  : cNoncopyableOwnedObject(name, false)
+{
+    creatorfunc = f;
+}
+
+ResultRecorderDescriptor *ResultRecorderDescriptor::find(const char *name)
+{
+    return dynamic_cast<ResultRecorderDescriptor *>(resultRecorders.getInstance()->lookup(name));
+}
+
+ResultRecorderDescriptor *ResultRecorderDescriptor::get(const char *name)
+{
+    ResultRecorderDescriptor *p = find(name);
+    if (!p)
+        throw cRuntimeError("Result recorder \"%s\" not found -- perhaps the name is wrong, "
+                            "or the recorder was not registered with Register_ResultRecorder()", name);
+    return p;
 }
 
 
