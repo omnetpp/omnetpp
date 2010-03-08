@@ -24,7 +24,6 @@
 
 NAMESPACE_BEGIN
 
-
 /**
  * This is an extensible arithmetic expression evaluator class. Supports the
  * following data types: long, double, string, bool.
@@ -66,7 +65,7 @@ class COMMON_API Expression
     class Elem
     {
       friend class Expression;
-      private:
+      public:
         // Types:
         //  - bool
         //  - double (there's no long -- we calculate everything in double)
@@ -74,7 +73,9 @@ class COMMON_API Expression
         //  - math operator (+-*/%^...)
         //  - functor
         //
-        enum Type {UNDEF, BOOL, DBL, STR, FUNCTOR, OP} type;
+        enum Type {UNDEF, BOOL, DBL, STR, FUNCTOR, OP};
+      private:
+        Type type;
         union {
             bool b;
             double d;
@@ -84,17 +85,32 @@ class COMMON_API Expression
         };
 
       private:
-        void deleteOld();
+        void deleteOld() { // note: when defined in .cc file, VC++ linker won't find it from the envir lib
+            if (type==STR)
+                delete [] s;
+            else if (type==FUNCTOR)
+                delete fu;
+        }
 
       public:
         Elem()  {type=UNDEF;}
         Elem(const Elem& other)  {type=UNDEF; operator=(other);}
-        ~Elem();
+        ~Elem() {deleteOld();}
+
+        /** @name Getters */
+        //@{
+        Type getType() const {return type;}
+        bool getBool() const {Assert(type==BOOL); return b;}
+        double getDouble() const {Assert(type==DBL); return d;}
+        const char *getString() const {Assert(type==STR); return s;}
+        Functor *getFunctor() const {Assert(type==FUNCTOR); return fu;}
+        OpType getOp() const {Assert(type==OP); return op;}
+        //@}
 
         /**
          * Assignment operator -- we need to copy Elem at a hundred places
          */
-        void operator=(const Elem& other);
+        void operator=(const Elem& other) {Elem_eq(*this, other);}
 
         /**
          * Effect during evaluation of the expression: pushes the given boolean
@@ -142,6 +158,18 @@ class COMMON_API Expression
          * Unary, binary or tertiary (?: only) operations.
          */
         void operator=(OpType _op)  {type=OP; op=_op;}
+
+        /**
+         * Utility function, returns the argument count of this element.
+         * I.e. returns 0 for BOOL, DBL, STRING and zero-arg Functors,
+         * returns 1 for a one-arg Functors, and returns 2 for most operators.
+         */
+        int getNumArgs() const {return Elem_getNumArgs(*this);}
+
+        /**
+         * Debug string.
+         */
+        std::string str() const { return Elem_str(type,b,d,s,fu,op);}
     };
 
     /**
@@ -188,6 +216,27 @@ class COMMON_API Expression
     };
 
     /**
+     * A functor subclass that implements a variable; still an abstract class.
+     */
+    class Variable : public Functor
+    {
+      public:
+        virtual const char *getArgTypes() const {return "";}
+        virtual int getNumArgs() const {return 0;}
+        virtual std::string str(std::string args[], int numargs) {return getName();}
+    };
+
+    /**
+     * A functor subclass that implements a function; still an abstract class.
+     */
+    class Function : public Functor
+    {
+      public:
+        // returns name(arg1,arg2,...)
+        virtual std::string str(std::string args[], int numargs) {return Function_str(getName(), args, numargs);}
+    };
+
+    /**
      * Abstract base class for variable and function resolvers. A resolver
      * is used during parsing, and tells the parser how to convert variable
      * references and functions into Functor objects for the stored
@@ -206,6 +255,14 @@ class COMMON_API Expression
   protected:
     Elem *elems;
     int nelems;
+
+    // workaround: when calling out-of-line methods of inner classes (Elem, Function etc)
+    // from the Envir lib, VC++ 9.0 linker reports them as undefined symbols; workaround
+    // is to delegate them to Expression.
+    static void Elem_eq(Elem& e, const Elem& other);
+    static int Elem_getNumArgs(const Elem& e);
+    static std::string Elem_str(int type, bool b, double d, const char *s, Functor *fu, int op);
+    static std::string Function_str(const char *name, std::string args[], int numargs);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -240,6 +297,18 @@ class COMMON_API Expression
      * No verification is performed on the expression at this time.
      */
     virtual void setExpression(Elem e[], int nelems);
+
+    /**
+     * Returns the Reverse Polish expression as an array of Elems.
+     * The array size is getExpressionLength().
+     */
+    virtual const Elem *getExpression() const {return elems;}
+
+    /**
+     * Returns the length of the array that contains the Reverse Polish
+     * expression. The array is returned by getExpression().
+     */
+    virtual int getExpressionLength() const {return nelems;}
 
     /**
      * Evaluate the expression, and return the results as a Value.
@@ -283,7 +352,7 @@ class COMMON_API Expression
     /**
      * Interprets the string as an expression, and stores it. Resolver
      * is used for translating variable and function references during
-     * parsing.
+     * parsing. Throws exception on parse errors.
      */
     virtual void parse(const char *text, Resolver *resolver);
 
@@ -299,7 +368,7 @@ class COMMON_API Expression
 /**
  * Function object to implement all math.h functions.
  */
-class COMMON_API MathFunction : public Expression::Functor
+class COMMON_API MathFunction : public Expression::Function
 {
   private:
     std::string funcname;
@@ -319,7 +388,6 @@ class COMMON_API MathFunction : public Expression::Functor
     virtual const char *getArgTypes() const;
     virtual char getReturnType() const;
     virtual Expression::Value evaluate(Expression::Value args[], int numargs);
-    virtual std::string str(std::string args[], int numargs);
 };
 
 NAMESPACE_END
