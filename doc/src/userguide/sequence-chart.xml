@@ -415,7 +415,7 @@
       <para>
 	Similar to navigating in the Eventlog Table, to go to the cause event, press
 	<keycap>CTRL+LEFT</keycap>. To go to the arrival of a message send, press
-	<keycap>CTRL+RIGTH</keycap> while an event is selected.
+	<keycap>CTRL+RIGHT</keycap> while an event is selected.
       </para>
     </sect2>
     <sect2>
