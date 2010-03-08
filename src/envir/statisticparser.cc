@@ -170,26 +170,22 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
 {
     Assert(len >= 1);
     int stackSize = stack.size();
-    printf(" to be replaced:\n");
-    for (int i=0; i<len; i++)
-        printf("   %s\n", stack[stackSize-len+i].str().c_str());
 
     // count SignalSourceReferences (nested filter) - there must be exactly one;
     // i.e. the expression may refer to exactly one signal only
-    int n = 0;
+    int numSignalRefs = 0;
     SignalSourceReference *signalSourceReference = NULL;
-    for (int i=stackSize-len; i<stackSize; i++)
+    for (int i = stackSize-len; i < stackSize; i++)
     {
         const Expression::Elem& e = stack[i];
         if (e.getType()==Expression::Elem::FUNCTOR)
             if (dynamic_cast<SignalSourceReference*>(e.getFunctor()))
-                {n++; signalSourceReference = (SignalSourceReference*)e.getFunctor();}
+                {numSignalRefs++; signalSourceReference = (SignalSourceReference*)e.getFunctor();}
     }
-    printf(" refs: %d\n", n);
 
-    if (n != 1)
+    if (numSignalRefs != 1)
     {
-        if (n==0)
+        if (numSignalRefs == 0)
             throw cRuntimeError("expression inside %s() does not refer to any signal", filterRef->getName());
         else
             throw cRuntimeError("expression inside %s() may only refer to one signal", filterRef->getName());

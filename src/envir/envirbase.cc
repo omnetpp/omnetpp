@@ -688,6 +688,8 @@ void EnvirBase::dumpComponentList(const char *category)
         }
     }
 
+    //FIXME TODO result filters, result recorders too!
+
     if (!processed)
         throw cRuntimeError("Unrecognized category for '-h' option: %s", category);
 }
@@ -940,26 +942,40 @@ ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
 
 void EnvirBase::dumpResultRecorders(cComponent *component)
 {
+    bool componentPathPrinted = false;
     std::vector<simsignal_t> signals = component->getLocalListenedSignals();
     for (unsigned int i = 0; i < signals.size(); i++)
     {
+        bool signalNamePrinted = false;
         simsignal_t signalID = signals[i];
         std::vector<cIListener*> listeners = component->getLocalSignalListeners(signalID);
-        for (unsigned int j = 0; j < listeners.size(); j++)
-            if (dynamic_cast<ResultListener*>(listeners[j]))
-                dumpResultRecorderChain(component, signalID, (ResultListener *)listeners[j]);
+        for (unsigned int j = 0; j < listeners.size(); j++) {
+            if (dynamic_cast<ResultListener*>(listeners[j])) {
+                if (!componentPathPrinted) {
+                    ev << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
+                    componentPathPrinted = true;
+                }
+                if (!signalNamePrinted) {
+                    ev << "  \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
+                    signalNamePrinted = true;
+                }
+                dumpResultRecorderChain((ResultListener *)listeners[j], 0);
+            }
+        }
     }
 }
 
-void EnvirBase::dumpResultRecorderChain(cComponent *component, simsignal_t signalID, ResultListener *listener)
+void EnvirBase::dumpResultRecorderChain(ResultListener *listener, int depth)
 {
-//FIXME refine format!!!!
+    ev << "    ";
+    for (int i = 0; i < depth; i++) ev << "  ";
     ev << listener->str() << "\n";
+
     if (dynamic_cast<ResultFilter *>(listener))
     {
         std::vector<ResultListener *> delegates = ((ResultFilter*)listener)->getDelegates();
         for (unsigned int i=0; i < delegates.size(); i++)
-            dumpResultRecorderChain(component, signalID, delegates[i]);
+            dumpResultRecorderChain(delegates[i], depth+1);
     }
 }
 
