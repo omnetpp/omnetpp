@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "statisticparser.h"
+#include "resultfilters.h"
 
 //FIXME TODO: in envirbase, dump the filter/recorder chain attached to the components' signals!!!
 

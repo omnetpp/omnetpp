@@ -33,7 +33,7 @@
 #include "eventlogfilemgr.h"
 #include "cconfiguration.h"
 #include "timeutil.h"
-#include "resultrecorders.h" //XXX split up that header!
+#include "resultlistener.h"
 
 NAMESPACE_BEGIN
 
