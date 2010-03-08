@@ -54,6 +54,7 @@ cOwnedObject
 x.getB():5
 x.getI():11
 class @TESTNAME@::MyClass {
+    string className = @TESTNAME@::MyClass
     string fullName = myclass
     string fullPath = Test.myclass
     string info = ""
@@ -62,4 +63,3 @@ class @TESTNAME@::MyClass {
     int b = 5
     int i = 11
 }
-

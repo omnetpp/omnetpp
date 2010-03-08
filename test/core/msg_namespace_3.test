@@ -71,13 +71,15 @@ ev << ".\n";
 
 %contains: stdout
 class @TESTNAME@::Msg1 {
+    string className = @TESTNAME@::Msg1
     string fullName = ""
     string fullPath = ""
     string info = ""
     string detailedInfo = ""
     int i = 90
     int e = 20
-    @TESTNAME@_other::Base member = struct @TESTNAME@_other::Base {
+    @TESTNAME@_other::Base member = class @TESTNAME@_other::Base {
+        string className = @TESTNAME@_other::Base
         string fullName = ""
         string fullPath = ""
         string info = ""
@@ -88,13 +90,15 @@ class @TESTNAME@::Msg1 {
     int ee = 10
 }
 class @TESTNAME@::Msg2 {
+    string className = @TESTNAME@::Msg2
     string fullName = ""
     string fullPath = ""
     string info = ""
     string detailedInfo = ""
     int i = 9
     int e = 1
-    @TESTNAME@_Base member = struct @TESTNAME@_Base {
+    @TESTNAME@_Base member = class @TESTNAME@_Base {
+        string className = @TESTNAME@_Base
         string fullName = ""
         string fullPath = ""
         string info = ""
@@ -105,6 +109,7 @@ class @TESTNAME@::Msg2 {
     int ee = 1
 }
 class @TESTNAME@::Msg3 {
+    string className = @TESTNAME@::Msg3
     string fullName = ""
     string fullPath = ""
     string info = ""
@@ -112,6 +117,7 @@ class @TESTNAME@::Msg3 {
     int i = 900
     int e = 300
     Base member = struct @TESTNAME@::Base {
+        string className = @TESTNAME@::Base
         string fullName = ""
         string fullPath = ""
         string info = ""
