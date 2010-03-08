@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="cover.svg">
+   sodipodi:docname="cover-omnetpp.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -235,17 +235,22 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8635292"
-     inkscape:cx="605.58647"
-     inkscape:cy="150.57974"
+     inkscape:zoom="1.0124105"
+     inkscape:cx="553.34373"
+     inkscape:cy="807.93678"
      inkscape:document-units="px"
      inkscape:current-layer="g4084"
-     showgrid="false"
+     showgrid="true"
      inkscape:window-width="1272"
      inkscape:window-height="728"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     showguides="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3204" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -254,7 +259,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1578,15 +1583,15 @@
            id="flowPara5125" /></flowRoot>      <text
          xml:space="preserve"
          style="font-size:39.19646835px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
-         x="34.540016"
-         y="-649.75201"
+         x="34.870785"
+         y="-645.80084"
          id="text7121"
          sodipodi:linespacing="125%"
          transform="scale(1,-1)"><tspan
            sodipodi:role="line"
            id="tspan7123"
-           x="34.540016"
-           y="-649.75201">@title@</tspan></text>
+           x="34.870785"
+           y="-645.80084">@title@</tspan></text>
       <text
          xml:space="preserve"
          style="font-size:19.59823418px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
