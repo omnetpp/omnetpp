@@ -35,7 +35,7 @@ class ENVIR_API ResultFilter : public ResultListener
         void fire(cComponent *source, simsignal_t signalID, const char *s);
         void fire(cComponent *source, simsignal_t signalID, cObject *obj);
     public:
-        ResultFilter() {delegates = NULL;}
+        ResultFilter();
         ~ResultFilter();
         virtual void addDelegate(ResultListener *delegate);
         virtual int getNumDelegates() const;

@@ -15,12 +15,19 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "commonutil.h"
 #include "resultfilter.h"
 
+ResultFilter::ResultFilter()
+{
+    delegates = new ResultListener*[1];
+    delegates[0] = NULL;
+}
 
 void ResultFilter::addDelegate(ResultListener *delegate)
 {
     // reallocate each time
+    Assert(delegates!=NULL);
     int n = getNumDelegates();
     ResultListener **v = new ResultListener*[n+2];
     memcpy(v, delegates, n*sizeof(ResultListener*));
@@ -34,8 +41,6 @@ void ResultFilter::addDelegate(ResultListener *delegate)
 
 int ResultFilter::getNumDelegates() const
 {
-    if (!delegates)
-        return 0;
     int k = 0;
     while (delegates[k])
         k++;
@@ -52,14 +57,11 @@ std::vector<ResultListener*> ResultFilter::getDelegates() const
 
 ResultFilter::~ResultFilter()
 {
-    if (delegates)
-    {
-        for (int i=0; delegates[i]; i++) {
-            delegates[i]->subscribecount--;
-            delegates[i]->listenerRemoved(NULL, SIMSIGNAL_NULL);
-        }
-        delete [] delegates;
+    for (int i=0; delegates[i]; i++) {
+        delegates[i]->subscribecount--;
+        delegates[i]->listenerRemoved(NULL, SIMSIGNAL_NULL);
     }
+    delete [] delegates;
 }
 
 void ResultFilter::listenerAdded(cComponent *component, simsignal_t signalID)
