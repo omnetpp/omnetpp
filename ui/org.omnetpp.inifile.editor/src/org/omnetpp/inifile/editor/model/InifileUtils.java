@@ -140,7 +140,7 @@ public class InifileUtils {
 	public static String resolveLikeParam(String moduleFullPath, ISubmoduleOrConnection element, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {
 		// get like parameter name
 		String likeParamName = element.getLikeParam();
-		if (!likeParamName.matches("[A-Za-z0-9_]+"))
+		if (likeParamName == null || !likeParamName.matches("[A-Za-z0-9_]+"))
 			return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
 		// look up parameter value

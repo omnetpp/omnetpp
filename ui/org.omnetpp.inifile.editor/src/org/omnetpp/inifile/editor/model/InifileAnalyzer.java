@@ -403,7 +403,7 @@ public class InifileAnalyzer {
 		IFile iniFile = doc.getDocumentFile();
 		String inifilePackage = ned.getExpectedPackageFor(iniFile);
 		IProject contextProject = iniFile.getProject();
-		if (inifilePackage != null) {
+		if (inifilePackage != null && value != null) {
 			String networkName = inifilePackage + (inifilePackage.length()!=0 && value.length()!=0 ? "." : "")+value;
 			network = ned.getToplevelNedType(networkName, contextProject);
 		}
