@@ -453,6 +453,8 @@ void EnvirBase::printHelp()
     ev << "    -h nedfunctions   Lists registered NED functions\n";
     ev << "    -h units          Lists recognized physical units\n";
     ev << "    -h enums          Lists registered enums\n";
+    ev << "    -h resultfilters  Lists result filters\n";
+    ev << "    -h resultrecorders Lists result recorders\n";
     ev << "    -h all            Union of all the above\n";
     ev << "\n";
 
@@ -688,7 +690,31 @@ void EnvirBase::dumpComponentList(const char *category)
         }
     }
 
-    //FIXME TODO result filters, result recorders too!
+    if (wantAll || !strcmp(category, "resultfilters"))
+    {
+        processed = true;
+        ev << "Result filters that can be used in @statistic properties:\n";
+        cRegistrationList *table = resultFilters.getInstance();
+        table->sort();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+        }
+    }
+
+    if (wantAll || !strcmp(category, "resultrecorders"))
+    {
+        processed = true;
+        ev << "Result recorders that can be used in @statistic properties:\n";
+        cRegistrationList *table = resultRecorders.getInstance();
+        table->sort();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+        }
+    }
 
     if (!processed)
         throw cRuntimeError("Unrecognized category for '-h' option: %s", category);
@@ -912,7 +938,7 @@ void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordi
                 delete listener;  //FIXME it shouldn't have been created in the first place then!
                 return;
             }
-            listener->init(component, statisticName, recordingMode);  //FIXME or whatever name
+            listener->init(component, statisticName, recordingMode);
             source.subscribe(listener);
         }
         else
