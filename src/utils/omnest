@@ -7,7 +7,7 @@ cd $IDEDIR
 PLATFORM=`uname -sm`
 LAUNCHER=omnest
 
-echo Starting the OMNeT++ IDE...
+echo Starting the OMNEST IDE...
 
 if java -version 2>&1 | grep -i "libgcj" >/dev/null 2>/dev/null; then
   echo "A compatible JRE is required to run the IDE. "
@@ -41,7 +41,7 @@ case $PLATFORM in
 	open ./${LAUNCHER}.app
         ;;
 *)
-	echo OMNeT++ IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel
+	echo OMNEST IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel
 	exit 1
         ;;
 esac
