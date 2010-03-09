@@ -36,7 +36,7 @@ extern cGlobalRegistrationList resultRecorders;
 
 
 /**
- * Abstract base class for result recording listeners
+ * Abstract base class for result recorders.
  */
 class ENVIR_API ResultRecorder : public ResultListener
 {
@@ -57,7 +57,9 @@ class ENVIR_API ResultRecorder : public ResultListener
 };
 
 /**
- * Abstract base class for result recording listeners
+ * Abstract base class for numeric result recorders. Numeric result recorders
+ * convert all numeric data types to double, and throw an error for non-numeric
+ * types (const char *, cObject *).
  */
 class ENVIR_API NumericResultRecorder : public ResultRecorder
 {
@@ -106,44 +108,6 @@ class ENVIR_API ResultRecorderDescriptor : public cNoncopyableOwnedObject
      */
     static ResultRecorderDescriptor *get(const char *name);
 };
-
-//XXX Misc notes: revise!
-//
-// When used in SOURCE= key:
-//
-// Maps ONE SIGNAL to ONE SIGNAL (i.e. vector-to-vector one-to-one mapping).
-// Scalars should be recorded by appending a Last (or Mean,Min,Max etc) listener).
-// DOES NOT RECORD ANYTHING.
-//
-// PROCESSORS:
-//
-// count(s), sum(s), min(s), max(s), mean(s), timeavg(s), last(s), constant(s,VALUE),
-// constant0(s), constant1(s), byteLength(s), messageKind(s), queueLength(s),
-// filter(s,PREDICATE), removeRepeats(s), timeDiff(s), timeShift(), movingAverage(s),
-// eval(s,EXPRESSION); spec versions of filter(s,PREDICATE) (==,!=,<,>,<=,>=);
-// spec versions of eval(s,EXPRESSION):add,substract,etc..
-//
-// simtime(s): the current simulation time
-//
-// (EXPRESSION and PREDICATE may use common/expression.h stuff)
-// common's Expression should be turned into a generic expression parser
-// (parser should build the Elem[] via a callback object, and then we can
-// use it for signals parsing too)
-//
-// IN source=, VARIABLES REFER TO SIGNALS.
-// IN record=, VARIABLES ARE INTERPRETED AS RECORDER NAMES (foo is short for foo()); AND SIGNALS CANNOT BE REFERENCED
-//
-// SYNTAX:
-//
-// source=NAME   <-- NAME is interpreted as signal
-// record=NAME   <-- NAME must be a filter (min,max,etc)
-// source=NAME(SIGNAL) <-- applies the vector processor
-// record=min(SIGNAL)  <-- forbidden, should be written into source=
-// record=min()
-// record=count/simtime  //simtime() is tricky!!! is should NOT do last(), but the current simulation time!!!
-// - if there is no record, the default is vector()
-//
-//
 
 #endif
 

@@ -24,28 +24,6 @@
 class ResultFilter;
 class cComponent;
 
-//XXX maybe we could get rid of the (component,signalID) parameters in all functions...
-// - component is needed for: recordScalar()/recordStatistic() calls and for collecting
-//   result attributes (extractStatisticAttributes(component, attributes)) in ResultRecorders;
-//     *** this is now SOLVED, as ResultRecorder stores the component ptr
-//
-// - signalID is needed for: getSignalTime(signalID) and getSignalValue(signalID) calls
-//   in cObject* signals, in both recorders and filters
-//     *** this is ONLY needed in the first listener; then it could convert to fire(simtime_t,double) pair!
-//
-//  FUNCTIONS:
-//        virtual void listenerAdded(ResultFilter *prev);
-//        virtual void listenerRemoved(ResultFilter *prev);
-//        virtual void finish();
-//        virtual void receiveSignal(double d);
-//        virtual void receiveSignal(simtime_t, double d);
-//  and existing functions would delegate to these.
-//
-//  problem (?): how to handle filters that accept objects or anything, like count(), byteLength(), etc!!
-//  maybe that's not a problem at all; re-think!
-//
-
-class ResultFilter;
 
 class ENVIR_API ResultListener : public cIListener
 {

@@ -33,7 +33,12 @@ class ResultFilter;
 
 extern cGlobalRegistrationList resultFilters;
 
-
+/**
+ * Base class for result filters. Result filters map ONE SIGNAL to ONE SIGNAL
+ * (i.e. vector-to-vector one-to-one mapping), and accept several listeners
+ * (delegates). Result filters do not record anything -- that is left to result
+ * recorders.
+ */
 class ENVIR_API ResultFilter : public ResultListener
 {
     private:
