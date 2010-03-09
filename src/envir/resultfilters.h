@@ -30,11 +30,12 @@ class ENVIR_API WarmupPeriodFilter : public ResultFilter
     private:
         simtime_t getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
     public:
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+        virtual void receiveSignal(ResultFilter *prev, long l);
+        virtual void receiveSignal(ResultFilter *prev, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t);
+        virtual void receiveSignal(ResultFilter *prev, const char *s);
+        virtual void receiveSignal(ResultFilter *prev, cObject *obj);
 };
 
 /**
@@ -46,14 +47,15 @@ class ENVIR_API CountFilter : public ResultFilter
     protected:
         long count;
     protected:
-        void doIt(cComponent *source, simsignal_t signalID) {count++; fire(source, signalID, count);}
+        void doIt(ResultFilter *prev) {count++; fire(this, count);}
     public:
         CountFilter() {count = 0;}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) {doIt(source, signalID);}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) {doIt(source, signalID);}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t) {doIt(source, signalID);}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) {doIt(source, signalID);}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+        virtual void receiveSignal(ResultFilter *prev, long l) {doIt(prev);}
+        virtual void receiveSignal(ResultFilter *prev, double d) {doIt(prev);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {count++; fire(this,t,count);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t) {doIt(prev);}
+        virtual void receiveSignal(ResultFilter *prev, const char *s) {doIt(prev);}
+        virtual void receiveSignal(ResultFilter *prev, cObject *obj) {doIt(prev);} // note: cISignalValue stuff was already dispatched to (simtime_t,double) method in base class
 };
 
 /**

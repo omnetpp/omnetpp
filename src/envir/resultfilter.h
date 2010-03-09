@@ -39,34 +39,35 @@ class ENVIR_API ResultFilter : public ResultListener
     private:
         ResultListener **delegates; // NULL-terminated array
     protected:
-        void fire(cComponent *source, simsignal_t signalID, long l);
-        void fire(cComponent *source, simsignal_t signalID, double d);
-        void fire(cComponent *source, simsignal_t signalID, simtime_t t);
-        void fire(cComponent *source, simsignal_t signalID, const char *s);
-        void fire(cComponent *source, simsignal_t signalID, cObject *obj);
+        void fire(ResultFilter *prev, long l);
+        void fire(ResultFilter *prev, double d);
+        void fire(ResultFilter *prev, simtime_t t, double d);
+        void fire(ResultFilter *prev, simtime_t t);
+        void fire(ResultFilter *prev, const char *s);
+        void fire(ResultFilter *prev, cObject *obj);
     public:
         ResultFilter();
         ~ResultFilter();
         virtual void addDelegate(ResultListener *delegate);
         virtual int getNumDelegates() const;
         std::vector<ResultListener*> getDelegates() const;
-        virtual void listenerAdded(cComponent *component, simsignal_t signalID);
-        virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 class ENVIR_API NumericResultFilter : public ResultFilter
 {
     protected:
-        // return value: whether to delegate (true) or to swallow the value (false)
+        // all receiveSignal() methods either throw error or delegate here;
+        // return value: whether to invoke chained listeners (true) or to swallow the value (false)
         virtual bool process(double& value) = 0;
         virtual bool process(simtime_t& t, double& value) = 0;
     public:
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+        virtual void receiveSignal(ResultFilter *prev, long l);
+        virtual void receiveSignal(ResultFilter *prev, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t);
+        virtual void receiveSignal(ResultFilter *prev, const char *s);
+        virtual void receiveSignal(ResultFilter *prev, cObject *obj);
 };
 
 /**

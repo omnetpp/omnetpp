@@ -37,27 +37,28 @@ class ENVIR_API VectorRecorder : public NumericResultRecorder
         virtual void collect(simtime_t t, double value);
     public:
         VectorRecorder() {handle = NULL; lastTime = 0;}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
-        virtual void listenerAdded(cComponent *component, simsignal_t signalID);
+        virtual void listenerAdded(ResultFilter *prev);
 };
 
 /**
  * Listener for recording the count of signal values. Signal values do not need
  * to be numeric to be counted.
  */
-class ENVIR_API CountRecorder : public NumericResultRecorder
+class ENVIR_API CountRecorder : public ResultRecorder
 {
     protected:
         long count;
     protected:
         virtual void tweakTitle(opp_string& title);
-        virtual void collect(double value)  {count++;}
-        virtual void collect(simtime_t t, double value) {count++;}
     public:
         CountRecorder() {count = 0;}
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s); // count strings too
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj); // and all objects
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void receiveSignal(ResultFilter *prev, long l) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, double d) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, const char *s) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, cObject *obj) {count++;}
+        virtual void finish(ResultFilter *prev);
 };
 
 /**
@@ -73,7 +74,7 @@ class ENVIR_API LastValueRecorder : public NumericResultRecorder
         virtual void collect(simtime_t t, double value) {lastValue = value;}
     public:
         LastValueRecorder() {lastValue = NaN;}
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 /**
@@ -89,7 +90,7 @@ class ENVIR_API SumRecorder : public NumericResultRecorder
         virtual void collect(simtime_t t, double value) {sum += value;}
     public:
         SumRecorder() {sum = 0;}
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 /**
@@ -106,7 +107,7 @@ class ENVIR_API MeanRecorder : public NumericResultRecorder
         virtual void collect(simtime_t t, double value) {count++; sum += value;}
     public:
         MeanRecorder() {count = 0; sum = 0;}
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 /**
@@ -122,7 +123,7 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
         virtual void collect(simtime_t t, double value) {if (value < min) min = value;}
     public:
         MinRecorder() {min = POSITIVE_INFINITY;}
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 /**
@@ -138,7 +139,7 @@ class ENVIR_API MaxRecorder : public NumericResultRecorder
         virtual void collect(simtime_t t, double value) {if (value > max) max = value;}
     public:
         MaxRecorder() {max = NEGATIVE_INFINITY;}
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 /**
@@ -157,7 +158,7 @@ class ENVIR_API TimeAverageRecorder : public NumericResultRecorder
         virtual void collect(simtime_t t, double value);
     public:
         TimeAverageRecorder() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 /**
@@ -173,7 +174,7 @@ class ENVIR_API StatisticsRecorder : public NumericResultRecorder, private cObje
     public:
         StatisticsRecorder(cStatistic *stat) {statistic = stat; take(statistic);}
         ~StatisticsRecorder() {drop(statistic); delete statistic;}
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 class ENVIR_API StddevRecorder : public StatisticsRecorder
@@ -190,7 +191,7 @@ class ENVIR_API HistogramRecorder : public StatisticsRecorder
 
 /**
  * Result recorder that remembers the last value of a signal,
- * and in finish() it evaluates an expression and saves the result.
+ * and in finish(ResultFilter *prev) it evaluates an expression and saves the result.
  */
 //TODO: make variants that eat 2 signals, and N signals
 class ENVIR_API ExpressionRecorder : public NumericResultRecorder
@@ -209,7 +210,7 @@ class ENVIR_API ExpressionRecorder : public NumericResultRecorder
         virtual Expression& getExpression() {return expr;}
         virtual Expression::Functor *makeValueVariable();
         virtual Expression::Functor *makeTimeVariable();
-        virtual void finish(cComponent *component, simsignal_t signalID);
+        virtual void finish(ResultFilter *prev);
 };
 
 #endif

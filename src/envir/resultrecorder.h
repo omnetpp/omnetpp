@@ -46,17 +46,14 @@ class ENVIR_API ResultRecorder : public ResultListener
         const char *statisticName;
         const char *recordingMode;
     protected:
-        simtime_t getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
-        virtual void extractStatisticAttributes(cComponent *component, opp_string_map& result);
+        virtual opp_string_map getStatisticAttributes();
         virtual void tweakTitle(opp_string& title) {}
-        cComponent *getComponent() {return component;}
     public:
         virtual void init(cComponent *component, const char *statisticName, const char *recordingMode);
-        const char *getStatisticName() {return statisticName;}
-        const char *getRecordingMode() {return recordingMode;}
-        virtual std::string getResultName()  {return std::string(statisticName)+":"+recordingMode;}
-        virtual void listenerAdded(cComponent *component, simsignal_t signalID);
-        virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
+        virtual cComponent *getComponent() const {return component;}
+        virtual const char *getStatisticName() const {return statisticName;}
+        virtual const char *getRecordingMode() const {return recordingMode;}
+        virtual std::string getResultName() const {return std::string(getStatisticName())+":"+getRecordingMode();}
 };
 
 /**
@@ -65,15 +62,17 @@ class ENVIR_API ResultRecorder : public ResultListener
 class ENVIR_API NumericResultRecorder : public ResultRecorder
 {
     protected:
-        // override one of them, and let the other delegate to it
+        // all receiveSignal() methods either throw error or delegate here.
+        // advice: override one of them, and let the other delegate to it
         virtual void collect(double value) = 0;
         virtual void collect(simtime_t t, double value) = 0;
     public:
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+        virtual void receiveSignal(ResultFilter *prev, long l);
+        virtual void receiveSignal(ResultFilter *prev, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t);
+        virtual void receiveSignal(ResultFilter *prev, const char *s);
+        virtual void receiveSignal(ResultFilter *prev, cObject *obj);
 };
 
 /**

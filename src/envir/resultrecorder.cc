@@ -32,22 +32,12 @@ void ResultRecorder::init(cComponent *comp, const char *statsName, const char *r
     recordingMode = namesPool.get(recMode);
 }
 
-void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
+opp_string_map ResultRecorder::getStatisticAttributes()
 {
-    ASSERT(getSubscribeCount() == 1);  // may only be subscribed once (otherwise results get mixed)
-}
-
-void ResultRecorder::listenerRemoved(cComponent *component, simsignal_t signalID)
-{
-    if (getSubscribeCount() == 0)
-        delete this;
-}
-
-void ResultRecorder::extractStatisticAttributes(cComponent *component, opp_string_map& result)
-{
-    cProperty *property = component->getProperties()->get("statistic", getStatisticName());
+    opp_string_map result;
+    cProperty *property = getComponent()->getProperties()->get("statistic", getStatisticName());
     if (!property)
-        return;
+        return result;
 
     // fill result[] from the properties
     const std::vector<const char *>& keys = property->getKeys();
@@ -73,37 +63,40 @@ void ResultRecorder::extractStatisticAttributes(cComponent *component, opp_strin
         if (strcmp(key,"title")==0)
             tweakTitle(result[key]);
     }
+    return result;
 }
 
 //---
 
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, long l)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, long l)
 {
     collect(l);
 }
 
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, double d)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, double d)
 {
     collect(d);
 }
 
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t d)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t t, double d)
+{
+    collect(t, d);
+}
+
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t d)
 {
     collect(SIMTIME_DBL(d));
 }
 
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, const char *s)
 {
     throw cRuntimeError("cannot convert const char * to double"); //FIXME better message
 }
 
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, cObject *obj)
 {
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (!v)
-        throw cRuntimeError("cannot convert cObject * to double"); //FIXME better message
-
-    collect(v->getSignalTime(signalID), v->getSignalValue(signalID));
+    // note: cISignalValue stuff was already dispatched to (simtime_t,double) method in base class
+    throw cRuntimeError("cannot convert cObject * to double"); //FIXME better message
 }
 
 //----

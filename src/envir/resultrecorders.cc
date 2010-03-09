@@ -31,13 +31,12 @@ Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
 
 
-void VectorRecorder::listenerAdded(cComponent *x, simsignal_t signalID)
+void VectorRecorder::listenerAdded(ResultFilter *prev)
 {
-    NumericResultRecorder::listenerAdded(x, signalID);
+    NumericResultRecorder::listenerAdded(prev);
 
     // we can register the vector here, because base class ensures we are subscribed only at once place
-    opp_string_map attributes;
-    extractStatisticAttributes(getComponent(), attributes);
+    opp_string_map attributes = getStatisticAttributes();
 
     handle = ev.registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str());
     ASSERT(handle != NULL);
@@ -45,27 +44,16 @@ void VectorRecorder::listenerAdded(cComponent *x, simsignal_t signalID)
         ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
 }
 
-void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
-{
-    // copied from base class to add monotonicity check
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (v) {
-        simtime_t t = v->getSignalTime(signalID);
-        if (t < lastTime) {
-            throw cRuntimeError(
-                    "%s: cannot record data with an earlier timestamp (t=%s) than "
-                    "the previously recorded value, for statistic %s (id=%d)",
-                    opp_typename(typeid(*this)), SIMTIME_STR(t), getStatisticName(), (int)signalID);
-        }
-        collect(t, v->getSignalValue(signalID));
-    }
-    else {
-        collect(obj!=NULL); // record 0 or 1
-    }
-}
-
 void VectorRecorder::collect(simtime_t t, double value)
 {
+    if (t < lastTime) {
+        throw cRuntimeError(
+                "%s: cannot record data with an earlier timestamp (t=%s) than "
+                "the previously recorded value, for statistic %s of %s",
+                opp_typename(typeid(*this)), SIMTIME_STR(t),
+                getStatisticName(), getComponent()->getFullPath().c_str());
+    }
+
     lastTime = t;
     ev.recordInOutputVector(handle, t, value);
 }
@@ -77,28 +65,10 @@ void CountRecorder::tweakTitle(opp_string& title)
     title = opp_string("count of ") + title;
 }
 
-void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
+void CountRecorder::finish(ResultFilter *prev)
 {
-    collect(0.0); // dummy value
-}
-
-void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
-{
-    // if it is a cISignalValue, we should use its time for checking warm-up period;
-    // base class method overridden to spare call to getSignalValue()
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (v)
-        collect(v->getSignalTime(signalID), 0.0); // dummy value
-    else
-        collect(0.0); // dummy value
-}
-
-void CountRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    std::string scalarName = getResultName();
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), count, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), count, &attributes);
 }
 
 //---
@@ -108,12 +78,10 @@ void LastValueRecorder::tweakTitle(opp_string& title)
     title = opp_string("last value of ") + title;
 }
 
-void LastValueRecorder::finish(cComponent *component, simsignal_t signalID)
+void LastValueRecorder::finish(ResultFilter *prev)
 {
-    std::string scalarName = getResultName();
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), lastValue, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), lastValue, &attributes);
 }
 
 //---
@@ -123,12 +91,10 @@ void SumRecorder::tweakTitle(opp_string& title)
     title = opp_string("sum of ") + title;
 }
 
-void SumRecorder::finish(cComponent *component, simsignal_t signalID)
+void SumRecorder::finish(ResultFilter *prev)
 {
-    std::string scalarName = getResultName();
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), sum, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), sum, &attributes);
 }
 
 //---
@@ -138,12 +104,10 @@ void MeanRecorder::tweakTitle(opp_string& title)
     title = opp_string("mean of ") + title;
 }
 
-void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
+void MeanRecorder::finish(ResultFilter *prev)
 {
-    std::string scalarName = getResultName();
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes); // note: this is NaN if count==0
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), sum/count, &attributes); // note: this is NaN if count==0
 }
 
 //---
@@ -153,12 +117,10 @@ void MinRecorder::tweakTitle(opp_string& title)
     title = opp_string("minimum of ") + title;
 }
 
-void MinRecorder::finish(cComponent *component, simsignal_t signalID)
+void MinRecorder::finish(ResultFilter *prev)
 {
-    std::string scalarName = getResultName();
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
 }
 
 //---
@@ -168,12 +130,10 @@ void MaxRecorder::tweakTitle(opp_string& title)
     title = opp_string("maximum of ") + title;
 }
 
-void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
+void MaxRecorder::finish(ResultFilter *prev)
 {
-    std::string scalarName = getResultName();
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
 }
 
 //---
@@ -193,26 +153,23 @@ void TimeAverageRecorder::collect(simtime_t t, double value)
     lastValue = value;
 }
 
-void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
+void TimeAverageRecorder::finish(ResultFilter *prev)
 {
     bool empty = (startTime < SIMTIME_ZERO);
     simtime_t t = simulation.getSimTime();
     collect(t, NaN); // to get the last interval counted in; the value is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
 
-    std::string scalarName = getResultName();
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), empty ? NaN : (weightedSum / interval), &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), empty ? NaN : (weightedSum / interval), &attributes);
 }
 
 //---
 
-void StatisticsRecorder::finish(cComponent *component, simsignal_t signalID)
+void StatisticsRecorder::finish(ResultFilter *prev)
 {
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordStatistic(component, getResultName().c_str(), statistic, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
 }
 
 StddevRecorder::StddevRecorder() : StatisticsRecorder(new cStdDev())
@@ -257,11 +214,9 @@ Expression::Functor *ExpressionRecorder::makeTimeVariable()
     return new RecTimeVariable();
 }
 
-void ExpressionRecorder::finish(cComponent *component, simsignal_t signalID)
+void ExpressionRecorder::finish(ResultFilter *prev)
 {
-    std::string scalarName = getResultName();
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), expr.doubleValue(), &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
 }
 

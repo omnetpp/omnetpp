@@ -39,7 +39,7 @@ void ResultFilter::addDelegate(ResultListener *delegate)
     delete [] delegates;
     delegates = v;
     delegate->subscribecount++;
-    delegate->listenerAdded(NULL, SIMSIGNAL_NULL);
+    delegate->listenerAdded(this);
 }
 
 int ResultFilter::getNumDelegates() const
@@ -62,98 +62,90 @@ ResultFilter::~ResultFilter()
 {
     for (int i=0; delegates[i]; i++) {
         delegates[i]->subscribecount--;
-        delegates[i]->listenerRemoved(NULL, SIMSIGNAL_NULL);
+        delegates[i]->listenerRemoved(this);
     }
     delete [] delegates;
 }
 
-void ResultFilter::listenerAdded(cComponent *component, simsignal_t signalID)
-{
-    ASSERT(getSubscribeCount() == 1);  // may only be subscribed once (otherwise results get mixed)
-}
-
-void ResultFilter::listenerRemoved(cComponent *component, simsignal_t signalID)
-{
-    if (getSubscribeCount() == 0)
-        delete this;
-}
-
-void ResultFilter::fire(cComponent *source, simsignal_t signalID, long l)
+void ResultFilter::fire(ResultFilter *prev, long l)
 {
     for (int i=0; delegates[i]; i++)
-        delegates[i]->receiveSignal(source, signalID, l);
+        delegates[i]->receiveSignal(this, l);
 }
 
-void ResultFilter::fire(cComponent *source, simsignal_t signalID, double d)
+void ResultFilter::fire(ResultFilter *prev, double d)
 {
     for (int i=0; delegates[i]; i++)
-        delegates[i]->receiveSignal(source, signalID, d);
+        delegates[i]->receiveSignal(this, d);
 }
 
-void ResultFilter::fire(cComponent *source, simsignal_t signalID, simtime_t t)
+void ResultFilter::fire(ResultFilter *prev, simtime_t t, double d)
 {
     for (int i=0; delegates[i]; i++)
-        delegates[i]->receiveSignal(source, signalID, t);
+        delegates[i]->receiveSignal(this, t, d);
 }
 
-void ResultFilter::fire(cComponent *source, simsignal_t signalID, const char *s)
+void ResultFilter::fire(ResultFilter *prev, simtime_t t)
 {
     for (int i=0; delegates[i]; i++)
-        delegates[i]->receiveSignal(source, signalID, s);
+        delegates[i]->receiveSignal(this, t);
 }
 
-void ResultFilter::fire(cComponent *source, simsignal_t signalID, cObject *obj)
+void ResultFilter::fire(ResultFilter *prev, const char *s)
 {
     for (int i=0; delegates[i]; i++)
-        delegates[i]->receiveSignal(source, signalID, obj);
+        delegates[i]->receiveSignal(this, s);
 }
 
-void ResultFilter::finish(cComponent *component, simsignal_t signalID)
+void ResultFilter::fire(ResultFilter *prev, cObject *obj)
 {
     for (int i=0; delegates[i]; i++)
-        delegates[i]->finish(component, signalID);
+        delegates[i]->receiveSignal(this, obj);
+}
+
+void ResultFilter::finish(ResultFilter *prev)
+{
+    for (int i=0; delegates[i]; i++)
+        delegates[i]->finish(this);
 }
 
 //---
 
-void NumericResultFilter::receiveSignal(cComponent *source, simsignal_t signalID, long l)
+void NumericResultFilter::receiveSignal(ResultFilter *prev, long l)
 {
     double d = l;
     if (process(d))
-        fire(source, signalID, d);
+        fire(this, d);
 }
 
-void NumericResultFilter::receiveSignal(cComponent *source, simsignal_t signalID, double d)
+void NumericResultFilter::receiveSignal(ResultFilter *prev, double d)
 {
     if (process(d))
-        fire(source, signalID, d);
+        fire(this, d);
 }
 
-void NumericResultFilter::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t v)
+void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t t, double d)
+{
+    if (process(t, d))
+        fire(this, t, d);
+}
+
+void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t v)
 {
     double d = SIMTIME_DBL(v);
     if (process(d))
-        fire(source, signalID, d);
+        fire(this, d);
 }
 
-void NumericResultFilter::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
+void NumericResultFilter::receiveSignal(ResultFilter *prev, const char *s)
 {
     throw cRuntimeError("cannot convert const char * to double"); //FIXME better message
 }
 
-void NumericResultFilter::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+void NumericResultFilter::receiveSignal(ResultFilter *prev, cObject *obj)
 {
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (!v)
-        throw cRuntimeError("cannot convert cObject* to double"); //FIXME better message
-
-    simtime_t t = v->getSignalTime(signalID);
-    double d = v->getSignalValue(signalID);
-    if (process(t,d))
-    {
-        cSignalValue tmp(t,d);
-        fire(source, signalID, &tmp);
-    }
+    // note: cISignalValue stuff was already dispatched to (simtime_t,double) method in base class
+    throw cRuntimeError("cannot convert cObject* to double"); //FIXME better message
 }
 
 //---

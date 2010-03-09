@@ -27,54 +27,46 @@ Register_ResultFilter("max", MaxFilter);
 Register_ResultFilter("timeavg", TimeAverageFilter);
 
 
-void WarmupPeriodFilter::receiveSignal(cComponent *source, simsignal_t signalID, long l)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, long l)
 {
     simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(source, signalID, l);
+        fire(this, l);
 }
 
-void WarmupPeriodFilter::receiveSignal(cComponent *source, simsignal_t signalID, double d)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, double d)
 {
     simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(source, signalID, d);
+        fire(this, d);
 }
 
-void WarmupPeriodFilter::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t v)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t t, double d)
+{
+    if (t >= getEndWarmupPeriod())
+        fire(this, t, d);
+}
+
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t v)
 {
     simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(source, signalID, v);
+        fire(this, v);
 }
 
-void WarmupPeriodFilter::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, const char *s)
 {
     simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(source, signalID, s);
+        fire(this, s);
 }
 
-void WarmupPeriodFilter::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, cObject *obj)
 {
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    simtime_t t = v ? v->getSignalTime(signalID) : simulation.getSimTime();
+    // note: cISignalValue stuff was already dispatched to (simtime_t,double) method in base class
+    simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(source, signalID, obj);
-}
-
-//---
-
-void CountFilter::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
-{
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (!v)
-        doIt(source, signalID);
-    else {
-        count++;
-        cSignalValue tmp(v->getSignalTime(signalID), count);
-        fire(source, signalID, &tmp);
-    }
+        fire(this, obj);
 }
 
 //---
