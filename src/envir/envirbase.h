@@ -258,12 +258,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
      */
     virtual void addResultRecorders(cComponent *component);
 
-    /**
-     * Factory method: create a corresponding result recorder object
-     * for the given recording mode ("sum", "timeavg" etc).
-     */
-    virtual ResultRecorder *createResultRecorder(const char *mode);
-
   public:
     // Utility function: optionally appends host name to fname
     virtual void processFileName(opp_string& fname);

@@ -120,7 +120,7 @@ Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
-Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODE, "result-recording-mode", CFG_STRING, "auto", "Defines how to calculate results from the given signal. Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram, auto. `auto' chooses `histogram', unless the `record' key in the @statistic property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.result-recording-mode=timeavg,max");
+Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODE, "result-recording-mode", CFG_STRING, "", "Defines how to calculate results from the @statistic property matched by the wildcard. Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. If the list begins with '+', values get appended to the list specified in the record= key of the @statistic, otherwise replaces it. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-mode=timeavg,max");
 
 // the following options are declared in other files
 extern cConfigOption *CFGID_SCALAR_RECORDING;
@@ -846,7 +846,7 @@ void EnvirBase::addResultRecorders(cComponent *component)
 
         std::vector<std::string> modes2;
         std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODE, "");
-        if (modesOption != "auto")
+        if (modesOption != "")
         {
             // +add,-remove,add,add,add
             if (modesOption[0] != '+' && modesOption[0] != '-')
@@ -929,17 +929,13 @@ void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordi
         if (opp_isidentifier(recordingMode))
         {
             // simple case: just a plain recorder
-            ResultRecorder *listener = createResultRecorder(recordingMode);
-            if (!listener)
-                throw opp_runtime_error("unrecognized recording mode \"%s\"", recordingMode);
-            bool recordsVector = !strcmp(recordingMode, "vector");
-            if (recordsVector ? !vectorsEnabled : !scalarsEnabled) {
-                // disabled, return
-                delete listener;  //FIXME it shouldn't have been created in the first place then!
-                return;
-            }
-            listener->init(component, statisticName, recordingMode);
-            source.subscribe(listener);
+            bool recordsVector = !strcmp(recordingMode, "vector");  // the only vector recorder is "vector"
+            if (recordsVector ? !vectorsEnabled : !scalarsEnabled)
+                return; // no point in creating if recording is disabled
+
+            ResultRecorder *recorder = ResultRecorderDescriptor::get(recordingMode)->create();
+            recorder->init(component, statisticName, recordingMode);
+            source.subscribe(recorder);
         }
         else
         {
@@ -953,18 +949,6 @@ void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordi
         throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s' specified %s: %s",
             statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, where, e.what());
     }
-}
-
-//FIXME this function shouldn't exist!!!
-ResultRecorder *EnvirBase::createResultRecorder(const char *recordingMode)
-{
-    if (!strcmp(recordingMode, "auto"))
-        recordingMode = "histogram";
-
-    ResultRecorderDescriptor *desc = ResultRecorderDescriptor::find(recordingMode);
-    if (!desc)
-        return NULL;
-    return desc->create();
 }
 
 void EnvirBase::dumpResultRecorders(cComponent *component)
