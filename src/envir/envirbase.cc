@@ -968,8 +968,12 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
 
 void EnvirBase::dumpResultRecorderChain(ResultListener *listener, int depth)
 {
-    for (int i = 0; i < depth+2; i++) ev << "    ";
-    ev << listener->str() << "\n";
+    for (int i = 0; i < depth+2; i++)
+        ev << "    ";
+    ev << listener->str();
+    if (dynamic_cast<ResultRecorder*>(listener))
+        ev << " ==> " << ((ResultRecorder*)listener)->getResultName();
+    ev << "\n";
 
     if (dynamic_cast<ResultFilter *>(listener))
     {

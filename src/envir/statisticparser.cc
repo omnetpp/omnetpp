@@ -171,6 +171,8 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
     Assert(len >= 1);
     int stackSize = stack.size();
 
+    int argLen = filterRef ? len-1 : len;  // often we need to ignore the last element on the stack, which is the filter name itself
+
     // count SignalSourceReferences (nested filter) - there must be exactly one;
     // i.e. the expression may refer to exactly one signal only
     int numSignalRefs = 0;
@@ -201,7 +203,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
 
     SignalSource result(NULL);
 
-    if (len == 1)
+    if (argLen == 1)
     {
         // a plain signal reference or chained filter -- no ExpressionFilter needed
         const SignalSource& signalSource = signalSourceReference->getSignalSource();
@@ -212,22 +214,21 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
             result = SignalSource(filter);
         }
     }
-    else // (len > 1)
+    else // (argLen > 1)
     {
         // some expression -- add an ExpressionFilter, and the new filter on top
         // replace Expr with SignalSourceReference
         ExpressionFilter *exprFilter = new ExpressionFilter();
 
-        int len1 = filter ? len-1 : len;  // leave out the last element, which is the filter name itself
-        Expression::Elem *v = new Expression::Elem[len1];
-        for (int i=0; i<len1; i++)
+        Expression::Elem *v = new Expression::Elem[argLen];
+        for (int i=0; i<argLen; i++)
         {
             v[i] = stack[stackSize-len+i];
             if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
                 v[i] = exprFilter->makeValueVariable();
         }
 
-        exprFilter->getExpression().setExpression(v,len1);
+        exprFilter->getExpression().setExpression(v, argLen);
 
         // subscribe
         const SignalSource& signalSource = signalSourceReference->getSignalSource();
@@ -348,6 +349,8 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     Assert(len >= 1);
     int stackSize = stack.size();
 
+    int argLen = filterOrRecorderRef ? len-1 : len;  // often we need to ignore the last element on the stack, which is the filter name itself
+
     // count embedded signal references, unless filter is arg-less (i.e. it has an
     // implicit source arg, like "record=timeavg" which means "record=timeavg($source)")
     SignalSourceReference *signalSourceReference = NULL;
@@ -389,7 +392,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
 
     SignalSource result(NULL);
 
-    if (len <= 1)
+    if (argLen <= 1)
     {
         // a plain signal reference or chained filter -- no ExpressionFilter needed
         const SignalSource& signalSource = signalSourceReference ?
@@ -403,7 +406,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
                 result = SignalSource((ResultFilter*)filterOrRecorder);
         }
     }
-    else // (len > 1)
+    else // (argLen > 1)
     {
         // some expression -- add an ExpressionFilter or Recorder, and chain the
         // new filter (if exists) on top of it.
@@ -414,14 +417,14 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
             ExpressionRecorder *exprRecorder = new ExpressionRecorder();
             exprRecorder->init(component, statisticName, recordingMode);
 
-            Expression::Elem *v = new Expression::Elem[len];
-            for (int i=0; i<len; i++)
+            Expression::Elem *v = new Expression::Elem[argLen];
+            for (int i=0; i<argLen; i++)
             {
                 v[i] = stack[stackSize-len+i];
                 if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
                     v[i] = exprRecorder->makeValueVariable();
             }
-            exprRecorder->getExpression().setExpression(v,len);
+            exprRecorder->getExpression().setExpression(v, argLen);
             exprListener = exprRecorder;
         }
         else
@@ -429,15 +432,14 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
             // expression filter
             ExpressionFilter *exprFilter = new ExpressionFilter();
 
-            int len1 = filterOrRecorder ? len-1 : len;  // leave out the last element, which is the filter name itself
-            Expression::Elem *v = new Expression::Elem[len1];
-            for (int i=0; i<len1; i++)
+            Expression::Elem *v = new Expression::Elem[argLen];
+            for (int i=0; i<argLen; i++)
             {
                 v[i] = stack[stackSize-len+i];
                 if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
                     v[i] = exprFilter->makeValueVariable();
             }
-            exprFilter->getExpression().setExpression(v,len1);
+            exprFilter->getExpression().setExpression(v, argLen);
             exprListener = exprFilter;
         }
 
@@ -456,6 +458,6 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
                 result = SignalSource((ResultFilter*)filterOrRecorder);
         }
     }
-    return result; // if isRecorder==NULL, we return a NULL SignalSource (no chaining possible)
+    return result; // if makeRecorder=true, we return a NULL SignalSource (no chaining possible)
 }
 
