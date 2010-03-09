@@ -38,13 +38,10 @@ class FilterOrRecorderReference : public Expression::Function
   private:
     std::string name;
     int argcount;
-    bool isfilter; // true by default; see markAsRecorders()
   public:
-    FilterOrRecorderReference(const char *s, int argc, bool filter=true) {name = s; argcount = argc; isfilter = filter;}
+    FilterOrRecorderReference(const char *s, int argc) {name = s; argcount = argc;}
     virtual Functor *dup() const {return new FilterOrRecorderReference(name.c_str(), argcount);}
     virtual const char *getName() const {return name.c_str();}
-    bool isFilter() const {return isfilter;}
-    void setIsFilter(bool b) {isfilter = b;}
     virtual const char *getArgTypes() const {const char *ddd="DDDDDDDDDD"; Assert(argcount<10); return ddd+strlen(ddd)-argcount;}
     virtual int getNumArgs() const {return argcount;}
     virtual char getReturnType() const {return Expression::Value::DBL;}
@@ -221,15 +218,16 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
         // replace Expr with SignalSourceReference
         ExpressionFilter *exprFilter = new ExpressionFilter();
 
-        Expression::Elem *v = new Expression::Elem[len];
-        for (int i=0; i<len; i++)
+        int len1 = filter ? len-1 : len;  // leave out the last element, which is the filter name itself
+        Expression::Elem *v = new Expression::Elem[len1];
+        for (int i=0; i<len1; i++)
         {
             v[i] = stack[stackSize-len+i];
             if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
                 v[i] = exprFilter->makeValueVariable();
         }
 
-        exprFilter->getExpression().setExpression(v,len);
+        exprFilter->getExpression().setExpression(v,len1);
 
         // subscribe
         const SignalSource& signalSource = signalSourceReference->getSignalSource();
@@ -276,24 +274,6 @@ class RecorderExpressionResolver : public Expression::Resolver
     }
 };
 
-// mark the outermost FilterOrRecorderReference(s) as recorders;
-// this is basically the same as countDepth(), but marks recorders along the way
-static int markRecorders(Expression::Elem *v, int root, bool underRecorder=false)
-{
-    Assert(root >= 0);
-    Expression::Elem& e = v[root];
-    if (e.getType()==Expression::Elem::FUNCTOR && dynamic_cast<FilterOrRecorderReference*>(e.getFunctor())) {
-        ((FilterOrRecorderReference*)e.getFunctor())->setIsFilter(false);
-        underRecorder = true;
-    }
-    int argc = e.getNumArgs();
-    int depth = 1;
-    for (int i=0; i<argc; i++)
-        depth += markRecorders(v, root-depth, underRecorder);
-    return depth;
-}
-
-
 void StatisticRecorderParser::parse(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where)
 {
     // parse expression
@@ -303,8 +283,6 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *mode
 
     int exprLen = expr.getExpressionLength();
     const Expression::Elem *elems = expr.getExpression();
-
-    markRecorders(const_cast<Expression::Elem *>(elems), exprLen-1);
 
     //printf("Recorder expression %s was parsed as:\n", sourceSpec);
     //for (int i=0; i<exprLen; i++)
@@ -331,7 +309,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *mode
            // on the stack.
            // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
            FilterOrRecorderReference *filterOrRecorderRef = (FilterOrRecorderReference *) e.getFunctor();
-           SignalSource signalSource = createFilterOrRecorder(filterOrRecorderRef, false, stack, len, source);
+           SignalSource signalSource = createFilterOrRecorder(filterOrRecorderRef, i==exprLen-1, stack, len, source, component, statisticName);
            stack.erase(stack.end()-len, stack.end());
            stack.push_back(Expression::Elem());
            stack.back() = new SignalSourceReference(signalSource);
@@ -347,7 +325,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *mode
         // install it, and replace top 'len' elements with a SignalSourceReference
         // on the stack.
         // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
-        SignalSource signalSource = createFilterOrRecorder(NULL, true, stack, len, source);
+        SignalSource signalSource = createFilterOrRecorder(NULL, true, stack, len, source, component, statisticName);
         stack.erase(stack.end()-len, stack.end());
         stack.push_back(Expression::Elem());
         stack.back() = new SignalSourceReference(signalSource);
@@ -365,7 +343,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *mode
 }
 
 //XXX now it appears that StatisticSourceParser::createFilter() is a special case of this -- eliminate it?
-SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderReference *filterOrRecorderRef, bool useRecorderForExpr, const std::vector<Expression::Elem>& stack, int len, const SignalSource& source)
+SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderReference *filterOrRecorderRef, bool makeRecorder, const std::vector<Expression::Elem>& stack, int len, const SignalSource& source, cComponent *component, const char *statisticName)
 {
     Assert(len >= 1);
     int stackSize = stack.size();
@@ -400,10 +378,13 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     if (filterOrRecorderRef)
     {
         const char *name = filterOrRecorderRef->getName();
-        if (filterOrRecorderRef->isFilter())
-            filterOrRecorder = ResultFilterDescriptor::get(name)->create();
+        if (makeRecorder) {
+            ResultRecorder *recorder = ResultRecorderDescriptor::get(name)->create();
+            recorder->init(component, statisticName);
+            filterOrRecorder = recorder;
+        }
         else
-            filterOrRecorder = ResultRecorderDescriptor::get(name)->create();
+            filterOrRecorder = ResultFilterDescriptor::get(name)->create();
     }
 
     SignalSource result(NULL);
@@ -418,7 +399,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
             result = signalSource;
         else {
             signalSource.subscribe(filterOrRecorder);
-            if (filterOrRecorderRef->isFilter())
+            if (!makeRecorder)
                 result = SignalSource((ResultFilter*)filterOrRecorder);
         }
     }
@@ -427,10 +408,11 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         // some expression -- add an ExpressionFilter or Recorder, and chain the
         // new filter (if exists) on top of it.
         ResultListener *exprListener;
-        if (!filterOrRecorder && useRecorderForExpr)
+        if (!filterOrRecorder && makeRecorder)
         {
             // expression recorder
             ExpressionRecorder *exprRecorder = new ExpressionRecorder();
+            exprRecorder->init(component, statisticName);
 
             Expression::Elem *v = new Expression::Elem[len];
             for (int i=0; i<len; i++)
@@ -447,14 +429,15 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
             // expression filter
             ExpressionFilter *exprFilter = new ExpressionFilter();
 
-            Expression::Elem *v = new Expression::Elem[len];
-            for (int i=0; i<len; i++)
+            int len1 = filterOrRecorder ? len-1 : len;  // leave out the last element, which is the filter name itself
+            Expression::Elem *v = new Expression::Elem[len1];
+            for (int i=0; i<len1; i++)
             {
                 v[i] = stack[stackSize-len+i];
                 if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
                     v[i] = exprFilter->makeValueVariable();
             }
-            exprFilter->getExpression().setExpression(v,len);
+            exprFilter->getExpression().setExpression(v,len1);
             exprListener = exprFilter;
         }
 
@@ -469,7 +452,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         else {
             Assert(dynamic_cast<ExpressionFilter*>(exprListener));
             ((ExpressionFilter*)exprListener)->addDelegate(filterOrRecorder);
-            if (filterOrRecorderRef->isFilter())
+            if (!makeRecorder)
                 result = SignalSource((ResultFilter*)filterOrRecorder);
         }
     }

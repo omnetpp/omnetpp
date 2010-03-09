@@ -929,6 +929,7 @@ void EnvirBase::doResultRecorder(const SignalSource& source, const char *mode, b
     }
 }
 
+//FIXME this function shouldn't exist!!!
 ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
 {
     if (!strcmp(mode, "auto"))
@@ -956,7 +957,7 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
                     componentPathPrinted = true;
                 }
                 if (!signalNamePrinted) {
-                    ev << "  \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
+                    ev << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
                     signalNamePrinted = true;
                 }
                 dumpResultRecorderChain((ResultListener *)listeners[j], 0);
@@ -967,8 +968,7 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
 
 void EnvirBase::dumpResultRecorderChain(ResultListener *listener, int depth)
 {
-    ev << "    ";
-    for (int i = 0; i < depth; i++) ev << "  ";
+    for (int i = 0; i < depth+2; i++) ev << "    ";
     ev << listener->str() << "\n";
 
     if (dynamic_cast<ResultFilter *>(listener))

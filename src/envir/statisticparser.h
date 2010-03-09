@@ -38,11 +38,11 @@ class ENVIR_API StatisticSourceParser
 class ENVIR_API StatisticRecorderParser
 {
   protected:
-    // create and install a ResultFilter or a ResultRecorder, depending ref's isFilter() flag;
+    // create and install a ResultFilter or a ResultRecorder, depending on the makeRecorder flag;
     // its input is the expression at the top of the stack (length 'len').
     // filterRef may be NULL; in that case, only the expression filter/recorder needs to be created.
-    // returns SignalSource(NULL) if called with isRecorder==true, meaning that no chaining is possible
-    SignalSource createFilterOrRecorder(FilterOrRecorderReference *filterOrRecorderRef, bool useRecorderForExpr, const std::vector<Expression::Elem>& stack, int len, const SignalSource& source);
+    // returns SignalSource(NULL) if called with makeRecorder==true, meaning that no chaining is possible
+    SignalSource createFilterOrRecorder(FilterOrRecorderReference *filterOrRecorderRef, bool makeRecorder, const std::vector<Expression::Elem>& stack, int len, const SignalSource& source, cComponent *component, const char *statisticName);
   public:
     StatisticRecorderParser() {}
     void parse(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where);

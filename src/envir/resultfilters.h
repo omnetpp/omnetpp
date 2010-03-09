@@ -156,7 +156,7 @@ class ENVIR_API ExpressionFilter : public NumericResultFilter
         virtual bool process(simtime_t& t, double& value);
     public:
         ExpressionFilter() {}
-        virtual std::string str() const {return expr.str();}
+        virtual std::string str() const {return expr.str()+" (ExpressionFilter)";}
         Expression& getExpression() {return expr;}
         Expression::Functor *makeValueVariable();
         Expression::Functor *makeTimeVariable();
