@@ -20,6 +20,7 @@
 
 #include "envirdefs.h"
 #include "resultrecorder.h"
+#include "expression.h"
 #include "cstatistic.h"
 
 
@@ -185,6 +186,30 @@ class ENVIR_API HistogramRecorder : public StatisticsRecorder
 {
     public:
         HistogramRecorder();
+};
+
+/**
+ * Result recorder that remembers the last value of a signal,
+ * and in finish() it evaluates an expression and saves the result.
+ */
+//TODO: make variants that eat 2 signals, and N signals
+class ENVIR_API ExpressionRecorder : public NumericResultRecorder
+{
+    protected:
+        Expression expr;
+    public:
+        // current values, valid inside process() only
+        double lastValue;
+    protected:
+        virtual void collect(double value) {lastValue = value;}
+        virtual void collect(simtime_t t, double value) {lastValue = value;}
+    public:
+        ExpressionRecorder() {}
+        virtual std::string str() const {return expr.str();}
+        virtual Expression& getExpression() {return expr;}
+        virtual Expression::Functor *makeValueVariable();
+        virtual Expression::Functor *makeTimeVariable();
+        virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
 #endif

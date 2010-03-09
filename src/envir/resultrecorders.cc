@@ -223,4 +223,45 @@ HistogramRecorder::HistogramRecorder() : StatisticsRecorder(new cHistogram())
 {
 }
 
+//---
+
+class RecValueVariable : public Expression::Variable
+{
+  private:
+    ExpressionRecorder *owner;
+  public:
+    RecValueVariable(ExpressionRecorder *recorder) {owner = recorder;}
+    virtual Functor *dup() const {return new RecValueVariable(owner);}
+    virtual const char *getName() const {return "<lastsignalvalue>";}
+    virtual char getReturnType() const {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return owner->lastValue;}
+};
+
+//XXX currently unused
+class RecTimeVariable : public Expression::Variable
+{
+  public:
+    virtual Functor *dup() const {return new RecTimeVariable();}
+    virtual const char *getName() const {return "<simtime>";}
+    virtual char getReturnType() const {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return SIMTIME_DBL(simulation.getSimTime());}
+};
+
+Expression::Functor *ExpressionRecorder::makeValueVariable()
+{
+    return new RecValueVariable(this);
+}
+
+Expression::Functor *ExpressionRecorder::makeTimeVariable()
+{
+    return new RecTimeVariable();
+}
+
+void ExpressionRecorder::finish(cComponent *component, simsignal_t signalID)
+{
+    std::string scalarName = makeName(expr.str().c_str());
+    opp_string_map attributes;
+    extractStatisticAttributes(component, attributes);
+    ev.recordScalar(component, scalarName.c_str(), expr.doubleValue(), &attributes);
+}
 

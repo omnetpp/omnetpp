@@ -16,7 +16,8 @@
 *--------------------------------------------------------------*/
 
 #include "statisticparser.h"
-#include "resultfilters.h"
+#include "resultfilters.h"    // WarmupFilter, ExpressionFilter
+#include "resultrecorders.h"  // ExpressionRecorder
 
 
 class SignalSourceReference : public Expression::Variable
@@ -120,15 +121,16 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
     for (int i = 0; i < exprLen; i++)
     {
        const Expression::Elem& e = elems[i];
-       if (e.getType()!=Expression::Elem::FUNCTOR || !dynamic_cast<FilterOrRecorderReference*>(e.getFunctor()))
+
+       // push it onto the stack
+       stack.push_back(e);
+
+       // if TOS is a filter: create ExpressionFilter from top n items, install it
+       // as listener, create and chain the ResultFilter after it, and replace
+       // expression on the stack (top n items) with a SourceReference.
+       if (e.getType()==Expression::Elem::FUNCTOR && dynamic_cast<FilterOrRecorderReference*>(e.getFunctor()))
        {
-           // some normal expression ingredient
-           stack.push_back(e);
-       }
-       else
-       {
-           // filter or recorder reference
-           // determine how many elements this covers on the stack
+           // determine how many elements this expression covers on the stack
            int len = countDepth(stack, stack.size()-1);
            // use top 'len' elements to create an ExpressionFilter,
            // install it, and replace top 'len' elements with a SignalSourceReference
@@ -313,22 +315,23 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *mode
     for (int i = 0; i < exprLen; i++)
     {
        const Expression::Elem& e = elems[i];
-       if (e.getType()!=Expression::Elem::FUNCTOR || !dynamic_cast<FilterOrRecorderReference*>(e.getFunctor()))
+
+       // push it onto the stack
+       stack.push_back(e);
+
+       // if TOS is a filter: create ExpressionFilter from top n items, install it
+       // as listener, create and chain the ResultFilter after it, and replace
+       // expression on the stack (top n items) with a SourceReference.
+       if (e.getType()==Expression::Elem::FUNCTOR && dynamic_cast<FilterOrRecorderReference*>(e.getFunctor()))
        {
-           // some normal expression ingredient
-           stack.push_back(e);
-       }
-       else
-       {
-           // filter or recorder reference
-           // determine how many elements this covers on the stack
+           // determine how many elements this expression covers on the stack
            int len = countDepth(stack, stack.size()-1);
            // use top 'len' elements to create an ExpressionFilter,
            // install it, and replace top 'len' elements with a SignalSourceReference
            // on the stack.
            // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
            FilterOrRecorderReference *filterOrRecorderRef = (FilterOrRecorderReference *) e.getFunctor();
-           SignalSource signalSource = createFilterOrRecorder(filterOrRecorderRef, stack, len, source);
+           SignalSource signalSource = createFilterOrRecorder(filterOrRecorderRef, false, stack, len, source);
            stack.erase(stack.end()-len, stack.end());
            stack.push_back(Expression::Elem());
            stack.back() = new SignalSourceReference(signalSource);
@@ -344,15 +347,15 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *mode
         // install it, and replace top 'len' elements with a SignalSourceReference
         // on the stack.
         // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
-        SignalSource signalSource = createFilterOrRecorder(NULL, stack, len, source);
+        SignalSource signalSource = createFilterOrRecorder(NULL, true, stack, len, source);
         stack.erase(stack.end()-len, stack.end());
         stack.push_back(Expression::Elem());
         stack.back() = new SignalSourceReference(signalSource);
     }
 
     // the whole expression must have evaluated to a single SignalSourceReference
-    // containing a SignalSource(NULL), meaning that the last element is a recorder
-    // which does not support further chaining
+    // containing a SignalSource(NULL), because the outer element must be a recorder
+    // that does not support further chaining (see markRecorders())
     if (stack.size() != 1)
         throw opp_runtime_error("malformed expression"); // something wrong
     if (stack[0].getType()!=Expression::Elem::FUNCTOR || !dynamic_cast<SignalSourceReference*>(stack[0].getFunctor()))
@@ -361,18 +364,16 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *mode
         throw opp_runtime_error("malformed expression"); // something wrong
 }
 
-SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderReference *filterOrRecorderRef, const std::vector<Expression::Elem>& stack, int len, const SignalSource& source)
+//XXX now it appears that StatisticSourceParser::createFilter() is a special case of this -- eliminate it?
+SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderReference *filterOrRecorderRef, bool useRecorderForExpr, const std::vector<Expression::Elem>& stack, int len, const SignalSource& source)
 {
-    //FIXME we need to create an ExpressionRecorder instead of ExpressionParser if filterOrRecorderRef==NULL
     Assert(len >= 1);
     int stackSize = stack.size();
 
+    // count embedded signal references, unless filter is arg-less (i.e. it has an
+    // implicit source arg, like "record=timeavg" which means "record=timeavg($source)")
     SignalSourceReference *signalSourceReference = NULL;
-    if (filterOrRecorderRef && filterOrRecorderRef->getNumArgs()==0)  // implicit source arg, like "timeavg" which means "timeavg($source)"
-    {
-        //FIXME must use "source" as SignalSource
-    }
-    else
+    if (!filterOrRecorderRef || filterOrRecorderRef->getNumArgs()>0)
     {
         // count SignalSourceReferences (nested filter) - there must be exactly one;
         // i.e. the expression may refer to exactly one signal only
@@ -407,41 +408,69 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
 
     SignalSource result(NULL);
 
-    if (len == 1)
+    if (len <= 1)
     {
         // a plain signal reference or chained filter -- no ExpressionFilter needed
-        const SignalSource& signalSource = signalSourceReference->getSignalSource();
+        const SignalSource& signalSource = signalSourceReference ?
+            signalSourceReference->getSignalSource() : source;
+
         if (!filterOrRecorder)
             result = signalSource;
         else {
             signalSource.subscribe(filterOrRecorder);
-            result = filterOrRecorderRef->isFilter() ? SignalSource((ResultFilter*)filterOrRecorder) : SignalSource(NULL);
+            if (filterOrRecorderRef->isFilter())
+                result = SignalSource((ResultFilter*)filterOrRecorder);
         }
     }
     else // (len > 1)
     {
-        // some expression -- add an ExpressionFilter, and the new filter on top
-        // replace Expr with SignalSourceReference
-        ExpressionFilter *exprFilter = new ExpressionFilter();
-
-        Expression::Elem *v = new Expression::Elem[len];
-        for (int i=0; i<len; i++)
+        // some expression -- add an ExpressionFilter or Recorder, and chain the
+        // new filter (if exists) on top of it.
+        ResultListener *exprListener;
+        if (!filterOrRecorder && useRecorderForExpr)
         {
-            v[i] = stack[stackSize-len+i];
-            if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
-                v[i] = exprFilter->makeValueVariable();
+            // expression recorder
+            ExpressionRecorder *exprRecorder = new ExpressionRecorder();
+
+            Expression::Elem *v = new Expression::Elem[len];
+            for (int i=0; i<len; i++)
+            {
+                v[i] = stack[stackSize-len+i];
+                if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
+                    v[i] = exprRecorder->makeValueVariable();
+            }
+            exprRecorder->getExpression().setExpression(v,len);
+            exprListener = exprRecorder;
+        }
+        else
+        {
+            // expression filter
+            ExpressionFilter *exprFilter = new ExpressionFilter();
+
+            Expression::Elem *v = new Expression::Elem[len];
+            for (int i=0; i<len; i++)
+            {
+                v[i] = stack[stackSize-len+i];
+                if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
+                    v[i] = exprFilter->makeValueVariable();
+            }
+            exprFilter->getExpression().setExpression(v,len);
+            exprListener = exprFilter;
         }
 
-        exprFilter->getExpression().setExpression(v,len);
 
         // subscribe
         const SignalSource& signalSource = signalSourceReference->getSignalSource();
-        signalSource.subscribe(exprFilter);
-        if (!filterOrRecorder)
-            result = SignalSource(exprFilter);
+        signalSource.subscribe(exprListener);
+        if (!filterOrRecorder) {
+            if (dynamic_cast<ExpressionFilter*>(exprListener))
+                result = SignalSource((ExpressionFilter*)exprListener);
+        }
         else {
-            exprFilter->addDelegate(filterOrRecorder);
-            result = filterOrRecorderRef->isFilter() ? SignalSource((ResultFilter*)filterOrRecorder) : SignalSource(NULL);
+            Assert(dynamic_cast<ExpressionFilter*>(exprListener));
+            ((ExpressionFilter*)exprListener)->addDelegate(filterOrRecorder);
+            if (filterOrRecorderRef->isFilter())
+                result = SignalSource((ResultFilter*)filterOrRecorder);
         }
     }
     return result; // if isRecorder==NULL, we return a NULL SignalSource (no chaining possible)
