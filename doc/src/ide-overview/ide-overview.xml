@@ -7,7 +7,7 @@
     <para>The &Omnetpp; 4.x Integrated Development Environment is based on the Eclipse platform, and extends
       it with new editors, views, wizards, and additional functionality. &Omnetpp; adds functionality for creating and
       configuring models (NED and ini files), performing batch executions, and analyzing simulation
-      results, while Eclipse provides C++ editing, CVS/SVN/GIT integration, and other optional features (UML
+      results, while Eclipse provides C++ editing, SVN/GIT integration, and other optional features (UML
       modeling, bugtracker integration, database access, etc.) via various open-source and commercial plug-ins.
     </para>
     <para>The following screenshots introduce the main components of the &Omnetpp; IDE.</para>

@@ -7,7 +7,7 @@
     simulation IDE is based on the Eclipse platform and extends it with new editors, views, wizards, and
     other functionality. &Omnetpp;
     adds functionality for creating and configuring models (NED and INI files), performing batch executions
-    and analyzing the simulation results, while Eclipse provides C++ editing, CVS/SVN integration and
+    and analyzing the simulation results, while Eclipse provides C++ editing, SVN/GIT integration and
     other optional features (UML modeling, bug-tracker integration, database access, etc.) via various
     open-source and commercial plug-ins. The environment will be instantly recognizable to those at home with
     the Eclipse platform.
