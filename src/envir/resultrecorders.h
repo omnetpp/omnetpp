@@ -48,8 +48,6 @@ class ENVIR_API CountRecorder : public ResultRecorder
 {
     protected:
         long count;
-    protected:
-        virtual void tweakTitle(opp_string& title);
     public:
         CountRecorder() {count = 0;}
         virtual void receiveSignal(ResultFilter *prev, long l) {count++;}
@@ -69,7 +67,6 @@ class ENVIR_API LastValueRecorder : public NumericResultRecorder
     protected:
         double lastValue;
     protected:
-        virtual void tweakTitle(opp_string& title);
         virtual void collect(double value) {lastValue = value;}
         virtual void collect(simtime_t t, double value) {lastValue = value;}
     public:
@@ -85,7 +82,6 @@ class ENVIR_API SumRecorder : public NumericResultRecorder
     protected:
         double sum;
     protected:
-        virtual void tweakTitle(opp_string& title);
         virtual void collect(double value) {sum += value;}
         virtual void collect(simtime_t t, double value) {sum += value;}
     public:
@@ -102,7 +98,6 @@ class ENVIR_API MeanRecorder : public NumericResultRecorder
         long count;
         double sum;
     protected:
-        virtual void tweakTitle(opp_string& title);
         virtual void collect(double value) {count++; sum += value;}
         virtual void collect(simtime_t t, double value) {count++; sum += value;}
     public:
@@ -118,7 +113,6 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
     protected:
         double min;
     protected:
-        virtual void tweakTitle(opp_string& title);
         virtual void collect(double value) {if (value < min) min = value;}
         virtual void collect(simtime_t t, double value) {if (value < min) min = value;}
     public:
@@ -134,7 +128,6 @@ class ENVIR_API MaxRecorder : public NumericResultRecorder
     protected:
         double max;
     protected:
-        virtual void tweakTitle(opp_string& title);
         virtual void collect(double value) {if (value > max) max = value;}
         virtual void collect(simtime_t t, double value) {if (value > max) max = value;}
     public:
@@ -153,7 +146,6 @@ class ENVIR_API TimeAverageRecorder : public NumericResultRecorder
         double lastValue;
         double weightedSum;
     protected:
-        virtual void tweakTitle(opp_string& title);
         virtual void collect(double value)  {collect(simulation.getSimTime(), value);}
         virtual void collect(simtime_t t, double value);
     public:
@@ -191,7 +183,7 @@ class ENVIR_API HistogramRecorder : public StatisticsRecorder
 
 /**
  * Result recorder that remembers the last value of a signal,
- * and in finish(ResultFilter *prev) it evaluates an expression and saves the result.
+ * and in finish() it evaluates an expression and saves the result.
  */
 //TODO: make variants that eat 2 signals, and N signals
 class ENVIR_API ExpressionRecorder : public NumericResultRecorder

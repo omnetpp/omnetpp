@@ -66,6 +66,12 @@ opp_string_map ResultRecorder::getStatisticAttributes()
     return result;
 }
 
+void ResultRecorder::tweakTitle(opp_string& title)
+{
+    //title = opp_string(getRecordingMode()) + " of " + title;
+    title = title + ", " + getRecordingMode();
+}
+
 //---
 
 void NumericResultRecorder::receiveSignal(ResultFilter *prev, long l)

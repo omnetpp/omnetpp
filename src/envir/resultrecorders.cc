@@ -51,7 +51,7 @@ void VectorRecorder::collect(simtime_t t, double value)
                 "%s: cannot record data with an earlier timestamp (t=%s) than "
                 "the previously recorded value, for statistic %s of %s",
                 opp_typename(typeid(*this)), SIMTIME_STR(t),
-                getStatisticName(), getComponent()->getFullPath().c_str());
+                getStatisticName(), getComponent()->getFullPath().c_str());  //FIXME msg too long
     }
 
     lastTime = t;
@@ -59,11 +59,6 @@ void VectorRecorder::collect(simtime_t t, double value)
 }
 
 //---
-
-void CountRecorder::tweakTitle(opp_string& title)
-{
-    title = opp_string("count of ") + title;
-}
 
 void CountRecorder::finish(ResultFilter *prev)
 {
@@ -73,11 +68,6 @@ void CountRecorder::finish(ResultFilter *prev)
 
 //---
 
-void LastValueRecorder::tweakTitle(opp_string& title)
-{
-    title = opp_string("last value of ") + title;
-}
-
 void LastValueRecorder::finish(ResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
@@ -85,11 +75,6 @@ void LastValueRecorder::finish(ResultFilter *prev)
 }
 
 //---
-
-void SumRecorder::tweakTitle(opp_string& title)
-{
-    title = opp_string("sum of ") + title;
-}
 
 void SumRecorder::finish(ResultFilter *prev)
 {
@@ -99,11 +84,6 @@ void SumRecorder::finish(ResultFilter *prev)
 
 //---
 
-void MeanRecorder::tweakTitle(opp_string& title)
-{
-    title = opp_string("mean of ") + title;
-}
-
 void MeanRecorder::finish(ResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
@@ -111,11 +91,6 @@ void MeanRecorder::finish(ResultFilter *prev)
 }
 
 //---
-
-void MinRecorder::tweakTitle(opp_string& title)
-{
-    title = opp_string("minimum of ") + title;
-}
 
 void MinRecorder::finish(ResultFilter *prev)
 {
@@ -125,11 +100,6 @@ void MinRecorder::finish(ResultFilter *prev)
 
 //---
 
-void MaxRecorder::tweakTitle(opp_string& title)
-{
-    title = opp_string("maximum of ") + title;
-}
-
 void MaxRecorder::finish(ResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
@@ -137,11 +107,6 @@ void MaxRecorder::finish(ResultFilter *prev)
 }
 
 //---
-
-void TimeAverageRecorder::tweakTitle(opp_string& title)
-{
-    title = opp_string("time average of ") + title;
-}
 
 void TimeAverageRecorder::collect(simtime_t t, double value)
 {

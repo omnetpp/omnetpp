@@ -47,7 +47,7 @@ class ENVIR_API ResultRecorder : public ResultListener
         const char *recordingMode;
     protected:
         virtual opp_string_map getStatisticAttributes();
-        virtual void tweakTitle(opp_string& title) {}
+        virtual void tweakTitle(opp_string& title);
     public:
         virtual void init(cComponent *component, const char *statisticName, const char *recordingMode);
         virtual cComponent *getComponent() const {return component;}
