@@ -3,20 +3,21 @@
 
 This appendix documents the format of the eventlog file. Eventlog
 files are written by the simulation (when enabled). Everything
-that happens during the simulation gets recorded into the file,
+that happens during the simulation is recorded into the file,
   \footnote{With certain granularity of course, and subject to
   filters that were active during simulation}
 so the file can later be used to reproduce the history of the
 simulation on a sequence chart, or in some other form.
 
-The file is line-oriented text file. Blank lines and lines beginning
-with "\#" (comments) will get ignored. Other lines begin with an
+The file is a line-oriented text file. Blank lines and lines beginning
+with "\#" (comments) will be ignored. Other lines begin with an
 \textit{entry identifier} like \ttt{E} for \textit{Event} or
 \ttt{BS} for \textit{BeginSend}, followed by \textit{attribute-identifier}
 and \textit{value} pairs. One exception is debug output
 (recorded from \ttt{ev<<...} statements), which are represented
-by lines that begin with a hypen, and continue with the actual text.
+by lines that begin with a hyphen, and continue with the actual text.
 
+The grammar of the eventlog file is very simple:
 \begin{verbatim}
 <file> ::= <line>*
 <line> ::= <empty-line> | <user-log-message> | <event-log-entry>
@@ -57,6 +58,7 @@ A correct eventlog also fulfills the following requirements:
 
 The various entry types and their supported attributes are as follows:
 
+%many long lines in the following section -verbatim doesn't wrap!
 \begin{verbatim}
 SB SimulationBeginEntry // recorded at the first event
 {
@@ -108,7 +110,7 @@ MR ModuleReparentedEntry // reparenting a module
 
 GC GateCreatedEntry     // gate created
 {
-   m int moduleId       // module in which the gate was create
+   m int moduleId       // module in which the gate was created
    g int gateId         // id of the new gate
    n string name        // gate name
    i int index -1       // gate index if vector, -1 otherwise
@@ -189,16 +191,16 @@ SD SendDirectEntry // sending a message directly to a destination gate
    sm int senderModuleId            // id of the source module from which the message is being sent
    dm int destModuleId              // id of the destination module to which the message is being sent
    dg int destGateId                // id of the gate at the destination module to which the message is being sent
-   pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
-   td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
+   pd simtime_t propagationDelay  0 // propagation delay as the message is propagated through the connection
+   td simtime_t transmissionDelay 0 // transmission delay as the whole message is sent from the source gate
 }
 
 SH SendHopEntry // sending a message through a connection identified by its source module and gate id
 {
    sm int senderModuleId            // id of the source module from which the message is being sent
    sg int senderGateId              // id of the gate at the source module from which the message is being sent
-   pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
-   td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
+   pd simtime_t propagationDelay  0 // propagation delay as the message is propagated through the connection
+   td simtime_t transmissionDelay 0 // transmission delay as the whole message is sent from the source gate
 }
 
 DM DeleteMessageEntry // deleting a message

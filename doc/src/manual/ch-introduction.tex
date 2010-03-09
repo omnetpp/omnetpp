@@ -21,7 +21,7 @@ used in various problem domains:
         messages.}
 \end{itemize}
 
-{\opp} itself is not a simulator of anything concrete but, rather,
+{\opp} itself is not a simulator of anything concrete, but rather
 provides infrastructure and tools for \textit{writing} simulations. One of
 the fundamental ingredients of this infrastructure is a component
 architecture for simulation models. Models are assembled from reusable
@@ -34,10 +34,10 @@ module nesting is not limited. Modules communicate through message passing,
 where messages may carry arbitrary data structures. Modules can pass
 messages along predefined paths via gates and connections, or directly to
 their destination; the latter is useful for wireless simulations, for
-example. Modules may have parameters, that can be used to customize module
-behavior, and/or to parameterize the model's topology.
+example. Modules may have parameters that can be used to customize module
+behavior and/or to parameterize the model's topology.
 Modules at the lowest level of the module hierarchy are called
-simple modules, and they encapsulate behavior. Simple modules
+simple modules, and they encapsulate model behavior. Simple modules
 are programmed in C++, and make use of the simulation library.
 
 {\opp} simulations can be run under various user interfaces.
@@ -53,8 +53,8 @@ modifications on most Unix-like operating systems.
 {\opp} also supports parallel distributed simulation. {\opp} can
 use several mechanisms for communication between partitions of
 a parallel distributed simulation, for example MPI or named pipes.
-The parallel simulation algorithm can easily be extended or new
-ones plugged in. Models do not need any special instrumentation
+The parallel simulation algorithm can easily be extended, or new
+ones can be plugged in. Models do not need any special instrumentation
 to be run in parallel -- it is just a matter of configuration.
 {\opp} can even be used for classroom presentation of parallel
 simulation algorithms, because simulations can be run in parallel
@@ -215,10 +215,10 @@ The manual is organized as follows:
     describe the simulation concepts and their implementation in {\opp}, explain
     how to write simple\index{module!simple} modules, and describe the class library.}
   \item{The chapters \ref{cha:graphics} and \ref{cha:neddoc}
-    expand on the topic by explaining how to customize
+    explain how to customize
     the network graphics and how to write NED source code comments
     from which documentation can be generated.}
-  \item{The following chapters, \ref{cha:building-simulation-programs},
+  \item{Chapters \ref{cha:building-simulation-programs},
     \ref{cha:config-sim}, \ref{cha:run-sim} and
     \ref{cha:analyzing-simulation-results} deal with practical issues
     like building and running simulations and analyzing results, and
@@ -228,7 +228,7 @@ The manual is organized as follows:
   \item{Chapters \ref{cha:plugin-exts} and \ref{cha:embedding}
     explain the architecture and internals of {\opp}, as well as
     ways to extend it and embed it into larger applications.}
-  \item{The appendices provide a reference on NED language,
+  \item{The appendices provide a reference on the NED language,
     configuration options, file formats, and other details.}
 \end{itemize}
 

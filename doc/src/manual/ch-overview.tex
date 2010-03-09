@@ -26,7 +26,7 @@ Arrows connecting small boxes represent connections and gates.
 
 
 Modules communicate with messages that may contain arbitrary
-data, in addition to usual attributes such as timestamp.
+data, in addition to usual attributes such as a timestamp.
 Simple modules typically send messages via gates, but it is also
 possible to send them directly to their destination modules. Gates are the
 input and output interfaces of modules: messages are sent through
@@ -48,7 +48,7 @@ define model topology. Parameters can take string, numeric, or boolean
 values. Because parameters are represented as objects in the program,
 parameters -- in addition to holding constants -- may transparently act as
 sources of random numbers, with the actual distributions provided with the
-model configuration, they may interactively prompt the user for the value,
+model configuration. They may interactively prompt the user for the value,
 and they might also hold expressions referencing other parameters. Compound
 modules may pass parameters or expressions of parameters to their
 submodules.
@@ -191,7 +191,7 @@ connections are made.
 \index{topology!description}
 
 The user defines the structure of the model in NED language descriptions
-(Network Description). NED language will be discussed in detail
+(Network Description). The NED language will be discussed in detail
 in chapter \ref{cha:the-ned-language}.
 
 
@@ -315,7 +315,7 @@ An {\opp} model consists of the following parts:
   \item{Message definitions (\texttt{.msg} files). You can define various message
     types and add data fields to them. {\opp} will translate message definitions
     into full-fledged C++ classes.}
-  \item{Simple modules sources. They are C++ files, with \texttt{.h}/\texttt{.cc} suffix.}
+  \item{Simple module sources. They are C++ files, with \texttt{.h}/\texttt{.cc} suffix.}
 \end{itemize}
 
 The simulation system provides the following components:
@@ -333,7 +333,7 @@ The simulation system provides the following components:
 
 Simulation programs are built from the above components. First,
 \ttt{.msg} files are translated into C++ code using the \ttt{opp\_msgc}.
-program. Then all C++ sources are compiled, and linked with the simulation
+program. Then all C++ sources are compiled and linked with the simulation
 kernel and a user interface library to form a simulation executable or
 shared library. NED files\index{ned!files} are loaded dynamically in their original
 text forms when the simulation program starts.
@@ -343,7 +343,7 @@ text forms when the simulation program starts.
 
 The simulation may be compiled as a standalone program executable;
 thus it can be run on other machines without {\opp}
-being present or it can be created as a shared library. In this case the
+being present, or it can be created as a shared library. In this case the
 {\opp} shared libraries must be present on that system.
 When the program is started, it first reads all NED files\index{ned!files}
 containing your model topology, then it reads a configuration
@@ -373,13 +373,13 @@ and possibly allow the user to intervene by changing variables/objects
 inside the model. This is very important in the development/debugging
 phase of the simulation project. Equally important, a hands-on
 experience allows the user to get a feel of the model's
-behaviour. The graphical user interface can also be used to
+behavior. The graphical user interface can also be used to
 demonstrate a model's operation.
 
 
 The same simulation model can be executed with various user
 interfaces, with no change in the model files themselves.
-The user would test and debug the simulation with a powerful
+The user would typically test and debug the simulation with a powerful
 graphical user interface, and finally run it with a simple,
 fast user interface that supports batch execution.
 

@@ -3,7 +3,7 @@
 
 The file format described here applies to \textit{both output vector and
 output scalar files}. Their formats are consistent, only the types of
-entries occurring into them are different. This unified format also
+entries occurring in them are different. This unified format also
 means that they can be read with a common routine.
 
 Result files are \textit{line oriented}. A line consists of one or more
@@ -85,7 +85,7 @@ run TokenRing1-0-20080514-18:19:44-3248
 \end{filelisting}
 
 Typically there will be one run per file, but this is not mandatory.
-In cases when there are more than one runs in a file and it is not feasible
+In cases when there are more than one run in a file and it is not feasible
 to keep the entire file in memory during analysis, the offsets of the \textit{run}
 lines may be indexed for more efficient random access.
 
@@ -266,7 +266,7 @@ Simulation times and event numbers \textit{within an output vector} are
 required to be in increasing order.
 
 Performance note: Data lines belonging to the same output vector may be
-written out in clusters (of sizes roughly multiple of the disk's
+written out in clusters (of size roughly a multiple of the disk's
 physical block size). Then, since an output vector file is typically
 not kept in memory during analysis, indexing the start offsets of these
 clusters allows one to read the file and seek in it more efficiently.
@@ -275,7 +275,7 @@ This does not require any change or extension to the file format.
 \section{Index Header}
 
 The first line of the index file stores the size and modification date
-of the vector file. If the attributes of vector file differs from
+of the vector file. If the attributes of a vector file differ from
 the information stored in the index file, then the IDE automatically
 rebuilds the index file.
 
@@ -413,9 +413,9 @@ The \textit{binLowerBound }column of \textbf{bin} lines represent the
 lower bound of the given histogram cell. \textbf{Bin} lines are in
 increasing \textit{binLowerBound} order.
 
-The \textit{value} column of \textbf{bin} lines represent observation
+The \textit{value} column of a \textbf{bin} line represents the observation
 count in the given cell: \textit{value k} is the number of observations
-greater or equal than \textit{binLowerBound k}, but smaller than
+greater or equal to \textit{binLowerBound k}, but smaller than
 \textit{binLowerBound k+1}. \textit{Value} is not necessarily an
 integer, because the cKSplit and cPSquare algorithms produce
 non{}-integer estimates. The first \textbf{bin} line is the underflow
