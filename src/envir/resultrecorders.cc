@@ -39,7 +39,7 @@ void VectorRecorder::listenerAdded(cComponent *x, simsignal_t signalID)
     opp_string_map attributes;
     extractStatisticAttributes(getComponent(), attributes);
 
-    handle = ev.registerOutputVector(getComponent()->getFullPath().c_str(), getStatisticName());
+    handle = ev.registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str());
     ASSERT(handle != NULL);
     for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
         ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
@@ -95,7 +95,7 @@ void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObj
 
 void CountRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName("count");
+    std::string scalarName = getResultName();
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), count, &attributes);
@@ -110,7 +110,7 @@ void LastValueRecorder::tweakTitle(opp_string& title)
 
 void LastValueRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName("last");
+    std::string scalarName = getResultName();
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), lastValue, &attributes);
@@ -125,7 +125,7 @@ void SumRecorder::tweakTitle(opp_string& title)
 
 void SumRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName("sum");
+    std::string scalarName = getResultName();
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), sum, &attributes);
@@ -140,7 +140,7 @@ void MeanRecorder::tweakTitle(opp_string& title)
 
 void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName("mean");
+    std::string scalarName = getResultName();
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes); // note: this is NaN if count==0
@@ -155,7 +155,7 @@ void MinRecorder::tweakTitle(opp_string& title)
 
 void MinRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName("min");
+    std::string scalarName = getResultName();
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
@@ -170,7 +170,7 @@ void MaxRecorder::tweakTitle(opp_string& title)
 
 void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName("max");
+    std::string scalarName = getResultName();
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
@@ -200,7 +200,7 @@ void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
     collect(t, NaN); // to get the last interval counted in; the value is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
 
-    std::string scalarName = makeName("timeavg");
+    std::string scalarName = getResultName();
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), empty ? NaN : (weightedSum / interval), &attributes);
@@ -212,7 +212,7 @@ void StatisticsRecorder::finish(cComponent *component, simsignal_t signalID)
 {
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
-    ev.recordStatistic(component, getStatisticName(), statistic, &attributes);
+    ev.recordStatistic(component, getResultName().c_str(), statistic, &attributes);
 }
 
 StddevRecorder::StddevRecorder() : StatisticsRecorder(new cStdDev())
@@ -259,7 +259,7 @@ Expression::Functor *ExpressionRecorder::makeTimeVariable()
 
 void ExpressionRecorder::finish(cComponent *component, simsignal_t signalID)
 {
-    std::string scalarName = makeName(expr.str().c_str());
+    std::string scalarName = getResultName();
     opp_string_map attributes;
     extractStatisticAttributes(component, attributes);
     ev.recordScalar(component, scalarName.c_str(), expr.doubleValue(), &attributes);

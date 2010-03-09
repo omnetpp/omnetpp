@@ -22,13 +22,14 @@
 
 cGlobalRegistrationList resultRecorders("resultRecorders");
 
-CommonStringPool ResultRecorder::statisticNamesPool;
+CommonStringPool ResultRecorder::namesPool;
 
 
-void ResultRecorder::init(cComponent *comp, const char *statsName)
+void ResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode)
 {
     component = comp;
-    statisticName = statisticNamesPool.get(statsName);
+    statisticName = namesPool.get(statsName);
+    recordingMode = namesPool.get(recMode);
 }
 
 void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
@@ -40,11 +41,6 @@ void ResultRecorder::listenerRemoved(cComponent *component, simsignal_t signalID
 {
     if (getSubscribeCount() == 0)
         delete this;
-}
-
-std::string ResultRecorder::makeName(const char *suffix)
-{
-    return std::string(statisticName) + ":" + suffix;
 }
 
 void ResultRecorder::extractStatisticAttributes(cComponent *component, opp_string_map& result)

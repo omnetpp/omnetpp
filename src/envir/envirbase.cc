@@ -896,46 +896,46 @@ SignalSource EnvirBase::doStatisticSource(cComponent *component, const char *sta
     }
 }
 
-void EnvirBase::doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where)
+void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where)
 {
     try
     {
-        if (opp_isidentifier(mode))
+        if (opp_isidentifier(recordingMode))
         {
             // simple case: just a plain recorder
-            ResultRecorder *listener = createResultRecorder(mode);
+            ResultRecorder *listener = createResultRecorder(recordingMode);
             if (!listener)
-                throw opp_runtime_error("unrecognized recording mode \"%s\"", mode);
-            bool recordsVector = !strcmp(mode, "vector");
+                throw opp_runtime_error("unrecognized recording mode \"%s\"", recordingMode);
+            bool recordsVector = !strcmp(recordingMode, "vector");
             if (recordsVector ? !vectorsEnabled : !scalarsEnabled) {
                 // disabled, return
                 delete listener;  //FIXME it shouldn't have been created in the first place then!
                 return;
             }
-            listener->init(component, statisticName);  //FIXME or whatever name
+            listener->init(component, statisticName, recordingMode);  //FIXME or whatever name
             source.subscribe(listener);
         }
         else
         {
             // something more complicated: use parser
             StatisticRecorderParser parser;
-            parser.parse(source, mode, scalarsEnabled, vectorsEnabled, component, statisticName, where);
+            parser.parse(source, recordingMode, scalarsEnabled, vectorsEnabled, component, statisticName, where);
         }
     }
     catch (std::exception& e)
     {
         throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s' specified %s: %s",
-            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), mode, where, e.what());
+            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, where, e.what());
     }
 }
 
 //FIXME this function shouldn't exist!!!
-ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
+ResultRecorder *EnvirBase::createResultRecorder(const char *recordingMode)
 {
-    if (!strcmp(mode, "auto"))
-        mode = "histogram";
+    if (!strcmp(recordingMode, "auto"))
+        recordingMode = "histogram";
 
-    ResultRecorderDescriptor *desc = ResultRecorderDescriptor::find(mode);
+    ResultRecorderDescriptor *desc = ResultRecorderDescriptor::find(recordingMode);
     if (!desc)
         return NULL;
     return desc->create();

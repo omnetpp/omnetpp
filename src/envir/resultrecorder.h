@@ -41,18 +41,20 @@ extern cGlobalRegistrationList resultRecorders;
 class ENVIR_API ResultRecorder : public ResultListener
 {
     private:
-        static CommonStringPool statisticNamesPool;
+        static CommonStringPool namesPool;
         cComponent *component;
         const char *statisticName;
+        const char *recordingMode;
     protected:
         simtime_t getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
-        virtual std::string makeName(const char *suffix);
         virtual void extractStatisticAttributes(cComponent *component, opp_string_map& result);
         virtual void tweakTitle(opp_string& title) {}
-        const char *getStatisticName() {return statisticName;}
         cComponent *getComponent() {return component;}
     public:
-        virtual void init(cComponent *component, const char *statisticName);
+        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode);
+        const char *getStatisticName() {return statisticName;}
+        const char *getRecordingMode() {return recordingMode;}
+        virtual std::string getResultName()  {return std::string(statisticName)+":"+recordingMode;}
         virtual void listenerAdded(cComponent *component, simsignal_t signalID);
         virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
 };
