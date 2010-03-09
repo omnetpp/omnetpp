@@ -146,7 +146,6 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cregistrationlist.h \
   resultlistener.h \
   ../../include/carray.h \
-  resultrecorders.h \
   ../../include/cgate.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
@@ -158,7 +157,6 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
-  resultrecorder.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -302,8 +300,8 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/opp_string.h \
   ../../include/envirext.h \
   ../../include/cexception.h \
-  ../../include/cdynamicexpression.h \
   ../../include/cnamedobject.h \
+  ../../include/cdynamicexpression.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
@@ -323,7 +321,6 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  resultrecorder.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cconfigoption.h \
@@ -332,7 +329,6 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
-  ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
@@ -342,7 +338,6 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/ccomponent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
-  resultrecorders.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cmathfunction.h \
@@ -409,7 +404,6 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  resultrecorder.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
@@ -426,7 +420,6 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/ccomponent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
-  resultrecorders.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   args.h \
@@ -459,14 +452,12 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  resultrecorder.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
-  ../../include/cstatistic.h \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -475,7 +466,6 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/ccomponent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
-  resultrecorders.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   args.h \
@@ -505,14 +495,12 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/cconfiguration.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  resultrecorder.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
-  ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/clistener.h \
@@ -520,7 +508,6 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/ccomponent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
-  resultrecorders.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   args.h \
@@ -570,7 +557,6 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  resultrecorder.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
@@ -585,7 +571,6 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/ccomponent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
-  resultrecorders.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   args.h \
@@ -628,20 +613,17 @@ $O/intervals.obj: intervals.cc \
   ../../include/cconfiguration.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  resultrecorder.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
-  ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/clistener.h \
   ../../include/ccomponent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
-  resultrecorders.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   args.h \
@@ -763,11 +745,13 @@ $O/resultfilter.obj: resultfilter.cc \
   ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
+  ../../include/cownedobject.h \
   ../../include/clistener.h \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   resultfilter.h \
+  ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/platdep/intxtypes.h \
@@ -793,6 +777,7 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   resultfilter.h \
+  ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/platdep/intxtypes.h \
@@ -822,6 +807,7 @@ $O/resultlistener.obj: resultlistener.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   resultfilter.h \
+  ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/cmessageheap.h \
@@ -840,8 +826,8 @@ $O/resultrecorder.obj: resultrecorder.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   resultrecorder.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
   ../../include/cclassfactory.h \
@@ -878,8 +864,8 @@ $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   resultrecorder.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
   ../../include/cclassfactory.h \
@@ -920,14 +906,12 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/cconfiguration.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  resultrecorder.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
-  ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/clistener.h \
@@ -935,7 +919,6 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/ccomponent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
-  resultrecorders.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   args.h \
@@ -1069,8 +1052,8 @@ $O/statisticparser.obj: statisticparser.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   resultrecorder.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
@@ -1117,20 +1100,17 @@ $O/xgridspec.obj: xgridspec.cc \
   ../../include/cenvir.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
-  resultrecorder.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
-  ../../include/cstatistic.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
   ../../include/clistener.h \
   ../../include/ccomponent.h \
   eventlogfilemgr.h \
   ../../include/cregistrationlist.h \
-  resultrecorders.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   args.h \

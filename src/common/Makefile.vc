@@ -100,7 +100,8 @@ $O/bigdecimal.obj: bigdecimal.cc \
   bigdecimal.h \
   exception.h \
   opp_ctype.h \
-  commondefs.h
+  commondefs.h \
+  commonutil.h
 $O/commonutil.obj: commonutil.cc \
   exception.h \
   commondefs.h \
