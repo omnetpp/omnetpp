@@ -20,12 +20,12 @@
 #include "ccomponent.h"
 
 
-void ResultListener::listenerAdded(ResultFilter *prev)
+void ResultListener::subscribedTo(ResultFilter *prev)
 {
     ASSERT(getSubscribeCount() == 1);  // except for multi-signal ExpressionRecorders
 }
 
-void ResultListener::listenerRemoved(ResultFilter *prev)
+void ResultListener::unsubscribedFrom(ResultFilter *prev)
 {
     if (getSubscribeCount() == 0)
         delete this;
@@ -105,14 +105,14 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cOb
 
 #undef THROW
 
-void ResultListener::listenerAdded(cComponent *component, simsignal_t signalID)
+void ResultListener::subscribedTo(cComponent *component, simsignal_t signalID)
 {
-    listenerAdded(NULL);
+    subscribedTo(NULL);
 }
 
-void ResultListener::listenerRemoved(cComponent *component, simsignal_t signalID)
+void ResultListener::unsubscribedFrom(cComponent *component, simsignal_t signalID)
 {
-    listenerRemoved(NULL);
+    unsubscribedFrom(NULL);
 }
 
 void ResultListener::finish(cComponent *component, simsignal_t signalID)

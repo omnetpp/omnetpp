@@ -31,9 +31,9 @@ Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
 
 
-void VectorRecorder::listenerAdded(ResultFilter *prev)
+void VectorRecorder::subscribedTo(ResultFilter *prev)
 {
-    NumericResultRecorder::listenerAdded(prev);
+    NumericResultRecorder::subscribedTo(prev);
 
     // we can register the vector here, because base class ensures we are subscribed only at once place
     opp_string_map attributes = getStatisticAttributes();

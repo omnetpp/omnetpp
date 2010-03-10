@@ -38,8 +38,8 @@ class ENVIR_API ResultListener : public cIListener
         virtual void receiveSignal(ResultFilter *prev, simtime_t t) = 0;
         virtual void receiveSignal(ResultFilter *prev, const char *s) = 0;
         virtual void receiveSignal(ResultFilter *prev, cObject *obj) = 0;
-        virtual void listenerAdded(ResultFilter *prev);
-        virtual void listenerRemoved(ResultFilter *prev);
+        virtual void subscribedTo(ResultFilter *prev);
+        virtual void unsubscribedFrom(ResultFilter *prev);
         virtual void finish(ResultFilter *prev) {}
 
         // original listener API delegates to simplified API:
@@ -48,8 +48,8 @@ class ENVIR_API ResultListener : public cIListener
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
-        virtual void listenerAdded(cComponent *component, simsignal_t signalID);
-        virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
+        virtual void subscribedTo(cComponent *component, simsignal_t signalID);
+        virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID);
         virtual void finish(cComponent *component, simsignal_t signalID);
 };
 

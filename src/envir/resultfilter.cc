@@ -39,7 +39,7 @@ void ResultFilter::addDelegate(ResultListener *delegate)
     delete [] delegates;
     delegates = v;
     delegate->subscribecount++;
-    delegate->listenerAdded(this);
+    delegate->subscribedTo(this);
 }
 
 int ResultFilter::getNumDelegates() const
@@ -62,7 +62,7 @@ ResultFilter::~ResultFilter()
 {
     for (int i=0; delegates[i]; i++) {
         delegates[i]->subscribecount--;
-        delegates[i]->listenerRemoved(this);
+        delegates[i]->unsubscribedFrom(this);
     }
     delete [] delegates;
 }

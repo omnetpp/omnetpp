@@ -37,7 +37,7 @@ class ENVIR_API VectorRecorder : public NumericResultRecorder
         virtual void collect(simtime_t t, double value);
     public:
         VectorRecorder() {handle = NULL; lastTime = 0;}
-        virtual void listenerAdded(ResultFilter *prev);
+        virtual void subscribedTo(ResultFilter *prev);
 };
 
 /**
