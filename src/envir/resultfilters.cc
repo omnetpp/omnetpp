@@ -16,6 +16,8 @@
 *--------------------------------------------------------------*/
 
 #include "resultfilters.h"
+#include "cmessage.h"  // PacketBytesFilter
+
 
 // note: we don't register WarmupPeriodFilter and ExpressionFilter
 Register_ResultFilter("count", CountFilter);
@@ -27,6 +29,7 @@ Register_ResultFilter("mean", MeanFilter);
 Register_ResultFilter("min", MinFilter);
 Register_ResultFilter("max", MaxFilter);
 Register_ResultFilter("timeavg", TimeAverageFilter);
+Register_ResultFilter("pkBytes", PacketBytesFilter);
 
 
 void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, long l)
@@ -131,5 +134,14 @@ Expression::Functor *ExpressionFilter::makeTimeVariable()
 {
     return new TimeVariable(this);
 }
+
+//---
+
+void PacketBytesFilter::receiveSignal(ResultFilter *prev, cObject *object)
+{
+    cPacket *pk = check_and_cast<cPacket *>(object);
+    fire(this, (double)pk->getByteLength());
+}
+
 
 

@@ -200,6 +200,15 @@ class ENVIR_API ExpressionFilter : public NumericResultFilter
         Expression::Functor *makeTimeVariable();
 };
 
+/**
+ * Filter that expects a cPacket and outputs its length in bytes (getByteLength()).
+ */
+class ENVIR_API PacketBytesFilter : public ObjectResultFilter
+{
+    public:
+        virtual void receiveSignal(ResultFilter *prev, cObject *object);
+};
+
 #endif
 
 

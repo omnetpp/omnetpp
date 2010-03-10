@@ -59,6 +59,11 @@ class ENVIR_API ResultFilter : public ResultListener
         virtual void finish(ResultFilter *prev);
 };
 
+/**
+ * Base class for filters that expect to receive an numeric value.
+ * This class overrides all other receiveSignal() methods to throw an exception,
+ * and delegates numeric types to a common (actually, two common) methods.
+ */
 class ENVIR_API NumericResultFilter : public ResultFilter
 {
     protected:
@@ -73,6 +78,21 @@ class ENVIR_API NumericResultFilter : public ResultFilter
         virtual void receiveSignal(ResultFilter *prev, simtime_t t);
         virtual void receiveSignal(ResultFilter *prev, const char *s);
         virtual void receiveSignal(ResultFilter *prev, cObject *obj);
+};
+
+/**
+ * Base class for filters that expect to receive an object.
+ * This class overrides all other receiveSignal() methods
+ * to throw an exception.
+ */
+class ENVIR_API ObjectResultFilter : public ResultFilter
+{
+    public:
+        virtual void receiveSignal(ResultFilter *prev, long l);
+        virtual void receiveSignal(ResultFilter *prev, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t);
+        virtual void receiveSignal(ResultFilter *prev, const char *s);
 };
 
 /**

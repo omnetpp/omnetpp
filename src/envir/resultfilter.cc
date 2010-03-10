@@ -150,6 +150,37 @@ void NumericResultFilter::receiveSignal(ResultFilter *prev, cObject *obj)
 
 //---
 
+#define THROW(t)  throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName(), t);
+
+void ObjectResultFilter::receiveSignal(ResultFilter *prev, long l)
+{
+    THROW("long");
+}
+
+void ObjectResultFilter::receiveSignal(ResultFilter *prev, double d)
+{
+    THROW("double");
+}
+
+void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t t, double d)
+{
+    THROW("double");
+}
+
+void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t t)
+{
+    THROW("simtime_t");
+}
+
+void ObjectResultFilter::receiveSignal(ResultFilter *prev, const char *s)
+{
+    THROW("const char *");
+}
+
+#undef THROW
+
+//---
+
 ResultFilterDescriptor::ResultFilterDescriptor(const char *name, ResultFilter *(*f)())
   : cNoncopyableOwnedObject(name, false)
 {
