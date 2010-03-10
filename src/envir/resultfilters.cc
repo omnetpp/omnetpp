@@ -19,6 +19,8 @@
 
 // note: we don't register WarmupPeriodFilter and ExpressionFilter
 Register_ResultFilter("count", CountFilter);
+Register_ResultFilter("constant0", Constant0Filter);
+Register_ResultFilter("constant1", Constant1Filter);
 Register_ResultFilter("last", LastValueFilter);
 Register_ResultFilter("sum", SumFilter);
 Register_ResultFilter("mean", MeanFilter);

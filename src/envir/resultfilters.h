@@ -47,15 +47,51 @@ class ENVIR_API CountFilter : public ResultFilter
     protected:
         long count;
     protected:
-        void doIt(ResultFilter *prev) {count++; fire(this, count);}
+        void doIt() {count++; fire(this, count);}
     public:
         CountFilter() {count = 0;}
-        virtual void receiveSignal(ResultFilter *prev, long l) {doIt(prev);}
-        virtual void receiveSignal(ResultFilter *prev, double d) {doIt(prev);}
+        virtual void receiveSignal(ResultFilter *prev, long l) {doIt();}
+        virtual void receiveSignal(ResultFilter *prev, double d) {doIt();}
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {count++; fire(this,t,count);}
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t) {doIt(prev);}
-        virtual void receiveSignal(ResultFilter *prev, const char *s) {doIt(prev);}
-        virtual void receiveSignal(ResultFilter *prev, cObject *obj) {doIt(prev);} // note: cISignalValue stuff was already dispatched to (simtime_t,double) method in base class
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t) {doIt();}
+        virtual void receiveSignal(ResultFilter *prev, const char *s) {doIt();}
+        virtual void receiveSignal(ResultFilter *prev, cObject *obj) {doIt();} // note: cISignalValue stuff was already dispatched to (simtime_t,double) method in base class
+};
+
+/**
+ * Result filter that replaces every value with a constant. Signal values
+ * do not need to be numeric.
+ */
+class ENVIR_API ConstantFilter : public ResultFilter
+{
+    protected:
+        double c;
+    public:
+        ConstantFilter(double c) {this->c = c;}
+        virtual void receiveSignal(ResultFilter *prev, long l) {fire(this,c);}
+        virtual void receiveSignal(ResultFilter *prev, double d) {fire(this,c);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {fire(this,t,c);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t t) {fire(this,c);}
+        virtual void receiveSignal(ResultFilter *prev, const char *s) {fire(this,c);}
+        virtual void receiveSignal(ResultFilter *prev, cObject *obj) {fire(this,c);} // note: cISignalValue stuff was already dispatched to (simtime_t,double) method in base class
+};
+
+/**
+ * Result filter that replaces every value with zero.
+ */
+class ENVIR_API Constant0Filter : public ConstantFilter
+{
+    public:
+        Constant0Filter() : ConstantFilter(0) {}
+};
+
+/**
+ * Result filter that replaces every value with 1.0.
+ */
+class ENVIR_API Constant1Filter : public ConstantFilter
+{
+    public:
+        Constant1Filter() : ConstantFilter(1) {}
 };
 
 /**
