@@ -28,6 +28,7 @@ class cComponent;
 class ENVIR_API ResultListener : public cIListener
 {
     public:
+        virtual const char *getClassName() const {return opp_typename(typeid(*this));}
         virtual std::string str() const {return opp_typename(typeid(*this));}
 
         // simplified API that better supports chaining:

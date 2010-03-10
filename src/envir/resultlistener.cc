@@ -33,34 +33,77 @@ void ResultListener::listenerRemoved(ResultFilter *prev)
 
 // original cIListener API that delegates to the simplified API:
 
+#define THROW(source, signalID, datatype, e) \
+    throw cRuntimeError("Error while processing statistic signal %s (id=%d) from (%s)%s, data type %s: %s", \
+                        cComponent::getSignalName(signalID), (int)signalID, \
+                        source->getClassName(), source->getFullPath().c_str(), datatype, e.what())
+
 void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
 {
-    receiveSignal(NULL, l);
+    try
+    {
+        receiveSignal(NULL, l);
+    }
+    catch (std::exception& e)
+    {
+        THROW(source, signalID, "long", e);
+    }
 }
 
 void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
 {
-    receiveSignal(NULL, d);
+    try
+    {
+        receiveSignal(NULL, d);
+    }
+    catch (std::exception& e)
+    {
+        THROW(source, signalID, "double", e);
+    }
 }
 
 void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t)
 {
-    receiveSignal(NULL, t);
+    try
+    {
+        receiveSignal(NULL, t);
+    }
+    catch (std::exception& e)
+    {
+        THROW(source, signalID, "simtime_t", e);
+    }
 }
 
 void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
-    receiveSignal(NULL, s);
+    try
+    {
+        receiveSignal(NULL, s);
+    }
+    catch (std::exception& e)
+    {
+        THROW(source, signalID, "const char *", e);
+    }
 }
 
 void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    // recognize cISignalValue, and dispatch to (simtime_t, double) handler
-    cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
-    if (v)
-        receiveSignal(NULL, v->getSignalTime(signalID), v->getSignalValue(signalID));
-    receiveSignal(NULL, obj);
+    try
+    {
+        // recognize cISignalValue, and dispatch to (simtime_t, double) handler
+        cISignalValue *v = dynamic_cast<cISignalValue *>(obj);
+        if (v)
+            receiveSignal(NULL, v->getSignalTime(signalID), v->getSignalValue(signalID));
+        else
+            receiveSignal(NULL, obj);
+    }
+    catch (std::exception& e)
+    {
+        THROW(source, signalID, (obj ? obj->getClassName() : "cObject* (NULL)"), e);
+    }
 }
+
+#undef THROW
 
 void ResultListener::listenerAdded(cComponent *component, simsignal_t signalID)
 {
@@ -78,6 +121,7 @@ void ResultListener::finish(cComponent *component, simsignal_t signalID)
 }
 
 //---
+
 void SignalSource::subscribe(ResultListener *listener) const
 {
     if (filter)

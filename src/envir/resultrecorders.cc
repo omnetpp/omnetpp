@@ -46,12 +46,11 @@ void VectorRecorder::listenerAdded(ResultFilter *prev)
 
 void VectorRecorder::collect(simtime_t t, double value)
 {
-    if (t < lastTime) {
-        throw cRuntimeError(
-                "%s: cannot record data with an earlier timestamp (t=%s) than "
-                "the previously recorded value, for statistic %s of %s",
-                opp_typename(typeid(*this)), SIMTIME_STR(t),
-                getStatisticName(), getComponent()->getFullPath().c_str());  //FIXME msg too long
+    if (t < lastTime)
+    {
+        throw cRuntimeError("%s: Cannot record data with an earlier timestamp (t=%s) "
+                            "than the previously recorded value (t=%s)",
+                            getClassName(), SIMTIME_STR(t), SIMTIME_STR(lastTime));
     }
 
     lastTime = t;

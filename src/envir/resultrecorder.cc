@@ -96,13 +96,13 @@ void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t d)
 
 void NumericResultRecorder::receiveSignal(ResultFilter *prev, const char *s)
 {
-    throw cRuntimeError("cannot convert const char * to double"); //FIXME better message
+    throw cRuntimeError("%s: Cannot convert const char * to double", getClassName());
 }
 
 void NumericResultRecorder::receiveSignal(ResultFilter *prev, cObject *obj)
 {
     // note: cISignalValue stuff was already dispatched to (simtime_t,double) method in base class
-    throw cRuntimeError("cannot convert cObject * to double"); //FIXME better message
+    throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName());
 }
 
 //----
