@@ -47,7 +47,10 @@ class cEnum;
 class SIM_API cOutVector : public cNoncopyableOwnedObject
 {
   protected:
-    enum {FL_ENABLED = 4}; // flag: when false, record() method will do nothing
+    enum {
+      FL_ENABLED = 4,      // flag: when false, record() method will do nothing
+      FL_RECORDWARMUP = 8, // flag: when set, object records data during warmup period as well
+    };
 
     void *handle;        // identifies output vector for the output vector manager
     simtime_t last_t;    // last timestamp written, needed to ensure increasing timestamp order
@@ -219,6 +222,21 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * Returns true if recording the data is enabled, false otherwise.
      */
     virtual bool isEnabled() const  {return flags&FL_ENABLED;}
+
+    /**
+     * Enables/disables recording data during the warm-up period.
+     * When set to false, record() calls will be ignored during
+     * warm-up period.
+     *
+     * @see cSimulation::getWarmupPeriod()
+     */
+    virtual void setRecordDuringWarmupPeriod(bool b)  {setFlag(FL_RECORDWARMUP,b);}
+
+    /**
+     * Returns true if the object will record data during the warm-up period.
+     * @see cSimulation::getWarmupPeriod()
+     */
+    virtual bool getRecordDuringWarmupPeriod() const  {return flags&FL_RECORDWARMUP;}
 
     /**
      * Returns the total number of values passed to the record() method of

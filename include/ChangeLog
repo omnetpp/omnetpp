@@ -8,6 +8,9 @@
 	* cVarHistogram: createEquiProbableCells() renamed to 
 	createEquiprobableCells() (lowercase "p")
 
+	* cOutVector: added setRecordDuringWarmupPeriod() and getRecordDuring-
+	WarmupPeriod() methods.
+
 2010-03-01  Andras Varga
 
 	* cGate: removed isBusy() and getTransmissionFinishTime(), as they
