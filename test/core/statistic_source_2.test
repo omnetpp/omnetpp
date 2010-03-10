@@ -1,0 +1,90 @@
+%description:
+Same as statistic_source_1, but with warmup period: framework should install a
+WarmupPeriodFilter on the signal first
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    @statistic[src0](record=vector,histogram);  // no "source=": should use statistic name as signal
+    @statistic[src1](source=foo;record=vector,histogram);
+    @statistic[src2](source=foo+1;record=vector,histogram);
+    @statistic[src3](source="2*fabs(foo+1)";record=vector,histogram);
+    @statistic[src4](source="mean(foo)";record=vector,histogram);
+    @statistic[src5](source="fabs(mean(foo))";record=vector,histogram);
+    @statistic[src6](source="mean(foo+1)";record=vector,histogram);
+    @statistic[src7](source="3+fabs(mean(foo+1))";record=vector,histogram);
+    @statistic[src8](source="max(mean(timeavg(foo)))";record=vector,histogram);
+    @statistic[src9](source="max(1+mean(2+timeavg(3+foo)))";record=vector,histogram);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+warmup-period = 10s
+debug-statistics-recording = true
+
+%contains: stdout
+Test.node (Node):
+    "foo" (signalID=3):
+        WarmupPeriodFilter
+            VectorRecorder ==> src1:vector
+            HistogramRecorder ==> src1:histogram
+        WarmupPeriodFilter
+            <signalvalue> + 1 (ExpressionFilter)
+                VectorRecorder ==> src2:vector
+                HistogramRecorder ==> src2:histogram
+        WarmupPeriodFilter
+            2 * (fabs(<signalvalue> + 1)) (ExpressionFilter)
+                VectorRecorder ==> src3:vector
+                HistogramRecorder ==> src3:histogram
+        WarmupPeriodFilter
+            MeanFilter
+                VectorRecorder ==> src4:vector
+                HistogramRecorder ==> src4:histogram
+        WarmupPeriodFilter
+            MeanFilter
+                fabs(<signalvalue>) (ExpressionFilter)
+                    VectorRecorder ==> src5:vector
+                    HistogramRecorder ==> src5:histogram
+        WarmupPeriodFilter
+            <signalvalue> + 1 (ExpressionFilter)
+                MeanFilter
+                    VectorRecorder ==> src6:vector
+                    HistogramRecorder ==> src6:histogram
+        WarmupPeriodFilter
+            <signalvalue> + 1 (ExpressionFilter)
+                MeanFilter
+                    3 + fabs(<signalvalue>) (ExpressionFilter)
+                        VectorRecorder ==> src7:vector
+                        HistogramRecorder ==> src7:histogram
+        WarmupPeriodFilter
+            TimeAverageFilter
+                MeanFilter
+                    MaxFilter
+                        VectorRecorder ==> src8:vector
+                        HistogramRecorder ==> src8:histogram
+        WarmupPeriodFilter
+            3 + <signalvalue> (ExpressionFilter)
+                TimeAverageFilter
+                    2 + <signalvalue> (ExpressionFilter)
+                        MeanFilter
+                            1 + <signalvalue> (ExpressionFilter)
+                                MaxFilter
+                                    VectorRecorder ==> src9:vector
+                                    HistogramRecorder ==> src9:histogram
+    "src0" (signalID=2):
+        WarmupPeriodFilter
+            VectorRecorder ==> src0:vector
+            HistogramRecorder ==> src0:histogram
+

@@ -1,0 +1,136 @@
+%description:
+Tests the **.result-recording-mode= configuration option.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    // same record= repeated; they will be tweaked from the ini file
+    @statistic[rec0](record=max,timeavg,vector);
+    @statistic[rec1](record=max,timeavg,vector);
+    @statistic[rec2](record=max,timeavg,vector);
+    @statistic[rec3](record=max,timeavg,vector);
+    @statistic[rec4](record=max,timeavg,vector);
+    @statistic[rec5](record=max,timeavg,vector);
+    @statistic[rec6](record=max,timeavg,vector);
+    @statistic[rec10](record=max,timeavg,vector);
+    @statistic[rec11](record=max,timeavg,vector);
+    @statistic[rec12](record=max,timeavg,vector);
+    @statistic[rec13](record=max,timeavg,vector);
+    @statistic[rec14](record=max,timeavg,vector);
+    @statistic[rec20](record=max,timeavg,vector);
+    @statistic[rec21](record=max,timeavg,vector);
+    @statistic[rec30](record=max+1,"max(timeavg)/2","vector(mean)");
+    @statistic[rec31](record=max+1,"max(timeavg)/2","vector(mean)");
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+# rec0: not modified
+**.rec1.result-recording-mode = histogram         #overwrite
+**.rec2.result-recording-mode = count,histogram   #overwrite
+
+**.rec3.result-recording-mode = +histogram        #add
+**.rec4.result-recording-mode = +count,histogram  #add
+
+**.rec5.result-recording-mode = -timeavg          #remove
+**.rec6.result-recording-mode = -timeavg,-vector  #remove
+
+**.rec10.result-recording-mode = +histogram,-timeavg                 #add,remove
+**.rec11.result-recording-mode = +count,histogram,-timeavg           #add,add,remove
+**.rec12.result-recording-mode = -timeavg,+count,histogram           #remove,add,add
+**.rec13.result-recording-mode= -timeavg,-vector,+count,histogram   #remove,remove,add,add
+**.rec14.result-recording-mode= -timeavg,-vector,+count,+histogram  #remove,remove,add,add
+
+**.rec20.result-recording-mode= min,max,min,max,min,max     #should filter out duplicates
+**.rec21.result-recording-mode= +vector,vector,count,count  #should filter out duplicates
+
+**.rec30.result-recording-mode= +cos(mean+1),vector(max)       #works with expressions too
+**.rec31.result-recording-mode= -max(timeavg)/2,-vector(mean)  #NOTE: '-' means REMOVE, not negation!
+
+%contains: stdout
+Test.node (Node):
+    "rec31" (signalID=17):
+        MaxFilter
+            <lastsignalvalue> + 1 (ExpressionRecorder) ==> rec31:max+1
+    "rec30" (signalID=16):
+        MaxFilter
+            <lastsignalvalue> + 1 (ExpressionRecorder) ==> rec30:max+1
+        TimeAverageFilter
+            MaxFilter
+                <lastsignalvalue> / 2 (ExpressionRecorder) ==> rec30:max(timeavg)/2
+        MeanFilter
+            VectorRecorder ==> rec30:vector(mean)
+        MeanFilter
+            cos(<lastsignalvalue> + 1) (ExpressionRecorder) ==> rec30:cos(mean+1)
+        MaxFilter
+            VectorRecorder ==> rec30:vector(max)
+    "rec21" (signalID=15):
+        MaxRecorder ==> rec21:max
+        TimeAverageRecorder ==> rec21:timeavg
+        VectorRecorder ==> rec21:vector
+        CountRecorder ==> rec21:count
+    "rec20" (signalID=14):
+        MinRecorder ==> rec20:min
+        MaxRecorder ==> rec20:max
+    "rec14" (signalID=13):
+        MaxRecorder ==> rec14:max
+        CountRecorder ==> rec14:count
+        HistogramRecorder ==> rec14:histogram
+    "rec13" (signalID=12):
+        MaxRecorder ==> rec13:max
+        CountRecorder ==> rec13:count
+        HistogramRecorder ==> rec13:histogram
+    "rec12" (signalID=11):
+        MaxRecorder ==> rec12:max
+        VectorRecorder ==> rec12:vector
+        CountRecorder ==> rec12:count
+        HistogramRecorder ==> rec12:histogram
+    "rec11" (signalID=10):
+        MaxRecorder ==> rec11:max
+        VectorRecorder ==> rec11:vector
+        CountRecorder ==> rec11:count
+        HistogramRecorder ==> rec11:histogram
+    "rec10" (signalID=9):
+        MaxRecorder ==> rec10:max
+        VectorRecorder ==> rec10:vector
+        HistogramRecorder ==> rec10:histogram
+    "rec6" (signalID=8):
+        MaxRecorder ==> rec6:max
+    "rec5" (signalID=7):
+        MaxRecorder ==> rec5:max
+        VectorRecorder ==> rec5:vector
+    "rec4" (signalID=6):
+        MaxRecorder ==> rec4:max
+        TimeAverageRecorder ==> rec4:timeavg
+        VectorRecorder ==> rec4:vector
+        CountRecorder ==> rec4:count
+        HistogramRecorder ==> rec4:histogram
+    "rec3" (signalID=5):
+        MaxRecorder ==> rec3:max
+        TimeAverageRecorder ==> rec3:timeavg
+        VectorRecorder ==> rec3:vector
+        HistogramRecorder ==> rec3:histogram
+    "rec2" (signalID=4):
+        CountRecorder ==> rec2:count
+        HistogramRecorder ==> rec2:histogram
+    "rec1" (signalID=3):
+        HistogramRecorder ==> rec1:histogram
+    "rec0" (signalID=2):
+        MaxRecorder ==> rec0:max
+        TimeAverageRecorder ==> rec0:timeavg
+        VectorRecorder ==> rec0:vector
+
