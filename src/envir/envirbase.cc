@@ -118,6 +118,7 @@ Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenne
 Register_PerRunConfigOption(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
 Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results", "Value for the ${resultdir} variable, which is used as the default directory for result files (output vector file, output scalar file, eventlog file, etc.)");
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
+Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (@statistic properties)");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
 Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODE, "result-recording-mode", CFG_STRING, "", "Defines how to calculate results from the @statistic property matched by the wildcard. Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. If the list begins with '+', values get appended to the list specified in the record= key of the @statistic, otherwise replaces it. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-mode=timeavg,max");
@@ -879,7 +880,8 @@ void EnvirBase::addResultRecorders(cComponent *component)
             doResultRecorder(source, modes2[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName, "in the configuration");
     }
 
-    dumpResultRecorders(component); //XXX if debug
+    if (opt_debug_statistics_recording)
+        dumpResultRecorders(component);
 }
 
 static bool opp_isidentifier(const char *s)
@@ -1356,6 +1358,7 @@ void EnvirBase::readPerRunOptions()
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
     opt_record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
+    opt_debug_statistics_recording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
 
     simulation.setWarmupPeriod(opt_warmupperiod);
 
