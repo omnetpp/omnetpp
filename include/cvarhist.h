@@ -89,7 +89,7 @@ class SIM_API cVarHistogram : public cHistogramBase
      * observations. This cannot be mixed with manually adding cell boundaries
      * -- if there are already some, an error is raised.
      */
-    void createEquiProbableCells();
+    void createEquiprobableCells();
 
   public:
     /** @name Constructors, destructor, assignment. */

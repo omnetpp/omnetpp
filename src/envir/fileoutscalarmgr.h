@@ -86,6 +86,7 @@ class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
 
     /**
      * Records a histogram or statistic object into the scalar result file.
+     * This operation may invoke the transform() method on the histogram object.
      */
     void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
 

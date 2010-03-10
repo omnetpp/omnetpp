@@ -1,3 +1,13 @@
+2010-03-10  Andras Varga
+
+	* When recording a histogram object into the scalars file (see 
+	cComponent::recordStatistic(), cStatistics::record(), etc.),
+	its transform() method gets invoked to force it set up the histogram
+	cells, provided it was not already invoked.
+
+	* cVarHistogram: createEquiProbableCells() renamed to 
+	createEquiprobableCells() (lowercase "p")
+
 2010-03-01  Andras Varga
 
 	* cGate: removed isBusy() and getTransmissionFinishTime(), as they

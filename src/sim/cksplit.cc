@@ -206,7 +206,8 @@ void cKSplit::doMergeCellValues(const cDensityEstBase *other)
 
 void cKSplit::transform()
 {
-    int i;
+    if (isTransformed())
+        throw cRuntimeError(this, "transform(): histogram already transformed");
 
     setupRange();
     createRootGrid();
@@ -215,12 +216,12 @@ void cKSplit::transform()
     // just to create grid structure; second, reset all cells to zero and
     // insert observations again, with cell splits disabled now.
 
-    for (i=0; i<num_vals; i++)
+    for (int i=0; i<num_vals; i++)
          collectTransformed( firstvals[i] );
 
     resetGrids( rootgrid );
 
-    for (i=0; i<num_vals; i++)
+    for (int i=0; i<num_vals; i++)
          insertIntoGrids( firstvals[i], false );
 
     transfd = true;

@@ -233,6 +233,9 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
         if (enabled)
         {
             cDensityEstBase *hist = (cDensityEstBase *)statistic;
+            if (!hist->isTransformed())
+                hist->transform();
+
             int n = hist->getNumCells();
             if (n>0)
             {

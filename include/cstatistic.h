@@ -268,6 +268,10 @@ class SIM_API cStatistic : public cOwnedObject
      * includes the number of observations, mean, standard deviation, min,
      * max, potential histogram data, etc.)  The name of the recorded
      * statistic will be the object name (see getFullName()).
+     *
+     * Note that this operation may have side effect: if this object is a
+     * histogram, the method may invoke the transform() on the histogram
+     * object, to force it set up histogram cells before recording.
      */
     virtual void record()  {recordAs(NULL, NULL);}
 
@@ -275,12 +279,20 @@ class SIM_API cStatistic : public cOwnedObject
      * Records the statistics into the scalar result file, with the given
      * unit (e.g. "s", "m/s", etc). The name of the recorded statistic
      * will be the object name (see getName()).
+     *
+     * Note that this operation may have side effect: if this object is a
+     * histogram, the method may invoke the transform() on the histogram
+     * object, to force it set up histogram cells before recording.
      */
     virtual void recordWithUnit(const char *unit)  {recordAs(NULL, unit);}
 
     /**
      * Records the statistics into the scalar result file, with the given name,
      * and optionally, the given unit (e.g. "s", "m/s", etc).
+     *
+     * Note that this operation may have side effect: if this object is a
+     * histogram, the method may invoke the transform() on the histogram
+     * object, to force it set up histogram cells before recording.
      */
     virtual void recordAs(const char *name, const char *unit=NULL);
     //@}

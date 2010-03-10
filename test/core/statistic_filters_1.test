@@ -75,6 +75,18 @@ field sqrsum 955
 field min 10
 field max 15
 attr source  tenToFifteen
+bin	-INF	0
+bin	7.5	0
+bin	8.5	0
+bin	9.5	1
+bin	10.5	1
+bin	11.5	1
+bin	12.5	1
+bin	13.5	1
+bin	14.5	1
+bin	15.5	0
+bin	16.5	0
+bin	17.5	0
 scalar Test.node 	rec:2*mean 	25
 attr source  tenToFifteen
 scalar Test.node 	flt:count+100 	106

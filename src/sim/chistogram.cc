@@ -109,7 +109,7 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
 void cHistogramBase::doMergeCellValues(const cDensityEstBase *other)
 {
     for (int i=0; i<num_cells; i++)
-        cellv[i] += (unsigned int) other->getCellValue(i);  //FIXME overflow check
+        cellv[i] += (unsigned int) other->getCellValue(i);  //TODO overflow check
 }
 
 void cHistogramBase::clearResult()
@@ -122,6 +122,9 @@ void cHistogramBase::clearResult()
 
 void cHistogramBase::transform()
 {
+    if (isTransformed())
+        throw cRuntimeError(this, "transform(): histogram already transformed");
+
     setupRange(); // this will set num_cells if it was unspecified (-1)
 
     int i;

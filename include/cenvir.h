@@ -555,6 +555,7 @@ class SIM_API cEnvir
 
     /**
      * Records a statistic object (histogram, etc) into the scalar result file.
+     * This operation may invoke the transform() method on the histogram object.
      */
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
     //@}

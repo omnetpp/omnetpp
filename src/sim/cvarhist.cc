@@ -160,7 +160,7 @@ static int double_compare_function( const void *p1, const void *p2 ) //--LG
         return 1;
 }
 
-void cVarHistogram::createEquiProbableCells()
+void cVarHistogram::createEquiprobableCells()
 {
     if (num_cells>0)
         throw cRuntimeError(this,"some bin bounds already present when making equi-probable cells");
@@ -272,14 +272,15 @@ void cVarHistogram::createEquiProbableCells()
 
 void cVarHistogram::transform() //--LG
 {
-    int i;
+    if (isTransformed())
+        throw cRuntimeError(this, "transform(): histogram already transformed");
 
     setupRange();
 
     if (transform_type==HIST_TR_AUTO_EPC_DBL || transform_type==HIST_TR_AUTO_EPC_INT)
     {
         // create bin bounds based on firstvals[]
-        createEquiProbableCells();
+        createEquiprobableCells();
     }
     else
     {
@@ -291,15 +292,18 @@ void cVarHistogram::transform() //--LG
             if (rangemin>bin_bounds[0] || rangemax<bin_bounds[num_cells])
                 throw cRuntimeError(this,"some bin bounds out of preset range");
 
-            if (rangemin<bin_bounds[0]) addBinBound(rangemin);
-            if (rangemax>bin_bounds[num_cells]) addBinBound(rangemax);
+            if (rangemin<bin_bounds[0])
+                addBinBound(rangemin);
+            if (rangemax>bin_bounds[num_cells])
+                addBinBound(rangemax);
         }
 
         // create cell vector and insert observations
         cellv = new unsigned [num_cells];
-        for (i=0; i<num_cells; i++) cellv[i]=0;
+        for (int i=0; i<num_cells; i++)
+            cellv[i]=0;
 
-        for (i=0; i<num_vals; i++)
+        for (int i=0; i<num_vals; i++)
             collectTransformed( firstvals[i] );
     }
     transfd = true;
