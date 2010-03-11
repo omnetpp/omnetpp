@@ -1,3 +1,9 @@
+2010-03-10  Andras Varga
+
+	* The transform() methods of histogram classes now throw an exception
+	if the histogram was already transformed. Clients may call isTrans-
+	formed() to determine whether transform() needs to or may be called.
+
 2010-02-27  Andras Varga
 
 	* created cHistogram class by merging cDoubleHistogram and cLongHistogram

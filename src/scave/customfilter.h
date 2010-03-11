@@ -45,7 +45,7 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
          * Implements a variable in the expression. Currently just delegates
          * to ExpressionFilterNode::getVariable().
          */
-        class NodeVar : public Expression::Functor
+        class NodeVar : public Expression::Variable
         {
           private:
             ExpressionFilterNode *hostnode;
@@ -56,11 +56,9 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
             virtual ~NodeVar() {}
             virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
             virtual const char *getName() const {return varname.c_str();}
-            virtual const char *getArgTypes() const {return "";}
             virtual char getReturnType() const {return Expression::Value::DBL;}
             virtual Expression::Value evaluate(Expression::Value args[], int numargs)
                 {return hostnode->getVariable(varname.c_str());}
-            virtual std::string str(std::string args[], int numargs) {return getName();}
         };
     private:
         Expression *expr;

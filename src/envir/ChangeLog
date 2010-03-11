@@ -1,3 +1,10 @@
+2010-03-10  Andras Varga
+
+	* integrated statistics recording code (@statistic property)
+
+	* new configuration options: debug-statistics-recording, 
+	result-recording-mode
+
 2010-02-03  Andras Varga
 
 	* renamed "vector-recording-interval" configuration option to 

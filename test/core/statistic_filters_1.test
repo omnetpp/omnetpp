@@ -1,0 +1,106 @@
+%description:
+Basic test for individual result filters and recorders.
+
+%file: test.ned
+
+simple Node
+{
+    // test the recorders
+    @statistic[rec](source=tenToFifteen;record=count,sum,mean,min,max,last,timeavg,histogram,vector,2*mean);
+
+    // test filters ("+100" forces the last node to be an ExpressionRecorder and previous ones to be Filters)
+    @statistic[flt](source=tenToFifteen;record=count+100,sum+100,mean+100,min+100,max+100,last+100,timeavg+100);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule {
+    simsignal_t signalID;
+
+    virtual void initialize() {
+        signalID = registerSignal("tenToFifteen");
+        emit(signalID, 10);
+        emit(signalID, 11);
+        emit(signalID, 12);
+        scheduleAt(0.1, new cMessage()); //so that we can exercise timeavg too
+    }
+    virtual void handleMessage(cMessage *msg) {
+        delete msg;
+        emit(signalID, 13);
+        emit(signalID, 14);
+        emit(signalID, 15);
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+%subst: /-?1\.#IND/nan/
+%subst: /-?1\.#QNAN/nan/
+%subst: /-?:NaN/:nan/
+%subst: /1.87[0-9]+/1.87/
+
+%contains: test.sca
+scalar Test.node 	rec:count 	6
+attr source  tenToFifteen
+scalar Test.node 	rec:sum 	75
+attr source  tenToFifteen
+scalar Test.node 	rec:mean 	12.5
+attr source  tenToFifteen
+scalar Test.node 	rec:min 	10
+attr source  tenToFifteen
+scalar Test.node 	rec:max 	15
+attr source  tenToFifteen
+scalar Test.node 	rec:last 	15
+attr source  tenToFifteen
+scalar Test.node 	rec:timeavg 	12
+attr source  tenToFifteen
+statistic Test.node 	rec:histogram
+field count 6
+field mean 12.5
+field stddev 1.87
+field sum 75
+field sqrsum 955
+field min 10
+field max 15
+attr source  tenToFifteen
+bin	-INF	0
+bin	7.5	0
+bin	8.5	0
+bin	9.5	1
+bin	10.5	1
+bin	11.5	1
+bin	12.5	1
+bin	13.5	1
+bin	14.5	1
+bin	15.5	0
+bin	16.5	0
+bin	17.5	0
+scalar Test.node 	rec:2*mean 	25
+attr source  tenToFifteen
+scalar Test.node 	flt:count+100 	106
+attr source  tenToFifteen
+scalar Test.node 	flt:sum+100 	175
+attr source  tenToFifteen
+scalar Test.node 	flt:mean+100 	112.5
+attr source  tenToFifteen
+scalar Test.node 	flt:min+100 	110
+attr source  tenToFifteen
+scalar Test.node 	flt:max+100 	115
+attr source  tenToFifteen
+scalar Test.node 	flt:last+100 	115
+attr source  tenToFifteen
+scalar Test.node 	flt:timeavg+100 	112
+attr source  tenToFifteen
+

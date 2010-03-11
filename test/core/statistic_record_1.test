@@ -1,0 +1,74 @@
+%description:
+Tests parsing of record= key in @statistic() properties.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    //TODO: mean($signal+1); mean(fabs($signal)+1); mean($time+1)
+    @statistic[rec0](record=mean);
+    @statistic[rec1](record="vector(mean)");
+    @statistic[rec2](record="max(mean(timeavg))");
+    @statistic[rec3](record="mean+1");
+    @statistic[rec4](record="fabs(mean+1)");
+    @statistic[rec5](record="vector(mean+1)");
+    @statistic[rec6](record="histogram(mean+1)");
+    @statistic[rec7](record="1+max(2+mean(3+timeavg))");
+    @statistic[rec8](record="vector(1+max(2+mean(3+timeavg)))");
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%contains: stdout
+    "rec8" (signalID=10):
+        TimeAverageFilter
+            3 + <signalvalue> (ExpressionFilter)
+                MeanFilter
+                    2 + <signalvalue> (ExpressionFilter)
+                        MaxFilter
+                            1 + <signalvalue> (ExpressionFilter)
+                                VectorRecorder ==> rec8:vector(1+max(2+mean(3+timeavg)))
+    "rec7" (signalID=9):
+        TimeAverageFilter
+            3 + <signalvalue> (ExpressionFilter)
+                MeanFilter
+                    2 + <signalvalue> (ExpressionFilter)
+                        MaxFilter
+                            1 + <lastsignalvalue> (ExpressionRecorder) ==> rec7:1+max(2+mean(3+timeavg))
+    "rec6" (signalID=8):
+        MeanFilter
+            <signalvalue> + 1 (ExpressionFilter)
+                HistogramRecorder ==> rec6:histogram(mean+1)
+    "rec5" (signalID=7):
+        MeanFilter
+            <signalvalue> + 1 (ExpressionFilter)
+                VectorRecorder ==> rec5:vector(mean+1)
+    "rec4" (signalID=6):
+        MeanFilter
+            fabs(<lastsignalvalue> + 1) (ExpressionRecorder) ==> rec4:fabs(mean+1)
+    "rec3" (signalID=5):
+        MeanFilter
+            <lastsignalvalue> + 1 (ExpressionRecorder) ==> rec3:mean+1
+    "rec2" (signalID=4):
+        TimeAverageFilter
+            MeanFilter
+                MaxRecorder ==> rec2:max(mean(timeavg))
+    "rec1" (signalID=3):
+        MeanFilter
+            VectorRecorder ==> rec1:vector(mean)
+    "rec0" (signalID=2):
+        MeanRecorder ==> rec0:mean
+

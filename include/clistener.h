@@ -93,6 +93,7 @@ class SIM_API cTimestampedValue : public cObject, cITimestampedValue, noncopyabl
 class SIM_API cIListener
 {
     friend class cComponent; // for subscribecount
+    friend class ResultFilter; // for subscribecount
   private:
     int subscribecount;
   public:
@@ -139,7 +140,7 @@ class SIM_API cIListener
      * as a listener. Note that this method will only be called from subscribe()
      * if this listener was not already subscribed.
      */
-    virtual void listenerAdded(cComponent *component, simsignal_t signalID) {}
+    virtual void subscribedTo(cComponent *component, simsignal_t signalID) {}
 
     /**
      * Called when this object was removed from the given component's listener
@@ -156,7 +157,7 @@ class SIM_API cIListener
      * if the listener is subscribed multiple times (see above), one must be
      * careful to prevent double deletion, e.g. by reference counting.
      */
-    virtual void listenerRemoved(cComponent *component, simsignal_t signalID) {}
+    virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID) {}
 
     /**
      * Returns the number of listener lists that contain this listener.

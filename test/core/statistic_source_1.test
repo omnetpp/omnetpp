@@ -1,0 +1,78 @@
+%description:
+Tests parsing of source= key in @statistic() properties, without warmup-period.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    @statistic[src0](record=vector,histogram);  // no "source=": should use statistic name as signal
+    @statistic[src1](source=foo;record=vector,histogram);
+    @statistic[src2](source=foo+1;record=vector,histogram);
+    @statistic[src3](source="2*fabs(foo+1)";record=vector,histogram);
+    @statistic[src4](source="mean(foo)";record=vector,histogram);
+    @statistic[src5](source="fabs(mean(foo))";record=vector,histogram);
+    @statistic[src6](source="mean(foo+1)";record=vector,histogram);
+    @statistic[src7](source="3+fabs(mean(foo+1))";record=vector,histogram);
+    @statistic[src8](source="max(mean(timeavg(foo)))";record=vector,histogram);
+    @statistic[src9](source="max(1+mean(2+timeavg(3+foo)))";record=vector,histogram);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%contains: stdout
+Test.node (Node):
+    "foo" (signalID=3):
+        VectorRecorder ==> src1:vector
+        HistogramRecorder ==> src1:histogram
+        <signalvalue> + 1 (ExpressionFilter)
+            VectorRecorder ==> src2:vector
+            HistogramRecorder ==> src2:histogram
+        2 * (fabs(<signalvalue> + 1)) (ExpressionFilter)
+            VectorRecorder ==> src3:vector
+            HistogramRecorder ==> src3:histogram
+        MeanFilter
+            VectorRecorder ==> src4:vector
+            HistogramRecorder ==> src4:histogram
+        MeanFilter
+            fabs(<signalvalue>) (ExpressionFilter)
+                VectorRecorder ==> src5:vector
+                HistogramRecorder ==> src5:histogram
+        <signalvalue> + 1 (ExpressionFilter)
+            MeanFilter
+                VectorRecorder ==> src6:vector
+                HistogramRecorder ==> src6:histogram
+        <signalvalue> + 1 (ExpressionFilter)
+            MeanFilter
+                3 + fabs(<signalvalue>) (ExpressionFilter)
+                    VectorRecorder ==> src7:vector
+                    HistogramRecorder ==> src7:histogram
+        TimeAverageFilter
+            MeanFilter
+                MaxFilter
+                    VectorRecorder ==> src8:vector
+                    HistogramRecorder ==> src8:histogram
+        3 + <signalvalue> (ExpressionFilter)
+            TimeAverageFilter
+                2 + <signalvalue> (ExpressionFilter)
+                    MeanFilter
+                        1 + <signalvalue> (ExpressionFilter)
+                            MaxFilter
+                                VectorRecorder ==> src9:vector
+                                HistogramRecorder ==> src9:histogram
+    "src0" (signalID=2):
+        VectorRecorder ==> src0:vector
+        HistogramRecorder ==> src0:histogram
+

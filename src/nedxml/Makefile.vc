@@ -123,47 +123,42 @@ clean:
 	-cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* opp_msgc opp_msgc.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/cppexprgenerator.obj: cppexprgenerator.cc \
-  nedelements.h \
-  nedelement.h \
-  cppexprgenerator.h \
-  nedxmldefs.h \
-  nederror.h
-$O/cppgenerator.obj: cppgenerator.cc \
-  nedelements.h \
-  cppgenerator.h \
-  nedelement.h \
-  cppexprgenerator.h \
-  nedxmldefs.h \
-  nederror.h
-$O/cppmsggenerator.obj: cppmsggenerator.cc \
-  nedelements.h \
-  cppgenerator.h \
-  nedelement.h \
-  cppexprgenerator.h \
-  nedxmldefs.h \
-  nederror.h
 $O/lex.msg2yy.obj: lex.msg2yy.cc \
   nedyydefs.h \
-  nedexception.h \
+  nedparser.h \
   msg2.tab.hh \
-  nedxmldefs.h
+  nederror.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelements.h \
+  nedexception.h \
+  nedelement.h \
+  nedutil.h \
+  nedfilebuffer.h
 $O/lex.ned1yy.obj: lex.ned1yy.cc \
   nedyydefs.h \
-  nedexception.h \
   nedxmldefs.h \
+  nedexception.h \
   ned1.tab.hh
 $O/lex.ned2yy.obj: lex.ned2yy.cc \
   nedyydefs.h \
-  nedexception.h \
+  nedparser.h \
+  nederror.h \
+  nedyylib.h \
   nedxmldefs.h \
-  ned2.tab.hh
+  ned2.tab.hh \
+  nedelements.h \
+  nedexception.h \
+  nedelement.h \
+  nedutil.h \
+  nedfilebuffer.h
 $O/msg2.tab.obj: msg2.tab.cc \
   nedyydefs.h \
   nedparser.h \
-  nedxmldefs.h \
-  nedyylib.h \
+  msg2.tab.hh \
   nederror.h \
+  nedyylib.h \
+  nedxmldefs.h \
   nedelements.h \
   nedexception.h \
   nedelement.h \
@@ -190,9 +185,10 @@ $O/ned1generator.obj: ned1generator.cc \
 $O/ned2.tab.obj: ned2.tab.cc \
   nedyydefs.h \
   nedparser.h \
-  nedxmldefs.h \
-  nedyylib.h \
   nederror.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  ned2.tab.hh \
   nedelements.h \
   nedexception.h \
   nedelement.h \
@@ -335,17 +331,6 @@ $O/nedtypeinfo.obj: nedtypeinfo.cc \
   nedexception.h \
   nedutil.h \
   ned2generator.h \
-  nederror.h \
-  nedtypeinfo.h \
-  nedelements.h \
-  nedelement.h
-$O/nedtypeinfo2.obj: nedtypeinfo2.cc \
-  nedresourcecache.h \
-  nedxmldefs.h \
-  nedexception.h \
-  nedutil.h \
-  ned2generator.h \
-  nedtypeinfo2.h \
   nederror.h \
   nedtypeinfo.h \
   nedelements.h \

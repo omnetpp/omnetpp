@@ -4054,8 +4054,8 @@ class cIListener
     virtual void receiveSignal(cComponent *src, simsignal_t id, const char *s) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id, cObject *obj) = 0;
     virtual void finish(cComponent *component, simsignal_t id) {}
-    virtual void listenerAdded(cComponent *component, simsignal_t id) {}
-    virtual void listenerRemoved(cComponent *component, simsignal_t id) {}
+    virtual void subscribedTo(cComponent *component, simsignal_t id) {}
+    virtual void unsubscribedFrom(cComponent *component, simsignal_t id) {}
 };
 \end{cpp}
 
@@ -4072,20 +4072,20 @@ This class has a number of virtual methods:
     will be called multiple times. Note that \ffunc{finish()} methods in general
     are not invoked if the simulation terminates with an error, so this method
     is not a place for doing cleanup.
-  \item \ffunc{listenerAdded()}, \ffunc{listenerRemoved()} are called
+  \item \ffunc{subscribedTo()}, \ffunc{unsubscribedFrom()} are called
     when this listener object is subscribed/unsubscribed to (from) a signal.
     These methods give the opportunity for listeners to track whether
     and where they are subscribed. It is also OK for a listener to delete
-    itself in the last statement of the \ffunc{listenerRemoved()} method,
+    itself in the last statement of the \ffunc{unsubscribedFrom()} method,
     but you must be sure that there are no other places the same listener
     is still subscribed.
 \end{itemize}
 
 Since \cclass{cIListener} has a large number of pure virtual methods, it is more
 convenient to subclass from \cclass{cListener}, a do-nothing implementation
-instead. It defines \ffunc{finish()}, \ffunc{listenerAdded()} and
-\ffunc{listenerRemoved()} with an empty body, and the \ffunc{receiveSignal()}
-methods with bodies that throw a \ttt{"Data type not supported"} error.
+instead. It defines \ffunc{finish()}, \ffunc{subscribedTo()} and
+\ffunc{unsubscribedFrom()} with an empty body, and the \ffunc{receiveSignal()}
+methods with a bodies that throw a \ttt{"Data type not supported"} error.
 You can redefine the \ffunc{receiveSignal()} method(s) whose data type
 you want to support, and signals emitted with other (unexpected) data
 types will result in an error instead of going unnoticed.
@@ -4106,7 +4106,7 @@ If a listener is deleted, it must already be unsubscribed from all
 components at that point. If it is not unsubscribed, pointers to the dead
 listener object will be left in the components' listener lists, and the
 components will crash inside an \ffunc{emit()} call, or when they
-try to invoke \ffunc{listenerRemoved()} on the dead listener from their
+try to invoke \ffunc{unsubscribedFrom()} on the dead listener from their
 destructors. The \cclass{cIListener} class contains a subscription count,
 and prints a warning message when it is not zero in the destructor.
 

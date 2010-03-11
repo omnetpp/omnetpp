@@ -611,8 +611,10 @@ $O/statinsp.obj: statinsp.cc \
   tkenv.h \
   ../../include/regmacros.h
 $O/tkcmd.obj: tkcmd.cc \
+  modinsp.h \
   ../../include/carray.h \
   ../../include/ccompoundmodule.h \
+  ../../include/cdataratechannel.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -628,6 +630,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cenum.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
+  ../../include/cstddev.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
@@ -652,6 +655,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
+  ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \

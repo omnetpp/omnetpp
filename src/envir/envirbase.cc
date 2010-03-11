@@ -46,7 +46,9 @@
 #include "stringutil.h"
 #include "enumstr.h"
 #include "simtime.h"
-#include "resultrecorders.h"
+#include "resultrecorder.h"
+#include "resultfilters.h"
+#include "statisticparser.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -116,9 +118,10 @@ Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenne
 Register_PerRunConfigOption(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
 Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results", "Value for the ${resultdir} variable, which is used as the default directory for result files (output vector file, output scalar file, eventlog file, etc.)");
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
+Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (@statistic properties)");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
-Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODE, "result-recording-mode", CFG_STRING, "auto", "Defines how to calculate results from the given signal. Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram, auto. `auto' chooses `histogram', unless the `record' key in the @statistic property tells otherwise. More than one values are accepted, separated by commas. Example: **.queueLength.result-recording-mode=timeavg,max");
+Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODE, "result-recording-mode", CFG_STRING, "", "Defines how to calculate results from the @statistic property matched by the wildcard. Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. If the list begins with '+', values get appended to the list specified in the record= key of the @statistic, otherwise replaces it. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-mode=timeavg,max");
 
 // the following options are declared in other files
 extern cConfigOption *CFGID_SCALAR_RECORDING;
@@ -451,6 +454,8 @@ void EnvirBase::printHelp()
     ev << "    -h nedfunctions   Lists registered NED functions\n";
     ev << "    -h units          Lists recognized physical units\n";
     ev << "    -h enums          Lists registered enums\n";
+    ev << "    -h resultfilters  Lists result filters\n";
+    ev << "    -h resultrecorders Lists result recorders\n";
     ev << "    -h all            Union of all the above\n";
     ev << "\n";
 
@@ -686,6 +691,32 @@ void EnvirBase::dumpComponentList(const char *category)
         }
     }
 
+    if (wantAll || !strcmp(category, "resultfilters"))
+    {
+        processed = true;
+        ev << "Result filters that can be used in @statistic properties:\n";
+        cRegistrationList *table = resultFilters.getInstance();
+        table->sort();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+        }
+    }
+
+    if (wantAll || !strcmp(category, "resultrecorders"))
+    {
+        processed = true;
+        ev << "Result recorders that can be used in @statistic properties:\n";
+        cRegistrationList *table = resultRecorders.getInstance();
+        table->sort();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+        }
+    }
+
     if (!processed)
         throw cRuntimeError("Unrecognized category for '-h' option: %s", category);
 }
@@ -805,10 +836,10 @@ void EnvirBase::addResultRecorders(cComponent *component)
         cProperty *property = component->getProperties()->get("statistic", statisticName);
         ASSERT(property!=NULL);
         bool hasSourceKey = property->getNumValues("source") > 0;
-        const char *signalName = hasSourceKey ? property->getValue("source",0) : statisticName;
-        simsignal_t signalID = cComponent::registerSignal(signalName);
+        const char *sourceSpec = hasSourceKey ? property->getValue("source",0) : statisticName;
+        SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
 
-        // add result recorders
+        // collect the list of result recorders
         std::vector<const char *> modes1;
         int n = property->getNumValues("record");
         for (int j = 0; j < n; j++)
@@ -816,7 +847,7 @@ void EnvirBase::addResultRecorders(cComponent *component)
 
         std::vector<std::string> modes2;
         std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODE, "");
-        if (modesOption != "auto")
+        if (modesOption != "")
         {
             // +add,-remove,add,add,add
             if (modesOption[0] != '+' && modesOption[0] != '-')
@@ -842,38 +873,126 @@ void EnvirBase::addResultRecorders(cComponent *component)
             }
         }
 
+        // add result recorders
         for (int j = 0; j < (int)modes1.size(); j++)
-            addResultRecorder(component, statisticName, signalID, modes1[j], "in @statistic property", scalarsEnabled, vectorsEnabled);
+            doResultRecorder(source, modes1[j], scalarsEnabled, vectorsEnabled, component, statisticName, "in @statistic property");
         for (int j = 0; j < (int)modes2.size(); j++)
-            addResultRecorder(component, statisticName, signalID, modes2[j].c_str(), "in the configuration", scalarsEnabled, vectorsEnabled);
+            doResultRecorder(source, modes2[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName, "in the configuration");
+    }
+
+    if (opt_debug_statistics_recording)
+        dumpResultRecorders(component);
+}
+
+static bool opp_isidentifier(const char *s)
+{
+    if (!opp_isalpha(s[0]) && s[0]!='_')
+        return false;
+    while (*++s)
+        if (!opp_isalnum(*s))
+            return false;
+    return true;
+}
+
+SignalSource EnvirBase::doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter)
+{
+    try
+    {
+        if (opp_isidentifier(sourceSpec))
+        {
+            // simple case: just a signal name
+            simsignal_t signalID = cComponent::registerSignal(sourceSpec);
+            if (!needWarmupFilter)
+                return SignalSource(component, signalID);
+            else
+            {
+                WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
+                component->subscribe(signalID, warmupFilter);
+                return SignalSource(warmupFilter);
+            }
+        }
+        else
+        {
+            StatisticSourceParser parser;
+            return parser.parse(component, statisticName, sourceSpec, needWarmupFilter);
+        }
+    }
+    catch (std::exception& e)
+    {
+        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): error in source=%s: %s",
+            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec, e.what());
     }
 }
 
-void EnvirBase::addResultRecorder(cComponent *component, const char *statisticName, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled)
+void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where)
 {
-    ResultRecorder *listener = createResultRecorder(mode);
-    if (!listener)
-        throw cRuntimeError(component, "Unrecognized recording mode specified %s for statistic %s: \"%s\"",
-                            where, statisticName, mode);
-    bool recordsVector = !strcmp(mode, "vector");
-    if (recordsVector ? !vectorsEnabled : !scalarsEnabled) {
-        // disabled, return
-        delete listener;
-        return;
+    try
+    {
+        if (opp_isidentifier(recordingMode))
+        {
+            // simple case: just a plain recorder
+            bool recordsVector = !strcmp(recordingMode, "vector");  // the only vector recorder is "vector"
+            if (recordsVector ? !vectorsEnabled : !scalarsEnabled)
+                return; // no point in creating if recording is disabled
+
+            ResultRecorder *recorder = ResultRecorderDescriptor::get(recordingMode)->create();
+            recorder->init(component, statisticName, recordingMode);
+            source.subscribe(recorder);
+        }
+        else
+        {
+            // something more complicated: use parser
+            StatisticRecorderParser parser;
+            parser.parse(source, recordingMode, scalarsEnabled, vectorsEnabled, component, statisticName, where);
+        }
     }
-    listener->init(statisticName);
-    component->subscribe(signalID, listener);
+    catch (std::exception& e)
+    {
+        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s' specified %s: %s",
+            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, where, e.what());
+    }
 }
 
-ResultRecorder *EnvirBase::createResultRecorder(const char *mode)
+void EnvirBase::dumpResultRecorders(cComponent *component)
 {
-    if (!strcmp(mode, "auto"))
-        mode = "histogram";
+    bool componentPathPrinted = false;
+    std::vector<simsignal_t> signals = component->getLocalListenedSignals();
+    for (unsigned int i = 0; i < signals.size(); i++)
+    {
+        bool signalNamePrinted = false;
+        simsignal_t signalID = signals[i];
+        std::vector<cIListener*> listeners = component->getLocalSignalListeners(signalID);
+        for (unsigned int j = 0; j < listeners.size(); j++) {
+            if (dynamic_cast<ResultListener*>(listeners[j])) {
+                if (!componentPathPrinted) {
+                    ev << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
+                    componentPathPrinted = true;
+                }
+                if (!signalNamePrinted) {
+                    ev << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
+                    signalNamePrinted = true;
+                }
+                dumpResultRecorderChain((ResultListener *)listeners[j], 0);
+            }
+        }
+    }
+}
 
-    ResultRecorderDescriptor *desc = ResultRecorderDescriptor::find(mode);
-    if (!desc)
-        return NULL;
-    return desc->create();
+void EnvirBase::dumpResultRecorderChain(ResultListener *listener, int depth)
+{
+    for (int i = 0; i < depth+2; i++)
+        ev << "    ";
+    ev << listener->str();
+    if (dynamic_cast<ResultRecorder*>(listener))
+        ev << " ==> " << ((ResultRecorder*)listener)->getResultName();
+    ev << "\n";
+
+    if (dynamic_cast<ResultFilter *>(listener))
+    {
+        std::vector<ResultListener *> delegates = ((ResultFilter*)listener)->getDelegates();
+        for (unsigned int i=0; i < delegates.size(); i++)
+            dumpResultRecorderChain(delegates[i], depth+1);
+    }
 }
 
 void EnvirBase::readParameter(cPar *par)
@@ -1239,6 +1358,7 @@ void EnvirBase::readPerRunOptions()
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
     opt_record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
+    opt_debug_statistics_recording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
 
     simulation.setWarmupPeriod(opt_warmupperiod);
 

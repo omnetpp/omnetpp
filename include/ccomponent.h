@@ -558,14 +558,16 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void recordScalar(const char *name, SimTime value, const char *unit=NULL) {recordScalar(name, value.dbl(), unit);}
 
     /**
-     * Records the given statistics into the scalar result file.
-     * Delegates to cStatistic::recordAs().
+     * Records the given statistics into the scalar result file. Delegates to
+     * cStatistic::recordAs(). Note that if the statistics object is a histogram,
+     * this operation may invoke its transform() method.
      */
     void recordStatistic(cStatistic *stats, const char *unit=NULL);
 
     /**
      * Records the given statistics into the scalar result file with the given name.
-     * Delegates to cStatistic::recordAs().
+     * Delegates to cStatistic::recordAs().  Note that if the statistics object is
+     * a histogram, this operation may invoke its transform() method.
      */
     void recordStatistic(const char *name, cStatistic *stats, const char *unit=NULL);
     //@}

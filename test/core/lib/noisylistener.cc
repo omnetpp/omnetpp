@@ -65,18 +65,18 @@ void NoisyListener::finish(cComponent *component, simsignal_t signalID)
     ASSERT(component->isSubscribed(signalID,this));
 }
 
-void NoisyListener::listenerAdded(cComponent *component, simsignal_t signalID)
+void NoisyListener::subscribedTo(cComponent *component, simsignal_t signalID)
 {
-    cListener::listenerAdded(component, signalID); // needed for refcounting
+    cListener::subscribedTo(component, signalID); // needed for refcounting
     EV << "SUBSCRIBED at "; printFrom(component, signalID); EV << "\n";
 
     simulation.getSystemModule()->checkSignalConsistency();
     ASSERT(component->isSubscribed(signalID,this));
 }
 
-void NoisyListener::listenerRemoved(cComponent *component, simsignal_t signalID)
+void NoisyListener::unsubscribedFrom(cComponent *component, simsignal_t signalID)
 {
-    cListener::listenerRemoved(component, signalID); // needed for refcounting
+    cListener::unsubscribedFrom(component, signalID); // needed for refcounting
     EV << "UNSUBSCRIBED from "; printFrom(component, signalID); EV << "\n";
 
     simulation.getSystemModule()->checkSignalConsistency();

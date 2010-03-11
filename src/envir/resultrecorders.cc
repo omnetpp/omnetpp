@@ -15,15 +15,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cproperties.h"
-#include "cproperty.h"
 #include "resultrecorders.h"
+#include "cproperty.h"
 #include "chistogram.h"
 
-
-cGlobalRegistrationList resultRecorders("resultRecorders");
-
-CommonStringPool ResultRecorder::statisticNamesPool;
 
 Register_ResultRecorder("vector", VectorRecorder);
 Register_ResultRecorder("count", CountRecorder);
@@ -36,269 +31,85 @@ Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
 
 
-ResultRecorderDescriptor::ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)())
-  : cNoncopyableOwnedObject(name, false)
+void VectorRecorder::subscribedTo(ResultFilter *prev)
 {
-    creatorfunc = f;
-}
-
-ResultRecorderDescriptor *ResultRecorderDescriptor::find(const char *name)
-{
-    return dynamic_cast<ResultRecorderDescriptor *>(resultRecorders.getInstance()->lookup(name));
-}
-
-ResultRecorderDescriptor *ResultRecorderDescriptor::get(const char *name)
-{
-    ResultRecorderDescriptor *p = find(name);
-    if (!p)
-        throw cRuntimeError("Result recorder \"%s\" not found -- perhaps the name is wrong, "
-                            "or the recorder wasn't registered with Register_ResultRecorder()", name);
-    return p;
-}
-
-//----
-
-void ResultRecorder::init(const char *statsName)
-{
-    statisticName = statisticNamesPool.get(statsName);
-}
-
-void ResultRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
-{
-    ASSERT(getSubscribeCount() == 1);  // may only be subscribed once (otherwise results get mixed)
-}
-
-void ResultRecorder::listenerRemoved(cComponent *component, simsignal_t signalID)
-{
-    if (getSubscribeCount() == 0)
-        delete this;
-}
-
-std::string ResultRecorder::makeName(const char *suffix)
-{
-    return std::string(statisticName) + ":" + suffix;
-}
-
-void ResultRecorder::extractStatisticAttributes(cComponent *component, opp_string_map& result)
-{
-    cProperty *property = component->getProperties()->get("statistic", getStatisticName());
-    if (!property)
-        return;
-
-    // fill result[] from the properties
-    const std::vector<const char *>& keys = property->getKeys();
-    for (int i = 0; i < (int)keys.size(); i++)
-    {
-        const char *key = keys[i];
-        if (!strcmp(key, "record"))
-            continue; // no need to save record= key
-        int numValues = property->getNumValues(key);
-        if (numValues == 0)
-            result[key] = "";
-        else if (numValues == 1)
-            result[key] = property->getValue(key, 0);
-        else {
-            std::string buf;
-            for (int j = 0; j < numValues; j++) {
-                if (j > 0) buf += ",";
-                buf += property->getValue(key, j);
-            }
-            result[key] = buf;
-        }
-
-        if (strcmp(key,"title")==0)
-            tweakTitle(result[key]);
-    }
-}
-
-//---
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, long l)
-{
-    maybeCollect(l);
-}
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, double d)
-{
-    maybeCollect(d);
-}
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t d)
-{
-    maybeCollect(SIMTIME_DBL(d));
-}
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
-{
-    maybeCollect(s!=NULL); // record 0 or 1
-}
-
-void NumericResultRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
-{
-    cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
-    if (v)
-        maybeCollect(v->getSignalTime(signalID), v->getSignalValue(signalID));
-    else
-        maybeCollect(obj!=NULL); // record 0 or 1
-}
-
-//---
-
-void VectorRecorder::listenerAdded(cComponent *component, simsignal_t signalID)
-{
-    NumericResultRecorder::listenerAdded(component, signalID);
+    NumericResultRecorder::subscribedTo(prev);
 
     // we can register the vector here, because base class ensures we are subscribed only at once place
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
+    opp_string_map attributes = getStatisticAttributes();
 
-    handle = ev.registerOutputVector(component->getFullPath().c_str(), getStatisticName());
+    handle = ev.registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str());
     ASSERT(handle != NULL);
     for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
         ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
 }
 
-void VectorRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
-{
-    // copied from base class to add monotonicity check
-    cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
-    if (v) {
-        simtime_t t = v->getSignalTime(signalID);
-        if (t < lastTime) {
-            throw cRuntimeError(
-                    "%s: cannot record data with an earlier timestamp (t=%s) than "
-                    "the previously recorded value, for statistic %s (id=%d)",
-                    opp_typename(typeid(*this)), SIMTIME_STR(t), getStatisticName(), (int)signalID);
-        }
-        maybeCollect(t, v->getSignalValue(signalID));
-    }
-    else {
-        maybeCollect(obj!=NULL); // record 0 or 1
-    }
-}
-
 void VectorRecorder::collect(simtime_t t, double value)
 {
+    if (t < lastTime)
+    {
+        throw cRuntimeError("%s: Cannot record data with an earlier timestamp (t=%s) "
+                            "than the previously recorded value (t=%s)",
+                            getClassName(), SIMTIME_STR(t), SIMTIME_STR(lastTime));
+    }
+
     lastTime = t;
     ev.recordInOutputVector(handle, t, value);
 }
 
 //---
 
-void CountRecorder::tweakTitle(opp_string& title)
+void CountRecorder::finish(ResultFilter *prev)
 {
-    title = opp_string("count of ") + title;
-}
-
-void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
-{
-    maybeCollect(0.0); // dummy value
-}
-
-void CountRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
-{
-    // if it is a cITimestampedValue, we should use its time for checking warm-up period;
-    // base class method overridden to spare call to getSignalValue()
-    cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
-    if (v)
-        maybeCollect(v->getSignalTime(signalID), 0.0); // dummy value
-    else
-        maybeCollect(0.0); // dummy value
-}
-
-void CountRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    std::string scalarName = makeName("count");
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), count, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), count, &attributes);
 }
 
 //---
 
-void LastValueRecorder::tweakTitle(opp_string& title)
+void LastValueRecorder::finish(ResultFilter *prev)
 {
-    title = opp_string("last value of ") + title;
-}
-
-void LastValueRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    std::string scalarName = makeName("last");
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), lastValue, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), lastValue, &attributes);
 }
 
 //---
 
-void SumRecorder::tweakTitle(opp_string& title)
+void SumRecorder::finish(ResultFilter *prev)
 {
-    title = opp_string("sum of ") + title;
-}
-
-void SumRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    std::string scalarName = makeName("sum");
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), sum, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), sum, &attributes);
 }
 
 //---
 
-void MeanRecorder::tweakTitle(opp_string& title)
+void MeanRecorder::finish(ResultFilter *prev)
 {
-    title = opp_string("mean of ") + title;
-}
-
-void MeanRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    std::string scalarName = makeName("mean");
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), sum/count, &attributes); // note: this is NaN if count==0
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), sum/count, &attributes); // note: this is NaN if count==0
 }
 
 //---
 
-void MinRecorder::tweakTitle(opp_string& title)
+void MinRecorder::finish(ResultFilter *prev)
 {
-    title = opp_string("minimum of ") + title;
-}
-
-void MinRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    std::string scalarName = makeName("min");
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
 }
 
 //---
 
-void MaxRecorder::tweakTitle(opp_string& title)
+void MaxRecorder::finish(ResultFilter *prev)
 {
-    title = opp_string("maximum of ") + title;
-}
-
-void MaxRecorder::finish(cComponent *component, simsignal_t signalID)
-{
-    std::string scalarName = makeName("max");
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
 }
 
 //---
-
-void TimeAverageRecorder::tweakTitle(opp_string& title)
-{
-    title = opp_string("time average of ") + title;
-}
 
 void TimeAverageRecorder::collect(simtime_t t, double value)
 {
-    if (startTime < SIMTIME_ZERO)
+    if (startTime < SIMTIME_ZERO) // uninitialized
         startTime = t;
     else
         weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
@@ -306,26 +117,23 @@ void TimeAverageRecorder::collect(simtime_t t, double value)
     lastValue = value;
 }
 
-void TimeAverageRecorder::finish(cComponent *component, simsignal_t signalID)
+void TimeAverageRecorder::finish(ResultFilter *prev)
 {
     bool empty = (startTime < SIMTIME_ZERO);
     simtime_t t = simulation.getSimTime();
-    collect(t, 0.0); // to get the last interval counted in; value 0.0 is just a dummy
+    collect(t, NaN); // to get the last interval counted in; the value is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
 
-    std::string scalarName = makeName("timeavg");
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordScalar(component, scalarName.c_str(), empty ? NaN : (weightedSum / interval), &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), empty ? NaN : (weightedSum / interval), &attributes);
 }
 
 //---
 
-void StatisticsRecorder::finish(cComponent *component, simsignal_t signalID)
+void StatisticsRecorder::finish(ResultFilter *prev)
 {
-    opp_string_map attributes;
-    extractStatisticAttributes(component, attributes);
-    ev.recordStatistic(component, getStatisticName(), statistic, &attributes);
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
 }
 
 StddevRecorder::StddevRecorder() : StatisticsRecorder(new cStdDev())
@@ -336,4 +144,43 @@ HistogramRecorder::HistogramRecorder() : StatisticsRecorder(new cHistogram())
 {
 }
 
+//---
+
+class RecValueVariable : public Expression::Variable
+{
+  private:
+    ExpressionRecorder *owner;
+  public:
+    RecValueVariable(ExpressionRecorder *recorder) {owner = recorder;}
+    virtual Functor *dup() const {return new RecValueVariable(owner);}
+    virtual const char *getName() const {return "<lastsignalvalue>";}
+    virtual char getReturnType() const {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return owner->lastValue;}
+};
+
+//XXX currently unused
+class RecTimeVariable : public Expression::Variable
+{
+  public:
+    virtual Functor *dup() const {return new RecTimeVariable();}
+    virtual const char *getName() const {return "<simtime>";}
+    virtual char getReturnType() const {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return SIMTIME_DBL(simulation.getSimTime());}
+};
+
+Expression::Functor *ExpressionRecorder::makeValueVariable()
+{
+    return new RecValueVariable(this);
+}
+
+Expression::Functor *ExpressionRecorder::makeTimeVariable()
+{
+    return new RecTimeVariable();
+}
+
+void ExpressionRecorder::finish(ResultFilter *prev)
+{
+    opp_string_map attributes = getStatisticAttributes();
+    ev.recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
+}
 

@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <sstream>
 #include "expression.h"
 #include "expressionyydefs.h"
 
@@ -29,29 +30,53 @@ USING_NAMESPACE
 #define eECANTCAST   "Cannot cast to %s"
 
 
-void Expression::Elem::operator=(const Elem& other)
+// should be member of Elem, but the VC++ 9.0 linker disagrees
+void Expression::Elem_eq(Elem& e, const Elem& other)
 {
-    deleteOld();
+    e.deleteOld();
 
-    memcpy(this, &other, sizeof(Elem));
+    memcpy(&e, &other, sizeof(Elem));
 
-    if (type==STR)
-        s = opp_strdup(s);
-    else if (type==FUNCTOR)
-        fu = (Functor *) fu->dup();
+    if (e.type==Elem::STR)
+        e.s = opp_strdup(e.s);
+    else if (e.type==Elem::FUNCTOR)
+        e.fu = e.fu->dup();
 }
 
-Expression::Elem::~Elem()
+// should be member of Elem, but the VC++ 9.0 linker disagrees
+int Expression::Elem_getNumArgs(const Elem& e)
 {
-    deleteOld();
+    switch(e.type)
+    {
+        case Elem::UNDEF: case Elem::BOOL: case Elem::DBL: case Elem::STR:
+            return 0;
+        case Elem::FUNCTOR:
+            return e.getFunctor()->getNumArgs();
+            break;
+        case Elem::OP:
+            switch(e.getOp()) {
+                case NEG: case NOT: case BIN_NOT: return 1;
+                case IIF: return 3;
+                default: return 2;
+            }
+    }
 }
 
-void Expression::Elem::deleteOld()
+//std::string Expression::Elem::str() const
+std::string Expression::Elem_str(int type, bool b, double d, const char *s, Functor *fu, int op)
 {
-    if (type==STR)
-        delete [] s;
-    else if (type==FUNCTOR)
-        delete fu;
+    std::stringstream os;
+    switch(type)
+    {
+        case Elem::UNDEF: os << "<undefined>"; break;
+        case Elem::BOOL: os << (b ? "true" : "false"); break;
+        case Elem::DBL: os << d; break;
+        case Elem::STR: os << "\"" << s << "\""; break;
+        case Elem::FUNCTOR: os << fu->getName() << "(argc=" << fu->getNumArgs() << ")"; break;
+        case Elem::OP: os << "op" << op; break;
+        default: Assert(false);
+    }
+    return os.str();
 }
 
 std::string Expression::Value::str()
@@ -66,6 +91,16 @@ std::string Expression::Value::str()
     }
 }
 
+// should be member of Function, but the VC++ 9.0 linker disagrees
+std::string Expression::Function_str(const char *name, std::string args[], int numargs)
+{
+    std::stringstream os;
+    os << name << "(";
+    for (int i=0; i<numargs; i++)
+        os << (i==0 ? "" : ", ") << args[i];
+    os << ")";
+    return os.str();
+}
 
 Expression::Expression()
 {
@@ -619,14 +654,5 @@ Expression::Value MathFunction::evaluate(Expression::Value args[], int numargs)
         case 3: return f(args[0].dbl, args[1].dbl, args[2].dbl);
         default: throw opp_runtime_error("too many args");
     }
-}
-
-std::string MathFunction::str(std::string args[], int numargs)
-{
-    std::string s = funcname+"(";
-    for (int i=0; i<numargs; i++)
-        s += (i==0 ? "" : ", ") + args[i];
-    s += ")";
-    return s;
 }
 

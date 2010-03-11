@@ -16,8 +16,8 @@ class NoisyListener : public cListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
     virtual void finish(cComponent *component, simsignal_t signalID);
-    virtual void listenerAdded(cComponent *component, simsignal_t signalID);
-    virtual void listenerRemoved(cComponent *component, simsignal_t signalID);
+    virtual void subscribedTo(cComponent *component, simsignal_t signalID);
+    virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID);
 };
 
 #endif

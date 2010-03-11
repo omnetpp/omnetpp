@@ -33,6 +33,7 @@
 #include "eventlogfilemgr.h"
 #include "cconfiguration.h"
 #include "timeutil.h"
+#include "resultlistener.h"
 
 NAMESPACE_BEGIN
 
@@ -89,6 +90,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     opp_string opt_outputscalarmanager_class;
     opp_string opt_snapshotmanager_class;
     bool opt_record_eventlog;
+    bool opt_debug_statistics_recording;
     bool opt_fname_append_host;
 
     bool opt_warnings;
@@ -257,12 +259,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
      */
     virtual void addResultRecorders(cComponent *component);
 
-    /**
-     * Factory method: create a corresponding result recorder object
-     * for the given recording mode ("sum", "timeavg" etc).
-     */
-    virtual ResultRecorder *createResultRecorder(const char *mode);
-
   public:
     // Utility function: optionally appends host name to fname
     virtual void processFileName(opp_string& fname);
@@ -272,7 +268,12 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void checkFingerprint();
 
     // Utility function for addResultRecorders()
-    void addResultRecorder(cComponent *component, const char *statisticName, simsignal_t signalID, const char *mode, const char *where, bool scalarsEnabled, bool vectorsEnabled);
+    SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
+    // Utility function for addResultRecorders()
+    void doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where);
+    // Utility function for addResultRecorders()
+    void dumpResultRecorders(cComponent *component);
+    void dumpResultRecorderChain(ResultListener *listener, int depth);
 
     /**
      * Original command-line args.

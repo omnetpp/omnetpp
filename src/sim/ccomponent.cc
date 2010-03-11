@@ -268,6 +268,8 @@ bool cComponent::SignalData::addListener(cIListener *l)
 {
     if (findListener(l) != -1)
         return false; // already subscribed
+
+    // reallocate each time (subscribe operations are rare, so we optimize for memory footprint)
     int n = countListeners();
     cIListener **v = new cIListener*[n+2];
     memcpy(v, listeners, n*sizeof(cIListener*));
@@ -507,7 +509,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     }
 
     listener->subscribecount++;
-    listener->listenerAdded(this, signalID);
+    listener->subscribedTo(this, signalID);
 }
 
 void cComponent::signalListenerAdded(simsignal_t signalID)
@@ -549,7 +551,7 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
     }
 
     listener->subscribecount--;
-    listener->listenerRemoved(this, signalID);
+    listener->unsubscribedFrom(this, signalID);
 }
 
 void cComponent::signalListenerRemoved(simsignal_t signalID)
@@ -690,14 +692,14 @@ void cComponent::releaseLocalListeners()
 /*
     // this is a faster version, but since listener lists and flags are only
     // updated at the end, hasListeners(), isSubscribed() etc. may give
-    // strange results when invoked within from listenerRemoved().
+    // strange results when invoked within from unsubscribedFrom().
     if (signalTable)
     {
-        // fire listenerRemoved() on listeners
+        // fire unsubscribedFrom() on listeners
         for (int i = 0; i < (int)signalTable->size(); i++) {
             for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp) {
                 (*lp)->subscribecount--;
-                (*lp)->listenerRemoved(this, (*signalTable)[i].signalID);
+                (*lp)->unsubscribedFrom(this, (*signalTable)[i].signalID);
             }
         }
         signalHasLocalListeners = 0;
