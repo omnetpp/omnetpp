@@ -154,6 +154,8 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	}
 
     public Map<String, Map<String, PropertyElementEx>> getProperties() {
-        return NedElementUtilEx.collectProperties(this, new HashMap<String, Map<String, PropertyElementEx>>());
+        HashMap<String, Map<String, PropertyElementEx>> map = new HashMap<String, Map<String, PropertyElementEx>>();
+		NedElementUtilEx.collectProperties(this, map);
+		return map;
     }
 }

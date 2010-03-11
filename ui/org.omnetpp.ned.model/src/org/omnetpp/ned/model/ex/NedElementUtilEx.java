@@ -384,23 +384,24 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	}
 
 
-    public static Map<String, Map<String, PropertyElementEx>> collectProperties(INedElement node, Map<String, Map<String, PropertyElementEx>> map) {
-        INedElement section = node.getFirstChildWithTag(NED_PARAMETERS);
-        if (section != null) {
-            for (INedElement child : section) {
-                if (child instanceof IHasName && child.getTagCode()==NED_PROPERTY) {
-                    String name = ((IHasName)child).getName();
-                    Map<String, PropertyElementEx> propertyMap = map.get(name);
-                    if (propertyMap == null) {
-                        propertyMap = new HashMap<String, PropertyElementEx>();
-                        map.put(name, propertyMap);
-                    }
-                    PropertyElementEx property = (PropertyElementEx)child;
-                    propertyMap.put(property.getIndex(), property);
-                }
-            }
-        }
-        return map;
+    public static void collectProperties(INedElement node, Map<String, Map<String, PropertyElementEx>> map) {
+   		INedElement propertyParent = node instanceof IHasParameters ? 
+   							node.getFirstChildWithTag(NED_PARAMETERS) : node;
+    		
+    	if (propertyParent != null) {
+    		for (INedElement child : propertyParent) {
+    			if (child instanceof IHasName && child.getTagCode()==NED_PROPERTY) {
+    				String name = ((IHasName)child).getName();
+    				Map<String, PropertyElementEx> propertyMap = map.get(name);
+    				if (propertyMap == null) {
+    					propertyMap = new HashMap<String, PropertyElementEx>();
+    					map.put(name, propertyMap);
+    				}
+    				PropertyElementEx property = (PropertyElementEx)child;
+    				propertyMap.put(property.getIndex(), property);
+    			}
+    		}
+    	}
     }
 
     public static PropertyElementEx getProperty(IHasProperties element, String name, String index) {
@@ -427,28 +428,23 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
         return properties;
     }
 
-    public static void setPropertyValues(IHasProperties element, String propertyName, Collection<String> values) {
-        NedElementFactory factory = NedElementFactoryEx.getInstance();
-        PropertyElementEx propertyElement = NedElementUtilEx.getProperty(element, propertyName, null);
+    public static void setPropertyValues(IHasProperties element, String propertyName, String propertyIndex, Collection<String> values) {
+        PropertyElementEx propertyElement = NedElementUtilEx.getProperty(element, propertyName, propertyIndex);
 
-        if (propertyElement == null) {
-            propertyElement = (PropertyElementEx)factory.createElement(NED_PROPERTY);
-            propertyElement.setName(propertyName);
-            ((INedElement)element).appendChild(propertyElement);
-        }
-        else
+        if (propertyElement != null)
             propertyElement.removeAllChildren();
 
-        addPropertyValues(element, propertyName, values);
+        addPropertyValues(element, propertyName, propertyIndex, values);
     }
 
-    public static void addPropertyValues(IHasProperties element, String propertyName, Collection<String> values) {
-        NedElementFactory factory = NedElementFactoryEx.getInstance();
-        PropertyElementEx propertyElement = NedElementUtilEx.getProperty(element, propertyName, null);
+    public static void addPropertyValues(IHasProperties element, String propertyName, String propertyIndex, Collection<String> values) {
+    	NedElementFactory factory = NedElementFactoryEx.getInstance();
+        PropertyElementEx propertyElement = NedElementUtilEx.getProperty(element, propertyName, propertyIndex);
 
         if (propertyElement == null) {
             propertyElement = (PropertyElementEx)factory.createElement(NED_PROPERTY);
             propertyElement.setName(propertyName);
+            propertyElement.setIndex(propertyIndex);
             ((INedElement)element).appendChild(propertyElement);
         }
 
@@ -473,10 +469,10 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     }
 
     public static void setLabels(IHasProperties element, Collection<String> labels) {
-        setPropertyValues(element, "labels", labels);
+        setPropertyValues(element, "labels", null, labels);
     }
 
     public static void addLabels(IHasProperties element, Collection<String> labels) {
-        addPropertyValues(element, "labels", labels);
+        addPropertyValues(element, "labels", null, labels);
     }
 }
