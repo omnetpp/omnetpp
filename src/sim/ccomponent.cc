@@ -236,7 +236,11 @@ void cComponent::recordParametersAsScalars()
                 throw cRuntimeError(this, "cannot record non-numeric parameter `%s' as an output scalar", par(i).getName());
             if (par(i).isVolatile() && (par(i).doubleValue()!=par(i).doubleValue() || par(i).doubleValue()!=par(i).doubleValue()))
                 throw cRuntimeError(this, "recording volatile parameter `%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).getName());
-            recordScalar(par(i).getName(), par(i).doubleValue());  //XXX mark value specially (as being a "param") in the file?
+
+            if (par(i).getType() == cPar::BOOL)
+                recordScalar(par(i).getName(), par(i).boolValue()); // note: no implicit conversion from bool to double
+            else
+                recordScalar(par(i).getName(), par(i).doubleValue());  //XXX mark value specially (as being a "param") in the file?
         }
     }
 }

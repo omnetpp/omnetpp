@@ -1,3 +1,8 @@
+2010-03-11  Andras Varga
+
+	* cComponent::recordParametersAsScalars(): recording a boolean parameter
+	caused an error [reported by Alberto Cortes]
+
 2010-03-10  Andras Varga
 
 	* The transform() methods of histogram classes now throw an exception
