@@ -106,7 +106,7 @@ TIP: XSWT documentation and a tutorial can be found at:
 
 NOTE: Currently we use XSWT 1.1.2. Newer XSWT versions from
       'http://www.coconut-palm-software.com/~xswt/integration/plugins/'
-      did not work as well.
+      did not work well.
 
 
 === Using the IDE
