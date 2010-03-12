@@ -211,6 +211,8 @@ copy-ui-docu:
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/plugin.xml
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide/plugin.xml
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide/plugin.xml
+	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
+	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-overview/*.html
 	perl -i -pe 's!href="!href="content/manual/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual/toc.xml
 	perl -i -pe 's!href="!href="content/userguide/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/toc.xml
 	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/*.html
@@ -220,19 +222,6 @@ copy-ui-docu:
 	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide/*.html
 	perl -i -pe 's!href="!href="content/ide-developersguide/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide/toc.xml
 	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide/*.html
-	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
-
-# utility target to copy 3rd party DLLs to the bin directory on MINGW build
-copy-dlls:
-	cp mingw/bin/libgcc_sjlj_1.dll bin
-	cp mingw/bin/libstdc++_sjlj_6.dll bin
-	cp msys/bin/tcl84.dll bin
-	cp msys/bin/tclpip84.dll bin
-	cp msys/bin/tk84.dll bin
-	cp msys/bin/BLT24.dll bin
-	cp msys/bin/BLTlite24.dll bin
-	cp msys/bin/zlib1.dll bin
-	cp msys/bin/libxml2.dll bin
 
 ifeq ($(findstring linux,$(PLATFORM)),linux)
 
