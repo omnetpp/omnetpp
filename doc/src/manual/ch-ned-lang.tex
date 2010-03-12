@@ -219,7 +219,7 @@ Later sections will cover the concepts used (inner types, channels, the
 
 
 \subsection{The App, Routing, and Queue Simple Modules}
-Simple modules are the basic building blocks for other (compound) modules, 
+Simple modules are the basic building blocks for other (compound) modules,
 denoted by the \fkeyword{simple} keyword.
 All active behavior in the model is encapsulated in \fkeyword{simple} modules.
 Behavior is defined with a C++ class; NED files only declare the externally
@@ -940,7 +940,7 @@ in subclasses or in submodule declarations.
 
 Sometimes modules need more complex input than simple module parameters
 can describe. In that case, you could put these parameters into an external config file,
-and let the modules read and process the file. The file name is passed 
+and let the modules read and process the file. The file name is passed
 to the modules in a string parameter.
 
 XML is increasingly becoming a standard format for configuration
@@ -1391,7 +1391,7 @@ module RandomGraph {
                 out[count];
         }
     connections allowunconnected:
-        for i=0..count-1, j=0..count-1 {
+        for i=0..count-1, for j=0..count-1 {
             node[i].out[j] --> node[j].in[i]
                 if i!=j && uniform(0,1)<connectedness;
         }
@@ -1421,7 +1421,7 @@ condition is used to ``carve out'' the necessary interconnection from
 the full graph:
 
 \begin{ned}
-for i=0..N-1, j=0..N-1 {
+for i=0..N-1, for j=0..N-1 {
     node[i].out[...] --> node[j].in[...] if condition(i,j);
 }
 \end{ned}
@@ -1445,7 +1445,7 @@ The pattern loops through all nodes and creates the necessary
 connections for each one. It can be generalized like this:
 
 \begin{ned}
-for i=0..Nnodes, j=0..Nconns(i)-1 {
+for i=0..Nnodes, for j=0..Nconns(i)-1 {
     node[i].out[j] --> node[rightNodeIndex(i,j)].in[j];
 }
 \end{ned}
@@ -1799,7 +1799,7 @@ module interfaces and channel interfaces \ref{sec:ch-ned-lang:submodule-like}).
 \section{Packages}
 \label{sec:ch-ned-lang:packages}
 
-Having all NED files in a single directory is fine for small simulation projects. 
+Having all NED files in a single directory is fine for small simulation projects.
 When a project grows, however, it sooner or later becomes
 necessary to introduce a directory structure, and sort the NED files into
 them. NED natively supports directory trees with NED files, and calls
