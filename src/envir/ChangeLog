@@ -7,6 +7,8 @@
 	* new configuration options: debug-statistics-recording, 
 	result-recording-mode
 
+	* new command-line options: -h resultfilters, -h resultrecorders
+
 2010-02-03  Andras Varga
 
 	* renamed "vector-recording-interval" configuration option to 
@@ -16,7 +18,7 @@
 2010-01-31  Andras Varga
 
 	* checked in signals-based result recording; see the User Manual for more 
-	info. New configuration options: warmup-period,  **.scalar-recording-mode
+	info. New configuration options: warmup-period,  **.result-recording-mode
 
 2009-05-13  Levente Meszaros
 
