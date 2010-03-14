@@ -1,3 +1,5 @@
+2010-03-14  ------ omnetpp-4.1b3 released ------
+
 2009-09-10  Andras Varga
 
 	* fix: cmdenv.cc: opt_autoflush was used before getting initialized

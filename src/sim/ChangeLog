@@ -1,3 +1,5 @@
+2010-03-14  ------ omnetpp-4.1b3 released ------
+
 2010-03-11  Andras Varga
 
 	* cComponent::recordParametersAsScalars(): recording a boolean parameter

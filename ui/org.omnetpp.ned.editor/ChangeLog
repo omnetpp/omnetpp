@@ -1,3 +1,5 @@
+2010-03-14  ------ omnetpp-4.1b3 released ------
+
 2009-08-03  Levente M‚sz ros
 
 	* Connection chooser brings up channel chooser when using the default connection tool and there are matching labels between the connected gates and an available channel type.

@@ -1,3 +1,5 @@
+2010-03-14  ------ omnetpp-4.1b3 released ------
+
 2010-01-29  Andras Varga
 
 	* ned2.y: fixed ambiguity when parsing @foo(key=,"val"); solution

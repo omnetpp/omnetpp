@@ -1,3 +1,5 @@
+2010-03-14  ------ omnetpp-4.1b3 released ------
+
 2009-08-30  Andras Varga
 
 	* JSimpleModule.cast() to return the java peer, instead of a newly

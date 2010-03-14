@@ -1,3 +1,5 @@
+2010-03-14  ------ omnetpp-4.1b3 released ------
+
 2009-01-27 Andras Varga
 
 	* fix: when subclassing from a compound module, parameter assignments

@@ -1,8 +1,81 @@
 What's New
 ==========
 
-OMNeT++ 4.1 beta 2 (Jan 2010)
+OMNeT++ 4.1 beta 3 (March 2010)
+API (see include/ChangeLog for more info):
+  New channel programming model
 
+  New cHistogram class (by merging cDoubleHistogram and cLongHistogram functionality) 
+
+  New statistic recording framework using signals: The module's C++ code only emits
+  signals containing important module variables and events. Statistic collector
+  objects are attached to the signals from the NED file or from the INI file allowing
+  to configure the statistic collection without modifying any C++ code.
+
+  New simTime() NED function returning the current simulation time. It is possible
+  now to create time dependent distributions e.g.:
+  interArrivalTime = exponential(simTime()<10s ? 0.5s : 2s)
+
+NED:
+  @signal property is used to define the signals emitted by the module
+  
+  @statistic property is used to define the default statistics gathered 
+  in the module by the new statistical framework.
+
+IDE:
+  The IDE is now based on Eclipse 3.5.2 and CDT 6.0.2.
+
+  NED editor now has content assist for display string tags.
+  Icons and colors are displayed inside the content assist window.
+
+  Content assist is supported for channel parameters in NED Editor.
+
+  Content assist is supported for @signal and @statistic in NED Editor.
+
+  Statistic and signal declarations are shown in the Module Hierarchy View
+
+  INI File Editor now supports content assist for statistic names.
+
+  Several usability enhancement in the Analysis Editor
+  - SVG export for charts.
+  - Redesigned filter interface on the browse data page provides more space.
+  - Tree view in the Browse Data page.
+  - It is now possible to group and explore the collected results in
+    several different way on the Dataset page.
+  - Charts in the Chart Sheet fill the editor window automatically. 
+  - Number of columns can be configured on the Chart Sheet.
+
+  Direct method calls can be visualised in Sequence charts.
+
+  Generated NED documentation now includes signal and statistic declarations.
+  
+  New Freemarker template editor used during wizad creation ('*.ftl' files).
+
+Tooling:
+  The git package is updated to version 1.6.5  
+
+Documentation:
+  Extensive documentation review and proofreading.
+
+Bugfixes since beta 2:
+
+  Fixed regressions related to parameter handling.
+
+  The IDE no longer crashes on multi-processor Windows machines.
+
+  git commands are working correctly now on Windows (git merge etc.)
+
+  The new version of Eclipse platform (3.5.2) solves the 'dead button' problem
+  found on Linux systems with the latest version of GTK.
+
+  Documentation generator now correctly generates docs from NED files containing
+  the @titlepage property.
+
+  Boolean parameters now can be recorded as scalars.
+
+
+OMNeT++ 4.1 beta 2 (Jan 2010)
+-----------------------------
 API:
   No breaking changes to the API since 4.0. Every model created for 4.0 
   should work without a problem on 4.1. See include/ChangeLog for details.
@@ -47,7 +120,7 @@ IDE:
 
   Parameters can be grouped now in the ModuleHierarchyView.
 
-  The simulation launcher now check for errors in the open project(s) 
+  The simulation launcher now checks for errors in the open project(s) 
   (and warns if any) before starting a simulation.
 
   Attaching vectors to a Sequence Chart is more intuitive now.
@@ -71,7 +144,7 @@ IDE:
   more information.
 
 Tkenv:
-  Two way connections between modules are now represented with a single line 
+  Two-way connections between modules are now represented with a single line 
   (without arrow heads). One way connetions are unaffected.
 
   Connection layouting has been optimized for connections between long shaped 
