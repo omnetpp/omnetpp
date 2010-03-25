@@ -189,7 +189,6 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         else if (strcmp(modulename, "this")==0)
             elems[pos++] = new NEDSupport::Sizeof(ident, false, true);
         else
-            //XXX elems[pos++] = new NEDSupport::Sizeof(modulename, ident, inSubcomponentScope, hasChild);
             throw cRuntimeError("dynamic module builder: sizeof(module.ident): not yet supported"); //TBD
     }
     else if (!strcmp(funcname, "xmldoc"))

@@ -58,7 +58,10 @@ class SIM_API cExpressionBuilder
     ~cExpressionBuilder();
 
     /**
-     * Translates a NED expression into a cDynamicExpression
+     * Translates a NED expression into a cDynamicExpression.
+     * Note that the resulting expression object is going to be shared
+     * across similar module instances, so it cannot contain concrete
+     * cModule or cComponent pointers.
      */
     cDynamicExpression *process(ExpressionElement *node, bool inSubcomponentScope);
 

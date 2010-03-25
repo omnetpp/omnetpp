@@ -43,6 +43,12 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
     void checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n);
     void checkDottedNameAttribute(NEDElement *node, const char *attr, bool wildcardsAllowed);
 
+    // helper: whether the given node is inside the BODY of a submodule decl or a connection's channelspec
+    bool isWithinSubcomponent(NEDElement *node);
+
+    // whether the given node is inside an inner type
+    bool isWithinInnerType(NEDElement *node);
+
   public:
     /**
      * Constructor. Bool argument specifies if the validator should expect

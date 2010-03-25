@@ -158,6 +158,28 @@ void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *
             {errors->addError(node,"validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
 }
 
+bool NEDSyntaxValidator::isWithinSubcomponent(NEDElement *node)
+{
+    // only returns true if node is within the BODY of a submodule or a channelspec
+    // (i.e. returns *false* for a submodule vector size)
+    for (; node!=NULL; node = node->getParent())
+    {
+        if (node->getTagCode() == NED_PARAMETERS || node->getTagCode() == NED_GATES) {
+            int sectionOwnerType = node->getParent()->getTagCode();
+            return sectionOwnerType==NED_SUBMODULE || sectionOwnerType==NED_CHANNEL_SPEC || sectionOwnerType==NED_CONNECTION;
+        }
+    }
+    return false;
+}
+
+bool NEDSyntaxValidator::isWithinInnerType(NEDElement *node)
+{
+    for (; node!=NULL; node = node->getParent())
+        if (node->getTagCode() == NED_TYPES)
+            return true;
+    return false;
+}
+
 void NEDSyntaxValidator::validateElement(FilesElement *node)
 {
 }
@@ -564,51 +586,25 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
 
 void NEDSyntaxValidator::validateElement(IdentElement *node)
 {
-    //FIXME revise
     const char *expr[] = {"module-index", "param-index"};
     bool opt[] = {true, true};
     checkExpressionAttributes(node, expr, opt, 2);
 
-    // FIXME loopvar and gatename for sizeof is also represented as IdentElement!!!
-    //FIXME also: if we don't find a param, it may still come from a submodule --this can only be done with semantic validation
+/*TODO:
+    bool withinSubcomponent = isWithinSubcomponent(node);
+    bool withinInnerType = isWithinInnerType(node);
 
-/*
-    // make sure parameter exists
-    if (opp_isempty(node->getModule()))
+    const char *modulename = node->getModule();
+    if (opp_isempty(modulename) || strcmp(modulename, "this")==0)
     {
-        const char *paramName = node->getName();
-        NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
-        if (!compound)
-            INTERNAL_ERROR0(node,"occurs outside a compound-module");
-        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMETERS);
-        if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
-        {
-            // FIXME TODO
-            //if (node->getParentWithTag(NED_FOR_LOOP))
-            //    errors->addError(node, "no compound module parameter or loop variable named '%s'", paramName);
-            //else
-            //    errors->addError(node, "compound module has no parameter named '%s'", paramName);
-        }
+        // OK -- "identifier" and "this.identifier" are allowed in expressions anywhere
+    }
+    else
+    {
+        // TODO module.ident is not legal at certain places
     }
 */
 }
-
-// TODO merge into Ref code
-//void NEDSyntaxValidator::validateElement(ObsoleteIdentElement *node)
-//{
-//    // ObsoleteIdentElement may occur: (1) as loop variable inside for-loops (2) argument to sizeof
-//    if (node->getParent()->getTagCode()==NED_FUNCTION &&
-//        !strcmp(((FunctionElement*)node->getParent())->getName(),"sizeof"))
-//        return;
-//
-//    // make sure ident (loop variable) exists
-//    const char *name = node->getName();
-//    NEDElement *forloop = node->getParentWithTag(NED_FOR_LOOP);
-//    if (!forloop)
-//        INTERNAL_ERROR1(node,"loop variable '%s' occurs outside for loop", name);
-//    if (forloop->getFirstChildWithAttribute(NED_LOOP_VAR, "param-name", name)==NULL)
-//        errors->addError(node, "no loop variable named '%s' in enclosing for loop", name);
-//}
 
 void NEDSyntaxValidator::validateElement(LiteralElement *node)
 {

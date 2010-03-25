@@ -169,9 +169,10 @@
 <!ATTLIST function
      name                NMTOKEN   #REQUIRED>
 
-<!-- Ident is either a parameter reference or an identifier for 'sizeof' operator
-     format is 'name' or 'module.name' or 'module[n].name'. If there is a child,
-     it represents the module index n.
+<!-- Ident is either a parameter reference or an argument for the "sizeof" 
+     operator; its NED source form is one of the following: "name", "module.name",
+     "module[n].name". If there is a child, it represents the module index n. 
+     A reserved module name (with special meaning) is "this".
 -->
 <!ELEMENT ident (comment*, (operator|function|ident|literal)?)>
 <!ATTLIST ident
