@@ -64,6 +64,15 @@ Value ParameterRef::evaluate(cComponent *context, Value args[], int numargs)
     cComponent *component = ofParent ? context->getParentModule() : context;
     if (!component)
         throw cRuntimeError(context,eENOPARENT);
+
+    // In inner types, a "paramName" should be first tried as the enclosing type's
+    // parameter, only then as local parameter.
+    // However, "this.paramName" (that is, ofParent==false and explicitKeyword==true)
+    // means local parameter, so parent should not be looked up in that case
+    if (!ofParent && !explicitKeyword && component->getComponentType()->isInnerType())
+        if (component->getParentModule() && component->getParentModule()->hasPar(paramName.c_str()))
+            return component->getParentModule()->par(paramName.c_str());
+
     return component->par(paramName.c_str());
 }
 

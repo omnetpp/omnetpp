@@ -1,0 +1,75 @@
+%description:
+Test parameter references in expressions inside an inner type: they should
+refer to the parent module's parameters (which is the same as the enclosing
+type, since inner types are not visible outside their enclosing types).
+If there is no such parent module parameter, it should refer to the local
+parameter with that name.
+
+Identifiers qualified with "this" should always refer to the local type.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+        int foo = 1;
+        int bar = 2;
+        int foobar = 3;
+    types:
+        module Node {
+          parameters:
+            int local = foo;    // parent foo
+            int bar = bar;      // parent bar
+            int third = local;  // local param
+            int foobar = 99;    // the local foobar
+            int foobar2 = this.foobar; // the local foobar
+          gates:
+            output out;
+            input in;
+          connections allowunconnected:
+        }
+        channel X extends ned.DelayChannel {
+          parameters:
+            int local = foo;    // parent foo
+            int bar = bar;      // parent bar
+            int third = local;  // local param
+            int foobar = 99;    // the local foobar
+            int foobar2 = this.foobar; // the local foobar
+        }
+    submodules:
+        node: Node;
+        dump: Dump;
+    connections:
+        node.out --> X --> node.in;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        foo = 1
+        bar = 2
+        foobar = 3
+    submodules:
+        module Test.node: Test.Node {
+            parameters:
+                local = 1
+                bar = 2
+                third = 1
+                foobar = 99
+                foobar2 = 99
+            gates:
+                out: --> node.in, Test.X disabled=false delay=0 local=1 bar=2 third=1 foobar=99 foobar2=99
+                in: <-- node.out, Test.X disabled=false delay=0 local=1 bar=2 third=1 foobar=99 foobar2=99
+        }
+}
+
