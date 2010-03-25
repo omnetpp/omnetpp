@@ -44,12 +44,12 @@ class ModuleIndex : public cDynamicExpression::Functor
 class ParameterRef : public cDynamicExpression::Functor
 {
   protected:
-    bool ofParent;  // if true, return parentModule->par(paramname)
-    bool printThis; // whether str() should prefix paramName with "this."
+    bool ofParent;  // if true, return parentModule->par(paramName)
+    bool explicitKeyword; // when ofParent==false: whether the NED file contained the explicit "this" qualifier
     std::string paramName;
   public:
-    ParameterRef(const char *paramName, bool ofParent, bool printThis);
-    ParameterRef *dup() const {return new ParameterRef(paramName.c_str(), ofParent, printThis);}
+    ParameterRef(const char *paramName, bool ofParent, bool explicitKeyword);
+    ParameterRef *dup() const {return new ParameterRef(paramName.c_str(), ofParent, explicitKeyword);}
     virtual const char *getFullName() const {return paramName.c_str();}
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return '*';}
@@ -114,11 +114,11 @@ class Sizeof : public cDynamicExpression::Functor
 {
   protected:
     bool ofParent;  // if true, return parentModule->gateSize(ident)
-    bool printThis; // whether str() should prefix paramName with "this."
+    bool explicitKeyword; // when ofParent==false: whether the NED file contained the explicit "this" qualifier
     std::string ident;
   public:
-    Sizeof(const char *ident, bool ofParent, bool printThis);
-    Sizeof *dup() const {return new Sizeof(ident.c_str(), ofParent, printThis);}
+    Sizeof(const char *ident, bool ofParent, bool explicitKeyword);
+    Sizeof *dup() const {return new Sizeof(ident.c_str(), ofParent, explicitKeyword);}
     virtual const char *getFullName() const {return ident.c_str();}
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return 'L';}

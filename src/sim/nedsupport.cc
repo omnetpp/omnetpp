@@ -22,6 +22,7 @@
 #include "cexception.h"
 #include "cenvir.h"
 #include "cmodule.h"
+#include "ccomponenttype.h"
 #include "nedsupport.h"
 #include "stringutil.h"
 
@@ -50,11 +51,11 @@ std::string ModuleIndex::str(std::string args[], int numargs)
 
 //----
 
-ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool printThis)
+ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool explicitKeyword)
 {
     this->paramName = paramName;
     this->ofParent = ofParent;
-    this->printThis = printThis;
+    this->explicitKeyword = explicitKeyword;
 }
 
 Value ParameterRef::evaluate(cComponent *context, Value args[], int numargs)
@@ -68,10 +69,12 @@ Value ParameterRef::evaluate(cComponent *context, Value args[], int numargs)
 
 std::string ParameterRef::str(std::string args[], int numargs)
 {
-    if (printThis)
-        return std::string("this.")+paramName;
-    else
+    if (!explicitKeyword)
         return paramName;
+    else if (ofParent)
+        return std::string("parent.")+paramName; // not a legal NED syntax
+    else
+        return std::string("this.")+paramName;
 }
 
 //----
@@ -151,11 +154,11 @@ std::string LoopVar::str(std::string args[], int numargs)
 
 //---
 
-Sizeof::Sizeof(const char *ident, bool ofParent, bool printThis)
+Sizeof::Sizeof(const char *ident, bool ofParent, bool explicitKeyword)
 {
     this->ident = ident;
     this->ofParent = ofParent;
-    this->printThis = printThis;
+    this->explicitKeyword = explicitKeyword;
 }
 
 Value Sizeof::evaluate(cComponent *context, Value args[], int numargs)
@@ -175,7 +178,7 @@ Value Sizeof::evaluate(cComponent *context, Value args[], int numargs)
         return (long) module->gateSize(ident.c_str()); // returns 1 if it's not a vector
     }
     else
-    {        //FIXME ofparent must be "true" here!
+    {
         // Find ident among submodules. If there's no such submodule, it may
         // be that such submodule vector never existed, or can be that it's zero
         // size -- we cannot tell, so we have to return 0 (and cannot throw error).
@@ -189,7 +192,8 @@ Value Sizeof::evaluate(cComponent *context, Value args[], int numargs)
 
 std::string Sizeof::str(std::string args[], int numargs)
 {
-    return std::string(printThis ? "sizeof(this." : "sizeof(") + ident + ")";
+    const char *prefix = !explicitKeyword ? "" : ofParent ? "parent." : "this."; // "parent" is not a legal NED syntax though
+    return std::string("sizeof(") + prefix + ident + ")";
 }
 
 //---
