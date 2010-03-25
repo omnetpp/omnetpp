@@ -28,10 +28,11 @@
 USING_NAMESPACE
 
 
-NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDElement *tree)
+NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree)
 {
     this->resolver = resolver;
     this->qualifiedName = qname;
+    this->isInner = isInnerType;
     this->tree = tree;
     this->flattenedTree = NULL;
 
@@ -97,6 +98,14 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
             Assert(interfaceDecl);
             checkComplianceToInterface(interfaceDecl);
         }
+    }
+
+    // fill in enclosingTypeName for inner types
+    if (isInner)
+    {
+        const char *lastDot = strrchr(qname, '.');
+        Assert(lastDot); // if it's an inner type, must have a parent
+        enclosingTypeName = std::string(qname, lastDot-qname);
     }
 
     // resolve C++ class name
@@ -233,6 +242,11 @@ const char *NEDTypeInfo::extendsName(int k) const
     return extendsnames[k].c_str();
 }
 
+const char *NEDTypeInfo::getEnclosingTypeName() const
+{
+    return isInner ? enclosingTypeName.c_str() : NULL;
+}
+
 const char *NEDTypeInfo::implementationClassName() const
 {
     return implClassName.empty() ? NULL : implClassName.c_str();
@@ -244,7 +258,7 @@ NEDTypeInfo *NEDTypeInfo::getSuperDecl() const
     return getResolver()->getDecl(superName);
 }
 
-bool NEDTypeInfo::isNetwork()
+bool NEDTypeInfo::isNetwork() const
 {
     return NEDElementUtil::getLocalBoolProperty(getTree(), "isNetwork");
 }

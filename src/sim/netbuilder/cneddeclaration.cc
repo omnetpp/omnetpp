@@ -29,7 +29,7 @@
 USING_NAMESPACE
 
 
-cNEDDeclaration::cNEDDeclaration(NEDResourceCache *resolver, const char *qname, NEDElement *tree) : NEDTypeInfo(resolver, qname, tree)
+cNEDDeclaration::cNEDDeclaration(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree) : NEDTypeInfo(resolver, qname, isInnerType, tree)
 {
     props = NULL;
     patternsValid = false;

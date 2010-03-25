@@ -50,6 +50,7 @@ class NEDXML_API NEDTypeInfo
 
     Type type;
     std::string qualifiedName;
+    bool isInner;  // whether it is an inner type
     NEDElement *tree; // points into resolver
 
     // tree with inheritance flattened out.
@@ -65,6 +66,8 @@ class NEDXML_API NEDTypeInfo
     StringVector extendsnames;
     StringVector interfacenames;
 
+    std::string enclosingTypeName;
+
     // simple module/channel C++ class to instantiate
     std::string implClassName;
 
@@ -79,7 +82,7 @@ class NEDXML_API NEDTypeInfo
 
   public:
     /** Constructor. It expects fully qualified name */
-    NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDElement *tree);
+    NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree);
 
     /** Destructor */
     virtual ~NEDTypeInfo();
@@ -154,10 +157,21 @@ class NEDXML_API NEDTypeInfo
     virtual bool supportsInterface(const char *qname);
 
     /**
+     * Returns true if this NED type is an inner type
+     */
+    virtual bool isInnerType() const  {return isInner;}
+
+    /**
+     * If this type is an inner type, returns fully qualified name of its
+     * enclosing type, otherwise returns NULL.
+     */
+    virtual const char *getEnclosingTypeName() const;
+
+    /**
      * Returns true if this NED type has a local (non-inherited)
      * \@network (or \@network(true)) property.
      */
-    virtual bool isNetwork();
+    virtual bool isNetwork() const;
 
     /**
      * For simple modules and channels, it returns the name of the C++ class that

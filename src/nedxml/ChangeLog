@@ -1,3 +1,7 @@
+2010-03-25  Andras Varga
+
+	* nedxml: added isInnerType() to NEDTypeInfo class
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2010-01-29  Andras Varga

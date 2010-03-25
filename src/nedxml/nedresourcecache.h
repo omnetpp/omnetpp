@@ -94,8 +94,9 @@ class NEDXML_API NEDResourceCache
 
     struct PendingNedType {
         std::string qname;
+        bool isInnerType;
         NEDElement *node;
-        PendingNedType(const char *q, NEDElement *e) {qname=q;node=e;}
+        PendingNedType(const char *q, bool inner, NEDElement *e) {qname=q;isInnerType=inner;node=e;}
     };
 
     // storage for NED components not resolved yet because of missing dependencies
@@ -108,11 +109,11 @@ class NEDXML_API NEDResourceCache
     virtual NEDElement *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
     virtual std::string determineRootPackageName(const char *nedSourceFolderName);
     virtual std::string getNedSourceFolderForFolder(const char *folder) const;
-    virtual void collectNedTypes(NEDElement *node, const std::string& namespacePrefix);
-    virtual void collectNedType(const char *qname, NEDElement *node);
+    virtual void collectNedTypesFrom(NEDElement *node, const std::string& namespacePrefix, bool areInnerTypes);
+    virtual void collectNedType(const char *qname, bool isInnerType, NEDElement *node);
     virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
     virtual void registerPendingNedTypes();
-    virtual void registerNedType(const char *qname, NEDElement *node);
+    virtual void registerNedType(const char *qname, bool isInnerType, NEDElement *node);
 
   public:
     /** Constructor */

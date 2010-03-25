@@ -217,11 +217,11 @@ bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
     if (!packagePrefix.empty())
         packagePrefix += ".";
 
-    collectNedTypes(node, packagePrefix);
+    collectNedTypesFrom(node, packagePrefix, false);
     return true;
 }
 
-void NEDResourceCache::collectNedTypes(NEDElement *node, const std::string& namespacePrefix)
+void NEDResourceCache::collectNedTypesFrom(NEDElement *node, const std::string& namespacePrefix, bool areInnerTypes)
 {
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
@@ -234,19 +234,19 @@ void NEDResourceCache::collectNedTypes(NEDElement *node, const std::string& name
             if (lookup(qname.c_str()))
                 throw NEDException("redeclaration of %s %s", child->getTagName(), qname.c_str()); //XXX maybe just NEDError?
 
-            collectNedType(qname.c_str(), child);
+            collectNedType(qname.c_str(), areInnerTypes, child);
 
             NEDElement *types = child->getFirstChildWithTag(NED_TYPES);
             if (types)
-                collectNedTypes(types, qname+".");
+                collectNedTypesFrom(types, qname+".", true);
         }
     }
 }
 
-void NEDResourceCache::collectNedType(const char *qname, NEDElement *node)
+void NEDResourceCache::collectNedType(const char *qname, bool isInnerType, NEDElement *node)
 {
     // we'll process it later, from doneLoadingNedFiles()
-    pendingList.push_back(PendingNedType(qname,node));
+    pendingList.push_back(PendingNedType(qname, isInnerType, node));
 }
 
 bool NEDResourceCache::areDependenciesResolved(const char *qname, NEDElement *node)
@@ -295,7 +295,7 @@ void NEDResourceCache::registerPendingNedTypes()
             PendingNedType type = pendingList[i];
             if (areDependenciesResolved(type.qname.c_str(), type.node))
             {
-                registerNedType(type.qname.c_str(), type.node);
+                registerNedType(type.qname.c_str(), type.isInnerType, type.node);
                 pendingList.erase(pendingList.begin() + i--);
                 again = true;
             }
@@ -303,9 +303,9 @@ void NEDResourceCache::registerPendingNedTypes()
     }
 }
 
-void NEDResourceCache::registerNedType(const char *qname, NEDElement *node)
+void NEDResourceCache::registerNedType(const char *qname, bool isInnerType, NEDElement *node)
 {
-    NEDTypeInfo *decl = new NEDTypeInfo(this, qname, node);
+    NEDTypeInfo *decl = new NEDTypeInfo(this, qname, isInnerType, node);
     nedTypes[qname] = decl;
     nedTypeNames.clear();  // invalidate
 }

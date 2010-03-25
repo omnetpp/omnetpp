@@ -102,7 +102,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     /**
      * Constructor. It takes the fully qualified name.
      */
-    cNEDDeclaration(NEDResourceCache *resolver, const char *qname, NEDElement *tree);
+    cNEDDeclaration(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree);
 
     /**
      * Destructor.
