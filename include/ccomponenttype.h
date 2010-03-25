@@ -93,6 +93,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // internal: delegates to the similar NedTypeInfo method
     virtual std::string getPackageProperty(const char *name) const {return "";}
 
+    // internal: delegates to the similar NedTypeInfo method
+    virtual bool isInnerType() const {return false;}
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{

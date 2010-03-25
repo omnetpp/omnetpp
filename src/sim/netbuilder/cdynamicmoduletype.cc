@@ -123,3 +123,9 @@ std::string cDynamicModuleType::getPackageProperty(const char *name) const
     return decl->getPackageProperty(name);
 }
 
+bool cDynamicModuleType::isInnerType() const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->isInnerType();
+}
+
