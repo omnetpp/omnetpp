@@ -79,6 +79,11 @@ void NumericResultRecorder::receiveSignal(ResultFilter *prev, long l)
     collect(l);
 }
 
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, unsigned long l)
+{
+    collect(l);
+}
+
 void NumericResultRecorder::receiveSignal(ResultFilter *prev, double d)
 {
     collect(d);

@@ -114,6 +114,9 @@ class SIM_API cIListener
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) = 0;
 
+    /** Receive an emitted unsigned long value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l) = 0;
+
     /** Receive an emitted double value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) = 0;
 
@@ -180,6 +183,7 @@ class SIM_API cListener : public cIListener
     virtual void unsupportedType(simsignal_t signalID, const char *dataType);
   public:
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);

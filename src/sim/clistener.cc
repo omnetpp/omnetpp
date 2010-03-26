@@ -107,6 +107,11 @@ void cListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
     unsupportedType(signalID, "long");
 }
 
+void cListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l)
+{
+    unsupportedType(signalID, "unsigned long");
+}
+
 void cListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
 {
     unsupportedType(signalID, "double");

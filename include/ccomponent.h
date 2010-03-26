@@ -390,6 +390,13 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void emit(simsignal_t signalID, long l);
 
     /**
+     * Emits the unsigned long value as a signal. If the given signal has listeners in
+     * this component or in ancestor components, their appropriate receiveSignal() methods
+     * get called. If there are no listeners, the runtime cost is usually minimal.
+     */
+    void emit(simsignal_t signalID, unsigned long l);
+
+    /**
      * Emits the double value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * get called. If there are no listeners, the runtime cost is usually minimal.
@@ -423,20 +430,20 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /** Delegates to emit(simsignal_t, long) */
     void emit(simsignal_t signalID, char c) {emit(signalID,(long)c);}
 
-    /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, unsigned char c) {emit(signalID,(long)c);}
+    /** Delegates to emit(simsignal_t, unsigned long) */
+    void emit(simsignal_t signalID, unsigned char c) {emit(signalID,(unsigned long)c);}
 
     /** Delegates to emit(simsignal_t, long) */
     void emit(simsignal_t signalID, short i) {emit(signalID,(long)i);}
 
-    /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, unsigned short i) {emit(signalID,(long)i);}
+    /** Delegates to emit(simsignal_t, unsigned long) */
+    void emit(simsignal_t signalID, unsigned short i) {emit(signalID,(unsigned long)i);}
 
     /** Delegates to emit(simsignal_t, long) */
     void emit(simsignal_t signalID, int i) {emit(signalID,(long)i);}
 
-    /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, unsigned int i) {emit(signalID,(long)i);}
+    /** Delegates to emit(simsignal_t, unsigned long) */
+    void emit(simsignal_t signalID, unsigned int i) {emit(signalID,(unsigned long)i);}
 
     /** Delegates to emit(simsignal_t, double) */
     void emit(simsignal_t signalID, float f) {emit(signalID,(double)f);}

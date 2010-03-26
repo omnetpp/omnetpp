@@ -420,6 +420,12 @@ void cComponent::emit(simsignal_t signalID, long l)
         fire(this, signalID, l);
 }
 
+void cComponent::emit(simsignal_t signalID, unsigned long l)
+{
+    if (mayHaveListeners(signalID))
+        fire(this, signalID, l);
+}
+
 void cComponent::emit(simsignal_t signalID, double d)
 {
     if (mayHaveListeners(signalID))
@@ -678,15 +684,14 @@ bool cComponent::computeHasListeners(simsignal_t signalID) const
 void cComponent::releaseLocalListeners()
 {
     // note: this may NOT be called from our destructor (only subclasses' destructor),
-    // because it would result in a 'pure virtual method called'
+    // because it would result in a "pure virtual method called" error
     if (signalTable)
     {
         while (signalTable && !signalTable->empty())
         {
             SignalData& signalData = signalTable->front();
             simsignal_t signalID = signalData.signalID;
-            int n = signalData.countListeners();
-            for (int i = 0; i < n; i++)
+            while (signalData.hasListener())
                 unsubscribe(signalID, signalData.listeners[0]);
         }
         delete signalTable;

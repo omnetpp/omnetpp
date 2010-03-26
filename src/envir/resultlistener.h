@@ -33,6 +33,7 @@ class ENVIR_API ResultListener : public cIListener
 
         // simplified API that better supports chaining:
         virtual void receiveSignal(ResultFilter *prev, long l) = 0;
+        virtual void receiveSignal(ResultFilter *prev, unsigned long l) = 0;
         virtual void receiveSignal(ResultFilter *prev, double d) = 0; // primary
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) = 0; // new; primary
         virtual void receiveSignal(ResultFilter *prev, simtime_t t) = 0;
@@ -44,6 +45,7 @@ class ENVIR_API ResultListener : public cIListener
 
         // original listener API delegates to simplified API:
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);

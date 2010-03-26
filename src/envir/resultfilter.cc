@@ -73,6 +73,12 @@ void ResultFilter::fire(ResultFilter *prev, long l)
         delegates[i]->receiveSignal(this, l);
 }
 
+void ResultFilter::fire(ResultFilter *prev, unsigned long l)
+{
+    for (int i=0; delegates[i]; i++)
+        delegates[i]->receiveSignal(this, l);
+}
+
 void ResultFilter::fire(ResultFilter *prev, double d)
 {
     for (int i=0; delegates[i]; i++)
@@ -118,6 +124,13 @@ void NumericResultFilter::receiveSignal(ResultFilter *prev, long l)
         fire(this, d);
 }
 
+void NumericResultFilter::receiveSignal(ResultFilter *prev, unsigned long l)
+{
+    double d = l;
+    if (process(d))
+        fire(this, d);
+}
+
 void NumericResultFilter::receiveSignal(ResultFilter *prev, double d)
 {
     if (process(d))
@@ -155,6 +168,11 @@ void NumericResultFilter::receiveSignal(ResultFilter *prev, cObject *obj)
 void ObjectResultFilter::receiveSignal(ResultFilter *prev, long l)
 {
     THROW("long");
+}
+
+void ObjectResultFilter::receiveSignal(ResultFilter *prev, unsigned long l)
+{
+    THROW("unsigned long");
 }
 
 void ObjectResultFilter::receiveSignal(ResultFilter *prev, double d)

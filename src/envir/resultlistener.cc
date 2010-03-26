@@ -50,6 +50,18 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, lon
     }
 }
 
+void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l)
+{
+    try
+    {
+        receiveSignal(NULL, l);
+    }
+    catch (std::exception& e)
+    {
+        THROW(source, signalID, "unsigned long", e);
+    }
+}
+
 void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
 {
     try

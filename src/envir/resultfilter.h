@@ -45,6 +45,7 @@ class ENVIR_API ResultFilter : public ResultListener
         ResultListener **delegates; // NULL-terminated array
     protected:
         void fire(ResultFilter *prev, long l);
+        void fire(ResultFilter *prev, unsigned long l);
         void fire(ResultFilter *prev, double d);
         void fire(ResultFilter *prev, simtime_t t, double d);
         void fire(ResultFilter *prev, simtime_t t);
@@ -73,6 +74,7 @@ class ENVIR_API NumericResultFilter : public ResultFilter
         virtual bool process(simtime_t& t, double& value) = 0;
     public:
         virtual void receiveSignal(ResultFilter *prev, long l);
+        virtual void receiveSignal(ResultFilter *prev, unsigned long l);
         virtual void receiveSignal(ResultFilter *prev, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t);
@@ -89,6 +91,7 @@ class ENVIR_API ObjectResultFilter : public ResultFilter
 {
     public:
         virtual void receiveSignal(ResultFilter *prev, long l);
+        virtual void receiveSignal(ResultFilter *prev, unsigned long l);
         virtual void receiveSignal(ResultFilter *prev, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t);

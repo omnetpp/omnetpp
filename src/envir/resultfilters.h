@@ -31,6 +31,7 @@ class ENVIR_API WarmupPeriodFilter : public ResultFilter
         simtime_t getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
     public:
         virtual void receiveSignal(ResultFilter *prev, long l);
+        virtual void receiveSignal(ResultFilter *prev, unsigned long l);
         virtual void receiveSignal(ResultFilter *prev, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t);
@@ -51,6 +52,7 @@ class ENVIR_API CountFilter : public ResultFilter
     public:
         CountFilter() {count = 0;}
         virtual void receiveSignal(ResultFilter *prev, long l) {doIt();}
+        virtual void receiveSignal(ResultFilter *prev, unsigned long l) {doIt();}
         virtual void receiveSignal(ResultFilter *prev, double d) {doIt();}
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {count++; fire(this,t,count);}
         virtual void receiveSignal(ResultFilter *prev, simtime_t t) {doIt();}
@@ -69,6 +71,7 @@ class ENVIR_API ConstantFilter : public ResultFilter
     public:
         ConstantFilter(double c) {this->c = c;}
         virtual void receiveSignal(ResultFilter *prev, long l) {fire(this,c);}
+        virtual void receiveSignal(ResultFilter *prev, unsigned long l) {fire(this,c);}
         virtual void receiveSignal(ResultFilter *prev, double d) {fire(this,c);}
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {fire(this,t,c);}
         virtual void receiveSignal(ResultFilter *prev, simtime_t t) {fire(this,c);}

@@ -70,6 +70,7 @@ class ENVIR_API NumericResultRecorder : public ResultRecorder
         virtual void collect(simtime_t t, double value) = 0;
     public:
         virtual void receiveSignal(ResultFilter *prev, long l);
+        virtual void receiveSignal(ResultFilter *prev, unsigned long l);
         virtual void receiveSignal(ResultFilter *prev, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t);
