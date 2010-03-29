@@ -1,0 +1,132 @@
+%description:
+dup() of cLongHistogram
+
+%activity:
+
+FILE *f = fopen("histograms.out", "w");
+if (!f)
+    throw cRuntimeError("cannot open output file for histograms");
+
+cLongHistogram h;
+cLongHistogram *h2;
+
+h.setNumCells(10);   // 10 cells
+h.setNumFirstVals(5);
+
+h.collect(10);
+h.collect(19);
+h.collect(9);
+
+h.saveToFile(f);
+h2 = h.dup(); h2->saveToFile(f); delete h2;
+
+h.collect(10);
+h.collect(12);
+h.collect(12);
+h.collect(20);
+
+h.saveToFile(f);
+h2 = h.dup(); h2->saveToFile(f); delete h2;
+
+fclose(f);
+
+
+%contains: histograms.out
+
+#
+# (cLongHistogram) Test.
+#
+3	 #= num_vals
+9 19	 #= min, max
+38	 #= sum
+542	 #= square sum
+0	 #= transformed
+2	 #= range_mode
+0	 #= range_ext_factor
+-9.25596e+061 -9.25596e+061	 #= range
+0 0	 #= cell_under, cell_over
+5	 #= num_firstvals
+1	 #= firstvals[] exists
+ 10
+ 19
+ 9
+10	 #= num_cells
+0	 #= cellv[] exists
+0	 #= cellsize
+
+#
+# (cLongHistogram) Test.
+#
+3	 #= num_vals
+9 19	 #= min, max
+38	 #= sum
+542	 #= square sum
+0	 #= transformed
+2	 #= range_mode
+0	 #= range_ext_factor
+-9.25596e+061 -9.25596e+061	 #= range
+0 0	 #= cell_under, cell_over
+5	 #= num_firstvals
+1	 #= firstvals[] exists
+ 10
+ 19
+ 9
+10	 #= num_cells
+0	 #= cellv[] exists
+0	 #= cellsize
+
+#
+# (cLongHistogram) Test.
+#
+7	 #= num_vals
+9 20	 #= min, max
+92	 #= sum
+1330	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+0	 #= range_ext_factor
+9.5 19.5	 #= range
+1 1	 #= cell_under, cell_over
+5	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 2
+ 0
+ 2
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 1
+1	 #= cellsize
+
+#
+# (cLongHistogram) Test.
+#
+7	 #= num_vals
+9 20	 #= min, max
+92	 #= sum
+1330	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+0	 #= range_ext_factor
+9.5 19.5	 #= range
+1 1	 #= cell_under, cell_over
+5	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 2
+ 0
+ 2
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 1
+1	 #= cellsize

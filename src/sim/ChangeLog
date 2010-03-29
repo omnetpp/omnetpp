@@ -1,3 +1,10 @@
+2010-03-29  Andras Varga
+
+	* histogram classes: 
+	 - fix: setNumFirstVals() took no effect if no setRange..() method was called
+	 - save/load/pack/unpack used slots in firstvals[] only
+	 - support for dup()
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2010-03-11  Andras Varga

@@ -417,9 +417,9 @@ class SIM_API cLongHistogram : public cHistogram
     virtual ~cLongHistogram() {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
+     * Assignment operator.
      */
-    cLongHistogram& operator=(const cLongHistogram&)  {copyNotSupported();return *this;}
+    cLongHistogram& operator=(const cLongHistogram& other)  {return (cLongHistogram&)cHistogram::operator=(other);}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -480,9 +480,9 @@ class SIM_API cDoubleHistogram : public cHistogram
     virtual ~cDoubleHistogram() {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
+     * Assignment operator.
      */
-    cDoubleHistogram& operator=(const cDoubleHistogram&)  {copyNotSupported();return *this;}
+    cDoubleHistogram& operator=(const cDoubleHistogram& other)  {return (cDoubleHistogram&)cHistogram::operator=(other);}
     //@}
 
     /** @name Redefined cObject member functions. */
