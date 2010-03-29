@@ -39,6 +39,7 @@ using std::ostream;
 cDensityEstBase::cDensityEstBase(const char *name ) : cStdDev(name)
 {
     range_mode = RANGE_INVALID;
+    range_ext_factor = 0;
     num_firstvals = 0;
     cell_under = cell_over = 0;
 
@@ -263,7 +264,7 @@ void cDensityEstBase::setupRange()
 void cDensityEstBase::collect(double val)
 {
     if (range_mode == RANGE_INVALID && !isTransformed())
-        setRangeAuto();
+        setRangeAuto(num_firstvals==0 ? 100 : num_firstvals, range_ext_factor); // do not overwrite previously set num_firstvals
 
     if (firstvals==NULL && !isTransformed())
         transform();
