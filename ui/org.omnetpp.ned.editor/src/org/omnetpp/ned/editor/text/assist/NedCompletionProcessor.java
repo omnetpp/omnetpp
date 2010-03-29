@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -22,6 +23,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.PropType;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedDisplayStringTagDetector;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagDetector;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper.NedPropertyTagValueDetector;
@@ -323,7 +325,9 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
             else {
                 // determine tag name and tag position from display string line
                 int tagPos = -1;
-                LinkedHashMap<String, DisplayString.TagInstance> tagMap = DisplayString.parseTags(line.replaceFirst(".*\"", ""));
+                // NOTE: we have to chop off the last word again, because the generic way does not allow / characters inside
+                String tagLine = line.replaceFirst("[a-zA-Z_][a-zA-Z0-9_/]*$", "").trim();
+                LinkedHashMap<String, DisplayString.TagInstance> tagMap = DisplayString.parseTags(tagLine.replaceFirst(".*\"", ""));
                 ArrayList<DisplayString.TagInstance> tags = new ArrayList<DisplayString.TagInstance>(tagMap.values());
                 DisplayString.TagInstance tagInstance = null;
                 IDisplayString.Tag tag = null;
@@ -340,8 +344,8 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                     prop = IDisplayString.Prop.findProp(tag, tagPos);
                 }
                 // add tag specific proposals
-                if (tagPos == 0 && tag.equals(IDisplayString.Tag.bgi))
-                    addImageProposals(viewer, documentOffset, result, "maps/.*");
+                if (tag != null && tagPos == 0 && tag.equals(IDisplayString.Tag.bgi))
+                    addImageProposals(viewer, documentOffset, result, "maps/.*", new SyntaxHighlightHelper.NedDisplayStringImageNameDetector());
                 else if (prop != null) {
                     IDisplayString.EnumSpec enumSpec = prop.getEnumSpec();
                     if (enumSpec != null)
@@ -349,7 +353,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                     else if (prop.getType() == PropType.COLOR)
                         addProposals(viewer, documentOffset, result, ColorFactory.getColorNames(), ColorFactory.getColorRGBs(), ColorFactory.getColorImages());
                     else if (prop.getType() == PropType.IMAGE)
-                        addImageProposals(viewer, documentOffset, result, ".*");
+                        addImageProposals(viewer, documentOffset, result, ".*", new SyntaxHighlightHelper.NedDisplayStringImageNameDetector());
                 }
             }
         }
@@ -376,7 +380,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 	    return result.toArray(new ICompletionProposal[result.size()]);
 	}
 
-	private void addImageProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String regex) {
+	private void addImageProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String regex, IWordDetector wordDetector) {
         List<String> names = ImageFactory.getImageNameList();
         List<String> matchingName = new ArrayList<String>();
         for (String name : names)
@@ -388,6 +392,6 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
             String proposal = proposals[i];
             images[i] = ImageFactory.getIconImage(proposal);
         }
-        addProposals(viewer, documentOffset, result, proposals, proposals, images);
+        result.addAll(createProposals(viewer, documentOffset, wordDetector, "", proposals, "", proposals, images));
 	}
 }
