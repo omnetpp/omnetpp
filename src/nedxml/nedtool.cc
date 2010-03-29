@@ -35,7 +35,6 @@
 #include "ned1generator.h"
 #include "xmlgenerator.h"
 #include "nedtools.h"
-//XXX #include "cppgenerator.h"
 #include "fileglobber.h"
 #include "fileutil.h"
 #include "stringutil.h"
@@ -47,8 +46,6 @@ USING_NAMESPACE
 using std::ofstream;
 using std::ifstream;
 using std::ios;
-
-//TODO: "preserve format" flag (genererate ned2 as ned2, and ned1 as ned1)
 
 // file types
 enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
@@ -72,10 +69,6 @@ bool opt_verbose = false;          // -V
 const char *opt_outputfile = NULL; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
-
-// global variables
-//XXX NEDFileCache filecache;
-//XXX NEDClassicImportResolver importresolver;
 
 FilesElement *outputtree;
 
@@ -209,15 +202,12 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         return false;
     }
 
-    //XXX NEDTools::repairNEDElementTree(tree);
-
     // DTD validation and additional syntax validation
     NEDDTDValidator dtdvalidator(errors);
     try {
         dtdvalidator.validate(tree);
     }
     catch(NEDException& e) {
-        // FIXME embed exception handling in validate()!
         fprintf(stderr,"nedtool: NEDException: %s\n", e.what());
         delete tree;
         return false;
@@ -230,31 +220,6 @@ bool processFile(const char *fname, NEDErrorStore *errors)
 
     NEDSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
     syntaxvalidator.validate(tree);
-    if (errors->containsError())
-    {
-        delete tree;
-        return false;
-    }
-
-    // NED type resolver is needed for further validation and C++ code generation
-//XXX    NEDTypeResolver resolver;
-
-    // semantic validation (will load imports too)
-    if (!opt_novalidation)
-    {
-        if (!opt_noimports)
-        {
-            // invoke NEDCompiler (will process imports and do semantic validation)
-//XXX            NEDCompiler nedc(&filecache, &resolver, &importresolver, errors);
-//XXX            nedc.validate(tree);
-        }
-        else
-        {
-            // simple semantic validation (without imports)
-//XXX            NEDCrossValidator validator(!opt_unparsedexpr,&resolver, errors);
-//XXX            validator.validate(tree);
-        }
-    }
     if (errors->containsError())
     {
         delete tree;
@@ -351,17 +316,6 @@ bool processFile(const char *fname, NEDErrorStore *errors)
             ofstream out(outfname);
             generateNED(out, tree, errors, opt_oldsyntax);
             out.close();
-        }
-        else
-        {
-            if (!renameFileToBAK(outfname))
-                return false;
-            ofstream out(outfname);
-            //ofstream outh(outhdrfname);
-            ofstream outh; // TBD open if we process msg files (not yet supported)
-//XXX            generateCpp(out, outh, tree, &resolver);
-            out.close();
-            outh.close();
         }
 
         delete tree;
@@ -493,11 +447,11 @@ int main(int argc, char **argv)
                 fprintf(stderr,"nedtool: unexpected end of arguments after -I\n");
                 return 1;
             }
-//XXX            importresolver.addImportPath(argv[i]);
+            // -I option is currently ignored
         }
         else if (argv[i][0]=='-' && argv[i][1]=='I')
         {
-//XXX            importresolver.addImportPath(argv[i]+2);
+            // -I option is currently ignored
         }
         else if (!strcmp(argv[i],"-X"))
         {
@@ -606,7 +560,7 @@ int main(int argc, char **argv)
         else
         {
             // process individual files on the command line
-            //FIXME these checks get bypassed with list files!!!
+            //FIXME these checks get bypassed with list files
             if (!opt_genxml && !opt_gensrc)
             {
                 fprintf(stderr,"nedtool: generating C++ source not currently supported\n"); //XXX
