@@ -68,7 +68,7 @@ void cDensityEstBase::parsimPack(cCommBuffer *buffer)
     buffer->pack(transfd);
 
     if (buffer->packFlag(firstvals!=NULL))
-        buffer->pack(firstvals, num_firstvals);
+        buffer->pack(firstvals, num_vals); // pack the used positions only
 #endif
 }
 
@@ -91,7 +91,7 @@ void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
     if (buffer->checkFlag())
     {
         firstvals = new double[num_firstvals];
-        buffer->unpack(firstvals, num_firstvals);
+        buffer->unpack(firstvals, num_vals);
     }
 #endif
 }
@@ -265,7 +265,7 @@ void cDensityEstBase::collect(double val)
     if (range_mode == RANGE_INVALID && !isTransformed())
         setRangeAuto();
 
-    if (firstvals==0 && !isTransformed())
+    if (firstvals==NULL && !isTransformed())
         transform();
 
     cStdDev::collect(val); // this also increments num_vals
@@ -359,7 +359,7 @@ void cDensityEstBase::saveToFile(FILE *f) const
 
     fprintf(f,"%d\t #= firstvals[] exists\n",firstvals!=NULL);
     if (firstvals)
-        for (int i=0; i<num_firstvals; i++)
+        for (int i=0; i<num_vals; i++)
             fprintf(f," %g\n",firstvals[i]);
 }
 
@@ -380,7 +380,7 @@ void cDensityEstBase::loadFromFile(FILE *f)
     if (firstvals_exists)
     {
         firstvals = new double[ num_firstvals ];
-        for (int i=0; i<num_firstvals; i++)
+        for (int i=0; i<num_vals; i++)
             freadvarsf(f," %g",firstvals+i);
     }
 }
