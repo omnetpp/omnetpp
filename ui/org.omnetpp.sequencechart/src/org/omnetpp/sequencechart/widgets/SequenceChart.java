@@ -4057,6 +4057,14 @@ public class SequenceChart
 					res += "t = " + getSimulationTimeForViewportCoordinate(x) + ", just after event #" + event.getEventNumber();
 			}
 
+			int i = axisModules.indexOf(axisModule);
+            if (i != -1 && getAxisRenderers()[i] instanceof AxisVectorBarRenderer) {
+                AxisVectorBarRenderer renderer = (AxisVectorBarRenderer)getAxisRenderers()[i];
+                renderer.getVectorFileName();
+                renderer.getVectorRunName();
+                res += "<br/>attaching <b>" + renderer.getVectorModuleFullPath() + ":" + renderer.getVectorName() + "</b>";
+            }
+
 			return res;
 		}
 
