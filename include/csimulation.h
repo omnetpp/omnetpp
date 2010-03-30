@@ -355,7 +355,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Returns the current simulation time. (It is also available via the
      * global simTime() function.)
      */
-    simtime_t_retval getSimTime() const  {return sim_time;}
+    simtime_t_cref getSimTime() const  {return sim_time;}
 
     /**
      * Returns the sequence number of current event.
@@ -371,7 +371,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * the warm-up period and need not be modified. The warm-up period is useful
      * for steady-state simulations.
      */
-    simtime_t_retval getWarmupPeriod() const  {return warmup_period;}
+    simtime_t_cref getWarmupPeriod() const  {return warmup_period;}
 
     /**
      * INTERNAL USE ONLY. Sets the warm-up period.

@@ -337,15 +337,14 @@ const char *cMessage::getDisplayString() const
     return ""; // clients may redefine this method to get messages with custom appearance
 }
 
-
-void cMessage::setSentFrom(cModule *module, int gateId, simtime_t t)
+void cMessage::setSentFrom(cModule *module, int gateId, simtime_t_cref t)
 {
     frommod = module ? module->getId() : -1;
     fromgate = gateId;
     sent = t;
 }
 
-void cMessage::setArrival(cModule *module, int gateId, simtime_t t)
+void cMessage::setArrival(cModule *module, int gateId, simtime_t_cref t)
 {
     tomod = module ? module->getId() : -1;
     togate = gateId;

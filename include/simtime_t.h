@@ -46,7 +46,7 @@
 
 // "Legacy" module: double simtime_t
 typedef double         simtime_t;
-typedef double         simtime_t_retval;
+typedef double         simtime_t_cref;
 typedef const double   const_simtime_t;
 #define MAXTIME        DBL_MAX
 #define SIMTIME_ZERO   0.0
@@ -61,7 +61,7 @@ typedef const double   const_simtime_t;
 // OMNeT++ 4.x native mode: int64-based fixed-point simtime_t (class SimTime)
 
 typedef OPP::SimTime   simtime_t;
-typedef const simtime_t& simtime_t_retval;  // in many configurations (e.g. debug builds), it is more efficient to return a SimTime from a function as a const ref than by value
+typedef const simtime_t& simtime_t_cref;  // in many configurations (e.g. debug builds), it is more efficient to return a SimTime from a function as a const ref than by value
 typedef const double   const_simtime_t;
 #define MAXTIME        OPP::SimTime::getMaxTime()
 #define SIMTIME_ZERO   OPP::SimTime()

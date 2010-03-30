@@ -157,7 +157,7 @@ class SIM_API cMessage : public cOwnedObject
     // internal: called by the simulation kernel as part of the send(),
     // scheduleAt() calls to set the values returned by the
     // getSenderModuleId(), getSenderGate(), getSendingTime() methods.
-    void setSentFrom(cModule *module, int gateId, simtime_t t);
+    void setSentFrom(cModule *module, int gateId, simtime_t_cref t);
 
     // internal: called by the simulation kernel as part of processing
     // the send(), scheduleAt() calls to set the values returned
@@ -167,7 +167,7 @@ class SIM_API cMessage : public cOwnedObject
     // internal: called by the simulation kernel as part of processing
     // the send(), scheduleAt() calls to set the values returned
     // by the getArrivalModuleId(), getArrivalGate(), getArrivalTime() methods.
-    void setArrival(cModule *module, int gate, simtime_t t);
+    void setArrival(cModule *module, int gate, simtime_t_cref t);
 
     // internal: called by the simulation kernel to set the value returned
     // by the getArrivalTime() method
@@ -327,7 +327,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns the message's time stamp.
      */
-    simtime_t_retval getTimestamp() const {return tstamp;}
+    simtime_t_cref getTimestamp() const {return tstamp;}
 
     /**
      * Returns the context pointer.
@@ -564,13 +564,13 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns time when the message was created.
      */
-    simtime_t_retval getCreationTime() const {return created;}
+    simtime_t_cref getCreationTime() const {return created;}
 
     /**
      * Returns time when the message was sent/scheduled or 0 if the message
      * hasn't been sent yet.
      */
-    simtime_t_retval getSendingTime()  const {return sent;}
+    simtime_t_cref getSendingTime()  const {return sent;}
 
     /**
      * Returns time when the message arrived (or will arrive if it
@@ -586,7 +586,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getDuration()
      */
-    simtime_t_retval getArrivalTime()  const {return delivd;}
+    simtime_t_cref getArrivalTime()  const {return delivd;}
 
     /**
      * Return true if the message arrived through the given gate.
@@ -907,7 +907,7 @@ class SIM_API cPacket : public cMessage
      *
      * @see isReceptionStart(), getArrivalTime(), cDatarateChannel
      */
-    simtime_t_retval getDuration() const {return duration;}
+    simtime_t_cref getDuration() const {return duration;}
 
     /**
      * Tells whether this packet represents the start or the end of the
