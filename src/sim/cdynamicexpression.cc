@@ -44,7 +44,7 @@ void cDynamicExpression::Elem::operator=(const Elem& other)
     else if (type==FUNCTOR)
         fu = (Functor *) fu->dup();
     else if (type==CONSTSUBEXPR)
-        constexpr = (cExpression *) constexpr->dup();
+        constExpr = (cExpression *) constExpr->dup();
 }
 
 cDynamicExpression::Elem::~Elem()
@@ -61,7 +61,7 @@ void cDynamicExpression::Elem::deleteOld()
     else if (type==FUNCTOR)
         delete fu;
     else if (type==CONSTSUBEXPR)
-        delete constexpr;
+        delete constExpr;
 }
 
 int cDynamicExpression::Elem::compare(const Elem& other) const
@@ -80,7 +80,7 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
       case NEDFUNC:  return nf.argc==other.nf.argc ? CMP(nf.f) : (other.nf.argc-nf.argc);
       case FUNCTOR:  return CMP(fu);
       case OP:       return other.op - op;
-      case CONSTSUBEXPR: return constexpr->compare(other.constexpr);
+      case CONSTSUBEXPR: return constExpr->compare(other.constExpr);
       default:   throw cRuntimeError("internal error: bad Elem type");
 #undef PTRCMP
     }
@@ -679,7 +679,7 @@ std::string cDynamicExpression::str() const
                  break;
                  }
                case Elem::CONSTSUBEXPR:
-                 strstk[++tos] = std::string("const(")+e.constexpr->str()+")";
+                 strstk[++tos] = std::string("const(")+e.constExpr->str()+")";
                  break;
                case Elem::OP:
                  if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
