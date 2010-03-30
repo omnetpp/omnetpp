@@ -1,0 +1,174 @@
+%description:
+Test the default setup of cHistogram
+
+%activity:
+
+cHistogram ints("ints"), doubles("doubles");
+
+for (int i=0; i<200; i++)
+{
+    ints.collect(100+geometric(0.05));
+    doubles.collect(normal(0,10));
+}
+recordStatistic(&ints);
+recordStatistic(&doubles);
+
+%subst: /(\.[0-9][0-9])[0-9]+/\1/
+
+%contains: test.sca
+statistic Test 	ints
+field count 200
+field mean 118.02
+field stddev 21.30
+field sum 23605
+field sqrsum 2876297
+field min 100
+field max 291
+attr isDiscrete  1
+bin	-INF	0
+bin	48	0
+bin	50	0
+bin	52	0
+bin	54	0
+bin	56	0
+bin	58	0
+bin	60	0
+bin	62	0
+bin	64	0
+bin	66	0
+bin	68	0
+bin	70	0
+bin	72	0
+bin	74	0
+bin	76	0
+bin	78	0
+bin	80	0
+bin	82	0
+bin	84	0
+bin	86	0
+bin	88	0
+bin	90	0
+bin	92	0
+bin	94	0
+bin	96	0
+bin	98	0
+bin	100	22
+bin	102	18
+bin	104	15
+bin	106	20
+bin	108	13
+bin	110	16
+bin	112	10
+bin	114	10
+bin	116	4
+bin	118	6
+bin	120	5
+bin	122	6
+bin	124	7
+bin	126	3
+bin	128	4
+bin	130	5
+bin	132	3
+bin	134	3
+bin	136	2
+bin	138	5
+bin	140	2
+bin	142	1
+bin	144	2
+bin	146	4
+bin	148	2
+bin	150	0
+bin	152	1
+bin	154	2
+bin	156	1
+bin	158	1
+bin	160	0
+bin	162	2
+bin	164	0
+bin	166	1
+bin	168	0
+bin	170	0
+bin	172	1
+bin	174	0
+bin	176	1
+bin	178	0
+bin	180	0
+bin	182	0
+bin	184	0
+bin	186	0
+bin	188	0
+bin	190	0
+bin	192	0
+bin	194	0
+bin	196	0
+bin	198	0
+bin	200	0
+bin	202	0
+bin	204	1
+bin	206	0
+bin	208	0
+bin	210	0
+bin	212	0
+bin	214	0
+bin	216	0
+bin	218	0
+bin	220	0
+bin	222	0
+bin	224	0
+bin	226	0
+bin	228	0
+bin	230	0
+bin	232	0
+bin	234	0
+bin	236	0
+bin	238	0
+bin	240	0
+bin	242	0
+bin	244	0
+bin	246	0
+bin	248	0
+bin	250	0
+bin	252	0
+bin	254	0
+bin	256	1
+statistic Test 	doubles
+field count 200
+field mean -0.74
+field stddev 9.40
+field sum -148.44
+field sqrsum 17720.44
+field min -21.97
+field max 24.03
+bin	-INF	0
+bin	-41.80	0
+bin	-38.88	0
+bin	-35.95	0
+bin	-33.02	0
+bin	-30.10	0
+bin	-27.17	0
+bin	-24.24	1
+bin	-21.32	5
+bin	-18.39	3
+bin	-15.47	10
+bin	-12.54	18
+bin	-9.61	20
+bin	-6.69	19
+bin	-3.76	24
+bin	-0.83	22
+bin	2.08	27
+bin	5.01	14
+bin	7.93	13
+bin	10.86	12
+bin	13.79	4
+bin	16.71	3
+bin	19.64	3
+bin	22.57	2
+bin	25.49	0
+bin	28.42	0
+bin	31.35	0
+bin	34.27	0
+bin	37.20	0
+bin	40.12	0
+bin	43.05	0
+bin	45.98	0
+

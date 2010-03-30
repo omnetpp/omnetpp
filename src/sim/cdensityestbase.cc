@@ -36,9 +36,10 @@ USING_NAMESPACE
 using std::ostream;
 
 
-cDensityEstBase::cDensityEstBase(const char *name ) : cStdDev(name)
+cDensityEstBase::cDensityEstBase(const char *name) : cStdDev(name)
 {
     range_mode = RANGE_INVALID;
+    rangemin = rangemax = 0;
     range_ext_factor = 0;
     num_firstvals = 0;
     cell_under = cell_over = 0;

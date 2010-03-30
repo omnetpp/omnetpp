@@ -1,9 +1,14 @@
 2010-03-29  Andras Varga
 
-	* histogram classes: 
-	 - fix: setNumFirstVals() took no effect if no setRange..() method was called
+	* histogram classes (cHistogram, cLongHistogram, cDoubleHistogram): 
+	 - fix: setNumFirstVals() took no effect if no setRange..() method was
+	   called
 	 - save/load/pack/unpack used slots in firstvals[] only
 	 - support for dup()
+	 - in integer mode, use whole numbers as cell boundaries (not halfs);
+	   the lower bound of a cell is inclusive, the upper limit is exclusive
+	   just as with doubles
+	 - default number of cells changed (30 in integer mode, 200 in dbl mode)
 
 2010-03-14  ------ omnetpp-4.1b3 released ------
 

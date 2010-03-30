@@ -131,7 +131,6 @@ class SIM_API cHistogramBase : public cDensityEstBase
     //@}
 };
 
-//==========================================================================
 
 /**
  * Equidistant histogram.
@@ -386,7 +385,6 @@ class SIM_API cHistogram : public cHistogramBase
 
 };
 
-//==========================================================================
 
 /**
  * Equidistant histogram for integers. This class is just a cHistogram
@@ -448,7 +446,6 @@ class SIM_API cLongHistogram : public cHistogram
     virtual void collect(SimTime value) {collect(value.dbl());}
 };
 
-//==========================================================================
 
 /**
  * Equidistant histogram for doubles. This class is just a cHistogram

@@ -45,7 +45,7 @@ fclose(f3);
 1	 #= transformed
 2	 #= range_mode
 1	 #= range_ext_factor
-9.5 19.5	 #= range
+10 20	 #= range
 1 1	 #= cell_under, cell_over
 2	 #= num_firstvals
 0	 #= firstvals[] exists
@@ -74,7 +74,7 @@ fclose(f3);
 1	 #= transformed
 2	 #= range_mode
 1	 #= range_ext_factor
-9.5 19.5	 #= range
+10 20	 #= range
 1 1	 #= cell_under, cell_over
 2	 #= num_firstvals
 0	 #= firstvals[] exists
@@ -91,5 +91,3 @@ fclose(f3);
  0
  1
 1	 #= cellsize
-
-

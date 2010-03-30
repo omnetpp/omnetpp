@@ -268,9 +268,9 @@ void cHistogram::setupRangeInteger()
     // cellsize is double but we want to calculate with integers here
     long cellsize = (long) this->cellsize;
 
-    // convert range limits to one halfs
-    rangemin = ceil(rangemin)-0.5;
-    rangemax = ceil(rangemax)-0.5;
+    // convert range limits to integers
+    rangemin = floor(rangemin);
+    rangemax = ceil(rangemax);
 
     if (range_mode==RANGE_FIXED)
     {
@@ -292,13 +292,13 @@ void cHistogram::setupRangeInteger()
             cellsize = range / num_cells;
         }
         else {
-            int mincellsize = (int) ceil(range/1000.0);
+            int mincellsize = (int) ceil(range/200.0);
             int maxcellsize = (int) ceil(range/10.0);
             for (cellsize=mincellsize; cellsize<=maxcellsize; cellsize++)
                 if (range % cellsize == 0)
                     break;
             if (cellsize > maxcellsize)
-                throw cRuntimeError(this, COMPLAINT": specified range is too large, and cannot divide it to 10..1000 equal-sized cells");
+                throw cRuntimeError(this, COMPLAINT": specified range is too large, and cannot divide it to 10..200 equal-sized cells");
             num_cells = range / cellsize;
         }
 #undef COMPLAINT
@@ -320,7 +320,7 @@ void cHistogram::setupRangeInteger()
         else {
             // neither given, choose both
             double range = rangemax - rangemin;
-            cellsize = (long) ceil(range / 1000.0);  // for range<=1000, cellsize==1
+            cellsize = (long) ceil(range / 200.0);  // for range<=200, cellsize==1
             num_cells = (int) ceil(range/cellsize);
         }
 
@@ -350,7 +350,7 @@ void cHistogram::setupRangeInteger()
 void cHistogram::setupRangeDouble()
 {
     if (num_cells==-1)
-        num_cells = 60; // to allow merging every 2, 3, 4, 5, 6 adjacent cells in post-processing
+        num_cells = 30; // to allow merging every 2, 3, 5, 6 adjacent cells in post-processing
     cellsize = (rangemax - rangemin) / num_cells;
 }
 
