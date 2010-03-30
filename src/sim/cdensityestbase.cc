@@ -264,7 +264,7 @@ void cDensityEstBase::setupRange()
 void cDensityEstBase::collect(double val)
 {
     if (range_mode == RANGE_INVALID && !isTransformed())
-        setRangeAuto(num_firstvals==0 ? 100 : num_firstvals, range_ext_factor); // do not overwrite previously set num_firstvals
+        setRangeAuto(num_firstvals==0 ? 100 : num_firstvals); // do not overwrite previously set num_firstvals
 
     if (firstvals==NULL && !isTransformed())
         transform();
