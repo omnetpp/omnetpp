@@ -133,113 +133,56 @@ class SIM_API cHistogramBase : public cDensityEstBase
 
 
 /**
- * Equidistant histogram.
+ * Implements an equidistant histogram that can operate in two modes.
+ * In INTEGERS mode, cell boundaries are whole numbers; in DOUBLES mode,
+ * they can be real numbers. The operating mode can be chosen with a
+ * constructor argument or with the setMode() method; the default behavior
+ * is to choose the mode automatically, by inspecting precollected
+ * observations.
  *
- * Functionality in DOUBLE mode:
+ * By default, the number of cells is chosen automatically, and the histogram
+ * range is determined by precollecting a number of observations and extending
+ * their range by a range extension factor.
  *
- *   - the number of cells is exactly <i>num_cells</i>, if specified
- *     using setNumCells() or as an argument to the constructor;
- *   - if the number of cells is not specified, it will default to 10.
- *   - the histogram range can be specified explicitly (via setRange()),
- *     or can be determined automatically, after collecting a number of
- *     initial observations (setRangeAuto(), setRangeAutoUpper(),
- *     setRangeAutoLower()).
- *   - the number of inition observations to collect for range determination
- *     can be set via setNumFirstVals().
+ * It is possible to explicitly set any of the following values (and the rest
+ * will be chosen or computed automatically): number of cells; cell size;
+ * number of observations to precollect; range extension factor; range lower
+ * bound; range upper bound. See the setNumCells(), setCellSize(),
+ * setNumFirstVals(), setRangeAuto(), setRangeAutoUpper(), and
+ * setRangeAutoLower() methods (many of them are inherited from
+ * cDensityEstBase and cHistogramBase).
  *
- * Examples:
+ * Especially in INTEGERS mode, if the cells cannot be set up to satisfy all
+ * explicitly given constraints (for example, if the explicitly specified
+ * range is not an integer multiple of the explicitly specified cell size),
+ * an error will be thrown.
  *
- * The following histogram will determine the range from the first few
- * observations, then it set up 10 equal-size cells on it:
- *
- * \code
- * cDoubleHistogram hist("hist");
- * \endcode
- *
- * This one will create 30 cells, after determining the range from the
- * first few observations:
- *
- * \code
- * cDoubleHistogram hist("hist");
- * hist.setNumCells(30);
- * \endcode
- *
- * To explicitly control the cells, you can use the following:
- *
- * \code
- * cDoubleHistogram hist("hist");
- * hist.setRange(0,3);
- * hist.setNumCells(30);
- * \endcode
- *
- * If you only know that the numbers will be nonnegative, but you don't
- * know their ranges, you can use the following (which will set up 20
- * cells, between 0 and an auto-determined limit):
- *
- * \code
- * cDoubleHistogram hist("hist");
- * hist.setRangeAutoUpper(0);
- * hist.setNumCells(20);
- * \endcode
- *
- * Functionality in INTEGER mode:
- *
- * The histogram will be set up in the following way:
- *   - the cell size is - by definition - always integer.
- *   - currently, cell boundaries are at halves (for example 9.5, 10.5);
- *     this may change in further releases.
- *   - the number of cells is exactly <i>num_cells</i>, if specified
- *     using setNumCells() or as an argument to the constructor;
- *   - if the number of cells is not specified, there will be one cell
- *     for every integer in the histogram range, but maximum 10,000 cells.
- *     Above 10,000, a >1 integer cell size will be chosen so that
- *     <i>num_cells</i> gets below 10,000.
- *   - the histogram range can be specified explicitly (via setRange()),
- *     or can be determined automatically, after collecting a number of
- *     initial observations (setRangeAuto(), setRangeAutoUpper(),
- *     setRangeAutoLower()).
- *   - the number of inition observations to collect for range determination
- *     can be set via setNumFirstVals().
- *   - if both <i>num_cells</i> and a histogram range (explicit or auto) was
- *     specified, the histogram range will be inflated to be an integer
- *     multiple of <i>num_cells</i> (so that cell size can be integer).
+ * Informational defaults for the various configuration values (subject to change
+ * without notice in any release): number of values to precollect: 100;
+ * range extension factor: 2.0; number of cells: 200 in INTEGERS mode and 30 in
+ * DOUBLES mode.
  *
  * Examples:
  *
- * This histogram will determine the range from the first few observations,
- * then it will try to keep maintain 1 cell for each integer value in the
- * range. If there would be more than 10,000 cells that way, it will make
- * 2 or 3 or 4 etc. wide cells to reduce the number of cells below 10,000.
+ * Automatic mode:
  *
  * \code
- * cLongHistogram hist("hist");
+ * cHistogram h("histogram");
  * \endcode
  *
- * The following histogram will maintain one cell for every integer 0,1,...500.
+ * Setting up a 50-cell histogram on the range [0.0, 5.0) (cell size = 0.1):
  *
  * \code
- * cLongHistogram hist("hist");
- * hist.setRange(0,500);
+ * cHistogram h("histogram", 50, cHistogram::MODE_DOUBLES);
+ * h.setRange(0,5);
  * \endcode
  *
- * The next one will set up 100 cells, and the range will be auto-determined from
- * the first few observations. If the range is <100 wide, every cell will be
- * 1 wide; with the range width in 100..200, cells will be 2 wide, etc.
+ * If you only know that the numbers will be nonnegative but the exact range
+ * is unknown:
  *
  * \code
- * cLongHistogram hist("hist");
- * hist.setNumCells(100);
- * \endcode
- *
- * If you know that the numbers will be nonnegative, but you don't
- * know their ranges, you can use the following (which will set up 20
- * cells, with the range 0..20, or 0..40, or 0..60 etc, depending on
- * the range of the initial observations):
- *
- * \code
- * cLongHistogram hist("hist");
- * hist.setRangeAutoUpper(0);
- * hist.setNumCells(20);
+ * cHistogram h("histogram");
+ * h.setRangeAutoUpper(0);  // sets zero as lower bound
  * \endcode
  *
  * @ingroup Statistics
