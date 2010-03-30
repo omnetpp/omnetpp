@@ -622,8 +622,15 @@ sub testcase_run()
                         return;
                     }
 
-                    # do it
-                    $txt =~ s/(?$flags)$searchstring/$replacement/g;  #note: g cannot be written as (?g)
+                    # do it.
+                    #
+                    # Note: this is wrong (does not recognize $1 or \1 in the replacement string): $txt =~ s/(?$flags)$searchstring/$replacement/g;
+                    # XXX: the following solution does not like curly braces in the search or replacement strings...
+                    # Note: g cannot be written as (?g)
+                    if (!(defined eval("\$txt =~ s{(?$flags)$searchstring}{$replacement}g"))) {
+                        unresolved($testfilename, "%subst: wrong find or replace pattern");
+                        return;
+                    }
                 }
             }
 
