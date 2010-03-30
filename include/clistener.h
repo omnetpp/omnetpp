@@ -121,7 +121,7 @@ class SIM_API cIListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) = 0;
 
     /** Receive an emitted simtime_t value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t) = 0;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t) = 0;
 
     /** Receive an emitted string value. See receiveSignal(cComponent*,simsignal_t,long) for more info */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) = 0;
@@ -185,7 +185,7 @@ class SIM_API cListener : public cIListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
 };

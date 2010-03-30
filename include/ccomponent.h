@@ -407,8 +407,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Emits the simtime_t value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * get called. If there are no listeners, the runtime cost is usually minimal.
+     *
+     * Note: for technical reasons, the argument type is SimTime instead of simtime_t;
+     * otherwise when compiled with USE_DOUBLE_SIMTIME we would have two "double"
+     * overloads for emit().
      */
-    void emit(simsignal_t signalID, simtime_t t);
+    void emit(simsignal_t signalID, const SimTime& t);
 
     /**
      * Emits the given string as a signal. If the given signal has listeners in this

@@ -74,7 +74,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, dou
     }
 }
 
-void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t)
+void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t)
 {
     try
     {

@@ -91,7 +91,7 @@ void ResultFilter::fire(ResultFilter *prev, simtime_t t, double d)
         delegates[i]->receiveSignal(this, t, d);
 }
 
-void ResultFilter::fire(ResultFilter *prev, simtime_t t)
+void ResultFilter::fire(ResultFilter *prev, const SimTime& t)
 {
     for (int i=0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t);
@@ -143,9 +143,9 @@ void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t t, double 
         fire(this, t, d);
 }
 
-void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t v)
+void NumericResultFilter::receiveSignal(ResultFilter *prev, const SimTime& v)
 {
-    double d = SIMTIME_DBL(v);
+    double d = v.dbl();
     if (process(d))
         fire(this, d);
 }
@@ -185,7 +185,7 @@ void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t t, double d
     THROW("double");
 }
 
-void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t t)
+void ObjectResultFilter::receiveSignal(ResultFilter *prev, const SimTime& t)
 {
     THROW("simtime_t");
 }

@@ -432,7 +432,7 @@ void cComponent::emit(simsignal_t signalID, double d)
         fire(this, signalID, d);
 }
 
-void cComponent::emit(simsignal_t signalID, simtime_t t)
+void cComponent::emit(simsignal_t signalID, const SimTime& t)
 {
     if (mayHaveListeners(signalID))
         fire(this, signalID, t);

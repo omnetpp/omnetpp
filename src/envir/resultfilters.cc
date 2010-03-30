@@ -59,7 +59,7 @@ void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t t, double d
         fire(this, t, d);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t v)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, const SimTime& v)
 {
     simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())

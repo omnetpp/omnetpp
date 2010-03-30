@@ -117,7 +117,7 @@ void cListener::receiveSignal(cComponent *source, simsignal_t signalID, double d
     unsupportedType(signalID, "double");
 }
 
-void cListener::receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t)
+void cListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t)
 {
     unsupportedType(signalID, "simtime_t");
 }

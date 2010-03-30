@@ -34,7 +34,7 @@ class ENVIR_API WarmupPeriodFilter : public ResultFilter
         virtual void receiveSignal(ResultFilter *prev, unsigned long l);
         virtual void receiveSignal(ResultFilter *prev, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t);
+        virtual void receiveSignal(ResultFilter *prev, const SimTime& t);
         virtual void receiveSignal(ResultFilter *prev, const char *s);
         virtual void receiveSignal(ResultFilter *prev, cObject *obj);
 };
@@ -55,7 +55,7 @@ class ENVIR_API CountFilter : public ResultFilter
         virtual void receiveSignal(ResultFilter *prev, unsigned long l) {doIt();}
         virtual void receiveSignal(ResultFilter *prev, double d) {doIt();}
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {count++; fire(this,t,count);}
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t) {doIt();}
+        virtual void receiveSignal(ResultFilter *prev, const SimTime& t) {doIt();}
         virtual void receiveSignal(ResultFilter *prev, const char *s) {doIt();}
         virtual void receiveSignal(ResultFilter *prev, cObject *obj) {doIt();} // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
 };
@@ -74,7 +74,7 @@ class ENVIR_API ConstantFilter : public ResultFilter
         virtual void receiveSignal(ResultFilter *prev, unsigned long l) {fire(this,c);}
         virtual void receiveSignal(ResultFilter *prev, double d) {fire(this,c);}
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {fire(this,t,c);}
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t) {fire(this,c);}
+        virtual void receiveSignal(ResultFilter *prev, const SimTime& t) {fire(this,c);}
         virtual void receiveSignal(ResultFilter *prev, const char *s) {fire(this,c);}
         virtual void receiveSignal(ResultFilter *prev, cObject *obj) {fire(this,c);} // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
 };

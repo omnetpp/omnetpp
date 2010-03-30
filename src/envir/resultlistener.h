@@ -36,7 +36,7 @@ class ENVIR_API ResultListener : public cIListener
         virtual void receiveSignal(ResultFilter *prev, unsigned long l) = 0;
         virtual void receiveSignal(ResultFilter *prev, double d) = 0; // primary
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) = 0; // new; primary
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t) = 0;
+        virtual void receiveSignal(ResultFilter *prev, const SimTime& t) = 0;
         virtual void receiveSignal(ResultFilter *prev, const char *s) = 0;
         virtual void receiveSignal(ResultFilter *prev, cObject *obj) = 0;
         virtual void subscribedTo(ResultFilter *prev);
@@ -47,7 +47,7 @@ class ENVIR_API ResultListener : public cIListener
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, simtime_t t);
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
         virtual void subscribedTo(cComponent *component, simsignal_t signalID);

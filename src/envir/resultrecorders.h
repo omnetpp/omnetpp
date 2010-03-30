@@ -54,7 +54,7 @@ class ENVIR_API CountRecorder : public ResultRecorder
         virtual void receiveSignal(ResultFilter *prev, unsigned long l) {count++;}
         virtual void receiveSignal(ResultFilter *prev, double d) {count++;}
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {count++;}
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, const SimTime& t) {count++;}
         virtual void receiveSignal(ResultFilter *prev, const char *s) {count++;}
         virtual void receiveSignal(ResultFilter *prev, cObject *obj) {count++;}
         virtual void finish(ResultFilter *prev);

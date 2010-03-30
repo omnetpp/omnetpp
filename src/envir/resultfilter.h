@@ -48,7 +48,7 @@ class ENVIR_API ResultFilter : public ResultListener
         void fire(ResultFilter *prev, unsigned long l);
         void fire(ResultFilter *prev, double d);
         void fire(ResultFilter *prev, simtime_t t, double d);
-        void fire(ResultFilter *prev, simtime_t t);
+        void fire(ResultFilter *prev, const SimTime& t);
         void fire(ResultFilter *prev, const char *s);
         void fire(ResultFilter *prev, cObject *obj);
     public:
@@ -77,7 +77,7 @@ class ENVIR_API NumericResultFilter : public ResultFilter
         virtual void receiveSignal(ResultFilter *prev, unsigned long l);
         virtual void receiveSignal(ResultFilter *prev, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t);
+        virtual void receiveSignal(ResultFilter *prev, const SimTime& t);
         virtual void receiveSignal(ResultFilter *prev, const char *s);
         virtual void receiveSignal(ResultFilter *prev, cObject *obj);
 };
@@ -94,7 +94,7 @@ class ENVIR_API ObjectResultFilter : public ResultFilter
         virtual void receiveSignal(ResultFilter *prev, unsigned long l);
         virtual void receiveSignal(ResultFilter *prev, double d);
         virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t);
+        virtual void receiveSignal(ResultFilter *prev, const SimTime& t);
         virtual void receiveSignal(ResultFilter *prev, const char *s);
 };
 

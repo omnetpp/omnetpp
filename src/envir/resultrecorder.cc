@@ -94,9 +94,9 @@ void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t t, doubl
     collect(t, d);
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t d)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, const SimTime& d)
 {
-    collect(SIMTIME_DBL(d));
+    collect(d.dbl());
 }
 
 void NumericResultRecorder::receiveSignal(ResultFilter *prev, const char *s)
