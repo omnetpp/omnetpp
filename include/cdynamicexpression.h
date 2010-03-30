@@ -86,7 +86,7 @@ class SIM_API cDynamicExpression : public cExpression
             struct {cNEDFunction *f; int argc;} nf;
             Functor *fu;
             OpType op;
-            cExpression *constexpr;
+            cExpression *constExpr;
         };
 
       private:
@@ -176,7 +176,7 @@ class SIM_API cDynamicExpression : public cExpression
         /**
          * Constant subexpression.
          */
-        void operator=(cExpression *_expr)  {type=CONSTSUBEXPR; constexpr=_expr;}
+        void operator=(cExpression *_expr)  {type=CONSTSUBEXPR; constExpr=_expr;}
 
         /**
          * For cDynamicExpression::compare()
