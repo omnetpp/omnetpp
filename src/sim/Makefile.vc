@@ -32,7 +32,7 @@ OBJS_STD=\
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cexception.obj $O/cfsm.obj $O/cmathfunction.obj $O/cgate.obj $O/chistogram.obj \
     $O/cksplit.obj $O/clcg32.obj $O/clinkedlist.obj $O/clistener.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
-    $O/cmessage.obj $O/cmsgpar.obj $O/cmodule.obj $O/cmessageheap.obj $O/chasher.obj \
+    $O/cmessage.obj $O/cmsgpar.obj $O/cmodule.obj $O/cmessageheap.obj $O/chasher.obj $O/ctimestampedvalue.obj \
     $O/cnedfunction.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj \
     $O/cpar.obj $O/cparimpl.obj $O/cownedobject.obj $O/cproperties.obj $O/cproperty.obj \
     $O/cpsquare.obj $O/cqueue.obj $O/cpacketqueue.obj $O/cscheduler.obj $O/csimplemodule.obj \
@@ -1913,6 +1913,27 @@ $O/cstringtokenizer.obj: cstringtokenizer.cc \
   ../../include/cexception.h \
   ../../include/platdep/platdefs.h \
   ../../include/cstringtokenizer.h
+$O/ctimestampedvalue.obj: ctimestampedvalue.cc \
+  ../../include/ctimestampedvalue.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/csimulation.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/clistener.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/regmacros.h
 $O/ctopology.obj: ctopology.cc \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
@@ -2276,6 +2297,7 @@ $O/nedsupport.obj: nedsupport.cc \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
+  ../../include/ccomponenttype.h \
   ../../include/cexception.h \
   ../../include/cnedfunction.h \
   ../../include/cnamedobject.h \
@@ -2360,6 +2382,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/ccomponent.h \
   ../../include/cstringtokenizer.h \
   ../../include/omnetpp.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
   ../../include/cscheduler.h \

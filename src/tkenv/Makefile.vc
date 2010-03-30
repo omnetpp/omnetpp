@@ -173,6 +173,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/ccomponent.h \
   ../../include/cstringtokenizer.h \
   ../../include/omnetpp.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
   ../../include/cscheduler.h \
@@ -273,6 +274,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/ccomponent.h \
   ../../include/cstringtokenizer.h \
   ../../include/omnetpp.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
   inspfactory.h \
@@ -519,6 +521,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/ccomponent.h \
   ../../include/cstringtokenizer.h \
   ../../include/omnetpp.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
   inspfactory.h \

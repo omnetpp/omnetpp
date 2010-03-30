@@ -18,6 +18,7 @@
 #include "resultlistener.h"
 #include "resultfilters.h"
 #include "ccomponent.h"
+#include "ctimestampedvalue.h"
 
 
 void ResultListener::subscribedTo(ResultFilter *prev)
@@ -42,7 +43,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, lon
 {
     try
     {
-        receiveSignal(NULL, l);
+        receiveSignal(NULL, simulation.getSimTime(), l);
     }
     catch (std::exception& e)
     {
@@ -54,7 +55,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, uns
 {
     try
     {
-        receiveSignal(NULL, l);
+        receiveSignal(NULL, simulation.getSimTime(), l);
     }
     catch (std::exception& e)
     {
@@ -66,7 +67,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, dou
 {
     try
     {
-        receiveSignal(NULL, d);
+        receiveSignal(NULL, simulation.getSimTime(), d);
     }
     catch (std::exception& e)
     {
@@ -74,11 +75,11 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, dou
     }
 }
 
-void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t)
+void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v)
 {
     try
     {
-        receiveSignal(NULL, t);
+        receiveSignal(NULL, simulation.getSimTime(), v);
     }
     catch (std::exception& e)
     {
@@ -90,7 +91,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, con
 {
     try
     {
-        receiveSignal(NULL, s);
+        receiveSignal(NULL, simulation.getSimTime(), s);
     }
     catch (std::exception& e)
     {
@@ -102,12 +103,23 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cOb
 {
     try
     {
-        // recognize cITimestampedValue, and dispatch to (simtime_t, double) handler
         cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
-        if (v)
-            receiveSignal(NULL, v->getSignalTime(signalID), v->getSignalValue(signalID));
+        if (!v)
+            receiveSignal(NULL, simulation.getSimTime(), obj);
         else
-            receiveSignal(NULL, obj);
+        {
+            // dispatch cITimestampedValue by data type
+            switch (v->getValueType(signalID))
+            {
+                case cITimestampedValue::LONG: receiveSignal(NULL, v->getTimestamp(signalID), v->longValue(signalID)); break;
+                case cITimestampedValue::ULONG: receiveSignal(NULL, v->getTimestamp(signalID), v->unsignedLongValue(signalID)); break;
+                case cITimestampedValue::DOUBLE: receiveSignal(NULL, v->getTimestamp(signalID), v->doubleValue(signalID)); break;
+                case cITimestampedValue::SIMTIME: receiveSignal(NULL, v->getTimestamp(signalID), v->simtimeValue(signalID)); break;
+                case cITimestampedValue::STRING: receiveSignal(NULL, v->getTimestamp(signalID), v->stringValue(signalID)); break;
+                case cITimestampedValue::OBJECT: receiveSignal(NULL, v->getTimestamp(signalID), v->objectValue(signalID)); break;
+                default: throw opp_runtime_error("got cITimestampedValue with blank or invalid data type");
+            }
+        }
     }
     catch (std::exception& e)
     {

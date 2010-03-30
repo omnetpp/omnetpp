@@ -84,6 +84,7 @@
 #include "cstringpool.h"
 #include "cstringtokenizer.h"
 #include "cclassdescriptor.h"
+#include "ctimestampedvalue.h"
 #include "ctopology.h"
 #include "cvarhist.h"
 #include "cvisitor.h"

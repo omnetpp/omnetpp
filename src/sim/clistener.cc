@@ -22,10 +22,6 @@
 
 USING_NAMESPACE
 
-simtime_t cITimestampedValue::getSignalTime(simsignal_t signalID)
-{
-    return simulation.getSimTime();
-}
 
 struct Subscription {cComponent *component; simsignal_t signalID;};
 typedef std::vector<Subscription> SubscriptionList;

@@ -74,37 +74,32 @@ void ResultRecorder::tweakTitle(opp_string& title)
 
 //---
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, long l)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
 {
-    collect(l);
+    collect(t, l);
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, unsigned long l)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
-    collect(l);
+    collect(t, l);
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, double d)
-{
-    collect(d);
-}
-
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t t, double d)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, double d)
 {
     collect(t, d);
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, const SimTime& d)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
-    collect(d.dbl());
+    collect(t, v.dbl());
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, const char *s)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s)
 {
     throw cRuntimeError("%s: Cannot convert const char * to double", getClassName());
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, cObject *obj)
+void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
     throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName());

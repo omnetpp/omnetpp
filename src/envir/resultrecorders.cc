@@ -44,7 +44,7 @@ void VectorRecorder::subscribedTo(ResultFilter *prev)
         ev.setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
 }
 
-void VectorRecorder::collect(simtime_t t, double value)
+void VectorRecorder::collect(simtime_t_cref t, double value)
 {
     if (t < lastTime)
     {
@@ -107,7 +107,7 @@ void MaxRecorder::finish(ResultFilter *prev)
 
 //---
 
-void TimeAverageRecorder::collect(simtime_t t, double value)
+void TimeAverageRecorder::collect(simtime_t_cref t, double value)
 {
     if (startTime < SIMTIME_ZERO) // uninitialized
         startTime = t;

@@ -763,12 +763,16 @@ $O/resultfilter.obj: resultfilter.cc \
   ../../include/regmacros.h
 $O/resultfilters.obj: resultfilters.cc \
   resultlistener.h \
+  ../../include/carray.h \
+  ../../include/cmessage.h \
   resultfilters.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cmsgpar.h \
   ../../include/cobject.h \
+  ../../include/cclassfactory.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
   ../../include/cownedobject.h \
@@ -776,12 +780,14 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cmathfunction.h \
   resultfilter.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
   ../../include/cexception.h \
@@ -803,6 +809,7 @@ $O/resultlistener.obj: resultlistener.cc \
   ../../include/cownedobject.h \
   ../../include/clistener.h \
   ../../include/ccomponent.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \

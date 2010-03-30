@@ -28,15 +28,14 @@
 class ENVIR_API WarmupPeriodFilter : public ResultFilter
 {
     private:
-        simtime_t getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
+        simtime_t_cref getEndWarmupPeriod() {return simulation.getWarmupPeriod();}
     public:
-        virtual void receiveSignal(ResultFilter *prev, long l);
-        virtual void receiveSignal(ResultFilter *prev, unsigned long l);
-        virtual void receiveSignal(ResultFilter *prev, double d);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
-        virtual void receiveSignal(ResultFilter *prev, const SimTime& t);
-        virtual void receiveSignal(ResultFilter *prev, const char *s);
-        virtual void receiveSignal(ResultFilter *prev, cObject *obj);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, long l);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj);
 };
 
 /**
@@ -47,17 +46,14 @@ class ENVIR_API CountFilter : public ResultFilter
 {
     protected:
         long count;
-    protected:
-        void doIt() {count++; fire(this, count);}
     public:
         CountFilter() {count = 0;}
-        virtual void receiveSignal(ResultFilter *prev, long l) {doIt();}
-        virtual void receiveSignal(ResultFilter *prev, unsigned long l) {doIt();}
-        virtual void receiveSignal(ResultFilter *prev, double d) {doIt();}
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {count++; fire(this,t,count);}
-        virtual void receiveSignal(ResultFilter *prev, const SimTime& t) {doIt();}
-        virtual void receiveSignal(ResultFilter *prev, const char *s) {doIt();}
-        virtual void receiveSignal(ResultFilter *prev, cObject *obj) {doIt();} // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, long l) {count++; fire(this,t,count);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l) {count++; fire(this,t,count);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, double d) {count++; fire(this,t,count);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v) {count++; fire(this,t,count);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s) {count++; fire(this,t,count);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj) {count++; fire(this,t,count);}
 };
 
 /**
@@ -70,13 +66,12 @@ class ENVIR_API ConstantFilter : public ResultFilter
         double c;
     public:
         ConstantFilter(double c) {this->c = c;}
-        virtual void receiveSignal(ResultFilter *prev, long l) {fire(this,c);}
-        virtual void receiveSignal(ResultFilter *prev, unsigned long l) {fire(this,c);}
-        virtual void receiveSignal(ResultFilter *prev, double d) {fire(this,c);}
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {fire(this,t,c);}
-        virtual void receiveSignal(ResultFilter *prev, const SimTime& t) {fire(this,c);}
-        virtual void receiveSignal(ResultFilter *prev, const char *s) {fire(this,c);}
-        virtual void receiveSignal(ResultFilter *prev, cObject *obj) {fire(this,c);} // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, long l) {fire(this,t,c);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l) {fire(this,t,c);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, double d) {fire(this,t,c);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v) {fire(this,t,c);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s) {fire(this,t,c);}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj) {fire(this,t,c);}
 };
 
 /**
@@ -103,7 +98,6 @@ class ENVIR_API Constant1Filter : public ConstantFilter
 class ENVIR_API LastValueFilter : public NumericResultFilter
 {
     protected:
-        virtual bool process(double& value) {return true;}
         virtual bool process(simtime_t& t, double& value) {return true;}
 };
 
@@ -115,7 +109,6 @@ class ENVIR_API SumFilter : public NumericResultFilter
     protected:
         double sum;
     protected:
-        virtual bool process(double& value) {sum += value; value = sum; return true;}
         virtual bool process(simtime_t& t, double& value) {sum += value; value = sum; return true;}
     public:
         SumFilter() {sum = 0;}
@@ -130,7 +123,6 @@ class ENVIR_API MeanFilter : public NumericResultFilter
         long count;
         double sum;
     protected:
-        virtual bool process(double& value) {count++; sum += value; value = sum/count; return true;}
         virtual bool process(simtime_t& t, double& value) {count++; sum += value; value = sum/count; return true;}
     public:
         MeanFilter() {count = 0; sum = 0;}
@@ -144,7 +136,6 @@ class ENVIR_API MinFilter : public NumericResultFilter
     protected:
         double min;
     protected:
-        virtual bool process(double& value) {if (value < min) min = value; value = min; return true;}
         virtual bool process(simtime_t& t, double& value) {if (value < min) min = value; value = min; return true;}
     public:
         MinFilter() {min = POSITIVE_INFINITY;}
@@ -158,7 +149,6 @@ class ENVIR_API MaxFilter : public NumericResultFilter
     protected:
         double max;
     protected:
-        virtual bool process(double& value) {if (value > max) max = value; value = max; return true;}
         virtual bool process(simtime_t& t, double& value) {if (value > max) max = value; value = max; return true;}
     public:
         MaxFilter() {max = NEGATIVE_INFINITY;}
@@ -175,7 +165,6 @@ class ENVIR_API TimeAverageFilter : public NumericResultFilter
         double lastValue;
         double weightedSum;
     protected:
-        virtual bool process(double& value)  {simtime_t tmp = simulation.getSimTime(); process(tmp, value); return true;}
         virtual bool process(simtime_t& t, double& value);
     public:
         TimeAverageFilter() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
@@ -193,7 +182,6 @@ class ENVIR_API ExpressionFilter : public NumericResultFilter
         simtime_t currentTime;
         double currentValue;
     protected:
-        virtual bool process(double& value)  {simtime_t tmp = simulation.getSimTime(); process(tmp, value); return true;}
         virtual bool process(simtime_t& t, double& value);
     public:
         ExpressionFilter() {}
@@ -209,7 +197,7 @@ class ENVIR_API ExpressionFilter : public NumericResultFilter
 class ENVIR_API PacketBytesFilter : public ObjectResultFilter
 {
     public:
-        virtual void receiveSignal(ResultFilter *prev, cObject *object);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *object);
 };
 
 #endif

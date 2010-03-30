@@ -32,53 +32,41 @@ Register_ResultFilter("timeavg", TimeAverageFilter);
 Register_ResultFilter("pkBytes", PacketBytesFilter);
 
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, long l)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
 {
-    simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(this, l);
+        fire(this, t, l);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, unsigned long l)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
-    simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(this, l);
+        fire(this, t, l);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, double d)
-{
-    simtime_t t = simulation.getSimTime();
-    if (t >= getEndWarmupPeriod())
-        fire(this, d);
-}
-
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t t, double d)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, double d)
 {
     if (t >= getEndWarmupPeriod())
         fire(this, t, d);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, const SimTime& v)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
-    simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(this, v);
+        fire(this, t, v);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, const char *s)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s)
 {
-    simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(this, s);
+        fire(this, t, s);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, cObject *obj)
+void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
-    simtime_t t = simulation.getSimTime();
     if (t >= getEndWarmupPeriod())
-        fire(this, obj);
+        fire(this, t, obj);
 }
 
 //---
@@ -144,10 +132,10 @@ Expression::Functor *ExpressionFilter::makeTimeVariable()
 
 //---
 
-void PacketBytesFilter::receiveSignal(ResultFilter *prev, cObject *object)
+void PacketBytesFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *object)
 {
     cPacket *pk = check_and_cast<cPacket *>(object);
-    fire(this, (double)pk->getByteLength());
+    fire(this, t, (double)pk->getByteLength());
 }
 
 

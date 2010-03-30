@@ -33,8 +33,7 @@ class ENVIR_API VectorRecorder : public NumericResultRecorder
         void *handle;        // identifies output vector for the output vector manager
         simtime_t lastTime;  // to ensure increasing timestamp order
     protected:
-        virtual void collect(double value) {collect(simulation.getSimTime(), value);}
-        virtual void collect(simtime_t t, double value);
+        virtual void collect(simtime_t_cref t, double value);
     public:
         VectorRecorder() {handle = NULL; lastTime = 0;}
         virtual void subscribedTo(ResultFilter *prev);
@@ -50,13 +49,12 @@ class ENVIR_API CountRecorder : public ResultRecorder
         long count;
     public:
         CountRecorder() {count = 0;}
-        virtual void receiveSignal(ResultFilter *prev, long l) {count++;}
-        virtual void receiveSignal(ResultFilter *prev, unsigned long l) {count++;}
-        virtual void receiveSignal(ResultFilter *prev, double d) {count++;}
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d) {count++;}
-        virtual void receiveSignal(ResultFilter *prev, const SimTime& t) {count++;}
-        virtual void receiveSignal(ResultFilter *prev, const char *s) {count++;}
-        virtual void receiveSignal(ResultFilter *prev, cObject *obj) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, long l) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, double d) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s) {count++;}
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj) {count++;}
         virtual void finish(ResultFilter *prev);
 };
 
@@ -68,8 +66,7 @@ class ENVIR_API LastValueRecorder : public NumericResultRecorder
     protected:
         double lastValue;
     protected:
-        virtual void collect(double value) {lastValue = value;}
-        virtual void collect(simtime_t t, double value) {lastValue = value;}
+        virtual void collect(simtime_t_cref t, double value) {lastValue = value;}
     public:
         LastValueRecorder() {lastValue = NaN;}
         virtual void finish(ResultFilter *prev);
@@ -83,8 +80,7 @@ class ENVIR_API SumRecorder : public NumericResultRecorder
     protected:
         double sum;
     protected:
-        virtual void collect(double value) {sum += value;}
-        virtual void collect(simtime_t t, double value) {sum += value;}
+        virtual void collect(simtime_t_cref t, double value) {sum += value;}
     public:
         SumRecorder() {sum = 0;}
         virtual void finish(ResultFilter *prev);
@@ -99,8 +95,7 @@ class ENVIR_API MeanRecorder : public NumericResultRecorder
         long count;
         double sum;
     protected:
-        virtual void collect(double value) {count++; sum += value;}
-        virtual void collect(simtime_t t, double value) {count++; sum += value;}
+        virtual void collect(simtime_t_cref t, double value) {count++; sum += value;}
     public:
         MeanRecorder() {count = 0; sum = 0;}
         virtual void finish(ResultFilter *prev);
@@ -114,8 +109,7 @@ class ENVIR_API MinRecorder : public NumericResultRecorder
     protected:
         double min;
     protected:
-        virtual void collect(double value) {if (value < min) min = value;}
-        virtual void collect(simtime_t t, double value) {if (value < min) min = value;}
+        virtual void collect(simtime_t_cref t, double value) {if (value < min) min = value;}
     public:
         MinRecorder() {min = POSITIVE_INFINITY;}
         virtual void finish(ResultFilter *prev);
@@ -129,8 +123,7 @@ class ENVIR_API MaxRecorder : public NumericResultRecorder
     protected:
         double max;
     protected:
-        virtual void collect(double value) {if (value > max) max = value;}
-        virtual void collect(simtime_t t, double value) {if (value > max) max = value;}
+        virtual void collect(simtime_t_cref t, double value) {if (value > max) max = value;}
     public:
         MaxRecorder() {max = NEGATIVE_INFINITY;}
         virtual void finish(ResultFilter *prev);
@@ -147,8 +140,7 @@ class ENVIR_API TimeAverageRecorder : public NumericResultRecorder
         double lastValue;
         double weightedSum;
     protected:
-        virtual void collect(double value)  {collect(simulation.getSimTime(), value);}
-        virtual void collect(simtime_t t, double value);
+        virtual void collect(simtime_t_cref t, double value);
     public:
         TimeAverageRecorder() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
         virtual void finish(ResultFilter *prev);
@@ -163,7 +155,7 @@ class ENVIR_API StatisticsRecorder : public NumericResultRecorder, private cObje
         cStatistic *statistic;
     protected:
         virtual void collect(double value) {statistic->collect(value);}
-        virtual void collect(simtime_t t, double value) {statistic->collect(value);}
+        virtual void collect(simtime_t_cref t, double value) {statistic->collect(value);}
     public:
         StatisticsRecorder(cStatistic *stat) {statistic = stat; take(statistic);}
         ~StatisticsRecorder() {drop(statistic); delete statistic;}
@@ -195,8 +187,7 @@ class ENVIR_API ExpressionRecorder : public NumericResultRecorder
         // current values, valid inside process() only
         double lastValue;
     protected:
-        virtual void collect(double value) {lastValue = value;}
-        virtual void collect(simtime_t t, double value) {lastValue = value;}
+        virtual void collect(simtime_t_cref t, double value) {lastValue = value;}
     public:
         ExpressionRecorder() {lastValue=NaN;}
         virtual std::string str() const {return expr.str()+" (ExpressionRecorder)";}

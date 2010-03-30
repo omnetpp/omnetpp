@@ -691,7 +691,13 @@ void cComponent::releaseLocalListeners()
         {
             SignalData& signalData = signalTable->front();
             simsignal_t signalID = signalData.signalID;
-            while (signalData.hasListener())
+
+            // unsubscribe listeners. Note: a "while (signalData.hasListener())"
+            // loop would not work, because the last unsubscribe deletes signalData
+            // as well. This "unsubscribe n times" method chosen here has problems if new
+            // listeners get subscribed inside the unsubscribed() hook though.
+            int n = signalData.countListeners();
+            for (int i = 0; i < n; i++)
                 unsubscribe(signalID, signalData.listeners[0]);
         }
         delete signalTable;

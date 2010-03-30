@@ -65,17 +65,14 @@ class ENVIR_API NumericResultRecorder : public ResultRecorder
 {
     protected:
         // all receiveSignal() methods either throw error or delegate here.
-        // advice: override one of them, and let the other delegate to it
-        virtual void collect(double value) = 0;
-        virtual void collect(simtime_t t, double value) = 0;
+        virtual void collect(simtime_t_cref t, double value) = 0;
     public:
-        virtual void receiveSignal(ResultFilter *prev, long l);
-        virtual void receiveSignal(ResultFilter *prev, unsigned long l);
-        virtual void receiveSignal(ResultFilter *prev, double d);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t t, double d);
-        virtual void receiveSignal(ResultFilter *prev, const SimTime& t);
-        virtual void receiveSignal(ResultFilter *prev, const char *s);
-        virtual void receiveSignal(ResultFilter *prev, cObject *obj);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, long l);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj);
 };
 
 /**
