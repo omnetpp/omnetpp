@@ -10,10 +10,8 @@ NoisyListener *listener = new NoisyListener();
 
 #define P  EV << (isSubscribed("dummy",listener)?"Y":"N") << "\n";
 
-// check that listener gets added to listener list only once
+// subscribe (2nd subscribe should cause exception)
 EV << "Subscribing:\n"; P
-subscribe("dummy", listener); P
-subscribe("dummy", listener); P
 subscribe("dummy", listener); P
 
 // check that if not subscribed, unsubscribe() does nothing
@@ -31,8 +29,6 @@ NOISYLISTENER CONSTRUCTOR
 Subscribing:
 N
 SUBSCRIBED at module "Test", signal "dummy" (id=2)
-Y
-Y
 Y
 Unsubscribing:
 Y
