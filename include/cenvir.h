@@ -105,6 +105,9 @@ class SIM_API cEnvir
     // Internal flag for express mode.
     bool disable_tracing;
 
+    // Indicates whether eventlog recording is currently enabled
+    bool record_eventlog;
+
     // Internal flag. When set to true, the simulation kernel MAY omit calling
     // the following cEnvir methods: messageScheduled(), messageCancelled(),
     // beginSend(), messageSendDirect(), messageSendHop(), messageSendHop(),
@@ -399,7 +402,7 @@ class SIM_API cEnvir
      *     EV << "Packet " << msg->getName() << " received";
      * </pre>
      */
-    bool isDisabled() const {return disable_tracing;}
+    bool isDisabled() const {return disable_tracing && !record_eventlog;}
 
     /**
      * Overloaded << operator to make cEnvir behave like an ostream.

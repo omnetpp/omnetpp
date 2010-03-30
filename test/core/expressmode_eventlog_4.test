@@ -1,0 +1,27 @@
+%description:
+test eventlog recording in express mode
+
+%activity:
+
+EV << "Before wait\n";
+
+wait(1);
+
+EV << "After wait\n";
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+record-eventlog = false
+cmdenv-express-mode = false
+
+%contains: stdout
+Running simulation...
+** Event #1  T=0   Test (Test, id=1)
+Before wait
+** Event #2  T=1   Test (Test, id=1)
+After wait
+
+<!> No more events -- simulation ended.
+
+%file-not-exists: results/General-0.elog

@@ -89,7 +89,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     opp_string opt_outputvectormanager_class;
     opp_string opt_outputscalarmanager_class;
     opp_string opt_snapshotmanager_class;
-    bool opt_record_eventlog;
     bool opt_debug_statistics_recording;
     bool opt_fname_append_host;
 

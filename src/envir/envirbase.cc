@@ -1357,8 +1357,8 @@ void EnvirBase::readPerRunOptions()
     opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
-    opt_record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
     opt_debug_statistics_recording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
+    record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 
     simulation.setWarmupPeriod(opt_warmupperiod);
 
@@ -1397,7 +1397,7 @@ void EnvirBase::readPerRunOptions()
         nextuniquenumber = (unsigned)parsimcomm->getProcId() * ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
 
-    if (opt_record_eventlog)
+    if (record_eventlog)
     {
         // open message log file. Note: in startRun() it would be too late,
         // because modules have already been created by then

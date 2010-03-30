@@ -549,10 +549,10 @@ void Cmdenv::putsmsg(const char *s)
 
 void Cmdenv::sputn(const char *s, int n)
 {
+    EnvirBase::sputn(s, n);
+
     if (disable_tracing)
         return;
-
-    EnvirBase::sputn(s, n);
 
     cModule *ctxmod = simulation.getContextModule();  //FIXME shouldn't this be "component" ?
     if (!ctxmod || (opt_modulemsgs && ctxmod->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
