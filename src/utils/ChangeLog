@@ -1,3 +1,8 @@
+2010-03-31  Levente Mészáros
+
+	* opp_test: added new entries called %file-exists and %file-not-exists
+	with a single file name parameter.
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2009-09-03  Andras Varga

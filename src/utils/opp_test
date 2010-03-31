@@ -454,7 +454,6 @@ sub testcase_generatesources
     # so that user can overwrite them if needed)
     foreach $key (keys(%values))
     {
-print $key;
         if ($key =~ /^file\([0-9]+\)/)
         {
             # write out file
