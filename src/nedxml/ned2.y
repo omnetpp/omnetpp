@@ -89,6 +89,9 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
+/* increase GLR stack -- with the default 200 some NED files have reportedly caused a "memory exhausted" error */
+#define YYINITDEPTH 500
+
 #define yylloc ned2yylloc
 #define yyin ned2yyin
 #define yyout ned2yyout

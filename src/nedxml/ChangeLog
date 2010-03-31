@@ -1,3 +1,8 @@
+2010-03-31  Andras Varga
+
+	* ned2.y: upped the GLR stack size from the default 200, as it was
+	too small for parsing NED files with complex expressions
+
 2010-03-25  Andras Varga
 
 	* nedxml: added isInnerType() to NEDTypeInfo class
