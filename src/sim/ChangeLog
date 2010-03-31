@@ -9,6 +9,8 @@
 	   the lower bound of a cell is inclusive, the upper limit is exclusive
 	   just as with doubles
 	 - default number of cells changed (30 in integer mode, 200 in dbl mode)
+	 - in result files, an integer histogram is now denoted with the line 
+	   "attr type int" instead of "attr isDiscrete 1".
 
 2010-03-14  ------ omnetpp-4.1b3 released ------
 

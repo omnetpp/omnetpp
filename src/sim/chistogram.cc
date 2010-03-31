@@ -234,7 +234,7 @@ void cHistogram::getAttributesToRecord(opp_string_map& attributes)
     cHistogramBase::getAttributesToRecord(attributes);
 
     if (mode == MODE_INTEGERS)
-        attributes["isDiscrete"] = "1";
+        attributes["type"] = "int";
 }
 
 void cHistogram::setupRange()

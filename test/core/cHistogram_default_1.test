@@ -24,7 +24,7 @@ field sum 23605
 field sqrsum 2876297
 field min 100
 field max 291
-attr isDiscrete  1
+attr type  int
 bin	-INF	0
 bin	48	0
 bin	50	0

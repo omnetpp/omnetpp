@@ -328,8 +328,8 @@ and a series of \textit{bin} lines that represent histogram data.
 \begin{itemize}
     \item \textbf{title}: suggested title on charts
     \item \textbf{unit}: measurement unit, e.g. \ttt{s} for seconds
-    \item \textbf{isDiscrete}: boolean (\ttt{0} or \ttt{1}), meaning whether
-          observations are integers
+    \item \textbf{type}: type of the collected values: \ttt{int} or \ttt{double}; 
+                         the default is \ttt{double}
 \end{itemize}
 
 A full example with fields, attributes and histogram bins:
@@ -343,20 +343,20 @@ field sum 95284
 field sqrsum 1034434
 field min 2
 field max 65
-attr isDiscrete  1
-attr unit  packets
+attr type int
+attr unit packets
 bin	-INF	0
-bin	-0.5	0
-bin	0.5	0
-bin	1.5	2254
-bin	2.5	2047
-bin	3.5	1586
-bin	4.5	1428
-bin	5.5	1101
-bin	6.5	952
-bin	7.5	785
+bin	0	0
+bin	1	0
+bin	2	2254
+bin	3	2047
+bin	4	1586
+bin	5	1428
+bin	6	1101
+bin	7	952
+bin	8	785
 ...
-bin	51.5	2
+bin	52	2
 \end{filelisting}
 
 
@@ -409,8 +409,8 @@ Histogram name and module is defined on the \textbf{statistic} line,
 which is followed by several \textbf{bin} lines to contain data. Any
 non{}-\textbf{bin} line marks the end of the histogram data.
 
-The \textit{binLowerBound }column of \textbf{bin} lines represent the
-lower bound of the given histogram cell. \textbf{Bin} lines are in
+The \textit{binLowerBound} column of \textbf{bin} lines represent the
+(inclusive) lower bound of the given histogram cell. \textbf{Bin} lines are in
 increasing \textit{binLowerBound} order.
 
 The \textit{value} column of a \textbf{bin} line represents the observation
