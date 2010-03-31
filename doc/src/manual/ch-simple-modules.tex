@@ -1800,7 +1800,7 @@ of a simulation run.
 The following example iterates through a gate vector, using IDs:
 
 \begin{cpp}
-int baseId = getBaseId("out");
+int baseId = gateBaseId("out");
 int size = gateSize("out");
 for (int i=0; i<size; i++) {
     cGate *gate = gate(baseId + i);
