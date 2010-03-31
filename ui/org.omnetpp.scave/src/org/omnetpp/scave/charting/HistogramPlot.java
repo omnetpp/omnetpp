@@ -245,40 +245,30 @@ class HistogramPlot {
 		for (int i = 0; i < seriesAndIndeces.length; i+=2) {
 			int series = seriesAndIndeces[i];
 			int index = seriesAndIndeces[i+1];
-			String key = dataset.getSeriesKey(series);
+            String key = dataset.getSeriesKey(series);
 			double lowerBound = dataset.getCellLowerBound(series, index);
 			double upperBound = dataset.getCellUpperBound(series, index);
 			double value = getCellValue(series, index);
-			double min,max;
-			String xNumberFormat;
-			if (dataset.isDiscrete(series)) {
-				// transform to integer bounds, both inclusive
-				min = Math.round(lowerBound + 0.5);
-				max = Math.round(upperBound - 0.5);
-				xNumberFormat = "%.0f";
-			}
-			else {
-				min = lowerBound;
-				max = upperBound;
-				xNumberFormat = "%.3g";
-			}
-			String yNumberFormat = valueTransform instanceof NullTransform ? "%.0f" : "%.3g";
-
-			if (Double.isInfinite(lowerBound))
-				result.append(String.format("%s [<="+xNumberFormat+"]="+yNumberFormat, key, max, value));
-			else if (Double.isInfinite(upperBound))
-				result.append(String.format("%s [>="+xNumberFormat+"]="+yNumberFormat, key, min, value));
-			else if (min == max)
-				result.append(String.format("%s ["+xNumberFormat+"]="+yNumberFormat, key, max, value));
-			else
-				result.append(String.format("%s [<"+xNumberFormat+","+xNumberFormat+"]="+yNumberFormat,
-													key, min, max, value));
+			boolean isIntegerType = dataset.isIntegerType(series);
+			result.append(key + "<br>");
+            result.append("[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ");
+            if (isIntegerType)
+                result.append(toIntegerAwareString(upperBound - 1, isIntegerType) + "]");
+            else
+                result.append(String.valueOf(upperBound) + ")");
+            result.append(" : " + toIntegerAwareString(value, true));
 			if (i != seriesAndIndeces.length - 1)
 				result.append("<br>");
 		}
-
 		return result.toString();
 	}
+
+    protected String toIntegerAwareString(double value, boolean isIntegerType) {
+        if (!isIntegerType || Double.isInfinite(value) || Double.isNaN(value) || Math.floor(value) != value)
+            return String.valueOf(value);
+        else
+            return String.valueOf((long)value);
+    }
 
 	private Integer[] findHistogramColumns(int x, int y) {
 		double xx = canvas.fromCanvasX(x);

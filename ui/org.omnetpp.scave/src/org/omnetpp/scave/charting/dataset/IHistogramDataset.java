@@ -29,7 +29,7 @@ public interface IHistogramDataset extends IDataset {
 	 * @param series index of the histogram
 	 * @return true if integers are collected
 	 */
-	boolean isDiscrete(int series);
+	boolean isIntegerType(int series);
 
 	/**
 	 * Returns the number of collected values.
@@ -108,7 +108,7 @@ public interface IHistogramDataset extends IDataset {
 			throw new IndexOutOfBoundsException();
 		}
 
-		public boolean isDiscrete(int series) {
+		public boolean isIntegerType(int series) {
 			throw new IndexOutOfBoundsException();
 		}
 
