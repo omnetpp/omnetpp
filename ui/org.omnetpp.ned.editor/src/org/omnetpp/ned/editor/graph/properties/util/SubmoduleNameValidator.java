@@ -23,17 +23,10 @@ public class SubmoduleNameValidator extends NedNameValidator {
 
     @Override
     public String isValid(Object newValue) {
-        if (compoundModuleModel.getNedTypeInfo().getMembers().containsKey(newValue) &&
-                !newValue.equals(originalName))
+        if (compoundModuleModel.getNedTypeInfo().getMembers().containsKey(newValue) && !newValue.equals(element.getName()))
             return "Name is already in use. Submodule name must not be the same as an existing" +
             		" submodule, gate, parameter or inner type name.";
 
-        String newText = (String)newValue;
-        int openIndex = newText.indexOf("[");
-        int closeIndex = newText.indexOf("]");
-        if (openIndex != -1 && closeIndex > openIndex)
-            return super.isValid(newText.substring(0, openIndex));
-        else
-            return super.isValid(newValue);
+        return super.isValid(newValue);
     }
 }

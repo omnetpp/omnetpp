@@ -10,7 +10,6 @@ package org.omnetpp.ned.editor.graph.properties.util;
 import java.util.Arrays;
 
 import org.eclipse.jface.viewers.ICellEditorValidator;
-
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
@@ -22,10 +21,10 @@ import org.omnetpp.ned.model.interfaces.IHasName;
  * @author rhornig
  */
 public class NedNameValidator implements ICellEditorValidator {
-    String originalName;
+    protected IHasName element;
 
     public NedNameValidator(IHasName element) {
-        originalName = element.getName();
+        this.element = element;
     }
 
     public String isValid(Object value) {

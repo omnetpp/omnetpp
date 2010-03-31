@@ -9,8 +9,8 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
@@ -31,7 +31,7 @@ public class RenameCommand extends Command {
         super();
         Assert.isNotNull(element);
         target = element;
-        oldName = target.getName();
+        oldName = NedElementUtilEx.getFullName(target);
         name = newName;
         setLabel("Rename "+oldName);
     }
@@ -48,12 +48,12 @@ public class RenameCommand extends Command {
 
     @Override
     public void redo() {
-        target.setName(name);
+        NedElementUtilEx.setFullName(target, name);
     }
 
     @Override
     public void undo() {
-        target.setName(oldName);
+        NedElementUtilEx.setFullName(target, oldName);
     }
 
 }

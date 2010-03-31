@@ -19,9 +19,10 @@ import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.figures.SubmoduleFigureEx;
-import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
+import org.omnetpp.ned.editor.graph.properties.util.SubmoduleFullNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 
@@ -36,7 +37,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     public void activate() {
         super.activate();
-        renameValidator = new SubmoduleNameValidator(getSubmoduleModel());
+        renameValidator = new SubmoduleFullNameValidator(getSubmoduleModel());
     }
 
     @Override
@@ -121,12 +122,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
     	SubmoduleElementEx submNode = getSubmoduleModel();
 
     	// set module name and vector size
-    	String nameToDisplay = submNode.getName();
-    	// add [size] if it's a module vector
-    	if (StringUtils.isNotEmpty(submNode.getVectorSize()))
-    		nameToDisplay += "["+submNode.getVectorSize()+"]";
     	SubmoduleFigure submoduleFigure = getSubmoduleFigure();
-        submoduleFigure.setName(nameToDisplay);
+        submoduleFigure.setName(NedElementUtilEx.getFullName(submNode));
         submoduleFigure.setAlpha(submNode.isDynamic() ? 64 : 255);
 
     	// parse a display string, so it's easier to get values from it.

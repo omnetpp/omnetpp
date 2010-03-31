@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
@@ -88,7 +88,7 @@ public class RenameDirectEditManager extends DirectEditManager {
 
         // set the initial content from the model
         if (sourcePart.getModel() instanceof IHasName)
-            getCellEditor().setValue(((IHasName)sourcePart.getModel()).getName());
+            getCellEditor().setValue(NedElementUtilEx.getFullName((IHasName)sourcePart.getModel()));
 
         // hide the underlying label text
         directEditable.showLabelUnderCellEditor(false);
