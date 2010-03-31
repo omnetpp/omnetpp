@@ -6,12 +6,13 @@
 //
 // Random variate generation
 //
-// Authors: Werner Sandmann (ws), Kay Michael Masslow (kmm)
+// Authors: Werner Sandmann (ws), Kay Michael Masslow (kmm), Kyeong Soo (Joseph) Kim (jk)
 // Documentation, maintenance: Andras Varga
 //
 // @date 11/26/2002 "doxygenification" (kmm)
 // @date 11/20/2002 some final comments (ws)
 // @date 10/22/2002 implemented various discrete distributions (kmm)
+// @date 10/22/2009 implemented various truncated distributions (jk)
 //
 //==========================================================================
 
@@ -380,6 +381,44 @@ SIM_API int negbinomial(int n, double p, int rng=0);
  * @param rng the underlying random number generator
  */
 SIM_API int poisson(double lambda, int rng=0);
+
+//----------------------------------------------------------------------------
+//  Contributions from Kyeong Soo (Joseph) Kim
+//----------------------------------------------------------------------------
+
+/**
+ * Truncated lognormal distribution at both ends.
+ * It is implemented with a loop that discards a value outside the range
+ * until it comes within a range. This means that the execution time
+ * is not bounded.
+ *
+ * The "scale" and "shape" parameters serve as parameters to the lognormal
+ * distribution <i>before</i> truncation.
+ *
+ * @param m  "scale" parameter, m>0
+ * @param w  "shape" parameter, w>0
+ * @param min left truncation point
+ * @param max right truncation point
+ * @param t   truncation mode, true->both (default), false->left only
+ * @param rng the underlying random number generator
+ */
+SIM_API double trunc_lognormal(double m, double w, double min, double max, bool t=true, int rng=0);
+
+/**
+ * Truncated Pareto distribution at both ends.
+ * It is implemented with a loop that discards a value outside the range
+ * until it comes within a range. This means that the execution time
+ * is not bounded.
+ *
+ * The following parameters (except for "max") serve as parameters
+ * to the Pareto distribution <i>before</i> truncation.
+ *
+ * @param k     scale parameter (> 0, minimum value)
+ * @param alpha shape parameter (> 0)
+ * @param m     right truncation point (maximum value)
+ * @param rng   the underlying random number generator
+ */
+SIM_API double trunc_pareto(double k, double alpha, double m, int rng=0);
 
 //@}
 
