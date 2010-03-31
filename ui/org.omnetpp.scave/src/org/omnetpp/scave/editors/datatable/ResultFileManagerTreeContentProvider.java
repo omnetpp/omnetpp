@@ -185,8 +185,10 @@ public class ResultFileManagerTreeContentProvider {
                             }
                             else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
                                 ResultItem resultItem = matchContext.getResultItem();
+                                ResultItem.Type type = resultItem.getType();
+                                boolean isIntegerType = type == ResultItem.Type.TYPE_INT;
                                 nodeIdsMap.put(new ResultItemAttributeNode("Module name", String.valueOf(resultItem.getModuleName())), id);
-                                nodeIdsMap.put(new ResultItemAttributeNode("Type", resultItem.getType().toString().replaceAll("TYPE_", "").toLowerCase()), id);
+                                nodeIdsMap.put(new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
                                 StringMap attributes = resultItem.getAttributes();
                                 StringVector keys = attributes.keys();
                                 for (int j = 0; j < keys.size(); j++) {
@@ -196,13 +198,13 @@ public class ResultFileManagerTreeContentProvider {
 
                                 if (resultItem instanceof ScalarResult) {
                                     ScalarResult scalar = (ScalarResult)resultItem;
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Value", String.valueOf(scalar.getValue())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);
                                 }
                                 else if (resultItem instanceof VectorResult) {
                                     VectorResult vector = (VectorResult)resultItem;
                                     nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(vector.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", String.valueOf(vector.getMin())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", String.valueOf(vector.getMax())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(vector.getMin(), isIntegerType)), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(vector.getMax(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(vector.getMean())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(vector.getStddev())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(vector.getVariance())), id);
@@ -214,8 +216,8 @@ public class ResultFileManagerTreeContentProvider {
                                 else if (resultItem instanceof HistogramResult) {
                                     HistogramResult histogram = (HistogramResult)resultItem;
                                     nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(histogram.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", String.valueOf(histogram.getMin())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", String.valueOf(histogram.getMax())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(histogram.getMin(), isIntegerType)), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(histogram.getMax(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(histogram.getMean())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(histogram.getStddev())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(histogram.getVariance())), id);
@@ -225,11 +227,15 @@ public class ResultFileManagerTreeContentProvider {
                                         ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(histogram.getBins().size()));
                                         List<Node> list = new ArrayList<Node>();
                                         for (int j = 0; j < bins.size(); j++) {
-                                            double bin1 = bins.get(j);
-                                            double bin2 = j < bins.size() - 1 ? bins.get(j + 1) : Double.POSITIVE_INFINITY;
+                                            double lowerBound = bins.get(j);
+                                            double upperBound = j < bins.size() - 1 ? bins.get(j + 1) : Double.POSITIVE_INFINITY;
                                             double value = values.get(j);
-                                            double valueFloor = Math.floor(value);
-                                            list.add(new NameValueNode(String.valueOf(bin1) + " .. " + String.valueOf(bin2), value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value)));
+                                            String name = "[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ";
+                                            if (isIntegerType)
+                                                name += toIntegerAwareString(upperBound - 1, isIntegerType) + "]";
+                                            else
+                                                name += String.valueOf(upperBound) + ")";
+                                            list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
                                         }
                                         binsNode.children = list.toArray(new Node[0]);
                                         nodeIdsMap.put(binsNode, id);
@@ -269,6 +275,13 @@ public class ResultFileManagerTreeContentProvider {
                 else
                     firstNode.children = nodes;
                 return nodes;
+            }
+
+            protected String toIntegerAwareString(double value, boolean isIntegerType) {
+                if (!isIntegerType || Double.isInfinite(value) || Double.isNaN(value) || Math.floor(value) != value)
+                    return String.valueOf(value);
+                else
+                    return String.valueOf((long)value);
             }
         });
 
