@@ -1,3 +1,12 @@
+2010-03-31 Rudolf Hornig
+
+	* handleParameterChange(NULL) is called for each component with NULL 
+	as the parameterName after the last stage of the initialization phase.
+	This allows the components to refresh their cached parameter values
+	if some parameters were changed during the initilaization phase.
+	This is necessary, because handleParameterChange() is not called during
+	the component's initialization pahse.
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2010-03-10  Andras Varga

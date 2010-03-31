@@ -287,10 +287,11 @@ void cPar::beforeChange()
 
 void cPar::afterChange()
 {
-    // call owner's component's handleParameterChange() method
-    if (simulation.getContextType()==CTX_EVENT) // don't call during build, initialize or finish
+    ASSERT(ownercomponent);
+    // call owner's component's handleParameterChange() method,
+    // i.e. parameter change notification is allowed only on fully initialized components
+    if (ownercomponent->initialized())
     {
-        ASSERT(ownercomponent);
         cContextSwitcher tmp(ownercomponent);
         ownercomponent->handleParameterChange(getFullName());
     }

@@ -200,16 +200,14 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Redefining this method allows simple modules and channels to be react on
      * parameter changes, for example by re-reading the value.
      * This default implementation does nothing.
+     * 
+     * The parameter name can be NULL if more than one parameter has changed.
      *
-     * To make it easier to write predictable simple modules, the function does
-     * NOT get called during initialize() or finish(). If you need
-     * notifications within those two functions as well, add the following
-     * code into your initialize() and/or finish() methods:
-     *
-     * <pre>
-     * for (int i=0; i<getNumParams(); i++)
-     *     handleParameterChange(par(i).getName());
-     * </pre>
+     * To make it easier to write predictable components, the function does
+     * NOT get called on uninitialized components (i.e. when initialized() returns
+     * false). For each component the function is called (with NULL as a parname) 
+     * after the last stage of the initialization so the module gets a chance to 
+     * update its cached parameters.
      *
      * Also, one must be extremely careful when changing parameters from inside
      * handleParameterChange(), to avoid creating an infinite notification loop.

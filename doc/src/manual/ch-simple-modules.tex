@@ -1620,18 +1620,22 @@ parameter, and update the module's state if needed.
 To enable notification, redefine the \ffunc{handleParameterChange()} method
 of the module class. This method will be called back by the
 simulation kernel when a module parameter changes, \textit{except during
-initialization and finalization}.
+initialization of the given module}.
 
 \begin{note}
-  Notifications are disabled during initialization and finalization,
-  because they would make it very difficult to write modules
+  Notifications are disabled during the initialization of the component,
+  because they would make it very difficult to write components
   that work reliably under all conditions.
   \ffunc{handleParameterChange()} is usually triggered from another
   module (it does not make much sense for a module to change
   its own parameters), so the relative order of
-  \ffunc{initialize()} / \ffunc{finish()} and \ffunc{handleParameterChange()}
+  \ffunc{initialize()} and \ffunc{handleParameterChange()}
   would be effectively determined by the initialization order
-  of modules, which generally cannot be relied upon.
+  of modules, which generally cannot be relied upon. After the last
+  stage of the initialization of the component is finished,
+  \ffunc{handleParameterChange()} is called by the simulation kernel
+  with \ttt{NULL} as a parameter name. This allows the component
+  to react to parameter changes occurred during the initialzaion phase.
 \end{note}
 
 The method signature is the following:

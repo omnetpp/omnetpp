@@ -1,0 +1,87 @@
+%description:
+Test that parameters of a channel can be changed from an other module's 
+initialize function (meaning that handleParameterChange is correctly called 
+in this case and the cached parameter values are refreshed correctly
+in the channel object)
+
+%file: test.ned
+
+channel MyConn extends ned.DatarateChannel
+{
+    parameters:
+        delay = 1s;
+        datarate = 5000bps;
+}
+
+simple Node1
+{
+    gates:
+        output out;
+}
+
+simple Node2
+{
+    gates:
+        input in;
+}
+
+network Test
+{
+    submodules:
+        node1: Node1;
+        node2: Node2;
+    connections:
+        node1.out --> MyConn --> node2.in;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Node1 : public cSimpleModule
+{
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Node1);
+
+void Node1::initialize()
+{
+    cDatarateChannel *chan = check_and_cast<cDatarateChannel *>(gate("out")->getChannel());
+    chan->setDatarate(1000);
+    cPacket *pkt = new cPacket();
+    pkt->setBitLength(100); // so transmission time = 0.1s
+    send(pkt, "out");
+}
+
+void Node1::handleMessage(cMessage *msg)
+{
+    ASSERT(false);
+}
+
+class Node2 : public cSimpleModule
+{
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Node2);
+
+void Node2::handleMessage(cMessage *msg)
+{
+    ev << "msg arrived at T=" << simTime();
+    delete msg;
+}
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%contains: stdout
+msg arrived at T=1.1

@@ -39,12 +39,6 @@ cDelayChannel *cDelayChannel::create(const char *name)
     return dynamic_cast<cDelayChannel *>(cChannelType::getDelayChannelType()->create(name));
 }
 
-void cDelayChannel::finalizeParameters()
-{
-    cChannel::finalizeParameters();
-    rereadPars();
-}
-
 void cDelayChannel::rereadPars()
 {
     delay = par("delay");

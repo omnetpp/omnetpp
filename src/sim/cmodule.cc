@@ -1249,7 +1249,6 @@ bool cModule::initializeModules(int stage)
         } catch (std::exception& e) {
             throw cRuntimeError("%s during initialize(): %s", opp_typename(typeid(e)), e.what());
         }
-        setFlag(FL_INITIALIZED, true);
     }
 
     // then recursively initialize submodules
@@ -1257,6 +1256,15 @@ bool cModule::initializeModules(int stage)
     for (SubmoduleIterator submod(this); !submod.end(); submod++)
         if (submod()->initializeModules(stage))
             moreStages = true;
+
+    // as a last step call handleParameterChnage so the component will be notified about
+    // parameter changes occured during initialization phase
+    if (!moreStages) {
+        // a module is initilized if all init stages have completed (both his own and
+        // all its submodules)
+        setFlag(FL_INITIALIZED, true);
+        handleParameterChange(NULL);
+    }
 
     return moreStages;
 }

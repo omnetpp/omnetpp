@@ -59,12 +59,6 @@ std::string cDatarateChannel::info() const
     return cChannel::info();
 }
 
-void cDatarateChannel::finalizeParameters()
-{
-    cChannel::finalizeParameters();
-    rereadPars();
-}
-
 void cDatarateChannel::rereadPars()
 {
     delay = par("delay");

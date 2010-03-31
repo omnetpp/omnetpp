@@ -119,13 +119,6 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     virtual bool isDisabled() const  {checkState(); return flags & FL_ISDISABLED;}
     //@}
 
-    /** @name Internally used methods. */
-    //@{
-    /**
-     * Called when parameters get set up. Redefined from cComponent.
-     */
-    virtual void finalizeParameters();
-
     /**
      * This implementation delivers the message to the opposite gate
      * with a delay.

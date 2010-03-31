@@ -188,13 +188,6 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
 
     //@}
 
-    /** @name Internally used methods. */
-    //@{
-    /**
-     * Called when parameters get set up. Redefined from cComponent.
-     */
-    virtual void finalizeParameters();
-
     /**
      * Performs bit error rate, delay and transmission time modelling.
      */

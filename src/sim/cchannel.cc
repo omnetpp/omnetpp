@@ -129,10 +129,15 @@ bool cChannel::initializeChannel(int stage)
         } catch (std::exception& e) {
             throw cRuntimeError("%s during initialize(): %s", opp_typename(typeid(e)), e.what());
         }
-        setFlag(FL_INITIALIZED, true);
     }
 
     bool moreStages = stage < numStages-1;
+    // as a last step call handleParameterChnage so the component will be notified about
+    // parameter changes occured during initialization phase
+    if (!moreStages) {
+        setFlag(FL_INITIALIZED, true);
+        handleParameterChange(NULL);
+    }
     return moreStages;
 }
 
