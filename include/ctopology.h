@@ -12,6 +12,7 @@
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
   Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 2008 Giorgos Nomikos & Ntinos Katsaros
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -85,6 +86,13 @@ class SIM_API cTopology : public cOwnedObject
         bool known;
         double dist;
         Link *out_path;
+
+        /*
+         * Variable hops_var is used to count the number of hops in the case
+         * of the weightedSingleShortestPath algorithm since the dist
+         * variable holds the weighted distance.
+         */
+         double num_hops;
 
       public:
         /** @name Node attributes: weight, enabled state, correspondence to modules. */
@@ -175,6 +183,16 @@ class SIM_API cTopology : public cOwnedObject
          * length.)
          */
         LinkOut *getPath(int) const  {return (LinkOut *)out_path;}
+
+        /**
+         * Returns the number of hops of this node to the target node.
+         */
+        double numHopsToTarget() {return num_hops;}
+
+        /**
+         * Sets the number of hops of this node to the target node.
+         */
+        void setNumHops(double numhops) { num_hops = numhops;}
         //@}
     };
 
@@ -503,6 +521,14 @@ class SIM_API cTopology : public cOwnedObject
      * graph node. The paths found can be extracted via Node's methods.
      */
     void calculateUnweightedSingleShortestPathsTo(Node *target);
+
+    /**
+     * Finds the shortest weighted paths to the given graph node.
+     * The paths found can be extracted via Node's methods.
+     * Weight can be specified as a parameter (called "weight")
+     * of the used channel's.
+     */
+    void calculateWeightedSingleShortestPathsTo(Node *target);
 
     /**
      * Returns the node that was passed to the most recently called

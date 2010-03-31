@@ -1,5 +1,9 @@
 2010-03-31 Rudolf Hornig
 
+	* calculateWeightedSingleShortestPathsTo() added the cTopology() class.
+	The link weights can be specified as the "weight" parameter on the channel
+	object.
+
 	* handleParameterChange(NULL) is called for each component with NULL 
 	as the parameterName after the last stage of the initialization phase.
 	This allows the components to refresh their cached parameter values
