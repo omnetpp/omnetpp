@@ -223,7 +223,9 @@ void EventlogFileManager::startRun()
     if (isEventLogRecordingEnabled)
     {
         const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
-        EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, simulation.getEventNumber(), simulation.getSimTime(), simulation.getSystemModule()->getId(), -1);
+        // TODO: we can't use simulation.getEventNumber() and simulation.getSimTime(), because when we start a new run
+        // these numbers are still set from the previous run (i.e. not zero)
+        EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, 0, 0, simulation.getSystemModule()->getId(), -1);
         EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
         fflush(feventlog);
     }
