@@ -119,7 +119,6 @@ proc create_omnetpp_window {} {
     # File menu
     foreach i {
       {command -command new_run -label {Set up a configuration...} -underline 7}
-      {command -command new_network -label {Set up a network...} -underline 7}
       {separator}
       {command -command load_nedfile -label {Load NED file...} -underline 0}
       {separator}
@@ -247,7 +246,6 @@ proc create_omnetpp_window {} {
     foreach i {
       {sep00    -separator}
       {newrun   -image $icons(newrun)  -command {new_run}}
-      {newnet   -image $icons(newnet)  -command {new_network}}
       {loadned  -image $icons(loadned) -command {load_nedfile}}
       {sep5     -separator}
       {copy     -image $icons(copy)    -command {edit_copy}}

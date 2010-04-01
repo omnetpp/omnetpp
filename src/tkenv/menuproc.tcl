@@ -187,6 +187,7 @@ proc load_nedfile {} {
    }
 }
 
+# TODO: FIXME: this function turns out to be not so useful in the 4.0 version, delete?
 proc new_network {} {
     # implements File|New network...
 
