@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include "opp_ctype.h"
 #include "commonutil.h"  //vsnprintf
 #include "eventlogfilemgr.h"
@@ -57,6 +58,13 @@ Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mes
 Register_PerRunConfigOption(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Simulation time interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, 233.3..");
 Register_PerObjectConfigOption(CFGID_MODULE_EVENTLOG_RECORDING, "module-eventlog-recording", CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.module-eventlog-recording = true\n **.module-eventlog-recording = false");
 
+static va_list empty_va;
+
+static bool compareMessageEventNumbers(cMessage *message1, cMessage *message2)
+{
+	return message1->getPreviousEventNumber() < message2->getPreviousEventNumber();
+}
+
 static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level) {
     const char* propertyValue = descriptor->getFieldProperty(object, fieldIndex, "eventlog");
 
@@ -98,7 +106,7 @@ EventlogFileManager::~EventlogFileManager()
     delete recordingIntervals;
 }
 
-void EventlogFileManager::setup()
+void EventlogFileManager::configure()
 {
     // setup event log object printer
     delete objectPrinter;
@@ -117,10 +125,14 @@ void EventlogFileManager::setup()
         recordingIntervals->parse(text);
     }
 
-    // setup file
+    // setup filename
     filename = ev.getConfig()->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
     dynamic_cast<EnvirBase *>(&ev)->processFileName(filename);
     ::printf("Recording event log to file `%s'...\n", filename.c_str());
+}
+
+void EventlogFileManager::open()
+{
     mkPath(directoryOf(filename.c_str()).c_str());
     FILE *out = fopen(filename.c_str(), "w");
     if (!out)
@@ -128,12 +140,90 @@ void EventlogFileManager::setup()
     feventlog = out;
 }
 
+void EventlogFileManager::recordSimulation()
+{
+	cModule *systemModule = simulation.getSystemModule();
+	recordModules(systemModule);
+	recordConnections(systemModule);
+    recordMessages();
+}
+
+void EventlogFileManager::recordMessages()
+{
+    const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
+    EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
+    std::vector<cMessage *> messages;
+	for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++)
+		messages.push_back(it());
+	std::stable_sort(messages.begin(), messages.end(), compareMessageEventNumbers);
+	eventnumber_t currentEvent = -1;
+	for (std::vector<cMessage *>::iterator it = messages.begin(); it != messages.end(); it++) {
+		cMessage *message = *it;
+		if (currentEvent != message->getPreviousEventNumber()) {
+			currentEvent = message->getPreviousEventNumber();
+			EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, currentEvent, message->getSendingTime(), currentEvent == 0 ? simulation.getSystemModule()->getId() : message->getSenderModuleId(), -1);
+		}
+		if (currentEvent == 0)
+			componentMethodBegin(simulation.getSystemModule(), message->getSenderModule(), "initialize", empty_va);
+		if (message->isSelfMessage())
+			messageScheduled(message);
+		else if (!message->getSenderGate()) {
+			beginSend(message);
+			if (message->isPacket()) {
+				cPacket *packet = (cPacket *)message;
+				simtime_t propagationDelay = packet->getArrivalTime() - packet->getSendingTime() - (packet->isReceptionStart() ? 0 : packet->getDuration());
+				messageSendDirect(message, message->getArrivalGate(), propagationDelay, packet->getDuration());
+			}
+			else
+				messageSendDirect(message, message->getArrivalGate(), 0, 0);
+			endSend(message);
+		}
+		else {
+			beginSend(message);
+			messageSendHop(message, message->getSenderGate());
+			endSend(message);
+		}
+		if (currentEvent == 0)
+			componentMethodEnd();
+	}
+}
+
+void EventlogFileManager::recordModules(cModule *module)
+{
+    for (cModule::GateIterator it(module); !it.end(); it++) {
+    	cGate *gate = it();
+    	gateCreated(gate);
+    }
+	moduleCreated(module);
+	// FIXME: records display string twice if it is lazily created right now
+	if (strcmp(module->getDisplayString().str(), "")) {
+		displayStringChanged(module);
+	}
+    for (cModule::SubmoduleIterator it(module); !it.end(); it++)
+    	recordModules(it());
+}
+
+void EventlogFileManager::recordConnections(cModule *module)
+{
+    for (cModule::GateIterator it(module); !it.end(); it++) {
+    	cGate *gate = it();
+    	if (gate->getNextGate())
+    		connectionCreated(gate);
+    	cChannel *channel = gate->getChannel();
+    	if (channel && strcmp(channel->getDisplayString(), "")) {
+    		displayStringChanged(channel);
+    	}
+    }
+    for (cModule::SubmoduleIterator it(module); !it.end(); it++)
+    	recordConnections(it());
+}
+
 void EventlogFileManager::startRun()
 {
     if (isEventLogRecordingEnabled)
     {
         const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
-        EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, 0, 0, simulation.getSystemModule()->getId(), -1);
+        EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, simulation.getEventNumber(), simulation.getSimTime(), simulation.getSystemModule()->getId(), -1);
         EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
         fflush(feventlog);
     }

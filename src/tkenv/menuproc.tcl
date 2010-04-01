@@ -220,6 +220,8 @@ proc new_network {} {
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
+           reflect_record_eventlog
+
            busy "Opening graphical network inspector..."
            opp_inspect [opp_object_systemmodule] (default)
            busy
@@ -249,6 +251,8 @@ proc new_run {} {
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
+           reflect_record_eventlog
+
            busy "Opening graphical network inspector..."
            opp_inspect [opp_object_systemmodule] (default)
            busy
@@ -313,6 +317,25 @@ proc toggle_timeline {} {
        pack $widgets(timeline) -before .main -anchor center -expand 0 -fill x -side top
        .toolbar.tline config -relief sunken
        redraw_timeline
+   }
+}
+
+proc toggle_record_eventlog {} {
+   if {[opp_getsimoption record_eventlog]==1} {
+       opp_setsimoption record_eventlog 0
+   } else {
+       opp_setsimoption record_eventlog 1
+   }
+   reflect_record_eventlog
+}
+
+proc reflect_record_eventlog {} {
+   global config widgets
+
+   if {[opp_getsimoption record_eventlog]==1} {
+       .toolbar.eventlog config -relief sunken
+   } else {
+       .toolbar.eventlog config -relief raised
    }
 }
 

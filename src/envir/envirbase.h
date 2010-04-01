@@ -111,7 +111,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     cRNG **rngs;
 
     // Output file managers
-    EventlogFileManager *eventlogmgr;  // NULL if no event log is being written
+    EventlogFileManager *eventlogmgr;  // NULL if no event log is being written, must be non NULL if record_eventlog is true
     cOutputVectorManager *outvectormgr;
     cOutputScalarManager *outscalarmgr;
     cSnapshotManager *snapshotmgr;
@@ -145,6 +145,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     //@{
     // life cycle
     virtual int run(int argc, char *argv[], cConfiguration *config);
+
+    virtual void setEventlogRecording(bool enabled);
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object);

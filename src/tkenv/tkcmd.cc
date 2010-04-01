@@ -1130,6 +1130,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_expressmode_autoupdate);
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
       sprintf(buf,"%d", app->opt_stoponmsgcancel);
+   else if (0==strcmp(argv[1], "record_eventlog"))
+      sprintf(buf,"%d", app->record_eventlog);
    else
       return TCL_ERROR;
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1190,6 +1192,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_expressmode_autoupdate = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
       app->opt_stoponmsgcancel = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "record_eventlog"))
+      app->setEventlogRecording(argv[2][0]!='0');
    else
       return TCL_ERROR;
    return TCL_OK;
