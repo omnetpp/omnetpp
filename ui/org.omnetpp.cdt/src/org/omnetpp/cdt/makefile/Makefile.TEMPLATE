@@ -121,16 +121,19 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@mkdir -p $O
-{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
+{gcclongline:}{exe:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) && $(CXX) $(LDFLAGS) {-out}$O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
+{~gcclongline:}{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
 {sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
-{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
+{gcclongline:}{sharedlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) && $(SHLIB_LD) {-out}$O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
+{~gcclongline:}{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
 {sharedlib:}{~nmake:}	-$(CHCON) -t textrel_shlib_t $O/$(TARGET) || echo "You can probably safely ignore the above message."
 {staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O
-{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) {nmake_inlineend}
+{gcclongline:}{staticlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) $O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
+{~gcclongline:}{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) {nmake_inlineend}
 {nolink:}all: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 

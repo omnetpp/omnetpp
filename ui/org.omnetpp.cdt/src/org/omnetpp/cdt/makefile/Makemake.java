@@ -390,6 +390,7 @@ public class Makemake {
         m.put("backslashedsourcedirs", backslashedSourceDirs);
         m.put("nmake_inlinefile", (isNMake && isLongLinkerLine) ? "@<<\n" : "");
         m.put("nmake_inlineend", (isNMake && isLongLinkerLine) ? "\n<<" : "");
+        m.put("gcclongline", !isNMake && isLongLinkerLine);
 
         // now generate the makefile
         Debug.println("generating makefile for " + folder.toString());
