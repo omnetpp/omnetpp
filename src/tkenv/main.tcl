@@ -267,7 +267,7 @@ proc create_omnetpp_window {} {
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggle_timeline}}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
-      {eventlog -image $icons(tree)    -command {toggle_record_eventlog}}
+      {eventlog -image $icons(recordeventlog) -command {toggle_record_eventlog}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulation_options}}
     } {
