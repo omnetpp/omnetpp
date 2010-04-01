@@ -39,9 +39,29 @@ cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
     rest = str;
 }
 
+cStringTokenizer::cStringTokenizer(const cStringTokenizer& other)
+{
+    str = NULL;
+    operator=(other);
+}
+
 cStringTokenizer::~cStringTokenizer()
 {
     delete [] str;
+}
+
+cStringTokenizer& cStringTokenizer::operator=(const cStringTokenizer& other)
+{
+    if (this == &other)
+        return *this;
+
+    delimiter = other.delimiter;
+    delete [] str;
+    size_t len = (other.rest - other.str) + strlen(other.rest);
+    str = new char[len+1];
+    memcpy(str, other.str, len+1);
+    rest = str + (other.rest - other.str);
+    return *this;
 }
 
 void cStringTokenizer::setDelimiter(const char *delim)

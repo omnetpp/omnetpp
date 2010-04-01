@@ -1,3 +1,7 @@
+2010-04-01  Andras Varga
+
+	* cStringTokenizer: added copy constructor and assignment operator
+
 2010-03-31 Rudolf Hornig
 
 	* calculateWeightedSingleShortestPathsTo() added the cTopology() class.
@@ -7,9 +11,9 @@
 	* handleParameterChange(NULL) is called for each component with NULL 
 	as the parameterName after the last stage of the initialization phase.
 	This allows the components to refresh their cached parameter values
-	if some parameters were changed during the initilaization phase.
-	This is necessary, because handleParameterChange() is not called during
-	the component's initialization pahse.
+	if some parameters were changed during the initialization phase.
+	This is necessary because handleParameterChange() is not called during
+	the component's initialization phase.
 
 2010-03-14  ------ omnetpp-4.1b3 released ------
 

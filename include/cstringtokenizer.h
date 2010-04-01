@@ -72,9 +72,21 @@ class SIM_API cStringTokenizer
     cStringTokenizer(const char *str, const char *delimiters=NULL);
 
     /**
+     * Copy constructor. It copies the current state of the tokenizer
+     * (i.e. does not re-position it to the first token.)
+     */
+    cStringTokenizer(const cStringTokenizer& other);
+
+    /**
      * Destructor.
      */
     ~cStringTokenizer();
+
+    /**
+     * Assignment operator. It copies the current state of the tokenizer
+     * (i.e. does not re-position it to the first token.)
+     */
+    cStringTokenizer& operator=(const cStringTokenizer& other);
 
     /**
      * Change delimiters. This allows for switching delimiters during

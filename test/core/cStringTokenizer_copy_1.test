@@ -1,0 +1,38 @@
+%description:
+test assignment operator and copy constructor
+
+%activity:
+
+const char *str = "one two three four five six  ";
+
+cStringTokenizer t(str);
+ev << t.nextToken() << "\n";
+ev << t.nextToken() << "\n";
+ev << t.nextToken() << "\n";
+
+cStringTokenizer t2(t);
+
+ev << "\n";
+while (t.hasMoreTokens())
+    ev << t.nextToken() << "\n";
+
+ev << "\n";
+while (t2.hasMoreTokens())
+    ev << t2.nextToken() << "\n";
+
+ev << ".";
+
+%contains: stdout
+one
+two
+three
+
+four
+five
+six
+
+four
+five
+six
+.
+
