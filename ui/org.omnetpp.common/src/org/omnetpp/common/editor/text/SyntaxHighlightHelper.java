@@ -143,6 +143,19 @@ public class SyntaxHighlightHelper {
     }
 
     /**
+     * Detects image names in display strings.
+     */
+    public static class NedDisplayStringImageNameDetector implements IWordDetector {
+        public boolean isWordStart(char character) {
+            return Character.isLetter(character);
+        }
+
+        public boolean isWordPart(char character) {
+            return Character.isLetterOrDigit(character) || character == '/';
+        }
+    }
+
+    /**
      * Detects tags in a property.
      */
     public static class NedPropertyTagDetector implements IWordDetector {

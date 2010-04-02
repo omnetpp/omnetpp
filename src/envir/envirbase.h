@@ -89,7 +89,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     opp_string opt_outputvectormanager_class;
     opp_string opt_outputscalarmanager_class;
     opp_string opt_snapshotmanager_class;
-    bool opt_record_eventlog;
     bool opt_debug_statistics_recording;
     bool opt_fname_append_host;
 
@@ -112,7 +111,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     cRNG **rngs;
 
     // Output file managers
-    EventlogFileManager *eventlogmgr;  // NULL if no event log is being written
+    EventlogFileManager *eventlogmgr;  // NULL if no event log is being written, must be non NULL if record_eventlog is true
     cOutputVectorManager *outvectormgr;
     cOutputScalarManager *outscalarmgr;
     cSnapshotManager *snapshotmgr;
@@ -146,6 +145,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     //@{
     // life cycle
     virtual int run(int argc, char *argv[], cConfiguration *config);
+
+    virtual void setEventlogRecording(bool enabled);
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object);

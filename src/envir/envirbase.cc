@@ -193,6 +193,7 @@ EnvirBase::EnvirBase()
     cfg = NULL;
     xmlcache = NULL;
 
+    record_eventlog = false;
     eventlogmgr = NULL;
     outvectormgr = NULL;
     outscalarmgr = NULL;
@@ -762,7 +763,7 @@ void EnvirBase::startRun()
     outvectormgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->startRun();
     if (opt_parsim)
     {
@@ -784,10 +785,11 @@ void EnvirBase::endRun()
         parsimpartition->endRun();
 #endif
     }
-    if (eventlogmgr) {
+    if (record_eventlog) {
         eventlogmgr->endRun();
         delete eventlogmgr;
         eventlogmgr = NULL;
+        record_eventlog = false;
     }
     snapshotmgr->endRun();
     outscalarmgr->endRun();
@@ -1136,131 +1138,132 @@ cConfigurationEx *EnvirBase::getConfigEx()
 
 void EnvirBase::bubble(cComponent *component, const char *text)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->bubble(component, text);
 }
 
 void EnvirBase::objectDeleted(cObject *object)
 {
+	// TODO?
 }
 
 void EnvirBase::simulationEvent(cMessage *msg)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->simulationEvent(msg);
 }
 
 void EnvirBase::beginSend(cMessage *msg)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->beginSend(msg);
 }
 
 void EnvirBase::messageScheduled(cMessage *msg)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->messageScheduled(msg);
 }
 
 void EnvirBase::messageCancelled(cMessage *msg)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->messageCancelled(msg);
 }
 
 void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->messageSendHop(msg, srcGate);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void EnvirBase::endSend(cMessage *msg)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->endSend(msg);
 }
 
 void EnvirBase::messageDeleted(cMessage *msg)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->messageDeleted(msg);
 }
 
 void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->componentMethodBegin(from, to, methodFmt, va);
 }
 
 void EnvirBase::componentMethodEnd()
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->componentMethodEnd();
 }
 
 void EnvirBase::moduleCreated(cModule *newmodule)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->moduleCreated(newmodule);
 }
 
 void EnvirBase::moduleDeleted(cModule *module)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->moduleDeleted(module);
 }
 
 void EnvirBase::moduleReparented(cModule *module, cModule *oldparent)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->moduleReparented(module, oldparent);
 }
 
 void EnvirBase::gateCreated(cGate *newgate)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->gateCreated(newgate);
 }
 
 void EnvirBase::gateDeleted(cGate *gate)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->gateDeleted(gate);
 }
 
 void EnvirBase::connectionCreated(cGate *srcgate)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->connectionCreated(srcgate);
 }
 
 void EnvirBase::connectionDeleted(cGate *srcgate)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->connectionDeleted(srcgate);
 }
 
 void EnvirBase::displayStringChanged(cComponent *component)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->displayStringChanged(component);
 }
 
 void EnvirBase::sputn(const char *s, int n)
 {
-    if (eventlogmgr)
+    if (record_eventlog)
         eventlogmgr->sputn(s, n);
 }
 
@@ -1357,7 +1360,6 @@ void EnvirBase::readPerRunOptions()
     opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
-    opt_record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
     opt_debug_statistics_recording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
 
     simulation.setWarmupPeriod(opt_warmupperiod);
@@ -1397,13 +1399,26 @@ void EnvirBase::readPerRunOptions()
         nextuniquenumber = (unsigned)parsimcomm->getProcId() * ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
 
-    if (opt_record_eventlog)
-    {
-        // open message log file. Note: in startRun() it would be too late,
-        // because modules have already been created by then
+    // open message log file. Note: in startRun() it would be too late,
+    // because modules have already been created by then
+    record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
+    if (record_eventlog) {
         eventlogmgr = new EventlogFileManager();
-        eventlogmgr->setup();
+        eventlogmgr->configure();
+        eventlogmgr->open();
     }
+}
+
+void EnvirBase::setEventlogRecording(bool enabled)
+{
+	// NOTE: eventlogmgr must be non NULL when record_eventlog is true
+	if (enabled && !eventlogmgr) {
+        eventlogmgr = new EventlogFileManager();
+        eventlogmgr->configure();
+        eventlogmgr->open();
+        eventlogmgr->recordSimulation();
+	}
+	cRunnableEnvir::setEventlogRecording(enabled);
 }
 
 //-------------------------------------------------------------

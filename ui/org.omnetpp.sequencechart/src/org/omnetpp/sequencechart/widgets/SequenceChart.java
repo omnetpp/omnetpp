@@ -1068,6 +1068,25 @@ public class SequenceChart
         });
 	}
 
+    /**
+     * Sets zoom level so that the default number of events fit into the viewport.
+     */
+    public void zoomToFit() {
+        eventLogInput.runWithProgressMonitor(new Runnable() {
+            public void run() {
+                int padding = 20;
+                double firstTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getFirstEvent());
+                double lastTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getLastEvent());
+                double timelineCoordinateDelta = lastTimelineCoordinate - firstTimelineCoordinate;
+                if (timelineCoordinateDelta == 0)
+                    setPixelPerTimelineUnit(1);
+                else
+                    setPixelPerTimelineUnit((getViewportWidth() - padding * 2) / timelineCoordinateDelta);
+                scrollToBegin();
+            }
+        });
+    }
+
 	/**
 	 * Increases pixels per timeline coordinate.
 	 */
@@ -4056,6 +4075,14 @@ public class SequenceChart
 				if (event != null)
 					res += "t = " + getSimulationTimeForViewportCoordinate(x) + ", just after event #" + event.getEventNumber();
 			}
+
+			int i = axisModules.indexOf(axisModule);
+            if (i != -1 && getAxisRenderers()[i] instanceof AxisVectorBarRenderer) {
+                AxisVectorBarRenderer renderer = (AxisVectorBarRenderer)getAxisRenderers()[i];
+                renderer.getVectorFileName();
+                renderer.getVectorRunName();
+                res += "<br/>attaching <b>" + renderer.getVectorModuleFullPath() + ":" + renderer.getVectorName() + "</b>";
+            }
 
 			return res;
 		}

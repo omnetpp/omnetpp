@@ -119,7 +119,6 @@ proc create_omnetpp_window {} {
     # File menu
     foreach i {
       {command -command new_run -label {Set up a configuration...} -underline 7}
-      {command -command new_network -label {Set up a network...} -underline 7}
       {separator}
       {command -command load_nedfile -label {Load NED file...} -underline 0}
       {separator}
@@ -221,6 +220,7 @@ proc create_omnetpp_window {} {
       {command -command simulation_options -label {Simulation options...} -underline 0}
       {command -command toggle_timeline -label {Show/hide timeline} -underline 10}
       {command -command toggle_treeview -label {Show/hide object tree} -underline 1}
+      {command -command toggle_record_eventlog -label {Eventlog recording} -underline 10}
       {separator}
       {command -label {Load config...} -underline 0 -command load_tkenv_config}
       {command -label {Save config...} -underline 1 -command save_tkenv_config}
@@ -246,7 +246,6 @@ proc create_omnetpp_window {} {
     foreach i {
       {sep00    -separator}
       {newrun   -image $icons(newrun)  -command {new_run}}
-      {newnet   -image $icons(newnet)  -command {new_network}}
       {loadned  -image $icons(loadned) -command {load_nedfile}}
       {sep5     -separator}
       {copy     -image $icons(copy)    -command {edit_copy}}
@@ -268,6 +267,7 @@ proc create_omnetpp_window {} {
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggle_timeline}}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
+      {eventlog -image $icons(recordeventlog) -command {toggle_record_eventlog}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulation_options}}
     } {
@@ -294,6 +294,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
+    set help_tips(.toolbar.eventlog) {Record eventlog}
     set help_tips(.toolbar.options) {Simulation options}
 
     #################################

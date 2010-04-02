@@ -3,6 +3,11 @@
 	* opp_makemake: support long linker lines (>32K) on Windows, via using 
 	temp files for arguments
 
+2010-03-31  Levente Mészáros
+
+	* opp_test: added new entries called %file-exists and %file-not-exists
+	with a single file name parameter.
+
 2010-03-30  Andras Varga
 
 	* opp_test: %subst to understand backrefs ($1) in the replacement string

@@ -110,7 +110,7 @@ public class CompoundModuleFigure extends NedFigure
 
 	        // =============================================================================
 	        // draw the grid
-	        if (gridTickDistance > 0) {
+	        if (gridTickDistance > 0 && gridColor != null) {
 
 	        	graphics.setForegroundColor(gridColor);
 	        	double minorTickDistance = 0;

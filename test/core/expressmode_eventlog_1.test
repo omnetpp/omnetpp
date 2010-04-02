@@ -1,0 +1,36 @@
+%description:
+test eventlog recording in express mode
+
+%activity:
+
+EV << "Before wait\n";
+
+wait(1);
+
+EV << "After wait\n";
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+record-eventlog = true
+cmdenv-express-mode = true
+
+%contains-regex: stdout
+Running simulation...
+\*\* Event #1   T=0   Elapsed: .*?
+     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
+     Messages:  created: 1   present: 1   in FES: 1
+\*\* Event #3   T=1   Elapsed: .*?
+     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
+     Messages:  created: 1   present: 1   in FES: 0
+
+<!> No more events -- simulation ended.
+
+%contains: results/General-0.elog
+E # 1 t 0 m 1 ce 0 msg 0
+- Before wait
+BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 pe 1 k -2
+ES t 1
+
+E # 2 t 1 m 1 ce 1 msg 0
+- After wait

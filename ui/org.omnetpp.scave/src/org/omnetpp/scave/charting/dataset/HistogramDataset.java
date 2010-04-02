@@ -12,24 +12,23 @@ import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.model2.DatasetManager;
 
 public class HistogramDataset implements IHistogramDataset {
 
 	private static class HistogramData {
 		String key;
-		boolean isDiscrete;
+		boolean isIntegerType;
 		int count;
 		double minValue;
 		double maxValue;
 		double[] cellBreaks;
 		double[] cellValues;
 
-		public HistogramData(String key, boolean isDiscrete,
-								int count, double minValue, double maxValue,
-								double[] cellBreaks, double[] cellValues) {
+		public HistogramData(String key, boolean isIntegerType, int count, double minValue, double maxValue, double[] cellBreaks, double[] cellValues) {
 			this.key = key;
-			this.isDiscrete = isDiscrete;
+			this.isIntegerType = isIntegerType;
 			this.count = count;
 			this.minValue = minValue;
 			this.maxValue = maxValue;
@@ -48,16 +47,14 @@ public class HistogramDataset implements IHistogramDataset {
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);
 			HistogramResult histogram = manager.getHistogram(id);
-			boolean isDiscrete = "1".equals(histogram.getAttribute("isDiscrete"));
+			boolean isIntegerType = histogram.getType() == ResultItem.Type.TYPE_INT;
 			DoubleVector bins = histogram.getBins();
 			int size = (int)bins.size();
 			double[] cellBreaks = new double[size+1];
 			System.arraycopy(bins.toArray(), 0, cellBreaks, 0, size);
 			cellBreaks[size] = Double.POSITIVE_INFINITY;
 			double[] cellValues = histogram.getValues().toArray();
-			histograms[i] = new HistogramData(keys[i], isDiscrete,
-									histogram.getCount(), histogram.getMin(), histogram.getMax(),
-									cellBreaks, cellValues);
+			histograms[i] = new HistogramData(keys[i], isIntegerType, histogram.getCount(), histogram.getMin(), histogram.getMax(), cellBreaks, cellValues);
 		}
 	}
 
@@ -74,8 +71,8 @@ public class HistogramDataset implements IHistogramDataset {
 		return histograms[series].key;
 	}
 
-	public boolean isDiscrete(int series) {
-		return histograms[series].isDiscrete;
+	public boolean isIntegerType(int series) {
+		return histograms[series].isIntegerType;
 	}
 
 	public int getValueCount(int series) {

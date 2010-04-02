@@ -49,9 +49,15 @@ class ENVIR_API EventlogFileManager
     EventlogFileManager();
     virtual ~EventlogFileManager();
 
-    virtual void setup();
+    virtual void configure();
+    virtual void open();
     virtual void startRun();
     virtual void endRun();
+
+    virtual void recordSimulation();
+    virtual void recordMessages();
+    virtual void recordModules(cModule *module);
+    virtual void recordConnections(cModule *module);
 
     virtual void flush();
 

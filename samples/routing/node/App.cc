@@ -75,6 +75,9 @@ void App::initialize()
     while ((token = tokenizer.nextToken())!=NULL)
         destAddresses.push_back(atoi(token));
 
+    if (destAddresses.size() == 0)
+        throw cRuntimeError("At least one address must be specified in the destAddresses parameter!");
+
     generatePacket = new cMessage("nextPacket");
     scheduleAt(sendIATime->doubleValue(), generatePacket);
 

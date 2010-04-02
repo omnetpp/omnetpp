@@ -232,6 +232,38 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
         return name.substring(0,i+1);
     }
 
+    public static String getFullName(IHasName element) {
+        String name = element.getName();
+        if (element instanceof SubmoduleElementEx) {
+            SubmoduleElementEx submoduleElement = (SubmoduleElementEx)element;
+            String vectorSize = submoduleElement.getVectorSize();
+            if (StringUtils.isNotEmpty(vectorSize))
+                return name + "[" + vectorSize + "]";
+            else
+                return name;
+        }
+        else
+            return name;
+    }
+
+    public static void setFullName(IHasName element, String name) {
+        if (element instanceof SubmoduleElementEx) {
+            SubmoduleElementEx submoduleElement = (SubmoduleElementEx)element;
+            int openIndex = name.indexOf("[");
+            int closeIndex = name.indexOf("]");
+            if (openIndex != -1 && closeIndex > openIndex) {
+                element.setName(name.substring(0, openIndex));
+                submoduleElement.setVectorSize(name.substring(openIndex + 1, closeIndex));
+            }
+            else {
+                element.setName(name);
+                submoduleElement.setVectorSize(null);
+            }
+        }
+        else
+            element.setName(name);
+    }
+
     /**
      * Calculates a unique name for the provided model element.
      */
@@ -385,9 +417,9 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 
 
     public static void collectProperties(INedElement node, Map<String, Map<String, PropertyElementEx>> map) {
-   		INedElement propertyParent = node instanceof IHasParameters ? 
+   		INedElement propertyParent = node instanceof IHasParameters ?
    							node.getFirstChildWithTag(NED_PARAMETERS) : node;
-    		
+
     	if (propertyParent != null) {
     		for (INedElement child : propertyParent) {
     			if (child instanceof IHasName && child.getTagCode()==NED_PROPERTY) {
