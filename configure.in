@@ -988,25 +988,29 @@ else
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  PCAP (optional)"
 fi
 
-##----------------------
-## Check for PTHREAD.
-## NOTE: This is commented out because only our UI lib needs pthreads
-## TODO: On MinGW, add "-mthread" to PTHREAD_CFLAGS!
-##----------------------
-#
-#if test -n "$PTHREAD_LIBS"; then
-#    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
-#else
-#    PTHREAD_LIBS="-lpthread"
-#    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
-#fi
-#if test $pthread_ok = yes; then
-#    HAVE_PTHREAD=yes
-#else
-#    HAVE_PTHREAD=no
-#    PTHREAD_CFLAGS=""
-#    PTHREAD_LIBS=""
-#fi
+#----------------------
+# Check for PTHREAD.
+# On MinGW, add "-mthread" to PTHREAD_CFLAGS and PTHREAD_LIBS to force using 
+# the multithreaded standard libraries.
+#----------------------
+
+if test -n "$PTHREAD_LIBS"; then
+    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
+else
+    PTHREAD_LIBS="-lpthread"
+    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
+fi
+if test $pthread_ok = yes; then
+    HAVE_PTHREAD=yes
+    if test "$mingw" = yes; then
+        PTHREAD_CFLAGS="$PTHREAD_CFLAGS -mthreads"
+        PTHREAD_LIBS="$PTHREAD_LIBS -mthreads"
+    fi
+else
+    HAVE_PTHREAD=no
+    PTHREAD_CFLAGS=""
+    PTHREAD_LIBS=""
+fi
 
 #----------------------
 # Check for XML parsers: EXPAT and/or LIBXML
