@@ -211,6 +211,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     protected SequenceChartAction defaultZoomAction;
 
+    protected SequenceChartAction zoomToFitAction;
+
 	protected SequenceChartAction zoomInAction;
 
 	protected SequenceChartAction zoomOutAction;
@@ -258,6 +260,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.increaseSpacingAction = createIncreaseSpacingAction();
 		this.decreaseSpacingAction = createDecreaseSpacingAction();
         this.defaultZoomAction = createDefaultZoomAction();
+        this.zoomToFitAction = createZoomToFitAction();
 		this.zoomInAction = createZoomInAction();
 		this.zoomOutAction = createZoomOutAction();
 		this.denseAxesAction = createDenseAxesAction();
@@ -390,15 +393,22 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 menuManager.add(changeFontAction);
                 menuManager.add(separatorAction);
-				menuManager.add(increaseSpacingAction);
-				menuManager.add(decreaseSpacingAction);
-				menuManager.add(separatorAction);
-				menuManager.add(denseAxesAction);
-				menuManager.add(balancedAxesAction);
-				menuManager.add(separatorAction);
-                menuManager.add(defaultZoomAction);
-				menuManager.add(zoomInAction);
-				menuManager.add(zoomOutAction);
+
+                subMenuManager = new MenuManager("Spacing");
+                menuManager.add(subMenuManager);
+                subMenuManager.add(balancedAxesAction);
+                subMenuManager.add(denseAxesAction);
+                subMenuManager.add(increaseSpacingAction);
+                subMenuManager.add(decreaseSpacingAction);
+
+				// zoom submenu
+                subMenuManager = new MenuManager("Zoom");
+                menuManager.add(subMenuManager);
+                subMenuManager.add(defaultZoomAction);
+                subMenuManager.add(zoomToFitAction);
+                subMenuManager.add(zoomInAction);
+                subMenuManager.add(zoomOutAction);
+
 				menuManager.add(separatorAction);
                 menuManager.add(toggleBookmarkAction);
                 menuManager.add(copyToClipboardAction);
@@ -1019,6 +1029,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             @Override
             protected void doRun() {
                 sequenceChart.defaultZoom();
+            }
+        };
+    }
+
+    private SequenceChartAction createZoomToFitAction() {
+        return new SequenceChartAction("Zoom to Fit", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM)) {
+            @Override
+            protected void doRun() {
+                sequenceChart.zoomToFit();
             }
         };
     }
