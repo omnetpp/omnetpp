@@ -1,3 +1,12 @@
+2010-04-02  Levente Meszaros:
+
+	* New feature: toggle eventlog recording interactively (menu item, 
+	toolbar button); it will then override the "intervals" setting from 
+	omnetpp.ini
+
+	* usability: New Network function removed from toolbar, as it was
+	confusing; still available via the File menu
+	
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2010-01-28  Andras Varga

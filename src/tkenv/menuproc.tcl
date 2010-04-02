@@ -187,7 +187,6 @@ proc load_nedfile {} {
    }
 }
 
-# TODO: FIXME: this function turns out to be not so useful in the 4.0 version, delete?
 proc new_network {} {
     # implements File|New network...
 
@@ -214,7 +213,7 @@ proc new_network {} {
 
     # pop up dialog, with current network as default
     set netname [opp_getnetworktype]
-    set ok [comboSelectionDialog "Set up network" "Set up a network, using parameter values defined \nin the \[General\] section of the ini file." "Select network:" netname $networknames]
+    set ok [comboSelectionDialog "Set up network" "Set up a network. NOTE: The network will use parameter values defined in the \n\[General\] section of the ini file." "Select network:" netname $networknames]
     if {$ok == 1} {
        busy "Setting up network..."
        opp_newnetwork $netname
@@ -297,7 +296,7 @@ proc toggle_treeview {} {
    if {$config(display-treeview)==1} {
        set config(display-treeview) 0
        pack forget $widgets(manager)
-       .toolbar.tree config -relief raised
+       .toolbar.tree config -relief flat
    } else {
        set config(display-treeview) 1
        pack $widgets(manager) -before .main.text -expand 0 -fill y  -side left
@@ -312,7 +311,7 @@ proc toggle_timeline {} {
    if {$config(display-timeline)==1} {
        set config(display-timeline) 0
        pack forget $widgets(timeline)
-       .toolbar.tline config -relief raised
+       .toolbar.tline config -relief flat
    } else {
        set config(display-timeline) 1
        pack $widgets(timeline) -before .main -anchor center -expand 0 -fill x -side top
@@ -336,7 +335,7 @@ proc reflect_record_eventlog {} {
    if {[opp_getsimoption record_eventlog]==1} {
        .toolbar.eventlog config -relief sunken
    } else {
-       .toolbar.eventlog config -relief raised
+       .toolbar.eventlog config -relief flat
    }
 }
 

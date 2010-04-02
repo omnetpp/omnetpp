@@ -119,6 +119,7 @@ proc create_omnetpp_window {} {
     # File menu
     foreach i {
       {command -command new_run -label {Set up a configuration...} -underline 7}
+      {command -command new_network -label {Set up a network...} -underline 7}
       {separator}
       {command -command load_nedfile -label {Load NED file...} -underline 0}
       {separator}
@@ -294,7 +295,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
-    set help_tips(.toolbar.eventlog) {Record eventlog}
+    set help_tips(.toolbar.eventlog) {Toggle eventlog recording}
     set help_tips(.toolbar.options) {Simulation options}
 
     #################################
@@ -388,13 +389,13 @@ proc create_omnetpp_window {} {
     pack .main.mgr -anchor center -expand 0 -fill y  -side left
 
     if {$config(display-treeview)==0} {
-        .toolbar.tree config -relief raised
+        .toolbar.tree config -relief flat
     } else {
         .toolbar.tree config -relief sunken
     }
 
     if {$config(display-timeline)==0} {
-        .toolbar.tline config -relief raised
+        .toolbar.tline config -relief flat
     } else {
         .toolbar.tline config -relief sunken
     }
