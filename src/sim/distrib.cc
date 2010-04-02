@@ -11,7 +11,6 @@
 // @date 11/26/2002 "doxygenification" (kmm)
 // @date 11/20/2002 some final comments (ws)
 // @date 10/22/2002 implemented various discrete distributions (kmm)
-// @date 10/22/2009 implemented various truncated distributions (jk)
 //
 //==========================================================================
 
@@ -302,35 +301,6 @@ double pareto_shifted(double a, double b, double c, int rng)
 
     double u_pow = pow(1.0 - genk_dblrand(rng), 1.0 / a);
     return b / u_pow - c;
-}
-
-
-//----------------------------------------------------------------------------
-//  Contributions from Kyeong Soo (Joseph) Kim
-//----------------------------------------------------------------------------
-
-// Now it's based on simple procedural truncation at both ends.
-// Later it will be updated based on the algorithm in [1].
-// [1] Robert, Christian P. (1995), Simulation of truncated normal variables,
-//     Statistics and Computing 5, 121.125. (* online version available at:
-//     http://arxiv.org/PS_cache/arxiv/pdf/0907/0907.4010v1.pdf *)
-double lognormal_trunc(double m, double w, double min, double max, int rng)
-{
-    double res;
-    do {
-        res = lognormal(m, w, rng);
-    } while (res < min || res > max);
-
-    return res;
-}
-
-
-double pareto_trunc(double k, double alpha, double m, int rng)
-{
-    if (k <= 0 || alpha <= 0)
-        throw cRuntimeError("pareto_trunc(): parameters alpha and k must be positive (alpha=%g, k=%g)", alpha, k);
-
-    return (k / pow((1.0 - (genk_dblrand(rng) * (1.0 - pow(k / m, alpha)))), 1.0 / alpha));
 }
 
 

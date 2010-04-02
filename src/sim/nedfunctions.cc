@@ -9,7 +9,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
   Copyright (C) 2006-2008 OpenSim Ltd.
-  Copyright (c) 2009      Kyeong Soo (Joseph) Kim
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -675,34 +674,6 @@ DEF(nedf_poisson,
 {
     int rng = argc==2 ? (int)argv[1].dbl : 0;
     argv[0].dbl = poisson(argv[0].dbl, rng);
-    return argv[0];
-})
-
-//----------------------------------------------------------------------------
-//  Contributions from Kyeong Soo (Joseph) Kim
-//----------------------------------------------------------------------------
-
-DEF(nedf_lognormal_trunc,
-    "quantity lognormal_trunc(quantity m, quantity w, quantity min, quantity max, long rng?)",
-    "random/continuous",
-    "Returns a random number from the truncated Lognormal distribution",
-{
-    int rng = argc==5 ? (int)argv[4].dbl : 0;
-    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
-    double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[0].dblunit);
-    double argv3converted = UnitConversion::convertUnit(argv[3].dbl, argv[3].dblunit, argv[0].dblunit);
-    argv[0].dbl = lognormal_trunc(argv[0].dbl, argv1converted, argv2converted, argv3converted, rng);
-    return argv[0];
-})
-
-DEF(nedf_pareto_trunc,
-    "quantity pareto_trunc(quantity k, double alpha, quantity m, long rng?)",
-    "random/continuous",
-    "Returns a random number from the truncated Pareto distribution",
-{
-    int rng = argc==4 ? (int)argv[3].dbl : 0;
-    double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[0].dblunit);
-    argv[0].dbl = pareto_trunc(argv[0].dbl, argv[1].dbl, argv2converted, rng);
     return argv[0];
 })
 

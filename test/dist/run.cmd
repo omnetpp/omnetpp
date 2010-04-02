@@ -22,12 +22,7 @@ call dist.cmd -u Cmdenv -c  config50
 call dist.cmd -u Cmdenv -c  config51
 call dist.cmd -u Cmdenv -c  config52
 call dist.cmd -u Cmdenv -c  config53
-call dist.cmd -u Cmdenv -c  config60
-call dist.cmd -u Cmdenv -c  config61
-call dist.cmd -u Cmdenv -c  config62
-call dist.cmd -u Cmdenv -c  config63
-call dist.cmd -u Cmdenv -c  config64
-call dist.cmd -u Cmdenv -c  config65
+call dist.cmd -u Cmdenv -c  lognormal
 call dist.cmd -u Cmdenv -c  config70
 call dist.cmd -u Cmdenv -c  config71
 call dist.cmd -u Cmdenv -c  config72
@@ -60,11 +55,7 @@ call dist.cmd -u Cmdenv -c  config133
 call dist.cmd -u Cmdenv -c  config134
 call dist.cmd -u Cmdenv -c  config140
 call dist.cmd -u Cmdenv -c  config141
-call dist.cmd -u Cmdenv -c  config150
-call dist.cmd -u Cmdenv -c  config151
-call dist.cmd -u Cmdenv -c  config152
-call dist.cmd -u Cmdenv -c  config153
-call dist.cmd -u Cmdenv -c  config154
+call dist.cmd -u Cmdenv -c  pareto
 call dist.cmd -u Cmdenv -c  config510
 call dist.cmd -u Cmdenv -c  config520
 call dist.cmd -u Cmdenv -c  config530
