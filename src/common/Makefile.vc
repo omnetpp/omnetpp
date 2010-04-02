@@ -21,8 +21,13 @@ LIBNAME=oppcommon$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) $(PTHREAD_CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $(PTHREAD_LIBS)
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
+IMPLIBS=
+
+!if "$(BUILDING_UILIBS)"=="yes"
+COPTS= $(COPTS) -DTHREADED $(PTHREAD_CFLAGS)
+IMPLIBS= $(IMPLIBS) $(PTHREAD_LIBS)
+!endif
 
 OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/stringpool.obj $O/stringtokenizer.obj $O/fnamelisttokenizer.obj \
@@ -32,7 +37,7 @@ OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj \
       $O/enumstr.obj
 
-!if "$(HAVE_PTHREADS)"=="yes"
+!if "$(BUILDING_UILIBS)"=="yes"
 OBJS= $(OBJS) $O/rwlock.obj
 !endif
 

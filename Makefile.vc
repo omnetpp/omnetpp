@@ -75,8 +75,9 @@ JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 base: $(BASE)
 	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) opp_run_executable
 
-ui : common layout eventlog scave nedxml $(JNILIBS)
 samples: $(SAMPLES)
+
+ui: check-ui-vars common layout eventlog scave nedxml $(JNILIBS)
 
 # dependencies (because of ver.h, opp_msgc, etc)
 clean depend: makefiles
@@ -138,6 +139,9 @@ tests: base
 # Utilities
 #
 #=====================================================================
+
+check-ui-vars:
+	@if not .$(BUILDING_UILIBS).==.yes. echo ERROR: "make ui" must be invoked with BUILDING_UILIBS=yes! && exit 1
 
 check-env:
 	@echo +++++ Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX)

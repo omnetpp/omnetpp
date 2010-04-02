@@ -22,9 +22,13 @@ LIBNAME=liboppscave$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/scave
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) $(XML_CFLAGS) $(PTHREAD_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
+COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
+IMPLIBS= -L$L -loppcommon$D
 
-IMPLIBS= -L$L -loppcommon$D $(PTHREAD_LIBS)
+ifeq ("$(BUILDING_UILIBS)","yes")
+COPTS+= -DTHREADED $(PTHREAD_CFLAGS)
+IMPLIBS+= $(PTHREAD_LIBS)
+endif
 
 OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/dataflowmanager.o $O/datasorter.o $O/diffquot.o \

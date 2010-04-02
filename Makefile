@@ -57,8 +57,9 @@ JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 base: $(BASE)
 	cd $(OMNETPP_SRC_DIR)/envir && $(MAKE) opp_run_executable
 
-ui : common layout eventlog scave nedxml $(JNILIBS)
 samples: $(SAMPLES)
+
+ui: check-ui-vars common layout eventlog scave nedxml $(JNILIBS)
 
 # dependencies (because of ver.h, opp_msgc, etc)
 clean depend: makefiles
@@ -120,6 +121,9 @@ tests: base
 # Utilities
 #
 #=====================================================================
+
+check-ui-vars:
+	@if [ "$(BUILDING_UILIBS)" != "yes" ]; then echo 'ERROR: "make ui" must be invoked with BUILDING_UILIBS=yes!' && exit 1; fi
 
 check-env:
 	@echo "***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX) ****"
@@ -245,7 +249,7 @@ ifeq ($(OMNETPP_PRODUCT),OMNEST)
 	-ln -s -f $(OMNETPP_ROOT)/ide/omnest.app /Applications/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
 else
 	-ln -s -f $(OMNETPP_ROOT)/ide/omnetpp.app /Applications/'$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE'
-endif 
+endif
 
 install-desktop-icon:
 ifeq ($(OMNETPP_PRODUCT),OMNEST)

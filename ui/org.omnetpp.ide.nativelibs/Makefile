@@ -62,7 +62,7 @@ DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM)
 # Local definitions
 #
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
-COPTS=$(CFLAGS) $(PTHREAD_CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
+COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS) 
 
 #
 # Automatic rules

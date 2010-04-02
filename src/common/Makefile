@@ -22,9 +22,13 @@ LIBNAME=liboppcommon$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep $(PTHREAD_CFLAGS)
+COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
+IMPLIBS=
 
-IMPLIBS= $(PTHREAD_LIBS)
+ifeq ("$(BUILDING_UILIBS)","yes")
+COPTS+= -DTHREADED $(PTHREAD_CFLAGS)
+IMPLIBS+= $(PTHREAD_LIBS)
+endif
 
 OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/stringpool.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
@@ -34,7 +38,7 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o
 
-ifeq ("$(HAVE_PTHREAD)","yes")
+ifeq ("$(BUILDING_UILIBS)","yes")
 OBJS+= $O/rwlock.o
 endif
 

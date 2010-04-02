@@ -53,8 +53,8 @@ DLL_TARGET_DIR = ..\org.omnetpp.ide.nativelibs.win32.x86
 #
 # Local definitions
 #
-INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
-COPTS=$(CFLAGS) $(PTHREAD_CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
+INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep 
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS)
 SWIGOPTS=$(SWIGFLAGS) $(INCLUDES)
 
 #
