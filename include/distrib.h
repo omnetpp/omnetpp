@@ -399,10 +399,9 @@ SIM_API int poisson(double lambda, int rng=0);
  * @param w  "shape" parameter, w>0
  * @param min left truncation point
  * @param max right truncation point
- * @param t   truncation mode, true->both (default), false->left only
  * @param rng the underlying random number generator
  */
-SIM_API double trunc_lognormal(double m, double w, double min, double max, bool t=true, int rng=0);
+SIM_API double lognormal_trunc(double m, double w, double min, double max, int rng=0);
 
 /**
  * Truncated Pareto distribution at both ends.
@@ -418,7 +417,7 @@ SIM_API double trunc_lognormal(double m, double w, double min, double max, bool 
  * @param m     right truncation point (maximum value)
  * @param rng   the underlying random number generator
  */
-SIM_API double trunc_pareto(double k, double alpha, double m, int rng=0);
+SIM_API double pareto_trunc(double k, double alpha, double m, int rng=0);
 
 //@}
 
@@ -426,5 +425,4 @@ NAMESPACE_END
 
 
 #endif
-
 

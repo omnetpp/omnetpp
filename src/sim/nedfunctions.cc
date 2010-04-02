@@ -682,28 +682,27 @@ DEF(nedf_poisson,
 //  Contributions from Kyeong Soo (Joseph) Kim
 //----------------------------------------------------------------------------
 
-DEF(nedf_trunc_lognormal,
-    "quantity trunc_lognormal(quantity m, quantity w, quantity min, quantity max, bool t?, long rng?)",
+DEF(nedf_lognormal_trunc,
+    "quantity lognormal_trunc(quantity m, quantity w, quantity min, quantity max, long rng?)",
     "random/continuous",
     "Returns a random number from the truncated Lognormal distribution",
 {
-    bool t = argc==5 ? (bool)argv[4].bl : true;
-    int rng = argc==6 ? (int)argv[5].dbl : 0;
+    int rng = argc==5 ? (int)argv[4].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[0].dblunit);
     double argv3converted = UnitConversion::convertUnit(argv[3].dbl, argv[3].dblunit, argv[0].dblunit);
-    argv[0].dbl = trunc_lognormal(argv[0].dbl, argv1converted, argv2converted, argv3converted, t, rng);
+    argv[0].dbl = lognormal_trunc(argv[0].dbl, argv1converted, argv2converted, argv3converted, rng);
     return argv[0];
 })
 
-DEF(nedf_trunc_pareto,
-    "quantity trunc_pareto(quantity k, double alpha, quantity m, long rng?)",
+DEF(nedf_pareto_trunc,
+    "quantity pareto_trunc(quantity k, double alpha, quantity m, long rng?)",
     "random/continuous",
     "Returns a random number from the truncated Pareto distribution",
 {
     int rng = argc==4 ? (int)argv[3].dbl : 0;
     double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[0].dblunit);
-    argv[0].dbl = trunc_pareto(argv[0].dbl, argv[1].dbl, argv2converted, rng);
+    argv[0].dbl = pareto_trunc(argv[0].dbl, argv[1].dbl, argv2converted, rng);
     return argv[0];
 })
 

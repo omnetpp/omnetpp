@@ -17,7 +17,7 @@ derlang_    <- function(x, k, mean) { dgamma(x, k, scale=mean/k) }
 dexp_       <- function(x, mean) { dexp(x, 1/mean) }
 dgamma_     <- function(x, shape, scale) { dgamma(x, shape, scale=scale) }
 dintunif_   <- function(x, min, max) { if (is.na(x) | x<min | x>max) 0.0 else 1/(max-min+1) }
-dpareto_    <- function(x, a, b, c) { }
+dpareto_    <- function(x, a, b, c) { a/b*(b/(x+c))^(a+1) }
 dtruncnorm_ <- function(x, mean, sd) { if (is.na(x) | x<0) 0.0 else dnorm(x, mean, sd)/(1-pnorm(0,mean,sd)) }
 dtriang_    <- function (x, a, b, c) {
 	if (is.na(x) | x<a | x>c) 0.0
@@ -29,8 +29,8 @@ dweibull_   <- function(x,scale,shape) { dweibull(x, shape, scale) }
 # names of the theoretical distributions
 dists <- c("dbernoulli_", "dbeta", "dbinom", "dcauchy", "dchisq", "derlang_",
 		"dexp_", "dgamma_", "dgeom", "dintunif_", "dlnorm", "dnbinom",
-		"dnorm", "dundefined", "dpois", "dt", "dtriang_", "dtruncnorm_",
-		"dunif", "dweibull_")
+		"dnorm", "dpareto_", "dpois", "dt", "dtriang_", "dtruncnorm_",
+		"dunif", "dweibull_", "dpareto_")
 
 # names of the distributions in the csv files
 names(dists) <- c("bernoulli", "beta", "binomial", "cauchy", "chi_square", "erlang_k",
