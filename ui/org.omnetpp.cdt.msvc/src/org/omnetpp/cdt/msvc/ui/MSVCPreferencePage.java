@@ -7,6 +7,7 @@
 
 package org.omnetpp.cdt.msvc.ui;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
@@ -21,6 +22,7 @@ public class MSVCPreferencePage extends FieldEditorPreferencePage implements IWo
 	public static final String PREFKEY_VCDIR = "vcdir";
 	public static final String PREFKEY_VSDIR = "vsdir";
     public static final String PREFKEY_SDKDIR = "sdkdir";
+    public static final String PREFKEY_APPENDPATH = "appendpath";
 
     public MSVCPreferencePage() {
 		super(GRID);
@@ -35,6 +37,7 @@ public class MSVCPreferencePage extends FieldEditorPreferencePage implements IWo
 		addField(new DirectoryFieldEditor(PREFKEY_VSDIR, "Visual Studio install location:", getFieldEditorParent()));
 		addField(new DirectoryFieldEditor(PREFKEY_VCDIR, "Visual C++ location:", getFieldEditorParent()));
 		addField(new DirectoryFieldEditor(PREFKEY_SDKDIR, "Platform SDK location:", getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PREFKEY_APPENDPATH, "Append PATH environment variable to build-time path", getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)

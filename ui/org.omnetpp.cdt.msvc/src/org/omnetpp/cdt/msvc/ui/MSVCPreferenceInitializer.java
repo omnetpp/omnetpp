@@ -44,7 +44,9 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
 
         String vsDir = StringUtils.nullToEmpty(detectVSDir());
         store.setDefault(MSVCPreferencePage.PREFKEY_VSDIR, vsDir);
-}
+
+        store.setDefault(MSVCPreferencePage.PREFKEY_APPENDPATH, false);
+    }
 
     /**
      * The Windows SDK installation directory (the highest version possible).

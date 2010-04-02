@@ -103,6 +103,13 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 	    return StringUtils.isEmpty(sdkDir) ? null : sdkDir;
 	}
 
+	/**
+	 * Returns true if the PATH environment variable should be appended to the build-time path.
+	 */
+    public static boolean getAppendPath() {
+        return Activator.getDefault().getPreferenceStore().getBoolean(MSVCPreferencePage.PREFKEY_APPENDPATH);
+    }
+
     public boolean isSupported(IToolChain toolChain, PluginVersionIdentifier version, String instance) {
         return getVCDir() != null;
     }
@@ -153,6 +160,8 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 		buff.append(new Path(vcDir).append("Bin").toOSString()+";");
         if (sdkDir != null)
             buff.append(new Path(sdkDir).append("Bin").toOSString()+";");
+        if (getAppendPath())
+            buff.append(System.getenv("PATH")+";");
 		addvar(vars, new MSVCBuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
 		return vars;
