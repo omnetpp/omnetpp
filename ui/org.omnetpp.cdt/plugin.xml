@@ -360,9 +360,9 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="org.omnetpp.cdt.handlers.GotoCppDefinitionForNEDTypeHandler"
+            defaultHandler="org.omnetpp.cdt.handlers.GotoCppDefinitionForNedTypeHandler"
             description="Opens the C++ definition for a NED type (simple module or channel)"
-            id="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+            id="org.omnetpp.cdt.gotoCppDefinitionForNedType"
             name="Goto C++ Definition">
       </command>
    </extension>
@@ -371,7 +371,7 @@
       <menuContribution
             locationURI="popup:org.omnetpp.ned.editor.graph?after=org.eclipse.gef.group.find">
          <command
-               commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+               commandId="org.omnetpp.cdt.gotoCppDefinitionForNedType"
                mnemonic="G"
                style="push"
                tooltip="Go To C++ Definition">
@@ -380,7 +380,7 @@
       <menuContribution
             locationURI="popup:org.omnetpp.ned.editor.text?after=group.find">
          <command
-               commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+               commandId="org.omnetpp.cdt.gotoCppDefinitionForNedType"
                mnemonic="G"
                style="push"
                tooltip="&amp;Go To C++ Definition">
@@ -390,7 +390,7 @@
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+            commandId="org.omnetpp.cdt.gotoCppDefinitionForNedType"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+TAB">
       </key>
