@@ -162,10 +162,10 @@ class ENVIR_API StatisticsRecorder : public NumericResultRecorder, private cObje
         virtual void finish(ResultFilter *prev);
 };
 
-class ENVIR_API StddevRecorder : public StatisticsRecorder
+class ENVIR_API StatsRecorder : public StatisticsRecorder
 {
     public:
-        StddevRecorder();
+        StatsRecorder();
 };
 
 class ENVIR_API HistogramRecorder : public StatisticsRecorder

@@ -28,6 +28,7 @@ Register_ResultRecorder("mean", MeanRecorder);
 Register_ResultRecorder("min", MinRecorder);
 Register_ResultRecorder("max", MaxRecorder);
 Register_ResultRecorder("timeavg", TimeAverageRecorder);
+Register_ResultRecorder("stats", StatsRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
 
 
@@ -136,7 +137,7 @@ void StatisticsRecorder::finish(ResultFilter *prev)
     ev.recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
 }
 
-StddevRecorder::StddevRecorder() : StatisticsRecorder(new cStdDev())
+StatsRecorder::StatsRecorder() : StatisticsRecorder(new cStdDev())
 {
 }
 
