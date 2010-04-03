@@ -235,7 +235,7 @@ public class PaletteManager {
         if (innerChannelTypes.size() > 0) {
             result.putAll(innerChannelTypes);
         }
-        Map<String, ToolEntry> channelsStackEntries = createChannelsStackEntries(contextProject);
+        Map<String, PaletteEntry> channelsStackEntries = createChannelsStackEntries(contextProject);
         if (channelsStackEntries.size() > 0) {
             result.putAll(channelsStackEntries);
         }
@@ -360,8 +360,8 @@ public class PaletteManager {
     }
 
     /**
-     * Iterates over all top level (module types) types in a NED file and gathers all NEDTypes from all components.
-     * Returns a Container containing all types in this file.
+     * Iterates over all top level types in a NED file and gathers all inner NEDTypes from all components.
+     * Returns a Container containing all inner types in this file.
      */
     private Map<String, PaletteEntry> createInnerTypes(IFile file, boolean moduleTypes) {
         List<INedTypeInfo> innerTypes = new ArrayList<INedTypeInfo>();
@@ -377,12 +377,16 @@ public class PaletteManager {
 
         Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
         for(INedTypeInfo innerType : innerTypes)
-            addToolEntry(innerType.getNedElement(), moduleTypes ? MRU_GROUP : CONNECTIONS_GROUP, entries);
+        	if (moduleTypes)
+        		addModuleToolEntry((IModuleKindTypeElement)innerType.getNedElement(), MRU_GROUP, entries);
+        	else
+        		addConnectionToolEntry((IChannelKindTypeElement)innerType.getNedElement(), entries);
+
         return entries;
     }
 
     /**
-     * Creates several submodule drawers using currently parsed types,
+     * Creates several submodule drawers using currently parsed types (only non-inner types),
      * and using the GROUP property as the drawer name.
      */
     protected Map<String, PaletteEntry> createSubmodules(IProject contextProject) {
@@ -411,7 +415,7 @@ public class PaletteManager {
             // add it if package filter matches
             String packageName = typeElement.getContainingNedFileElement().getPackage();
             if (!excludedPackages.contains(packageName) && matchesSubmodulesFilter(typeElement))
-                addToolEntry(typeElement, MRU_GROUP, entries);
+                addModuleToolEntry((IModuleKindTypeElement)typeElement, MRU_GROUP, entries);
         }
 
         entries.put("separator", new PaletteSeparator());
@@ -432,14 +436,17 @@ public class PaletteManager {
                 PropertyElement property = typeElement.getNedTypeInfo().getProperty(GROUP_PROPERTY, null);
                 String group = (property == null) ? "" : NedElementUtilEx.getPropertyValue(property);
 
-                addToolEntry(typeElement, group, entries);
+                addModuleToolEntry((IModuleKindTypeElement)typeElement, group, entries);
             }
         }
 
         return entries;
     }
 
-    private void addToolEntry(INedTypeElement typeElement, String group, Map<String, PaletteEntry> entries) {
+    /**
+     * Adds a tool to the "entries" map for the provided MODULE type.
+     */
+    private void addModuleToolEntry(IModuleKindTypeElement typeElement, String group, Map<String, PaletteEntry> entries) {
         String fullyQualifiedTypeName = typeElement.getNedTypeInfo().getFullyQualifiedName();
 
         String key = fullyQualifiedTypeName;
@@ -487,8 +494,11 @@ public class PaletteManager {
         entries.put(key, toolEntry);
     }
 
-    private Map<String, ToolEntry> createChannelsStackEntries(IProject contextProject) {
-        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
+    /**
+     * Creates entries for default tools and all top-level (non inner) channel types.
+     */
+    private Map<String, PaletteEntry> createChannelsStackEntries(IProject contextProject) {
+        Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
 
         ConnectionCreationToolEntry defaultConnectionTool = new ConnectionCreationToolEntry(
                 "Connection",
@@ -521,20 +531,29 @@ public class PaletteManager {
 
             // add it if package filter matches
             String packageName = modelElement.getContainingNedFileElement().getPackage();
-            if (!excludedPackages.contains(packageName)) {
-                ConnectionCreationToolEntry tool = new ConnectionCreationToolEntry(
-                        getLabelFor(typeInfo),
-                        NedCommentFormatter.makeBriefDocu(modelElement.getComment(), 300),
-                        new ModelFactory(NedElementTags.NED_CONNECTION, "n/a", fullyQualifiedName, modelElement instanceof ChannelInterfaceElement),
-                        ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-                        ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
-                );
-                // sets the required connection tool
-                tool.setToolClass(NedConnectionCreationTool.class);
-                entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+fullyQualifiedName, tool);
-            }
+            if (!excludedPackages.contains(packageName)) 
+            	addConnectionToolEntry((IChannelKindTypeElement)modelElement, entries);
+            
         }
         return entries;
+    }
+
+    /**
+     * Adds a connection tool to the "entries" map for the provided CHANNEL type.
+     */
+    private void addConnectionToolEntry(IChannelKindTypeElement typeElement, Map<String, PaletteEntry> entries) {
+        String fullyQualifiedTypeName = typeElement.getNedTypeInfo().getFullyQualifiedName();
+
+        ConnectionCreationToolEntry toolEntry = new ConnectionCreationToolEntry(
+                getLabelFor(typeElement.getNedTypeInfo()),
+                NedCommentFormatter.makeBriefDocu(typeElement.getComment(), 300),
+                new ModelFactory(NedElementTags.NED_CONNECTION, "n/a", fullyQualifiedTypeName, typeElement instanceof ChannelInterfaceElement),
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
+        );
+        // sets the required connection tool
+        toolEntry.setToolClass(NedConnectionCreationTool.class);
+        entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+fullyQualifiedTypeName, toolEntry);
     }
 
     /**
