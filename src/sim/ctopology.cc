@@ -14,7 +14,6 @@
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
   Copyright (C) 2006-2008 OpenSim Ltd.
-  Copyright (C) 2008 Giorgos Nomikos & Ntinos Katsaros
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -32,8 +31,6 @@
 #include "cexception.h"
 #include "cproperty.h"
 #include "patternmatcher.h"
-
-#include "cchannel.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -212,7 +209,6 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
             // init auxiliary variables
             temp_nodev[k].known = 0;
             temp_nodev[k].dist = INFINITY;
-            temp_nodev[k].num_hops = INFINITY;
             temp_nodev[k].out_path = NULL;
 
             // create in_links[] arrays (big enough...)
@@ -258,8 +254,7 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
                 temp_out_links[n_out].src_gate = src_gate->getId();
                 temp_out_links[n_out].dest_node = getNodeFor(gate->getOwnerModule());
                 temp_out_links[n_out].dest_gate = gate->getId();
-                temp_out_links[n_out].wgt = 
-                    gate->getChannel()->hasPar("weight") ? gate->getChannel()->par("weight") : 1.0;
+                temp_out_links[n_out].wgt = 1.0;
                 temp_out_links[n_out].enabl = true;
                 n_out++;
             }
@@ -386,51 +381,3 @@ void cTopology::weightedSingleShortestPathsTo(Node *_target)
     }
 }
 */
-
-// Giorgos Nomikos 02/06/2009 , ported to Omnet 4
-// Original Omnet 3 code added by Pasquale Gurzi'
-// (see http://www.omnetpp.org/listarchive/msg10970.php)
-
-void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
-{
-    // multiple paths are not supported :-(
-    if (!_target)
-        throw cRuntimeError(this,"ShortestPathTo(): target node is NULL");
-    target = _target;
-
-    for (int i=0; i<num_nodes; i++)
-    {
-       nodev[i].known = false;   // not really needed for unweighted
-       nodev[i].dist = INFINITY;
-       nodev[i].num_hops = INFINITY;
-       nodev[i].out_path = NULL;
-    }
-    target->dist = 0;
-    target->num_hops = 0;
-
-    std::deque<Node*> q;
-    q.push_back(target);
-
-    while (!q.empty())
-    {
-        Node *v = q.front();
-        q.pop_front();
-
-        // for each w adjacent to v...
-        for (int i=0; i<v->num_in_links; i++)
-        {
-            if (!(v->in_links[i]->enabl)) continue;
-
-            Node *w = v->in_links[i]->src_node;
-            if (!(w->enabl)) continue;
-
-            if (w->dist == INFINITY || w->dist > v->dist + v->in_links[i]->wgt)
-            {
-                w->dist = v->dist + v->in_links[i]->wgt;    // That is the difference
-                w->num_hops = v->num_hops + 1;
-                w->out_path = v->in_links[i];
-                q.push_back(w);
-           }
-       }
-    }
-}
