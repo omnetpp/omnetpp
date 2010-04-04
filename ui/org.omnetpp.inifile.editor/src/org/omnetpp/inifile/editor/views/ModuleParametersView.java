@@ -9,6 +9,7 @@ package org.omnetpp.inifile.editor.views;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -65,8 +66,8 @@ import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 
 
 /**
@@ -360,13 +361,15 @@ public class ModuleParametersView extends AbstractModuleView {
 
 			if (elementWithParameters instanceof SubmoduleElementEx) {
 			    SubmoduleElementEx submodule = (SubmoduleElementEx)elementWithParameters;
-			    text = "Submodule: " + submodule.getName() + " (" + submodule.getNedTypeInfo().getName() + ")";
+                INedTypeInfo typeInfo = submodule.getNedTypeInfo();
+                text = "Submodule " + submodule.getName() + ": " + (typeInfo==null ? "(invalid submodule type)" : typeInfo.getName());
 				pars = InifileAnalyzer.collectParameters(submodule);
 			}
             else if (elementWithParameters instanceof ConnectionElementEx) {
-                INedTypeInfo typeInfo = ((ConnectionElementEx)elementWithParameters).getNedTypeInfo();
-                text = "Connection: " + typeInfo.getName();
-                pars = InifileAnalyzer.collectParameters(typeInfo);
+                ConnectionElementEx connection = (ConnectionElementEx)elementWithParameters;
+                INedTypeInfo typeInfo = connection.getNedTypeInfo();
+                text = "Connection " + connection.getSrcGateFullyQualified() + ": " + (typeInfo==null ? "(invalid channel type)" : typeInfo.getName());
+                pars = typeInfo!=null ? InifileAnalyzer.collectParameters(typeInfo) : new ArrayList<ParamResolution>();
             }
 			else if (elementWithParameters instanceof INedTypeElement) {
 			    INedTypeInfo typeInfo = ((INedTypeElement)elementWithParameters).getNedTypeInfo();
