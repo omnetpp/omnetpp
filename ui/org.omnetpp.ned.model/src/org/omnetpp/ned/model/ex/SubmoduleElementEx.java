@@ -85,21 +85,10 @@ public class SubmoduleElementEx extends SubmoduleElement
     	return displayString;
     }
 
-    /**
-     * Returns the display string for this submodule, assuming
-     * that the submodule's actual type is the compound or simple module type
-     * passed in the <code>submoduleType</code> parameter. This is useful
-     * when the submodule is a "like" submodule, whose the actual submodule
-     * type (not the <code>likeType</code>) is known. The latter usually
-     * comes from an ini file or some other source outside the INedElement tree.
-     * Used within the inifile editor.
-     *
-     * @param submoduleType  a CompoundModuleElementEx or a SimpleModuleElementEx
-     */
-    public DisplayString getDisplayString(IModuleKindTypeElement submoduleType) {
+    public DisplayString getDisplayString(INedTypeElement actualType) {
     	if (displayString == null)
     		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(submoduleType.getDisplayString());
+    	displayString.setFallbackDisplayString(actualType.getDisplayString());
     	return displayString;
     }
 

@@ -61,12 +61,9 @@ import org.omnetpp.ned.core.ParamUtil;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedTreeUtil;
-import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
@@ -238,9 +235,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					if (mn.typeElement == null)
 						return NedTreeUtil.getNedModelLabelProvider().getImage(mn.element);
 					// for a "like" submodule, use icon of the concrete module type
-		            DisplayString dps = mn.element instanceof SubmoduleElementEx ?
-	                    ((SubmoduleElementEx)mn.element).getDisplayString((IModuleKindTypeElement)mn.typeElement) :
-	                    ((ConnectionElementEx)mn.element).getDisplayString((IChannelKindTypeElement)mn.typeElement);
+		            DisplayString dps = mn.element.getDisplayString(mn.typeElement);
 		            Image image = ImageFactory.getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
 					return image!=null ? image : NedTreeUtil.getNedModelLabelProvider().getImage(mn.element);
 				}

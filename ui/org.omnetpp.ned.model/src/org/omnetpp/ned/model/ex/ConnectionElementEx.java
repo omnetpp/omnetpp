@@ -163,13 +163,10 @@ public class ConnectionElementEx extends ConnectionElement
     	return displayString;
     }
 
-    /**
-     * To be used when the actual type for a "like" channel is known.
-     */
-    public DisplayString getDisplayString(IChannelKindTypeElement channelType) {
+    public DisplayString getDisplayString(INedTypeElement actualType) {
         if (displayString == null)
             displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-        displayString.setFallbackDisplayString(channelType.getDisplayString());
+        displayString.setFallbackDisplayString(actualType.getDisplayString());
         return displayString;
     }
 
