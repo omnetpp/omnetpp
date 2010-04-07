@@ -111,7 +111,7 @@ public class RefactoringTools {
 		NedElementUtilEx.visitNedTree(nedFileElement, new NedElementUtilEx.INedElementVisitor() {
 			public void visit(INedElement element) {
 				if (element instanceof IHasType)
-					collect(result, ((IHasType)element).getEffectiveType());
+					collect(result, NedElementUtilEx.getTypeOrLikeType((IHasType)element));
 				else if (element instanceof ExtendsElement)
 					collect(result, ((ExtendsElement)element).getName());
 				else if (element instanceof InterfaceNameElement)

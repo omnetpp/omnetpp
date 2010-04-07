@@ -9,7 +9,6 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
@@ -19,11 +18,11 @@ import org.omnetpp.ned.model.pojo.ImportElement;
  * A command that adds a connection to the given compound module. Optionally adds an import statement
  * and turns the type name into a simple name if the connection has a fully qualified name.
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class CreateConnectionCommand extends Command {
     private ImportElement importElement;
-    private String fullyQualifiedTypeName;
+    private String fullyQualifiedTypeName; // needed because redo() destructively modifies the child's type
     // the containing compound module
     protected CompoundModuleElementEx parentModule;
     // a template element used to store the requested connection
@@ -35,7 +34,7 @@ public class CreateConnectionCommand extends Command {
         setLabel("Create Connection");
         connection = conn;
         parentModule = compoundModuleElement;
-        this.fullyQualifiedTypeName = conn.getEffectiveType();  // redo() destructively modifies child's type
+        fullyQualifiedTypeName = NedElementUtilEx.getTypeOrLikeType(conn);
     }
 
     @Override
@@ -52,7 +51,7 @@ public class CreateConnectionCommand extends Command {
     @Override
     public void undo() {
         connection.removeFromParent();
-        NedElementUtilEx.setEffectiveType(connection, fullyQualifiedTypeName); // restore original value (redo() will need it)
+        NedElementUtilEx.setTypeOrLikeType(connection, fullyQualifiedTypeName); // restore original value (redo() will need it)
         if (importElement != null)
             importElement.removeFromParent();
     }

@@ -351,25 +351,25 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      * (I.e. it returns null as well if an existing import already covered this type.)
      */
 	public static ImportElement addImportFor(IHasType submoduleOrConnection) {
-	    String effectiveType = submoduleOrConnection.getEffectiveType();
-        if (StringUtils.isEmpty(effectiveType))
+	    String typeOrLikeType = getTypeOrLikeType(submoduleOrConnection);
+        if (StringUtils.isEmpty(typeOrLikeType))
 	            return null;
 
 		ImportElement theImport = null;
 		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
 
-		if (effectiveType.contains(".")) {
-			String fullyQualifiedTypeName = effectiveType;
+		if (typeOrLikeType.contains(".")) {
+			String fullyQualifiedTypeName = typeOrLikeType;
         	String simpleTypeName = StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
 			INedTypeInfo existingSimilarType = NedElement.getDefaultNedTypeResolver().lookupNedType(simpleTypeName, parent);
 			if (existingSimilarType == null) {
 				// add import
 				theImport = parent.getContainingNedFileElement().addImport(fullyQualifiedTypeName);
-				setEffectiveType(submoduleOrConnection, simpleTypeName);
+				setTypeOrLikeType(submoduleOrConnection, simpleTypeName);
 			}
 			else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
 				// import not needed, this type is already visible: just use short name
-				setEffectiveType(submoduleOrConnection, simpleTypeName);
+				setTypeOrLikeType(submoduleOrConnection, simpleTypeName);
 			}
 			else {
 				// do nothing: another module with the same simple name already imported, so leave fully qualified name
@@ -382,11 +382,21 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	/**
 	 * Sets whichever of "type" and "like-type" is already set on the element
 	 */
-	public static void setEffectiveType(IHasType submoduleOrConnection, String value) {
+	public static void setTypeOrLikeType(IHasType submoduleOrConnection, String value) {
 		if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
 			submoduleOrConnection.setLikeType(value);
 		else
 			submoduleOrConnection.setType(value);
+	}
+
+	/**
+	 * Returns whichever of "type" and "like-type" is already set on the element
+	 */
+	public static String getTypeOrLikeType(IHasType submoduleOrConnection) {
+	    if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
+	        return submoduleOrConnection.getLikeType();
+	    else
+	        return submoduleOrConnection.getType();
 	}
 
 	/**

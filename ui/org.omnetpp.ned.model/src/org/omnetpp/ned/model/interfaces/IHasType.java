@@ -46,7 +46,10 @@ public interface IHasType extends INedElement {
     public void setLikeParam(String type);
 
     /**
-     * Returns the type, or the likeType if type was not specified
+     * Returns the type, or the likeType if type was not specified. For connections with
+     * implicit type (i.e. where getType()==""), it returns one of "ned.IdealChannel", 
+     * "ned.DelayChannel" or "ned.DatarateChannel", based on the parameter assignments
+     * in the connection's "parameters" section.
      */
     public String getEffectiveType();
 

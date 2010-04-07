@@ -35,7 +35,7 @@ public class CreateSubmoduleCommand extends Command {
         Assert.isNotNull(child);
     	this.child = child;
     	this.parent = parent;
-    	this.fullyQualifiedTypeName = child.getEffectiveType();  // redo() destructively modifies child's type
+    	this.fullyQualifiedTypeName = NedElementUtilEx.getTypeOrLikeType(child);  // redo() destructively modifies child's type
     }
 
     @Override
@@ -72,7 +72,7 @@ public class CreateSubmoduleCommand extends Command {
     @Override
     public void undo() {
         parent.removeSubmodule(child);
-        NedElementUtilEx.setEffectiveType(child, fullyQualifiedTypeName); // restore original value (redo() will need it)
+        NedElementUtilEx.setTypeOrLikeType(child, fullyQualifiedTypeName); // restore original value (redo() will need it)
         if (importElement != null)
         	importElement.removeFromParent();
     }
