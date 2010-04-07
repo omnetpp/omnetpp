@@ -213,6 +213,11 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
 
     	for (int i = 0; i < editParts.size(); i++) {
     		childPart = (GraphicalEditPart)editParts.get(i);
+    		// we are interested only in submodule figures and skip other figures
+    		// like top level ned types in the local "types:" declaration
+    		if (!(childPart.getFigure() instanceof SubmoduleFigure))
+    			continue;
+    		
     		r = ((SubmoduleFigure)childPart.getFigure()).getShapeBounds().getCopy();
     		//convert r to absolute from childpart figure
     		childPart.getFigure().translateToAbsolute(r);
@@ -226,8 +231,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     		 * @TODO:Pratik Should create a new createAddCommand(...) which is given the
     		 * request so that attaching to/detaching from guides can be taken care of.
     		 */
-    		command.add(createAddCommand(childPart,
-    			translateToModelConstraint(constraint)));
+    		command.add(createAddCommand(childPart, translateToModelConstraint(constraint)));
     	}
     	return command.unwrap();
     }
