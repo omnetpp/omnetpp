@@ -32,7 +32,6 @@ import org.eclipse.gef.palette.PaletteSeparator;
 import org.eclipse.gef.palette.PaletteStack;
 import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
-import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.CreationTool;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -51,7 +50,6 @@ import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
-import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -59,8 +57,8 @@ import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
@@ -580,31 +578,35 @@ public class PaletteManager {
      * Builds a tool entry list containing base top level NED components like simple, module, channel etc.
      */
     private static Map<String, ToolEntry> createTypesEntries() {
+    	String bannerComment = "//\n// TODO documentation\n//\n// @author "+System.getProperty("user.name")+"\n//\n";
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
-        CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
+        ModelFactory modelFactory = new ModelFactory(NedElementTags.NED_SIMPLE_MODULE, IHasName.DEFAULT_TYPE_NAME);
+        modelFactory.setBannerComment(bannerComment);
+		CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
                 "Simple"+NBSP+"Module",
                 "Create a simple module type",
-                new ModelFactory(NedElementTags.NED_SIMPLE_MODULE, IHasName.DEFAULT_TYPE_NAME),
+                modelFactory,
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"simple", entry);
 
+        modelFactory = new ModelFactory(NedElementTags.NED_COMPOUND_MODULE, IHasName.DEFAULT_TYPE_NAME);
+        modelFactory.setBannerComment(bannerComment);
         entry = new CombinedTemplateCreationEntry(
                 "Compound"+NBSP+"Module",
                 "Create a compound module type that may contain submodules",
-                new ModelFactory(NedElementTags.NED_COMPOUND_MODULE, IHasName.DEFAULT_TYPE_NAME),
+                modelFactory,
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"compound", entry);
 
         // network tool
-        CreationFactory networkFactory = new CreationFactory() {
+        modelFactory = new ModelFactory(NedElementTags.NED_COMPOUND_MODULE, "Network") {
 			public Object getNewObject() {
-				CompoundModuleElementEx network = (CompoundModuleElementEx)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_COMPOUND_MODULE);
-				network.setName("Network");
+				CompoundModuleElementEx network = (CompoundModuleElementEx)super.getNewObject();
 				network.setIsNetwork(true);
 				return network;
 			}
@@ -612,38 +614,44 @@ public class PaletteManager {
 				return "Network";
 			}
         };
-
+        modelFactory.setBannerComment(bannerComment);
         entry = new CombinedTemplateCreationEntry(
                 "Network",
                 "Create a network type",
-                networkFactory,
+                modelFactory,
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_NETWORK),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_NETWORK)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"network", entry);
 
+        modelFactory = new ModelFactory(NedElementTags.NED_CHANNEL, IHasName.DEFAULT_TYPE_NAME);
+        modelFactory.setBannerComment(bannerComment);
         entry = new CombinedTemplateCreationEntry(
                 "Channel",
                 "Create a channel type",
-                new ModelFactory(NedElementTags.NED_CHANNEL, IHasName.DEFAULT_TYPE_NAME),
+                modelFactory,
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"channel", entry);
 
+        modelFactory = new ModelFactory(NedElementTags.NED_MODULE_INTERFACE, IHasName.DEFAULT_TYPE_NAME);
+        modelFactory.setBannerComment(bannerComment);
         entry = new CombinedTemplateCreationEntry(
         		"Module"+NBSP+"Interface",
         		"Create a module interface type",
-        		new ModelFactory(NedElementTags.NED_MODULE_INTERFACE, IHasName.DEFAULT_TYPE_NAME),
+        		modelFactory,
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"moduleinterface", entry);
 
+        modelFactory = new ModelFactory(NedElementTags.NED_CHANNEL_INTERFACE, IHasName.DEFAULT_TYPE_NAME);
+        modelFactory.setBannerComment(bannerComment);
         entry = new CombinedTemplateCreationEntry(
                 "Channel"+NBSP+"Interface",
                 "Create a channel interface type",
-                new ModelFactory(NedElementTags.NED_CHANNEL_INTERFACE, IHasName.DEFAULT_TYPE_NAME),
+                modelFactory,
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE)
         );
