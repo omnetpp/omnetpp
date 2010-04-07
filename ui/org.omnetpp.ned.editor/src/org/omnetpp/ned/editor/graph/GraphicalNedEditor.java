@@ -942,11 +942,17 @@ public class GraphicalNedEditor
 
             private void updateTextBounds() {
                 Dimension d = getCollapseToggle().getSize();
-                int bd = Platform.getOS().equals(Platform.OS_MACOSX) ? text.getBorderWidth() : 0; 
-                text.setSize(d.width - 3 * (ICON_WIDTH + ICON_SPACING) + 2 * bd, d.height + 2 * bd - 2 * ICON_SPACING + 10);
+                text.setSize(d.width - 3 * (ICON_WIDTH + ICON_SPACING), d.height - 2 * ICON_SPACING + 2);
                 Point location = getBounds().getLocation();
                 translateToAbsolute(location);
-                text.setLocation(location.x + ICON_WIDTH + ICON_SPACING * 2 - bd, location.y + ICON_SPACING - 5 - bd);
+                text.setLocation(location.x + ICON_WIDTH + ICON_SPACING * 2, location.y + ICON_SPACING);
+
+                // resize on MAC because the size of the field was too small
+                if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+                	int bd = text.getBorderWidth();
+                	text.setBounds(text.getLocation().x-bd, text.getLocation().y-5-bd, text.getSize().x+2*bd, text.getSize().y+2*bd+8);
+                }
+                
             }
 
             private void updateFilterFigureBounds() {
