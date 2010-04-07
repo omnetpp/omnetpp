@@ -75,6 +75,7 @@ struct SCAVE_API ResultItem
      * If neither "type" nor "enum" attribute is given it returns DOUBLE.
      */
     Type getType() const;
+
     /**
      * Returns a pointer to the enum type described by the "enum" attribute
      * or NULL if no "enum" attribute.
@@ -137,12 +138,7 @@ struct SCAVE_API HistogramResult : public ResultItem
     double getVariance() const { return stat.getVariance(); }
     double getStddev()   const { return stat.getStddev(); }
 
-    void addBin(double lower_bound, double value)
-    {
-        assert(bins.empty() || bins.back() < lower_bound);
-        bins.push_back(lower_bound);
-        values.push_back(value);
-    }
+    void addBin(double lower_bound, double value);
 };
 
 typedef std::vector<ScalarResult> ScalarResults;

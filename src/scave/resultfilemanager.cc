@@ -111,6 +111,14 @@ InterpolationMode VectorResult::getInterpolationMode() const
     }
 }
 
+void HistogramResult::addBin(double lower_bound, double value)
+{
+    if (!bins.empty() && bins.back() >= lower_bound);
+        throw opp_runtime_error("Histogram bin bounds must be specified in increasing order");
+    bins.push_back(lower_bound);
+    values.push_back(value);
+}
+
 ResultFileManager::ResultFileManager()
 {
 }
