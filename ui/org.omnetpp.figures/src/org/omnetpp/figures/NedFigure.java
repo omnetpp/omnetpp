@@ -8,14 +8,20 @@
 package org.omnetpp.figures;
 
 import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.TextUtilities;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.displaymodel.IDisplayString;
+
 
 /**
  * It is the common base to all selectable figures in the editor.
@@ -25,6 +31,24 @@ import org.omnetpp.common.displaymodel.IDisplayString;
  * @author rhornig
  */
 abstract public class NedFigure extends Figure implements IProblemDecorationSupport, ITooltipTextProvider {
+
+	// This is a global hack to increase the text size returned by the textExtents function
+	// on Windows, because it is too small if anti aliased fonts are used. Once 
+	// textExtent works correctly it can be removed
+	static {
+		TextUtilities.INSTANCE = new TextUtilities() {
+		    public Dimension getStringExtents(String s, Font f) {
+		        Dimension stringExtents = FigureUtilities.getStringExtents(s, f);
+				return "win32".equals(SWT.getPlatform()) ? stringExtents.expand(2,0) : stringExtents;
+		    }
+
+		    public Dimension getTextExtents(String s, Font f) {
+		        Dimension textExtents = FigureUtilities.getTextExtents(s, f);
+				return "win32".equals(SWT.getPlatform()) ? textExtents.expand(2,0) : textExtents;
+		    }
+		};
+	}
+	
 	// FIXME move it to ImageFactory
 	protected static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
 	protected static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
