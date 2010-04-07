@@ -7,6 +7,7 @@
 
 package org.omnetpp.figures;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.ImageFigure;
@@ -15,7 +16,6 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.TextUtilities;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
@@ -39,12 +39,12 @@ abstract public class NedFigure extends Figure implements IProblemDecorationSupp
 		TextUtilities.INSTANCE = new TextUtilities() {
 		    public Dimension getStringExtents(String s, Font f) {
 		        Dimension stringExtents = FigureUtilities.getStringExtents(s, f);
-				return "win32".equals(SWT.getPlatform()) ? stringExtents.expand(2,0) : stringExtents;
+				return Platform.OS_WIN32.equals(Platform.getOS()) ? stringExtents.expand(2,0) : stringExtents;
 		    }
 
 		    public Dimension getTextExtents(String s, Font f) {
 		        Dimension textExtents = FigureUtilities.getTextExtents(s, f);
-				return "win32".equals(SWT.getPlatform()) ? textExtents.expand(2,0) : textExtents;
+				return Platform.OS_WIN32.equals(Platform.getOS()) ? textExtents.expand(2,0) : textExtents;
 		    }
 		};
 	}
