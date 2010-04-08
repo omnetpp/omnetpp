@@ -261,6 +261,7 @@ proc create_omnetpp_window {} {
       {until    -image $icons(until)   -command {run_until}}
       {stop     -image $icons(stop)    -command {stop_simulation}}
       {sep4     -separator}
+      {eventlog -image $icons(recordeventlog) -command {toggle_record_eventlog}}
       {finish   -image $icons(finish)  -command {call_finish}}
       {sep02     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
@@ -268,7 +269,6 @@ proc create_omnetpp_window {} {
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggle_timeline}}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
-      {eventlog -image $icons(recordeventlog) -command {toggle_record_eventlog}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulation_options}}
     } {
@@ -290,12 +290,12 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.until)   {Run until time or event number}
     set help_tips(.toolbar.stop)    {Stop running simulation (F8)}
     set help_tips(.toolbar.restart) {Rebuild network}
+    set help_tips(.toolbar.eventlog) {Eventlog recording on/off}
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
-    set help_tips(.toolbar.eventlog) {Toggle eventlog recording}
     set help_tips(.toolbar.options) {Simulation options}
 
     #################################
