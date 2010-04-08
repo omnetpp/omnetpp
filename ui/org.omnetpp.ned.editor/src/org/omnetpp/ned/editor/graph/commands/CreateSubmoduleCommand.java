@@ -10,7 +10,6 @@ package org.omnetpp.ned.editor.graph.commands;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;

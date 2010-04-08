@@ -119,16 +119,19 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	}
 
 	/**
-	 * Insert an import after the last import in the file
+	 * Insert an import before the first import in the file.
+	 * 
+	 * The new import is inserted at the beginning rather than after 
+	 * the last import so the trailing new lines (in the trailing comment 
+	 * of the last import) will not appear between the import lines. 
 	 */
    public ImportElement addImport(String importSpec) {
 		ImportElement importElement = (ImportElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_IMPORT);
 		importElement.setImportSpec(importSpec);
 
-		INedElement lastImport = getLastImportChild();
-		INedElement insertionPoint = lastImport!=null ? lastImport.getNextSibling() :
-			getFirstPackageChild()!=null ? getFirstPackageChild().getNextSibling() :
-				getFirstChild();
+		INedElement firstImport = getFirstImportChild();
+		INedElement insertionPoint = firstImport!=null ? firstImport :
+			getFirstPackageChild()!=null ? getFirstPackageChild().getNextSibling() : getFirstChild();
 
 		insertChildBefore(insertionPoint, importElement);
 		return importElement;
@@ -140,6 +143,16 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	public void removeImports() {
 		while (getFirstImportChild() != null)
 			getFirstImportChild().removeFromParent();
+	}
+
+	/**
+	 * Returns the first import child in this NED file, or null
+	 */
+	public ImportElement getFirstImportChild() {
+		for (INedElement element : this)
+			if (element instanceof ImportElement)
+				return (ImportElement)element;
+		return null;
 	}
 
 	/**

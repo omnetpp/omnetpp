@@ -349,6 +349,10 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      *
      * Returns the newly created ImportElement, or null if no import got added.
      * (I.e. it returns null as well if an existing import already covered this type.)
+     * 
+     * The new import is inserted at the beginning rather than after 
+     * the last import so the trailing new lines (in the trailing comment 
+     * of the last import) will not appear between the import lines. 
      */
 	public static ImportElement addImportFor(IHasType submoduleOrConnection) {
 	    String typeOrLikeType = getTypeOrLikeType(submoduleOrConnection);
