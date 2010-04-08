@@ -369,6 +369,10 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 			if (existingSimilarType == null) {
 				// add import
 				theImport = parent.getContainingNedFileElement().addImport(fullyQualifiedTypeName);
+				// if this is the last import element add some additional new lines as trailing comment
+				if (theImport.getNextImportSibling() == null)
+					theImport.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
+				
 				setTypeOrLikeType(submoduleOrConnection, simpleTypeName);
 			}
 			else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
