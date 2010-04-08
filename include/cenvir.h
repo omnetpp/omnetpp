@@ -151,12 +151,6 @@ class SIM_API cEnvir
     virtual ~cEnvir();
     //@}
 
-    /**
-     * Notifies the environment that eventlog recording should be enabled
-     * or disabled.
-     */
-    virtual void setEventlogRecording(bool enabled) { record_eventlog = enabled; };
-
     /** @name Methods to be called by the simulation kernel to notify the environment about events. */
     //@{
 
