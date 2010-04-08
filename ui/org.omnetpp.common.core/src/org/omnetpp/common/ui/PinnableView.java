@@ -144,7 +144,7 @@ public abstract class PinnableView extends ViewWithMessagePart {
 
 	protected IAction getOrCreatePinAction() {
 		if (pinAction == null) {
-			pinAction = new ActionExt("Pin", IAction.AS_CHECK_BOX, CommonCorePlugin.getImageDescriptor("icons/elcl16/pin.gif")) {
+			pinAction = new ActionExt("Pin", IAction.AS_CHECK_BOX, CommonCorePlugin.getImageDescriptor("icons/elcl16/pin.png")) {
 				@Override
 				public void run() {
 					if (isChecked())
