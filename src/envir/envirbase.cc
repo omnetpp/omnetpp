@@ -121,7 +121,7 @@ Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, 
 Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (@statistic properties)");
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
-Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODE, "result-recording-mode", CFG_STRING, "", "Defines how to calculate results from the @statistic property matched by the wildcard. Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. If the list begins with '+', values get appended to the list specified in the record= key of the @statistic, otherwise replaces it. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-mode=timeavg,max");
+Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-modes", CFG_STRING, "default", "Defines how to calculate results from the @statistic property matched by the wildcard. Special values: default, all: they select the modes listed in the record= key of @statistic; all selects all of them, default selects the non-optional ones (i.e. excludes the ones that end in a question mark). Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
 
 // the following options are declared in other files
 extern cConfigOption *CFGID_SCALAR_RECORDING;
@@ -803,18 +803,10 @@ void EnvirBase::configure(cComponent *component)
     addResultRecorders(component);
 }
 
-static int search_(std::vector<const char *>& v, const char *s)
+static int search_(std::vector<std::string>& v, const char *s)
 {
     for (int i=0; i<(int)v.size(); i++)
-        if (opp_strcmp(v[i],s)==0)
-            return i;
-    return -1;
-}
-
-static int search_(std::vector<std::string>& v, std::string& s)
-{
-    for (int i=0; i<(int)v.size(); i++)
-        if (v[i] == s)
+        if (strcmp(v[i].c_str(), s)==0)
             return i;
     return -1;
 }
@@ -842,44 +834,74 @@ void EnvirBase::addResultRecorders(cComponent *component)
         SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
 
         // collect the list of result recorders
-        std::vector<const char *> modes1;
-        int n = property->getNumValues("record");
-        for (int j = 0; j < n; j++)
-            modes1.push_back(property->getValue("record",j));
-
-        std::vector<std::string> modes2;
-        std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODE, "");
-        if (modesOption != "")
+        std::vector<std::string> modes;
+        std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODES, "");
+        if (!modesOption.empty() && modesOption != "-") // "-" means "none"
         {
-            // +add,-remove,add,add,add
-            if (modesOption[0] != '+' && modesOption[0] != '-')
-                modes1.clear();
+            // if first configured mode starts with '+' or '-', assume "default" as base
+            if (modesOption[0]=='-' || modesOption[1]=='+')
+            {
+                // collect the mandatory record= items from @statistic (those not ending in '?')
+                int n = property->getNumValues("record");
+                for (int j = 0; j < n; j++) {
+                    const char *m = property->getValue("record",j);
+                    if (m[strlen(m)-1] != '?')
+                        modes.push_back(m);
+                }
+            }
+
+            // loop through all modes
             StringTokenizer tokenizer(modesOption.c_str(), ","); //XXX we should ignore commas within parens
             while (tokenizer.hasMoreTokens())
             {
-                std::string mode = tokenizer.nextToken();
-                if (mode[0]=='-') {
-                    // remove from modes1
-                    mode = mode.substr(1);
-                    int k = search_(modes1, mode.c_str());
-                    if (k!=-1)
-                        modes1.erase(modes1.begin()+k);
+                const char *mode = tokenizer.nextToken();
+                if (!strcmp(mode, "default"))
+                {
+                    // collect the mandatory record= items from @statistic (those not ending in '?')
+                    int n = property->getNumValues("record");
+                    for (int j = 0; j < n; j++) {
+                        const char *m = property->getValue("record",j);
+                        if (m[strlen(m)-1] != '?')
+                            modes.push_back(m); //FIXME if not yet added
+                    }
+                }
+                else if (!strcmp(mode, "all"))
+                {
+                    // collect the all record= items from @statistic (strip trailing '?' if present)
+                    int n = property->getNumValues("record");
+                    for (int j = 0; j < n; j++) {
+                        const char *m = property->getValue("record",j);
+                        if (m[strlen(m)-1] != '?') {
+                            if (search_(modes, m) == -1)
+                                modes.push_back(m);
+                        }
+                        else {
+                            std::string m1 = std::string(m, strlen(m)-1);
+                            if (search_(modes, m1.c_str()) == -1)
+                                modes.push_back(m1);
+                        }
+                    }
+                }
+                else if (mode[0] == '-')
+                {
+                    // remove from modes
+                    int k = search_(modes, mode+1);
+                    if (k != -1)
+                        modes.erase(modes.begin()+k);
                 }
                 else {
-                    // add to modes2 if not yet in modes1 or in modes2
-                    if (mode[0]=='+')
-                        mode = mode.substr(1);
-                    if (search_(modes1, mode.c_str())==-1 && search_(modes2, mode)==-1)
-                        modes2.push_back(mode);
+                    // add to modes
+                    if (mode[0] == '+')
+                        ++mode;
+                    if (search_(modes, mode) == -1)
+                        modes.push_back(mode);
                 }
             }
         }
 
         // add result recorders
-        for (int j = 0; j < (int)modes1.size(); j++)
-            doResultRecorder(source, modes1[j], scalarsEnabled, vectorsEnabled, component, statisticName, "in @statistic property");
-        for (int j = 0; j < (int)modes2.size(); j++)
-            doResultRecorder(source, modes2[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName, "in the configuration");
+        for (int j = 0; j < (int)modes.size(); j++)
+            doResultRecorder(source, modes[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName);
     }
 
     if (opt_debug_statistics_recording)
@@ -926,7 +948,7 @@ SignalSource EnvirBase::doStatisticSource(cComponent *component, const char *sta
     }
 }
 
-void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where)
+void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName)
 {
     try
     {
@@ -945,13 +967,13 @@ void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordi
         {
             // something more complicated: use parser
             StatisticRecorderParser parser;
-            parser.parse(source, recordingMode, scalarsEnabled, vectorsEnabled, component, statisticName, where);
+            parser.parse(source, recordingMode, scalarsEnabled, vectorsEnabled, component, statisticName);
         }
     }
     catch (std::exception& e)
     {
-        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s' specified %s: %s",
-            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, where, e.what());
+        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s': %s",
+            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, e.what());
     }
 }
 
@@ -1144,7 +1166,7 @@ void EnvirBase::bubble(cComponent *component, const char *text)
 
 void EnvirBase::objectDeleted(cObject *object)
 {
-	// TODO?
+    // TODO?
 }
 
 void EnvirBase::simulationEvent(cMessage *msg)
@@ -1411,14 +1433,14 @@ void EnvirBase::readPerRunOptions()
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
-	// NOTE: eventlogmgr must be non NULL when record_eventlog is true
-	if (enabled && !eventlogmgr) {
+    // NOTE: eventlogmgr must be non NULL when record_eventlog is true
+    if (enabled && !eventlogmgr) {
         eventlogmgr = new EventlogFileManager();
         eventlogmgr->configure();
         eventlogmgr->open();
         eventlogmgr->recordSimulation();
-	}
-	cRunnableEnvir::setEventlogRecording(enabled);
+    }
+    cRunnableEnvir::setEventlogRecording(enabled);
 }
 
 //-------------------------------------------------------------

@@ -1,3 +1,26 @@
+2010-04-08  Andras Varga
+
+	* result-recording-mode renamed to result-recording-modes=
+
+	* in the record= list of @statistic, now you can make items optional
+	by appending "?" to them. By default, only non-optional items
+	are used
+
+	* result-recording-modes has changed: there are two keywords that
+	are accepted in the list: "all" and "default". "all" copies all items
+	from record= of @statistic() including optional ones (those suffixed
+	with "?"), and "default" copies only non-optional ones. "default" is 
+	the default setting; it is also implied if result-recording-modes 
+	starts with '+'  or '-'. A lone '-' disables all recording modes.
+	Examples:
+	**.result-recording-modes = default  --> the default setting
+	**.result-recording-modes = all      --> includes '?' items too
+	**.result-recording-modes = -        --> disable all
+	**.result-recording-modes = mean     --> only mean (disables 'default')
+	**.result-recording-modes = default,-vector,+histogram
+	**.result-recording-modes = -vector,+histogram   --> same as above
+	**.result-recording-modes = all,-vector,+histogram
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2010-03-10  Andras Varga

@@ -275,7 +275,7 @@ class RecorderExpressionResolver : public Expression::Resolver
     }
 };
 
-void StatisticRecorderParser::parse(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, const char *where)
+void StatisticRecorderParser::parse(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName)
 {
     // parse expression
     Expression expr;
