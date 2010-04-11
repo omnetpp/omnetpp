@@ -140,99 +140,57 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 public class SequenceChartContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_TIMELINE_MODE = TOOL_IMAGE_DIR + "timelinemode.png";
-
     public final static String IMAGE_AXIS_ORDERING_MODE = TOOL_IMAGE_DIR + "axisordering.gif";
-
     public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOL_IMAGE_DIR + "eventnumbers.png";
-
+    public final static String IMAGE_SHOW_SELF_MESSAGES = TOOL_IMAGE_DIR + "selfmessages.png";
     public final static String IMAGE_SHOW_MESSAGE_SENDS = TOOL_IMAGE_DIR + "messagesends.png";
-
     public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOL_IMAGE_DIR + "messagenames.png";
-
     public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOL_IMAGE_DIR + "reusearrows.png";
-
     public final static String IMAGE_SHOW_MODULE_METHOD_CALLS = TOOL_IMAGE_DIR + "modulemethodcall.png";
-
+    public final static String IMAGE_SHOW_TRANSMISSION_DURATIONS = TOOL_IMAGE_DIR + "transmissiondurations.png";
     public final static String IMAGE_SHOW_ARROW_HEADS = TOOL_IMAGE_DIR + "arrowhead.png";
-
+    public final static String IMAGE_SHOW_ZERO_TIME_REGIONS = TOOL_IMAGE_DIR + "zerotimeregions.png";
     public final static String IMAGE_INCREASE_SPACING = TOOL_IMAGE_DIR + "incr_spacing.png";
-
     public final static String IMAGE_DECREASE_SPACING = TOOL_IMAGE_DIR + "decr_spacing.png";
-
     public final static String IMAGE_DENSE_AXES = TOOL_IMAGE_DIR + "denseaxes.png";
-
     public final static String IMAGE_BALANCED_AXES = TOOL_IMAGE_DIR + "balancedaxes.png";
-
     public final static String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOL_IMAGE_DIR + "attachvector.png";
-
     public final static String IMAGE_EXPORT_SVG = TOOL_IMAGE_DIR + "export_wiz.gif";
 
 	private static SequenceChartContributor singleton;
-
 	protected SequenceChart sequenceChart;
-
+	
 	protected Separator separatorAction;
-
 	protected SequenceChartMenuAction timelineModeAction;
-
 	protected SequenceChartMenuAction axisOrderingModeAction;
-
 	protected SequenceChartAction filterAction;
-
 	protected SequenceChartAction showEventNumbersAction;
-
 	protected SequenceChartAction showMessageNamesAction;
-
     protected SequenceChartAction showMessageSendsAction;
-
     protected SequenceChartAction showSelfMessagesAction;
-
     protected SequenceChartAction showSelfMessageReusesAction;
-
 	protected SequenceChartAction showOtherMessageReusesAction;
-
 	protected SequenceChartAction showArrowHeadsAction;
-
     protected SequenceChartAction showZeroSimulationTimeRegionsAction;
-
     protected SequenceChartAction showAxisLabelsAction;
-
     protected SequenceChartAction showAxesWithoutEventsAction;
-
     protected SequenceChartAction showTransmissionDurationsAction;
-
     protected SequenceChartAction showModuleMethodCallsAction;
-
     protected SequenceChartAction changeFontAction;
-
     protected SequenceChartAction increaseSpacingAction;
-
 	protected SequenceChartAction decreaseSpacingAction;
-
     protected SequenceChartAction defaultZoomAction;
-
     protected SequenceChartAction zoomToFitAction;
-
 	protected SequenceChartAction zoomInAction;
-
 	protected SequenceChartAction zoomOutAction;
-
 	protected SequenceChartAction denseAxesAction;
-
 	protected SequenceChartAction balancedAxesAction;
-
 	protected SequenceChartAction toggleBookmarkAction;
-
     protected SequenceChartAction releaseMemoryAction;
-
     protected SequenceChartAction copyToClipboardAction;
-
     protected SequenceChartAction exportToSVGAction;
-
     protected SequenceChartAction refreshAction;
-
 	protected StatusLineContributionItem timelineModeStatus;
-
 	protected StatusLineContributionItem filterStatus;
 
 	/*************************************************************************************
@@ -369,29 +327,29 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				menuManager.add(createFindTextCommandContributionItem());
                 menuManager.add(createFindNextCommandContributionItem());
 
-                menuManager.add(separatorAction);
-                menuManager.add(timelineModeAction);
-				menuManager.add(axisOrderingModeAction);
-			    menuManager.add(filterAction);
-				menuManager.add(separatorAction);
-
 				// show/hide submenu
 				IMenuManager subMenuManager = new MenuManager("Show/Hide");
-                menuManager.add(subMenuManager);
-                subMenuManager.add(showEventNumbersAction);
-                subMenuManager.add(showMessageNamesAction);
                 subMenuManager.add(showMessageSendsAction);
                 subMenuManager.add(showSelfMessagesAction);
                 subMenuManager.add(showOtherMessageReusesAction);
                 subMenuManager.add(showSelfMessageReusesAction);
-                subMenuManager.add(showArrowHeadsAction);
-                subMenuManager.add(showZeroSimulationTimeRegionsAction);
-                subMenuManager.add(showAxisLabelsAction);
+                subMenuManager.add(showModuleMethodCallsAction);
+                subMenuManager.add(separatorAction);
                 subMenuManager.add(showAxesWithoutEventsAction);
                 subMenuManager.add(showTransmissionDurationsAction);
-                subMenuManager.add(showModuleMethodCallsAction);
+                subMenuManager.add(showZeroSimulationTimeRegionsAction);
+                subMenuManager.add(separatorAction);
+                subMenuManager.add(showEventNumbersAction);
+                subMenuManager.add(showMessageNamesAction);
+                subMenuManager.add(showArrowHeadsAction);
+                subMenuManager.add(showAxisLabelsAction);
 
-                menuManager.add(changeFontAction);
+                menuManager.add(separatorAction);
+                menuManager.add(subMenuManager);
+                menuManager.add(filterAction);
+                menuManager.add(timelineModeAction);
+                menuManager.add(axisOrderingModeAction);
+                menuManager.add(separatorAction);
                 menuManager.add(separatorAction);
 
                 subMenuManager = new MenuManager("Spacing");
@@ -409,7 +367,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 subMenuManager.add(zoomInAction);
                 subMenuManager.add(zoomOutAction);
 
-				menuManager.add(separatorAction);
+                menuManager.add(changeFontAction);
+
+                menuManager.add(separatorAction);
                 menuManager.add(toggleBookmarkAction);
                 menuManager.add(copyToClipboardAction);
 				menuManager.add(createRefreshCommandContributionItem());
@@ -857,7 +817,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
 	private SequenceChartAction createShowSelfMessagesAction() {
-		return new SequenceChartAction("Show Self Messages", Action.AS_CHECK_BOX) {
+		return new SequenceChartAction("Show Self-Messages", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_SELF_MESSAGES)) {
 			@Override
 			protected void doRun() {
 				sequenceChart.setShowSelfMessages(!sequenceChart.getShowSelfMessages());
@@ -887,7 +847,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createShowSelfMessageReusesAction() {
-        return new SequenceChartAction("Show Self Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+        return new SequenceChartAction("Show Self-Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
             @Override
             protected void doRun() {
                 sequenceChart.setShowSelfMessageReuses(!sequenceChart.getShowSelfMessageReuses());
@@ -917,7 +877,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	}
 
     private SequenceChartAction createShowZeroSimulationTimeRegionsAction() {
-        return new SequenceChartAction("Show Zero Simulation Time Regions", Action.AS_CHECK_BOX) {
+        return new SequenceChartAction("Show Zero Simulation Time Regions", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_ZERO_TIME_REGIONS)) {
             @Override
             protected void doRun() {
                 sequenceChart.setShowZeroSimulationTimeRegions(!sequenceChart.getShowZeroSimulationTimeRegions());
@@ -962,7 +922,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createShowTransmissionDurationsAction() {
-        return new SequenceChartAction("Show Transmission Durations", Action.AS_CHECK_BOX) {
+        return new SequenceChartAction("Show Transmission Durations", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_TRANSMISSION_DURATIONS)) {
             @Override
             protected void doRun() {
                 sequenceChart.setShowTransmissionDurations(!sequenceChart.getShowTransmissionDurations());

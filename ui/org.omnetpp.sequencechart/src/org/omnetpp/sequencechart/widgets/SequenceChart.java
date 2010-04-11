@@ -202,7 +202,7 @@ public class SequenceChart
     private boolean showMessageSends = true; // show or hide message send arrows
     private boolean showSelfMessages = true; // show or hide self message arrows
     private boolean showSelfMessageReuses = false; // show or hide self message reuse arrows
-	private boolean showOtherMessageReuses = true; // show or hide reuse message arrows
+	private boolean showOtherMessageReuses = false; // show or hide reuse message arrows
     private boolean showModuleMethodCalls = false; // show or hide module method call arrows
 	private boolean showEventNumbers = true;
     private boolean showZeroSimulationTimeRegions = true;
