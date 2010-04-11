@@ -119,9 +119,9 @@ proc create_omnetpp_window {} {
     # File menu
     foreach i {
       {command -command new_run -label {Set up a configuration...} -underline 7}
-      {command -command new_network -label {Set up a network...} -underline 7}
       {separator}
       {command -command load_nedfile -label {Load NED file...} -underline 0}
+      {command -command new_network -label {Set up an unconfigured network...} -underline 7}
       {separator}
       {command -command create_snapshot -label {Create snapshot...} -underline 7}
       {separator}
