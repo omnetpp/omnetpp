@@ -217,11 +217,10 @@ proc new_network {} {
     if {$ok == 1} {
        busy "Setting up network..."
        opp_newnetwork $netname
+       reflect_record_eventlog
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
-           reflect_record_eventlog
-
            busy "Opening graphical network inspector..."
            opp_inspect [opp_object_systemmodule] (default)
            busy
@@ -248,11 +247,10 @@ proc new_run {} {
        # puts "DBG: selected $configname $runnumber"
        busy "Setting up network..."
        opp_newrun $configname $runnumber
+       reflect_record_eventlog
        busy
 
        if [opp_isnotnull [opp_object_systemmodule]] {
-           reflect_record_eventlog
-
            busy "Opening graphical network inspector..."
            opp_inspect [opp_object_systemmodule] (default)
            busy
