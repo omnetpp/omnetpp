@@ -33,9 +33,9 @@ NAMESPACE_BEGIN
 class COMMON_API LineTokenizer
 {
   private:
-	// separators
-	char sep1;
-	char sep2;
+    // separators
+    char sep1;
+    char sep2;
 
     int lineBufferSize;
     char *lineBuffer;

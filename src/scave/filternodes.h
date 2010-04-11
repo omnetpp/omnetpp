@@ -521,10 +521,10 @@ class SCAVE_API DivideByTimeNodeType : public FilterNodeType
  */
 class SCAVE_API TimeToSerialNode : public FilterNode
 {
-	protected:
-		int64 serial;
+    protected:
+        int64 serial;
     public:
-    	TimeToSerialNode() : serial(0) {}
+        TimeToSerialNode() : serial(0) {}
         virtual ~TimeToSerialNode() {}
 
         virtual bool isReady() const;

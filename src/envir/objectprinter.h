@@ -32,10 +32,10 @@ class cObject;
  *
  */
 enum ObjectPrinterRecursionControl {
-	SKIP,      // don't print this field
-	RECURSE,   // print this field in detail by recursing down
-	FULL_NAME, // print the full name only (applicable to cObject)
-	FULL_PATH  // print the full Path only (applicable to cObject)
+    SKIP,      // don't print this field
+    RECURSE,   // print this field in detail by recursing down
+    FULL_NAME, // print the full name only (applicable to cObject)
+    FULL_PATH  // print the full Path only (applicable to cObject)
 };
 
 /**
@@ -53,12 +53,12 @@ typedef ObjectPrinterRecursionControl (*ObjectPrinterRecursionPredicate)(void *,
  */
 class ENVIR_API ObjectPrinter
 {
-	protected:
+    protected:
         int indentSize;
         char buffer[1024];
         std::vector<MatchExpression*> objectMatchExpressions;
         std::vector<std::vector<MatchExpression*> > fieldNameMatchExpressionsList;
-		ObjectPrinterRecursionPredicate recursionPredicate;
+        ObjectPrinterRecursionPredicate recursionPredicate;
 
     public:
         /**
@@ -67,7 +67,7 @@ class ENVIR_API ObjectPrinter
          * will be deallocated by this ObjectPrinter.
          */
         ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
-        		      const std::vector<MatchExpression*>& objectMatchExpressions,
+                      const std::vector<MatchExpression*>& objectMatchExpressions,
                       const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
                       int indentSize=4);
 

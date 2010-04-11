@@ -185,7 +185,7 @@ void FileReader::checkConsistence(bool checkDataPointer) const
     bool ok = (size_t)(bufferEnd - bufferBegin) == bufferSize &&
       ((!dataBegin && !dataEnd) ||
        (dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
-	(!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd))));
+    (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd))));
 
     if (!ok)
         throw opp_runtime_error("FileReader: internal error");

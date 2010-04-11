@@ -89,9 +89,9 @@ inline std::string XYDataset::getRowField(int row, ResultItemField field) const
 
 inline std::string XYDataset::getRowFieldNoCheck(int row, ResultItemField field) const
 {
-	if (row < 0 || row >= getRowCount())
-		return "";
-	return field.getFieldValue(rowKeys[rowOrder[row]]);
+    if (row < 0 || row >= getRowCount())
+        return "";
+    return field.getFieldValue(rowKeys[rowOrder[row]]);
 }
 
 inline std::string XYDataset::getColumnField(int column, ResultItemField field) const

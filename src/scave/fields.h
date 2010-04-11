@@ -179,7 +179,7 @@ class SCAVE_API ResultItemFields
     private:
         std::vector<ResultItemField> fields;
     public:
-    	typedef std::vector<ResultItemField>::const_iterator const_iterator;
+        typedef std::vector<ResultItemField>::const_iterator const_iterator;
 
         static StringVector getFieldNames();
 

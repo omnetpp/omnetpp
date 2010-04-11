@@ -53,21 +53,21 @@ class SCAVE_API DataTable
             Column(const std::string name, ColumnType type) : name(name), type(type) {}
         };
 
-		class CellPtr {
-			private:
-				DataTable* table;
-				int row;
-				int column;
-			public:
-				CellPtr() :table(NULL), row(-1), column(-1) {}
-				CellPtr(DataTable *table, int row, int column) : table(table), column(column), row(row) {}
-				bool isNull() const { return table == NULL || row < 0 || row >= table->getNumRows() || column < 0 || column >= table->getNumColumns(); }
-				int getRow() const {return row; }
-				int getColumn() const { return column; }
-				void resetRow() { row = 0; }
-				void nextRow() { row++; }
-				bool operator<(const CellPtr &other) const;
-		};
+        class CellPtr {
+            private:
+                DataTable* table;
+                int row;
+                int column;
+            public:
+                CellPtr() :table(NULL), row(-1), column(-1) {}
+                CellPtr(DataTable *table, int row, int column) : table(table), column(column), row(row) {}
+                bool isNull() const { return table == NULL || row < 0 || row >= table->getNumRows() || column < 0 || column >= table->getNumColumns(); }
+                int getRow() const {return row; }
+                int getColumn() const { return column; }
+                void resetRow() { row = 0; }
+                void nextRow() { row++; }
+                bool operator<(const CellPtr &other) const;
+        };
     public:
         const std::string name;
         const std::string description;
@@ -148,32 +148,32 @@ class SCAVE_API ScalarDataTable : public DataTable
  */
 class SCAVE_API JoinedDataTable : public DataTable
 {
-	private:
-		std::vector<DataTable*> joinedTables;
-		int tableCount;
-		int rowCount;
-		std::vector<std::pair<int,int> > columnMap; // maps column -> (tableIndex,tableColumn)
-		int* rowMap; // maps (row,tableIndex) -> tableRow
-		             //   implemented as a two dimensional array (has rowCount*tableCount elements)
-	public:
+    private:
+        std::vector<DataTable*> joinedTables;
+        int tableCount;
+        int rowCount;
+        std::vector<std::pair<int,int> > columnMap; // maps column -> (tableIndex,tableColumn)
+        int* rowMap; // maps (row,tableIndex) -> tableRow
+                     //   implemented as a two dimensional array (has rowCount*tableCount elements)
+    public:
         JoinedDataTable(const std::string name, const std::string description,
             const std::vector<DataTable*> &joinedTables, int joinOnColumn);
-		virtual ~JoinedDataTable();
+        virtual ~JoinedDataTable();
 
         virtual int getNumRows() const;
         virtual bool isNull(int row, int col) const;
         virtual double getDoubleValue(int row, int col) const;
         virtual BigDecimal getBigDecimalValue(int row, int col) const;
         virtual std::string getStringValue(int row, int col) const;
-	private:
-		void addColumn(const Column &column, int tableIndex, int colIndex);
-		void mapTableCell(int row, int column, DataTable *&table, int &tableRow, int &tableCol) const;
+    private:
+        void addColumn(const Column &column, int tableIndex, int colIndex);
+        void mapTableCell(int row, int column, DataTable *&table, int &tableRow, int &tableCol) const;
 };
 
 inline void JoinedDataTable::addColumn(const Column &column, int tableIndex, int colIndex)
 {
-	header.push_back(column); //addColumn(column);
-	columnMap.push_back(std::make_pair(tableIndex, colIndex));
+    header.push_back(column); //addColumn(column);
+    columnMap.push_back(std::make_pair(tableIndex, colIndex));
 }
 
 
@@ -183,8 +183,8 @@ inline void JoinedDataTable::addColumn(const Column &column, int tableIndex, int
  */
 class SCAVE_API ScaveExport
 {
-	private:
-		std::set<std::string> identifiers;
+    private:
+        std::set<std::string> identifiers;
 
     protected:
         std::string baseFileName;
@@ -211,18 +211,18 @@ class SCAVE_API ScaveExport
                                      const IDList &vectors, const std::vector<XYArray*> xyarrays,
                                      const ResultFileManager &manager);
         virtual void saveScalars(const std::string &name, const std::string &description,
-									const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager);
+                                    const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager);
 
         virtual void saveScalars(const std::string &name, const std::string &description,
-									const IDList &scalars, const std::string &moduleName, const std::string &scalarName,
-									ResultItemFields columnFields,
-									const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
-									ResultItemFields isoFields, ResultFileManager &manager);
+                                    const IDList &scalars, const std::string &moduleName, const std::string &scalarName,
+                                    ResultItemFields columnFields,
+                                    const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
+                                    ResultItemFields isoFields, ResultFileManager &manager);
 
         const std::string &getLastFileName() const { return fileName; }
     protected:
         std::string makeUniqueIdentifier(const std::string &name);
-    	virtual std::string makeIdentifier(const std::string &name) = 0;
+        virtual std::string makeIdentifier(const std::string &name) = 0;
         virtual void saveTable(const DataTable &rows, int startIndex, int endIndex) = 0;
 };
 
@@ -326,7 +326,7 @@ class SCAVE_API CsvExport : public ScaveExport
                         int startIndex=0, int endIndex=-1);
     protected:
         virtual std::string makeFileName(const std::string name);
-    	virtual std::string makeIdentifier(const std::string &name);
+        virtual std::string makeIdentifier(const std::string &name);
         virtual void saveTable(const DataTable &table, int startRow, int endRow);
     private:
         void writeHeader(const DataTable &table);

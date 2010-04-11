@@ -377,18 +377,18 @@ int strdictcmp(const char *s1, const char *s2)
     {
         if (opp_isdigit(c1) && opp_isdigit(c2))
         {
-        	char *s1end, *s2end;
+            char *s1end, *s2end;
             double d1 = strtod(s1, &s1end);
             double d2 = strtod(s2, &s2end);
             if (d1!=d2)
                 return d1<d2 ? -1 : 1;
             if (!firstdiff) {
-            	if (s1end-s1 < s2end-s2)
-            		firstdiff = strncasecmp(s1, s2, s1end-s1);
-            	else
-            		firstdiff = strncasecmp(s1, s2, s2end-s2);
-            	if (!firstdiff && (s1end-s1) != (s2end-s2))
-            		firstdiff = (s1end-s1 < s2end-s2) ? -1 : 1;
+                if (s1end-s1 < s2end-s2)
+                    firstdiff = strncasecmp(s1, s2, s1end-s1);
+                else
+                    firstdiff = strncasecmp(s1, s2, s2end-s2);
+                if (!firstdiff && (s1end-s1) != (s2end-s2))
+                    firstdiff = (s1end-s1 < s2end-s2) ? -1 : 1;
             }
             s1 = s1end;
             s2 = s2end;
@@ -405,7 +405,7 @@ int strdictcmp(const char *s1, const char *s2)
             if (lc1!=lc2)
                 return lc1<lc2 ? -1 : 1;
             if (c1!=c2 && !firstdiff && opp_isalpha(c1) && opp_isalpha(c2))
-            	firstdiff = opp_isupper(c2) ? -1 : 1;
+                firstdiff = opp_isupper(c2) ? -1 : 1;
             s1++;
             s2++;
         }

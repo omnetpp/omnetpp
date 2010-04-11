@@ -315,7 +315,7 @@ static bool isMissing(const IDVectorVector &vv, int j)
 
 XYDataset DataSorter::groupAndAggregate(const IDList& scalars, ResultItemFields rowFields, ResultItemFields columnFields)
 {
-	Assert(scalars.areAllScalars());
+    Assert(scalars.areAllScalars());
 
     XYDataset dataset(rowFields, columnFields);
 
@@ -332,7 +332,7 @@ XYDataset DataSorter::groupAndAggregate(const IDList& scalars, ResultItemFields 
 
 IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char *moduleName, const char *scalarName)
 {
-	Assert(scalars.areAllScalars());
+    Assert(scalars.areAllScalars());
 
     // form groups (IDVectors) by moduleName+scalarName
     IDVectorVector vv = doGrouping(scalars, sameGroupModuleScalar);
@@ -410,7 +410,7 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
 XYDataset DataSorter::prepareScatterPlot2(const IDList& scalars, const char *moduleName, const char *scalarName,
             ResultItemFields rowFields, ResultItemFields columnFields)
 {
-	Assert(scalars.areAllScalars());
+    Assert(scalars.areAllScalars());
 
     XYDataset dataset = groupAndAggregate(scalars, rowFields, columnFields);
 
@@ -447,14 +447,14 @@ struct IsoGroupingFn : public std::binary_function<ResultItem, ResultItem, bool>
 
     IsoGroupingFn() {}
     IDList init(const IDList &idlist, const StringVector &moduleNames, const StringVector &scalarNames,
-				ResultItemFields fields, ResultFileManager *manager);
+                ResultItemFields fields, ResultFileManager *manager);
     bool operator()(const ResultItem &d1, const ResultItem &d2) const;
 };
 
 IDList IsoGroupingFn::init(const IDList &idlist, const StringVector &moduleNames, const StringVector &scalarNames,
-							ResultItemFields fields, ResultFileManager *manager)
+                            ResultItemFields fields, ResultFileManager *manager)
 {
-	this->fields = fields;
+    this->fields = fields;
 
     //assert(moduleNames.size() == scalarNames.size());
     int numOfIsoValues = scalarNames.size();
@@ -500,7 +500,7 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
         return true;
 
     if (!fields.equal(d1,d2))
-    	return false;
+        return false;
 
     if (isoMap.empty())
         return true;
@@ -526,7 +526,7 @@ XYDatasetVector DataSorter::prepareScatterPlot3(const IDList& scalars, const cha
         ResultItemFields rowFields, ResultItemFields columnFields,
         const StringVector &isoModuleNames, const StringVector &isoScalarNames, ResultItemFields isoFields)
 {
-	Assert(scalars.areAllScalars());
+    Assert(scalars.areAllScalars());
 
     // group data according to iso fields
     IsoGroupingFn grouping;

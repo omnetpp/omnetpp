@@ -62,7 +62,7 @@ static va_list empty_va;
 
 static bool compareMessageEventNumbers(cMessage *message1, cMessage *message2)
 {
-	return message1->getPreviousEventNumber() < message2->getPreviousEventNumber();
+    return message1->getPreviousEventNumber() < message2->getPreviousEventNumber();
 }
 
 static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level) {
@@ -142,9 +142,9 @@ void EventlogFileManager::open()
 
 void EventlogFileManager::recordSimulation()
 {
-	cModule *systemModule = simulation.getSystemModule();
-	recordModules(systemModule);
-	recordConnections(systemModule);
+    cModule *systemModule = simulation.getSystemModule();
+    recordModules(systemModule);
+    recordConnections(systemModule);
     recordMessages();
 }
 
@@ -153,69 +153,69 @@ void EventlogFileManager::recordMessages()
     const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
     EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
     std::vector<cMessage *> messages;
-	for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++)
-		messages.push_back(it());
-	std::stable_sort(messages.begin(), messages.end(), compareMessageEventNumbers);
-	eventnumber_t currentEvent = -1;
-	for (std::vector<cMessage *>::iterator it = messages.begin(); it != messages.end(); it++) {
-		cMessage *message = *it;
-		if (currentEvent != message->getPreviousEventNumber()) {
-			currentEvent = message->getPreviousEventNumber();
-			EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, currentEvent, message->getSendingTime(), currentEvent == 0 ? simulation.getSystemModule()->getId() : message->getSenderModuleId(), -1);
-		}
-		if (currentEvent == 0)
-			componentMethodBegin(simulation.getSystemModule(), message->getSenderModule(), "initialize", empty_va);
-		if (message->isSelfMessage())
-			messageScheduled(message);
-		else if (!message->getSenderGate()) {
-			beginSend(message);
-			if (message->isPacket()) {
-				cPacket *packet = (cPacket *)message;
-				simtime_t propagationDelay = packet->getArrivalTime() - packet->getSendingTime() - (packet->isReceptionStart() ? 0 : packet->getDuration());
-				messageSendDirect(message, message->getArrivalGate(), propagationDelay, packet->getDuration());
-			}
-			else
-				messageSendDirect(message, message->getArrivalGate(), 0, 0);
-			endSend(message);
-		}
-		else {
-			beginSend(message);
-			messageSendHop(message, message->getSenderGate());
-			endSend(message);
-		}
-		if (currentEvent == 0)
-			componentMethodEnd();
-	}
+    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++)
+        messages.push_back(it());
+    std::stable_sort(messages.begin(), messages.end(), compareMessageEventNumbers);
+    eventnumber_t currentEvent = -1;
+    for (std::vector<cMessage *>::iterator it = messages.begin(); it != messages.end(); it++) {
+        cMessage *message = *it;
+        if (currentEvent != message->getPreviousEventNumber()) {
+            currentEvent = message->getPreviousEventNumber();
+            EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, currentEvent, message->getSendingTime(), currentEvent == 0 ? simulation.getSystemModule()->getId() : message->getSenderModuleId(), -1);
+        }
+        if (currentEvent == 0)
+            componentMethodBegin(simulation.getSystemModule(), message->getSenderModule(), "initialize", empty_va);
+        if (message->isSelfMessage())
+            messageScheduled(message);
+        else if (!message->getSenderGate()) {
+            beginSend(message);
+            if (message->isPacket()) {
+                cPacket *packet = (cPacket *)message;
+                simtime_t propagationDelay = packet->getArrivalTime() - packet->getSendingTime() - (packet->isReceptionStart() ? 0 : packet->getDuration());
+                messageSendDirect(message, message->getArrivalGate(), propagationDelay, packet->getDuration());
+            }
+            else
+                messageSendDirect(message, message->getArrivalGate(), 0, 0);
+            endSend(message);
+        }
+        else {
+            beginSend(message);
+            messageSendHop(message, message->getSenderGate());
+            endSend(message);
+        }
+        if (currentEvent == 0)
+            componentMethodEnd();
+    }
 }
 
 void EventlogFileManager::recordModules(cModule *module)
 {
     for (cModule::GateIterator it(module); !it.end(); it++) {
-    	cGate *gate = it();
-    	gateCreated(gate);
+        cGate *gate = it();
+        gateCreated(gate);
     }
-	moduleCreated(module);
-	// FIXME: records display string twice if it is lazily created right now
-	if (strcmp(module->getDisplayString().str(), "")) {
-		displayStringChanged(module);
-	}
+    moduleCreated(module);
+    // FIXME: records display string twice if it is lazily created right now
+    if (strcmp(module->getDisplayString().str(), "")) {
+        displayStringChanged(module);
+    }
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
-    	recordModules(it());
+        recordModules(it());
 }
 
 void EventlogFileManager::recordConnections(cModule *module)
 {
     for (cModule::GateIterator it(module); !it.end(); it++) {
-    	cGate *gate = it();
-    	if (gate->getNextGate())
-    		connectionCreated(gate);
-    	cChannel *channel = gate->getChannel();
-    	if (channel && strcmp(channel->getDisplayString(), "")) {
-    		displayStringChanged(channel);
-    	}
+        cGate *gate = it();
+        if (gate->getNextGate())
+            connectionCreated(gate);
+        cChannel *channel = gate->getChannel();
+        if (channel && strcmp(channel->getDisplayString(), "")) {
+            displayStringChanged(channel);
+        }
     }
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
-    	recordConnections(it());
+        recordConnections(it());
 }
 
 void EventlogFileManager::startRun()

@@ -102,10 +102,10 @@ void WindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out
 
 TimeWindowAverageNode::TimeWindowAverageNode(simultime_t windowSize)
 {
-	winsize = windowSize;
-	win_end = windowSize;
-	sum = 0.0;
-	count = 0;
+    winsize = windowSize;
+    win_end = windowSize;
+    sum = 0.0;
+    count = 0;
 }
 
 TimeWindowAverageNode::~TimeWindowAverageNode()
@@ -126,24 +126,24 @@ void TimeWindowAverageNode::process()
 {
     int n = in()->length();
 
-	for (int i=0; i<n; i++)
-	{
-		Datum d;
-		in()->read(&d,1);
-		if (inCurrentWindow(d))
-		{
-			collect(d);
-		}
-		else
-		{
-			outputWindowAverage();
-			moveWindow(d);
-			collect(d);
-		}
-	}
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+        if (inCurrentWindow(d))
+        {
+            collect(d);
+        }
+        else
+        {
+            outputWindowAverage();
+            moveWindow(d);
+            collect(d);
+        }
+    }
 
-	if (in()->eof())
-		outputWindowAverage();
+    if (in()->eof())
+        outputWindowAverage();
 }
 
 //-----
@@ -162,7 +162,7 @@ void TimeWindowAverageNodeType::getAttributes(StringMap& attrs) const
 
 void TimeWindowAverageNodeType::getAttrDefaults(StringMap& attrs) const
 {
-	attrs["windowSize"] = "1";
+    attrs["windowSize"] = "1";
 }
 
 Node *TimeWindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
@@ -173,7 +173,7 @@ Node *TimeWindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) 
     simultime_t windowSize;
     parseSimtime(ws, windowSize);
     if (windowSize.isNil() || windowSize <= 0)
-    	windowSize = 1;
+        windowSize = 1;
 
     Node *node = new TimeWindowAverageNode(windowSize);
     node->setNodeType(this);

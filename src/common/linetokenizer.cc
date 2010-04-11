@@ -25,7 +25,7 @@ USING_NAMESPACE
 
 
 LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum, char sep1, char sep2)
-	: sep1(sep1), sep2(sep2)
+    : sep1(sep1), sep2(sep2)
 {
     if (maxTokenNum < 0)
         maxTokenNum = bufferSize/4;

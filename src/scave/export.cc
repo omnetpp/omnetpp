@@ -38,26 +38,26 @@ using namespace std;
  *=====================*/
 bool DataTable::CellPtr::operator <(const DataTable::CellPtr &other) const
 {
-	if (this->isNull())
-		return false;
-	if (other.isNull())
-		return true;
+    if (this->isNull())
+        return false;
+    if (other.isNull())
+        return true;
 
-	ColumnType keyColumnType = this->table->getColumn(this->column).type;
-	switch (keyColumnType)
-	{
-	case DOUBLE:
-		return this->table->getDoubleValue(this->row, this->column) <
-				 other.table->getDoubleValue(other.row, other.column);
-	case BIGDECIMAL:
-		return this->table->getBigDecimalValue(this->row, this->column) <
-				 other.table->getBigDecimalValue(other.row, other.column);
-	case STRING:
-		return this->table->getStringValue(this->row, this->column) <
-				 other.table->getStringValue(other.row, other.column);
-	}
-	Assert(false);
-	return false;
+    ColumnType keyColumnType = this->table->getColumn(this->column).type;
+    switch (keyColumnType)
+    {
+    case DOUBLE:
+        return this->table->getDoubleValue(this->row, this->column) <
+                 other.table->getDoubleValue(other.row, other.column);
+    case BIGDECIMAL:
+        return this->table->getBigDecimalValue(this->row, this->column) <
+                 other.table->getBigDecimalValue(other.row, other.column);
+    case STRING:
+        return this->table->getStringValue(this->row, this->column) <
+                 other.table->getStringValue(other.row, other.column);
+    }
+    Assert(false);
+    return false;
 }
 
 /*=====================
@@ -78,7 +78,7 @@ int XYDataTable::getNumRows() const
 
 bool XYDataTable::isNull(int row, int col) const
 {
-	return false;
+    return false;
 }
 
 string XYDataTable::getStringValue(int row, int col) const
@@ -108,16 +108,16 @@ double XYDataTable::getDoubleValue(int row, int col) const
 
 static string createNameForXYDatasetRow(const XYDataset &data, int row, const string &separator = "/")
 {
-	string name;
-	ResultItemFields rowFields = data.getRowFields();
-	bool first = true;
-	for (ResultItemFields::const_iterator rowField = rowFields.begin(); rowField != rowFields.end(); ++rowField)
-	{
-		if (!first) name += separator;
-		name += data.getRowField(row, *rowField);
-		first = false;
-	}
-	return name;
+    string name;
+    ResultItemFields rowFields = data.getRowFields();
+    bool first = true;
+    for (ResultItemFields::const_iterator rowField = rowFields.begin(); rowField != rowFields.end(); ++rowField)
+    {
+        if (!first) name += separator;
+        name += data.getRowField(row, *rowField);
+        first = false;
+    }
+    return name;
 }
 
 /*=====================
@@ -126,11 +126,11 @@ static string createNameForXYDatasetRow(const XYDataset &data, int row, const st
 ScatterDataTable::ScatterDataTable(const string &name, const string &description, const XYDataset &data)
     : DataTable(name, description), dataset(data)
 {
-	for (int row = 0; row < data.getRowCount(); ++row)
-	{
-		string columnName = createNameForXYDatasetRow(data, row);
-		header.push_back(Column(columnName, DOUBLE));
-	}
+    for (int row = 0; row < data.getRowCount(); ++row)
+    {
+        string columnName = createNameForXYDatasetRow(data, row);
+        header.push_back(Column(columnName, DOUBLE));
+    }
 }
 
 int ScatterDataTable::getNumRows() const
@@ -140,7 +140,7 @@ int ScatterDataTable::getNumRows() const
 
 bool ScatterDataTable::isNull(int row, int col) const
 {
-	return dataset.getValue(col, row).getCount() == 0;
+    return dataset.getValue(col, row).getCount() == 0;
 }
 
 string ScatterDataTable::getStringValue(int row, int col) const
@@ -151,13 +151,13 @@ string ScatterDataTable::getStringValue(int row, int col) const
 
 BigDecimal ScatterDataTable::getBigDecimalValue(int row, int col) const
 {
-	// no BigDecimal column
-	return BigDecimal::Nil;
+    // no BigDecimal column
+    return BigDecimal::Nil;
 }
 
 double ScatterDataTable::getDoubleValue(int row, int col) const
 {
-	return dataset.getValue(col, row).getMean();
+    return dataset.getValue(col, row).getMean();
 }
 
 /*================================
@@ -210,7 +210,7 @@ int ScalarDataTable::getNumRows() const
 
 bool ScalarDataTable::isNull(int row, int col) const
 {
-	return false;
+    return false;
 }
 
 double ScalarDataTable::getDoubleValue(int row, int col) const
@@ -261,49 +261,49 @@ std::string ScalarDataTable::getStringValue(int row, int col) const
  *=====================*/
 class DataTableIterator
 {
-	private:
-		vector<DataTable::CellPtr> cells;
-		vector<int> currentRows;
-	public:
-		DataTableIterator(const vector<DataTable*> &tables, int keyColumn)
-			: cells(tables.size()), currentRows(tables.size())
-		{
-			for (int i = 0; i < tables.size(); ++i)
-			{
-				this->cells[i] = DataTable::CellPtr(tables[i], 0, keyColumn);
-				currentRows[i] = -1;
-			}
-		}
+    private:
+        vector<DataTable::CellPtr> cells;
+        vector<int> currentRows;
+    public:
+        DataTableIterator(const vector<DataTable*> &tables, int keyColumn)
+            : cells(tables.size()), currentRows(tables.size())
+        {
+            for (int i = 0; i < tables.size(); ++i)
+            {
+                this->cells[i] = DataTable::CellPtr(tables[i], 0, keyColumn);
+                currentRows[i] = -1;
+            }
+        }
 
-		bool hasNext() const
-		{
-			return find_if(cells.begin(), cells.end(), not1(mem_fun_ref(&DataTable::CellPtr::isNull)))
-					!= cells.end();
-		}
+        bool hasNext() const
+        {
+            return find_if(cells.begin(), cells.end(), not1(mem_fun_ref(&DataTable::CellPtr::isNull)))
+                    != cells.end();
+        }
 
-		int currentRow(int index) const { return currentRows[index]; }
-		void reset() { 	for_each(cells.begin(), cells.end(), mem_fun_ref(&DataTable::CellPtr::resetRow)); }
-		void next();
+        int currentRow(int index) const { return currentRows[index]; }
+        void reset() {  for_each(cells.begin(), cells.end(), mem_fun_ref(&DataTable::CellPtr::resetRow)); }
+        void next();
 };
 
 void DataTableIterator::next()
 {
-	vector<DataTable::CellPtr>::iterator minElementPtr = min_element(cells.begin(), cells.end());
-	if (minElementPtr != cells.end())
-	{
-		DataTable::CellPtr minElement = *minElementPtr;
-		currentRows.clear();
-		for (vector<DataTable::CellPtr>::iterator cellPtr = cells.begin(); cellPtr != cells.end(); ++cellPtr)
-		{
-			if (cellPtr->isNull() || minElement < *cellPtr)
-				currentRows.push_back(-1);
-			else
-			{
-				currentRows.push_back(cellPtr->getRow());
-				cellPtr->nextRow();
-			}
-		}
-	}
+    vector<DataTable::CellPtr>::iterator minElementPtr = min_element(cells.begin(), cells.end());
+    if (minElementPtr != cells.end())
+    {
+        DataTable::CellPtr minElement = *minElementPtr;
+        currentRows.clear();
+        for (vector<DataTable::CellPtr>::iterator cellPtr = cells.begin(); cellPtr != cells.end(); ++cellPtr)
+        {
+            if (cellPtr->isNull() || minElement < *cellPtr)
+                currentRows.push_back(-1);
+            else
+            {
+                currentRows.push_back(cellPtr->getRow());
+                cellPtr->nextRow();
+            }
+        }
+    }
 }
 
 JoinedDataTable::JoinedDataTable(const string name, const string description,
@@ -314,28 +314,28 @@ JoinedDataTable::JoinedDataTable(const string name, const string description,
    // checks
    for (int tableIndex = 0; tableIndex < tableCount; ++tableIndex)
    {
-	   DataTable *table = joinedTables[tableIndex];
-	   Assert(table && joinOnColumn < table->getNumColumns());
-	   Assert(table->getColumn(joinOnColumn).type == joinedTables[0]->getColumn(joinOnColumn).type);
+       DataTable *table = joinedTables[tableIndex];
+       Assert(table && joinOnColumn < table->getNumColumns());
+       Assert(table->getColumn(joinOnColumn).type == joinedTables[0]->getColumn(joinOnColumn).type);
    }
 
    // compute columns
    if (tableCount > 0)
-	   addColumn(joinedTables[0]->getColumn(joinOnColumn), 0, joinOnColumn);
+       addColumn(joinedTables[0]->getColumn(joinOnColumn), 0, joinOnColumn);
    for (int tableIndex = 0; tableIndex < tableCount; ++tableIndex)
    {
-	   DataTable *table = joinedTables[tableIndex];
-	   int numColumns = table->getNumColumns();
-	   for (int col = 0; col < numColumns; ++col)
-	   {
-		   Column column = table->getColumn(col);
-		   if (col != joinOnColumn)
-		   {
-			   if (!table-name.empty())
-				   column.name = table->name + "/" + column.name;
-			   addColumn(column, tableIndex, col);
-		   }
-	   }
+       DataTable *table = joinedTables[tableIndex];
+       int numColumns = table->getNumColumns();
+       for (int col = 0; col < numColumns; ++col)
+       {
+           Column column = table->getColumn(col);
+           if (col != joinOnColumn)
+           {
+               if (!table-name.empty())
+                   column.name = table->name + "/" + column.name;
+               addColumn(column, tableIndex, col);
+           }
+       }
    }
 
    // compute rows
@@ -343,8 +343,8 @@ JoinedDataTable::JoinedDataTable(const string name, const string description,
    rowCount = 0;
    while (iterator.hasNext())
    {
-	   rowCount++;
-	   iterator.next();
+       rowCount++;
+       iterator.next();
    }
 
    rowMap = new int[rowCount*tableCount];
@@ -352,94 +352,94 @@ JoinedDataTable::JoinedDataTable(const string name, const string description,
    iterator.reset();
    for (int row = 0; row < rowCount; ++row)
    {
-	   Assert(iterator.hasNext());
-	   iterator.next();
+       Assert(iterator.hasNext());
+       iterator.next();
 
-	   for (int j = 0; j < joinedTables.size(); ++j)
-		   rowMap[row*tableCount+j]=iterator.currentRow(j);
+       for (int j = 0; j < joinedTables.size(); ++j)
+           rowMap[row*tableCount+j]=iterator.currentRow(j);
    }
 }
 
 JoinedDataTable::~JoinedDataTable()
 {
    if (rowMap)
-	   delete[] rowMap;
+       delete[] rowMap;
 
    for (vector<DataTable*>::const_iterator it = joinedTables.begin(); it != joinedTables.end(); ++it)
    {
-	   if (*it)
-		   delete (*it);
+       if (*it)
+           delete (*it);
    }
 }
 
 int JoinedDataTable::getNumRows() const
 {
-	return rowCount;
+    return rowCount;
 }
 
 bool JoinedDataTable::isNull(int row, int col) const
 {
-	DataTable *table;
-	int tableRow, tableCol;
-	mapTableCell(row, col, table, tableRow, tableCol);
-	return table == NULL;
+    DataTable *table;
+    int tableRow, tableCol;
+    mapTableCell(row, col, table, tableRow, tableCol);
+    return table == NULL;
 }
 
 string JoinedDataTable::getStringValue(int row, int col) const
 {
-	DataTable *table;
-	int tableRow, tableCol;
-	mapTableCell(row, col, table, tableRow, tableCol);
-	if (table)
-		return table->getStringValue(tableRow, tableCol);
+    DataTable *table;
+    int tableRow, tableCol;
+    mapTableCell(row, col, table, tableRow, tableCol);
+    if (table)
+        return table->getStringValue(tableRow, tableCol);
     return "";
 }
 
 BigDecimal JoinedDataTable::getBigDecimalValue(int row, int col) const
 {
-	DataTable *table;
-	int tableRow, tableCol;
-	mapTableCell(row, col, table, tableRow, tableCol);
-	if (table)
-		return table->getBigDecimalValue(tableRow, tableCol);
-	return BigDecimal::Nil;
+    DataTable *table;
+    int tableRow, tableCol;
+    mapTableCell(row, col, table, tableRow, tableCol);
+    if (table)
+        return table->getBigDecimalValue(tableRow, tableCol);
+    return BigDecimal::Nil;
 }
 
 double JoinedDataTable::getDoubleValue(int row, int col) const
 {
-	DataTable *table;
-	int tableRow, tableCol;
-	mapTableCell(row, col, table, tableRow, tableCol);
-	if (table)
-		return table->getDoubleValue(tableRow, tableCol);
-	return NaN;
+    DataTable *table;
+    int tableRow, tableCol;
+    mapTableCell(row, col, table, tableRow, tableCol);
+    if (table)
+        return table->getDoubleValue(tableRow, tableCol);
+    return NaN;
 }
 
 void JoinedDataTable::mapTableCell(int row, int col, DataTable* &table, int &tableRow, int &tableCol) const
 {
-	Assert(0 <= row && row < rowCount && 0 <= col && col < columnMap.size());
+    Assert(0 <= row && row < rowCount && 0 <= col && col < columnMap.size());
 
-	if (col == 0)
-	{
-		tableCol = columnMap[col].second;
-		table = NULL;
-		for (int tableIndex = 0; tableIndex < tableCount; ++tableIndex) {
-			tableRow = rowMap[row*tableCount+tableIndex];
-			if (tableRow >= 0)
-			{
-				table = joinedTables[tableIndex];
-				return;
-			}
-		}
-	}
-	else
-	{
-		const pair<int,int> &tableAndColumn = columnMap[col];
-		int tableIndex = tableAndColumn.first;
-		tableCol = tableAndColumn.second;
-		tableRow = rowMap[row*tableCount+tableIndex];
-		table = tableRow >= 0 ? joinedTables[tableIndex] : NULL;
-	}
+    if (col == 0)
+    {
+        tableCol = columnMap[col].second;
+        table = NULL;
+        for (int tableIndex = 0; tableIndex < tableCount; ++tableIndex) {
+            tableRow = rowMap[row*tableCount+tableIndex];
+            if (tableRow >= 0)
+            {
+                table = joinedTables[tableIndex];
+                return;
+            }
+        }
+    }
+    else
+    {
+        const pair<int,int> &tableAndColumn = columnMap[col];
+        int tableIndex = tableAndColumn.first;
+        tableCol = tableAndColumn.second;
+        tableRow = rowMap[row*tableCount+tableIndex];
+        table = tableRow >= 0 ? joinedTables[tableIndex] : NULL;
+    }
 }
 
 
@@ -484,17 +484,17 @@ void ScaveExport::saveVector(const string &name, const string &description,
 void ScaveExport::saveVectors(const string &name, const string &description,
                              const IDList &vectors, const vector<XYArray*> xyArrays, const ResultFileManager &manager)
 {
-	Assert(vectors.size() == xyArrays.size());
+    Assert(vectors.size() == xyArrays.size());
 
-	vector<DataTable*> tables;
-	for (int i = 0; i < xyArrays.size(); ++i)
-	{
-		const VectorResult& vector = manager.getVector(vectors.get(i));
-		std::string yColumnName = makeUniqueIdentifier(*vector.moduleNameRef + "/" + *vector.nameRef);
+    vector<DataTable*> tables;
+    for (int i = 0; i < xyArrays.size(); ++i)
+    {
+        const VectorResult& vector = manager.getVector(vectors.get(i));
+        std::string yColumnName = makeUniqueIdentifier(*vector.moduleNameRef + "/" + *vector.nameRef);
 
-		tables.push_back(new XYDataTable(name, description, "X", yColumnName, xyArrays[i]));
-	}
-	JoinedDataTable table(name, description, tables, 0);
+        tables.push_back(new XYDataTable(name, description, "X", yColumnName, xyArrays[i]));
+    }
+    JoinedDataTable table(name, description, tables, 0);
     saveTable(table, 0, table.getNumRows());
 }
 
@@ -505,28 +505,28 @@ void ScaveExport::saveScalars(const string &name, const string &description, con
 }
 
 void ScaveExport::saveScalars(const string &name, const string &description,
-								const IDList &scalars, const string &moduleName, const string &scalarName,
-								ResultItemFields columnFields,
-								const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
-								ResultItemFields isoFields, ResultFileManager &manager)
+                                const IDList &scalars, const string &moduleName, const string &scalarName,
+                                ResultItemFields columnFields,
+                                const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
+                                ResultItemFields isoFields, ResultFileManager &manager)
 {
-	DataSorter sorter(&manager);
-	StringVector rowFields;
-	rowFields.push_back(ResultItemField::MODULE);
-	rowFields.push_back(ResultItemField::NAME);
-	XYDatasetVector xyDatasets = sorter.prepareScatterPlot3(scalars, moduleName.c_str(), scalarName.c_str(),
-															ResultItemFields(rowFields), columnFields,
-															isoModuleNames, isoScalarNames, isoFields);
-	vector<DataTable *> tables;
-	for (XYDatasetVector::const_iterator it = xyDatasets.begin(); it != xyDatasets.end(); it++)
-	{
-		string name = ""; // TODO iso attr values
-		string description = "";
-		tables.push_back(new ScatterDataTable(name, description, *it));
-	}
+    DataSorter sorter(&manager);
+    StringVector rowFields;
+    rowFields.push_back(ResultItemField::MODULE);
+    rowFields.push_back(ResultItemField::NAME);
+    XYDatasetVector xyDatasets = sorter.prepareScatterPlot3(scalars, moduleName.c_str(), scalarName.c_str(),
+                                                            ResultItemFields(rowFields), columnFields,
+                                                            isoModuleNames, isoScalarNames, isoFields);
+    vector<DataTable *> tables;
+    for (XYDatasetVector::const_iterator it = xyDatasets.begin(); it != xyDatasets.end(); it++)
+    {
+        string name = ""; // TODO iso attr values
+        string description = "";
+        tables.push_back(new ScatterDataTable(name, description, *it));
+    }
 
-	JoinedDataTable table(name, description, tables, 0 /*first column is X*/);
-	saveTable(table, 0, table.getNumRows());
+    JoinedDataTable table(name, description, tables, 0 /*first column is X*/);
+    saveTable(table, 0, table.getNumRows());
 }
 
 string ScaveExport::makeUniqueIdentifier(const string &name)
@@ -869,12 +869,12 @@ void CsvExport::writeRow(const DataTable &table, int row)
             out << separator;
         if (!table.isNull(row, col))
         {
-			switch (column.type)
-			{
-			case DataTable::DOUBLE: writeDouble(table.getDoubleValue(row, col)); break;
-			case DataTable::BIGDECIMAL: writeBigDecimal(table.getBigDecimalValue(row, col)); break;
-			case DataTable::STRING: writeString(table.getStringValue(row, col)); break;
-			}
+            switch (column.type)
+            {
+            case DataTable::DOUBLE: writeDouble(table.getDoubleValue(row, col)); break;
+            case DataTable::BIGDECIMAL: writeBigDecimal(table.getBigDecimalValue(row, col)); break;
+            case DataTable::STRING: writeString(table.getStringValue(row, col)); break;
+            }
         }
     }
     out << eol;
@@ -956,7 +956,7 @@ void CsvExport::writeChar(char ch)
 
 string CsvExport::makeIdentifier(const string &name)
 {
-	return name;
+    return name;
 }
 
 

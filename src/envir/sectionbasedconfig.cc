@@ -1098,7 +1098,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
     // to handle the "pattern matches pattern" case (see below as well).
     bool anyObject = strcmp(objectFullPathPattern, "**")==0;
     if (!anyObject && PatternMatcher::containsWildcards(objectFullPathPattern))
-    	throw cRuntimeError("getMatchingPerObjectConfigKeys: invalid objectFullPath parameter: the only wildcard pattern accepted is '**'");
+        throw cRuntimeError("getMatchingPerObjectConfigKeys: invalid objectFullPath parameter: the only wildcard pattern accepted is '**'");
 
     // check all suffix groups whose name matches the pattern
     PatternMatcher suffixMatcher(keySuffixPattern, true, true, true);

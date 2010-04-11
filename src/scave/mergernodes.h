@@ -68,25 +68,25 @@ class SCAVE_API MergerNodeType : public NodeType
  */
 class SCAVE_API AggregatorNode : public Node
 {
-	private:
-		enum Function
-		{
-			Sum, Average, Count, Minimum, Maximum
-		};
+    private:
+        enum Function
+        {
+            Sum, Average, Count, Minimum, Maximum
+        };
 
-		Function fn;
-		double acc;
-		int count;
+        Function fn;
+        double acc;
+        int count;
 
-		void init();
-		void collect(double value);
-		double result();
+        void init();
+        void collect(double value);
+        double result();
     public:
         typedef std::vector<Port> PortVector;
         Port out;
         PortVector ports;
     public:
-    	AggregatorNode(const std::string &function);
+        AggregatorNode(const std::string &function);
         virtual ~AggregatorNode() {}
 
         Port *addPort();
