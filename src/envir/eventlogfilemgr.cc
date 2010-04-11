@@ -241,6 +241,20 @@ void EventlogFileManager::endRun()
     }
 }
 
+bool EventlogFileManager::hasRecordingIntervals() const
+{
+    return recordingIntervals && !recordingIntervals->empty();
+}
+
+void EventlogFileManager::clearRecordingIntervals()
+{
+    if (recordingIntervals)
+    {
+        delete recordingIntervals;
+        recordingIntervals = NULL;
+    }
+}
+
 void EventlogFileManager::flush()
 {
     if (isEventLogRecordingEnabled)

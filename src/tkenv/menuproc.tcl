@@ -335,6 +335,11 @@ proc reflect_record_eventlog {} {
    } else {
        .toolbar.eventlog config -relief flat
    }
+
+   if {[opp_eventlogrecording hasintervals]} {
+       messagebox {Eventlog Recording} "Switching to manual control of eventlog recording -- the recording intervals specified in the configuration will be ignored." info ok
+       opp_eventlogrecording clearintervals
+   }
 }
 
 proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {

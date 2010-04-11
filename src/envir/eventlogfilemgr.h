@@ -54,6 +54,9 @@ class ENVIR_API EventlogFileManager
     virtual void startRun();
     virtual void endRun();
 
+    virtual bool hasRecordingIntervals() const;
+    virtual void clearRecordingIntervals();
+
     virtual void recordSimulation();
     virtual void recordMessages();
     virtual void recordModules(cModule *module);

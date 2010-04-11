@@ -136,6 +136,7 @@ int patmatch_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setMsgWindowExists_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getMainWindowExcludedModuleIds_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setMainWindowExcludedModuleIds_cmd(ClientData, Tcl_Interp *, int, const char **);
+int eventlogRecording_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -242,6 +243,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_setmsgwindowexists", setMsgWindowExists_cmd }, // args: 0 or 1
    { "opp_getmainwindowexcludedmoduleids", getMainWindowExcludedModuleIds_cmd }, // args: - ret: module id list
    { "opp_setmainwindowexcludedmoduleids", setMainWindowExcludedModuleIds_cmd }, // args: <moduleIds>
+   { "opp_eventlogrecording", eventlogRecording_cmd },   // args: subcommand <args>
 
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
@@ -1620,6 +1622,24 @@ int setMainWindowExcludedModuleIds_cmd(ClientData, Tcl_Interp *interp, int argc,
    while (tokenizer.hasMoreTokens())
        excludedModuleIds.insert(atoi(tokenizer.nextToken()));
    getTkenv()->setMainWindowExcludedModuleIds(excludedModuleIds);
+   return TCL_OK;
+}
+
+int eventlogRecording_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   Tkenv *app = getTkenv();
+   if (strcmp(argv[1], "hasintervals")==0) {
+       bool result = app->hasEventlogRecordingIntervals();
+       Tcl_SetResult(interp, TCLCONST(result ? "1" : "0"), TCL_STATIC);
+   }
+   else if (strcmp(argv[1], "clearintervals")==0) {
+       app->clearEventlogRecordingIntervals();
+   }
+   else {
+       Tcl_SetResult(interp, TCLCONST("unknown option"), TCL_STATIC);
+       return TCL_ERROR;
+   }
    return TCL_OK;
 }
 

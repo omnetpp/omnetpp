@@ -147,6 +147,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual int run(int argc, char *argv[], cConfiguration *config);
 
     virtual void setEventlogRecording(bool enabled);
+    virtual bool hasEventlogRecordingIntervals() const;
+    virtual void clearEventlogRecordingIntervals();
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object);

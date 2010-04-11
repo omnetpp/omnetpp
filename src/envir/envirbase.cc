@@ -1433,14 +1433,25 @@ void EnvirBase::readPerRunOptions()
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
-    // NOTE: eventlogmgr must be non NULL when record_eventlog is true
+    // NOTE: eventlogmgr must be non-NULL when record_eventlog is true
     if (enabled && !eventlogmgr) {
         eventlogmgr = new EventlogFileManager();
         eventlogmgr->configure();
         eventlogmgr->open();
         eventlogmgr->recordSimulation();
     }
-    cRunnableEnvir::setEventlogRecording(enabled);
+    record_eventlog = enabled;
+}
+
+bool EnvirBase::hasEventlogRecordingIntervals() const
+{
+    return eventlogmgr && eventlogmgr->hasRecordingIntervals();
+}
+
+void EnvirBase::clearEventlogRecordingIntervals()
+{
+    if (eventlogmgr)
+        eventlogmgr->clearRecordingIntervals();
 }
 
 //-------------------------------------------------------------

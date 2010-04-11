@@ -44,7 +44,8 @@ class ENVIR_API Intervals
         Intervals();
         ~Intervals();
         void parse(const char *text);
-        bool contains(simtime_t t);
+        bool contains(simtime_t t) const;
+        bool empty() const;
 };
 
 NAMESPACE_END

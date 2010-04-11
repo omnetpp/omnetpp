@@ -64,7 +64,7 @@ void Intervals::parse(const char *text)
         intervals[i] = parsedIntervals[i];
 }
 
-bool Intervals::contains(simtime_t t)
+bool Intervals::contains(simtime_t t) const
 {
     // empty contains all t values
     if (!intervals)
@@ -76,3 +76,9 @@ bool Intervals::contains(simtime_t t)
 
     return false;
 }
+
+bool Intervals::empty() const
+{
+    return !intervals || (intervals[0].startTime==0 && intervals[0].stopTime==0);
+}
+
