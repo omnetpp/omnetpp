@@ -323,67 +323,71 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					menuManager.add(separatorAction);
 				}
 
-				// static menu
-				menuManager.add(createFindTextCommandContributionItem());
-                menuManager.add(createFindNextCommandContributionItem());
+				// Show/Hide submenu
+				IMenuManager showHideSubmenu = new MenuManager("Show/Hide");
+                showHideSubmenu.add(showMessageSendsAction);
+                showHideSubmenu.add(showSelfMessagesAction);
+                showHideSubmenu.add(showOtherMessageReusesAction);
+                showHideSubmenu.add(showSelfMessageReusesAction);
+                showHideSubmenu.add(showModuleMethodCallsAction);
+                showHideSubmenu.add(separatorAction);
+                showHideSubmenu.add(showAxesWithoutEventsAction);
+                showHideSubmenu.add(showTransmissionDurationsAction);
+                showHideSubmenu.add(showZeroSimulationTimeRegionsAction);
+                showHideSubmenu.add(separatorAction);
+                showHideSubmenu.add(showEventNumbersAction);
+                showHideSubmenu.add(showMessageNamesAction);
+                showHideSubmenu.add(showArrowHeadsAction);
+                showHideSubmenu.add(showAxisLabelsAction);
 
-				// show/hide submenu
-				IMenuManager subMenuManager = new MenuManager("Show/Hide");
-                subMenuManager.add(showMessageSendsAction);
-                subMenuManager.add(showSelfMessagesAction);
-                subMenuManager.add(showOtherMessageReusesAction);
-                subMenuManager.add(showSelfMessageReusesAction);
-                subMenuManager.add(showModuleMethodCallsAction);
-                subMenuManager.add(separatorAction);
-                subMenuManager.add(showAxesWithoutEventsAction);
-                subMenuManager.add(showTransmissionDurationsAction);
-                subMenuManager.add(showZeroSimulationTimeRegionsAction);
-                subMenuManager.add(separatorAction);
-                subMenuManager.add(showEventNumbersAction);
-                subMenuManager.add(showMessageNamesAction);
-                subMenuManager.add(showArrowHeadsAction);
-                subMenuManager.add(showAxisLabelsAction);
+                // Spacing submenu
+                IMenuManager spacingSubmenu = new MenuManager("Spacing");
+                spacingSubmenu.add(balancedAxesAction);
+                spacingSubmenu.add(denseAxesAction);
+                spacingSubmenu.add(increaseSpacingAction);
+                spacingSubmenu.add(decreaseSpacingAction);
 
-                menuManager.add(separatorAction);
-                menuManager.add(subMenuManager);
+				// Zoom submenu
+                IMenuManager zoomSubmenu = new MenuManager("Zoom");
+                zoomSubmenu.add(defaultZoomAction);
+                zoomSubmenu.add(zoomToFitAction);
+                zoomSubmenu.add(zoomInAction);
+                zoomSubmenu.add(zoomOutAction);
+                
+                // Show In submenu
+                MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
+                IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                IContributionItem showInViewItem = ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow);
+                showInSubmenu.add(showInViewItem);
+
+                // context menu static part
+                menuManager.add(showHideSubmenu);
                 menuManager.add(filterAction);
                 menuManager.add(timelineModeAction);
                 menuManager.add(axisOrderingModeAction);
                 menuManager.add(separatorAction);
+                
+                menuManager.add(createFindTextCommandContributionItem());
+                menuManager.add(createFindNextCommandContributionItem());
                 menuManager.add(separatorAction);
-
-                subMenuManager = new MenuManager("Spacing");
-                menuManager.add(subMenuManager);
-                subMenuManager.add(balancedAxesAction);
-                subMenuManager.add(denseAxesAction);
-                subMenuManager.add(increaseSpacingAction);
-                subMenuManager.add(decreaseSpacingAction);
-
-				// zoom submenu
-                subMenuManager = new MenuManager("Zoom");
-                menuManager.add(subMenuManager);
-                subMenuManager.add(defaultZoomAction);
-                subMenuManager.add(zoomToFitAction);
-                subMenuManager.add(zoomInAction);
-                subMenuManager.add(zoomOutAction);
-
+                
+                menuManager.add(spacingSubmenu);
+                menuManager.add(zoomSubmenu);
                 menuManager.add(changeFontAction);
-
                 menuManager.add(separatorAction);
+                
                 menuManager.add(toggleBookmarkAction);
                 menuManager.add(copyToClipboardAction);
-				menuManager.add(createRefreshCommandContributionItem());
+                if (IConstants.IS_COMMERCIAL)
+                    menuManager.add(exportToSVGAction);
+                menuManager.add(separatorAction);
+
+                menuManager.add(createRefreshCommandContributionItem());
                 menuManager.add(releaseMemoryAction);
 				menuManager.add(separatorAction);
 
-		        MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
-		        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		        IContributionItem showInViewItem = ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow);
-                showInSubmenu.add(showInViewItem);
 		        menuManager.add(showInSubmenu);
 
-                if (IConstants.IS_COMMERCIAL)
-                    menuManager.add(exportToSVGAction);
 			}
 		});
 	}
