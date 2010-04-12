@@ -148,7 +148,8 @@ Tkenv::Tkenv()
     opt_arrangevectorconnections = false;
     opt_bubbles = true;
     opt_animation_speed = 1.5;
-    opt_print_banners = true;
+    opt_event_banners = true;
+    opt_init_banners = true;
     opt_short_banners = false;
     opt_use_mainwindow = true;
     opt_expressmode_autoupdate = true;
@@ -329,7 +330,7 @@ void Tkenv::doOneStep()
         cSimpleModule *mod = simulation.selectNextModule();
         if (mod)  // selectNextModule() not interrupted
         {
-            if (opt_print_banners)
+            if (opt_event_banners)
                printEventBanner(simulation.msgQueue.peekFirst(), mod);
             simulation.doOneEvent(mod);
             performAnimations();
@@ -524,7 +525,7 @@ bool Tkenv::doRunSimulation()
         speedometer.addEvent(simulation.getSimTime());
 
         // do a simulation step
-        if (opt_print_banners)
+        if (opt_event_banners)
             printEventBanner(simulation.msgQueue.peekFirst(), mod);
 
         simulation.doOneEvent(mod);
@@ -1042,6 +1043,31 @@ void Tkenv::printLastLogLine()
             mod = mod->getParentModule();
         }
     }
+}
+
+void Tkenv::componentInitBegin(cComponent *component, int stage)
+{
+    if (!opt_init_banners || runmode == RUNMODE_EXPRESS)
+        return;
+
+    // produce banner text
+    char banner[MAX_OBJECTFULLPATH+60];
+    sprintf(banner, "{Initializing %s %s, stage %d\n}",
+        component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
+
+    // insert into log buffer
+    logBuffer.addLogLine(banner);
+
+    // print into module log windows
+    printLastLogLine();
+
+    // and into the message window
+    if (hasmessagewindow)
+        CHK(Tcl_VarEval(interp,
+              "catch {\n"
+              " .messagewindow.main.text insert end ",banner,"\n"
+              " .messagewindow.main.text see end\n"
+              "}\n", NULL));
 }
 
 void Tkenv::setMainWindowExcludedModuleIds(const std::set<int>& ids)

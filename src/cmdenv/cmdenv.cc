@@ -521,6 +521,13 @@ const char *Cmdenv::progressPercentage()
     }
 }
 
+void Cmdenv::componentInitBegin(cComponent *component, int stage)
+{
+    if (!opt_expressmode)
+        ::fprintf(fout, "Initializing %s %s, stage %d\n",
+                component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
+}
+
 void Cmdenv::signalHandler(int signum)
 {
     if (signum == SIGINT || signum == SIGTERM)

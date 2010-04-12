@@ -75,7 +75,7 @@ cModule::~cModule()
     // delete submodules
     for (SubmoduleIterator submod(this); !submod.end(); )
     {
-        if (submod() == (cModule *)simulation.getContextModule()) 
+        if (submod() == (cModule *)simulation.getContextModule())
         {
             throw cRuntimeError("Cannot delete a compound module from one of its submodules!");
             // The reason is that deleteModule() of the currently executing
@@ -1241,7 +1241,7 @@ bool cModule::initializeModules(int stage)
     {
         // switch context for the duration of the call
         Enter_Method("initialize");
-        ev << "Initializing module " << getFullPath() << ", stage " << stage << "\n";
+        ev.componentInitBegin(this, stage);
         try {
             initialize(stage);
         } catch (cException&) {
@@ -1257,11 +1257,12 @@ bool cModule::initializeModules(int stage)
         if (submod()->initializeModules(stage))
             moreStages = true;
 
-    // as a last step call handleParameterChnage so the component will be notified about
-    // parameter changes occured during initialization phase
-    if (!moreStages) {
-        // a module is initilized if all init stages have completed (both his own and
-        // all its submodules)
+    // as a last step, call handleParameterChange() to notify the component about
+    // parameter changes that occured during initialization phase
+    if (!moreStages)
+    {
+        // a module is initialized when all init stages have been completed
+        // (both its own and on all its submodules)
         setFlag(FL_INITIALIZED, true);
         handleParameterChange(NULL);
     }

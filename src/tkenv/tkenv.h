@@ -77,7 +77,8 @@ class TKENV_API Tkenv : public EnvirBase
       // options
       opp_string opt_default_config; // automatically set up this config at startup
       int  opt_default_run;        // automatically set up this run (of the default config) at startup
-      bool opt_print_banners;      // print event banners
+      bool opt_init_banners;       // print "initializing..." banners
+      bool opt_event_banners;      // print event banners
       bool opt_short_banners;      // controls detail of event banners
       bool opt_use_mainwindow;     // dump modules' ev << ... stuff into main window
       bool opt_animation_enabled;  // msg animation
@@ -137,6 +138,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual ~Tkenv();
 
       virtual void objectDeleted(cObject *object); // notify environment
+      virtual void componentInitBegin(cComponent *component, int stage);
       virtual void simulationEvent(cMessage *msg);
       virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
       virtual void messageScheduled(cMessage *msg);

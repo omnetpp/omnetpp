@@ -65,6 +65,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual ~Cmdenv();
 
      // redefined virtual funcs:
+     virtual void componentInitBegin(cComponent *component, int stage);
      virtual void moduleCreated(cModule *newmodule);
      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
      virtual void simulationEvent(cMessage *msg);

@@ -121,7 +121,7 @@ bool cChannel::initializeChannel(int stage)
     {
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
-        ev << "Initializing channel " << getFullPath() << ", stage " << stage << "\n";
+        ev.componentInitBegin(this, stage);
         try {
             initialize(stage);
         } catch (cException&) {
@@ -132,9 +132,11 @@ bool cChannel::initializeChannel(int stage)
     }
 
     bool moreStages = stage < numStages-1;
-    // as a last step call handleParameterChnage so the component will be notified about
-    // parameter changes occured during initialization phase
-    if (!moreStages) {
+
+    // as a last step, call handleParameterChange() to notify the component about
+    // parameter changes that occured during initialization phase
+    if (!moreStages)
+    {
         setFlag(FL_INITIALIZED, true);
         handleParameterChange(NULL);
     }

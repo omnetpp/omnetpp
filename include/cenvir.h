@@ -161,7 +161,12 @@ class SIM_API cEnvir
      * destructor automatically calls this function.
      */
     // note: this cannot be pure virtual, because it has to work even after ev was disposed of
-    virtual void objectDeleted(cObject *object) {};
+    virtual void objectDeleted(cObject *object) {}
+
+    /**
+     * Notifies the environment that a component's initialize method is about to be called.
+     */
+    virtual void componentInitBegin(cComponent *component, int stage) {}
 
     /**
      * Notifies the environment that a message was delivered to its destination

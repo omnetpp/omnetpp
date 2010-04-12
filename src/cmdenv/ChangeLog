@@ -1,3 +1,8 @@
+2010-04-12  Rudolf Hornig, Andras Varga
+
+	* improvement: in express mode, do not print log messages during
+	initialization
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2009-09-10  Andras Varga

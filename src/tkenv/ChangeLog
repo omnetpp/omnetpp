@@ -1,8 +1,13 @@
-2010-04-02  Levente Meszaros:
+2010-04-12  Rudolf Hornig, Andras Varga
 
-	* New feature: toggle eventlog recording interactively (menu item, 
-	toolbar button); it will then override the "intervals" setting from 
-	omnetpp.ini
+	* feature: added an option to disable printing of banner messages 
+	about module/channel initializations; see "Print initialization 
+	banners" checkbox in the Options dialog.
+
+2010-04-02  Levente Meszaros
+
+	* feature: toggle eventlog recording interactively (menu item, toolbar 
+	button); it will then override the "intervals" setting from omnetpp.ini
 
 	* usability: New Network function removed from toolbar, as it was
 	confusing; still available via the File menu

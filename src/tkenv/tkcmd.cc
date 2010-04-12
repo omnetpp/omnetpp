@@ -1118,8 +1118,10 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%g", app->opt_animation_speed);
    else if (0==strcmp(argv[1], "stepdelay"))
       sprintf(buf,"%ld", app->opt_stepdelay);
-   else if (0==strcmp(argv[1], "print_banners"))
-      sprintf(buf,"%d", app->opt_print_banners);
+   else if (0==strcmp(argv[1], "event_banners"))
+      sprintf(buf,"%d", app->opt_event_banners);
+   else if (0==strcmp(argv[1], "init_banners"))
+      sprintf(buf,"%d", app->opt_init_banners);
    else if (0==strcmp(argv[1], "short_banners"))
       sprintf(buf,"%d", app->opt_short_banners);
    else if (0==strcmp(argv[1], "use_mainwindow"))
@@ -1180,8 +1182,10 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       if (app->opt_animation_speed<0) app->opt_animation_speed=0;
       if (app->opt_animation_speed>3) app->opt_animation_speed=3;
    }
-   else if (0==strcmp(argv[1], "print_banners"))
-      app->opt_print_banners = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "event_banners"))
+      app->opt_event_banners = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "init_banners"))
+      app->opt_init_banners = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "short_banners"))
       app->opt_short_banners = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "use_mainwindow"))
