@@ -27,10 +27,21 @@ import org.eclipse.swt.widgets.Display;
 
 %pragma(java) jniclasscode=%{
   static {
+      if (Platform.getOS().equals(Platform.OS_WIN32)) {
+          try {
+              // mingwm10.dll is a dependency of opplibs.dll. We need to load it
+              // explicitly, because for some reason it is not found otherwise
+              // when placed next to opplibs.dll. --Andras
+              System.loadLibrary("mingwm10");
+          }
+          catch (UnsatisfiedLinkError e) {
+              System.err.println("Warning: could not load mingwm10.dll: " + e.getClass().getName() + ": " + e.toString());
+          }
+      }
       try {
           System.loadLibrary("opplibs");
       }
-      catch (final UnsatisfiedLinkError e) {
+      catch (UnsatisfiedLinkError e) {
           displayError(e);
           throw e;
       }
@@ -60,7 +71,7 @@ import org.eclipse.swt.widgets.Display;
                       "FATAL: The OMNeT++ IDE native library failed to load, " +
                       "all OMNeT++-related functionality will be unaccessible.\n\n" +
                       "Details:\n\n" +
-                      "UnsatisfiedLinkError: " + e.getMessage() + "\n\n" +
+                      e.getClass().getSimpleName() + ": " + e.getMessage() + "\n\n" +
                       (Platform.getOS().equals(Platform.OS_LINUX) ?
                               "Try upgrading your Linux installation to a more recent version, " +
                               "or installing newer versions of libc and libstdc++." : "")
