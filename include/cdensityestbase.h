@@ -97,7 +97,7 @@ class SIM_API cDensityEstBase : public cStdDev
 
   protected:
     double rangemin, rangemax;   // range for distribution density collection
-    long num_firstvals;         // number of "pre-collected" observations
+    int num_firstvals;         // number of "pre-collected" observations
                                 // before transform() is performed.
     unsigned long cell_under;
     unsigned long cell_over;    // for counting observations that fall out of range
@@ -252,6 +252,18 @@ class SIM_API cDensityEstBase : public cStdDev
      * place. See transform().
      */
     virtual void setNumFirstVals(int num_firstvals);
+
+    /**
+     * Returns the number of values to be pre-collected before transformation
+     * takes place. See transform().
+     */
+    virtual int getNumFirstVals() const {return num_firstvals;}
+
+    /**
+     * Returns the range extension factor, used with histogram range setup.
+     * See setRangeAuto() and transform().
+     */
+    virtual double getRangeExtensionFactor() const {return range_ext_factor;}
     //@}
 
   protected:

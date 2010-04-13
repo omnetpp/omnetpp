@@ -315,14 +315,14 @@ double cDensityEstBase::getCellPDF(int k) const
 void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, double count, double a)
 {
     const int picwidth = 54;  // width of picture
-    char buf[101], *s;
-    int x, m, k;
+    char buf[101];
     sprintf(buf, "   %s%12f %5g :", pref, xval, count);
-    s = buf+strlen(buf);
-    x = (int) floor(a*count+.5);
-    if (x <= picwidth)  k = x;  else k = picwidth;
-    for (m = 1;  m<=k;  m++)  *s++ = '-';
-    if (x <= picwidth) strcpy(s, "*\n");  else strcpy(s, ">\n");
+    char *s = buf+strlen(buf);
+    int x = (int) floor(a*count+.5);
+    int k = x<=picwidth ? x : picwidth;
+    for (int m = 1;  m<=k;  m++)
+        *s++ = '-';
+    strcpy(s, x<=picwidth ? "*\n" : ">\n");
     os << buf;
 }
 
