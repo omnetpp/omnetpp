@@ -14,15 +14,12 @@ EV << "After wait\n";
 network = Test
 record-eventlog = true
 cmdenv-express-mode = true
+cmdenv-performance-display= false
 
 %contains-regex: stdout
 Running simulation...
 \*\* Event #1   T=0   Elapsed: .*?
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 1   present: 1   in FES: 1
 \*\* Event #3   T=1   Elapsed: .*?
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 1   present: 1   in FES: 0
 
 <!> No more events -- simulation ended.
 

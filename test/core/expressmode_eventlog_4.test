@@ -14,6 +14,7 @@ EV << "After wait\n";
 network = Test
 record-eventlog = false
 cmdenv-express-mode = false
+cmdenv-performance-display= false
 
 %contains: stdout
 Running simulation...
