@@ -113,8 +113,8 @@ InterpolationMode VectorResult::getInterpolationMode() const
 
 void HistogramResult::addBin(double lower_bound, double value)
 {
-    if (!bins.empty() && bins.back() >= lower_bound);
-        throw opp_runtime_error("Histogram bin bounds must be specified in increasing order");
+    if (!bins.empty() && bins.back() >= lower_bound)
+        throw opp_runtime_error("histogram bin bounds must be specified in increasing order");
     bins.push_back(lower_bound);
     values.push_back(value);
 }
@@ -908,46 +908,21 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     // process "run" lines
     if (vec[0][0]=='r' && !strcmp(vec[0],"run"))
     {
-        CHECK(numTokens >= 2, "invalid result file: run Id missing from `run' line");
+        CHECK(numTokens==2, "incorrect 'run' line -- run <runID> expected");
 
-        if (atoi(vec[1])>0 && strlen(vec[1])<=10)
+        // "run" line, format: run <runName>
+        // find out if we have that run already
+        Run *runRef = getRunByName(vec[1]);
+        if (!runRef)
         {
-            // old-style "run" line, format: run <runNumber> [<networkName> [<dateTime>]]
-            // and runs in different files cannot be related, so we must create a new Run entry.
-            Run *runRef = addRun();
-            ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
-
-            runRef->runNumber = atoi(vec[1]);
-            runRef->attributes["run-number"] = vec[1];
-            if (numTokens>=3)
-                runRef->attributes["network"] = vec[2];
-            if (numTokens>=4)
-                runRef->attributes["dateTime"] = vec[3];
-
-            // assemble a probably-unique runName
-            std::stringstream os;
-            os << ctx.fileRef->fileName << ":" << ctx.lineNo << "-#" << vec[1];
-            if (numTokens>=3)
-                os << "-" << vec[2];
-            if (numTokens>=4)
-                os << "-" << vec[3];
-            runRef->runName = os.str();
+            // not yet: add it
+            runRef = addRun();
+            runRef->runName = vec[1];
         }
-        else
-        {
-            // new-style "run" line, format: run <runName>
-            // find out if we have that run already
-            Run *runRef = getRunByName(vec[1]);
-            if (!runRef)
-            {
-                // not yet: add it
-                runRef = addRun();
-                runRef->runName = vec[1];
-            }
-            // associate Run with this file
-            CHECK(getFileRun(ctx.fileRef, runRef)==NULL, "invalid result file: run Id repeats in the file");
-            ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
-        }
+        // associate Run with this file
+        CHECK(getFileRun(ctx.fileRef, runRef)==NULL, "non-unique runId in the file");
+        ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
+
         ctx.lastResultItemType = 0;
         ctx.lastResultItemIndex = -1;
         ctx.clearHistogram();
@@ -956,9 +931,9 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     else if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0)
     {
         int version;
-        CHECK(numTokens >= 2, "missing version number");
+        CHECK(numTokens==2, "incorrect 'version' line -- version <number> expected");
         CHECK(parseInt(vec[1], version), "version is not a number");
-        CHECK(version <= 2, "expects version 2 or lower");
+        CHECK(version==2, "expects version 2");
         return;
     }
 
@@ -983,10 +958,10 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     if (vec[0][0]=='s' && !strcmp(vec[0],"scalar"))
     {
         // syntax: "scalar <module> <scalarname> <value>"
-        CHECK(numTokens>=4, "invalid scalar file: too few items on `scalar' line");
+        CHECK(numTokens==4, "incorrect 'scalar' line -- scalar <module> <scalarname> <value> expected");
 
         double value;
-        CHECK(parseDouble(vec[3],value), "invalid scalar file syntax: invalid value column");
+        CHECK(parseDouble(vec[3],value), "invalid value column");
 
         ctx.lastResultItemType = SCALAR;
         ctx.lastResultItemIndex = addScalar(ctx.fileRunRef, vec[1], vec[2], value, false);
@@ -995,9 +970,9 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
     {
         // syntax: "vector <id> <module> <vectorname> [<columns>]"
-        CHECK(numTokens>=4, "invalid vector file syntax: too few items on 'vector' line");
+        CHECK(numTokens==4 || numTokens==5, "incorrect 'vector' line -- vector <id> <module> <vectorname> [<columns>] expected");
         int vectorId;
-        CHECK(parseInt(vec[1], vectorId), "invalid vector file syntax: invalid vector id in vector definition");
+        CHECK(parseInt(vec[1], vectorId), "invalid vector id in vector definition");
         const char *columns = (numTokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
 
         ctx.lastResultItemType = VECTOR;
@@ -1007,7 +982,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     else if (vec[0][0]=='s' && !strcmp(vec[0],"statistic"))
     {
         // syntax: "statistic <module> <statisticname>"
-        CHECK(numTokens>=3, "invalid scalar file: too few items on `statistic' line");
+        CHECK(numTokens==3, "incorrect 'statistic' line -- statistic <module> <statisticname> expected");
 
         ctx.clearHistogram();
         ctx.moduleName = vec[1];
@@ -1015,13 +990,13 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         ctx.lastResultItemType = SCALAR; // add scalars first
         ctx.lastResultItemIndex = ctx.fileRef->scalarResults.size();
 
-        CHECK(!ctx.moduleName.empty(), "invalid scalar file: missing module name");
-        CHECK(!ctx.statisticName.empty(), "invalid scalar file: missing statistics name");
+        CHECK(!ctx.moduleName.empty(), "missing module name");
+        CHECK(!ctx.statisticName.empty(), "missing statistics name");
     }
     else if (vec[0][0]=='f' && !strcmp(vec[0],"field"))
     {
         // syntax: "field <name> <value>"
-        CHECK(numTokens>=3, "invalid scalar file: too few items on `field' line");
+        CHECK(numTokens==3, "incorrect 'field' line -- field <name> <value> expected");
 
         std::string fieldName = vec[1];
         double value;
@@ -1051,15 +1026,15 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     else if (vec[0][0]=='b' && !strcmp(vec[0],"bin"))
     {
         // syntax: "bin <lower_bound> <value>"
-        CHECK(numTokens>=3, "");
+        CHECK(numTokens==3, "incorrect 'bin' line -- bin <lowerBound> <value> expected");
         double lower_bound, value;
-        CHECK(parseDouble(vec[1], lower_bound), "");
-        CHECK(parseDouble(vec[2], value), "");
+        CHECK(parseDouble(vec[1], lower_bound), "invalid lower bound");
+        CHECK(parseDouble(vec[2], value), "invalid bin value");
 
         if (ctx.lastResultItemType != HISTOGRAM)
         {
             CHECK(ctx.lastResultItemType == SCALAR && !ctx.moduleName.empty() && !ctx.statisticName.empty(),
-                    "invalid scalar file: missing statistics declaration");
+                  "stray 'bin' line (not preceded by a 'statistic' line)");
             Statistics stat(ctx.count, ctx.min, ctx.max, ctx.sum, ctx.sumSqr);
             const ScalarResults &scalars = ctx.fileRef->scalarResults;
             const StringMap &attrs = ctx.lastResultItemIndex < (int)scalars.size() ?
@@ -1067,12 +1042,17 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
             ctx.lastResultItemType = HISTOGRAM;
             ctx.lastResultItemIndex = addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat, attrs);
         }
-        HistogramResult &histogram = ctx.fileRef->histogramResults[ctx.lastResultItemIndex];
-        histogram.addBin(lower_bound, value);
+        HistogramResult& histogram = ctx.fileRef->histogramResults[ctx.lastResultItemIndex];
+        try {
+            histogram.addBin(lower_bound, value);
+        } catch (std::exception& e) {
+            throw ResultFileFormatException(e.what(), ctx.fileName, ctx.lineNo);
+        }
     }
     else if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
     {
-        CHECK(numTokens>=3, "invalid result file: 'attr <name> <value>' expected");
+        // syntax: "attr <name> <value>"
+        CHECK(numTokens==3, "incorrect 'attr' line -- attr <name> <value> expected");
 
         std::string attrName = vec[1];
         std::string attrValue = vec[2];
@@ -1111,7 +1091,8 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     }
     else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
     {
-        CHECK(numTokens>=3, "invalid result file: 'param <namePattern> <value>' expected");
+        // syntax: "param <namePattern> <value>"
+        CHECK(numTokens==3, "incorrect 'param' line -- param <namePattern> <value> expected");
 
         // store module param
         std::string paramName = vec[1];
@@ -1125,13 +1106,14 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     else if (opp_isdigit(vec[0][0]) && numTokens>=3)
     {
         // this looks like a vector data line, skip it this time
-
-        // TODO collect statistics
+        // syntax: "<vectorID> <2-or-3-columns>"
+        CHECK(numTokens==3 || numTokens==4, "incorrect vector data line -- 3 or 4 items expected");
     }
     else
     {
         // ignore unknown lines and vector data lines
-        ctx.fileRef->numUnrecognizedLines++;
+        //ctx.fileRef->numUnrecognizedLines++; -- counter not used any more
+        CHECK(false, "unrecognized line");
     }
 }
 

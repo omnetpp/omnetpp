@@ -211,7 +211,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 		}
 		else {
 			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
-			setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+e.getMessage(), -1);
+			setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Could not load file. Reason: "+e.getMessage(), -1);
 		}
 	}
 
