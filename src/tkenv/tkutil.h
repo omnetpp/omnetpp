@@ -41,7 +41,7 @@ NAMESPACE_BEGIN
 #else
 #define CHK(tcl_eval_statement)    \
   do{ if (tcl_eval_statement==TCL_ERROR) \
-        fprintf(stderr,"%s#%d:%s\n",__FILE__,__LINE__,interp->result); \
+        fprintf(stderr,"%s#%d:%s\n",__FILE__,__LINE__,Tcl_GetStringResult(interp)); \
   } while(0)
 #endif
 
