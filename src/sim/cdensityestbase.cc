@@ -136,9 +136,9 @@ void cDensityEstBase::merge(const cStatistic *other)
 
     if (!otherd->isTransformed())
     {
-        // easiest and exact solution: simply recollect the observation
+        // easiest and exact solution: simply recollect the observations
         // the other object has collected
-        for (int i=0; i<otherd->num_firstvals; i++)
+        for (int i=0; i<otherd->num_vals; i++)
             collect(firstvals[i]);
     }
     else
