@@ -462,10 +462,19 @@ void cComponent::fire(cComponent *source, simsignal_t signalID, T x)
             cIListener **listeners = data->listeners;
             if (notificationSP >= NOTIFICATION_STACK_SIZE)
                 throw cRuntimeError(this, "emit(): recursive notification stack overflow, signalID=%d", signalID);
-            notificationStack[notificationSP++] = listeners; // lock against modification
-            for (int i=0; listeners[i]; i++)
-                listeners[i]->receiveSignal(source, signalID, x); // will crash if listener is already deleted
-            notificationSP--;
+
+            int oldNotificationSP = notificationSP;
+            try {
+                notificationStack[notificationSP++] = listeners; // lock against modification
+                for (int i=0; listeners[i]; i++)
+                    listeners[i]->receiveSignal(source, signalID, x); // will crash if listener is already deleted
+                notificationSP--;
+            }
+            catch (std::exception& e) {
+                notificationSP = oldNotificationSP;
+                throw;
+            }
+
         }
     }
 

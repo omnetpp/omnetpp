@@ -1,0 +1,31 @@
+%description:
+Test that exceptions in listeners work OK (leaves modules in a good state.)
+
+E.g. if notificationSP doesn't get reset to zero, that would cause
+a secondary exception or crash later in the shutdown phase.
+
+%global:
+
+class BogusListener : public cListener
+{
+  public:
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) {
+        throw std::runtime_error("problem!");
+    }
+};
+
+%activity:
+
+BogusListener *listener = new BogusListener();
+
+EV << "Before\n";
+simsignal_t dummySignal = registerSignal("dummy");
+subscribe(dummySignal, listener);
+emit(dummySignal, 3.1415);
+EV << "After\n";
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error.* std::runtime_error: problem!
+
