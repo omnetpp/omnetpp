@@ -1,5 +1,5 @@
 %description:
-Tests the **.result-recording-mode= configuration option.
+Tests the **.result-recording-modes= configuration option.
 
 %file: test.ned
 
@@ -40,26 +40,26 @@ network = Test
 debug-statistics-recording = true
 
 # rec0: not modified
-**.rec1.result-recording-mode = histogram         #overwrite
-**.rec2.result-recording-mode = count,histogram   #overwrite
+**.rec1.result-recording-modes = histogram         #overwrite
+**.rec2.result-recording-modes = count,histogram   #overwrite
 
-**.rec3.result-recording-mode = +histogram        #add
-**.rec4.result-recording-mode = +count,histogram  #add
+**.rec3.result-recording-modes = +histogram        #add
+**.rec4.result-recording-modes = +count,histogram  #add
 
-**.rec5.result-recording-mode = -timeavg          #remove
-**.rec6.result-recording-mode = -timeavg,-vector  #remove
+**.rec5.result-recording-modes = -timeavg          #remove
+**.rec6.result-recording-modes = -timeavg,-vector  #remove
 
-**.rec10.result-recording-mode = +histogram,-timeavg                 #add,remove
-**.rec11.result-recording-mode = +count,histogram,-timeavg           #add,add,remove
-**.rec12.result-recording-mode = -timeavg,+count,histogram           #remove,add,add
-**.rec13.result-recording-mode= -timeavg,-vector,+count,histogram   #remove,remove,add,add
-**.rec14.result-recording-mode= -timeavg,-vector,+count,+histogram  #remove,remove,add,add
+**.rec10.result-recording-modes = +histogram,-timeavg                 #add,remove
+**.rec11.result-recording-modes = +count,histogram,-timeavg           #add,add,remove
+**.rec12.result-recording-modes = -timeavg,+count,histogram           #remove,add,add
+**.rec13.result-recording-modes = -timeavg,-vector,+count,histogram   #remove,remove,add,add
+**.rec14.result-recording-modes = -timeavg,-vector,+count,+histogram  #remove,remove,add,add
 
-**.rec20.result-recording-mode= min,max,min,max,min,max     #should filter out duplicates
-**.rec21.result-recording-mode= +vector,vector,count,count  #should filter out duplicates
+**.rec20.result-recording-modes = min,max,min,max,min,max     #should filter out duplicates
+**.rec21.result-recording-modes = +vector,vector,count,count  #should filter out duplicates
 
-**.rec30.result-recording-mode= +cos(mean+1),vector(max)       #works with expressions too
-**.rec31.result-recording-mode= -max(timeavg)/2,-vector(mean)  #NOTE: '-' means REMOVE, not negation!
+**.rec30.result-recording-modes = +cos(mean+1),vector(max)       #works with expressions too
+**.rec31.result-recording-modes = -max(timeavg)/2,-vector(mean)  #NOTE: '-' means REMOVE, not negation!
 
 %contains: stdout
 Test.node (Node):
