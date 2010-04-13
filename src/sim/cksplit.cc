@@ -224,6 +224,9 @@ void cKSplit::transform()
     for (int i=0; i<num_vals; i++)
          insertIntoGrids( firstvals[i], false );
 
+    delete [] firstvals;
+    firstvals = NULL;
+
     transfd = true;
 }
 

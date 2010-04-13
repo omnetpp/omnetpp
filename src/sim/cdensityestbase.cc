@@ -267,21 +267,17 @@ void cDensityEstBase::setupRange()
 
 void cDensityEstBase::collect(double val)
 {
-    if (firstvals==NULL && !isTransformed())
+    if (firstvals==NULL && !isTransformed())   //FIXME wtf purpose does this serve???? no firstvals: no mode, etc???
         transform();
 
     cStdDev::collect(val); // this also increments num_vals
 
     if (!isTransformed())
     {
-        firstvals[num_vals-1] = val;
+        firstvals[num_vals-1] = val;  //FIXME if we were created with RANGE_INVALID, this will CRASH!!!!
 
         if (num_vals==num_firstvals)
-        {
             transform();  // must set transfd and call setupRange()
-            delete [] firstvals;
-            firstvals = NULL;
-        }
     }
     else
     {

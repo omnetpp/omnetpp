@@ -306,6 +306,10 @@ void cVarHistogram::transform() //--LG
         for (int i=0; i<num_vals; i++)
             collectTransformed( firstvals[i] );
     }
+
+    delete [] firstvals;
+    firstvals = NULL;
+
     transfd = true;
 }
 

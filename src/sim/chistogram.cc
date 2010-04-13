@@ -134,13 +134,17 @@ void cHistogramBase::transform()
 
     for (i=0; i<num_vals; i++)
         collectTransformed(firstvals[i]);
+
+    delete [] firstvals;
+    firstvals = NULL;
+
     transfd = true;
 }
 
 int cHistogramBase::getNumCells() const
 {
-    if (!isTransformed()) return 0;
-
+    if (!isTransformed())
+        return 0;
     return num_cells;
 }
 
