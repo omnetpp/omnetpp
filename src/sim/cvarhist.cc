@@ -44,8 +44,8 @@ Register_Class(cVarHistogram);
 //----
 // cVarHistogram - member functions
 
-cVarHistogram::cVarHistogram(const char *name, int maxnumcells, int transformtype ) :
-cHistogramBase(name,-1) //--LG
+cVarHistogram::cVarHistogram(const char *name, int maxnumcells, int transformtype) :
+cHistogramBase(name, -1) //--LG
 {
     // num_cells==-1 means that no bin boundaries are defined (num_cells+1 is 0)
     range_mode = RANGE_NOTSET;
@@ -53,9 +53,9 @@ cHistogramBase(name,-1) //--LG
     max_num_cells = maxnumcells;
     bin_bounds = NULL; // no bin bounds are defined
 
-    if ( (transform_type==HIST_TR_AUTO_EPC_DBL ||
-         transform_type==HIST_TR_AUTO_EPC_INT) && max_num_cells<2 )
-        throw cRuntimeError(this,"constructor: the maximal number of cells/bin should be >=2");
+    if ((transform_type == HIST_TR_AUTO_EPC_DBL ||
+         transform_type == HIST_TR_AUTO_EPC_INT) && max_num_cells<2)
+        throw cRuntimeError(this, "constructor: the maximal number of cells should be >=2");
 }
 
 cVarHistogram::~cVarHistogram()
@@ -66,7 +66,7 @@ cVarHistogram::~cVarHistogram()
 void cVarHistogram::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this, eNOPARSIM);
 #else
     cHistogramBase::parsimPack(buffer);
 
@@ -79,7 +79,7 @@ void cVarHistogram::parsimPack(cCommBuffer *buffer)
 void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this, eNOPARSIM);
 #else
     cHistogramBase::parsimUnpack(buffer);
 
@@ -95,25 +95,25 @@ void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 void cVarHistogram::addBinBound(double x) //--LG
 {
     if (isTransformed())
-        throw cRuntimeError(this,"cannot add bin bound after transform()");
+        throw cRuntimeError(this, "cannot add bin bound after transform()");
 
     // create bin_bounds if not exists
-    if ( bin_bounds == NULL )
+    if (bin_bounds == NULL)
         bin_bounds = new double [max_num_cells+1];
 
     // expand if full
-    if ( num_cells == max_num_cells )
+    if (num_cells == max_num_cells)
     {
         double * temp = new double [max_num_cells*2+1];
-        memcpy(temp,bin_bounds,(max_num_cells+1)*sizeof(double));
+        memcpy(temp, bin_bounds, (max_num_cells+1)*sizeof(double));
         delete [] bin_bounds;
-        bin_bounds=temp;
+        bin_bounds = temp;
         max_num_cells*=2;
     }
 
     // insert bound
     int i;
-    for (i=num_cells+1; bin_bounds[i]>x; i-- )
+    for (i = num_cells+1; bin_bounds[i]>x; i--)
         bin_bounds[i] = bin_bounds[i-1]; // shift up bin boundaries
     bin_bounds[i]=x;
 
@@ -147,14 +147,14 @@ cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res) //--LG
     return *this;
 }
 
-static int double_compare_function( const void *p1, const void *p2 ) //--LG
+static int double_compare_function(const void *p1, const void *p2) //--LG
 {
     double x1 = * (double *) p1;
     double x2 = * (double *) p2;
 
-    if ( x1 == x2 )
+    if (x1 == x2)
         return 0;
-    else if ( x1 < x2 )
+    else if (x1 < x2)
         return -1;
     else
         return 1;
@@ -163,11 +163,11 @@ static int double_compare_function( const void *p1, const void *p2 ) //--LG
 void cVarHistogram::createEquiprobableCells()
 {
     if (num_cells>0)
-        throw cRuntimeError(this,"some bin bounds already present when making equi-probable cells");
+        throw cRuntimeError(this, "some bin bounds already present when making equi-probable cells");
 
     if (range_mode != RANGE_NOTSET)
     {
-        throw cRuntimeError(this,"setRange..() only supported with HIST_TR_NO_TRANSFORM mode");
+        throw cRuntimeError(this, "setRange..() only supported with HIST_TR_NO_TRANSFORM mode");
 
         // // put away observations that are out of range
         // int num_inrange = num_vals;
@@ -206,24 +206,24 @@ void cVarHistogram::createEquiprobableCells()
     double boundary;      // firstvals[index]
 
     // construct cells; last cell will be handled separately
-    for ( cell=0, prev_index=0, prev_boundary=firstvals[prev_index],
-         rangemin=bin_bounds[0]=firstvals[0], index=prev_index+(int)esnpc;
+    for (cell = 0, prev_index = 0, prev_boundary = firstvals[prev_index],
+         rangemin = bin_bounds[0]=firstvals[0], index = prev_index+(int)esnpc;
 
          cell<max_num_cells-1 && index<num_vals;
 
-         cell++, prev_index=index, prev_boundary=boundary,
-         index=(int)MAX(prev_index+esnpc,(cell+1)*esnpc) )
+         cell++, prev_index = index, prev_boundary = boundary,
+         index = (int)MAX(prev_index+esnpc, (cell+1)*esnpc))
     {
         boundary = firstvals[index];
-        if ( boundary == prev_boundary )
+        if (boundary == prev_boundary)
         {
             // try to find a greater one
             int j;
-            for ( j=index; j<num_vals && firstvals[j] == prev_boundary; j++ )
+            for (j=index; j<num_vals && firstvals[j] == prev_boundary; j++)
                  ;
             // remark: either j == num_vals or
             //  prev_boundary == firstvals[j-1] < firstvals[j] holds
-            if ( j == num_vals )
+            if (j == num_vals)
                  break; // the cell-th cell/bin will be the last cell/bin
             else
             {
@@ -241,7 +241,7 @@ void cVarHistogram::createEquiprobableCells()
             //       AND index > prev_index (otherwise   ^^^ here '=' would be)
             //        ==> j >= prev_index when firstvals[j] is evaluated
             // for this reason we do not need to check j>=0
-            for ( j=index-1; firstvals[j]==boundary; j-- )
+            for (j=index-1; firstvals[j] == boundary; j--)
                 ; // may run 0 or more times
             index = j+1; // unnecessary if cycle ran 0 times
         }
@@ -251,6 +251,7 @@ void cVarHistogram::createEquiprobableCells()
 
     // the last cell/bin:
     cellv[cell] = num_vals-prev_index;
+
     // the last boundary:
     rangemax = bin_bounds[cell+1]=firstvals[num_vals-1];
 
@@ -259,11 +260,11 @@ void cVarHistogram::createEquiprobableCells()
     {
         double range = firstvals[num_vals-1]-firstvals[0];
         double epsilon = range*1e-6;   // hack: value < boundary; not '<='
-        rangemax=bin_bounds[cell+1] += epsilon;
+        rangemax = bin_bounds[cell+1] += epsilon;
     }
     else if (transform_type == HIST_TR_AUTO_EPC_INT)
     {
-        rangemax=bin_bounds[cell+1] += 1;  // hack: take the next integer
+        rangemax = bin_bounds[cell+1] += 1;  // hack: take the next integer
     }
 
     // remark: cellv[0]...cellv[cell] are the valid cells
@@ -277,20 +278,20 @@ void cVarHistogram::transform() //--LG
 
     setupRange();
 
-    if (transform_type==HIST_TR_AUTO_EPC_DBL || transform_type==HIST_TR_AUTO_EPC_INT)
+    if (transform_type == HIST_TR_AUTO_EPC_DBL || transform_type == HIST_TR_AUTO_EPC_INT)
     {
         // create bin bounds based on firstvals[]
         createEquiprobableCells();
     }
     else
     {
-        ASSERT(transform_type==HIST_TR_NO_TRANSFORM);
+        ASSERT(transform_type == HIST_TR_NO_TRANSFORM);
 
         // all manually added bin bounds must be in the range
         if (range_mode != RANGE_NOTSET)
         {
             if (rangemin>bin_bounds[0] || rangemax<bin_bounds[num_cells])
-                throw cRuntimeError(this,"some bin bounds out of preset range");
+                throw cRuntimeError(this, "some bin bounds out of preset range");
 
             if (rangemin<bin_bounds[0])
                 addBinBound(rangemin);
@@ -304,7 +305,7 @@ void cVarHistogram::transform() //--LG
             cellv[i]=0;
 
         for (int i=0; i<num_vals; i++)
-            collectTransformed( firstvals[i] );
+            collectTransformed(firstvals[i]);
     }
 
     delete [] firstvals;
@@ -328,12 +329,12 @@ void cVarHistogram::collectTransformed(double val)
        // rangemin <= val < rangemax
        // binary search
        int lower_index, upper_index, index;
-       for ( lower_index = 0, upper_index = num_cells,
-             index=(lower_index+upper_index)/2;
+       for (lower_index = 0, upper_index = num_cells,
+             index = (lower_index+upper_index)/2;
 
              lower_index<index;
 
-             index=(lower_index+upper_index)/2 )
+             index = (lower_index+upper_index)/2)
        {
           // cycle invariant: bin_bound[lower_index]<=val<bin_bounds[upper_index]
            if (val < bin_bounds[index])
@@ -363,7 +364,7 @@ double cVarHistogram::getBasepoint(int k) const
     if (k<num_cells+1)
         return bin_bounds[k];
     else
-        throw cRuntimeError(this,"invalid basepoint index %u",k);
+        throw cRuntimeError(this, "invalid basepoint index %u", k);
 }
 
 double cVarHistogram::getCellValue(int k) const
@@ -371,18 +372,18 @@ double cVarHistogram::getCellValue(int k) const
     if (k<num_cells)
         return cellv[k];
     else
-        throw cRuntimeError(this,"invalid cell index %u",k);
+        throw cRuntimeError(this, "invalid cell index %u", k);
 }
 
 double cVarHistogram::random() const //--LG
 {
-    if (num_vals==0)
+    if (num_vals == 0)
         return 0;
 
     if (num_vals < num_firstvals)
     {
         // randomly select a sample from the stored ones
-        return firstvals[genk_intrand(genk,num_vals)];
+        return firstvals[genk_intrand(genk, num_vals)];
     }
     else
     {
@@ -410,20 +411,20 @@ double cVarHistogram::getPDF(double x) const // --LG
         return 0.0;
 
     if (!isTransformed())
-        throw cRuntimeError(this,"getPDF(x) cannot be called before histogram is transformed");
+        throw cRuntimeError(this, "getPDF(x) cannot be called before histogram is transformed");
 
-    if (x<rangemin || x>=rangemax)
+    if (x < rangemin || x >= rangemax)
         return 0.0;
 
     // rangemin <= x < rangemax
     // binary search
     int lower_index, upper_index, index;
-    for ( lower_index = 0, upper_index = num_cells,
-         index=(lower_index+upper_index)/2;
+    for (lower_index = 0, upper_index = num_cells,
+         index = (lower_index+upper_index)/2;
 
          lower_index<index;
 
-         index=(lower_index+upper_index)/2 )
+         index = (lower_index+upper_index)/2)
     {
         // cycle invariant: bin_bound[lower_index]<=x<bin_bounds[upper_index]
         if (x < bin_bounds[index])
@@ -438,26 +439,26 @@ double cVarHistogram::getPDF(double x) const // --LG
 
 double cVarHistogram::getCDF(double) const
 {
-    throw cRuntimeError(this,"getCDF(x) not implemented");
+    throw cRuntimeError(this, "getCDF(x) not implemented");
 }
 
 void cVarHistogram::saveToFile(FILE *f) const //--LG
 {
     cHistogramBase::saveToFile(f);
 
-    fprintf(f,"%d\t #= transform_type\n", transform_type);
-    fprintf(f,"%u\t #= max_num_cells\n", max_num_cells);
+    fprintf(f, "%d\t #= transform_type\n", transform_type);
+    fprintf(f, "%u\t #= max_num_cells\n", max_num_cells);
 
-    fprintf(f,"%d\t #= bin_bounds[] exists\n", bin_bounds!=NULL);
-    if (bin_bounds) for (int i=0; i<max_num_cells+1; i++) fprintf(f," %g\n",bin_bounds[i]);
+    fprintf(f, "%d\t #= bin_bounds[] exists\n", bin_bounds!=NULL);
+    if (bin_bounds) for (int i=0; i<max_num_cells+1; i++) fprintf(f, " %g\n", bin_bounds[i]);
 }
 
 void cVarHistogram::loadFromFile(FILE *f)
 {
     cHistogramBase::loadFromFile(f);
 
-    freadvarsf(f,"%d\t #= transform_type", &transform_type);
-    freadvarsf(f,"%u\t #= max_num_cells", &max_num_cells);
+    freadvarsf(f, "%d\t #= transform_type", &transform_type);
+    freadvarsf(f, "%u\t #= max_num_cells", &max_num_cells);
 
     // increase allocated size of cellv[] to max_num_cells
     if (cellv && max_num_cells>num_cells)
@@ -468,12 +469,12 @@ void cVarHistogram::loadFromFile(FILE *f)
     }
 
     int binbounds_exists;
-    freadvarsf(f,"%d\t #= bin_bounds[] exists", &binbounds_exists);
+    freadvarsf(f, "%d\t #= bin_bounds[] exists", &binbounds_exists);
     delete [] bin_bounds; bin_bounds = NULL;
     if (binbounds_exists)
     {
         bin_bounds = new double[max_num_cells+1];
-        for (int i=0; i<max_num_cells+1; i++) freadvarsf(f," %g",bin_bounds+i);
+        for (int i=0; i<max_num_cells+1; i++) freadvarsf(f, " %g", bin_bounds+i);
     }
 }
 

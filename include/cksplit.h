@@ -107,27 +107,27 @@ class SIM_API cKSplit : public cDensityEstBase
         /**
          * Returns true if the iterator has reached either end of the cell sequence.
          */
-        bool end() const           {return grid==0;}
+        bool end() const  {return grid==0;}
 
         /**
          * Returns the index of the current cell.
          */
-        int getCellNumber() const     {return cellnum;}
+        int getCellNumber() const  {return cellnum;}
 
         /**
          * Returns the upper lower of the current cell.
          */
-        double getCellMin() const     {return gridmin+cell*cellsize;}
+        double getCellMin() const  {return gridmin+cell*cellsize;}
 
         /**
          * Returns the upper bound of the current cell.
          */
-        double getCellMax() const     {return gridmin+(cell+1)*cellsize;}
+        double getCellMax() const  {return gridmin+(cell+1)*cellsize;}
 
         /**
          * Returns the size of the current cell.
          */
-        double getCellSize() const    {return cellsize;}
+        double getCellSize() const  {return cellsize;}
 
         /**
          * Returns the actual amount of observations in current cell.
@@ -323,7 +323,7 @@ class SIM_API cKSplit : public cDensityEstBase
      * If range extension is disabled, such observations will simply be
      * counted as underflows or overflows.
      */
-    void rangeExtension( bool enabled );
+    void rangeExtension(bool enabled);
     //@}
 
     /** @name Querying the k-split data structure. */

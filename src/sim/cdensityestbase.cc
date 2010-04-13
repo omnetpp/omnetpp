@@ -55,7 +55,7 @@ cDensityEstBase::~cDensityEstBase()
 void cDensityEstBase::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this, eNOPARSIM);
 #else
     cStdDev::parsimPack(buffer);
 
@@ -76,7 +76,7 @@ void cDensityEstBase::parsimPack(cCommBuffer *buffer)
 void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this, eNOPARSIM);
 #else
     cStdDev::parsimUnpack(buffer);
 
@@ -128,7 +128,7 @@ cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
 
 void cDensityEstBase::merge(const cStatistic *other)
 {
-    if (dynamic_cast<const cDensityEstBase *>(other)==NULL)
+    if (dynamic_cast<const cDensityEstBase *>(other) == NULL)
         throw cRuntimeError(this, "Cannot merge non-histogram (non-cDensityEstBase) statistics (%s)%s into a histogram type",
                                   other->getClassName(), other->getFullPath().c_str());
 
@@ -187,7 +187,7 @@ void cDensityEstBase::clearResult()
 void cDensityEstBase::setRange(double lower, double upper)
 {
     if (num_vals>0 || isTransformed())
-        throw cRuntimeError(this,"setRange() can only be called before collecting any values");
+        throw cRuntimeError(this, "setRange() can only be called before collecting any values");
 
     range_mode = RANGE_FIXED;
     rangemin = lower;
@@ -200,7 +200,7 @@ void cDensityEstBase::setRange(double lower, double upper)
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
     if (num_vals>0 || isTransformed())
-        throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
+        throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTO;
     num_firstvals = num_fstvals;
@@ -213,7 +213,7 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
 {
     if (num_vals>0 || isTransformed())
-        throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
+        throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOLOWER;
     num_firstvals = num_fstvals;
@@ -227,7 +227,7 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
 {
     if (num_vals>0 || isTransformed())
-        throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
+        throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOUPPER;
     num_firstvals = num_fstvals;
@@ -241,7 +241,7 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
 void cDensityEstBase::setNumFirstVals(int num_fstvals)
 {
     if (num_vals>0 || isTransformed())
-        throw cRuntimeError(this,"setNumFirstVals() can only be called before collecting any values");
+        throw cRuntimeError(this, "setNumFirstVals() can only be called before collecting any values");
 
     num_firstvals = num_fstvals;
 
@@ -259,30 +259,34 @@ void cDensityEstBase::setupRange()
     // set rangemin and rangemax.
     //   Attempts not to make zero width range (makes it 1.0 wide).
     //
-    double c,r;
+    double c, r;
     switch (range_mode)
     {
       case RANGE_AUTO:
          c = (min_vals+max_vals)/2;
          r = (max_vals-min_vals)*range_ext_factor;
-         if (r==0) r=1.0; // warning?
+         if (r == 0) r = 1.0; // warning?
          rangemin = c-r/2;
          rangemax = c+r/2;
          break;
       case RANGE_AUTOLOWER:
-         if (rangemax<=min_vals) rangemin=rangemax-1.0; // warning?
-         else rangemin = rangemax-(rangemax-min_vals)*range_ext_factor;
+         if (rangemax <= min_vals)
+             rangemin = rangemax-1.0; // warning?
+         else
+             rangemin = rangemax-(rangemax-min_vals)*range_ext_factor;
          break;
       case RANGE_AUTOUPPER:
-         if (rangemin>=max_vals) rangemax=rangemin+1.0; // warning?
-         else rangemax = rangemin+(max_vals-rangemin)*range_ext_factor;
+         if (rangemin >= max_vals)
+             rangemax = rangemin+1.0; // warning?
+         else
+             rangemax = rangemin+(max_vals-rangemin)*range_ext_factor;
          break;
     }
 }
 
 void cDensityEstBase::collect(double val)
 {
-    if (!isTransformed() && range_mode==RANGE_FIXED)  //FIXME or RANGE_NOT_SET ???
+    if (!isTransformed() && range_mode == RANGE_FIXED)  //FIXME or RANGE_NOT_SET ???
         transform();
 
     cStdDev::collect(val); // this also increments num_vals
@@ -303,22 +307,22 @@ void cDensityEstBase::collect(double val)
 
 double cDensityEstBase::getCellPDF(int k) const
 {
-    if (num_vals==0) return 0.0;
+    if (num_vals == 0) return 0.0;
     double cellsize = getBasepoint(k+1) - getBasepoint(k);
-    return cellsize==0 ? 0.0 : getCellValue(k)/cellsize/getCount();
+    return cellsize == 0 ? 0.0 : getCellValue(k)/cellsize/getCount();
 }
 
 void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, double count, double a)
 {
-    const int picwidth=54;  // width of picture
+    const int picwidth = 54;  // width of picture
     char buf[101], *s;
-    int x,m,k;
+    int x, m, k;
     sprintf(buf, "   %s%12f %5g :", pref, xval, count);
     s = buf+strlen(buf);
     x = (int) floor(a*count+.5);
-    if (x<=picwidth)  k=x;  else k=picwidth;
-    for (m=1;  m<=k;  m++)  *s++ = '-';
-    if (x<=picwidth) strcpy(s,"*\n");  else strcpy(s,">\n");
+    if (x <= picwidth)  k = x;  else k = picwidth;
+    for (m = 1;  m<=k;  m++)  *s++ = '-';
+    if (x <= picwidth) strcpy(s, "*\n");  else strcpy(s, ">\n");
     os << buf;
 }
 
@@ -341,18 +345,18 @@ std::string cDensityEstBase::detailedInfo() const
 
     if (num_vals>1)
     {
-        const int picwidth=55;   // width of picture
-        double max=0;           // biggest cell value
+        const int picwidth = 55;   // width of picture
+        double max = 0;           // biggest cell value
         int nc = getNumCells();        // number of cells
         int k;
         double d;
-        for (k=0; k<nc; k++)
-            if ((d=getCellValue(k)) > max)
-               max = d;
-        double a=(double)picwidth/max;
+        for (k = 0; k<nc; k++)
+            if ((d = getCellValue(k)) > max)
+                max = d;
+        double a = (double)picwidth/max;
 
         os << "Distribution density function:\n";
-        for (k=0; k<nc; k++)
+        for (k = 0; k<nc; k++)
             plotline(os, "< ", getBasepoint(k), (k==0 ? cell_under : getCellValue(k-1)), a);
         plotline(os, ">=", getBasepoint(nc), cell_over, a);
         os << "\n";
@@ -364,38 +368,40 @@ void cDensityEstBase::saveToFile(FILE *f) const
 {
     cStdDev::saveToFile(f);
 
-    fprintf(f,"%d\t #= transformed\n",transfd);
-    fprintf(f,"%d\t #= range_mode\n",range_mode);
-    fprintf(f,"%g\t #= range_ext_factor\n",range_ext_factor);
-    fprintf(f,"%g %g\t #= range\n",rangemin,rangemax);
-    fprintf(f,"%lu %lu\t #= cell_under, cell_over\n",cell_under,cell_over);
-    fprintf(f,"%ld\t #= num_firstvals\n",num_firstvals);
+    fprintf(f, "%d\t #= transformed\n", transfd);
+    fprintf(f, "%d\t #= range_mode\n", range_mode);
+    fprintf(f, "%g\t #= range_ext_factor\n", range_ext_factor);
+    fprintf(f, "%g %g\t #= range\n", rangemin, rangemax);
+    fprintf(f, "%lu %lu\t #= cell_under, cell_over\n", cell_under, cell_over);
+    fprintf(f, "%ld\t #= num_firstvals\n", num_firstvals);
 
-    fprintf(f,"%d\t #= firstvals[] exists\n",firstvals!=NULL);
+    fprintf(f, "%d\t #= firstvals[] exists\n", firstvals!=NULL);
     if (firstvals)
         for (int i=0; i<num_vals; i++)
-            fprintf(f," %g\n",firstvals[i]);
+            fprintf(f, " %g\n", firstvals[i]);
 }
 
 void cDensityEstBase::loadFromFile(FILE *f)
 {
     cStdDev::loadFromFile(f);
 
-    freadvarsf(f,"%d\t #= transformed",&transfd);
-    freadvarsf(f,"%d\t #= range_mode",&range_mode);
-    freadvarsf(f,"%g\t #= range_ext_factor",&range_ext_factor);
-    freadvarsf(f,"%g %g\t #= range",&rangemin,&rangemax);
-    freadvarsf(f,"%lu %lu\t #= cell_under, cell_over",&cell_under,&cell_over);
-    freadvarsf(f,"%ld\t #= num_firstvals",&num_firstvals);
+    freadvarsf(f, "%d\t #= transformed", &transfd);
+    freadvarsf(f, "%d\t #= range_mode", &range_mode);
+    freadvarsf(f, "%g\t #= range_ext_factor", &range_ext_factor);
+    freadvarsf(f, "%g %g\t #= range", &rangemin, &rangemax);
+    freadvarsf(f, "%lu %lu\t #= cell_under, cell_over", &cell_under, &cell_over);
+    freadvarsf(f, "%ld\t #= num_firstvals", &num_firstvals);
 
     int firstvals_exists;
-    freadvarsf(f,"%d\t #= firstvals[] exists", &firstvals_exists);
-    delete [] firstvals; firstvals = NULL;
+    freadvarsf(f, "%d\t #= firstvals[] exists", &firstvals_exists);
+
+    delete [] firstvals;
+    firstvals = NULL;
     if (firstvals_exists)
     {
         firstvals = new double[num_firstvals];
         for (int i=0; i<num_vals; i++)
-            freadvarsf(f," %g",firstvals+i);
+            freadvarsf(f, " %g", firstvals+i);
     }
 }
 

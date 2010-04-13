@@ -77,7 +77,7 @@ class SIM_API cDensityEstBase : public cStdDev
         RANGE_AUTO,      // automatic range setup, using precollected values and range extension (the default)
         RANGE_AUTOLOWER, // like RANGE_AUTO, but upper limit is fixed
         RANGE_AUTOUPPER, // like RANGE_AUTO, but lower limit is fixed
-        RANGE_FIXED,     // fixed range (lower,upper)
+        RANGE_FIXED,     // fixed range (lower, upper)
         RANGE_NOTSET     // not set, but it's OK (cVarHistogram only)
     };
 
@@ -96,13 +96,13 @@ class SIM_API cDensityEstBase : public cStdDev
     };
 
   protected:
-    double rangemin,rangemax;   // range for distribution density collection
+    double rangemin, rangemax;   // range for distribution density collection
     long num_firstvals;         // number of "pre-collected" observations
                                 // before transform() is performed.
     unsigned long cell_under;
     unsigned long cell_over;    // for counting observations that fall out of range
 
-    double range_ext_factor;    // the range of histogram is: [min_vals,max_vals] made
+    double range_ext_factor;    // the range of histogram is: [min_vals, max_vals] made
                                 // range_ext_factor times larger
     int range_mode;             // one of RANGE_xxx constants
 

@@ -63,7 +63,7 @@ cHistogramBase::~cHistogramBase()
 void cHistogramBase::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this, eNOPARSIM);
 #else
     cDensityEstBase::parsimPack(buffer);
     buffer->pack(num_cells);
@@ -76,7 +76,7 @@ void cHistogramBase::parsimPack(cCommBuffer *buffer)
 void cHistogramBase::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this, eNOPARSIM);
 #else
     cDensityEstBase::parsimUnpack(buffer);
     buffer->pack(num_cells);
@@ -151,30 +151,30 @@ int cHistogramBase::getNumCells() const
 void cHistogramBase::saveToFile(FILE *f) const
 {
     cDensityEstBase::saveToFile(f);
-    fprintf(f,"%d\t #= num_cells\n", num_cells);
-    fprintf(f,"%d\t #= cellv[] exists\n", cellv!=NULL);
-    if (cellv) for (int i=0; i<num_cells; i++) fprintf(f," %u\n",cellv[i]);
+    fprintf(f, "%d\t #= num_cells\n", num_cells);
+    fprintf(f, "%d\t #= cellv[] exists\n", cellv!=NULL);
+    if (cellv) for (int i=0; i<num_cells; i++) fprintf(f, " %u\n", cellv[i]);
 }
 
 void cHistogramBase::loadFromFile(FILE *f)
 {
     cDensityEstBase::loadFromFile(f);
-    freadvarsf(f,"%d\t #= num_cells", &num_cells);
+    freadvarsf(f, "%d\t #= num_cells", &num_cells);
 
     int cellv_exists;
-    freadvarsf(f,"%d\t #= cellv[] exists", &cellv_exists);
+    freadvarsf(f, "%d\t #= cellv[] exists", &cellv_exists);
     delete [] cellv; cellv = NULL;
     if (cellv_exists)
     {
         cellv = new unsigned[num_cells];
-        for (int i=0; i<num_cells; i++) freadvarsf(f," %u",cellv+i);
+        for (int i=0; i<num_cells; i++) freadvarsf(f, " %u", cellv+i);
     }
 }
 
 void cHistogramBase::setNumCells(int numcells)
 {
     if (cellv)
-        throw cRuntimeError(this,"setNumCells(): too late, cells already set up");
+        throw cRuntimeError(this, "setNumCells(): too late, cells already set up");
     num_cells = numcells;
 }
 
@@ -192,7 +192,7 @@ cHistogramBase(name, numcells)
 void cHistogram::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this, eNOPARSIM);
 #else
     cHistogramBase::parsimPack(buffer);
     buffer->pack(cellsize);
@@ -202,14 +202,14 @@ void cHistogram::parsimPack(cCommBuffer *buffer)
 void cHistogram::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this, eNOPARSIM);
 #else
     cHistogramBase::parsimUnpack(buffer);
     buffer->unpack(cellsize);
 #endif
 }
 
-cHistogram& cHistogram::operator=(const cHistogram& res)
+cHistogram& cHistogram::operator = (const cHistogram& res)
 {
     if (this==&res) return *this;
 
@@ -222,14 +222,14 @@ cHistogram& cHistogram::operator=(const cHistogram& res)
 void cHistogram::setMode(Mode mode)
 {
     if (isTransformed())
-        throw cRuntimeError(this,"setMode() cannot be called when cells have been set up already");
+        throw cRuntimeError(this, "setMode() cannot be called when cells have been set up already");
     this->mode = mode;
 }
 
 void cHistogram::setCellSize(double d)
 {
     if (isTransformed())
-        throw cRuntimeError(this,"setCellSize() cannot be called when cells have been set up already");
+        throw cRuntimeError(this, "setCellSize() cannot be called when cells have been set up already");
     cellsize = d;
 }
 
@@ -251,7 +251,7 @@ void cHistogram::setupRange()
     {
         // if all precollected numbers are integers, go for integer mode
         bool allints = true;
-        for (int i = 0; i < num_firstvals; i++)
+        for (int i=0; i < num_firstvals; i++)
             if (firstvals[i] != floor(firstvals[i]))
                 {allints = false; break;}
 
@@ -276,7 +276,7 @@ void cHistogram::setupRangeInteger()
     rangemin = floor(rangemin);
     rangemax = ceil(rangemax);
 
-    if (range_mode==RANGE_FIXED)
+    if (range_mode == RANGE_FIXED)
     {
 #define COMPLAINT "Cannot set up cells to satisfy constraints"
         long range = (long)(rangemax-rangemin);
@@ -298,7 +298,7 @@ void cHistogram::setupRangeInteger()
         else {
             int mincellsize = (int) ceil(range/200.0);
             int maxcellsize = (int) ceil(range/10.0);
-            for (cellsize=mincellsize; cellsize<=maxcellsize; cellsize++)
+            for (cellsize = mincellsize; cellsize <= maxcellsize; cellsize++)
                 if (range % cellsize == 0)
                     break;
             if (cellsize > maxcellsize)
@@ -353,21 +353,21 @@ void cHistogram::setupRangeInteger()
 
 void cHistogram::setupRangeDouble()
 {
-    if (num_cells==-1)
+    if (num_cells == -1)
         num_cells = 30; // to allow merging every 2, 3, 5, 6 adjacent cells in post-processing
     cellsize = (rangemax - rangemin) / num_cells;
 }
 
 double cHistogram::random() const
 {
-    if (num_vals==0)
+    if (num_vals == 0)
     {
         return 0L;
     }
     else if (num_vals < num_firstvals)
     {
         // randomly select a sample from the stored ones
-        return firstvals[genk_intrand(genk,num_vals)];
+        return firstvals[genk_intrand(genk, num_vals)];
     }
     else
     {
@@ -396,9 +396,9 @@ double cHistogram::random() const
 void cHistogram::collectTransformed (double val)
 {
     int k = (int)floor((val-rangemin)/cellsize);
-    if (k<0 || val<rangemin)
+    if (k < 0 || val < rangemin)
         cell_under++;
-    else if (k>=num_cells || val>=rangemax)
+    else if (k >= num_cells || val >= rangemax)
         cell_over++;
     else
         cellv[k]++;
@@ -407,10 +407,10 @@ void cHistogram::collectTransformed (double val)
 double cHistogram::getPDF(double x) const
 {
     if (!isTransformed())
-        throw cRuntimeError(this,"getPDF(x) cannot be called before histogram is transformed");
+        throw cRuntimeError(this, "getPDF(x) cannot be called before histogram is transformed");
 
     int k = (int)floor((x-rangemin)/cellsize);
-    if (k<0 || x<rangemin || k>=num_cells || x>=rangemax)
+    if (k < 0 || x < rangemin || k >= num_cells || x >= rangemax)
         return 0.0;
 
     return cellv[k] / cellsize / num_vals;
@@ -418,7 +418,7 @@ double cHistogram::getPDF(double x) const
 
 double cHistogram::getCDF(double) const
 {
-    throw cRuntimeError(this,"getCDF() not implemented");
+    throw cRuntimeError(this, "getCDF() not implemented");
 }
 
 // return kth basepoint
@@ -429,9 +429,9 @@ double cHistogram::getBasepoint(int k) const
     //   k=num_cells   : rangemax
 
     if (k<0 || k>num_cells)
-        throw cRuntimeError(this,"invalid basepoint index %u",k);
+        throw cRuntimeError(this, "invalid basepoint index %u", k);
 
-    if (k==num_cells)
+    if (k == num_cells)
         return rangemax;
     else
         return rangemin + k*cellsize;
@@ -440,20 +440,20 @@ double cHistogram::getBasepoint(int k) const
 double cHistogram::getCellValue(int k) const
 {
     if (k<0 || k>num_cells)
-        throw cRuntimeError(this,"invalid cell index %u",k);
+        throw cRuntimeError(this, "invalid cell index %u", k);
     return cellv[k];
 }
 
 void cHistogram::saveToFile(FILE *f) const
 {
     cHistogramBase::saveToFile(f);
-    fprintf(f,"%g\t #= cellsize\n", cellsize);
+    fprintf(f, "%g\t #= cellsize\n", cellsize);
 }
 
 void cHistogram::loadFromFile(FILE *f)
 {
     cHistogramBase::loadFromFile(f);
-    freadvarsf(f,"%g\t #= cellsize", &cellsize);
+    freadvarsf(f, "%g\t #= cellsize", &cellsize);
 }
 
 
