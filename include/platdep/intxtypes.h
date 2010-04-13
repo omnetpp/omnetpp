@@ -180,10 +180,14 @@
 #ifdef _MSC_VER
 typedef __int64            opp_long_long;
 typedef unsigned __int64   opp_unsigned_long_long;
-#define LONGLONG_PRINTF_FORMAT  "I64"
 #else
 typedef long long          opp_long_long;
 typedef unsigned long long opp_unsigned_long_long;
+#endif
+
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#define LONGLONG_PRINTF_FORMAT  "I64"
+#else
 #define LONGLONG_PRINTF_FORMAT  "ll"
 #endif
 
