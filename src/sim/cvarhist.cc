@@ -376,9 +376,10 @@ double cVarHistogram::getCellValue(int k) const
 
 double cVarHistogram::random() const //--LG
 {
-    if (num_vals==0) return 0L;
+    if (num_vals==0)
+        return 0;
 
-    if (num_vals<num_firstvals)
+    if (num_vals < num_firstvals)
     {
         // randomly select a sample from the stored ones
         return firstvals[genk_intrand(genk,num_vals)];
@@ -386,8 +387,8 @@ double cVarHistogram::random() const //--LG
     else
     {
         double lower, upper;
-        // generate in [lower, upper)
 
+        // generate in [lower, upper)
         double m = genk_intrand(genk, num_vals-cell_under-cell_over);
 
         // select a random interval (k-1) and return a random number from

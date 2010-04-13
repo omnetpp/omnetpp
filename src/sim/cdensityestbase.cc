@@ -38,14 +38,13 @@ using std::ostream;
 
 cDensityEstBase::cDensityEstBase(const char *name) : cStdDev(name)
 {
-    range_mode = RANGE_INVALID;
+    range_mode = RANGE_AUTO;
+    num_firstvals = 100;
+    range_ext_factor = 2.0;
     rangemin = rangemax = 0;
-    range_ext_factor = 0;
-    num_firstvals = 0;
     cell_under = cell_over = 0;
-
-    transfd = 0;
-    firstvals = NULL;
+    transfd = false;
+    firstvals = new double[num_firstvals];  // to match RANGE_AUTO
 }
 
 cDensityEstBase::~cDensityEstBase()
@@ -90,6 +89,8 @@ void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(range_mode);
     buffer->unpack(transfd);
 
+    delete[] firstvals;
+    firstvals = NULL;
     if (buffer->checkFlag())
     {
         firstvals = new double[num_firstvals];
@@ -119,7 +120,7 @@ cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
     firstvals = NULL;
     if (res.firstvals)
     {
-        firstvals = new double[ num_firstvals ];
+        firstvals = new double[num_firstvals];
         memcpy(firstvals, res.firstvals, num_firstvals*sizeof(double));
     }
     return *this;
@@ -172,12 +173,15 @@ void cDensityEstBase::clearResult()
 {
     cStdDev::clearResult();
 
-    range_mode = RANGE_INVALID;
-    num_firstvals = 0;
-    cell_under = cell_over = 0;
-    delete [] firstvals;
-    firstvals = NULL;
     transfd = false;
+    range_mode = RANGE_AUTO;
+    num_firstvals = 100;
+    range_ext_factor = 2.0;
+    rangemin = rangemax = 0;
+    cell_under = cell_over = 0;
+
+    delete [] firstvals;
+    firstvals = new double[num_firstvals];  // to match RANGE_AUTO
 }
 
 void cDensityEstBase::setRange(double lower, double upper)
@@ -188,6 +192,9 @@ void cDensityEstBase::setRange(double lower, double upper)
     range_mode = RANGE_FIXED;
     rangemin = lower;
     rangemax = upper;
+
+    delete [] firstvals;
+    firstvals = NULL;    // not needed with RANGE_FIXED
 }
 
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
@@ -197,8 +204,10 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 
     range_mode = RANGE_AUTO;
     num_firstvals = num_fstvals;
-    firstvals = new double [num_firstvals];
     range_ext_factor = range_ext_fct;
+
+    delete [] firstvals;
+    firstvals = new double[num_firstvals];
 }
 
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
@@ -208,9 +217,11 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
 
     range_mode = RANGE_AUTOLOWER;
     num_firstvals = num_fstvals;
-    firstvals = new double [num_firstvals];
     rangemax = upper;
     range_ext_factor = range_ext_fct;
+
+    delete [] firstvals;
+    firstvals = new double[num_firstvals];
 }
 
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
@@ -220,9 +231,11 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
 
     range_mode = RANGE_AUTOUPPER;
     num_firstvals = num_fstvals;
-    firstvals = new double [num_firstvals];
     rangemin = lower;
     range_ext_factor = range_ext_fct;
+
+    delete [] firstvals;
+    firstvals = new double[num_firstvals];
 }
 
 void cDensityEstBase::setNumFirstVals(int num_fstvals)
@@ -231,15 +244,17 @@ void cDensityEstBase::setNumFirstVals(int num_fstvals)
         throw cRuntimeError(this,"setNumFirstVals() can only be called before collecting any values");
 
     num_firstvals = num_fstvals;
-    delete [] firstvals;
-    firstvals = new double [num_firstvals];
+
+    // if already allocated, reallocate with the correct size
+    if (firstvals)
+    {
+        delete [] firstvals;
+        firstvals = new double[num_firstvals];
+    }
 }
 
 void cDensityEstBase::setupRange()
 {
-    if (range_mode == RANGE_INVALID)   //FIXME needed???
-        range_mode = RANGE_AUTO;
-
     //
     // set rangemin and rangemax.
     //   Attempts not to make zero width range (makes it 1.0 wide).
@@ -267,17 +282,18 @@ void cDensityEstBase::setupRange()
 
 void cDensityEstBase::collect(double val)
 {
-    if (firstvals==NULL && !isTransformed())   //FIXME wtf purpose does this serve???? no firstvals: no mode, etc???
+    if (!isTransformed() && range_mode==RANGE_FIXED)  //FIXME or RANGE_NOT_SET ???
         transform();
 
     cStdDev::collect(val); // this also increments num_vals
 
     if (!isTransformed())
     {
-        firstvals[num_vals-1] = val;  //FIXME if we were created with RANGE_INVALID, this will CRASH!!!!
+        ASSERT(firstvals);
+        firstvals[num_vals-1] = val;
 
-        if (num_vals==num_firstvals)
-            transform();  // must set transfd and call setupRange()
+        if (num_vals == num_firstvals)
+            transform();
     }
     else
     {
@@ -377,7 +393,7 @@ void cDensityEstBase::loadFromFile(FILE *f)
     delete [] firstvals; firstvals = NULL;
     if (firstvals_exists)
     {
-        firstvals = new double[ num_firstvals ];
+        firstvals = new double[num_firstvals];
         for (int i=0; i<num_vals; i++)
             freadvarsf(f," %g",firstvals+i);
     }

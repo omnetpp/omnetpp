@@ -74,12 +74,11 @@ class SIM_API cDensityEstBase : public cStdDev
      * Constants for histogram range_mode
      */
     enum {
-        RANGE_INVALID,   // --> needs to be set
-        RANGE_FIXED,     // --> fixed range (lower,upper)
-        RANGE_AUTO,
-        RANGE_AUTOLOWER, // --> will be determined from firstvals[],
-        RANGE_AUTOUPPER, //        using min and/or max and range_ext_fact
-        RANGE_NOTSET     // --> not set, but it's OK (cVarHistogram only)
+        RANGE_AUTO,      // automatic range setup, using precollected values and range extension (the default)
+        RANGE_AUTOLOWER, // like RANGE_AUTO, but upper limit is fixed
+        RANGE_AUTOUPPER, // like RANGE_AUTO, but lower limit is fixed
+        RANGE_FIXED,     // fixed range (lower,upper)
+        RANGE_NOTSET     // not set, but it's OK (cVarHistogram only)
     };
 
     /**
