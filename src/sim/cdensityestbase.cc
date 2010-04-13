@@ -328,26 +328,23 @@ void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, doubl
 
 std::string cDensityEstBase::detailedInfo() const
 {
-    if (!isTransformed())
-    {
-        // if the histogram is not transformed, we create a temporary copy,
-        // transform it and call its detailedInfo() to do the job.
-        cDensityEstBase *temp = (cDensityEstBase *)dup();
-        temp->transform();
-        std::string res = temp->detailedInfo();
-        delete temp;
-        return res;
-    }
-
-    // Now the histogram is surely transformed.
     std::stringstream os;
     os << cStdDev::detailedInfo();
 
-    if (num_vals>1)
+    if (!isTransformed())
     {
+        ASSERT(firstvals || num_vals==0);
+        os << "Values collected so far: ";
+        for (int i=0; i<num_vals; i++)
+            os << (i==0?"":", ") << firstvals[i];
+        os << "\n";
+    }
+    else
+    {
+        // transformed
         const int picwidth = 55;   // width of picture
-        double max = 0;           // biggest cell value
-        int nc = getNumCells();        // number of cells
+        double max = 0;            // biggest cell value
+        int nc = getNumCells();    // number of cells
         int k;
         double d;
         for (k = 0; k<nc; k++)
