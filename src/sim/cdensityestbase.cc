@@ -237,6 +237,9 @@ void cDensityEstBase::setNumFirstVals(int num_fstvals)
 
 void cDensityEstBase::setupRange()
 {
+    if (range_mode == RANGE_INVALID)   //FIXME needed???
+        range_mode = RANGE_AUTO;
+
     //
     // set rangemin and rangemax.
     //   Attempts not to make zero width range (makes it 1.0 wide).
@@ -264,9 +267,6 @@ void cDensityEstBase::setupRange()
 
 void cDensityEstBase::collect(double val)
 {
-    if (range_mode == RANGE_INVALID && !isTransformed())
-        setRangeAuto(num_firstvals==0 ? 100 : num_firstvals); // do not overwrite previously set num_firstvals
-
     if (firstvals==NULL && !isTransformed())
         transform();
 
