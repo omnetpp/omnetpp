@@ -75,6 +75,8 @@ test("3km != 3000m");
 
 ev << ".\n";
 
+%subst: /e\+00/e+0/
+
 %contains: stdout
 2m ==> 2m
 2 meter ==> 2meter
