@@ -51,7 +51,8 @@ cHistogramBase(name, -1) //--LG
     range_mode = RANGE_NOTSET;
     transform_type = transformtype;
     max_num_cells = maxnumcells;
-    bin_bounds = NULL; // no bin bounds are defined
+    bin_bounds = NULL;
+    ASSERT(firstvals); // base class must have allocated it for RANGE_AUTO
 
     if ((transform_type == HIST_TR_AUTO_EPC_DBL ||
          transform_type == HIST_TR_AUTO_EPC_INT) && max_num_cells<2)
@@ -162,29 +163,14 @@ static int double_compare_function(const void *p1, const void *p2) //--LG
 
 void cVarHistogram::createEquiprobableCells()
 {
+    // this method is called from transform() if equi-probable cells (automatic setup) was requested
     if (num_cells>0)
         throw cRuntimeError(this, "some bin bounds already present when making equi-probable cells");
 
+    // setRange() methods must not be used with cVarHistogram's equi-probable cell auto-setup mode,
+    // so range_mode should still be the RANGE_NOTSET that we set in the ctor
     if (range_mode != RANGE_NOTSET)
-    {
         throw cRuntimeError(this, "setRange..() only supported with HIST_TR_NO_TRANSFORM mode");
-
-        // // put away observations that are out of range
-        // int num_inrange = num_vals;
-        // for (i=0; i<num_vals; i++)
-        // {
-        //    if (firstvals[i]<rangemin || firstvals[i]>=rangemax)
-        //    {
-        //       // swap [i] and [num_inrange-1]
-        //       double tmp = firstvals[i];
-        //       firstvals[i]=firstvals[--num_inrange];
-        //       firstvals[i]=tmp;
-        //    }
-        // }
-        //
-        // // following code should only deal with first num_inrange observations,
-        // // and make 2 additional bin bounds (rangemin and rangemax).
-    }
 
     // this version automatically sets the cell boundaries...
     ASSERT(max_num_cells>=2); // maybe 1 is enough...
@@ -195,7 +181,7 @@ void cVarHistogram::createEquiprobableCells()
 
     qsort(firstvals, num_vals, sizeof(double), double_compare_function);
 
-    // expected sample number per cell/bin
+    // expected sample number per cell
     double esnpc = num_vals/(double)max_num_cells;
 
     int cell;       // index of cell being constructed
@@ -302,7 +288,7 @@ void cVarHistogram::transform() //--LG
         // create cell vector and insert observations
         cellv = new unsigned [num_cells];
         for (int i=0; i<num_cells; i++)
-            cellv[i]=0;
+            cellv[i] = 0;
 
         for (int i=0; i<num_vals; i++)
             collectTransformed(firstvals[i]);

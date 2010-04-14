@@ -286,7 +286,7 @@ void cDensityEstBase::setupRange()
 
 void cDensityEstBase::collect(double val)
 {
-    if (!isTransformed() && range_mode == RANGE_FIXED)  //FIXME or RANGE_NOT_SET ???
+    if (!isTransformed() && range_mode == RANGE_FIXED)
         transform();
 
     cStdDev::collect(val); // this also increments num_vals
