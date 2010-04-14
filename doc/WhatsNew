@@ -1,7 +1,52 @@
 What's New
 ==========
 
+OMNeT++ 4.1 beta 4 (April 2010)
+-------------------------------
+API:
+  handleParameterChange(NULL) is called for each component with NULL
+  as the parameterName after the last stage of the initialization phase.
+  This allows the components to refresh their cached parameter values
+  if some parameters were changed during the initialization phase.
+
+IDE:
+  Rearanged context menu in Sequence Chart editor 
+
+  Improved display of @statistic and @signal properties in ModuleHierarchyView
+
+  Added banner comment if a module or channel type is dropped into a NED filename
+  from the palette.
+
+Tooling:
+  Updated MINGW and MSYS tools in the Windows distribution. The new MSYS
+  now should work on Win64 (altough the compiler still produces 32bit code)
+  The GCC compiler is updated to a pre-release version of MINGW 4.5 (this solves
+  the debugging issues on Windows platform)
+
+Build system:
+  Extra long commandlines are supported now for mingw linker
+
+Tkenv:
+  A new toolbar button to start/stop eventlog recording interactively
+  
+  An option for eliminating module initilalization messages in the console
+
+Cmdenv:
+  Module initialization messages are not printed in express mode
+
+Simulation kernel:
+  Better configuration for statistics (see src/envir/ChangeLog)
+
+  Default channel statistics (message count, byte sum, utilization, throuhput etc.)
+
+Bugfixes since beta 3:
+  - Connecting two modules in the IDE does not use IdealChannel explicitly.
+  - pack/unpack error for long long types fixed (on mingw compiler)
+  - fixed (reduced) the size of filter textline in the NED editor palette
+  - Goto C++ definition in NED file is working again
+
 OMNeT++ 4.1 beta 3 (March 2010)
+-------------------------------
 API (see include/ChangeLog for more info):
   New channel programming model
 
