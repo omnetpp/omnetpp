@@ -42,6 +42,7 @@ class cXMLDocCache;
 class cScheduler;
 class cModuleType;
 class cIListener;
+class cProperty;
 // WITH_PARSIM:
 class cParsimCommunications;
 class cParsimPartition;
@@ -270,6 +271,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
 
+    // Utility function for addResultRecorders()
+    std::vector<std::string> extractRecorderList(const char *modesOption, cProperty *statisticProperty);
     // Utility function for addResultRecorders()
     SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
     // Utility function for addResultRecorders()

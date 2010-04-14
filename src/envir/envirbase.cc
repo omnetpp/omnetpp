@@ -827,81 +827,19 @@ void EnvirBase::addResultRecorders(cComponent *component)
         if (!scalarsEnabled && !vectorsEnabled)
             continue;
 
-        cProperty *property = component->getProperties()->get("statistic", statisticName);
-        ASSERT(property!=NULL);
+        cProperty *statisticProperty = component->getProperties()->get("statistic", statisticName);
+        ASSERT(statisticProperty!=NULL);
 
         // collect the list of result recorders
-        std::vector<std::string> modes;
         std::string modesOption = ev.getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODES, "");
-        if (!modesOption.empty() && modesOption != "-") // "-" means "none"
-        {
-            // if first configured mode starts with '+' or '-', assume "default" as base
-            if (modesOption[0]=='-' || modesOption[1]=='+')
-            {
-                // collect the mandatory record= items from @statistic (those not ending in '?')
-                int n = property->getNumValues("record");
-                for (int j = 0; j < n; j++) {
-                    const char *m = property->getValue("record",j);
-                    if (m[strlen(m)-1] != '?')
-                        modes.push_back(m);
-                }
-            }
-
-            // loop through all modes
-            StringTokenizer tokenizer(modesOption.c_str(), ","); //XXX we should ignore commas within parens
-            while (tokenizer.hasMoreTokens())
-            {
-                const char *mode = tokenizer.nextToken();
-                if (!strcmp(mode, "default"))
-                {
-                    // collect the mandatory record= items from @statistic (those not ending in '?')
-                    int n = property->getNumValues("record");
-                    for (int j = 0; j < n; j++) {
-                        const char *m = property->getValue("record",j);
-                        if (m[strlen(m)-1] != '?')
-                            modes.push_back(m); //FIXME if not yet added
-                    }
-                }
-                else if (!strcmp(mode, "all"))
-                {
-                    // collect the all record= items from @statistic (strip trailing '?' if present)
-                    int n = property->getNumValues("record");
-                    for (int j = 0; j < n; j++) {
-                        const char *m = property->getValue("record",j);
-                        if (m[strlen(m)-1] != '?') {
-                            if (search_(modes, m) == -1)
-                                modes.push_back(m);
-                        }
-                        else {
-                            std::string m1 = std::string(m, strlen(m)-1);
-                            if (search_(modes, m1.c_str()) == -1)
-                                modes.push_back(m1);
-                        }
-                    }
-                }
-                else if (mode[0] == '-')
-                {
-                    // remove from modes
-                    int k = search_(modes, mode+1);
-                    if (k != -1)
-                        modes.erase(modes.begin()+k);
-                }
-                else {
-                    // add to modes
-                    if (mode[0] == '+')
-                        ++mode;
-                    if (search_(modes, mode) == -1)
-                        modes.push_back(mode);
-                }
-            }
-        }
+        std::vector<std::string> modes = extractRecorderList(modesOption.c_str(), statisticProperty);
 
         // if there are result recorders, add source filters and recorders
         if (!modes.empty())
         {
             // add source
-            bool hasSourceKey = property->getNumValues("source") > 0;
-            const char *sourceSpec = hasSourceKey ? property->getValue("source",0) : statisticName;
+            bool hasSourceKey = statisticProperty->getNumValues("source") > 0;
+            const char *sourceSpec = hasSourceKey ? statisticProperty->getValue("source",0) : statisticName;
             SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
 
             // add result recorders
@@ -912,6 +850,76 @@ void EnvirBase::addResultRecorders(cComponent *component)
 
     if (opt_debug_statistics_recording)
         dumpResultRecorders(component);
+}
+
+std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption, cProperty *statisticProperty)
+{
+    // "-" means "none"
+    if (!modesOption[0] || (modesOption[0]=='-' && !modesOption[1]))
+        return std::vector<std::string>();
+
+    std::vector<std::string> modes; // the result
+
+    // if first configured mode starts with '+' or '-', assume "default" as base
+    if (modesOption[0]=='-' || modesOption[1]=='+')
+    {
+        // collect the mandatory record= items from @statistic (those not ending in '?')
+        int n = statisticProperty->getNumValues("record");
+        for (int j = 0; j < n; j++) {
+            const char *m = statisticProperty->getValue("record",j);
+            if (m[strlen(m)-1] != '?')
+                modes.push_back(m);
+        }
+    }
+
+    // loop through all modes
+    StringTokenizer tokenizer(modesOption, ","); //XXX we should ignore commas within parens
+    while (tokenizer.hasMoreTokens())
+    {
+        const char *mode = tokenizer.nextToken();
+        if (!strcmp(mode, "default"))
+        {
+            // collect the mandatory record= items from @statistic (those not ending in '?')
+            int n = statisticProperty->getNumValues("record");
+            for (int j = 0; j < n; j++) {
+                const char *m = statisticProperty->getValue("record",j);
+                if (m[strlen(m)-1] != '?')
+                    modes.push_back(m); //FIXME if not yet added
+            }
+        }
+        else if (!strcmp(mode, "all"))
+        {
+            // collect the all record= items from @statistic (strip trailing '?' if present)
+            int n = statisticProperty->getNumValues("record");
+            for (int j = 0; j < n; j++) {
+                const char *m = statisticProperty->getValue("record",j);
+                if (m[strlen(m)-1] != '?') {
+                    if (search_(modes, m) == -1)
+                        modes.push_back(m);
+                }
+                else {
+                    std::string m1 = std::string(m, strlen(m)-1);
+                    if (search_(modes, m1.c_str()) == -1)
+                        modes.push_back(m1);
+                }
+            }
+        }
+        else if (mode[0] == '-')
+        {
+            // remove from modes
+            int k = search_(modes, mode+1);
+            if (k != -1)
+                modes.erase(modes.begin()+k);
+        }
+        else {
+            // add to modes
+            if (mode[0] == '+')
+                ++mode;
+            if (search_(modes, mode) == -1)
+                modes.push_back(mode);
+        }
+    }
+    return modes;
 }
 
 static bool opp_isidentifier(const char *s)
