@@ -829,9 +829,6 @@ void EnvirBase::addResultRecorders(cComponent *component)
 
         cProperty *property = component->getProperties()->get("statistic", statisticName);
         ASSERT(property!=NULL);
-        bool hasSourceKey = property->getNumValues("source") > 0;
-        const char *sourceSpec = hasSourceKey ? property->getValue("source",0) : statisticName;
-        SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
 
         // collect the list of result recorders
         std::vector<std::string> modes;
@@ -899,9 +896,18 @@ void EnvirBase::addResultRecorders(cComponent *component)
             }
         }
 
-        // add result recorders
-        for (int j = 0; j < (int)modes.size(); j++)
-            doResultRecorder(source, modes[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName);
+        // if there are result recorders, add source filters and recorders
+        if (!modes.empty())
+        {
+            // add source
+            bool hasSourceKey = property->getNumValues("source") > 0;
+            const char *sourceSpec = hasSourceKey ? property->getValue("source",0) : statisticName;
+            SignalSource source = doStatisticSource(component, statisticName, sourceSpec, opt_warmupperiod!=0);
+
+            // add result recorders
+            for (int j = 0; j < (int)modes.size(); j++)
+                doResultRecorder(source, modes[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName);
+        }
     }
 
     if (opt_debug_statistics_recording)
