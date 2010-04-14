@@ -63,7 +63,7 @@ class SIM_API cITimestampedValue
  *
  * @ingroup Signals
  */
-class SIM_API cTimestampedValue : public cITimestampedValue, cObject
+class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
 {
     public:
         simtime_t timestamp;
