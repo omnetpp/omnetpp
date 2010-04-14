@@ -811,6 +811,18 @@ static int search_(std::vector<std::string>& v, const char *s)
     return -1;
 }
 
+inline void addIfNotContains_(std::vector<std::string>& v, const char *s)
+{
+    if (search_(v,s)==-1)
+        v.push_back(s);
+}
+
+inline void addIfNotContains_(std::vector<std::string>& v, const std::string& s)
+{
+    if (search_(v,s.c_str())==-1)
+        v.push_back(s);
+}
+
 void EnvirBase::addResultRecorders(cComponent *component)
 {
     std::vector<const char *> statisticNames = component->getProperties()->getIndicesFor("statistic");
@@ -861,14 +873,14 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
     std::vector<std::string> modes; // the result
 
     // if first configured mode starts with '+' or '-', assume "default" as base
-    if (modesOption[0]=='-' || modesOption[1]=='+')
+    if (modesOption[0]=='-' || modesOption[0]=='+')
     {
         // collect the mandatory record= items from @statistic (those not ending in '?')
         int n = statisticProperty->getNumValues("record");
-        for (int j = 0; j < n; j++) {
-            const char *m = statisticProperty->getValue("record",j);
+        for (int i = 0; i < n; i++) {
+            const char *m = statisticProperty->getValue("record", i);
             if (m[strlen(m)-1] != '?')
-                modes.push_back(m);
+                addIfNotContains_(modes, m);
         }
     }
 
@@ -881,27 +893,22 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
         {
             // collect the mandatory record= items from @statistic (those not ending in '?')
             int n = statisticProperty->getNumValues("record");
-            for (int j = 0; j < n; j++) {
-                const char *m = statisticProperty->getValue("record",j);
+            for (int i = 0; i < n; i++) {
+                const char *m = statisticProperty->getValue("record", i);
                 if (m[strlen(m)-1] != '?')
-                    modes.push_back(m); //FIXME if not yet added
+                    addIfNotContains_(modes, m);
             }
         }
         else if (!strcmp(mode, "all"))
         {
-            // collect the all record= items from @statistic (strip trailing '?' if present)
+            // collect all record= items from @statistic (strip trailing '?' if present)
             int n = statisticProperty->getNumValues("record");
-            for (int j = 0; j < n; j++) {
-                const char *m = statisticProperty->getValue("record",j);
-                if (m[strlen(m)-1] != '?') {
-                    if (search_(modes, m) == -1)
-                        modes.push_back(m);
-                }
-                else {
-                    std::string m1 = std::string(m, strlen(m)-1);
-                    if (search_(modes, m1.c_str()) == -1)
-                        modes.push_back(m1);
-                }
+            for (int i = 0; i < n; i++) {
+                const char *m = statisticProperty->getValue("record", i);
+                if (m[strlen(m)-1] != '?')
+                    addIfNotContains_(modes, m);
+                else
+                    addIfNotContains_(modes, std::string(m, strlen(m)-1));
             }
         }
         else if (mode[0] == '-')
@@ -913,10 +920,7 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
         }
         else {
             // add to modes
-            if (mode[0] == '+')
-                ++mode;
-            if (search_(modes, mode) == -1)
-                modes.push_back(mode);
+            addIfNotContains_(modes, mode[0]=='+' ? mode+1 : mode);
         }
     }
     return modes;
