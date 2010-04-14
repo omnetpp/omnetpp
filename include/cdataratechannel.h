@@ -29,6 +29,11 @@ NAMESPACE_BEGIN
  */
 class SIM_API cDatarateChannel : public cChannel //implies noncopyable
 {
+  protected:
+    static simsignal_t channelBusySignal;
+    static simsignal_t messageSentSignal;
+    static simsignal_t messageDiscardedSignal;
+
   private:
     enum {
       FL_ISDISABLED = 128,
@@ -187,6 +192,13 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     virtual bool isBusy() const {return simTime() < txfinishtime;}
 
     //@}
+
+    /** @name Implementation methods */
+    //@{
+    /**
+     * Initialization.
+     */
+    virtual void initialize();
 
     /**
      * Performs bit error rate, delay and transmission time modelling.

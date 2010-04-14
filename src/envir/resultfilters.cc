@@ -29,7 +29,9 @@ Register_ResultFilter("mean", MeanFilter);
 Register_ResultFilter("min", MinFilter);
 Register_ResultFilter("max", MaxFilter);
 Register_ResultFilter("timeavg", TimeAverageFilter);
-Register_ResultFilter("pkBytes", PacketBytesFilter);
+Register_ResultFilter("packetBytes", PacketBytesFilter);
+Register_ResultFilter("packetBits", PacketBitsFilter);
+Register_ResultFilter("sumPerDuration", SumPerDurationFilter);
 
 
 void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
@@ -134,9 +136,30 @@ Expression::Functor *ExpressionFilter::makeTimeVariable()
 
 void PacketBytesFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *object)
 {
-    cPacket *pk = check_and_cast<cPacket *>(object);
-    fire(this, t, (double)pk->getByteLength());
+    if (dynamic_cast<cPacket *>(object))
+    {
+        cPacket *pk = (cPacket *)object;
+        fire(this, t, (double)pk->getByteLength());
+    }
 }
 
+//---
 
+void PacketBitsFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *object)
+{
+    if (dynamic_cast<cPacket *>(object))
+    {
+        cPacket *pk = (cPacket *)object;
+        fire(this, t, (double)pk->getBitLength());
+    }
+}
+
+//---
+
+bool SumPerDurationFilter::process(simtime_t& t, double& value)
+{
+    sum += value;
+    value = sum / (simTime() - simulation.getWarmupPeriod());
+    return true;
+}
 

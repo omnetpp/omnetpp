@@ -23,6 +23,7 @@
 #include "globals.h"
 #include "cgate.h"
 #include "cexception.h"
+#include "ctimestampedvalue.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -34,9 +35,18 @@ using std::ostream;
 
 Register_Class(cDelayChannel);
 
+simsignal_t cDelayChannel::messageSentSignal;
+simsignal_t cDelayChannel::messageDiscardedSignal;
+
 cDelayChannel *cDelayChannel::create(const char *name)
 {
     return dynamic_cast<cDelayChannel *>(cChannelType::getDelayChannelType()->create(name));
+}
+
+void cDelayChannel::initialize()
+{
+    messageSentSignal = registerSignal("messageSent");
+    messageDiscardedSignal = registerSignal("messageDiscarded");
 }
 
 void cDelayChannel::rereadPars()
@@ -66,9 +76,22 @@ void cDelayChannel::setDisabled(bool d)
 void cDelayChannel::process(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
-    result.discard = (flags & FL_ISDISABLED);
+    if (flags & FL_ISDISABLED)
+    {
+        result.discard = true;
+        cTimestampedValue tmp(t, msg);
+        emit(messageDiscardedSignal, &tmp);
+        return;
+    }
 
     // propagation delay modeling
     result.delay = delay;
+
+    // emit signals
+    if (mayHaveListeners(messageSentSignal))
+    {
+        cTimestampedValue tmp(t, msg);
+        emit(messageSentSignal, &tmp);
+    }
 }
 

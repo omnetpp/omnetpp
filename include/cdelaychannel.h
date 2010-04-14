@@ -32,6 +32,10 @@ NAMESPACE_BEGIN
  */
 class SIM_API cDelayChannel : public cChannel //implies noncopyable
 {
+  protected:
+    static simsignal_t messageSentSignal;
+    static simsignal_t messageDiscardedSignal;
+
   private:
     enum {
       FL_ISDISABLED = 128,
@@ -118,6 +122,13 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      */
     virtual bool isDisabled() const  {checkState(); return flags & FL_ISDISABLED;}
     //@}
+
+    /** @name Implementation methods */
+    //@{
+    /**
+     * Initialization.
+     */
+    virtual void initialize();
 
     /**
      * This implementation delivers the message to the opposite gate

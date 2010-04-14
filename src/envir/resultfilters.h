@@ -200,6 +200,29 @@ class ENVIR_API PacketBytesFilter : public ObjectResultFilter
         virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *object);
 };
 
+/**
+ * Filter that expects a cPacket and outputs its length in bits (getBitLength()).
+ */
+class ENVIR_API PacketBitsFilter : public ObjectResultFilter
+{
+    public:
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *object);
+};
+
+/**
+ * Filter that outputs the sum of signal values divided by the measurement
+ * interval (simtime minus warmupPeriod)
+ */
+class ENVIR_API SumPerDurationFilter : public NumericResultFilter
+{
+    protected:
+        double sum;
+    protected:
+        virtual bool process(simtime_t& t, double& value);
+    public:
+        SumPerDurationFilter() {sum = 0;}
+};
+
 #endif
 
 

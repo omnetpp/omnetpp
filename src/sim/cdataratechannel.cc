@@ -24,6 +24,7 @@
 #include "globals.h"
 #include "cgate.h"
 #include "cexception.h"
+#include "ctimestampedvalue.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -35,6 +36,9 @@ using std::ostream;
 
 Register_Class(cDatarateChannel);
 
+simsignal_t cDatarateChannel::channelBusySignal;
+simsignal_t cDatarateChannel::messageSentSignal;
+simsignal_t cDatarateChannel::messageDiscardedSignal;
 
 cDatarateChannel::cDatarateChannel(const char *name) : cChannel(name)
 {
@@ -57,6 +61,15 @@ cDatarateChannel *cDatarateChannel::create(const char *name)
 std::string cDatarateChannel::info() const
 {
     return cChannel::info();
+}
+
+void cDatarateChannel::initialize()
+{
+    channelBusySignal = registerSignal("channelBusy");
+    messageSentSignal = registerSignal("messageSent");
+    messageDiscardedSignal = registerSignal("messageDiscarded");
+
+    emit(channelBusySignal, 0);
 }
 
 void cDatarateChannel::rereadPars()
@@ -118,6 +131,8 @@ void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
     if (flags & FL_ISDISABLED)
     {
         result.discard = true;
+        cTimestampedValue tmp(t, msg);
+        emit(messageDiscardedSignal, &tmp);
         return;
     }
 
@@ -146,6 +161,21 @@ void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
         if (flags & FL_PER_NONZERO)
             if (dblrand() < per)
                 pkt->setBitError(true);
+    }
+
+    // emit signals
+    if (mayHaveListeners(messageSentSignal))
+    {
+        cTimestampedValue tmp(t, msg);
+        emit(messageSentSignal, &tmp);
+    }
+    if (mayHaveListeners(channelBusySignal))
+    {
+        cTimestampedValue tmp(t, 1L);
+        emit(channelBusySignal, &tmp);
+
+        tmp.timestamp = txfinishtime; tmp.l = 0L;
+        emit(channelBusySignal, &tmp);
     }
 }
 
