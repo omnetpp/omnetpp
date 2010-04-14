@@ -42,6 +42,7 @@
 #include "cconfigoption.h"
 #include "cmathfunction.h"
 #include "cnedfunction.h"
+#include "../nedxml/nedparser.h" // NEDParser::getBuiltInDeclarations()
 #include "regmacros.h"
 #include "stringutil.h"
 #include "enumstr.h"
@@ -453,6 +454,7 @@ void EnvirBase::printHelp()
     ev << "    -h classdesc      Lists C++ classes that have associated reflection\n";
     ev << "                      information (needed for Tkenv inspectors)\n";
     ev << "    -h nedfunctions   Lists registered NED functions\n";
+    ev << "    -h neddecls       Lists built-in NED component declarations\n";
     ev << "    -h units          Lists recognized physical units\n";
     ev << "    -h enums          Lists registered enums\n";
     ev << "    -h resultfilters  Lists result filters\n";
@@ -647,6 +649,15 @@ void EnvirBase::dumpComponentList(const char *category)
                 }
             }
         }
+        ev << "\n";
+    }
+    if (wantAll || !strcmp(category, "neddecls"))
+    {
+        processed = true;
+        ev << "Built-in NED declarations:\n\n";
+        ev << "---START---\n";
+        ev << NEDParser::getBuiltInDeclarations();
+        ev << "---END---\n";
         ev << "\n";
     }
     if (wantAll || !strcmp(category, "units"))

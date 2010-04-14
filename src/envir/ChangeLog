@@ -1,3 +1,7 @@
+2010-04-14  Andras Varga
+
+	* implemented "-h neddecls" option; it prints built-in NED declarations
+
 2010-04-08  Andras Varga
 
 	* result-recording-mode renamed to result-recording-modes=
