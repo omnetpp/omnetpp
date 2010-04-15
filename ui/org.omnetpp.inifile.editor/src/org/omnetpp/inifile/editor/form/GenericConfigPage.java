@@ -125,7 +125,8 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_ADVANCED = "Advanced";
     public static final String CAT_SCENARIO = "Scenarios";
     public static final String CAT_RANDOMNUMBERS = "Random Numbers";
-    public static final String CAT_OUTPUTFILES = "Output Files";
+    public static final String CAT_RESULTRECORDING = "Result Recording";
+    public static final String CAT_EVENTLOG = "Event Log";
     public static final String CAT_CMDENV = "Cmdenv";
     public static final String CAT_TKENV = "Tkenv";
     public static final String CAT_EXTENSIONS = "Extensions";
@@ -143,7 +144,8 @@ public class GenericConfigPage extends ScrolledFormPage {
     			CAT_ADVANCED,
     			CAT_SCENARIO,
     			CAT_RANDOMNUMBERS,
-    			CAT_OUTPUTFILES,
+    			CAT_RESULTRECORDING,
+    			CAT_EVENTLOG,
     			CAT_CMDENV,
     			CAT_TKENV,
     			CAT_EXTENSIONS,
@@ -179,7 +181,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group1 = createGroup(form, "Network");
 			addTextFieldEditor(group1, CFGID_NETWORK, "Network to simulate"); //FIXME use ComboBoxFieldEditor
 			addSpacer(form);
-			Group group2 = createGroup(form, "Stopping condition");
+			Group group2 = createGroup(form, "Stopping Condition");
 			addTextFieldEditor(group2, CFGID_SIM_TIME_LIMIT, "Simulation time limit");
             addTextFieldEditor(group2, CFGID_CPU_TIME_LIMIT, "CPU time limit");
 			addSpacer(form);
@@ -197,13 +199,13 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
 			addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
 			addSpacer(form);
-            Group group4 = createGroup(form, "Output vector recording");
+            Group group4 = createGroup(form, "Output Vector Recording");
 	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision");
 	        addCheckboxFieldEditor(group4, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers");
 	        addTextFieldEditor(group4, CFGID_VECTOR_MAX_BUFFERED_VALUES, "Buffered size for output vectors");
 	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit");
             addSpacer(form);
-            Group group5 = createGroup(form, "Output scalar recording");
+            Group group5 = createGroup(form, "Output Scalar Recording");
             addTextFieldEditor(group5, CFGID_OUTPUT_SCALAR_PRECISION, "Precision");
             addSpacer(form);
             Group group1 = createGroup(form, "Limits");
@@ -230,42 +232,44 @@ public class GenericConfigPage extends ScrolledFormPage {
             //addTextTableFieldEditor(form, CFGID_SEED_n_MT_Pn, "Per-partition Mersenne Twister seeds (for parsim)");
 		}
 		else if (category.equals(CAT_SCENARIO)) {
-			Group group1 = createGroup(form, "Run labeling");
+			Group group1 = createGroup(form, "Run Labeling");
 			addTextFieldEditor(group1, CFGID_EXPERIMENT_LABEL, "Experiment label");
 			addTextFieldEditor(group1, CFGID_MEASUREMENT_LABEL, "Measurement label");
 			addTextFieldEditor(group1, CFGID_REPLICATION_LABEL, "Replication label");
 			addSpacer(form);
-			Group group2 = createGroup(form, "Scenario generation");
+			Group group2 = createGroup(form, "Scenario Generation");
 			addTextFieldEditor(group2, CFGID_REPEAT, "Repeat count");
 			addTextFieldEditor(group2, CFGID_CONSTRAINT, "Constraint");
             addSpacer(form);
 		}
-		else if (category.equals(CAT_OUTPUTFILES)) {
-			addTextFieldEditor(form, CFGID_RESULT_DIR, "Result directory");
-			addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
-			addSpacer(form);
-			Group group0 = createGroup(form, "Event log");
-			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable recording");
+		else if (category.equals(CAT_RESULTRECORDING)) {
+		    addTextFieldEditor(form, CFGID_RESULT_DIR, "Result directory");
+		    addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
+		    addSpacer(form);
+		    Group group1a = createGroup(form, "Statistic Recording");
+		    addTextFieldEditor(group1a, CFGID_WARMUP_PERIOD, "Warm-up period");
+		    addTextFieldEditor(group1a, CFGID_RESULT_RECORDING_MODES, "Result recording modes");
+		    addCheckboxFieldEditor(group1a, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
+		    addSpacer(form);
+		    Group group1 = createGroup(form, "Output Vector Recording");
+		    addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
+		    addCheckboxFieldEditor(group1, CFGID_VECTOR_RECORDING, "Enable recording of vectors");
+		    addTextFieldEditor(group1, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals");
+		    addSpacer(form);
+		    Group group2 = createGroup(form, "Output Scalar Recording");
+		    addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
+		    addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
+		    addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording of scalars");
+		    addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars");
+		    addSpacer(form);
+		}
+		else if (category.equals(CAT_EVENTLOG)) {
+			Group group0 = createGroup(form, "Eventlog");
+			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable eventlog recording");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record");
 			addCheckboxFieldEditor(group0, CFGID_MODULE_EVENTLOG_RECORDING, "Record events");
-            addSpacer(form);
-            Group group1a = createGroup(form, "Statistic recording");
-            addTextFieldEditor(group1a, CFGID_WARMUP_PERIOD, "Warmup period");
-            addTextFieldEditor(group1a, CFGID_RESULT_RECORDING_MODES, "Result recording modes");
-            addCheckboxFieldEditor(group1a, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
-            addSpacer(form);
-            Group group1 = createGroup(form, "Output vector recording");
-			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
-            addCheckboxFieldEditor(group1, CFGID_VECTOR_RECORDING, "Enable recording of vectors");
-            addTextFieldEditor(group1, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals");
-            addSpacer(form);
-            Group group2 = createGroup(form, "Output scalar recording");
-			addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
-			addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
-			addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording of scalars");
-			addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars");
 			addSpacer(form);
             Group group3 = createGroup(form, "Snapshots");
 			addTextFieldEditor(group3, CFGID_SNAPSHOT_FILE, "Snapshot file");
@@ -274,7 +278,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		else if (category.equals(CAT_EXTENSIONS)) {
 			addTextFieldEditor(form, CFGID_LOAD_LIBS, "Shared libraries to load");
 			addSpacer(form);
-			Group group1 = createGroup(form, "Extension classes");
+			Group group1 = createGroup(form, "Extension Classes");
 			addTextFieldEditor(group1, CFGID_CONFIGURATION_CLASS, "Configuration class");
 			addTextFieldEditor(group1, CFGID_SCHEDULER_CLASS, "Scheduler class");
 			addTextFieldEditor(group1, CFGID_REALTIMESCHEDULER_SCALING, "Real-Time scheduler scaling");
@@ -291,11 +295,11 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
 			addCheckboxFieldEditor(form, CFGID_CMDENV_EXPRESS_MODE, "Run in Express mode");
 			addSpacer(form);
-			Group group1 = createGroup(form, "Express mode");
+			Group group1 = createGroup(form, "Express Mode");
 			addCheckboxFieldEditor(group1, CFGID_CMDENV_PERFORMANCE_DISPLAY, "Display performance data");
 			addTextFieldEditor(group1, CFGID_CMDENV_STATUS_FREQUENCY, "Status frequency");
 			addSpacer(form);
-			Group group2 = createGroup(form, "Normal (non-Express) mode");
+			Group group2 = createGroup(form, "Normal (Non-Express) Mode");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_MODULE_MESSAGES, "Print module messages");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
@@ -337,7 +341,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group2, CFGID_PARSIM_FILECOMMUNICATIONS_READ_PREFIX, "File-based communications: read prefix");
 			addCheckboxFieldEditor(group2, CFGID_PARSIM_FILECOMMUNICATIONS_PRESERVE_READ, "File-based communications: preserve read files");
 			addSpacer(form);
-			Group group3 = createGroup(form, "Protocol-specific settings");
+			Group group3 = createGroup(form, "Protocol-Specific Settings");
 			addTextFieldEditor(group3, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "Null Message Protocol: lookahead class");
 			addTextFieldEditor(group3, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "Null Message Protocol: laziness");
 			addTextFieldEditor(group3, CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "Ideal Simulation Protocol: table size");
