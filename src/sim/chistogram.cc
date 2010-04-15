@@ -249,13 +249,18 @@ void cHistogram::setupRange()
 
     if (mode == MODE_AUTO)
     {
-        // if all precollected numbers are integers, go for integer mode
+        // if all precollected numbers are integers (and they are not all zeroes), go for integer mode
+        bool allzeroes = true;
         bool allints = true;
-        for (int i=0; i < num_firstvals; i++)
+        for (int i=0; i < num_vals; i++)
+        {
+            if (firstvals[i] != 0)
+                allzeroes = false;
             if (firstvals[i] != floor(firstvals[i]))
-                {allints = false; break;}
+                allints = false;
+        }
 
-        mode = (num_firstvals > 0 && allints) ? MODE_INTEGERS : MODE_DOUBLES;
+        mode = (num_vals > 0 && allints && !allzeroes) ? MODE_INTEGERS : MODE_DOUBLES;
     }
 
     if (mode == MODE_INTEGERS)
