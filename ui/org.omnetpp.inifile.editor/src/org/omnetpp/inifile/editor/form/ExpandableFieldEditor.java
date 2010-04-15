@@ -9,6 +9,8 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -49,8 +51,8 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 		}
 	};
 
-	public ExpandableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, SWT.NONE, entry, inifile, formPage);
+	public ExpandableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, SWT.NONE, entry, inifile, formPage, hints);
 		this.labelText = labelText;
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginHeight = gridLayout.marginWidth = 0;

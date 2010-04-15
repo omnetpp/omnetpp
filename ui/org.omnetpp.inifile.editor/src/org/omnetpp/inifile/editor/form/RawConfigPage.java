@@ -36,11 +36,11 @@ public class RawConfigPage extends FormPage {
 		for (ConfigOption e : ConfigRegistry.getEntries()) {
 			String label = "The \""+e.getName()+"\" setting";
 			if (e.getDataType()==ConfigOption.DataType.CFG_BOOL) {
-				CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, this, label);
+				CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, this, label, null);
 				control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 			}
 			else {
-				TextFieldEditor control = new TextFieldEditor(this, e, doc, this, label);
+				TextFieldEditor control = new TextFieldEditor(this, e, doc, this, label, null);
 				control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 			}
 		}

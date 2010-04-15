@@ -95,7 +95,9 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -141,11 +143,11 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static String[] getCategoryNames() {
     	return new String[] {
     			CAT_GENERAL,
-    			CAT_ADVANCED,
     			CAT_SCENARIO,
     			CAT_RANDOMNUMBERS,
     			CAT_RESULTRECORDING,
     			CAT_EVENTLOG,
+    			CAT_ADVANCED,
     			CAT_CMDENV,
     			CAT_TKENV,
     			CAT_EXTENSIONS,
@@ -176,14 +178,14 @@ public class GenericConfigPage extends ScrolledFormPage {
 		});
 	}
 
-	private void createFieldEditors(Composite form, String category) {
+	protected void createFieldEditors(Composite form, String category) {
 		if (category.equals(CAT_GENERAL)) {
             Group group1 = createGroup(form, "Network");
-			addTextFieldEditor(group1, CFGID_NETWORK, "Network to simulate"); //FIXME use ComboBoxFieldEditor
+			addTextFieldEditor(group1, CFGID_NETWORK, "Network to simulate", c(null, "Name")); //FIXME use ComboBoxFieldEditor
 			addSpacer(form);
 			Group group2 = createGroup(form, "Stopping Condition");
-			addTextFieldEditor(group2, CFGID_SIM_TIME_LIMIT, "Simulation time limit");
-            addTextFieldEditor(group2, CFGID_CPU_TIME_LIMIT, "CPU time limit");
+			addTextFieldEditor(group2, CFGID_SIM_TIME_LIMIT, "Simulation time limit", c(null, "Simulation Time Limit"));
+            addTextFieldEditor(group2, CFGID_CPU_TIME_LIMIT, "CPU time limit", c(null, "CPU Time Limit"));
 			addSpacer(form);
             Group group3 = createGroup(form, "Other");
             addComboboxFieldEditor(group3, CFGID_SIMTIME_SCALE, "Simulation time precision");
@@ -193,37 +195,38 @@ public class GenericConfigPage extends ScrolledFormPage {
 		}
 		else if (category.equals(CAT_ADVANCED)) {
 		    Group group0 = createGroup(form, "Regression");
-		    addTextFieldEditor(group0, CFGID_FINGERPRINT, "Fingerprint to verify");
+		    addTextFieldEditor(group0, CFGID_FINGERPRINT, "Fingerprint to verify", c(null, "Fingerprint (Hex)"));
             addSpacer(form);
 			Group group2 = createGroup(form, "Debugging");
 			addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
 			addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
 			addSpacer(form);
             Group group4 = createGroup(form, "Output Vector Recording");
-	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision");
-	        addCheckboxFieldEditor(group4, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers");
-	        addTextFieldEditor(group4, CFGID_VECTOR_MAX_BUFFERED_VALUES, "Buffered size for output vectors");
-	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit");
+	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
+	        addCheckboxFieldEditor(group4, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", null));
+	        addTextFieldEditor(group4, CFGID_VECTOR_MAX_BUFFERED_VALUES, "Buffered size for output vectors", c("Vector (module-path.vectorname pattern)", "Number of Values"));
+	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit", c(null, "Memory Limit"));
             addSpacer(form);
             Group group5 = createGroup(form, "Output Scalar Recording");
-            addTextFieldEditor(group5, CFGID_OUTPUT_SCALAR_PRECISION, "Precision");
+            addTextFieldEditor(group5, CFGID_OUTPUT_SCALAR_PRECISION, "Precision", c(null, "Precision"));
+            addCheckboxFieldEditor(group5, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
             addSpacer(form);
             Group group1 = createGroup(form, "Limits");
             addTextFieldEditor(group1, CFGID_TOTAL_STACK, "Total activity stack");
-            addTextFieldEditor(group1, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting");
+            addTextFieldEditor(group1, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting", c(null, "Nesting Level"));
             addSpacer(form);
             Group group6 = createGroup(form, "Other");
-            addTextFieldEditor(group6, CFGID_RUNNUMBER_WIDTH, "Run number width");
+            addTextFieldEditor(group6, CFGID_RUNNUMBER_WIDTH, "Run number width", c(null, "Width"));
             addTextFieldEditor(group6, CFGID_NED_PATH, "NED file path");
             addTextFieldEditor(group6, CFGID_USER_INTERFACE, "User interface");
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
 			Group group1 = createGroup(form, "Random Number Generators");
-			addTextFieldEditor(group1, CFGID_NUM_RNGS, "Number of RNGs");
-			addTextFieldEditor(group1, CFGID_RNG_CLASS, "RNG class");
+			addTextFieldEditor(group1, CFGID_NUM_RNGS, "Number of RNGs", c(null, "Number of RNGs"));
+			addTextFieldEditor(group1, CFGID_RNG_CLASS, "RNG class", c(null, "RNG Class"));
 			addSpacer(form);
 			Group group2 = createGroup(form, "Automatic Seeds");
-			addTextFieldEditor(group2, CFGID_SEED_SET, "Seed set");
+			addTextFieldEditor(group2, CFGID_SEED_SET, "Seed set", c(null, "Index of Seed Set"));
 			//TODO the ones that contain "%":
 			//Group group3 = createGroup(form, "Manual Seeds");
             //addTextTableFieldEditor(form, CFGID_RNG_n, "Module RNG mapping");
@@ -233,46 +236,45 @@ public class GenericConfigPage extends ScrolledFormPage {
 		}
 		else if (category.equals(CAT_SCENARIO)) {
 			Group group1 = createGroup(form, "Run Labeling");
-			addTextFieldEditor(group1, CFGID_EXPERIMENT_LABEL, "Experiment label");
-			addTextFieldEditor(group1, CFGID_MEASUREMENT_LABEL, "Measurement label");
-			addTextFieldEditor(group1, CFGID_REPLICATION_LABEL, "Replication label");
+			addTextFieldEditor(group1, CFGID_EXPERIMENT_LABEL, "Experiment label", c(null, "Label"));
+			addTextFieldEditor(group1, CFGID_MEASUREMENT_LABEL, "Measurement label", c(null, "Label"));
+			addTextFieldEditor(group1, CFGID_REPLICATION_LABEL, "Replication label", c(null, "Label"));
 			addSpacer(form);
 			Group group2 = createGroup(form, "Scenario Generation");
-			addTextFieldEditor(group2, CFGID_REPEAT, "Repeat count");
-			addTextFieldEditor(group2, CFGID_CONSTRAINT, "Constraint");
+			addTextFieldEditor(group2, CFGID_REPEAT, "Repeat count", c(null, "Repeat Count"));
+			addTextFieldEditor(group2, CFGID_CONSTRAINT, "Constraint expression", c(null, "Expression"));
             addSpacer(form);
 		}
 		else if (category.equals(CAT_RESULTRECORDING)) {
-		    addTextFieldEditor(form, CFGID_RESULT_DIR, "Result directory");
+		    addTextFieldEditor(form, CFGID_RESULT_DIR, "Result folder", c(null, "Results Folder"));
 		    addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
 		    addSpacer(form);
-		    Group group1a = createGroup(form, "Statistic Recording");
-		    addTextFieldEditor(group1a, CFGID_WARMUP_PERIOD, "Warm-up period");
-		    addTextFieldEditor(group1a, CFGID_RESULT_RECORDING_MODES, "Result recording modes");
-		    addCheckboxFieldEditor(group1a, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
+		    Group group0 = createGroup(form, "Statistic Recording");
+		    addTextFieldEditor(group0, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Warm-up Period"));
+		    addTextFieldEditor(group0, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
+		    addCheckboxFieldEditor(group0, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
 		    addSpacer(form);
 		    Group group1 = createGroup(form, "Output Vector Recording");
-		    addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
-		    addCheckboxFieldEditor(group1, CFGID_VECTOR_RECORDING, "Enable recording of vectors");
-		    addTextFieldEditor(group1, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals");
+		    addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file", c(null, "Filename"));
+		    addCheckboxFieldEditor(group1, CFGID_VECTOR_RECORDING, "Enable recording of vectors", c("Vector (module-path.vectorname pattern)", null));
+		    addTextFieldEditor(group1, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals", c("Vector (module-path.vectorname pattern)", "Intervals"));
 		    addSpacer(form);
 		    Group group2 = createGroup(form, "Output Scalar Recording");
-		    addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
-		    addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
-		    addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording of scalars");
-		    addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars");
+		    addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file", c(null, "Filename"));
+		    addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording of scalars", c("Scalar (module-path.scalarname pattern)", null));
+		    addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars", c("Parameter (module-path.paramname pattern)", null));
 		    addSpacer(form);
 		}
 		else if (category.equals(CAT_EVENTLOG)) {
 			Group group0 = createGroup(form, "Eventlog");
 			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable eventlog recording");
-			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file");
-			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals");
-			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record");
-			addCheckboxFieldEditor(group0, CFGID_MODULE_EVENTLOG_RECORDING, "Record events");
+			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file", c(null, "Filename"));
+			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals", c(null, "Intervals"));
+			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record", c(null, "Pattern Expression"));
+			addCheckboxFieldEditor(group0, CFGID_MODULE_EVENTLOG_RECORDING, "Modules to record", c("Module", null));
 			addSpacer(form);
             Group group3 = createGroup(form, "Snapshots");
-			addTextFieldEditor(group3, CFGID_SNAPSHOT_FILE, "Snapshot file");
+			addTextFieldEditor(group3, CFGID_SNAPSHOT_FILE, "Snapshot file", c(null, "Filename"));
 			addSpacer(form);
 		}
 		else if (category.equals(CAT_EXTENSIONS)) {
@@ -327,7 +329,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		else if (category.equals(CAT_PARSIM)) {
 			addCheckboxFieldEditor(form, CFGID_PARALLEL_SIMULATION, "Enable parallel simulation");
             Group group0 = createGroup(form, "Partitioning");
-            addTextTableFieldEditor(group0, CFGID_PARTITION_ID, "Module partitioning");
+            addTextTableFieldEditor(group0, CFGID_PARTITION_ID, "Module partitioning", c("Module", "Partition ID(s)"));
             addSpacer(form);
 			Group group1 = createGroup(form, "General");
 			addTextFieldEditor(group1, CFGID_PARSIM_COMMUNICATIONS_CLASS, "Communications class");
@@ -357,11 +359,11 @@ public class GenericConfigPage extends ScrolledFormPage {
             simtimeScaleEditor.setComboContents(Arrays.asList(SIMTIME_SCALE_CHOICES));
 	}
 
-	private Label addSpacer(Composite parent) {
+	protected Label addSpacer(Composite parent) {
 		return new Label(parent, SWT.NONE);
 	}
 
-	private Group createGroup(Composite parent, String groupLabel) {
+	protected Group createGroup(Composite parent, String groupLabel) {
 		final Group group = new Group(parent, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		group.setText(groupLabel);
@@ -384,38 +386,65 @@ public class GenericConfigPage extends ScrolledFormPage {
 		return group;
 	}
 
-    protected FieldEditor addTextFieldEditor(Composite parent, ConfigOption e, String label) {
+	protected Map<String,Object> c(String objectColumnTitle, String valueColumnTitle) {
+	    Map<String,Object> result = new HashMap<String,Object>();
+	    result.put(TableFieldEditor.HINT_OBJECT_COL_TITLE, objectColumnTitle);
+        result.put(TableFieldEditor.HINT_VALUE_COL_TITLE, valueColumnTitle);
+        return result;
+	}
+	
+	protected FieldEditor addTextFieldEditor(Composite parent, ConfigOption e, String label) {
+	    return addTextFieldEditor(parent, e, label, null);
+	}
+
+	protected FieldEditor addTextFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
         FieldEditor editor = e.isGlobal() ?
-                new TextFieldEditor(parent, e, getInifileDocument(), this, label) :
-                new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label);
+                new TextFieldEditor(parent, e, getInifileDocument(), this, label, hints) :
+                new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label, hints);
         addFieldEditor(editor);
         return editor;
     }
 
-    protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label) {
+	protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label) {
+        return addComboboxFieldEditor(parent, e, label, null);
+	}
+
+	protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
 		FieldEditor editor = e.isGlobal() ?
-				new ComboFieldEditor(parent, e, getInifileDocument(), this, label) :
-				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label); //FIXME make it combo too
+				new ComboFieldEditor(parent, e, getInifileDocument(), this, label, hints) :
+				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label, hints); //FIXME make it combo too
 		addFieldEditor(editor);
         return editor;
 	}
 
 	protected FieldEditor addCheckboxFieldEditor(Composite parent, ConfigOption e, String label) {
+        return addCheckboxFieldEditor(parent, e, label, null);
+	}
+
+	protected FieldEditor addCheckboxFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
 		FieldEditor editor = e.isGlobal() ?
-				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label) :
-				new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, label);
+				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label, hints) :
+				new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, label, hints);
 		addFieldEditor(editor);
 		return editor;
 	}
 
-    protected FieldEditor addTextTableFieldEditor(Composite parent, ConfigOption e, String label) {
-        FieldEditor editor = new TextTableFieldEditor(parent, e, getInifileDocument(), this, label);
+	protected FieldEditor addTextTableFieldEditor(Composite parent, ConfigOption e, String label) {
+        return addTextTableFieldEditor(parent, e, label, null);
+	}
+
+	protected FieldEditor addTextTableFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
+        FieldEditor editor = new TextTableFieldEditor(parent, e, getInifileDocument(), this, label, hints);
         addFieldEditor(editor);
         return editor;
     }
 
-    protected FieldEditor addCheckboxTableFieldEditor(Composite parent, ConfigOption e, String label) {
-        FieldEditor editor = new CheckboxTableFieldEditor(parent, e, getInifileDocument(), this, label);
+	protected FieldEditor addCheckboxTableFieldEditor(Composite parent, ConfigOption e, String label) {
+        return addCheckboxTableFieldEditor(parent, e, label, null);
+	}
+
+	protected FieldEditor addCheckboxTableFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
+        FieldEditor editor = new CheckboxTableFieldEditor(parent, e, getInifileDocument(), this, label, hints);
         addFieldEditor(editor);
         return editor;
     }

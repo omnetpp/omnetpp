@@ -8,6 +8,7 @@
 package org.omnetpp.inifile.editor.form;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -22,15 +23,15 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public class ExpandableComboFieldEditor extends ExpandableFieldEditor {
     protected List<String> comboContents;
 
-	public ExpandableComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, entry, inifile, formPage, labelText);
+	public ExpandableComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, entry, inifile, formPage, labelText, hints);
 	}
 
 	@Override
 	protected FieldEditor createFieldEditor(boolean isExpanded) {
 		FieldEditor result = isExpanded ?
-				new TextTableFieldEditor(this, entry, inifile, formPage, labelText) : // currently we have no ComboTableFieldEditor
-				new ComboFieldEditor(this, entry, inifile, formPage, labelText);
+				new TextTableFieldEditor(this, entry, inifile, formPage, labelText, hints) : // currently we have no ComboTableFieldEditor
+				new ComboFieldEditor(this, entry, inifile, formPage, labelText, hints);
 		result.setComboContents(comboContents);
 		return result;
 	}

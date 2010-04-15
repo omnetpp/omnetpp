@@ -7,6 +7,8 @@
 
 package org.omnetpp.inifile.editor.form;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -40,8 +42,8 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 //XXX fix up content assist!!!
 //XXX todo: content assist for the "object" column too
 public class TextTableFieldEditor extends TableFieldEditor {
-	public TextTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, entry, inifile, formPage, labelText);
+	public TextTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, entry, inifile, formPage, labelText, hints);
 	}
 
     public void setSectionColumnTitle(String text) {
@@ -65,13 +67,13 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		if (entry.isPerObject()) {
-		    addTableColumn(table, "Section", 100);
-		    addTableColumn(table, "Object", 100);
-		    addTableColumn(table, "Value", 160);
+		    addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 100);
+		    addTableColumn(table, getStringHint(HINT_OBJECT_COL_TITLE, "Object"), 100);
+		    addTableColumn(table, getStringHint(HINT_VALUE_COL_TITLE, "Value"), 160);
 		}
 		else {
-            addTableColumn(table, "Section", 100);
-            addTableColumn(table, "Value", 260);
+            addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 100);
+            addTableColumn(table, getStringHint(HINT_VALUE_COL_TITLE, "Value"), 260);
 		}
 		int numLines = entry.isPerObject() ? 6 : 3;
 		int height = table.getHeaderHeight()+numLines*table.getItemHeight()+2;

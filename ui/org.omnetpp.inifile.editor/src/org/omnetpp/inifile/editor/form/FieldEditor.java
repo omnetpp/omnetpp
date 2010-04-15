@@ -10,6 +10,7 @@ package org.omnetpp.inifile.editor.form;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
@@ -52,6 +53,7 @@ public abstract class FieldEditor extends Composite {
 	protected ConfigOption entry;
 	protected IInifileDocument inifile;
 	protected FormPage formPage; // to access hoverSupport, and to be able to call setEditorSelection()
+	protected Map<String,Object> hints;  // various options for the field editor; may be null; see HINT_xxx constants
 
 	protected IHoverTextProvider hoverTextProvider = new IHoverTextProvider() {
 		public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
@@ -59,11 +61,12 @@ public abstract class FieldEditor extends Composite {
 		}
 	};
 
-	public FieldEditor(Composite parent, int style, ConfigOption entry, IInifileDocument inifile, FormPage formPage) {
+	public FieldEditor(Composite parent, int style, ConfigOption entry, IInifileDocument inifile, FormPage formPage, Map<String,Object> hints) {
 		super(parent, style);
 		this.entry = entry;
 		this.inifile = inifile;
 		this.formPage = formPage;
+		this.hints = hints;
 		setBackground(BGCOLOR);
 
 	}
@@ -119,6 +122,21 @@ public abstract class FieldEditor extends Composite {
 		MessageDialog.openError(getShell(), "Error", e.getMessage()+".");
 	}
 
+    protected String getStringHint(String key, String defaultValue) {
+        return (String)getHint(key, defaultValue);
+    }
+
+    protected int getIntHint(String key, int defaultValue) {
+        return (Integer)getHint(key, defaultValue);
+    }
+
+    protected Object getHint(String key, Object defaultValue) {
+	    if (hints != null && hints.containsKey(key))
+	        return hints.get(key);
+	    else
+	        return defaultValue;
+	}
+	
 	protected Label createLabel(ConfigOption entry, String labelText) {
 		Label label = new Label(this, SWT.NONE);
 		label.setBackground(BGCOLOR);

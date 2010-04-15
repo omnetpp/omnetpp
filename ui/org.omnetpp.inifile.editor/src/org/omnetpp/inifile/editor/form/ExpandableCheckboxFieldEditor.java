@@ -7,6 +7,8 @@
 
 package org.omnetpp.inifile.editor.form;
 
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -21,8 +23,8 @@ public class ExpandableCheckboxFieldEditor extends ExpandableFieldEditor {
     protected String sectionColumnTitle;
     protected String objectColumnTitle;
 
-	public ExpandableCheckboxFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, entry, inifile, formPage, labelText);
+	public ExpandableCheckboxFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, entry, inifile, formPage, labelText, hints);
 	}
 
 	public void setSectionColumnTitle(String text) {
@@ -40,9 +42,9 @@ public class ExpandableCheckboxFieldEditor extends ExpandableFieldEditor {
     @Override
 	protected FieldEditor createFieldEditor(boolean isExpanded) {
 		if (!isExpanded)
-		    return new CheckboxFieldEditor(this, entry, inifile, formPage, labelText);
+		    return new CheckboxFieldEditor(this, entry, inifile, formPage, labelText, hints);
 		else {
-		    CheckboxTableFieldEditor editor = new CheckboxTableFieldEditor(this, entry, inifile, formPage, labelText);
+		    CheckboxTableFieldEditor editor = new CheckboxTableFieldEditor(this, entry, inifile, formPage, labelText, hints);
 		    if (sectionColumnTitle != null)
 		        editor.setSectionColumnTitle(sectionColumnTitle);
             if (objectColumnTitle != null)

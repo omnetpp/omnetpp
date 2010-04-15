@@ -8,6 +8,7 @@
 package org.omnetpp.inifile.editor.form;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -45,12 +46,16 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  * @author Andras
  */
 public abstract class TableFieldEditor extends FieldEditor {
+    public static final String HINT_SECTION_COL_TITLE = "section.column.title";
+    public static final String HINT_OBJECT_COL_TITLE = "object.column.title";
+    public static final String HINT_VALUE_COL_TITLE = "value.column.title";
+    
 	protected TableViewer tableViewer;  // input: section names as String[]
 	protected Button addButton;
 	protected Button removeButton;
 
-	public TableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, SWT.NONE, entry, inifile, formPage);
+	public TableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, SWT.NONE, entry, inifile, formPage, hints);
 
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;

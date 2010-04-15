@@ -7,6 +7,8 @@
 
 package org.omnetpp.inifile.editor.form;
 
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -19,15 +21,15 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  */
 public class ExpandableTextFieldEditor extends ExpandableFieldEditor {
 
-	public ExpandableTextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, entry, inifile, formPage, labelText);
+	public ExpandableTextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, entry, inifile, formPage, labelText, hints);
 	}
 
 	@Override
 	protected FieldEditor createFieldEditor(boolean isExpanded) {
 		return isExpanded ?
-				new TextTableFieldEditor(this, entry, inifile, formPage, labelText) :
-				new TextFieldEditor(this, entry, inifile, formPage, labelText);
+				new TextTableFieldEditor(this, entry, inifile, formPage, labelText, hints) :
+				new TextFieldEditor(this, entry, inifile, formPage, labelText, hints);
 	}
 
 }

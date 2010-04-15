@@ -9,6 +9,8 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -54,8 +56,8 @@ public class TextFieldEditor extends FieldEditor {
 	private boolean isEdited;
 	private ControlDecoration problemDecoration;
 
-	public TextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, SWT.NONE, entry, inifile, formPage);
+	public TextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, SWT.NONE, entry, inifile, formPage, hints);
 
 		// layout
 		GridLayout gridLayout = new GridLayout(3, false);

@@ -9,6 +9,8 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -42,8 +44,8 @@ public class CheckboxFieldEditor extends FieldEditor {
 	private ControlDecoration problemDecoration;
 	private Button resetButton;
 
-	public CheckboxFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, SWT.NONE, entry, inifile, formPage);
+	public CheckboxFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, SWT.NONE, entry, inifile, formPage, hints);
 
 		Assert.isTrue(entry.getDataType()==ConfigOption.DataType.CFG_BOOL);
 

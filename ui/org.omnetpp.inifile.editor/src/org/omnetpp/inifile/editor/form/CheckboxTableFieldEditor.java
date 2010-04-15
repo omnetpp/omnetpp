@@ -8,16 +8,14 @@
 package org.omnetpp.inifile.editor.form;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -25,12 +23,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
-import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
-import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -45,8 +40,8 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  */
 public class CheckboxTableFieldEditor extends TableFieldEditor {
 
-    public CheckboxTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
-		super(parent, entry, inifile, formPage, labelText);
+    public CheckboxTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+		super(parent, entry, inifile, formPage, labelText, hints);
 	}
 
 	public void setSectionColumnTitle(String text) {
@@ -70,8 +65,8 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		else {
 		    table.setLinesVisible(true);
 		    table.setHeaderVisible(true);
-		    addTableColumn(table, "Object", 150);
-		    addTableColumn(table, "Section", 150);
+		    addTableColumn(table, getStringHint(HINT_OBJECT_COL_TITLE, "Object"), 150);
+		    addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 150);
 		    height = table.getHeaderHeight() + 6*table.getItemHeight();
 		}
         table.setLayoutData(new GridData(305, height));
