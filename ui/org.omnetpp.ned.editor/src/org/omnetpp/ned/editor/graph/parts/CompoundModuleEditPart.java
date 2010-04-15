@@ -15,18 +15,14 @@ import java.util.Map;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.ExposeHelper;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.MouseWheelHelper;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
-import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
-import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
@@ -115,8 +111,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     @SuppressWarnings("unchecked")
     public Object getAdapter(Class key) {
-        if (key == AutoexposeHelper.class) return new ViewportAutoexposeHelper(this);
-        if (key == ExposeHelper.class) return new ViewportExposeHelper(this);
         if (key == MouseWheelHelper.class) return new ViewportMouseWheelHelper(this);
         // snap to grid/guide adaptor
         if (key == SnapToHelper.class) {
