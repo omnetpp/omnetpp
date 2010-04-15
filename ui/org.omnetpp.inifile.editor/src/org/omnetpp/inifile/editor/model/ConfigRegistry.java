@@ -236,6 +236,10 @@ public class ConfigRegistry {
         "into the C++ debugger (if the simulation is running under one, or " +
         "just-in-time debugging is activated). Once in the debugger, you can view " +
         "the stack trace or examine variables.");
+    public static final ConfigOption CFGID_DEBUG_STATISTICS_RECORDING = addPerRunOption(
+        "debug-statistics-recording", CFG_BOOL, "false",
+        "Turns on the printing of debugging information related to statistics " +
+        "recording (@statistic properties)");
     public static final ConfigOption CFGID_DESCRIPTION = addPerRunOption(
         "description", CFG_STRING, null,
         "Descriptive name for the given simulation configuration. Descriptions get " +
@@ -460,6 +464,16 @@ public class ConfigRegistry {
         "Value for the ${resultdir} variable, which is used as the default directory " +
         "for result files (output vector file, output scalar file, eventlog file, " +
         "etc.)");
+    public static final ConfigOption CFGID_RESULT_RECORDING_MODES = addPerObjectOption(
+        "result-recording-modes", CFG_STRING, "default",
+        "Defines how to calculate results from the @statistic property matched by " +
+        "the wildcard. Special values: default, all: they select the modes listed in " +
+        "the record= key of @statistic; all selects all of them, default selects the " +
+        "non-optional ones (i.e. excludes the ones that end in a question mark). " +
+        "Example values: vector, count, last, sum, mean, min, max, timeavg, stats, " +
+        "histogram. More than one values are accepted, separated by commas. " +
+        "Expressions are allowed. Items prefixed with '-' get removed from the list. " +
+        "Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
     public static final ConfigOption CFGID_RNG_n = addPerObjectOption(
         "rng-%", CFG_INT, null,
         "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 " +
@@ -479,13 +493,6 @@ public class ConfigRegistry {
         "Whether the matching output scalars should be recorded. Syntax: " +
         "<module-full-path>.<scalar-name>.scalar-recording=true/false. Example: " +
         "**.queue.packetsDropped.scalar-recording=true");
-    public static final ConfigOption CFGID_RESULT_RECORDING_MODE = addPerObjectOption(
-        "result-recording-mode", CFG_STRING, "auto",
-        "Defines how to calculate results from the given signal. Example " +
-        "values: vector, count, lastval, sum, mean, min, max, timeavg, stddev, histogram, " +
-        "auto. `auto' chooses `histogram', unless the `record' key in the @statistic " +
-        "property tells otherwise. More than one values are accepted, separated by " +
-        "commas. Example: **.queueLength.result-recording-mode=timeavg,max");
     public static final ConfigOption CFGID_SCHEDULER_CLASS = addGlobalOption(
         "scheduler-class", CFG_STRING, "cSequentialScheduler",
         "Part of the Envir plugin mechanism: selects the scheduler class. This " +
@@ -590,7 +597,7 @@ public class ConfigRegistry {
         "Length of the initial warm-up period. When set, results belonging to the " +
         "first x seconds of the simulation will not be recorded into output vectors, " +
         "and will not be counted into output scalars (see option " +
-        "**.result-recording-mode). This option is useful for steady-state " +
+        "**.result-recording-modes). This option is useful for steady-state " +
         "simulations. The default is 0s (no warmup period). Note that models that " +
         "compute and record scalar results manually (via recordScalar()) will not " +
         "automatically obey this setting.");

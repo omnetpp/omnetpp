@@ -25,6 +25,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONFIGURATIO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CPU_TIME_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERRORS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_STATISTICS_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORDING_INTERVALS;
@@ -66,10 +67,10 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENT
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_DIR;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_RECORDING_MODES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RUNNUMBER_WIDTH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_RECORDING_MODE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
@@ -242,7 +243,6 @@ public class GenericConfigPage extends ScrolledFormPage {
 		else if (category.equals(CAT_OUTPUTFILES)) {
 			addTextFieldEditor(form, CFGID_RESULT_DIR, "Result directory");
 			addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
-            addTextFieldEditor(form, CFGID_WARMUP_PERIOD, "Warmup period");
 			addSpacer(form);
 			Group group0 = createGroup(form, "Event log");
 			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable recording");
@@ -250,19 +250,22 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record");
 			addCheckboxFieldEditor(group0, CFGID_MODULE_EVENTLOG_RECORDING, "Record events");
-			addSpacer(form);
+            addSpacer(form);
+            Group group1a = createGroup(form, "Statistic recording");
+            addTextFieldEditor(group1a, CFGID_WARMUP_PERIOD, "Warmup period");
+            addTextFieldEditor(group1a, CFGID_RESULT_RECORDING_MODES, "Result recording modes");
+            addCheckboxFieldEditor(group1a, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
+            addSpacer(form);
             Group group1 = createGroup(form, "Output vector recording");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
-            addCheckboxFieldEditor(group1, CFGID_VECTOR_RECORDING, "Enable recording");
+            addCheckboxFieldEditor(group1, CFGID_VECTOR_RECORDING, "Enable recording of vectors");
             addTextFieldEditor(group1, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals");
             addSpacer(form);
             Group group2 = createGroup(form, "Output scalar recording");
 			addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
 			addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
-			addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording");
-            addTextFieldEditor(group2, CFGID_RESULT_RECORDING_MODE, "Recording mode");
+			addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording of scalars");
 			addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars");
-
 			addSpacer(form);
             Group group3 = createGroup(form, "Snapshots");
 			addTextFieldEditor(group3, CFGID_SNAPSHOT_FILE, "Snapshot file");
