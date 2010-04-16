@@ -127,21 +127,20 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChar
 
 		ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
 		if (contributor != null) {
-			final IAction zoomOutAction = contributor.getZoomOutAction();
+			final IAction hzoomOutAction = contributor.getHZoomOutAction();
+			final IAction vzoomOutAction = contributor.getVZoomOutAction();
 			final IAction zoomToFitAction = contributor.getZoomToFitAction();
-			if (zoomOutAction instanceof ZoomChartAction) {
-				addPropertyChangeListener(new IPropertyChangeListener() {
-					public void propertyChange(PropertyChangeEvent event) {
-						if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
-								event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y) {
-							if (zoomOutAction instanceof ZoomChartAction)
-								((ZoomChartAction)zoomOutAction).updateEnabled();
-							if (zoomToFitAction instanceof ZoomChartAction)
-								((ZoomChartAction)zoomToFitAction).updateEnabled();
-						}
-					}
-				});
-			}
+			addPropertyChangeListener(new IPropertyChangeListener() {
+			    public void propertyChange(PropertyChangeEvent event) {
+			        if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X)
+			            ((ZoomChartAction)hzoomOutAction).updateEnabled();
+			        if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
+			            ((ZoomChartAction)vzoomOutAction).updateEnabled();
+                    if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X || 
+                            event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
+                        ((ZoomChartAction)zoomToFitAction).updateEnabled();
+			    }
+			});
 		}
 	}
 

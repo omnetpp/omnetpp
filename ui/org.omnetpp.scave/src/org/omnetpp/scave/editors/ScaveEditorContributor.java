@@ -101,8 +101,10 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction exportChartsAction;
 
 	// ChartPage/ChartSheetPage actions
-	private IAction zoomInAction;
-	private IAction zoomOutAction;
+	private IAction hzoomInAction;
+	private IAction hzoomOutAction;
+	private IAction vzoomInAction;
+	private IAction vzoomOutAction;
 	private IAction zoomToFitAction;
 	private IAction switchChartToPanModeAction;
 	private IAction switchChartToZoomModeAction;
@@ -122,13 +124,10 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 	IPropertyChangeListener zoomListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event) {
-            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
-                    event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y) {
-                if (zoomOutAction instanceof ZoomChartAction)
-                    ((ZoomChartAction)zoomOutAction).updateEnabled();
-                if (zoomToFitAction instanceof ZoomChartAction)
-                    ((ZoomChartAction)zoomToFitAction).updateEnabled();
-            }
+            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X)
+                ((ZoomChartAction)hzoomOutAction).updateEnabled();
+            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
+                ((ZoomChartAction)vzoomOutAction).updateEnabled();
         }
     };
 
@@ -172,8 +171,10 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 
         // ChartPage actions
-        zoomInAction = registerAction(page, new ZoomChartAction(true, true, 2.0));
-        zoomOutAction = registerAction(page, new ZoomChartAction(true, true, 1/2.0));
+        hzoomInAction = registerAction(page, new ZoomChartAction(true, false, 2.0));
+        hzoomOutAction = registerAction(page, new ZoomChartAction(true, false, 1/2.0));
+        vzoomInAction = registerAction(page, new ZoomChartAction(false, true, 2.0));
+        vzoomOutAction = registerAction(page, new ZoomChartAction(false, true, 1/2.0));
         zoomToFitAction = registerAction(page, new ZoomChartAction(true, true, 0.0));
         switchChartToPanModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
         switchChartToZoomModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
@@ -280,8 +281,10 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 		manager.insertBefore("scavemodel-additions", switchChartToPanModeAction);
 		manager.insertBefore("scavemodel-additions", switchChartToZoomModeAction);
-		manager.insertBefore("scavemodel-additions", zoomInAction);
-		manager.insertBefore("scavemodel-additions", zoomOutAction);
+		manager.insertBefore("scavemodel-additions", hzoomInAction);
+		manager.insertBefore("scavemodel-additions", hzoomOutAction);
+		manager.insertBefore("scavemodel-additions", vzoomInAction);
+		manager.insertBefore("scavemodel-additions", vzoomOutAction);
 		manager.insertBefore("scavemodel-additions", zoomToFitAction);
 		manager.insertBefore("scavemodel-additions", refreshChartAction);
 		manager.insertBefore("scavemodel-additions", createChartTemplateAction);
@@ -368,12 +371,18 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		return editAction;
 	}
 
-	public IAction getZoomInAction() {
-		return zoomInAction;
+	public IAction getHZoomInAction() {
+		return hzoomInAction;
 	}
-    public IAction getZoomOutAction() {
-		return zoomOutAction;
+    public IAction getHZoomOutAction() {
+		return hzoomOutAction;
 	}
+    public IAction getVZoomInAction() {
+        return vzoomInAction;
+    }
+    public IAction getVZoomOutAction() {
+        return vzoomOutAction;
+    }
     public IAction getZoomToFitAction() {
     	return zoomToFitAction;
     }

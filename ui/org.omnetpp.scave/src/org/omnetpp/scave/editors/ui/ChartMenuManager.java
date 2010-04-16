@@ -59,9 +59,14 @@ public class ChartMenuManager extends MenuManager {
 	}
 
 	protected void updateContextMenu() {
-			add(editorContributor.getZoomInAction());
-			add(editorContributor.getZoomOutAction());
-			add(editorContributor.getZoomToFitAction());
+            IMenuManager zoomSubmenuManager = new MenuManager("Zoom");
+            zoomSubmenuManager.add(editorContributor.getHZoomInAction());
+            zoomSubmenuManager.add(editorContributor.getHZoomOutAction());
+            zoomSubmenuManager.add(editorContributor.getVZoomInAction());
+            zoomSubmenuManager.add(editorContributor.getVZoomOutAction());
+            zoomSubmenuManager.add(new Separator());
+            zoomSubmenuManager.add(editorContributor.getZoomToFitAction());
+            add(zoomSubmenuManager);
 			add(new Separator());
 			add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
 			if (chart instanceof LineChart)

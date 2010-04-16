@@ -8,7 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
 
@@ -18,6 +18,13 @@ import org.omnetpp.scave.editors.ScaveEditor;
  * @author tomi
  */
 public class ZoomChartAction extends AbstractScaveAction {
+    public static final String IMAGE_ZOOMOUT = "icons/full/etool16/zoomout.png"; 
+    public static final String IMAGE_ZOOMIN = "icons/full/etool16/zoomin.png"; 
+    public static final String IMAGE_ZOOMTOFIT = "icons/full/etool16/zoomtofit.png"; 
+    public static final String IMAGE_HZOOMIN = "icons/full/etool16/hzoomin.png"; 
+    public static final String IMAGE_HZOOMOUT = "icons/full/etool16/hzoomout.png"; 
+    public static final String IMAGE_VZOOMIN = "icons/full/etool16/vzoomin.png"; 
+    public static final String IMAGE_VZOOMOUT = "icons/full/etool16/vzoomout.png"; 
 
 	private double zoomFactor;
 	private boolean horizontally;
@@ -28,16 +35,19 @@ public class ZoomChartAction extends AbstractScaveAction {
 		this.vertically = vertically;
 		this.zoomFactor = zoomFactor;
 
+		boolean both = horizontally && vertically;
 		String inout = (zoomFactor == 0.0 ? "To Fit" :
 						zoomFactor > 1.0 ? "In" : "Out");
-		String dir = (horizontally && vertically) ? "" : (horizontally ? " X" : " Y");
-		String dir2 = (horizontally && vertically) ? "" : (horizontally ? " Horizontally" : " Vertically");
-		setText("Zoom " +  inout + dir);
-		setDescription("Zoom " + inout.toLowerCase() + " chart " + dir2.toLowerCase());
+		//String dir = both ? "" : (horizontally ? " X" : " Y");
+		String dir2 = both ? "" : (horizontally ? " Horizontally" : " Vertically");
+		setText("Zoom " +  inout + dir2);
+		setDescription("Zoom " + inout.toLowerCase() + " Chart " + dir2.toLowerCase());
+		
 		String imageId =
-			zoomFactor == 0.0 ? ImageFactory.TOOLBAR_IMAGE_ZOOMTOFIT :
-			zoomFactor > 1.0 ? ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS : ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS;
-		setImageDescriptor(ImageFactory.getDescriptor(imageId));
+			zoomFactor == 0.0 ? IMAGE_ZOOMTOFIT :
+			zoomFactor > 1.0 ? (both ? IMAGE_ZOOMIN : horizontally ? IMAGE_HZOOMIN : IMAGE_VZOOMIN) : 
+			    (both ? IMAGE_ZOOMOUT : horizontally ? IMAGE_HZOOMOUT : IMAGE_VZOOMOUT);
+		setImageDescriptor(ScavePlugin.getImageDescriptor(imageId));
 	}
 
 	@Override
