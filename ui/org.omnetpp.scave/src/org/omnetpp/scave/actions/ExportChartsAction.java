@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -69,7 +70,7 @@ public class ExportChartsAction extends AbstractScaveAction {
 	private List<File> generateFilenames(List<Chart> charts, File folder, IGraphicalExportFileFormat format, Shell shell) {
 	    List<String> names = new ArrayList<String>(charts.size());
 	    for (Chart chart : charts)
-	        names.add(chart.getName() != null ? chart.getName() : "unnamed");
+	        names.add(!StringUtils.isBlank(chart.getName()) ? chart.getName() : "unnamed-"+chart.hashCode());
         List<File> files = new FilenameGenerator(folder, format.getName(), Overwrite.Ask).generateFilenames(names, shell);
         return files;
 	}
