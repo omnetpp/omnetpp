@@ -204,6 +204,10 @@ Conditions for PASS:
    %not-contains-regex: <output-file-to-check>
    <regexp-pattern>
 
+   %file-exists: <filename>
+
+   %file-not-exists: <filename>
+
 Enjoy!
 
 --Andras
