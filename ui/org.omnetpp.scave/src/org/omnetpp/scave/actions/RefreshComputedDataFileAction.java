@@ -15,10 +15,15 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater;
 
+/**
+ * TODO
+ * 
+ * @author Tomi
+ */
 public class RefreshComputedDataFileAction extends AbstractScaveAction {
 
 	public RefreshComputedDataFileAction() {
-		setText("Refresh computed data");
+		setText("Refresh Computed Data");
 	}
 
 	@Override
