@@ -24,15 +24,8 @@ import org.omnetpp.scave.actions.NewChartProcessingOpAction;
 import org.omnetpp.scave.actions.RemoveObjectAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
-import org.omnetpp.scave.editors.forms.BarChartEditForm;
-import org.omnetpp.scave.editors.forms.ChartEditForm;
-import org.omnetpp.scave.editors.forms.HistogramChartEditForm;
-import org.omnetpp.scave.editors.forms.LineChartEditForm;
-import org.omnetpp.scave.editors.forms.ScatterChartEditForm;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
-import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
@@ -40,6 +33,7 @@ import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 
 public class ChartMenuManager extends MenuManager {
+	private static final String IMG_ZOOM = "icons/full/etool16/zoom.png";
 	private static final String IMG_APPLY = "icons/full/etool16/apply.png";
 	private static final String IMG_COMPUTE = "icons/full/etool16/compute.png";
 	
@@ -62,50 +56,38 @@ public class ChartMenuManager extends MenuManager {
 	}
 
 	protected void updateContextMenu() {
-            IMenuManager zoomSubmenuManager = new MenuManager("Zoom");
-            zoomSubmenuManager.add(editorContributor.getHZoomInAction());
-            zoomSubmenuManager.add(editorContributor.getHZoomOutAction());
-            zoomSubmenuManager.add(editorContributor.getVZoomInAction());
-            zoomSubmenuManager.add(editorContributor.getVZoomOutAction());
-            zoomSubmenuManager.add(new Separator());
-            zoomSubmenuManager.add(editorContributor.getZoomToFitAction());
-            add(zoomSubmenuManager);
+            add(new EditAction());
+            if (chart instanceof LineChart || chart instanceof ScatterChart) {
+                add(new Separator());
+                add(createProcessingSubmenu(true));  // "Apply" submenu
+                add(createProcessingSubmenu(false)); // "Compute" submenu
+                add(createRemoveProcessingSubmenu()); // "Remove" submenu
+            }
 			add(new Separator());
-			add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
-			if (chart instanceof LineChart)
-				add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
-			else if (chart instanceof BarChart) {
-				add(new EditAction("Content...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, BarChartEditForm.TAB_CONTENT)));
-				add(new EditAction("Bars...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, BarChartEditForm.TAB_BARS)));
-			}
-			else if (chart instanceof ScatterChart) {
-				add(new EditAction("Content...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ScatterChartEditForm.TAB_CONTENT)));
-				add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
-			}
-			else if (chart instanceof HistogramChart) {
-				add(new EditAction("Plot...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, HistogramChartEditForm.TAB_PLOT)));
-			}
-			add(new EditAction("Axes...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_AXES)));
-			add(new EditAction("Title...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_TITLES)));
-			add(new EditAction("Legend...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_LEGEND)));
+			add(editorContributor.getCreateChartTemplateAction());
+			add(editorContributor.getGotoChartDefinitionAction());
+			add(new Separator());
+			add(createZoomSubmenu());
 			add(new Separator());
 			add(editorContributor.getCopyChartToClipboardAction());
 			add(editorContributor.getExportToSVGAction());
 			add(new Separator());
-			if (chart instanceof LineChart || chart instanceof ScatterChart) {
-				add(createProcessingSubmenu(true));  // "Apply" submenu
-				add(createProcessingSubmenu(false)); // "Compute" submenu
-				add(createRemoveProcessingSubmenu()); // "Remove" submenu
-			}
-			add(editorContributor.getGotoChartDefinitionAction());
-			add(new Separator());
 			add(editorContributor.getUndoRetargetAction());
 			add(editorContributor.getRedoRetargetAction());
 			add(new Separator());
-			add(editorContributor.getCreateChartTemplateAction());
-			add(new Separator());
 			add(editorContributor.getRefreshChartAction());
 	}
+
+    private IMenuManager createZoomSubmenu() {
+        IMenuManager zoomSubmenuManager = new MenuManager("Zoom", ScavePlugin.getImageDescriptor(IMG_ZOOM), null);
+        zoomSubmenuManager.add(editorContributor.getHZoomInAction());
+        zoomSubmenuManager.add(editorContributor.getHZoomOutAction());
+        zoomSubmenuManager.add(editorContributor.getVZoomInAction());
+        zoomSubmenuManager.add(editorContributor.getVZoomOutAction());
+        zoomSubmenuManager.add(new Separator());
+        zoomSubmenuManager.add(editorContributor.getZoomToFitAction());
+        return zoomSubmenuManager;
+    }
 
 	protected IMenuManager createProcessingSubmenu(boolean isApply) {
 		IMenuManager submenuManager = new MenuManager(isApply ? "Apply" : "Compute", 
