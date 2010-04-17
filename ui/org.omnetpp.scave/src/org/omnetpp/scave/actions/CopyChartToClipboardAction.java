@@ -10,6 +10,7 @@ package org.omnetpp.scave.actions;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
 
@@ -20,6 +21,7 @@ public class CopyChartToClipboardAction extends AbstractScaveAction {
 	public CopyChartToClipboardAction() {
 		setText("Copy to Clipboard");
 		setToolTipText("Copy Chart to Clipboard");
+		setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/copy.png"));
 	}
 
 	@Override

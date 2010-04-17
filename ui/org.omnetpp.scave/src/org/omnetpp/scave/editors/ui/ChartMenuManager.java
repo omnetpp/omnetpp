@@ -18,6 +18,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.NewChartProcessingOpAction;
 import org.omnetpp.scave.actions.RemoveObjectAction;
@@ -39,8 +40,10 @@ import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 
 public class ChartMenuManager extends MenuManager {
-
-	private Chart chart;
+	private static final String IMG_APPLY = "icons/full/etool16/apply.png";
+	private static final String IMG_COMPUTE = "icons/full/etool16/compute.png";
+	
+    private Chart chart;
 	private ScaveEditorContributor editorContributor;
 	private ILabelProvider labelProvider;
 
@@ -105,7 +108,8 @@ public class ChartMenuManager extends MenuManager {
 	}
 
 	protected IMenuManager createProcessingSubmenu(boolean isApply) {
-		IMenuManager submenuManager = new MenuManager(isApply ? "Apply" : "Compute");
+		IMenuManager submenuManager = new MenuManager(isApply ? "Apply" : "Compute", 
+		        ScavePlugin.getImageDescriptor(isApply ? IMG_APPLY : IMG_COMPUTE), null);
 		submenuManager.add(new NewChartProcessingOpAction("Mean", createOp(isApply, "mean")));
 		submenuManager.add(new NewChartProcessingOpAction("Window Batch Average", createOp(isApply, "winavg", "windowSize", "10")));
 		submenuManager.add(new NewChartProcessingOpAction("Sliding Window Average", createOp(isApply, "slidingwinavg", "windowSize", "10")));

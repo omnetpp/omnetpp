@@ -30,12 +30,20 @@ import org.omnetpp.scave.engine.ResultFileManager;
 public class EditAction extends AbstractScaveAction {
 	private Map<String,Object> formParameters = null;
 
+	/**
+	 * Creates the action with an default title and icon, and without parameters.
+	 */
 	public EditAction() {
         setText("Properties...");
         setToolTipText("Edit the properties of the selected item");
 		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_PROPERTIES));
 	}
 
+	/**
+	 * Allows passing parameters to the action; e.g. for opening the Properties dialog
+	 * with a specific page selected, use the the following parameter: 
+	 * formParameters.put(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN);
+	 */
 	public EditAction(String text, Map<String,Object> formParameters) {
         setText(text);
         setToolTipText("Edit the properties of the selected item");
