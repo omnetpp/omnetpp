@@ -259,7 +259,7 @@ param\_typename
         ;
 
 pattern\_value
-        : '/' pattern '/' '=' paramvalue
+        : pattern '=' paramvalue ';'
         ;
 
 paramtype
@@ -293,27 +293,37 @@ inline\_properties
         ;
 
 pattern
-        : pattern pattern\_elem
+        : pattern2 '.' pattern\_elem
+        ;
+
+pattern2
+        : pattern2 '.' pattern\_elem
         | pattern\_elem
         ;
 
 pattern\_elem
-        : '.'
-        | '*'
-        | '?'
+        : pattern\_name
+        | pattern\_name '[' pattern\_index ']'
+        | pattern\_name '[' '*' ']'
         | '**'
-        | NAME
-        | INTCONSTANT
-        | '..'
-        | '[' pattern ']'
-        | '\{' pattern '\}'
-        | IMPORT | PACKAGE | PROPERTY
-        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
-        | EXTENDS | LIKE
-        | DOUBLE | INT | STRING | BOOL | XML | VOLATILE
-        | INPUT | OUTPUT | INOUT | IF | FOR
-        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
-        | TRUE | FALSE | THIS | DEFAULT | CONST | SIZEOF | INDEX | XMLDOC
+        ;
+
+pattern\_name
+        : NAME
+        | NAME '$' NAME
+        | CHANNEL
+        | '\{' pattern\_index '\}'
+        | '*'
+        | pattern\_name NAME
+        | pattern\_name '\{' pattern\_index '\}'
+        | pattern\_name '*'
+        ;
+
+pattern\_index
+        : INTCONSTANT
+        | INTCONSTANT '..' INTCONSTANT
+        | '..' INTCONSTANT
+        | INTCONSTANT '..'
         ;
 
 property
@@ -362,7 +372,7 @@ property\_value\_tokens
 
 property\_value\_token
         : NAME | INTCONSTANT | REALCONSTANT | TRUE | FALSE
-        | '$' | '@' | ':' | '=' | '[' | ']' | '\{' | '\}' | '.' | '?'
+        | '$' | '@' | ':' | '[' | ']' | '\{' | '\}' | '.' | '?'
         | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | '==' | '!=' | '<=' | '>='
         | '**' | '..' | '++' | '||' | '&&' | '##' | '!'
         ;
@@ -717,7 +727,6 @@ opt\_semicolon
         : ';'
         |
         ;
-
 \end{Verbatim}
 
 

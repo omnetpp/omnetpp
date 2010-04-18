@@ -17,7 +17,8 @@ and \textit{value} pairs. One exception is debug output
 (recorded from \ttt{ev<<...} statements), which are represented
 by lines that begin with a hyphen, and continue with the actual text.
 
-The grammar of the eventlog file is very simple:
+The grammar of the eventlog file is the following:
+
 \begin{verbatim}
 <file> ::= <line>*
 <line> ::= <empty-line> | <user-log-message> | <event-log-entry>
@@ -58,11 +59,15 @@ A correct eventlog also fulfills the following requirements:
 
 The various entry types and their supported attributes are as follows:
 
-%many long lines in the following section -verbatim doesn't wrap!
+%% To update this section, paste src/eventlog/eventlogentries.txt below,
+%% and remove XXX, TODO etc lines from it.
+%%
+%% TODO: many long lines in the following section, as "verbatim" doesn't wrap
+
 \begin{verbatim}
 SB SimulationBeginEntry // recorded at the first event
 {
-   v int version       // simulator version, e.g. 0x401 (=1025) is release 4.1
+   v int version       // OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
    rid string runId    // identifies the simulation run
 }
 
@@ -125,10 +130,10 @@ GD GateDeletedEntry     // gate deleted
 
 CC ConnectionCreatedEntry // creating a connection
 {
-   sm int sourceModuleId  // id of the source module identifying the connection
-   sg int sourceGateId    // id of the gate at the source module identifying the connection
-   dm int destModuleId    // id of the destination module
-   dg int destGateId      // id of the gate at the destination module
+   sm int sourceModuleId // id of the source module identifying the connection
+   sg int sourceGateId   // id of the gate at the source module identifying the connection
+   dm int destModuleId   // id of the destination module
+   dg int destGateId     // id of the gate at the destination module
 }
 
 CD ConnectionDeletedEntry // deleting a connection
@@ -152,17 +157,17 @@ MS ModuleDisplayStringChangedEntry // a module display string change
 
 E EventEntry // an event that is processing of a message
 {
-   # long eventNumber          // unique event number
-   t simtime_t simulationTime  // simulation time when the event occurred
-   m int moduleId              // id of the processing module
-   ce long causeEventNumber -1 // event number from which the message being processed was sent or -1 if the message was sent from initialize
-   msg long messageId          // life time unique id of the message being processed
+   # eventnumber_t eventNumber          // unique event number
+   t simtime_t simulationTime           // simulation time when the event occurred
+   m int moduleId                       // id of the processing module
+   ce eventnumber_t causeEventNumber -1 // event number from which the message being processed was sent or -1 if the message was sent from initialize
+   msg long messageId                   // life time unique id of the message being processed
 }
 
 CE CancelEventEntry // canceling an event caused by self message
 {
-   id long messageId              // id of the message being removed from the FES
-   pe long previousEventNumber -1 // event number from which the message being cancelled was sent or -1 if the message was sent from initialize
+   id long messageId                       // id of the message being removed from the FES
+   pe eventnumber_t previousEventNumber -1 // event number from which the message being cancelled was sent or -1 if the message was sent from initialize
 }
 
 BS BeginSendEntry // beginning to send a message
@@ -173,7 +178,7 @@ BS BeginSendEntry // beginning to send a message
    etid long messageEncapsulationTreeId -1 // id of the message inherited by both dup and encapsulation
    c string messageClassName               // C++ class name of the message
    n string messageFullName                // message name
-   pe long previousEventNumber -1          // event number from which the message being sent was processed or -1 if the message has not yet been processed before
+   pe eventnumber_t previousEventNumber -1 // event number from which the message being sent was processed or -1 if the message has not yet been processed before
    k short messageKind     0               // message kind
    p short messagePriority 0               // message priority
    l int64 messageLength   0               // message length in bits
@@ -183,7 +188,8 @@ BS BeginSendEntry // beginning to send a message
 
 ES EndSendEntry // prediction of the arrival of a message
 {
-   t simtime_t arrivalTime // when the message will arrive to its destination module
+   t simtime_t arrivalTime        // when the message will arrive to its destination module
+   is bool isReceptionStart false // true indicates the message arrives with the first bit
 }
 
 SD SendDirectEntry // sending a message directly to a destination gate
@@ -192,7 +198,7 @@ SD SendDirectEntry // sending a message directly to a destination gate
    dm int destModuleId              // id of the destination module to which the message is being sent
    dg int destGateId                // id of the gate at the destination module to which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay as the message is propagated through the connection
-   td simtime_t transmissionDelay 0 // transmission delay as the whole message is sent from the source gate
+   td simtime_t transmissionDelay 0 // transmission duration as the whole message is sent from the source gate
 }
 
 SH SendHopEntry // sending a message through a connection identified by its source module and gate id
@@ -200,13 +206,13 @@ SH SendHopEntry // sending a message through a connection identified by its sour
    sm int senderModuleId            // id of the source module from which the message is being sent
    sg int senderGateId              // id of the gate at the source module from which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay as the message is propagated through the connection
-   td simtime_t transmissionDelay 0 // transmission delay as the whole message is sent from the source gate
+   td simtime_t transmissionDelay 0 // transmission duration as the whole message is sent from the source gate
 }
 
 DM DeleteMessageEntry // deleting a message
 {
-   id int messageId               // id of the message being deleted
-   pe long previousEventNumber -1 // event number from which the message being deleted was sent or -1 if the message was sent from initialize
+   id int messageId                        // id of the message being deleted
+   pe eventnumber_t previousEventNumber -1 // event number from which the message being deleted was sent or -1 if the message was sent from initialize
 }
 \end{verbatim}
 

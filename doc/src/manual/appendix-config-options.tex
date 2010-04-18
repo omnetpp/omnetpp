@@ -3,6 +3,11 @@
 
 \section{Configuration Options}
 
+%% To bring this chapter up to date, run opp_run -h configdetails, and paste
+%% the result. When committing, make sure no option gets lost (e.g parsim
+%% or MPI-related options; opp_run can only print options from code that
+%% enabled at compile time!)
+
 This section lists all configuration options that are available in ini files.
 A similar list can be obtained from any simulation executable by running it
 with the \ttt{-h configdetails} option.
@@ -67,9 +72,8 @@ cmdenv-runs-to-execute=<string>; global setting
     executes all runs in the selected configuration. The -r command line option
     overrides this setting.
 
-cmdenv-status-frequency=<int>, default:100000; per-run setting
-    When cmdenv-express-mode=true: print status update every n events. Typical
-    values are 100,000...1,000,000.
+cmdenv-status-frequency=<double>, unit="s", default:2s; per-run setting
+    When cmdenv-express-mode=true: print status update every n seconds.
 
 configuration-class=<string>; global setting
     Part of the Envir plugin mechanism: selects the class from which all
@@ -77,7 +81,7 @@ configuration-class=<string>; global setting
     omnetpp.ini with some other implementation, e.g. database input. The
     simulation program still has to bootstrap from an omnetpp.ini (which
     contains the configuration-class setting). The class should implement the
-    cConfiguration interface.
+    cConfigurationEx interface.
 
 constraint=<string>; per-run setting
     For scenarios. Contains an expression that iteration variables (${} syntax)
@@ -92,6 +96,10 @@ debug-on-errors=<bool>, default:false; global setting
     into the C++ debugger (if the simulation is running under one, or
     just-in-time debugging is activated). Once in the debugger, you can view
     the stack trace or examine variables.
+
+debug-statistics-recording=<bool>, default:false; per-run setting
+    Turns on the printing of debugging information related to statistics
+    recording (@statistic properties)
 
 description=<string>; per-run setting
     Descriptive name for the given simulation configuration. Descriptions get
@@ -149,10 +157,11 @@ fingerprint=<string>; per-run setting
     calculate the initial fingerprint, enter any dummy string (such as "none"),
     and run the simulation.
 
-fname-append-host=<bool>, default:false; global setting
+fname-append-host=<bool>; global setting
     Turning it on will cause the host name and process Id to be appended to the
     names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially
-    useful with distributed simulation.
+    useful with distributed simulation. The default value is true if parallel
+    simulation is enabled, false otherwise.
 
 load-libs=<filenames>; global setting
     A space-separated list of dynamic libraries to be loaded on startup. The
@@ -178,7 +187,7 @@ ned-path=<path>; global setting
     A semicolon-separated list of directories. The directories will be regarded
     as roots of the NED package hierarchy, and all NED files will be loaded
     from their subdirectory trees. This option is normally left empty, as the
-    {\opp} IDE sets the NED path automatically, and for simulations started
+    OMNeT++ IDE sets the NED path automatically, and for simulations started
     outside the IDE it is more convenient to specify it via a command-line
     option or the NEDPATH environment variable.
 
@@ -195,7 +204,7 @@ output-scalar-file=<filename>, default:${resultdir}/${configname}-${runnumber}.s
 
 output-scalar-file-append=<bool>, default:false; per-run setting
     What to do when the output scalar file already exists: append to it
-    ({\opp} 3.x behavior), or delete it and begin a new file (default).
+    (OMNeT++ 3.x behavior), or delete it and begin a new file (default).
 
 output-scalar-precision=<int>, default:14; per-run setting
     The number of significant digits for recording data into the output scalar
@@ -320,6 +329,16 @@ result-dir=<string>, default:results; per-run setting
     for result files (output vector file, output scalar file, eventlog file,
     etc.)
 
+<object-full-path>.result-recording-modes=<string>, default:default; per-object setting
+    Defines how to calculate results from the @statistic property matched by
+    the wildcard. Special values: default, all: they select the modes listed in
+    the record= key of @statistic; all selects all of them, default selects the
+    non-optional ones (i.e. excludes the ones that end in a question mark).
+    Example values: vector, count, last, sum, mean, min, max, timeavg, stats,
+    histogram. More than one values are accepted, separated by commas.
+    Expressions are allowed. Items prefixed with '-' get removed from the list.
+    Example: **.queueLength.result-recording-modes=default,-vector,+timeavg
+
 <object-full-path>.rng-%=<int>; per-object setting
     Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3
     maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The
@@ -344,6 +363,11 @@ scheduler-class=<string>, default:cSequentialScheduler; global setting
     plugin interface allows for implementing real-time, hardware-in-the-loop,
     distributed and distributed parallel simulation. The class has to implement
     the cScheduler interface.
+
+sectionbasedconfig-configreader-class=<string>; global setting
+    When configuration-class=SectionBasedConfiguration: selects the
+    configuration reader C++ class, which must subclass from
+    cConfigurationReader.
 
 seed-%-lcg32=<int>; per-run setting
     When cLCG32 is selected as random number generator: seed for the kth RNG.
@@ -412,7 +436,8 @@ user-interface=<string>; global setting
     Selects the user interface to be started. Possible values are Cmdenv and
     Tkenv. This option is normally left empty, as it is more convenient to
     specify the user interface via a command-line option or the IDE's Run and
-    Debug dialogs.
+    Debug dialogs. New user interfaces can be defined by subclassing
+    cRunnableEnvir.
 
 <object-full-path>.vector-max-buffered-values=<int>; per-object setting
     For output vectors: the maximum number of values to buffer per vector,
@@ -431,6 +456,15 @@ user-interface=<string>; global setting
     Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],...
     That is, both start and end of an interval are optional, and intervals are
     separated by comma. Example: ..100, 200..400, 900..
+
+warmup-period=<double>, unit="s"; per-run setting
+    Length of the initial warm-up period. When set, results belonging to the
+    first x seconds of the simulation will not be recorded into output vectors,
+    and will not be counted into output scalars (see option
+    **.result-recording-modes). This option is useful for steady-state
+    simulations. The default is 0s (no warmup period). Note that models that
+    compute and record scalar results manually (via recordScalar()) will not
+    automatically obey this setting.
 
 warnings=<bool>, default:true; per-run setting
     Enables warnings.

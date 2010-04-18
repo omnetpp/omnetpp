@@ -70,7 +70,7 @@ message definitions.
 <!ATTLIST channel
      name                NMTOKEN   #REQUIRED>
 
-<!ELEMENT parameters (comment*, (property|param|pattern)*)>
+<!ELEMENT parameters (comment*, (property|param)*)>
 <!ATTLIST parameters
     is-implicit         (true|false)  "false">
 
@@ -78,14 +78,9 @@ message definitions.
 <!ATTLIST param
      type               (double|int|string|bool|xml) #IMPLIED
      is-volatile        (true|false)  "false"
-     name               NMTOKEN   #REQUIRED
+     name               CDATA     #REQUIRED
      value              CDATA     #IMPLIED
-     is-default         (true|false)  "false">
-
-<!ELEMENT pattern (comment*, expression?, property*)>
-<!ATTLIST pattern
-     pattern            CDATA     #REQUIRED
-     value              CDATA     #IMPLIED
+     is-pattern         (true|false)  "false"
      is-default         (true|false)  "false">
 
 <!ELEMENT property (comment*, property-key*)>
@@ -175,9 +170,10 @@ message definitions.
 <!ATTLIST function
      name                NMTOKEN   #REQUIRED>
 
-<!-- Ident is either a parameter reference or an identifier for 'sizeof' operator
-     format is 'name' or 'module.name' or 'module[n].name'. If there is a child,
-     that's the module index n.
+<!-- Ident is either a parameter reference or an argument for the "sizeof"
+     operator; its NED source form is one of the following: "name", "module.name",
+     "module[n].name". If there is a child, it represents the module index n.
+     A reserved module name (with special meaning) is "this".
 -->
 <!ELEMENT ident (comment*, (operator|function|ident|literal)?)>
 <!ATTLIST ident
@@ -225,32 +221,32 @@ message definitions.
 
 <!ELEMENT struct-decl (comment*)>
 <!ATTLIST struct-decl
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>
 
 <!ELEMENT class-decl (comment*)>
 <!ATTLIST class-decl
-     name                NMTOKEN   #REQUIRED
+     name                CDATA     #REQUIRED
      is-cobject      (true|false)  "false"
-     extends-name        NMTOKEN   #IMPLIED>
+     extends-name        CDATA     #IMPLIED>
 
 <!ELEMENT message-decl (comment*)>
 <!ATTLIST message-decl
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>
 
 <!ELEMENT packet-decl (comment*)>
 <!ATTLIST packet-decl
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>
 
 <!ELEMENT enum-decl (comment*)>
 <!ATTLIST enum-decl
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>
 
 <!-- Enums -->
 
 <!ELEMENT enum (comment*, enum-fields?)>
 <!ATTLIST enum
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT enum-fields (comment*, enum-field*)>
@@ -265,28 +261,28 @@ message definitions.
 <!ELEMENT message (comment*, (property|field)*)>
 <!ATTLIST message
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT packet (comment*, (property|field)*)>
 <!ATTLIST packet
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT class (comment*, (property|field)*)>
 <!ATTLIST class
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT struct (comment*, (property|field)*)>
 <!ATTLIST struct
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
-<!ELEMENT field (comment*)>
+<!ELEMENT field (comment*, property*)>
 <!ATTLIST field
      name                NMTOKEN   #REQUIRED
      data-type           CDATA     #IMPLIED
@@ -294,7 +290,6 @@ message definitions.
      is-readonly     (true|false)  "false"
      is-vector       (true|false)  "false"
      vector-size         CDATA     #IMPLIED
-     enum-name           NMTOKEN   #IMPLIED
      default-value       CDATA     #IMPLIED>
 
 <!--
