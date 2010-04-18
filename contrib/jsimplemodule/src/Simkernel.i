@@ -82,12 +82,11 @@
 %ignore cEnvir::printf;
 
 // ignore methods that are useless from Java
+%ignore process;  //cChannel
 %ignore netPack;
 %ignore netUnpack;
 %ignore doPacking;
 %ignore doUnpacking;
-%ignore writeTo;
-%ignore writeContents;
 %ignore saveToFile;
 %ignore loadFromFile;
 %ignore createWatch;
@@ -95,7 +94,6 @@
 
 // ignore non-inspectable classes and those that cause problems
 %ignore eMessageKind;
-%ignore cBag;
 %ignore cLinkedList;
 %ignore cCommBuffer;
 %ignore cContextSwitcher;
