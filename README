@@ -10,7 +10,7 @@ as well.
 
 OLD USERS:
 	If you have simulations written for OMNeT++ 3.x that you want to
-	port to 4.0, see the MIGRATION file, doc/migration.pdf, and the
+	port to 4.x, see the MIGRATION file, doc/migration.pdf, and the
 	scripts under migrate/!
 
 If you installed the source distribution, the omnetpp directory on your system
@@ -62,11 +62,14 @@ Sample simulations are in the samples directory.
 The contrib directory contains material from the OMNeT++ community.
 
     contrib/     directory for contributed material
+      jsimplemodule/  package for writing OMNeT++ simulations in Java
+      jresultwriter/  package for creating OMNeT++ result files from 3rd party Java-based simulators
+      topologyexport/ simple module for exporting model topology in XML
       akaroa/    patch file to compile akaroa with GCC 4.4
       gtk/       files to make Eclipse look good on Linux
       octave/    Octave scripts for result processing (somewhat outdated)
       emacs/     NED syntax highlighting for Emacs (somewhat outdated)
-      med/       NED syntax highlighting for MED (somewhat outdated)
+      med/       NED syntax highlighting for the MED editor (somewhat outdated)
 
 
 The example simulations
@@ -79,13 +82,10 @@ accompanying tutorial under doc/.
 
 Installation
 ~~~~~~~~~~~~
-If you're installing from a source distribution, please read one of the
-following files for instructions, depending on your OS and compiler:
-   Readme.MinGW   -- Windows + MinGW
-   Readme.Unix    -- generic Unix/Linux
-   Readme.OSX     -- Mac OS/X
 
-A more detailed, step by step InstallGuide can be found in the doc/ folder.
+Please see the Install Guide, doc/InstallGuide.pdf for specific instructions
+for various operating systems, and to read about dependencies, optional 
+packages and build options.
 
 Enjoy.
 
