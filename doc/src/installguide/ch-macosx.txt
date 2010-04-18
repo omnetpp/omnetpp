@@ -59,7 +59,7 @@ you can use the terminal-based 'pico' editor (`pico ~/.bashrc`)
 
 Add the following line at the end of the file, then save it:
 
-  $ export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
+  export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
 
 You need to close and re-open the terminal for the changes to take effect.
 
