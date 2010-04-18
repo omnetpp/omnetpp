@@ -110,7 +110,7 @@ fields in all network packets looks like the following:
 
 \begin{inifile}
 eventlog-message-detail-pattern =
- PPPFrame:encapsulatedMsg|IPDatagram:encapsulatedMsg,*Address|TCPSegment:*Port
+ PPPFrame:encapsulatedPacket|IPDatagram:encapsulatedPacket,*Address|TCPSegment:*Port
 \end{inifile}
 
 % TODO : Assuming you have a message type named \ttt{WirelessFrame}, the following

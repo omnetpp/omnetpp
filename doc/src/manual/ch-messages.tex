@@ -355,7 +355,7 @@ cPacket *userdata = tcpseg->decapsulate();
 except if it was zero. If the length would become negative, an
 error occurs.
 
-The \ffunc{getEncapsulatedMsg()} function returns a pointer to the encapsulated
+The \ffunc{getEncapsulatedPacket()} function returns a pointer to the encapsulated
 packet, or \ttt{NULL} if no packet is encapsulated.
 
 
@@ -382,7 +382,7 @@ MAC address doesn't match in the first place.
 The reference counting mechanism works transparently. However, there
 is one implication: \tbf{one must not change anything in a packet
 that is encapsulated into another!} That is,
-\ffunc{getEncapsulatedMsg()} should be viewed as if it returned a
+\ffunc{getEncapsulatedPacket()} should be viewed as if it returned a
 pointer to a read-only object (it returns a \ttt{const} pointer
 indeed), for quite obvious reasons: the encapsulated packet may be
 shared between several packets, and any change would affect those
@@ -425,7 +425,7 @@ You will also have to provide an \ffunc{operator=()} method to
 make sure your message objects can be copied and duplicated
 properly -- this is something often needed in simulations
 (think of broadcasts and retransmissions!). Section
-\ref{sec:ch-sim-lib:deriving-new-classes} contains more 
+\ref{sec:ch-sim-lib:deriving-new-classes} contains more
 about the things you need to take care of when deriving new classes.
 
 
@@ -1351,7 +1351,7 @@ class STLMessage : public STLMessage_Base
 
   public:
     STLMessage(const char *name=NULL, int kind=0) : STLMessage_Base(name,kind) {}
-    STLMessage(const STLMessage& other) : STLMessage_Base(other.getName()) 
+    STLMessage(const STLMessage& other) : STLMessage_Base(other.getName())
         { operator=(other); }
     STLMessage& operator=(const STLMessage& other) {
         if (&other==this) return *this;
@@ -1373,7 +1373,7 @@ class STLMessage : public STLMessage_Base
     virtual void setBarArraySize(unsigned int size) {}
     virtual unsigned int getBarArraySize() const {return bar.size();}
     virtual Item& getBar(unsigned int k) {throw cRuntimeException("sorry");}
-    virtual void setBar(unsigned int k, const Item& bar) 
+    virtual void setBar(unsigned int k, const Item& bar)
         { throw cRuntimeException("sorry"); }
     virtual void barPush(const Item& abar) {bar.push(abar);}
     virtual void barPop() {bar.pop();}

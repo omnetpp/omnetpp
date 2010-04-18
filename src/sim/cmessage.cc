@@ -620,7 +620,7 @@ cPacket *cPacket::decapsulate()
     return msg;
 }
 
-cPacket *cPacket::getEncapsulatedMsg() const
+cPacket *cPacket::getEncapsulatedPacket() const
 {
 #ifdef REFCOUNTING
     // encapmsg may be shared (sharecount>0) -- we'll make our own copy,
@@ -636,7 +636,7 @@ cPacket *cPacket::getEncapsulatedMsg() const
 
 long cPacket::getEncapsulationId() const
 {
-    // find innermost msg. Note: don't use getEncapsulatedMsg() because it does copy-on-touch of shared msgs
+    // find innermost msg. Note: don't use getEncapsulatedPacket() because it does copy-on-touch of shared msgs
     const cPacket *msg = this;
     while (msg->encapmsg)
         msg = msg->encapmsg;
@@ -645,7 +645,7 @@ long cPacket::getEncapsulationId() const
 
 long cPacket::getEncapsulationTreeId() const
 {
-    // find innermost msg. Note: don't use getEncapsulatedMsg() because it does copy-on-touch of shared msgs
+    // find innermost msg. Note: don't use getEncapsulatedPacket() because it does copy-on-touch of shared msgs
     const cPacket *msg = this;
     while (msg->encapmsg)
         msg = msg->encapmsg;

@@ -356,7 +356,7 @@ class SIM_API cMessage : public cOwnedObject
      * suit your needs. For more information, see class description for discussion
      * about message subclassing vs dynamically attached objects.</i>
      */
-    cArray& getParList()  {if (!parlistp) _createparlist(); return *parlistp;}
+    virtual cArray& getParList()  {if (!parlistp) _createparlist(); return *parlistp;}
 
     /**
      * Add a new, empty parameter (cMsgPar object) with the given name
@@ -368,7 +368,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cMsgPar& addPar(const char *s)  {cMsgPar *p=new cMsgPar(s);getParList().add(p);return *p;}
+    virtual cMsgPar& addPar(const char *s)  {cMsgPar *p=new cMsgPar(s);getParList().add(p);return *p;}
 
     /**
      * Add a parameter object to the message's object list.
@@ -379,12 +379,12 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cMsgPar& addPar(cMsgPar *p)  {getParList().add(p); return *p;}
+    virtual cMsgPar& addPar(cMsgPar *p)  {getParList().add(p); return *p;}
 
     /**
      * DEPRECATED! Use addPar(cMsgPar *p) instead.
      */
-    _OPPDEPRECATED cMsgPar& addPar(cMsgPar& p)  {getParList().add(&p); return p;}
+    _OPPDEPRECATED cMsgPar& addPar(cMsgPar& p)  {return addPar(&p);}
 
     /**
      * Returns the nth object in the message's object list, converting it to a cMsgPar.
@@ -397,7 +397,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cMsgPar& par(int n);
+    virtual cMsgPar& par(int n);
 
     /**
      * Returns the object with the given name in the message's object list,
@@ -411,7 +411,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cMsgPar& par(const char *s);
+    virtual cMsgPar& par(const char *s);
 
     /**
      * Returns the index of the parameter with the given name in the message's
@@ -423,7 +423,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    int findPar(const char *s) const;
+    virtual int findPar(const char *s) const;
 
     /**
      * Check if a parameter with the given name exists in the message's
@@ -435,7 +435,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    bool hasPar(const char *s) const {return findPar(s)>=0;}
+    virtual bool hasPar(const char *s) const {return findPar(s)>=0;}
 
     /**
      * Add an object to the message's object list.
@@ -446,7 +446,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cObject *addObject(cObject *p)  {getParList().add(p); return p;}
+    virtual cObject *addObject(cObject *p)  {getParList().add(p); return p;}
 
     /**
      * Returns the object with the given name in the message's object list.
@@ -458,7 +458,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cObject *getObject(const char *s)  {return getParList().get(s);}
+    virtual cObject *getObject(const char *s)  {return getParList().get(s);}
 
     /**
      * Check if an object with the given name exists in the message's object list.
@@ -469,7 +469,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    bool hasObject(const char *s)  {return !parlistp ? false : parlistp->find(s)>=0;}
+    virtual bool hasObject(const char *s)  {return !parlistp ? false : parlistp->find(s)>=0;}
 
     /**
      * Remove the object with the given name from the message's object list, and
@@ -481,7 +481,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cObject *removeObject(const char *s)  {return getParList().remove(s);}
+    virtual cObject *removeObject(const char *s)  {return getParList().remove(s);}
 
     /**
      * Remove the object with the given name from the message's object list, and
@@ -493,7 +493,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cObject *removeObject(cObject *p)  {return getParList().remove(p);}
+    virtual cObject *removeObject(cObject *p)  {return getParList().remove(p);}
     //@}
 
     /** @name Sending/arrival information. */
@@ -811,7 +811,7 @@ class SIM_API cPacket : public cMessage
      * channel, packet length affects the transmission duration and the
      * probability of setting the bit error flag.
      */
-    void setBitLength(int64 l);
+    virtual void setBitLength(int64 l);
 
     /**
      * Sets packet length (bytes). This is just a convenience function which
@@ -830,7 +830,7 @@ class SIM_API cPacket : public cMessage
      * If the resulting length would be negative, the method throws a
      * cRuntimeError.
      */
-    void addBitLength(int64 delta);
+    virtual void addBitLength(int64 delta);
 
     /**
      * Changes packet length by the given value (bytes). This is just a
@@ -843,7 +843,7 @@ class SIM_API cPacket : public cMessage
     /**
      * Returns the packet length (in bits).
      */
-    int64 getBitLength() const  {return len;}
+    virtual int64 getBitLength() const  {return len;}
 
     /**
      * Returns the packet length in bytes, that is, bitlength/8. If bitlength
@@ -854,12 +854,12 @@ class SIM_API cPacket : public cMessage
     /**
      * Sets the bit error flag.
      */
-    void setBitError(bool e) {setFlag(FL_BITERROR,e);}
+    virtual void setBitError(bool e) {setFlag(FL_BITERROR,e);}
 
     /**
      * Returns the bit error flag.
      */
-    bool hasBitError() const {return flags&FL_BITERROR;}
+    virtual bool hasBitError() const {return flags&FL_BITERROR;}
     //@}
 
     /** @name Message encapsulation. */
@@ -875,10 +875,10 @@ class SIM_API cPacket : public cMessage
      * packet is not duplicated when you duplicate a packet, but rather,
      * both (all) copies share the same packet instance. Any change done
      * to the encapsulated packet would affect other packets as well.
-     * Decapsulation (and even calling getEncapsulatedMsg()) will create an
+     * Decapsulation (and even calling getEncapsulatedPacket()) will create an
      * own (non-shared) copy of the packet.
      */
-    void encapsulate(cPacket *packet);
+    virtual void encapsulate(cPacket *packet);
 
     /**
      * Decapsulates a packet from the packet object. The length of
@@ -887,7 +887,7 @@ class SIM_API cPacket : public cMessage
      * negative, cRuntimeError is thrown. If there is no encapsulated
      * packet, the method returns NULL.
      */
-    cPacket *decapsulate();
+    virtual cPacket *decapsulate();
 
     /**
      * Returns a pointer to the encapsulated packet, or NULL if there
@@ -896,7 +896,13 @@ class SIM_API cPacket : public cMessage
      * IMPORTANT: see notes at encapsulate() about reference counting
      * of encapsulated packets.
      */
-    cPacket *getEncapsulatedMsg() const;    // XXX rename to getEncapsulatedPacket()?
+    virtual cPacket *getEncapsulatedPacket() const;
+
+    /**
+     * DEPRECATED. getEncapsulatedMsg() was renamed to getEncapsulatedPacket(),
+     * this method was left for backward compatibility.
+     */
+    _OPPDEPRECATED cPacket *getEncapsulatedMsg() const {return getEncapsulatedPacket();}
     //@}
 
     /** @name Transmission state */

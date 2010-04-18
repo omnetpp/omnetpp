@@ -1,11 +1,22 @@
+2010-04-18  Andras Varga
+
+	* cMessage, cPacket: several methods made virtual, most notably
+	encapsulate() and decapsulate(), to allow customizing the behavior
+	in subclasses
+
+	* cPacket: getEncapsulatedMsg() renamed to getEncapsulatedPacket()
+	to better describe its function. The old method was left there for 
+	backward compatibility; it is deprecated and delegates to the new 
+	method.
+	
 2010-04-01  Andras Varga
 
 	* cStringTokenizer: added copy constructor and assignment operator
 
-2010-03-31 Rudolf Hornig
+2010-03-31  Rudolf Hornig
 
-	* handleParameterChange(NULL) is called for each component with NULL 
-	as the parameterName after the last stage of the initialization phase.
+	* handleParameterChange() is called for each component with 
+	parameterName=NULL after the last stage of the initialization phase.
 	This allows the components to refresh their cached parameter values
 	if some parameters were changed during the initialization phase.
 	This is necessary because handleParameterChange() is not called during
