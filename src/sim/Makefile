@@ -28,7 +28,7 @@ IMPLIBS=-L$L -loppcommon$D
 
 OBJS_STD=\
     $O/carray.o $O/cdelaychannel.o $O/cdataratechannel.o $O/cboolparimpl.o $O/cchannel.o \
-    $O/cclassfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigoption.o \
+    $O/cobjectfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigoption.o \
     $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
     $O/cenum.o $O/cexception.o $O/cfsm.o $O/cmathfunction.o $O/cgate.o $O/chistogram.o \
@@ -138,7 +138,7 @@ $O/carray.o: carray.cc \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cstringpool.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -185,7 +185,7 @@ $O/cchannel.o: cchannel.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -222,7 +222,7 @@ $O/cchannel.o: cchannel.cc \
 $O/cclassdescriptor.o: cclassdescriptor.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -242,11 +242,11 @@ $O/cclassdescriptor.o: cclassdescriptor.cc \
   ../../include/cexception.h \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h
-$O/cclassfactory.o: cclassfactory.cc \
+$O/cobjectfactory.o: cobjectfactory.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -278,7 +278,7 @@ $O/cclassfactory.o: cclassfactory.cc \
 $O/ccommbuffer.o: ccommbuffer.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -300,7 +300,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
@@ -340,7 +340,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -378,7 +378,7 @@ $O/ccompoundmodule.o: ccompoundmodule.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -461,7 +461,7 @@ $O/cdataratechannel.o: cdataratechannel.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/distrib.h \
   ../../include/cdataratechannel.h \
@@ -503,7 +503,7 @@ $O/cdefaultlist.o: cdefaultlist.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/cwatch.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -529,7 +529,7 @@ $O/cdelaychannel.o: cdelaychannel.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -566,7 +566,7 @@ $O/cdelaychannel.o: cdelaychannel.cc \
 $O/cdensityestbase.o: cdensityestbase.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -594,7 +594,7 @@ $O/cdetect.o: cdetect.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
@@ -620,7 +620,7 @@ $O/cdisplaystring.o: cdisplaystring.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -681,7 +681,7 @@ $O/cdynamicexpression.o: cdynamicexpression.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   expryydefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -716,7 +716,7 @@ $O/cenum.o: cenum.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -765,7 +765,7 @@ $O/cexception.o: cexception.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -796,7 +796,7 @@ $O/cexception.o: cexception.cc \
 $O/cfsm.o: cfsm.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -820,7 +820,7 @@ $O/cgate.o: cgate.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cdataratechannel.h \
   ../../include/cexpression.h \
@@ -873,7 +873,7 @@ $O/chistogram.o: chistogram.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/distrib.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -913,7 +913,7 @@ $O/cksplit.o: cksplit.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cksplit.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -950,7 +950,7 @@ $O/cksplit.o: cksplit.cc \
 $O/clcg32.o: clcg32.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -977,7 +977,7 @@ $O/clinkedlist.o: clinkedlist.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/clinkedlist.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -1027,7 +1027,7 @@ $O/cmathfunction.o: cmathfunction.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1063,7 +1063,7 @@ $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -1097,7 +1097,7 @@ $O/cmessage.o: cmessage.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1134,7 +1134,7 @@ $O/cmessageheap.o: cmessageheap.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -1163,7 +1163,7 @@ $O/cmodule.o: cmodule.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1203,7 +1203,7 @@ $O/cmsgpar.o: cmsgpar.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1236,7 +1236,7 @@ $O/cmsgpar.o: cmsgpar.cc \
 $O/cnamedobject.o: cnamedobject.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
@@ -1259,7 +1259,7 @@ $O/cnamedobject.o: cnamedobject.cc \
 $O/cnedfunction.o: cnedfunction.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/simtime.h \
@@ -1306,7 +1306,7 @@ $O/coutvector.o: coutvector.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/coutvector.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -1339,7 +1339,7 @@ $O/cownedobject.o: cownedobject.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -1368,7 +1368,7 @@ $O/cpacketqueue.o: cpacketqueue.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cqueue.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -1399,7 +1399,7 @@ $O/cpar.o: cpar.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -1435,7 +1435,7 @@ $O/cparimpl.o: cparimpl.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdoubleparimpl.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1488,7 +1488,7 @@ $O/cparsimcomm.o: cparsimcomm.cc \
 $O/cproperties.o: cproperties.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
@@ -1512,7 +1512,7 @@ $O/cproperties.o: cproperties.cc \
 $O/cproperty.o: cproperty.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
@@ -1537,7 +1537,7 @@ $O/cpsquare.o: cpsquare.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1576,7 +1576,7 @@ $O/cqueue.o: cqueue.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/cqueue.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -1619,7 +1619,7 @@ $O/cscheduler.o: cscheduler.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -1653,7 +1653,7 @@ $O/csimplemodule.o: csimplemodule.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cqueue.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -1689,7 +1689,7 @@ $O/csimulation.o: csimulation.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1738,7 +1738,7 @@ $O/cstatistic.o: cstatistic.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1776,7 +1776,7 @@ $O/cstddev.o: cstddev.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1814,7 +1814,7 @@ $O/cstlwatch.o: cstlwatch.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/cwatch.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -1892,7 +1892,7 @@ $O/ctopology.o: ctopology.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
@@ -1927,7 +1927,7 @@ $O/cvarhist.o: cvarhist.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -1997,7 +1997,7 @@ $O/cxmlelement.o: cxmlelement.cc \
   ../../include/ccoroutine.h \
   minixpath.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -2056,7 +2056,7 @@ $O/distrib.o: distrib.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
@@ -2096,7 +2096,7 @@ $O/expr.tab.o: expr.tab.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   expryydefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -2125,7 +2125,7 @@ $O/expr.tab.o: expr.tab.cc \
 $O/globals.o: globals.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -2183,7 +2183,7 @@ $O/nedfunctions.o: nedfunctions.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
@@ -2221,7 +2221,7 @@ $O/nedsupport.o: nedsupport.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -2326,7 +2326,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
   sim_std_m.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../../include/cgate.h \
@@ -2419,7 +2419,7 @@ $O/util.o: util.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cqueue.h \
   ../../include/cwatch.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../../include/cgate.h \
@@ -2467,7 +2467,7 @@ $O/netbuilder/cdynamicchanneltype.o: netbuilder/cdynamicchanneltype.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
@@ -2506,7 +2506,7 @@ $O/netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   ../../include/ccomponenttype.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/simtime_t.h \
@@ -2540,7 +2540,7 @@ $O/netbuilder/cexpressionbuilder.o: netbuilder/cexpressionbuilder.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
@@ -2573,7 +2573,7 @@ $O/netbuilder/cneddeclaration.o: netbuilder/cneddeclaration.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
@@ -2618,7 +2618,7 @@ $O/netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   ../../include/ccomponenttype.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/simtime_t.h \
@@ -2663,7 +2663,7 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/ccomponenttype.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -2710,7 +2710,7 @@ $O/parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -2766,7 +2766,7 @@ $O/parsim/cfilecomm.o: parsim/cfilecomm.cc \
   ../../include/cparsimcomm.h \
   parsim/cfilecomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -2792,7 +2792,7 @@ $O/parsim/cfilecommbuffer.o: parsim/cfilecommbuffer.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
@@ -2829,7 +2829,7 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   parsim/cidealsimulationprot.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -2874,7 +2874,7 @@ $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   parsim/cidealsimulationprot.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -2919,7 +2919,7 @@ $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cdataratechannel.h \
   ../../include/cgate.h \
@@ -2957,7 +2957,7 @@ $O/parsim/cmemcommbuffer.o: parsim/cmemcommbuffer.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   parsim/cmemcommbuffer.h \
   ../../include/cenvir.h \
@@ -2985,7 +2985,7 @@ $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
   parsim/cmpicommbuffer.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -3012,7 +3012,7 @@ $O/parsim/cmpicommbuffer.o: parsim/cmpicommbuffer.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   parsim/cmpicommbuffer.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -3039,7 +3039,7 @@ $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   parsim/cmemcommbuffer.h \
   ../../include/simtime_t.h \
@@ -3069,7 +3069,7 @@ $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/simtime.h \
   parsim/cmemcommbuffer.h \
   ../../include/simtime_t.h \
@@ -3105,7 +3105,7 @@ $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -3153,7 +3153,7 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -3204,7 +3204,7 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -3248,7 +3248,7 @@ $O/parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -3294,7 +3294,7 @@ $O/parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   ../../include/ccoroutine.h \
   parsim/cfilecomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -3339,7 +3339,7 @@ $O/parsim/cproxygate.o: parsim/cproxygate.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \

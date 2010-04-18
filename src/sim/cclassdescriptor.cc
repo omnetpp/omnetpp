@@ -25,7 +25,7 @@
 #include "cenum.h"
 #include "simutil.h"
 #include "opp_ctype.h"
-#include "cclassfactory.h"  // createOne()
+#include "cobjectfactory.h"  // createOne()
 
 USING_NAMESPACE
 

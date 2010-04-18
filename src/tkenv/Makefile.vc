@@ -141,7 +141,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cobject.h \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
@@ -242,7 +242,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cobject.h \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
@@ -333,7 +333,7 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cstddev.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
@@ -380,7 +380,7 @@ $O/logbuffer.obj: logbuffer.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/cexpression.h \
@@ -422,7 +422,7 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cstddev.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
@@ -489,7 +489,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cobject.h \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
@@ -579,7 +579,7 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   statinsp.h \
   ../../include/errmsg.h \
   tkdefs.h \
@@ -634,7 +634,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/cstatistic.h \
@@ -691,7 +691,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
   tkdefs.h \
@@ -742,7 +742,7 @@ $O/tklib.obj: tklib.cc \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   tkdefs.h \
@@ -780,7 +780,7 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
@@ -824,7 +824,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cfsm.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \

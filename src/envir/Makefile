@@ -118,7 +118,7 @@ $O/akaroarng.o: akaroarng.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cstringpool.h \
   envirdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   akaroarng.h \
   ../../include/cnamedobject.h \
@@ -144,7 +144,7 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/platdep/platdefs.h \
   fileoutvectormgr.h \
   envirdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -192,7 +192,7 @@ $O/startup.o: startup.cc \
   sectionbasedconfig.h \
   fileoutvectormgr.h \
   inifilereader.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   envirdefs.h \
   akaroarng.h \
   ../../include/distrib.h \
@@ -264,7 +264,7 @@ $O/envirbase.o: envirbase.cc \
   ../../include/ccoroutine.h \
   envirbase.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   envirdefs.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -318,7 +318,7 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/ccoroutine.h \
   envirbase.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   envirdefs.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
@@ -367,7 +367,7 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/ccoroutine.h \
   envirbase.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   envirdefs.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -416,7 +416,7 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   envirbase.h \
   ../../include/platdep/platdefs.h \
   fileoutvectormgr.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   envirdefs.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -459,7 +459,7 @@ $O/filesnapshotmgr.o: filesnapshotmgr.cc \
   ../../include/regmacros.h \
   envirbase.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   envirdefs.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -517,7 +517,7 @@ $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/platdep/platdefs.h \
   fileoutvectormgr.h \
   envirdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -573,7 +573,7 @@ $O/intervals.o: intervals.cc \
   envirbase.h \
   ../../include/platdep/platdefs.h \
   envirdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -667,7 +667,7 @@ $O/objectprinter.o: objectprinter.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   envirdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -719,7 +719,7 @@ $O/runattributes.o: runattributes.cc \
   envirbase.h \
   ../../include/platdep/platdefs.h \
   envirdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -771,7 +771,7 @@ $O/sectionbasedconfig.o: sectionbasedconfig.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   sectionbasedconfig.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   envirdefs.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \

@@ -27,7 +27,7 @@ IMPLIBS=$O/../common/oppcommon$D.lib
 
 OBJS_STD=\
     $O/carray.obj $O/cdelaychannel.obj $O/cdataratechannel.obj $O/cboolparimpl.obj $O/cchannel.obj \
-    $O/cclassfactory.obj $O/ccomponent.obj $O/ccomponenttype.obj $O/cconfiguration.obj $O/cconfigoption.obj \
+    $O/cobjectfactory.obj $O/ccomponent.obj $O/ccomponenttype.obj $O/cconfiguration.obj $O/cconfigoption.obj \
     $O/ccompoundmodule.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cexception.obj $O/cfsm.obj $O/cmathfunction.obj $O/cgate.obj $O/chistogram.obj \
@@ -167,7 +167,7 @@ $O/carray.obj: carray.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/regmacros.h \
-  ../../include/cclassfactory.h
+  ../../include/cobjectfactory.h
 $O/cboolparimpl.obj: cboolparimpl.cc \
   ../../include/platdep/platmisc.h \
   ../../include/cboolparimpl.h \
@@ -218,7 +218,7 @@ $O/cchannel.obj: cchannel.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -246,7 +246,7 @@ $O/cclassdescriptor.obj: cclassdescriptor.cc \
   ../../include/cenum.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -256,7 +256,7 @@ $O/cclassdescriptor.obj: cclassdescriptor.cc \
   ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
-$O/cclassfactory.obj: cclassfactory.cc \
+$O/cobjectfactory.obj: cobjectfactory.cc \
   ../../include/cregistrationlist.h \
   parsim/cplaceholdermod.h \
   ../../include/ccommbuffer.h \
@@ -274,7 +274,7 @@ $O/cclassfactory.obj: cclassfactory.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -298,7 +298,7 @@ $O/ccommbuffer.obj: ccommbuffer.cc \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -326,7 +326,7 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -372,7 +372,7 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -412,7 +412,7 @@ $O/ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -490,7 +490,7 @@ $O/cdataratechannel.obj: cdataratechannel.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -527,7 +527,7 @@ $O/cdefaultlist.obj: cdefaultlist.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -559,7 +559,7 @@ $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -589,7 +589,7 @@ $O/cdensityestbase.obj: cdensityestbase.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -637,7 +637,7 @@ $O/cdisplaystring.obj: cdisplaystring.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -704,7 +704,7 @@ $O/cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -735,7 +735,7 @@ $O/cenum.obj: cenum.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -784,7 +784,7 @@ $O/cexception.obj: cexception.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -809,7 +809,7 @@ $O/cfsm.obj: cfsm.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cfsm.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -840,7 +840,7 @@ $O/cgate.obj: cgate.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -891,7 +891,7 @@ $O/chistogram.obj: chistogram.cc \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -931,7 +931,7 @@ $O/cksplit.obj: cksplit.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -968,7 +968,7 @@ $O/clcg32.obj: clcg32.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -990,7 +990,7 @@ $O/clinkedlist.obj: clinkedlist.cc \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1017,7 +1017,7 @@ $O/clistener.obj: clistener.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1082,7 +1082,7 @@ $O/cmathfunction.obj: cmathfunction.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1120,7 +1120,7 @@ $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1154,7 +1154,7 @@ $O/cmessage.obj: cmessage.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1186,7 +1186,7 @@ $O/cmessageheap.obj: cmessageheap.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1217,7 +1217,7 @@ $O/cmodule.obj: cmodule.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1256,7 +1256,7 @@ $O/cmsgpar.obj: cmsgpar.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1281,7 +1281,7 @@ $O/cnamedobject.obj: cnamedobject.cc \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1300,7 +1300,7 @@ $O/cnedfunction.obj: cnedfunction.cc \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1354,7 +1354,7 @@ $O/coutvector.obj: coutvector.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1385,7 +1385,7 @@ $O/cownedobject.obj: cownedobject.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1414,7 +1414,7 @@ $O/cpacketqueue.obj: cpacketqueue.cc \
   ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1443,7 +1443,7 @@ $O/cpar.obj: cpar.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1481,7 +1481,7 @@ $O/cparimpl.obj: cparimpl.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cstringparimpl.h \
@@ -1531,7 +1531,7 @@ $O/cproperties.obj: cproperties.cc \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1552,7 +1552,7 @@ $O/cproperty.obj: cproperty.cc \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1584,7 +1584,7 @@ $O/cpsquare.obj: cpsquare.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1614,7 +1614,7 @@ $O/cqueue.obj: cqueue.cc \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1663,7 +1663,7 @@ $O/cscheduler.obj: cscheduler.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1694,7 +1694,7 @@ $O/csimplemodule.obj: csimplemodule.cc \
   ../../include/cmessageheap.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1737,7 +1737,7 @@ $O/csimulation.obj: csimulation.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/chasher.h \
@@ -1778,7 +1778,7 @@ $O/cstatistic.obj: cstatistic.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1816,7 +1816,7 @@ $O/cstddev.obj: cstddev.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cstddev.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -1850,7 +1850,7 @@ $O/cstlwatch.obj: cstlwatch.cc \
   ../../include/cstlwatch.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1951,7 +1951,7 @@ $O/ctopology.obj: ctopology.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -1989,7 +1989,7 @@ $O/cvarhist.obj: cvarhist.cc \
   ../../include/cvarhist.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -2052,7 +2052,7 @@ $O/cxmlelement.obj: cxmlelement.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -2115,7 +2115,7 @@ $O/distrib.obj: distrib.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -2156,7 +2156,7 @@ $O/expr.tab.obj: expr.tab.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/nedsupport.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -2182,7 +2182,7 @@ $O/globals.obj: globals.cc \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -2251,7 +2251,7 @@ $O/nedfunctions.obj: nedfunctions.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -2291,7 +2291,7 @@ $O/nedsupport.obj: nedsupport.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/nedsupport.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -2353,7 +2353,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/nedsupport.h \
   ../../include/cstddev.h \
   ../../include/cnullenvir.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdoubleparimpl.h \
   ../../include/packing.h \
   ../../include/errmsg.h \
@@ -2462,7 +2462,7 @@ $O/util.obj: util.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   ../../include/cstatistic.h \
@@ -2511,7 +2511,7 @@ $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   ../../include/cownedobject.h \
@@ -2551,7 +2551,7 @@ $O/netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   ../../include/cownedobject.h \
@@ -2585,7 +2585,7 @@ $O/netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/nedsupport.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cnedfunction.h \
   ../../include/cownedobject.h \
@@ -2617,7 +2617,7 @@ $O/netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
@@ -2656,7 +2656,7 @@ $O/netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdoubleparimpl.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
@@ -2706,7 +2706,7 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/nedsupport.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
@@ -2756,7 +2756,7 @@ $O/parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimpartition.h \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
@@ -2812,7 +2812,7 @@ $O/parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/simutil.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   parsim/cfilecomm.h \
   ../../include/cownedobject.h \
@@ -2840,7 +2840,7 @@ $O/parsim/cfilecommbuffer.obj: parsim/cfilecommbuffer.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cregistrationlist.h \
@@ -2874,7 +2874,7 @@ $O/parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimpartition.h \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
@@ -2920,7 +2920,7 @@ $O/parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   parsim/cispeventlogger.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
   ../../include/cexpression.h \
@@ -2966,7 +2966,7 @@ $O/parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimpartition.h \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
@@ -3004,7 +3004,7 @@ $O/parsim/cmemcommbuffer.obj: parsim/cmemcommbuffer.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cregistrationlist.h \
@@ -3031,7 +3031,7 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   ../../include/simutil.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   parsim/cmpicomm.h \
@@ -3058,7 +3058,7 @@ $O/parsim/cmpicommbuffer.obj: parsim/cmpicommbuffer.cc \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cregistrationlist.h \
@@ -3085,7 +3085,7 @@ $O/parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cparsimcomm.h \
@@ -3117,7 +3117,7 @@ $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cparsimcomm.h \
@@ -3153,7 +3153,7 @@ $O/parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimpartition.h \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
@@ -3201,7 +3201,7 @@ $O/parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimpartition.h \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
@@ -3252,7 +3252,7 @@ $O/parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimpartition.h \
   ../../include/errmsg.h \
   parsim/messagetags.h \
@@ -3296,7 +3296,7 @@ $O/parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimpartition.h \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
@@ -3342,7 +3342,7 @@ $O/parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   parsim/cispeventlogger.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimprotocolbase.h \
   ../../include/errmsg.h \
   parsim/cfilecomm.h \
@@ -3389,7 +3389,7 @@ $O/parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   parsim/cparsimpartition.h \
   ../../include/errmsg.h \
   ../../include/cexpression.h \

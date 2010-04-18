@@ -138,7 +138,7 @@ $O/akaroarng.obj: akaroarng.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/regmacros.h \
-  ../../include/cclassfactory.h
+  ../../include/cobjectfactory.h
 $O/akoutvectormgr.obj: akoutvectormgr.cc \
   eventlogfilemgr.h \
   envirbase.h \
@@ -164,7 +164,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -200,7 +200,7 @@ $O/appreg.obj: appreg.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -258,7 +258,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
   ../../include/ccomponenttype.h \
@@ -326,7 +326,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
@@ -369,7 +369,7 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -409,7 +409,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   ../../include/cstatistic.h \
@@ -456,7 +456,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
@@ -499,7 +499,7 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -561,7 +561,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
   ../../include/cexpression.h \
@@ -616,7 +616,7 @@ $O/intervals.obj: intervals.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -711,7 +711,7 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   matchableobject.h \
   ../../include/cexpression.h \
@@ -772,7 +772,7 @@ $O/resultfilters.obj: resultfilters.cc \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
   ../../include/cownedobject.h \
@@ -837,7 +837,7 @@ $O/resultrecorder.obj: resultrecorder.cc \
   ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
   ../../include/cexpression.h \
@@ -875,7 +875,7 @@ $O/resultrecorders.obj: resultrecorders.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
   ../../include/cownedobject.h \
@@ -917,7 +917,7 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
@@ -971,7 +971,7 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   sectionbasedconfig.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cregistrationlist.h \
@@ -1012,7 +1012,7 @@ $O/startup.obj: startup.cc \
   sectionbasedconfig.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   startup.h \
   ../../include/distrib.h \
@@ -1110,7 +1110,7 @@ $O/xgridspec.obj: xgridspec.cc \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \

@@ -91,7 +91,7 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   cmddefs.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \

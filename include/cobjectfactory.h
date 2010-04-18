@@ -1,5 +1,5 @@
 //==========================================================================
-//  CCLASSFACTORY.H - part of
+//  COBJECTFACTORY.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCLASSFACTORY_H
-#define __CCLASSFACTORY_H
+#ifndef __COBJECTFACTORY_H
+#define __COBJECTFACTORY_H
 
 #include "simkerneldefs.h"
 #include "globals.h"
@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
  * @see Register_Class(), Define_Module() macros
  * @ingroup Internals
  */
-class SIM_API cClassFactory : public cNoncopyableOwnedObject
+class SIM_API cObjectFactory : public cNoncopyableOwnedObject
 {
   private:
     cObject *(*creatorfunc)();
@@ -43,7 +43,7 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cClassFactory(const char *name, cObject *(*f)(), const char *description=NULL);
+    cObjectFactory(const char *name, cObject *(*f)(), const char *description=NULL);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -78,12 +78,12 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
      * potential namespace, enclosing class etc. The class must have been
      * registered previously with the Register_Class() macro.
      */
-    static cClassFactory *find(const char *classname);
+    static cObjectFactory *find(const char *classname);
 
     /**
      * Like find(), but throws an error if the object was not found.
      */
-    static cClassFactory *get(const char *classname);
+    static cObjectFactory *get(const char *classname);
 
     /**
      * Creates an instance of a particular class; the result has to be cast
@@ -97,14 +97,14 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
      *
      * Example:
      *
-     * <tt>cMessage *msg = cClassFactory::createOne("INET::EthernetFrame");</tt>
+     * <tt>cMessage *msg = cObjectFactory::createOne("INET::EthernetFrame");</tt>
      *
      * createOne() is used e.g. in parallel simulation, when an object is received
      * from another partition in serialized form and has to be demarshalled.
      *
      * @see createOneIfClassIsKnown()
      * @see Register_Class() macro
-     * @see cClassFactory class
+     * @see cObjectFactory class
      */
     static cObject *createOne(const char *classname);
 
@@ -126,17 +126,17 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
  */
 //@{
 /**
- * Shortcut to cClassFactory::createOne().
+ * Shortcut to cObjectFactory::createOne().
  */
 inline cObject *createOne(const char *classname) {
-    return cClassFactory::createOne(classname);
+    return cObjectFactory::createOne(classname);
 }
 
 /**
- * Shortcut to cClassFactory::createOneIfClassIsKnown().
+ * Shortcut to cObjectFactory::createOneIfClassIsKnown().
  */
 inline cObject *createOneIfClassIsKnown(const char *classname) {
-    return cClassFactory::createOneIfClassIsKnown(classname);
+    return cObjectFactory::createOneIfClassIsKnown(classname);
 }
 //@}
 

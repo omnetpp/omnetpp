@@ -219,7 +219,7 @@
 %ignore cXMLElement::getDocumentElementByPath;
 %ignore cXMLElement::getElementByPath;
 
-%ignore cClassFactory::cClassFactory;
+%ignore cObjectFactory::cObjectFactory;
 
 
 // ignore deprecated methods
@@ -581,7 +581,7 @@ BASECLASS(cSubModIterator);
 BASECLASS(cVisitor);
 BASECLASS(cXMLElement);
 BASECLASS(std::vector<cXMLElement*>);
-BASECLASS(cClassFactory);
+BASECLASS(cObjectFactory);
 //BASECLASS(std::map<std::string,std::string>);
 DERIVEDCLASS(cArray, cObject);
 DERIVEDCLASS(cComponentType, cObject);
@@ -652,7 +652,7 @@ typedef SimTime simtime_t;
 %include "crng.h"
 %include "clcg32.h"
 %include "cmersennetwister.h"
-%include "cclassfactory.h"
+%include "cobjectfactory.h"
 %include "ccommbuffer.h"
 //%include "cconfiguration.h"
 //%include "cconfigoption.h"

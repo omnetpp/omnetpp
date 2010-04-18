@@ -22,7 +22,7 @@
 #include "ccommbuffer.h"
 #include "simutil.h"
 #include "cobject.h"
-#include "cclassfactory.h"    // createOne()
+#include "cobjectfactory.h"    // createOne()
 
 USING_NAMESPACE
 

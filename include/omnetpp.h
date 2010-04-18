@@ -20,7 +20,7 @@
 
 #include "carray.h"
 #include "cboolparimpl.h"
-#include "cclassfactory.h"
+#include "cobjectfactory.h"
 #include "ccommbuffer.h"
 #include "ccomponent.h"
 #include "ccomponenttype.h"

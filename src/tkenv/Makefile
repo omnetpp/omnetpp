@@ -184,7 +184,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cwatch.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
@@ -288,7 +288,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cqueue.h \
   ../../include/coutvector.h \
   ../../include/cwatch.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cdataratechannel.h \
   ../envir/eventlogfilemgr.h \
@@ -367,7 +367,7 @@ $O/layouterenv.o: layouterenv.cc \
   modinsp.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
@@ -413,7 +413,7 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/platdep/intxtypes.h \
   tklib.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
@@ -462,7 +462,7 @@ $O/modinsp.o: modinsp.cc \
   modinsp.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
@@ -551,7 +551,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cqueue.h \
   ../../include/coutvector.h \
   ../../include/cwatch.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cdataratechannel.h \
   ../envir/eventlogfilemgr.h \
@@ -626,7 +626,7 @@ $O/statinsp.o: statinsp.cc \
   tklib.h \
   ../../include/platdep/platdefs.h \
   ../../include/coutvector.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
@@ -691,7 +691,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
   ../../include/cwatch.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
@@ -756,7 +756,7 @@ $O/tkenv.o: tkenv.cc \
   modinsp.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
@@ -814,7 +814,7 @@ $O/tklib.o: tklib.cc \
   ../../include/ccomponenttype.h \
   tklib.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -861,7 +861,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -914,7 +914,7 @@ $O/visitor.o: visitor.cc \
   ../../include/cwatch.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \

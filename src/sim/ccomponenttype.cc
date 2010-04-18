@@ -192,7 +192,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 
 cModule *cModuleType::instantiateModuleClass(const char *classname)
 {
-    cObject *obj = cClassFactory::createOne(classname); // this won't return NULL
+    cObject *obj = cObjectFactory::createOne(classname); // this won't return NULL
     cModule *mod = dynamic_cast<cModule *>(obj);
     if (!mod)
         throw cRuntimeError("incorrect module class %s: not subclassed from cModule", classname);
@@ -257,7 +257,7 @@ cChannelType::cChannelType(const char *name) : cComponentType(name)
 
 cChannel *cChannelType::instantiateChannelClass(const char *classname)
 {
-    cObject *obj = cClassFactory::createOne(classname); // this won't return NULL
+    cObject *obj = cObjectFactory::createOne(classname); // this won't return NULL
     cChannel *channel = dynamic_cast<cChannel *>(obj);
     if (!channel)
         throw cRuntimeError("class %s is not a channel type", classname); //FIXME better msg

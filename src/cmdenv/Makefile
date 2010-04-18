@@ -76,7 +76,7 @@ $O/cmdenv.o: cmdenv.cc \
   cmdenv.h \
   ../../include/platdep/platdefs.h \
   ../envir/envirdefs.h \
-  ../../include/cclassfactory.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
