@@ -82,7 +82,7 @@
 %ignore cEnvir::printf;
 
 // ignore methods that are useless from Java
-%ignore process;  //cChannel
+%ignore processMessage;  //cChannel
 %ignore netPack;
 %ignore netUnpack;
 %ignore doPacking;

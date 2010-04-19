@@ -203,7 +203,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Performs bit error rate, delay and transmission time modelling.
      */
-    virtual void process(cMessage *msg, simtime_t t, result_t& result);
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result);
     //@}
 };
 

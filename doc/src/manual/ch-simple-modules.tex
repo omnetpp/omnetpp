@@ -2713,11 +2713,11 @@ implementations for the following pure virtual member functions:
 \begin{itemize}
   \item \ffunc[isTransmissionChannel()]{bool isTransmissionChannel() const}
   \item \ffunc[getTransmissionFinishTime()]{simtime\_t getTransmissionFinishTime() const}
-  \item \ffunc[process()]{void process(cMessage *msg, simtime\_t t, result\_t\& result)}
+  \item \ffunc[processMessage()]{void processMessage(cMessage *msg, simtime\_t t, result\_t\& result)}
 \end{itemize}
 
 The first two functions are usually one-liners; the channel behavior is
-encapsulated in the third function, \ffunc{process()}.
+encapsulated in the third function, \ffunc{processMessage()}.
 
 \subsubsection{Transmission Channels}
 
@@ -2737,9 +2737,9 @@ non-transmission channels, the \ffunc{getTransmissionFinishTime()} return
 value may be any simulation time which is less than or equal to the current
 simulation time.
 
-\subsubsection{The process() Function}
+\subsubsection{The processMessage() Function}
 
-The third function, \ffunc{process()} encapsulates the channel's
+The third function, \ffunc{processMessage()} encapsulates the channel's
 functionality. However, before going into the details of this function
 we need to understand how {\opp} handles message sending on connections.
 
@@ -2765,7 +2765,7 @@ will determine whether the transmission duration will be added to the
 arrival time or not. Packet transmissions have been described in section
 \ref{sec:simple-modules:packet-transmission}.
 
-Now, back to the \ffunc{process()} method.
+Now, back to the \ffunc{processMessage()} method.
 
 The method gets called as part of the above process, when the message
 is processed at the given hop. The method's arguments are the message
@@ -2796,7 +2796,7 @@ untouched.
 Transmission duration and bit error modeling only applies to packets (i.e.
 to instances of \cclass{cPacket}, where \cclass{cMessage}'s
 \ffunc{isPacket()} returns true); it should be skipped for non-packet
-messages. \ffunc{process()} does not need to call the \ffunc{setDuration()}
+messages. \ffunc{processMessage()} does not need to call the \ffunc{setDuration()}
 method on the packet; this is done by the simulation kernel. However,
 it should call \ffunc[setBitError()]{setBitError(true)} on the packet
 if error modeling results in bit errors.
@@ -2805,9 +2805,9 @@ If the method sets the \ttt{discard} flag in the result object, that
 means that the message object will be deleted by {\opp}; this facility
 can be used to model that the message gets lost in the channel.
 
-The \ffunc{process()} method does not need to throw error on overlapping
+The \ffunc{processMessage()} method does not need to throw error on overlapping
 transmissions, or if the packet's duration field is already set; these
-checks are done by the simulation kernel before \ffunc{process()} is called.
+checks are done by the simulation kernel before \ffunc{processMessage()} is called.
 
 % TODO:
 %
@@ -2832,10 +2832,10 @@ types are implemented.
 \cclass{cIdealChannel} lets through messages and packets without
 any delay or change. Its \ffunc{isTransmissionChannel()} method returns
 \ttt{false}, \ffunc{getTransmissionFinishTime()} returns $0s$, and the
-body of its \ffunc{process()} method is empty:
+body of its \ffunc{processMessage()} method is empty:
 
 \begin{cpp}
-void cIdealChannel::process(cMessage *msg, simtime_t t, result_t& result)
+void cIdealChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
 }
 \end{cpp}
@@ -2844,11 +2844,11 @@ void cIdealChannel::process(cMessage *msg, simtime_t t, result_t& result)
 disabled; in its disabled state, messages sent though it will be discarded.
 This class still models zero transmission duration, so its
 \ffunc{isTransmissionChannel()} and \ffunc{getTransmissionFinishTime()}
-methods still return \ttt{false} and $0s$. The \ffunc{process()} method
+methods still return \ttt{false} and $0s$. The \ffunc{processMessage()} method
 sets the appropriate fields in the \cclass{result\_t} struct:
 
 \begin{cpp}
-void cDelayChannel::process(cMessage *msg, simtime_t t, result_t& result)
+void cDelayChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
     result.discard = isDisabled;
@@ -2877,13 +2877,13 @@ simtime_t cDatarateChannel::getTransmissionFinishTime() const
 }
 \end{cpp}
 
-\cclass{cDatarateChannel}'s \ffunc{process()} method makes use of
+\cclass{cDatarateChannel}'s \ffunc{processMessage()} method makes use of
 the \ttt{isDisabled}, \ttt{datarate}, \ttt{ber} and \ttt{per} data
 members, which are also kept up to date with the help of
 \ffunc{handleParameterChange()}.
 
 \begin{cpp}
-void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
+void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
     if (isDisabled) {

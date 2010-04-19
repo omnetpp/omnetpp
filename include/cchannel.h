@@ -57,7 +57,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
   public:
     /**
-     * Allows for returning multiple values from the process() method.
+     * Allows for returning multiple values from the processMessage() method.
      * The constructor initializes all fields to zero.
      */
     struct result_t {
@@ -190,9 +190,9 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      *
      * The method does not need to throw error on overlapping transmissions,
      * or if the packet's duration field is already set; these checks are
-     * done by the simulation kernel before process() is called.
+     * done by the simulation kernel before processMessage() is called.
      */
-    virtual void process(cMessage *msg, simtime_t t, result_t& result) = 0;
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) = 0;
 
     /**
      * For transmission channels: Returns the simulation time
@@ -251,7 +251,7 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     /**
      * The cIdealChannel implementation of this method does nothing.
      */
-    virtual void process(cMessage *msg, simtime_t t, result_t& result) {}
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) {}
 
     /**
      * The cIdealChannel implementation of this method always returns false.

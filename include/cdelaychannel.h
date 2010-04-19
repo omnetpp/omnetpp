@@ -134,7 +134,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      * This implementation delivers the message to the opposite gate
      * with a delay.
      */
-    virtual void process(cMessage *msg, simtime_t t, result_t& result);
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result);
     //@}
 };
 

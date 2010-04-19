@@ -431,7 +431,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
         if (!channelp->isTransmissionChannel())
         {
             cChannel::result_t tmp;
-            channelp->process(msg, t, tmp);
+            channelp->processMessage(msg, t, tmp);
             if (tmp.discard)
                 return false;
             EVCB.messageSendHop(msg, this, tmp.delay, SIMTIME_ZERO); // tmp.duration ignored for non-transmission channels
@@ -459,7 +459,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
 
             // process
             cChannel::result_t tmp;
-            channelp->process(msg, t, tmp);
+            channelp->processMessage(msg, t, tmp);
             if (tmp.discard)
                 return false;
             if (isPacket)

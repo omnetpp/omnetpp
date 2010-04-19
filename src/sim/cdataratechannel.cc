@@ -125,7 +125,7 @@ void cDatarateChannel::setDisabled(bool d)
     par("disabled").setBoolValue(d);
 }
 
-void cDatarateChannel::process(cMessage *msg, simtime_t t, result_t& result)
+void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)

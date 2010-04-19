@@ -1,3 +1,8 @@
+2010-04-19  Andras Varga
+
+	* channel's main function process(), introduced in the previous beta,
+	renamed to processMessage() for consistency with handleMessage().
+
 2010-04-18  Andras Varga
 
 	* cMessage, cPacket: several methods made virtual, most notably
