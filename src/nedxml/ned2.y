@@ -896,7 +896,7 @@ property_value_tokens
 property_value_token
         : NAME | INTCONSTANT | REALCONSTANT | TRUE_ | FALSE_
         | '$' | '@' | ':' | '[' | ']' | '{' | '}' | '.' | '?'
-        | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE
+        | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE   /*note: '=' not listed as it would cause ambiguity: "a=b" is key=value or a single value for the default key? */
         | DOUBLEASTERISK | TO | PLUSPLUS | OR | AND | XOR | NOT
         ;
 
