@@ -42,6 +42,7 @@
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
+#include "nedutil.h"
 #include "xmlgenerator.h"  // for debugging
 
 #include "cnednetworkbuilder.h"
@@ -659,6 +660,13 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
 {
+    // if there is a @dynamic or @dynamic(true), do not instantiate the submodule
+    ParametersElement *paramsNode = submod->getFirstParametersChild();
+    if (paramsNode)
+        for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop!=NULL; prop = prop->getNextPropertySibling())
+            if (opp_strcmp(prop->getName(), "dynamic")==0 && NEDElementUtil::propertyAsBool(prop)==true)
+                return;
+
     // create submodule
     const char *submodname = submod->getName();
     bool usesLike = !opp_isempty(submod->getLikeType());
