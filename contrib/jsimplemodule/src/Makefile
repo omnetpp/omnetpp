@@ -1,27 +1,31 @@
-#--------------------------------------------------------------------
-# Adjust the following paths:
 #
-#JAVA_HOME=/usr/lib/jvm/java-6-sun
-#SWIG="$(TOOLS_DIR)\swigwin-1.3.31\swig.exe"
-#PERL=perl
+# OMNeT++/OMNEST Makefile for jsimplemodule SWIG code generation
+#
+#
 
-#--------------------------------------------------------------------
+# Output directory
+PROJECT_OUTPUT_DIR = out
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/
 
-#!if !exist($(JAVA_HOME))
-#!error directory $(JAVA_HOME) does not exist -- set JAVA_HOME properly
-#!endif
+#------------------------------------------------------------------------------
+# Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
 
-#!if !exist($(SWIG))
-#!error SWIG not found as $(SWIG) -- please edit makefrag.vc
-#!endif
+ifneq ("$(OMNETPP_CONFIGFILE)","")
+CONFIGFILE = $(OMNETPP_CONFIGFILE)
+else
+ifneq ("$(OMNETPP_ROOT)","")
+CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
+else
+CONFIGFILE = $(shell opp_configfilepath)
+endif
+endif
 
-# use this to manually set the compile and linker flags for JDK
-#INCLUDE_PATH+= -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
-#LIBS+= -L$(JAVA_HOME)/jre/lib/i386/client -Wl,-rpath,$(JAVA_HOME)/jre/lib/i386/client -ljvm
+ifeq ("$(wildcard $(CONFIGFILE))","")
+$(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
+endif
 
-# using the JDK autodetected by the configure script
-INCLUDE_PATH += $(JAVA_CFLAGS)
-LIBS += $(JAVA_LIBS)
+include $(CONFIGFILE)
+
 JAVAC=javac
 JAR=jar
 
@@ -32,7 +36,6 @@ CLASSDIR = $(OUTDIR)/classes
 DISTDIR  = ../jsimple
 
 GENERATED_FILES = $(OUTDIR)/simkernel_wrap.cc  $(OUTDIR)/SimkernelJNI_registerNatives.cc
-OBJS+= $(OUTDIR)/simkernel_wrap.o $(OUTDIR)/SimkernelJNI_registerNatives.o
 
 DIST_SRC_FILES = \
     ChangeLog \
@@ -49,8 +52,8 @@ DIST_SRC_FILES = \
     JSimpleModule.ned \
     JUtil.cc \
     JUtil.h \
-    makefrag.vc \
-    makefrag
+    Makefile.vc \
+    Makefile
 
 # the following files are not distributed by default
 EXPERIMENTAL_SRC_FILES = \
@@ -60,8 +63,6 @@ EXPERIMENTAL_SRC_FILES = \
   ProxyObjectMap.java.in
 
 all: dist
-
-binaries: $(TARGET)
 
 $(GENERATED_FILES) : Simkernel.i Makefile $(OMNETPP_ROOT)/include/*.h  # and many oher things
 	-mkdir -p $(OUTDIR)/java
@@ -76,12 +77,6 @@ $(GENERATED_FILES) : Simkernel.i Makefile $(OMNETPP_ROOT)/include/*.h  # and man
 	$(PERL) registernatives.pl $(JAVADIR)/SimkernelJNI.java $(OUTDIR)
 	@# $(PERL) patchownership.pl $(JAVADIR)
 	@# $(PERL) patchcastfrom.pl $(JAVADIR)
-
-$(OUTDIR)/SimkernelJNI_registerNatives.o: $(OUTDIR)/SimkernelJNI_registerNatives.cc
-	$(CXX) -c $(COPTS) -o $(OUTDIR)/SimkernelJNI_registerNatives.o $(OUTDIR)/SimkernelJNI_registerNatives.cc
-
-$(OUTDIR)/simkernel_wrap.o: $(OUTDIR)/simkernel_wrap.cc
-	$(CXX) -c $(COPTS) -o $(OUTDIR)/simkernel_wrap.o $(OUTDIR)/simkernel_wrap.cc
 
 javafiles:
 	@# cp ProxyObjectMap.java.in java/org/omnetpp/simkernel/ProxyObjectMap.java
@@ -101,3 +96,9 @@ dist: $(GENERATED_FILES) javafiles
 	cp *.h $(DISTDIR)
 	cp $(OUTDIR)/*.cc $(DISTDIR)
 	cp JSimpleModule.ned $(DISTDIR)
+
+clean:
+	-rm -rf $(PROJECT_OUTPUT_DIR)
+
+cleanall: clean
+	rm $(DISTDIR)/*.cc $(DISTDIR)/*.h $(DISTDIR)/*.jar $(DISTDIR)/*.zip $(DISTDIR)/*.ned
