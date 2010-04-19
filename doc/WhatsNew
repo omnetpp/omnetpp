@@ -1,220 +1,396 @@
 What's New
 ==========
 
+
 OMNeT++ 4.1 beta 4 (April 2010)
 -------------------------------
-API:
-  handleParameterChange(NULL) is called for each component with NULL
-  as the parameterName after the last stage of the initialization phase.
-  This allows the components to refresh their cached parameter values
-  if some parameters were changed during the initialization phase.
+Simulation kernel:
+ - Added statistics to the built-in channel types, ned.DatarateChannel and
+   ned.DelayChannel. They are not recorded by default; recording can be turned
+   on with "**.channel.result-recording-modes = all" in the configuration.
+   DatarateChannel records the following: busy state (as vector);
+   utilization (time average as scalar); number of packets (as scalar);
+   number of bytes (as scalar); number of packets discarded in channel
+   disabled state (as scalar); throughput (bps, as scalar). You can see the
+   declarations of these statistics by running "opp_run -h neddecls".
+
+ - handleParameterChange() is now called for each component with NULL
+   as the parameterName after the last stage of the initialization phase.
+   This allows the components to refresh their cached parameter values
+   if some parameters were changed during the initialization phase.
+   Existing code needs to be updated to accept name=NULL and interpret
+   it as "any parameter".
+
+ - signals framework: changes in the cIListener interface since the previous
+   beta; changed cTimestampedValue class (which is used to emit a signal for
+   statistics purposes with a different timestamp than the current simulation
+   time) to support all data types
+
+ - histogram classes: added getters getNumFirstVals() and getRangeExtension-
+   Factor(); for integer histograms, cell boundaries are now at whole numbers,
+   not halfs; implemented dup(); default number of cells changed
+
+Envir:
+
+	* result-recording-mode renamed to result-recording-modes=
+
+	* in the record= list of @statistic, now you can make items optional
+	by appending "?" to them. By default, only non-optional items
+	are used
+
+	* result-recording-modes has changed: there are two keywords that
+	are accepted in the list: "all" and "default". "all" copies all items
+	from record= of @statistic() including optional ones (those suffixed
+	with "?"), and "default" copies only non-optional ones. "default" is
+	the default setting; it is also implied if result-recording-modes
+	starts with '+'  or '-'. A lone '-' disables all recording modes.
+	Examples:
+	**.result-recording-modes = default  --> the default setting
+	**.result-recording-modes = all      --> includes '?' items too
+	**.result-recording-modes = -        --> disable all
+	**.result-recording-modes = mean     --> only mean (disables 'default')
+	**.result-recording-modes = default,-vector,+histogram
+	**.result-recording-modes = -vector,+histogram   --> same as above
+	**.result-recording-modes = all,-vector,+histogram
+
+  XXX statistic modes
+
+  XXX histogram results: use "type" attribute instead of "isDiscrete"
+
+  XXX Changed cEnvir to write EV messages in express mode to eventlog when recording is enabled.
+
+FIXME TODO @dynamic!!!
+
+NED:
+ - Inner types can now refer to the parameters of their enclosing type.
 
 IDE:
-  Rearanged context menu in Sequence Chart editor 
+ - NED editor: added banner comment for module/channel types created
+   graphically
 
-  Improved display of @statistic and @signal properties in ModuleHierarchyView
+ - Ini file editor usability: more specific names for table columns in form
+   editor; split "Output Files" page into "Result Recording" and "Event Log"
+   pages in form editor
 
-  Added banner comment if a module or channel type is dropped into a NED filename
-  from the palette.
+ - Analysis editor: separate horizontal and vertical zoom controls;
+   more usable context menu for charts; result file reading made more
+   robust (better error messages on errors); at the same time, removed
+   support for reading old-syle (3.x) vector files
+
+ - Sequence Chart: more usable context menu; display of method calls and
+   message reuse arrows turned off by default
+
+ - Improved the display of @statistic and @signal properties in Module
+   Hierarchy view
+
+ - Dozens of bugfixes and other improvements
 
 Tooling:
-  Updated MINGW and MSYS tools in the Windows distribution. The new MSYS
-  now should work on Win64 (altough the compiler still produces 32bit code)
-  The GCC compiler is updated to a pre-release version of MINGW 4.5 (this solves
-  the debugging issues on Windows platform)
+ - Updated MinGW and MSYS tools in the Windows distribution. The new MSYS
+   now should work on Win64 (although the compiler still produces 32bit code).
+   The GCC compiler is updated to a pre-release version of MinGW 4.5 (this
+   solves the debugging issues on Windows platform).
 
 Build system:
-  Extra long commandlines are supported now for mingw linker
+ - Extra long command lines are supported now for the MinGW linker. (Uses a
+   temporary file to pass args to the linker if the command line is >32K.)
 
 Tkenv:
-  A new toolbar button to start/stop eventlog recording interactively
-  
-  An option for eliminating module initilalization messages in the console
+ - It is now possible to turn eventlog recording on/off interactively, not only
+   via omnetpp.ini options; see "Toggle eventlog recording" toolbar button.
+
+ - Module initialization messages are now not printed; we added an option to
+   turn them back on in the Simulation Options dialog.
 
 Cmdenv:
-  Module initialization messages are not printed in express mode
-
-Simulation kernel:
-  Better configuration for statistics (see src/envir/ChangeLog)
-
-  Default channel statistics (message count, byte sum, utilization, throuhput etc.)
+ - Printing of module initialization messages is now suppressed in express mode
 
 Bugfixes since beta 3:
-  - Connecting two modules in the IDE does not use IdealChannel explicitly.
-  - pack/unpack error for long long types fixed (on mingw compiler)
-  - fixed (reduced) the size of filter textline in the NED editor palette
-  - Goto C++ definition in NED file is working again
+ - NED graphical editor added explicit "ned.IdealChannel" to connections
+ - NED editor failed to add blank lines between components created graphically
+ - pack/unpack error for "long long" type fixed (on MinGW compiler)
+ - fixed (reduced) the size of filter text field in the NED editor palette
+ - Go To C++ Definition in NED file is working again
+ - opp_test: %subst to understand backrefs ($1) in the replacement string
+ - many other bug fixes
+
 
 OMNeT++ 4.1 beta 3 (March 2010)
 -------------------------------
-API (see include/ChangeLog for more info):
-  New channel programming model
+Simulation library:
+ - New channel programming model. The user needs to override the process()
+   method of cChannel, which has the following parameters: the message;
+   the time the message will reach the source gate of the connection; and
+   a reference to a struct (cChannel::result_t) in which the method should
+   return the results. result_t fields to be filled in are the propagation
+   delay, the transmission duration, and a flag to indicate whether to model
+   that the message got lost in the channel (when this is set, the simulation
+   kernel will delete the message after process() returns).
 
-  New cHistogram class (by merging cDoubleHistogram and cLongHistogram functionality) 
+ - New class: cHistogram. It is a merger of cDoubleHistogram and cLongHistogram
+   (which have been kept for compatibility). cHistogram can work in "integers"
+   or "doubles" mode; the difference is that in "integers mode", cell boundaries
+   will be chosen to be integers. The default behavior is to automatically
+   choose the mode after precollecting some (by default 100) observations.
+   The significance of cHistogram is that the "histogram" recording mode
+   of the new statistics framework (see below) uses cHistogram in its default
+   setup.
 
-  New statistic recording framework using signals: The module's C++ code only emits
-  signals containing important module variables and events. Statistic collector
-  objects are attached to the signals from the NED file or from the INI file allowing
-  to configure the statistic collection without modifying any C++ code.
+ - New statistics recording framework using signals. The module's C++ code
+   emits statistics as signals, and collector objects are attached externally,
+   by the simulation framework. Statistics are declared in NED files using
+   @statistic properties, and actual recording (whether to record values as
+   output vector, or as histogram, or the average/minimum/maximum etc value
+   as scalars) can be configured from ini files. The runtime cost of
+   statistics that are not recorded is minimal, which allows module authors
+   to emit lots of statistics in the code, and let the end users decide which
+   statistics they want to record and in what form. Earlier, such functionality
+   would have required extensive C++ programming in module.
 
-  New simTime() NED function returning the current simulation time. It is possible
-  now to create time dependent distributions e.g.:
-  interArrivalTime = exponential(simTime()<10s ? 0.5s : 2s)
+ - Added a simTime() NED function that returns the current simulation time.
+   simTime() makes it possible to create time-dependent distributions, e.g.:
+   interArrivalTime = exponential(simTime()<10s ? 0.5s : 2s)
+
+Envir:
+ - New configuration option: warmup-period. This is associated with the new
+   statistics recording framework: when specified, values produced during
+   the first X seconds of the simulation will not be calculated in the
+   results. For existing statistics that are calculated manually inside
+   modules and recorded e.g. as recordScalar() in finish(), the module C++
+   code of course needs to be modified to respect the warmup period; the
+   length of the warmup period can be obtained from C++ code as
+   simulation.getWarmupPeriod().
+
+ - New configuration option: result-recording-mode (renamed to ~-modes in
+   beta4); this option specifies what to record from statistics declared
+   in NED. Example value: vector,histogram,timeavg,min,max.
+
+ - New configuration option: debug-statistics-recording. When turned on,
+   the simulation program will dump what result recorders have been attached
+   to which module signals.
+
+ - Renamed "vector-recording-interval" configuration option to
+   "vector-recording-intervals" (plural) which is a more precise name, plus
+   more consistent with eventlog-recording-intervals.
+
+ - New command-line options: -h neddecls prints the NED declarations for
+   built-in types (ned.DatarateChannel, etc); -h resultfilters and -h
+   resultrecorders prints the list of available result filters and
+   result recorders (such as min, max, mean, timeavg, last, histogram,
+   vector, packetBytes, packetBits, etc).
 
 NED:
-  @signal property is used to define the signals emitted by the module
-  
-  @statistic property is used to define the default statistics gathered 
-  in the module by the new statistical framework.
+ - New properties associated with the statistics recording framework (above):
+   @signal defines a signal emitted by the module, and @statistic defines
+   a statistic that is available for recording. (A statistic can use a signal
+   "as is", or can be some function of it; for example, a signal can be
+   a packet, and a corresponding statistic can be the length of the packet.)
 
 IDE:
-  The IDE is now based on Eclipse 3.5.2 and CDT 6.0.2.
+ - The IDE is now based on Eclipse 3.5.2 and CDT 6.0.2.
 
-  NED editor now has content assist for display string tags.
-  Icons and colors are displayed inside the content assist window.
+ - Content assist for icons (with preview!), colors and other display string
+   tags in the NED source editor. Content assist is now also supported
+   for channel parameters, and @signal and @statistic properties.
 
-  Content assist is supported for channel parameters in NED Editor.
+ - Statistic and signal declarations are now shown in the Module Hierarchy view.
 
-  Content assist is supported for @signal and @statistic in NED Editor.
+ - Content assist for statistics names in the ini file editor.
 
-  Statistic and signal declarations are shown in the Module Hierarchy View
+ - Several usability enhancement in the Analysis Editor:
+   - SVG export for charts.
+   - Redesigned filter interface on the Browse Data page provides more space.
+   - Tree view in the Browse Data page: it shows results in a tree organized
+     along runs, modules, results and result properties as tree levels.
+     Tree levels can be freely configured.
+   - Charts in the Chart Sheet are resized fill the editor window automatically.
+   - The number of columns can be configured on the Chart Sheet.
 
-  INI File Editor now supports content assist for statistic names.
+ - Direct method calls can be visualized in Sequence Charts (needs to be
+   turned on manually)
 
-  Several usability enhancement in the Analysis Editor
-  - SVG export for charts.
-  - Redesigned filter interface on the browse data page provides more space.
-  - Tree view in the Browse Data page.
-  - It is now possible to group and explore the collected results in
-    several different way on the Dataset page.
-  - Charts in the Chart Sheet fill the editor window automatically. 
-  - Number of columns can be configured on the Chart Sheet.
+ - Generated NED documentation now includes signal and statistic declarations.
 
-  Direct method calls can be visualised in Sequence charts.
-
-  Generated NED documentation now includes signal and statistic declarations.
-  
-  New Freemarker template editor used during wizad creation ('*.ftl' files).
+ - New FreeMarker template editor for editing of ".ftl" files, used for the new
+   templated wizards feature (see 4.1b1).
 
 Tooling:
-  The git package is updated to version 1.6.5  
+ - The git package has been updated to version 1.6.5.
 
 Documentation:
-  Extensive documentation review and proofreading.
+ - Extensive documentation review and proofreading.
 
 Bugfixes since beta 2:
-
-  Fixed regressions related to parameter handling.
-
-  The IDE no longer crashes on multi-processor Windows machines.
-
-  git commands are working correctly now on Windows (git merge etc.)
-
-  The new version of Eclipse platform (3.5.2) solves the 'dead button' problem
-  found on Linux systems with the latest version of GTK.
-
-  Documentation generator now correctly generates docs from NED files containing
-  the @titlepage property.
-
-  Boolean parameters now can be recorded as scalars.
+ - Fixed regressions related to parameter handling.
+ - The IDE no longer crashes on multi-processor Windows machines.
+ - git commands are working correctly now on Windows (git merge etc.)
+ - The new version of Eclipse platform (3.5.2) solves the 'dead button' problem
+   found on Linux systems with the latest version of GTK.
+ - Documentation generator now correctly generates docs from NED files
+   containing the @titlepage property.
+ - Boolean parameters now can be recorded as scalars.
 
 
 OMNeT++ 4.1 beta 2 (Jan 2010)
 -----------------------------
 API:
-  No breaking changes to the API since 4.0. Every model created for 4.0 
-  should work without a problem on 4.1. See include/ChangeLog for details.
-
-  Added a 'signal mechanism' to support emitting signals from a model. Signals 
-  can be used to gather statistics, send notifications about model changes etc.
-  Consumers can subscribe to a signal and recive notifications whenever the 
-  signal is emitted. Signals can carry basic data elements so it is possible 
-  to implement data collection or other notification related features using them.
-  The OMNeT++ kernel is now using the same signal mechanism to emit signals when
-  the NED topology is changing. See include/ChangeLog for details.
-
-NED:
-  Deep parameter assignments: It is now possible to assign a parameter of a 
-  submodule inside the parent (or any ancestor) in 'submodule.parameter = value' form.
-  Wildcards (like in INI) files are allowed too.
-
-  Re-assigning a parameter, that has an already assigned non-default value
-  in an ancestor is no longer allowed.
-
-IDE:
-  The IDE is now based on Eclipse 3.5.1 and CDT 6.0.1.
-
-  Palette in NED editor has been enhanced with auto sorting, filtering and
-  recently used items.
-
-  Connection chooser enhancements: When two modules are connected with a
-  connection, the editor tries to guess which gates must be connected.
-  The NED model can be annotated with '@labels' properties to support this
-  functionality. e.g. If a gate is annotated with label 'AAA' then only 
-  gates annotated with the same 'AAA' label will be offered as the other 
-  endpoint.
-
-  New Parameter editor dialog has been added for channel and module
-  parameters.
-
-  Content assist is working now for connection parameters.
-
-  Looped and conditional connections are rendered differently by the IDE.
-
-  NED file validation has been enhanced in the NED Editor.
-
-  Parameters can be grouped now in the ModuleHierarchyView.
-
-  The simulation launcher now checks for errors in the open project(s) 
-  (and warns if any) before starting a simulation.
-
-  Attaching vectors to a Sequence Chart is more intuitive now.
-
-  The usability of the result analysis charts and chart-sheets has been 
-  greatly enhanced. It is now possible to group and explore the collected 
-  results in several different way on the Dataset page.
-
-  Result charts and sequence diagrams can be exported in SVG format. This
-  allows the creation of publication quality charts and diagrams.
-
-  The IDE now automatically discovers and activates all eclipse plugins copied
-  into a project's 'plugins' folder. This mechanism allows the creation and
-  easy distribution of model specific IDE extensions. Check the IDE-DevelopersGuide
-  document for more information.
-
-  Simulation models may add their own 'New...' wizards to the IDE when their
-  projects are opened. The wizards will appear automatically in the 'New...' menu.
-  Wizards are simple template files that are expanded on wizard execution.
-  No Java programming is required. Check the IDE-CustomizationGuide for
-  more information.
-
-Tkenv:
-  Two-way connections between modules are now represented with a single line 
-  (without arrow heads). One way connetions are unaffected.
-
-  Connection layouting has been optimized for connections between long shaped 
-  modules. YOu will see better results if modules are horizontally or vertically
-  overlapping.
-
-  Right clicking on a point covered by several objects brings up a popup menu 
-  containing an item for each object under the mouse. Previously only the 
-  topmost object was accessible, making crowded areas hard to inspect.
-
-Tooling:
-  The bundled MINGW GCC compiler and MSYS binaries have been updated
-  to their latest version (on Windows).
+ - Added a "signal mechanism" to support emitting signals from a model. Signals
+   can be used to decouple production of simulation results (statistics) from
+   recording them, for model change notifications, publish-subscribe style
+   module communication, and several other purposes. See the Manual for more
+   information.
 
 Simulation kernel:
-  Source files are now compatible with GCC 4.4 version
+ - Source files are now compatible with GCC 4.4 version.
 
-  Several performance and memory optimization.
+ - Performance and memory optimizations.
+
+IDE:
+ - Result charts and sequence diagrams can now be exported in SVG format. This
+   allows the creation of publication quality charts and diagrams.
+
+Tooling:
+ - The bundled MinGW GCC compiler and MSYS binaries have been updated
+   to their latest version (on Windows).
 
 Documentation:
-  A very detailed Installation Guide has been created. It provides step by
-  step installation instruction for the most popular operating systems.
+ - A very detailed Installation Guide has been created. It provides step-by-step
+   installation instructions for the most popular operating systems.
 
-  An IDE Developers Guide has been created describing how to enhance the 
-  OMNeT++ IDE itself and extend it with new functionality.
+ - An IDE Developers Guide has been created that describes how to enhance the
+   OMNeT++ IDE and extend it with new functionality.
+
+
+OMNeT++ 4.1 beta 1 (Jan 2010)
+-----------------------------
+
+Simulation kernel:
+ - Added setCapacity()/getCapacity() to cArray. setCapacity() can be used
+   to trim back the internally allocated array after a large number of
+   items have been removed from it.
+
+ - cGate: added getNameSuffix() method.
+
+ - FES performance improvement: cMessageHeap was changed to more efficiently
+   handle the insertion and removal of events scheduled for the current
+   simulation time. Such events are actually quite common due to plain
+   (zero delay, zero datarate) connections between modules.
+
+ - Performance improvement: cMessage::getArrivalTime() was consuming
+   10-20% of CPU time in many configurations. Solution is return
+   a reference (const simtime_t&) instead of a value.
+
+ - Fixed cPacketQueue::remove() incorrect behavior when called
+   with a packet that was not in the queue
+
+ - Dynamic module creation: modules now pick up parameter values from the
+   parent compound module's submodules section in the NED file
+
+ - Fix: parse() and some other cPar methods did not cause handleParameter-
+   Changed() to be called on the owner module
+
+ - Many other bugfixes and improvements; see include/ChangeLog and
+   src/sim/ChangeLog
+
+NED:
+ - Deep parameter assignments: it is now possible to assign parameters of
+   sub-submodules, sub-sub-submodules, etc. from a compound module, using
+   inifile-like wildcards. For example, **.tcp.mss=1024 may be used in a
+   network NED file to configure TCPs inside all hosts in the network.
+   This feature also involves a slight NED DTD change (doc/ned2.dtd).
+
+ - Re-assigning a parameter that has an already assigned non-default value
+   in an ancestor is no longer allowed.
+
+ - Compound modules may now have a custom C++ implementation class,
+   i.e. the @class() property is now understood for compound modules as well
+
+ - Fix: operands of the '%' (integer modulo) NED operator now must be
+   dimensionless (otherwise the result of truncation depends on the choice
+   of the measurement unit)
+
+Msg files:
+ - opp_msgc: fixed namespace support. It is now possible to use types
+   from other namespaces as base class, field type, or field enum.
+   The src/nedxml/ChangeLog file contains some examples for this.
+
+ - opp_msgc: improved cplusplus {{..}} blocks: their contents can be placed
+   into or outside the namespace {...} block in the generated header file,
+   depending on whether the block occurs before or after the namespace
+   declaration in the msg file.
+
+ - opp_msgc: removed support for enum inheritance (which was an undocumented
+   and generally unused feature, with several issues)
+
+ - opp_msgc: the message compiler can now be used to generate reflection info
+   (cClassDescriptor) for existing classes. If you add @existingClass(true)
+   into a message/class/struct, opp_msgc will not generate code for the class,
+   only a descriptor object. (Corresponds to -Xnc command-line option.)
+
+ - opp_msgc: generating descriptors can also be controlled via properties now.
+   @descriptor(false) instructs opp_msgc not to generate a cClassDescriptor,
+   and @descriptor(readonly) instructs it not to generate field setters into
+   the cClassDescriptor. (Corresponds to -Xnd, -Xns command-line options.)
+
+Envir:
+ - When parallel simulation is enabled, host name and process ID will be
+   included by default in the output file names.
+
+ - A related fix: host name and PID are now inserted before default file
+   extension instead of appending them at the end.
+
+IDE:
+ - The IDE is now based on Eclipse 3.5.1 and CDT 6.0.1.
+
+IDE features:
+ - NED editor:
+    o adaptive palette: items with matching @labels properties and those
+      already in the compound module are shown at the top
+    o palette filtering: easily accessible text field to filter palette
+      contents (case insensitive substring search)
+    o when creating connections, connection chooser now offers connections
+      with matching gates, using @labels properties of gates
+    o new parameter editor dialog for channels and modules
+    o completion proposals for connection parameters
+    o visual feedback for multiple and conditional connections
+    o better validation of NED files in the editor
+
+ - Parameter grouping in the Module Hierarchy view
+
+ - The simulation launcher now check for errors (and warns if any) before
+   launching simulations
+
+ - Sequence Chart: attaching vectors to axes made more intuitive
+
+ - Analysis Tool: many chart sheet and chart usability enhancements
+
+IDE extensibility:
+ - Support for easy creation of templated wizards that can contribute to
+   the New OMNeT++ Project, New OMNeT++ Simulation, New Simple Module,
+   New NED File, etc. dialogs. Such wizards are simple text files inside
+   the templates/ folders of OMNeT++ projects. Wizards for creating wizards
+   have also been provided. Templated wizards is one of the killer features
+   of OMNeT++ 4.1. Read the IDE Customization Guide for further info!
+
+ - Automatic discovery and activation of Eclipse plugins dropped into the
+   plugins/ folders of OMNeT++ projects. This allows easy deployment of
+   project-specific IDE extensions. Check the IDE Developers Guide for more
+   information.
+
+Tkenv:
+ - Two-way connections are now rendered as a single line (without arrows)
+
+ - Enhanced connection layouting for modules with a large width or height.
+
+ - Right-clicking on a point covered by several objects now brings up a
+   popup menu that contains a submenu for each object under the mouse.
+   Previously only the topmost object was accessible, making crowded areas
+   hard to inspect.
+
+Tooling:
+ - Source files are now compatible with GCC 4.4 version (fixed missing #includes)
+ - Updated MinGW GCC compiler to 4.4 (on Windows)
+ - Updated MSYS binaries (on Windows)
 
 
 OMNeT++ 4.0 (March 2009)
