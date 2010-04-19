@@ -1,7 +1,7 @@
 #--------------------------------------------------------------------
 # Adjust the following paths:
 #
-JAVA_HOME=/usr/lib/jvm/java-6-sun
+#JAVA_HOME=/usr/lib/jvm/java-6-sun
 #SWIG="$(TOOLS_DIR)\swigwin-1.3.31\swig.exe"
 #PERL=perl
 
@@ -15,8 +15,13 @@ JAVA_HOME=/usr/lib/jvm/java-6-sun
 #!error SWIG not found as $(SWIG) -- please edit makefrag.vc
 #!endif
 
-INCLUDE_PATH+= -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
-LIBS+= -L$(JAVA_HOME)/jre/lib/i386/client -Wl,-rpath,$(JAVA_HOME)/jre/lib/i386/client -ljvm
+# use this to manually set the compile and linker flags for JDK
+#INCLUDE_PATH+= -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
+#LIBS+= -L$(JAVA_HOME)/jre/lib/i386/client -Wl,-rpath,$(JAVA_HOME)/jre/lib/i386/client -ljvm
+
+# using the JDK autodetected by the configure script
+INCLUDE_PATH += $(JAVA_CFLAGS)
+LIBS += $(JAVA_LIBS)
 JAVAC=javac
 JAR=jar
 
@@ -30,6 +35,7 @@ GENERATED_FILES = $(OUTDIR)/simkernel_wrap.cc  $(OUTDIR)/SimkernelJNI_registerNa
 OBJS+= $(OUTDIR)/simkernel_wrap.o $(OUTDIR)/SimkernelJNI_registerNatives.o
 
 DIST_SRC_FILES = \
+    ChangeLog \
     commondefs.i \
     PlainMemoryManagement.i \
     Reflection.i \

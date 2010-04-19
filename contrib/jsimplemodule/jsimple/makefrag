@@ -1,0 +1,16 @@
+# adding JDK includes and libraries detected by the configure script
+INCLUDE_PATH += $(JAVA_CFLAGS)
+LIBS += $(JAVA_LIBS)
+
+# if JDK was not correctly detected, (i.e. you get jni.h not found errors during compile)
+# use one of the following to specify the location of your JDK manually.
+# In this case you must specify JAVA_HOME before compiling the project
+
+# Windows:
+#INCLUDE_PATH += -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32
+#LIBS += -L$(JAVA_HOME)/lib -ljvm
+
+# Linux:
+#INCLUDE_PATH += -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
+#LIBS += -L$(JAVA_HOME)/jre/lib/i386/client -Wl,-rpath,$(JAVA_HOME)/jre/lib/i386/client -ljvm
+

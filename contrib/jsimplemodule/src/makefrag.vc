@@ -32,6 +32,7 @@ GENERATED_FILES = $(OUTDIR)\simkernel_wrap.cc  $(OUTDIR)\SimkernelJNI_registerNa
 EXTRA_OBJS =      $(OUTDIR)\simkernel_wrap.obj $(OUTDIR)\SimkernelJNI_registerNatives.obj
 
 DIST_SRC_FILES = \
+    ChangeLog \
     commondefs.i \
     PlainMemoryManagement.i \
     Reflection.i \
