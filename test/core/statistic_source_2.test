@@ -45,7 +45,7 @@ Test.node (Node):
                 VectorRecorder ==> src2:vector
                 HistogramRecorder ==> src2:histogram
         WarmupPeriodFilter
-            2 * (fabs(<signalvalue> + 1)) (ExpressionFilter)
+            2 * fabs(<signalvalue> + 1) (ExpressionFilter)
                 VectorRecorder ==> src3:vector
                 HistogramRecorder ==> src3:histogram
         WarmupPeriodFilter

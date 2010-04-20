@@ -8,7 +8,7 @@ import testlib.Dump;
 module Base
 {
     parameters:
-        double param @unit(s) = 1s;
+        double param @unit(s) = default(1s);
     gates:
         output out @color(blue);
         inout vec[2] @color(red);

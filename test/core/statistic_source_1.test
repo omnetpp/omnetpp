@@ -40,7 +40,7 @@ Test.node (Node):
         <signalvalue> + 1 (ExpressionFilter)
             VectorRecorder ==> src2:vector
             HistogramRecorder ==> src2:histogram
-        2 * (fabs(<signalvalue> + 1)) (ExpressionFilter)
+        2 * fabs(<signalvalue> + 1) (ExpressionFilter)
             VectorRecorder ==> src3:vector
             HistogramRecorder ==> src3:histogram
         MeanFilter
