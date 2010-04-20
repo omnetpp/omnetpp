@@ -31,8 +31,9 @@
       <perspectiveExtension
             targetID="org.eclipse.ui.resourcePerspective">
          <view
-               relationship="bottom"
-               id="org.omnetpp.sequencechart.editors.SequenceChartView">
+               id="org.omnetpp.sequencechart.editors.SequenceChartView"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
          </view>
       </perspectiveExtension>
    </extension>

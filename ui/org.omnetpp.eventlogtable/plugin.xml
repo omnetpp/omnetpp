@@ -30,8 +30,9 @@
       <perspectiveExtension
             targetID="org.eclipse.ui.resourcePerspective">
          <view
-               relationship="bottom"
-               id="org.omnetpp.eventlogtable.editors.EventLogTableView">
+               id="org.omnetpp.eventlogtable.editors.EventLogTableView"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
          </view>
       </perspectiveExtension>
    </extension>

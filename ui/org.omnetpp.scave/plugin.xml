@@ -134,5 +134,22 @@
            pattern="*.vci"
            selected="false"/>
   </extension>
+  <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+     <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="org.omnetpp.scave.VectorBrowserView"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+         <view
+               id="org.omnetpp.scave.DatasetView"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+     </perspectiveExtension>
+  </extension>
 
 </plugin>
