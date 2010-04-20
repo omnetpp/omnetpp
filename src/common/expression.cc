@@ -438,6 +438,7 @@ std::string Expression::str() const
                      throw opp_runtime_error(eESTKUFLOW);
                  strstk[argpos] = e.fu->str(strstk+argpos, numargs);
                  tos = argpos;
+                 pristk[tos] = 0;
                  break;
                  }
                case Elem::OP:
