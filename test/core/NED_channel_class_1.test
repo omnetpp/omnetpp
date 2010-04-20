@@ -38,15 +38,15 @@ class ChannelWithoutNamespace: public cIdealChannel
 {
   public:
     ChannelWithoutNamespace() { }
-    virtual void process(cMessage *msg, simtime_t t, result_t& result);
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result);
 };
 
 Define_Channel(ChannelWithoutNamespace);
 
-void ChannelWithoutNamespace::process(cMessage *msg, simtime_t t, result_t& result)
+void ChannelWithoutNamespace::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
     ev << "ChannelWithoutNamespace\n";
-    cIdealChannel::process(msg, t, result);
+    cIdealChannel::processMessage(msg, t, result);
 }
 
 namespace @TESTNAME@ {

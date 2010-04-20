@@ -40,11 +40,11 @@ class TestChannel: public cIdealChannel
         ev << "- " << getFullPath() << " initialize\n";
     }
 
-    virtual void process(cMessage *msg, simtime_t t, result_t& result) {
+    virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) {
         //FIXME this fails: ASSERT(simulation.getContext() == this);
         ASSERT(simulation.getContextType() == CTX_EVENT);
         ev << "- " << getFullPath() << " process: \"" << msg->getName() << "\"\n";
-        cIdealChannel::process(msg, t, result);
+        cIdealChannel::processMessage(msg, t, result);
     }
 
     virtual void finish() {
