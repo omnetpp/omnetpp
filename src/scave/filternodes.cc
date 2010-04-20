@@ -928,16 +928,29 @@ void TimeAverageNode::process()
     {
         Datum d;
         in()->read(&d,1);
-        switch (interpolationmode) {
-            case SAMPLE_HOLD: integral += prevy * (d.x-prevx); break;
-            case BACKWARD_SAMPLE_HOLD: integral += d.y * (d.x-prevx); break;
-            case LINEAR: integral += (prevy+d.y)/2 * (d.x-prevx); break;
-            default: Assert(false);
+
+        if (!isPrevValid)
+        {
+            prevx = d.x;
+            prevy = d.y;
+            isPrevValid = true;
         }
-        prevx = d.x;
-        prevy = d.y;
-        d.y = integral / d.x;
-        out()->write(&d,1);
+        else
+        {
+            switch (interpolationmode) {
+                case SAMPLE_HOLD: integral += prevy * (d.x-prevx); break;
+                case BACKWARD_SAMPLE_HOLD: integral += d.y * (d.x-prevx); break;
+                case LINEAR: integral += (prevy+d.y)/2 * (d.x-prevx); break;
+                default: Assert(false);
+            }
+            prevx = d.x;
+            prevy = d.y;
+            if (d.x != startx)  // suppress 0/0 = NaN values
+            {
+                d.y = integral / (d.x - startx);
+                out()->write(&d,1);
+            }
+        }
     }
 }
 

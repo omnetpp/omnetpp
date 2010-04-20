@@ -75,15 +75,19 @@ void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cOb
 
 bool TimeAverageFilter::process(simtime_t& t, double& value)
 {
-    if (startTime < SIMTIME_ZERO) // uninitialized
+    bool isFirstValue = startTime < SIMTIME_ZERO;
+    if (isFirstValue)
         startTime = t;
     else
-        weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
+        weightedSum += lastValue * SIMTIME_DBL(t - lastTime);  // always forward-sample-hold
     lastTime = t;
     lastValue = value;
 
+    if (isFirstValue || t==startTime)
+        return false;  // suppress initial 0/0 = NaNs
+
     double interval = SIMTIME_DBL(t - startTime);
-    value = weightedSum / interval;  // if interval==0, result will be 0/0=NaN
+    value = weightedSum / interval;
     return true;
 }
 

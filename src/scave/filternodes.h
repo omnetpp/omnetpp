@@ -470,10 +470,12 @@ class SCAVE_API TimeAverageNode : public FilterNode
 {
     protected:
         InterpolationMode interpolationmode;
+        bool isPrevValid; // false before collecting the 1st value
         double integral;
+        double startx;
         double prevx, prevy;
     public:
-        TimeAverageNode(InterpolationMode mode)  {interpolationmode = mode; integral = prevx = prevy = 0;}
+        TimeAverageNode(InterpolationMode mode)  {interpolationmode = mode; integral = startx = prevx = prevy = 0; isPrevValid = false;}
         virtual ~TimeAverageNode() {}
 
         virtual bool isReady() const;
