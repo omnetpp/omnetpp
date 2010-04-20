@@ -43,7 +43,7 @@ fclose(f3);
 92	 #= sum
 1330	 #= square sum
 1	 #= transformed
-2	 #= range_mode
+0	 #= range_mode
 1	 #= range_ext_factor
 10 20	 #= range
 1 1	 #= cell_under, cell_over
@@ -72,7 +72,7 @@ fclose(f3);
 92	 #= sum
 1330	 #= square sum
 1	 #= transformed
-2	 #= range_mode
+0	 #= range_mode
 1	 #= range_ext_factor
 10 20	 #= range
 1 1	 #= cell_under, cell_over
