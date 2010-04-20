@@ -1,10 +1,13 @@
 %description:
+WARNING: This test needs to be revised or removed
+
 Check that rng seeding works properly.
 IMPORTANT: FOR (b),(c),... VERSIONS OF THIS TEST, take the (a),
 change the runs-to-execute parameter -- result should be the same,
 only in different order.
 
 %activity:
+ev << "#UNRESOLVED: test is not adopted to 4.x";
 for (int i=0; i<ev.getNumRNGs(); i++)
 {
     // note: the intRand() calls cannot be put into the ev<< statement directly, because
@@ -24,22 +27,23 @@ num-rngs = 3
 
 # Runs occurring more than once should get the same seeds every time.
 # Autoseeded runs should get the same seeds as in the autoseeding test cases.
-cmdenv-runs-to-execute = 2,1,4,3,1,2,3,4
 
-[Run 1]
+#cmdenv-runs-to-execute = 2,1,4,3,1,2,3,4
+
+[Config c1]
 seed-0-mt = 793
 seed-1-mt = 717
 seed-2-mt = 745
 
-[Run 2]
+[Config c2]
 # autoseeded
 
-[Run 3]
+[Config c3]
 seed-0-mt = 434
 seed-1-mt = 467
 seed-2-mt = 497
 
-[Run 4]
+[Config c4]
 # autoseeded
 
 %contains-regex: stdout
