@@ -440,10 +440,11 @@ class SCAVE_API IntegrateNode : public FilterNode
 {
     protected:
         InterpolationMode interpolationmode;
+        bool isPrevValid; // false before collecting the 1st value
         double integral;
         double prevx, prevy;
     public:
-        IntegrateNode(InterpolationMode mode)  {interpolationmode = mode; integral = prevx = prevy = 0;}
+        IntegrateNode(InterpolationMode mode)  {interpolationmode = mode; integral = prevx = prevy = 0; isPrevValid = false;}
         virtual ~IntegrateNode() {}
 
         virtual bool isReady() const;

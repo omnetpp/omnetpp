@@ -1,5 +1,12 @@
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
+2010-04-20  Andras Varga
+
+	* fixed "timeavg" filter not to assume an initial (0,0) data point, 
+	and to suppress potential initial 0/0 = NaN (or NaNs) 
+
+	* fixed "integrate" filter not to assume an initial (0,0) data point
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2009-09-04  Tamas Borbely
