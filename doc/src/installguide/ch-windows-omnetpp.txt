@@ -45,7 +45,7 @@ it in Windows Explorer. It will bring up a console with the MSYS 'bash' shell,
 where the path is already set to include the `@omnetpp@-@version@/bin` directory.
 
 NOTE: If you want to start simulations from outside the shell as well
-(for example from Exlorer), you need to add @OMNETPP@'s `bin` directory
+(for example from Explorer), you need to add @OMNETPP@'s `bin` directory
 to the path; instructions are provided later.
 
 First, check the `configure.user` file to make sure it contains the settings

@@ -31,8 +31,8 @@ MC ModuleCreatedEntry // creating a module
    c string moduleClassName     // C++ class name of the module
    t string nedTypeName         // fully qualified NED type name
    pid int parentModuleId  -1   // id of the parent module
-   n string fullName            // full dotted hierarchic module name
-   cm bool compoundModule false // simple or compound module
+   n string fullName            // full dotted hierarchical module name
+   cm bool compoundModule false // whether module is a simple or compound module
 }
 
 MD ModuleDeletedEntry // deleting a module
@@ -52,7 +52,7 @@ GC GateCreatedEntry     // gate created
    g int gateId         // id of the new gate
    n string name        // gate name
    i int index -1       // gate index if vector, -1 otherwise
-   o bool isOutput      // input or output gate
+   o bool isOutput      // whether the gate is input or output
 }
 
 GD GateDeletedEntry     // gate deleted
@@ -94,14 +94,14 @@ E EventEntry // an event that is processing of a message
    # eventnumber_t eventNumber          // unique event number
    t simtime_t simulationTime           // simulation time when the event occurred
    m int moduleId                       // id of the processing module
-   ce eventnumber_t causeEventNumber -1 // event number from which the message being processed was sent or -1 if the message was sent from initialize
-   msg long messageId                   // life time unique id of the message being processed
+   ce eventnumber_t causeEventNumber -1 // event number from which the message being processed was sent, or -1 if the message was sent from initialize
+   msg long messageId                   // lifetime-unique id of the message being processed
 }
 
 CE CancelEventEntry // canceling an event caused by self message
 {
    id long messageId                       // id of the message being removed from the FES
-   pe eventnumber_t previousEventNumber -1 // event number from which the message being cancelled was sent or -1 if the message was sent from initialize
+   pe eventnumber_t previousEventNumber -1 // event number from which the message being cancelled was sent, or -1 if the message was sent from initialize
 }
 
 BS BeginSendEntry // beginning to send a message
@@ -113,11 +113,11 @@ BS BeginSendEntry // beginning to send a message
    etid long messageEncapsulationTreeId -1 // id of the message inherited by both dup and encapsulation
    c string messageClassName               // C++ class name of the message
    n string messageFullName                // message name
-   pe eventnumber_t previousEventNumber -1 // event number from which the message being sent was processed or -1 if the message has not yet been processed before
+   pe eventnumber_t previousEventNumber -1 // event number from which the message being sent was processed, or -1 if the message has not yet been processed before
    k short messageKind     0               // message kind
    p short messagePriority 0               // message priority
    l int64 messageLength   0               // message length in bits
-   er bool hasBitError   false             // true indicates the message has bit errors
+   er bool hasBitError   false             // true indicates that the message has bit errors
    d string detail       NULL              // detailed information of message content when recording message data is turned on
    //XXX and many other fields, including message contents
 }
@@ -148,6 +148,6 @@ SH SendHopEntry // sending a message through a connection identified by its sour
 DM DeleteMessageEntry // deleting a message
 {
    id int messageId                        // id of the message being deleted
-   pe eventnumber_t previousEventNumber -1 // event number from which the message being deleted was sent or -1 if the message was sent from initialize
+   pe eventnumber_t previousEventNumber -1 // event number from which the message being deleted was sent, or -1 if the message was sent from initialize
 }
 

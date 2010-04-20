@@ -335,12 +335,12 @@ be referred to during result analysis.
 \end{warning}
 
 Module parameters can also be saved, but this has to be
-requested by the user, by configuring \ttt{save-as-scalar=true} for the
+requested by the user, by configuring \ttt{param-record-as-scalar=true} for the
 parameters in question. The configuration key is a pattern that
-identifies the parameter, plus \ttt{.save-as-scalar}. An example:
+identifies the parameter, plus \ttt{.param-record-as-scalar}. An example:
 
 \begin{inifile}
-**.host[*].networkLoad.save-as-scalar = true
+**.host[*].networkLoad.param-record-as-scalar = true
 \end{inifile}
 
 This looks simple enough, however there are three pitfalls:
@@ -359,7 +359,7 @@ each host.
 
 \begin{inifile}
 **.host[*].startTime = 3
-**.host[*].startTime.save-as-scalar = true  # saves "3" once for each host
+**.host[*].startTime.param-record-as-scalar = true  # saves "3" once for each host
 \end{inifile}
 
 Third, recording a random-valued volatile parameter will just save a
@@ -368,7 +368,7 @@ the simulation kernel will also issue a warning if this happens.
 
 \begin{inifile}
 **.interarrivalTime = exponential(1s)
-**.interarrivalTime.save-as-scalar = true  # wrong: saves random values!
+**.interarrivalTime.param-record-as-scalar = true  # wrong: saves random values!
 \end{inifile}
 
 These pitfalls are quite common in practice, so it is usually better
@@ -381,7 +381,7 @@ That is, one can rewrite the above example as
 
 and refer to the \ttt{\$mean} iteration variable instead of the
 interarrivalTime module parameter(s) during result analysis.
-\ttt{save-as-scalar=true} is not needed, because iteration variables are
+\ttt{param-record-as-scalar=true} is not needed, because iteration variables are
 automatically saved into the result files.
 
 
@@ -711,7 +711,7 @@ The program uses a command line interface, though several graphical user
 interfaces are available.
 
 Several {\opp}-related packages such as SimProcTC and Syntony already
-use R for data analysis and plotting. In the future, {\opp} will 
+use R for data analysis and plotting. In the future, {\opp} will
 be extended with features that further facilitate using it with R.
 
 
