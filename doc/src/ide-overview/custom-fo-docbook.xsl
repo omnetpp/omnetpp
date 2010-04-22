@@ -25,12 +25,35 @@
 <!-- ***************************************************  -->
 
 <!-- If true (non-zero), admonitions are presented in an alternate style that uses a graphic. Default graphics are provided in the distribution. -->
-<xsl:param name="admon.graphics" select="1"/>
+<!-- If true (non-zero), admonitions are presented in an alternate style that uses a graphic. Default graphics are provided in the distribution. -->
+<xsl:param name="admon.graphics" select="1"/> 
+<xsl:param name="admon.textlabel" select="0"/> 
 
 <!-- How do you want admonitions styled? Set the font-size, weight, etc. to the style required. -->
 <xsl:attribute-set name="admonition.properties">
- <xsl:attribute name="font-size">10pt</xsl:attribute>
+ <xsl:attribute name="font-size">9pt</xsl:attribute>
 </xsl:attribute-set>
+
+<xsl:attribute-set name="graphical.admonition.properties">
+  <xsl:attribute name="border-style">solid</xsl:attribute>
+  <xsl:attribute name="border-width">1pt</xsl:attribute>
+  <xsl:attribute name="border-color">#C0C0E0</xsl:attribute>
+  <xsl:attribute name="background-color">#D9D9FF</xsl:attribute>
+  <xsl:attribute name="padding-left">12pt</xsl:attribute>
+  <xsl:attribute name="padding-right">12pt</xsl:attribute>
+  <xsl:attribute name="padding-top">6pt</xsl:attribute>
+  <xsl:attribute name="padding-bottom">6pt</xsl:attribute>
+  <!--
+  <xsl:attribute name="margin-left">0pt</xsl:attribute>
+  <xsl:attribute name="margin-right">0pt</xsl:attribute>
+  <xsl:attribute name="margin-top">6pt</xsl:attribute>
+  <xsl:attribute name="margin-bottom">6pt</xsl:attribute>
+  -->
+</xsl:attribute-set>
+
+<xsl:template match="*" mode="admon.graphic.width">
+  <xsl:text>24pt</xsl:text>
+</xsl:template>
 
 <!-- ***************  Automatic labelling  *********************  -->
 <!-- ***************************************************  -->
