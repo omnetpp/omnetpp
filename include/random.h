@@ -40,22 +40,22 @@ inline cRNG *__contextModuleRNG(int k) {
 //@{
 
 /**
- * Produces random integer in range [0,r) using generator 0.
+ * Produces a random integer in the range [0,r) using generator 0.
  */
 inline long intrand(long r)  {return __contextModuleRNG(0)->intRand(r);}
 
 /**
- * Produces random double in range [0,1) using generator 0.
+ * Produces a random double in the range [0,1) using generator 0.
  */
 inline double dblrand()  {return __contextModuleRNG(0)->doubleRand();}
 
 /**
- * Produces random integer in range [0,r) using generator k.
+ * Produces a random integer in the range [0,r) using generator k.
  */
 inline long genk_intrand(int k,long r)  {return __contextModuleRNG(k)->intRand(r);}
 
 /**
- * Produces random double in range [0,1) using generator k.
+ * Produces a random double in the range [0,1) using generator k.
  */
 inline double genk_dblrand(int k)  {return __contextModuleRNG(k)->doubleRand();}
 //@}

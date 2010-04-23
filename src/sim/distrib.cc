@@ -48,17 +48,21 @@ double uniform(double a, double b, int rng)
 
 double exponential(double p, int rng)
 {
-    return -p * log(genk_dblrand(rng));
+    return -p * log(1.0 - genk_dblrand(rng));
 }
 
 double unit_normal(int rng)
 {
-    return sqrt(-2.0*log(genk_dblrand(rng)))*cos(PI*2*genk_dblrand(rng));
+    double U = 1.0 - genk_dblrand(rng);
+    double V = 1.0 - genk_dblrand(rng);
+    return sqrt(-2.0*log(U)) * cos(PI*2*V);
 }
 
 double normal(double m, double d, int rng)
 {
-    return m + d *  sqrt(-2.0*log(genk_dblrand(rng)))*cos(PI*2*genk_dblrand(rng));
+    double U = 1.0 - genk_dblrand(rng);
+    double V = 1.0 - genk_dblrand(rng);
+    return m + d * sqrt(-2.0*log(U)) * cos(PI*2*V);
 }
 
 double truncnormal(double m, double d, int rng)
@@ -354,7 +358,7 @@ int geometric(double p, int rng)
         throw cRuntimeError("geometric(): parameter p=%g out of range [0,1)", p);
 
     double a = 1.0 / (log(1.0 - p));
-    return (int)floor(a * log(genk_dblrand(rng)));
+    return (int)floor(a * log(1.0 - genk_dblrand(rng)));
 }
 
 

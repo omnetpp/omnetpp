@@ -1,3 +1,11 @@
+2010-04-23  Andras Varga
+
+	* fix of bug #43: exponential(), normal(), truncnormal() and geometric()
+	could  produce +INF, due to log(dblrand()) in their code where dblrand() 
+	can produce zero. Solution: use 1.0-dblrand() instead, i.e. (0,1] instead
+	of [0,1). Side effect: fingerprint change for all simulations that use 
+	those distributions as input.
+
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
 2010-03-29  Andras Varga
