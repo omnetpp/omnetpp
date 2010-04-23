@@ -53,16 +53,16 @@
           definition, configuration templates (i.e. debug / release), error parsers, and debugger settings.
         </listitem>
         <listitem>
-          [[.buildspec]] : Contains all settings specific to &Omnetpp;.
+          [[.oppbuildspec]] : Contains all settings specific to &Omnetpp;.
           This file contains the settings passed to the makefile generator. You can configure all &Omnetpp;-specific
           settings in the ``Project Properties'' dialog on the ``&Omnetpp;/Makemakepage''.
-          Everything you set on this page will be stored in the [[.buildspec]] file.
+          Everything you set on this page will be stored in the [[.oppbuildspec]] file.
         </listitem>
       </itemizedlist>
       <note>
         If you are creating a project where no C++ support is needed (i.e. you are using an existing
-        precompiled simulation library and you edit only Ned and Ini files), the [[.cproject]] and
-        [[.buildspec]] files will not be present in your project.
+        precompiled simulation library and you edit only NED and Ini files), the [[.cproject]] and
+        [[.oppbuildspec]] files will not be present in your project.
       </note>
     </para>
   </sect1>
@@ -75,8 +75,8 @@
       <itemizedlist>
         <listitem>
           On Windows: The &Omnetpp;
-          distribution comes with a preconfigured MINGW compiler toolchain. You do not have to install or
-          download anything. The IDE should be able to use the MINGW compiler without any problem.
+          distribution comes with a preconfigured MinGW compiler toolchain. You do not have to install or
+          download anything. The IDE should be able to use the MinGW compiler without any problem.
         </listitem>
         <listitem>
           On Linux: The default GCC toolchain can be used. &Omnetpp;
@@ -123,7 +123,7 @@
     <title>Configuring the Project</title>
     <para>
       The &Omnetpp;
-      IDE adds several extensions to the standard CDT to make the building of simulations much easier. The
+      IDE adds several extensions to the standard CDT to make the building of simulations easier. The
       project properties dialog is extended with a special page - ``&Omnetpp;
       | Makemake'' - where you can configure the options used for automatically generating the makefile(s). A
       separate makefile will be created according to the settings you specify in the dialog. On the ``C/C++

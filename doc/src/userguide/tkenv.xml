@@ -71,7 +71,7 @@
         [[-c configname]] : Selects a configuration for execution.
       </listitem>
       <listitem>
-        [[-r run-number]] : It has the same effect as (but takes priority over) the ``tkenv-default-run='' 
+        [[-r run-number]] : It has the same effect as (but takes priority over) the ``tkenv-default-run=''
         INI file configuration.
       </listitem>
     </itemizedlist>
@@ -142,7 +142,7 @@
         go directly to the timeline configuration dialog).
       </listitem>
       <listitem>
-        ``Object tree'': Displays all inspectable objects currently present in the memory. You may double click on
+        ``Object tree'': Displays all inspectable objects currently present in the memory. You may double-click on
         nodes to further inspect the given object in a separate window.
       </listitem>
       <listitem>

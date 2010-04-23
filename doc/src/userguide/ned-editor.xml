@@ -63,7 +63,7 @@
         directory for your NED package hierarchy. The IDE will not use any NED files outside the specified NED
         Source Folders and those files will be opened in a standard text editor. To specify the directory
         where the NED files will be stored, right-click on the project in the ``Project Explorer'' and choose
-        ``Properties''. Select the ``&Omnetpp; | Ned
+        ``Properties''. Select the ``&Omnetpp; | NED
         Source Folders'' page and click on the folders where you store your NED files. The default value is the
         project root.
       </para>
@@ -72,7 +72,7 @@
   </sect1>
   <sect1>
     <title>Using the NED Editor</title>
-    <para> If you want to open an Ned file, just double-click its icon in the ``Project Explorer''. If the NED file
+    <para> If you want to open an NED file, just double-click its icon in the ``Project Explorer''. If the NED file
       can be parsed without an error, the graphical representation of the file will be opened; otherwise,
       the text view will be opened and the text will be annotated
       with error markers.</para>
@@ -94,10 +94,10 @@
       <title>Editing in graphical mode</title>
       <para> The graphical editor displays the visible elements of the loaded NED file. Simple modules,
         compound modules and networks are represented by figures or icons. Each NED file can contain more than
-        one module or network. In that case, the corresponding figures will appear in the same order as they
+        one module or network. If it does, the corresponding figures will appear in the same order as they
         are found in the NED file.</para>
       <tip>
-        Place only a single module or network into an Ned file and name the file
+        Place only a single module or network into an NED file, and name the file
         according to the module name.
       </tip>
       <para> Simple modules and submodules are represented as icons while compound modules and networks are
@@ -232,11 +232,11 @@
         <para> Double-clicking a submodule will open the corresponding module type in a NED editor. Selecting
           an element in the graphical editor and then switching to text mode will place the cursor near the
           previously selected element in the text editor.</para>
-        <para> Navigating inside a longer NED file is much easier if you open the ``Outline View'' to see the
-          internal structure of the file. Selecting an element in the outline will select the same element in
+        <para> Navigating inside a longer NED file is easier if you open the ``Outline View'' to see the
+          structure of the file. Selecting an element in the outline will select the same element in
           the graphical editor.</para>
         <para> If you want to see the selected element in a different view, select the element and right-click
-          on it. Choose ``Show In'' from the context menu and select the desired view.</para>
+          on it. Choose ``Show In'' from the context menu, and select the desired view.</para>
       </sect3>
       <sect3>
         <title>Opening a NED type</title>
@@ -245,7 +245,7 @@
           Type'' dialog by pressing
           <keycap>Ctrl+SHIFT+N</keycap>
           . Type the name, or search with wildcards. The requested type will be opened in an editor. This
-          feature is not tied to the graphical editor. The Open NED Type dialog is available from anywhere in
+          feature is not tied to the graphical editor: the Open NED Type dialog is available from anywhere in
           the IDE.
         </para>
       </sect3>

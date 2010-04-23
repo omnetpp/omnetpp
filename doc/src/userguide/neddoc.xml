@@ -52,7 +52,7 @@
     <para>
       The result is a number of cross-linked HTML pages that can be opened by double-clicking the generated <filename>index.html</filename>.
       On the left side, you will see a navigation tree, while on the right side there will be an overview of the project. If you
-      have not yet added a @titlepage directive into your NED comments, then the overview page will display its default content.
+      have not yet added a @titlepage directive into your NED comments, then the overview page will display a default content.
     </para>
     <picture file="pictures/NEDDOC-Documentation.png">
       The resulting NED documentation

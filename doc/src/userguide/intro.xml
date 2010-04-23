@@ -41,8 +41,8 @@
     <para>The ``Properties View'' contains information on the particular object that is selected in the
       editor area, or one of the other views that serve as a selection provider.
       The ``Problems View'' references code lines where Eclipse encountered problems.</para>
-    <para>Several &Omnetpp;
-      specific views exist that can be used during development. We will discuss how you can use them
+    <para>Several &Omnetpp;-specific
+      views exist that can be used during development. We will discuss how you can use them
       effectively in a later chapter. You can open any View by selecting ``Window | Show View''
       from the menu.
     </para>
@@ -52,7 +52,7 @@
     <para>
       A workspace is basically a directory where all your projects are located. You may create and use several
       workspaces and switch between them as needed. During the first run, the &Omnetpp;
-      IDE offers to open the samples directory as the workspace so you will be able to experiment with the
+      IDE offers to open the samples directory as the workspace, so you will be able to experiment with the
       available examples immediately. Once you start working on your own projects, we recommend that you create
       your own workspace by selecting ``File | Switch Workspace | Other'' . You can switch between workspaces,
       as necessary. Please be aware that the &Omnetpp;
