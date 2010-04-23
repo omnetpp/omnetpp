@@ -3,19 +3,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Visual Changelog</title>
   </head>
-  <style> 
+  <style>
     td {border-top: solid thin black;}
     tr {vertical-align: top;}
-  </style> 
+  </style>
 <body>
 
 <h1>What's New in the IDE</h1>
 
 <h2>NED Editor</h2>
 
-<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup> 
-<tbody> 
- 
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
 <tr><td><p align="right"><b>New Eclipse Platform
 </b></p></td><td><p>The IDE is now based on Eclipse 3.5.2 and CDT 6.0.2.</p>
 <img src="pictures/41-version.png" border="0">
@@ -27,22 +27,22 @@
 </td></tr>
 
 <tr><td><p align="right"><b>Adaptive Palette Ordering
-</b></p></td><td><p>Submodule types that are related to the currently 
+</b></p></td><td><p>Submodule types that are related to the currently
 used compound module and its submodules are displayed first in the NED editor palette.
-Submodules that are already used in the compound module are placed at the top. 
-The <b>@labels</b> properties on the gates are also used to decide which other 
+Submodules that are already used in the compound module are placed at the top.
+The <b>@labels</b> properties on the gates are also used to decide which other
 submodules can be connected to the current ones.</p>
 <img src="pictures/41-ned-palette-adaptive.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Connection Chooser Enhancements
-</b></p></td><td><p>When two modules are connected with a connection, the editor 
-tries to guess which gates must be connected based on <b>@labels</b> properties.</p>
+</b></p></td><td><p>When two modules are connected with a connection, the editor
+tries to guess which gates must be connected, based on <b>@labels</b> gate properties.</p>
 <img src="pictures/41-ned-labels1.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Connection Rendering Enhancements
-</b></p></td><td><p>Looped and conditional connections are rendered differently by the IDE.</p>
+</b></p></td><td><p>Multiple and conditional connections can now be visually distinguished in the graphical editor.</p>
 <img src="pictures/41-ned-connection-loop.png"/>
 </td></tr>
 
@@ -53,31 +53,31 @@ parameters. It can be accessed using the context menu of the submodule or connec
 </td></tr>
 
 <tr><td><p align="right"><b>Content Assist for Connections
-</b></p></td><td><p>Content assist is working now for connection parameters (delay, datarate etc.).</p>
+</b></p></td><td><p>Content assist is now supported for connection parameters (delay, datarate etc.).</p>
 <img src="pictures/41-ned-channel-assist.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Content Assist for Icons
-</b></p></td><td><p>Content assist is available for icons by pressing Ctrl-Space in a display string.</p>
+</b></p></td><td><p>Content assist is available for icons by pressing Ctrl+Space inside a display string.</p>
 <img src="pictures/41-ned-icon-assist.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Content Assist for Colors
-</b></p></td><td><p>Content assist is available for colors by pressing Ctrl-Space in a display string.</p>
+</b></p></td><td><p>Content assist is available for colors by pressing Ctrl+Space inside a display string.</p>
 <img src="pictures/41-ned-color-assist.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Content Assist for Statistics
-</b></p></td><td><p>Content assist is available for statistics by pressing 
-Ctrl-Space in a <b>@statistic</b> property definition.</p>
+</b></p></td><td><p>Content assist is available for statistics by pressing
+Ctrl+Space inside a <b>@statistic</b> property definition.</p>
 <img src="pictures/41-ned-statistic-assist.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Support for @dynamic Property
-</b></p></td><td><p>Modules can be tagged with the <b>@dynamic</b> property. Dynamic modules are handled 
-exactly the same way as normal modules (i.e. content assist, validation and parameter lookup is working correctly), 
+</b></p></td><td><p>Modules can be tagged with the <b>@dynamic</b> property. Dynamic modules are handled
+exactly the same way as normal modules (i.e. content assist, validation and parameter lookup is working correctly),
 except that the simulation kernel does not instantiate them automatically during network setup. Dynamic modules
-are displayed semi-transparently in the NED editor.</p>
+are displayed as semi-transparent in the NED editor.</p>
 <img src="pictures/41-ned-dynamic-module.png"/>
 </td></tr>
 
@@ -85,23 +85,23 @@ are displayed semi-transparently in the NED editor.</p>
 
 <h2>INI Editor</h2>
 
-<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup> 
-<tbody> 
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
 
-<tr><td><p align="right"><b>Enhanced Content Assist in INI Files
-</b></p></td><td><p>Content assist is now available for INI parameters and configuration options.
-It can display possible NED functions.</p>
+<tr><td><p align="right"><b>Enhanced Content Assist in Ini Files
+</b></p></td><td><p>Content assist is now available for ini parameters and configuration options.
+For parameter values, content assist also offers the list of NED functions.</p>
 <img src="pictures/41-ini-content-assist.png"/>
 </td></tr>
 
-<tr><td><p align="right"><b>Channel Parameters in INI Files
-</b></p></td><td><p>Channel parameters can be set in INI file too using 
-the <b>**.channel.parname =</b> syntax</p>
+<tr><td><p align="right"><b>Channel Parameters in Ini Files
+</b></p></td><td><p>Channel parameters can be set in ini files, too, using
+the <b>**.channel.parametername =</b> syntax.</p>
 <img src="pictures/41-ini-channel-assist.png"/>
 </td></tr>
-  
-<tr><td><p align="right"><b>Statistics Configuration from INI File
-</b></p></td><td><p>Statistics can be configured in an INI file. Content assist is available for statistics related keys.</p>
+
+<tr><td><p align="right"><b>Statistics Configuration from Ini File
+</b></p></td><td><p>Statistics can be configured in an ini file. Content assist is available for statistics-related options.</p>
 <img src="pictures/41-ini-statistic-assist.png"/>
 </td></tr>
 
@@ -109,12 +109,12 @@ the <b>**.channel.parname =</b> syntax</p>
 
 <h2>Module Hierarchy view</h2>
 
-<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup> 
-<tbody> 
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
 
 <tr><td><p align="right"><b>Statistics and Signals in Module Hierarchy
-</b></p></td><td><p>In addition to parameters Module Hierarchy view 
-now displays the @statistic and @signal properties of the modules.</p>
+</b></p></td><td><p>In addition to parameters, the Module Hierarchy view
+now also displays the @statistic and @signal properties of the modules.</p>
 <img src="pictures/41-module-view.png"/>
 </td></tr>
 
@@ -122,12 +122,12 @@ now displays the @statistic and @signal properties of the modules.</p>
 
 <h2>Launcher</h2>
 
-<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup> 
-<tbody> 
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
 
 <tr><td><p align="right"><b>Better Error Checking
-</b></p></td><td><p>The simulation launcher now checks for errors in the open project(s) 
-(and warns if any) before starting a simulation.</p>
+</b></p></td><td><p>The simulation launcher now checks for errors in open projects
+before starting a simulation, and warns if there are any.</p>
 <img src="pictures/41-errors-in-project.png"/>
 </td></tr>
 
@@ -135,23 +135,23 @@ now displays the @statistic and @signal properties of the modules.</p>
 
 <h2>Sequence Chart</h2>
 
-<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup> 
-<tbody> 
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
 
 <tr><td><p align="right"><b>Attach Vectors to Sequence Charts
 </b></p></td><td><p>Attaching vectors to a Sequence Chart is more intuitive now.</p>
 <img src="pictures/41-seq-vector-attach.png"/>
 </td></tr>
 
-<tr><td><p align="right"><b>Show only Related Vectors
-</b></p></td><td><p>After selecting a vector file the IDE shows only the vectors 
-related to the selected module (axis).</p>
+<tr><td><p align="right"><b>Show Related Vectors Only
+</b></p></td><td><p>After choosing a vector file, the IDE only offers the vectors
+related to the selected module axis.</p>
 <img src="pictures/41-seq-vector-attach2.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Method Calls on Sequence Charts
-</b></p></td><td><p>Direct method calls can be shown in the sequence chart. 
-Method calls are not displayed automatically, but can be turned on on the toolbar or in the 
+</b></p></td><td><p>Direct method calls can be shown in the sequence chart.
+Method calls are not displayed automatically, but can be turned on on the toolbar or in the
 sequence chart context menu.</p>
 <img src="pictures/41-seq-methodcalls.png"/>
 </td></tr>
@@ -160,18 +160,18 @@ sequence chart context menu.</p>
 
 <h2>Result Analysis</h2>
 
-<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup> 
-<tbody> 
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
 
 <tr><td><p align="right"><b>New Tree View in Browse Data
-</b></p></td><td><p>A New Tree view added for the 'Browse Data' page. The tree can 
-be configured freely to group the data several different ways. Use the context menu to configure
+</b></p></td><td><p>An "All" tab has been added to the Browse Data page, showing all simulation results in a tree. The tree can
+be configured freely to group the data several in different ways. Use the context menu to configure
 the levels in the tree view.</p>
 <img src="pictures/41-ana-browse-data.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Redesigned Filter
-</b></p></td><td><p>Filter interface on the browse data page has been reorganized to provide more space.</p>
+</b></p></td><td><p>The filter interface on the Browse Data page has been reorganized to provide more space. Fields are also resizable by dragging the separators.</p>
 <img src="pictures/41-ana-filter.png"/>
 </td></tr>
 
@@ -181,7 +181,7 @@ the levels in the tree view.</p>
 </td></tr>
 
 <tr><td><p align="right"><b>Properties for Data Items
-</b></p></td><td><p>Property View for the data items on the Browse data page</p>
+</b></p></td><td><p>Property View for the data items on the Browse Data page</p>
 <img src="pictures/41-ana-properties2.png"/>
 </td></tr>
 
@@ -191,28 +191,28 @@ the levels in the tree view.</p>
 </td></tr>
 
 <tr><td><p align="right"><b>Separate Horizontal and Vertical Zoom
-</b></p></td><td><p>Separate horizontal and vertical zoom action are available on the toolbar
+</b></p></td><td><p>Separate horizontal and vertical zoom actions are available on the toolbar
 and in the context menu. The context menu has been reorganized for better usability.</p>
 <img src="pictures/41-ana-new-zoom.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Charts on Sheet Fill the Window
-</b></p></td><td><p>Charts in a chart sheet fill the window horizontally (with a minimum width configurable)</p>
+</b></p></td><td><p>Charts in a Chart Sheet fill the window horizontally. The minimum chart width is also configurable.</p>
 <img src="pictures/41-ana-fillwindow.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Chart SVG Export 1
-</b></p></td><td><p>Charts can be exported in SVG format from the Dataset page's context menu</p>
+</b></p></td><td><p>Charts can be exported in SVG format from the Dataset page's context menu.</p>
 <img src="pictures/41-ana-export-chart.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Chart SVG Export 2
-</b></p></td><td><p>Charts can be exported in SVG format from the chart context menu</p>
+</b></p></td><td><p>Charts can be exported in SVG format from the chart context menu.</p>
 <img src="pictures/41-ana-export-chart-from-sheet.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Editable Chart Line Titles
-</b></p></td><td><p>Line Titles on charts are editable now.</p>
+</b></p></td><td><p>Line titles on charts are editable now.</p>
 <img src="pictures/41-ana-editable-line-titles.png"/>
 </td></tr>
 
@@ -220,13 +220,12 @@ and in the context menu. The context menu has been reorganized for better usabil
 
 <h2>Wizards</h2>
 
-<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup> 
-<tbody> 
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
 
-<tr><td><p align="right"><b>Add your Own Wizards to the IDE
-</b></p></td><td><p>New wizards can be contributed by opened projects. (In this case after opening
-the 'queueinglib' project in samples, a new wizard type appears automatically in the
-New Network wizard.)</p>
+<tr><td><p align="right"><b>Add Your Own Wizards to the IDE
+</b></p></td><td><p>New wizards can be contributed by open projects. (In the screenshot, the
+"New Queueing Model" wizard was contributed by the "queueinglib" sample project.)</p>
 <img src="pictures/41-wiz-queueing.png"/>
 </td></tr>
 
@@ -236,7 +235,7 @@ New Network wizard.)</p>
 </td></tr>
 
 <tr><td><p align="right"><b>Topology Generation using Wizards
-</b></p></td><td><p>The IDE contributes also several generic topology generator wizards</p>
+</b></p></td><td><p>The IDE also contributes several generic topology generator wizards.</p>
 <img src="pictures/41-wiz-topology.png"/>
 </td></tr>
 
@@ -252,13 +251,13 @@ New Network wizard.)</p>
 
 <tr><td><p align="right"><b>Wizard Wizards
 </b></p></td><td><p>There are several wizards that help creating other wizards. It is possible to
-create a wizards based on an already existing simulation directory, or based on an other wizard. 
+create a wizards based on an already existing simulation directory, or based on an other wizard.
 Example wizards are also provided to help you quickly create your first wizard...</p>
 <img src="pictures/41-wiz-wiz-menu.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>New Wizard from an Existing One
-</b></p></td><td><p>New wizards can be created by either copying and modifying an existing similar one or 
+</b></p></td><td><p>New wizards can be created by either copying and modifying an existing similar one or
 by generating some example code.</p>
 <img src="pictures/41-wiz-wiz-selection.png"/>
 </td></tr>
@@ -269,7 +268,7 @@ by generating some example code.</p>
 </td></tr>
 
 <tr><td><p align="right"><b>New Wizards by Specifying their Variables
-</b></p></td><td><p>New wizards can be created by textually specifying their variables (and the type of widget they are using)</p>
+</b></p></td><td><p>New wizards can be created by textually specifying their input variables and the associated widget types.</p>
 <img src="pictures/41-wiz-wiz-variables.png"/>
 </td></tr>
 
@@ -279,13 +278,13 @@ by generating some example code.</p>
 </td></tr>
 
 <tr><td><p align="right"><b>Wizard Page Editor
-</b></p></td><td><p>Wizard page editor (XSWT) and preview is available by double clicking on XSWT files</p>
+</b></p></td><td><p>The wizard page (XSWT) editor and preview are available by double-clicking on XSWT files.</p>
 <img src="pictures/41-wiz-xswt.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Wizard Template Editor
-</b></p></td><td><p>Teamplate editor with syntax higlight and content assist support is available
-to help you authoring new wizard templates.</p>
+</b></p></td><td><p>Template editor with syntax highlight and content assist support is available
+to help you author new wizard content templates.</p>
 <img src="pictures/41-wiz-ftl.png"/>
 </td></tr>
 
@@ -293,13 +292,14 @@ to help you authoring new wizard templates.</p>
 
 <h2>Extending the IDE</h2>
 
-<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup> 
-<tbody> 
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
 
 <tr><td><p align="right"><b>Automatic Plugin Activation
-</b></p></td><td><p>The IDE now automatically discovers and activates all eclipse plugins copied
-into a project's 'plugins' folder. This allows you to create project specific IDE extensions for 
-your users.</p>
+</b></p></td><td><p>The IDE now automatically discovers and activates all Eclipse plug-ins
+in a project's "plugins" folder. This feature allows you to distribute IDE extensions together
+with your project, and they will be automatically loaded and activated when your users open
+the project.</p>
 <img src="pictures/41-plugin-running.png"/>
 </td></tr>
 
