@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.Debug;
@@ -390,7 +391,7 @@ public class Makemake {
         m.put("backslashedsourcedirs", backslashedSourceDirs);
         m.put("nmake_inlinefile", (isNMake && isLongLinkerLine) ? "@<<\n" : "");
         m.put("nmake_inlineend", (isNMake && isLongLinkerLine) ? "\n<<" : "");
-        m.put("gcclongline", !isNMake && isLongLinkerLine);
+        m.put("gcclongline", !isNMake && isLongLinkerLine && Platform.getOS().equals(Platform.OS_WIN32));
 
         // now generate the makefile
         Debug.println("generating makefile for " + folder.toString());

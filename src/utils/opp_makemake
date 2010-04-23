@@ -657,7 +657,7 @@ sub makemake()
         "backslashedsourcedirs" => \@backslashedSourceDirs,
         "nmake_inlinefile" => ($isNMake && $isLongLinkerLine) ? "@<<\n" : "",
         "nmake_inlineend" => ($isNMake && $isLongLinkerLine) ? "\n<<" : "",
-        "gcclongline" => (!$isNMake && $isLongLinkerLine)
+        "gcclongline" => (!$isNMake && $isLongLinkerLine && $isWindows)
     );
 
     my $content = substituteIntoTemplate(template(), \%m, "{", "}");
