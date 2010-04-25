@@ -8,6 +8,10 @@
 
 	* cConfiguration: substituteVariables() made public
 
+	* new NED function: expand(). It substituted ${} config variables
+	into a string. Possible use: in NED parameters like the following:
+        string fname = default(expand("${resultdir}/${configname}-${runnumber}.txt"));
+
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
 2010-04-19  Andras Varga

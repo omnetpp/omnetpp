@@ -4,5 +4,5 @@
 simple NetAnimTrace
 {
     parameters:
-        string filename = default("netanim-trace.txt");
+        string filename = default(expand("${resultdir}/${configname}-${runnumber}.tr"));
 }

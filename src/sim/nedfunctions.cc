@@ -25,6 +25,7 @@
 #include "stringutil.h"
 #include "stringpool.h"
 #include "opp_ctype.h"
+#include "cconfiguration.h"
 
 USING_NAMESPACE
 
@@ -349,6 +350,16 @@ DEF(nedf_toLower,
     int length = tmp.length();
     for (int i=0; i<length; i++)
         tmp[i] = opp_tolower(tmp[i]);
+    return tmp;
+})
+
+DEF(nedf_expand,
+    "string expand(string s)",
+    "strings",
+    "Expands ${} variables (${configname}, ${runnumber}, etc.) in the given string, and returns the result.",
+{
+    std::string tmp = argv[0].s;
+    tmp = ev.getConfig()->substituteVariables(tmp.c_str());
     return tmp;
 })
 

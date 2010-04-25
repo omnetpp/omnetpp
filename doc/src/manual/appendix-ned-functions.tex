@@ -139,6 +139,8 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
     Returns true if string s contains substr as substring
 \item[endsWith]: \ttt{bool endsWith(string s, string substr)} \\
     Returns true if s ends with the substring substr.
+\item[expand] : \ttt{string expand(string s)} \\
+    Expands \$\{\} variables (\$\{configname\}, \$\{runnumber\}, etc.) in the given string, and returns the result.
 \item[indexOf]: \ttt{long indexOf(string s, string substr)} \\
     Returns the position of the first occurrence of substring substr in s, or -1 if s does not contain substr.
 \item[length]: \ttt{long length(string s)} \\
