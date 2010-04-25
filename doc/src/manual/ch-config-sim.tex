@@ -81,7 +81,7 @@ to the location of the file which contains the reference,
 rather than relative to the current working directory of the simulation.
 
 This rule also applies to other file names occurring in ini files
-(such as the \ttt{load-libs=}, \ttt{output-vector-file=}, \ttt{output-scalar-file=}
+(such as the \fconfig{load-libs}, \fconfig{output-vector-file}, \fconfig{output-scalar-file}
 etc. options, and \ttt{xmldoc()} module parameter values.)
 
 
@@ -102,7 +102,7 @@ following.
 \end{itemize}
 
 Note that the NED files loaded by the simulation may contain several
-networks, and any of them may be specified in the \ttt{network=}
+networks, and any of them may be specified in the \fconfig{network}
 option.
 
 
@@ -152,7 +152,7 @@ treated like an empty \ttt{[General]} section.
 
 All named configurations fall back to \ttt{[General]} by default. However, for
 each configuration it is possible to specify a fall-back section
-explicitly, using the \ttt{extends=} key. Consider the following ini file
+explicitly, using the \fconfig{extends} key. Consider the following ini file
 skeleton:
 
 \begin{inifile}
@@ -233,7 +233,7 @@ Models can have a large number of parameters to be configured, and it would
 be tedious to set them one-by-one in \ffilename{omnetpp.ini}. {\opp} supports
 \textit{wildcard patterns} which allow for setting several model parameters
 at once. The same pattern syntax is used for per-object configuration options;
-for example \ttt{<object-path-pattern>.record-scalar=}, or \ttt{<module-path-pattern>.rng-<N>=}.
+for example \ttt{<object-path-pattern>.record-scalar}, or \ttt{<module-path-pattern>.rng-<N>}.
 
 The pattern syntax is a variation on the usual \textit{glob}-style
 patterns. The most apparent differences to the \textit{glob} rules are the
@@ -533,7 +533,7 @@ more than one place in the ini file. The syntax is
 \end{inifile}
 
 The scope of the variable name is the section that defines it, plus
-sections based on that section (via \ttt{extends=}).
+sections based on that section (via \fconfig{extends}).
 
 There are also a number of predefined variables: \ttt{\$\{configname\}} and
 \ttt{\$\{runnumber\}} with the obvious meanings; \ttt{\$\{network\}} is the name of
@@ -559,7 +559,7 @@ constraint expression. This expression is interpreted as a conditional
 (an "if" statement) within the innermost
 loop, and it must evaluate to \ttt{true} for
 the variable combination to generate a run. The expression should be
-given with the \ttt{constraint=} configuration key. An example:
+given with the \fconfig{constraint} configuration option. An example:
 
 \begin{inifile}
 *.numNodes = ${n=10..100 step 10}
@@ -583,8 +583,8 @@ double and string. The expression must evaluate to a boolean.
 
 It is directly supported to perform several runs with the same
 parameters but different random number seeds. There are two
-configuration keys related to this: \ttt{repeat=} and \ttt{seed-set=}. The first
-one simply specifies how many times a run needs to be repeated. For
+configuration options related to this: \fconfig{repeat} and \fconfig{seed-set}.
+The first one simply specifies how many times a run needs to be repeated. For
 example,
 
 \begin{inifile}
@@ -596,9 +596,9 @@ and the \ttt{\$\{repetition\}} predefined variable holds the loop counter.
 Indeed, \ttt{repeat=10} is equivalent to adding \ttt{\$\{repetition=0..9\}}
 to the ini file. The \ttt{\$\{repetition\}} loop always becomes the innermost loop.
 
-The \ttt{seed-set=} configuration key affects seed selection. Every
+The \fconfig{seed-set} configuration key affects seed selection. Every
 simulation uses one or more random number generators (as configured by
-the \ttt{num-rngs=} key), for which the simulation kernel can automatically
+the \fconfig{num-rngs} key), for which the simulation kernel can automatically
 generate seeds. The first simulation run may use one set of seeds (seed
 set 0), the second run may use a second set (seed set 1), and so on.
 Each set contains as many seeds as there are RNGs configured. All
@@ -611,7 +611,7 @@ Mersenne Twister, the default RNG of {\opp} has a cycle length of
 $2^{19937}$, which is more than enough for any conceivable purpose.
 \end{note}
 
-The \ttt{seed-set=} key tells the simulation kernel which seed set to use.
+The \fconfig{seed-set} key tells the simulation kernel which seed set to use.
 It can be set to a concrete number (such as \ttt{seed-set=0}), but it
 usually does not make sense as it would cause every simulation to run
 with exactly the same seeds. It is more practical to set it to either
@@ -634,13 +634,13 @@ where all \ttt{\$repetition=0} runs will use the same seeds (seed set 0), all
 set, etc.
 
 To perform runs with manually selected seed sets, you can just define an
-iteration for the \ttt{seed-set=} key:
+iteration for the \fconfig{seed-set} key:
 
 \begin{inifile}
 seed-set = ${5,6,8..11}
 \end{inifile}
 
-In this case, the \ttt{repeat=} key should be left out, as \ttt{seed-set=}
+In this case, the \fconfig{repeat} key should be left out, as \fconfig{seed-set}
 already defines an iteration and there is no need for an extra loop.
 
 It is of course also possible to manually specify individual seeds for
@@ -807,7 +807,7 @@ we'll cover the configuration of RNGs in \ffilename{omnetpp.ini}.
 
 \subsection{Number of RNGs}
 
-The \ttt{num-rngs=} configuration option sets the number of
+The \fconfig{num-rngs} configuration option sets the number of
 random number generator instances (i.e. random number streams)
 available for the simulation model (see \ref{cha:sim-lib:generating-random-numbers}).
 Referencing an RNG number greater or equal to this number
@@ -816,7 +816,7 @@ Referencing an RNG number greater or equal to this number
 
 \subsection{RNG Choice}
 
-The \ttt{rng-class=} configuration option sets the random number
+The \fconfig{rng-class} configuration option sets the random number
 generator class to be used. It defaults to \ttt{"cMersenneTwister"},
 the Mersenne Twister RNG. Other available classes are \ttt{"cLCG32"}
 (the "legacy" RNG of {\opp} 2.3 and earlier versions, with a cycle length
@@ -869,7 +869,7 @@ to choose different seeds which are also sufficiently separated in the RNG's seq
 so that the generated sequences don't overlap.
 
 The run number can be specified either in in \ffilename{omnetpp.ini} (e.g. via the
-\ttt{cmdenv-runs-to-execute=} option) or on the command line:
+\fconfig{cmdenv-runs-to-execute} option) or on the command line:
 
 \begin{commandline}
 ./mysim -r 1

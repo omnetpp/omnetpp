@@ -93,8 +93,8 @@ files}. The usual file extension for scalar files is \ttt{.sca}, and
 for vector files \ttt{.vec}.
 
 Every simulation run generates a single scalar file and a vector file.
-The file names can be controlled with the \ttt{output-vector-file=}
-and \ttt{output-scalar-file=} options. These options rarely need
+The file names can be controlled with the \fconfig{output-vector-file}
+and \fconfig{output-scalar-file} options. These options rarely need
 to be used, because the default values are usually fine. The defaults
 are:
 
@@ -103,7 +103,7 @@ output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
 output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
 \end{inifile}
 
-Here, \ttt{\$\{resultdir\}} is the value of the \ttt{result-dir=}
+Here, \ttt{\$\{resultdir\}} is the value of the \fconfig{result-dir}
 configuration option which defaults to \ttt{results/}, and
 \ttt{\$\{configname\}} and \ttt{\$\{runnumber\}} are the name of
 the configuration name in the ini file (e.g. \ttt{[Config PureAloha]}),
@@ -122,7 +122,7 @@ and so on.
 \subsection{Turning Off Scalar or Vector Recording Globally}
 
 The recording of scalar and/or vector results can be turned off with
-the \ttt{scalar-recording=} and \ttt{vector-recording=} options (both
+the \fconfig{scalar-recording} and \fconfig{vector-recording} options (both
 are turned on by default). These options actually provide per-vector
 and per-scalar control, but disabling all scalars/vectors will turn off
 file creation altogether. However, any existing file with the same name
@@ -137,7 +137,7 @@ will still be removed before the simulation starts.
 \subsection{Warm-up Period}
 \label{sec:ana-sim:warmup-period}
 
-The \ttt{warmup-period=} option specifies the length of the initial
+The \fconfig{warmup-period} option specifies the length of the initial
 warm-up period. When set, results belonging to the first $x$ seconds
 of the simulation will not be recorded into output vectors, and will
 not be counted into the calculation of output scalars.
@@ -252,8 +252,8 @@ hundred megabytes, but very often, only some of the recorded statistics are
 interesting to the analyst. {\opp} allows you to control which vectors you
 want to record, and to specify one or more collection intervals.
 
-Output vectors can be configured with the \ttt{vector-recording=} and
-\ttt{vector-recording-intervals=} per-object options. The syntax of the
+Output vectors can be configured with the \fconfig{vector-recording} and
+\fconfig{vector-recording-intervals} per-object options. The syntax of the
 configuration options are
 \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording=}\textit{true/false},
 %line is outside the margins
@@ -273,7 +273,7 @@ The following example only records the \ttt{queueLength} vectors and
 **.vector-recording = false
 \end{inifile}
 
-For the \ttt{vector-recording-intervals=} option, one can specify
+For the \fconfig{vector-recording-intervals} option, one can specify
 one or more intervals in the \textit{<startTime>..<stopTime>} syntax,
 separated by comma. \textit{<startTime>} or \textit{<stopTime>} need
 to be given with measurement units, and both can be omitted to denote
@@ -288,7 +288,7 @@ simulation run:
 **.vector-recording-intervals = 0..1000s, 5000s..6000s, 9000s..
 \end{inifile}
 
-A third per-vector configuration option is \ttt{vector-record-eventnumbers=},
+A third per-vector configuration option is \fconfig{vector-record-eventnumbers},
 which specifies whether to record event numbers for an output vector.
 (Simulation time and value are always recorded. Event numbers are needed
 by the Sequence Chart Tool, for example.) Event number recording is enabled
@@ -391,7 +391,7 @@ automatically saved into the result files.
 Output scalar and output vector files are text files, and floating point
 values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
 \ttt{"\%g"} format. The number of significant digits can be configured
-using the \ttt{output-scalar-precision=} and \ttt{output-vector-precision=}
+using the \fconfig{output-scalar-precision} and \fconfig{output-vector-precision}
 configuration options.
 
 The default precision is 12 digits. The following has to be considered when
@@ -442,8 +442,8 @@ upper limit is 17 digits, setting it higher doesn't make any difference in
 Errors resulting from converting to/from decimal representation can be
 eliminated by choosing an output vector/output scalar manager class
 which stores \ttt{double}s in their native binary form.
-The appropriate configuration options are \ttt{outputvectormanager-class=}
-and \ttt{outputvectormanager-class=}. For example,
+The appropriate configuration options are \fconfig{outputvectormanager-class}
+and \fconfig{outputvectormanager-class}. For example,
 \cclass{cMySQLOutputScalarManager} and \cclass{cMySQLOutputScalarManager}
 provided in \ttt{samples/database} fulfill this requirement.
 
