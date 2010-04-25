@@ -169,9 +169,10 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
         throw cRuntimeError(this, "bad file format in loadFromFile(): expected `%s' and got `%s'",fmt,line);
 
     // actual read
-    va_list args;
-    va_start(args,fmt);
-    opp_vsscanf(line,fmt,args);
+    va_list va;
+    va_start(va,fmt);
+    opp_vsscanf(line,fmt,va);
+    va_end(va);
 }
 
 

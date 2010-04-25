@@ -96,6 +96,10 @@ inline std::string opp_getWindowsError(DWORD errorCode)
 }
 #endif
 
+#ifdef _MSC_VER
+#define va_copy(dst, src) ((void)((dst) = (src)))
+#endif
+
 
 //
 // gcvt -- FreeBSD does not have it

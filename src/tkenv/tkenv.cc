@@ -45,6 +45,7 @@
 #include "timeutil.h"
 #include "stringutil.h"
 #include "../common/ver.h"
+#include "platdep/platmisc.h"  // va_copy
 
 
 // default plugin path -- allow overriding it via compiler option (-D)
@@ -1303,7 +1304,10 @@ void Tkenv::messageDeleted(cMessage *msg)
 
 void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va)
 {
-    EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va);
+    va_list va2;
+    va_copy(va2, va); // see bug #107
+    EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2);
+    va_end(va2);
 
     if (!animating || !opt_anim_methodcalls)
         return;
