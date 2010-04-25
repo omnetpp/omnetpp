@@ -190,10 +190,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
 
-  protected:
-    // cConfiguration method
-    virtual const char *substituteVariables(const char *value);
-
   public:
     SectionBasedConfiguration();
     virtual ~SectionBasedConfiguration();
@@ -213,7 +209,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
      */
     virtual void setCommandLineConfigOptions(const std::map<std::string,std::string>& options);
 
-    /** @name Methods that implement the cConfiguration interface. */
+    /** @name Methods that implement the cConfiguration(Ex) interface. */
     //@{
     virtual void initializeFrom(cConfiguration *bootConfig);
     virtual const char *getFileName() const;
@@ -240,6 +236,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual std::vector<const char *> getIterationVariableNames() const;
     virtual std::vector<const char *> getPredefinedVariableNames() const;
     virtual const char *getVariableDescription(const char *varname) const;
+    virtual const char *substituteVariables(const char *value);
     virtual void dump() const;
     //@}
 };

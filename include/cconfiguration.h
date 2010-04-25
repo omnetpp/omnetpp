@@ -87,12 +87,6 @@ class SIM_API cConfiguration : public cObject
         virtual const char *getBaseDirectory() const = 0;
     };
 
-  protected:
-    /**
-     * Substitute ${configname} etc into default values
-     */
-    virtual const char *substituteVariables(const char *value) = 0;
-
   public:
     /** @name String-based getters for configuration options */
     //@{
@@ -255,6 +249,15 @@ class SIM_API cConfiguration : public cObject
      * using the base directory (see getBaseDirectoryFor() method).
      */
     virtual std::string getAsPath(const char *objectFullPath, cConfigOption *option);
+    //@}
+
+    /** @name Other methods */
+    //@{
+    /**
+     * Substitutes ${} variables into the given string. The resulting string
+     * is stored inside the configuration object.
+     */
+    virtual const char *substituteVariables(const char *value) = 0;
     //@}
 };
 

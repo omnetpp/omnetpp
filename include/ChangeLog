@@ -6,6 +6,8 @@
 	details (result_t) available in listeners of the "messageSent"
 	channel signal
 
+	* cConfiguration: substituteVariables() made public
+
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
 2010-04-19  Andras Varga
