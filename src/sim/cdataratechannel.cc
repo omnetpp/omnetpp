@@ -166,7 +166,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     // emit signals
     if (mayHaveListeners(messageSentSignal))
     {
-        cTimestampedValue tmp(t, msg);
+        MessageSentSignalValue tmp(t, msg, &result);
         emit(messageSentSignal, &tmp);
     }
     if (mayHaveListeners(channelBusySignal))

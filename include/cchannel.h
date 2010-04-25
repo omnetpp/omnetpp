@@ -22,11 +22,12 @@
 
 #include "ccomponent.h"
 #include "ccomponenttype.h"
+#include "cmessage.h"
+#include "ctimestampedvalue.h"
 
 NAMESPACE_BEGIN
 
 class cGate;
-class cMessage;
 
 
 /**
@@ -60,11 +61,54 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * Allows for returning multiple values from the processMessage() method.
      * The constructor initializes all fields to zero.
      */
-    struct result_t {
+    struct result_t
+    {
         result_t() : delay(SIMTIME_ZERO), duration(SIMTIME_ZERO), discard(false) {}
         simtime_t delay;     //< propagation delay
         simtime_t duration;  //< transmission duration
         bool discard;        //< whether the channel has lost the message
+    };
+
+    /**
+     * Signal value that acompanies the "messageSent" signal.
+     */
+    class MessageSentSignalValue : public cITimestampedValue, public cObject
+    {
+      public:
+        simtime_t timestamp;
+        cMessage *msg;
+        result_t *result;
+      public:
+        /** Constructor. */
+        MessageSentSignalValue(simtime_t_cref t, cMessage *m, result_t *r) {timestamp=t; msg=m; result=r;}
+
+        /** @name cITimestampedValue methods */
+        //@{
+        /** Returns the timestamp; it represents the start of the transmission. */
+        virtual simtime_t_cref getTimestamp(simsignal_t signalID) const {return timestamp;}
+
+        /** Returns cITimestampedValue::OBJECT. */
+        virtual Type getValueType(simsignal_t signalID) const {return OBJECT;}
+
+        /** Returns the message (packet) as the stored object. */
+        virtual cObject *objectValue(simsignal_t signalID) const {return msg;}
+        //@}
+
+        /** Returns the message (packet). */
+        cObject *getMessage() const {return msg;}
+
+        /** Returns the channel result. */
+        result_t *getChannelResult() const {return result;}
+
+        /** @name Other (non-cObject) getters throw an exception. */
+        //@{
+        virtual long longValue(simsignal_t signalID) const {error(); return 0;}
+        virtual unsigned long unsignedLongValue(simsignal_t signalID) const {error(); return 0;}
+        virtual double doubleValue(simsignal_t signalID) const {error(); return 0;}
+        virtual const SimTime& simtimeValue(simsignal_t signalID) const {error(); return timestamp;}
+        virtual const char *stringValue(simsignal_t signalID) const {error(); return NULL;}
+        void error() const;
+        //@}
     };
 
   public:

@@ -38,6 +38,11 @@ using std::ostream;
 Register_Class(cIdealChannel);
 
 
+void cChannel::MessageSentSignalValue::error() const
+{
+    throw cRuntimeError("cChannel::MessageSentSignalValue: getter for unsupported value type called");
+}
+
 cChannel::cChannel(const char *name) : cComponent(name)
 {
     srcgatep = NULL;
