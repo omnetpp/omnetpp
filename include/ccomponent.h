@@ -200,13 +200,13 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Redefining this method allows simple modules and channels to be react on
      * parameter changes, for example by re-reading the value.
      * This default implementation does nothing.
-     * 
+     *
      * The parameter name can be NULL if more than one parameter has changed.
      *
      * To make it easier to write predictable components, the function does
      * NOT get called on uninitialized components (i.e. when initialized() returns
-     * false). For each component the function is called (with NULL as a parname) 
-     * after the last stage of the initialization so the module gets a chance to 
+     * false). For each component the function is called (with NULL as a parname)
+     * after the last stage of the initialization so the module gets a chance to
      * update its cached parameters.
      *
      * Also, one must be extremely careful when changing parameters from inside
@@ -276,6 +276,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Redefined to return true in cModule and subclasses, otherwise returns false.
      */
     virtual bool isModule() const  {return false;}
+
+    /**
+     * Returns true for channels, and false for modules.
+     */
+    bool isChannel() const  {return !isModule();}
 
     /**
      * Returns the module containing this module/channel. This is not necessarily
