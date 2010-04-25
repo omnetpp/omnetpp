@@ -66,7 +66,7 @@ void NetAnimTrace::dump()
 
 void NetAnimTrace::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
-    if (signalID == messageSentSignal && !source->isModule())
+    if (signalID == messageSentSignal && source->isChannel())
     {
         // record a "packet sent" line
         cChannel *channel = (cChannel *)source;
@@ -74,26 +74,13 @@ void NetAnimTrace::receiveSignal(cComponent *source, simsignal_t signalID, cObje
         if (isRelevantModule(srcModule))
         {
             cModule *destModule = channel->getSourceGate()->getNextGate()->getOwnerModule();
-            cITimestampedValue *v = check_and_cast<cITimestampedValue *>(obj);
-            if (dynamic_cast<cDatarateChannel *>(channel))
-            {
-                cDatarateChannel *datarateChannel = (cDatarateChannel *)channel;
-                cMessage *msg = check_and_cast<cMessage *>(v->objectValue(signalID));
-                simtime_t duration = msg->isPacket() ? ((cPacket*)msg)->getBitLength() / datarateChannel->getDatarate() : 0.0;
-                simtime_t delay = datarateChannel->getDelay();
-                simtime_t fbTx = v->getTimestamp(signalID);
-                simtime_t lbTx = fbTx + duration;
-                simtime_t fbRx = fbTx + delay;
-                simtime_t lbRx = lbTx + delay;
-                f << fbTx << " P " << srcModule->getId() << " " << destModule->getId() << " " << lbTx << " " << fbRx << " " << lbRx << "\n";
-            }
-            else if (dynamic_cast<cDelayChannel *>(channel))
-            {
-                cDelayChannel *delayChannel = (cDelayChannel *)channel;
-                simtime_t fbTx = v->getTimestamp(signalID);
-                simtime_t fbRx = fbTx + delayChannel->getDelay();
-                f << fbTx << " P " << srcModule->getId() << " " << destModule->getId() << " " << fbTx << " " << fbRx << " " << fbRx << "\n";
-            }
+            cChannel::MessageSentSignalValue *v = check_and_cast<cChannel::MessageSentSignalValue *>(obj);
+            cChannel::result_t *result = v->getChannelResult();
+            simtime_t fbTx = v->getTimestamp(signalID);
+            simtime_t lbTx = fbTx + result->duration;
+            simtime_t fbRx = fbTx + result->delay;
+            simtime_t lbRx = lbTx + result->delay;
+            f << fbTx << " P " << srcModule->getId() << " " << destModule->getId() << " " << lbTx << " " << fbRx << " " << lbRx << "\n";
         }
     }
     else if (signalID == POST_MODEL_CHANGE)
