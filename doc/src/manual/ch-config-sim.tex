@@ -697,13 +697,13 @@ files, and display simulation runs and recorded results accordingly on
 the user interface.
 
 These labels can be explicitly specified in the ini file using the
-\ttt{experiment=}, \ttt{measurement=} and \ttt{replication=} config keys.
-If they are missing, the default is the following:
+\fconfig{experiment-label}, \fconfig{measurement-label} and \fconfig{replication-label}
+config options. If they are missing, the default is the following:
 
 \begin{inifile}
-experiment = "${configname}"
-measurement = "${iterationvars}"
-replication = "#${repetition},seed-set=<seedset>"
+experiment-label = "${configname}"
+measurement-label = "${iterationvars}"
+replication-label = "#${repetition},seed-set=<seedset>"
 \end{inifile}
 
 That is, the default experiment label is the configuration name; the
@@ -774,10 +774,10 @@ configurations into one experiment:
 
 \begin{inifile}
 [Config PureAloha_Part1]
-experiment = "PureAloha"
+experiment-label = "PureAloha"
 ...
 [Config PureAloha_Part2]
-experiment = "PureAloha"
+experiment-label = "PureAloha"
 ...
 \end{inifile}
 
