@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.Action;
@@ -194,7 +195,7 @@ public class DataTree extends Tree implements IDataControl {
 
     public void setSelectedID(long id) {
         if (idList.indexOf(id) != -1) {
-            TreeItem treeItem = getTreeItem(id);
+            TreeItem treeItem = getTreeItem(new long[] {id});
             if (treeItem != null)
                 setSelection(treeItem);
         }
@@ -204,41 +205,59 @@ public class DataTree extends Tree implements IDataControl {
 
     public void setSelectedIDs(IDList idList) {
         ArrayList<TreeItem> treeItems = new ArrayList<TreeItem>();
-        for (int i = 0; i < idList.size(); i++) {
-            TreeItem treeItem = getTreeItem(idList.get(i));
-            if (treeItem != null) {
+        List<Long> ids = Arrays.asList(idList.toArray());
+        long begin = System.currentTimeMillis();
+        // find the topmost tree items that cover the whole idList set, but not more
+        while (ids.size() > 0) {
+            TreeItem treeItem = getTreeItem(ArrayUtils.toPrimitive(ids.toArray(new Long[0])));
+            if (treeItem == null)
+                break;
+            else {
                 treeItems.add(treeItem);
                 showItem(treeItem);
+                Node node = (Node)treeItem.getData();
+                if (node != null)
+                    ids = (ArrayList<Long>)CollectionUtils.subtract(ids, Arrays.asList(ArrayUtils.toObject(node.ids)));
             }
+            // don't spend to much time on it, because the gui becomes unresponsive and it's not worth it
+            if (System.currentTimeMillis() - begin > 5000)
+                break;
         }
         setSelection(treeItems.toArray(new TreeItem[0]));
     }
 
-    protected TreeItem getTreeItem(long id) {
+    protected TreeItem getTreeItem(long[] ids) {
         for (TreeItem treeItem : getItems()) {
-            TreeItem foundTreeItem = getTreeItem(treeItem, id);
+            TreeItem foundTreeItem = getTreeItem(treeItem, ids);
             if (foundTreeItem != null)
                 return foundTreeItem;
         }
         return null;
     }
 
-    protected TreeItem getTreeItem(TreeItem treeItem, long id) {
+    protected TreeItem getTreeItem(TreeItem treeItem, long[] ids) {
         // items must be queried first, because getData does not fill up the item
         TreeItem[] childTreeItems = treeItem.getItems();
         Node node = (Node)treeItem.getData();
-        if (node != null && (node.ids == null || ArrayUtils.indexOf(node.ids, id) == -1))
+        if (node != null && node.ids == null)
             return null;
-        else if (node != null && node.ids.length == 1)
-            return treeItem;
-        else {
-            for (TreeItem childTreeItem : childTreeItems) {
-                TreeItem foundTreeItem = getTreeItem(childTreeItem, id);
-                if (foundTreeItem != null)
-                    return foundTreeItem;
+        else if (node != null && node.ids != null) {
+            boolean subset = true;
+            for (long id : node.ids) {
+                if (ArrayUtils.indexOf(ids, id) == -1) {
+                    subset = false;
+                    break;
+                }
             }
-            return null;
+            if (subset)
+                return treeItem;
         }
+        for (TreeItem childTreeItem : childTreeItems) {
+            TreeItem foundTreeItem = getTreeItem(childTreeItem, ids);
+            if (foundTreeItem != null)
+                return foundTreeItem;
+        }
+        return null;
     }
 
     public void addDataListener(IDataListener listener) {
