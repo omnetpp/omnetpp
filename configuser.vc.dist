@@ -99,7 +99,7 @@ LEX=$(OPT_DIR:\=/)/bin/flex.exe
 PCAP_DIR=$(TOOLS_DIR)/WpdPack
 
 #
-# If you want thread-safe libs, install pthreads and set its path.
+# Pthreads library; only needed for the UI native library.
 #
 #PTHREADS_DIR=$(TOOLS_DIR)/pthreads-2.8.0
 #USE_PTHREADS_STATIC_LIB=yes
@@ -380,7 +380,6 @@ CFLAGS=$(CFLAGS) -DXMLPARSER=$(XMLPARSER)
 
 !if "$(PTHREADS_DIR)"!=""
 HAVE_PTHREADS=yes
-CFLAGS=$(CFLAGS) /DTHREADED
 !if "$(USE_PTHREADS_STATIC_LIB)"=="yes"
 PTHREAD_CFLAGS=$(PTHREAD_CFLAGS) /DPTW32_STATIC_LIB
 !endif
