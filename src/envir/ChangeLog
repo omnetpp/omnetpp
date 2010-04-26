@@ -1,3 +1,8 @@
+2010-04026  Andras Varga
+
+	* ValueIterator: fix bug #115: "1..4 step 0.1" went only up to 3.9 
+	not 4, due to floating-point rounding error.
+
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
 2010-04-14  Andras Varga

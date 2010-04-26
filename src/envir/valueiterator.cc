@@ -49,7 +49,9 @@ void ValueIterator::parse(const char *s)
         Item item;
         item.text = opp_trim(tokenizer.nextToken());
         parseAsNumericRegion(item);
-        item.n = item.isNumeric ? std::max(0, (int)floor((item.to - item.from + item.step) / item.step)) : 1;
+        // note 1.000001 below: without it, "1..9 step 0.1" would only go up to 8.9,
+        // because floor(8/0.1) = floor(79.9999999999) = 79 not 80!
+        item.n = item.isNumeric ? std::max(0, (int)floor((item.to - item.from + 1.000001 * item.step) / item.step)) : 1;
         items.push_back(item);
     }
     restart();
