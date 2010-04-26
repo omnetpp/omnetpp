@@ -29,6 +29,9 @@ Define_Module(NetAnimTrace);
 
 void NetAnimTrace::initialize()
 {
+    if (!par("enabled").boolValue())
+        return;
+
     const char *filename = par("filename");
     f.open(filename, std::ios::out | std::ios::trunc);
     if (f.fail())
@@ -125,7 +128,7 @@ double toDouble(const char *s, double defaultValue)
        return defaultValue;
    char *end;
    double d = strtod(s, &end);
-   return end ? 0.0 : d; // return 0.0 on error, instead of throwing an exception
+   return (end && *end) ? 0.0 : d; // return 0.0 on error, instead of throwing an exception
 }
 
 void NetAnimTrace::resolveNodeCoordinates(cModule *submod, double& x, double& y)
