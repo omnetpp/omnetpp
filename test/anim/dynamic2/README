@@ -1,0 +1,7 @@
+We test the layout of dynamically created floating nodes in the presence 
+of fixed nodes (Oversim scenario, see bug #38).  
+
+Result must be suitable with both the old and the new layouter.
+Especially, dynamically created nodes should NOT be placed outside of the 
+compound module bounding box.
+
