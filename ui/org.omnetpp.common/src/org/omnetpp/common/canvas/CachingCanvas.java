@@ -178,8 +178,18 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
         return image;
     }
 
+    protected Graphics createGraphics(GC gc) {
+        return new SWTGraphics(gc);
+    }
+
     protected void paint(GC gc) {
-        paint(new SWTGraphics(gc));
+        Graphics graphics = createGraphics(gc);
+        try {
+            paint(graphics);
+        }
+        finally {
+            graphics.dispose();
+        }
     }
 
 	/**
@@ -212,23 +222,34 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 				Rectangle rect = virtualToCanvasRect(lrect);
 				Assert.isTrue(!rect.isEmpty()); // tile cache should not return empty rectangles
 
+				Graphics imageGraphics = null;
+				GC imageGC = null;
+				Transform transform = null;
 				Image image = new Image(getDisplay(), rect.width, rect.height);
-				GC imgc = new GC(image);
-				Transform transform = new Transform(imgc.getDevice());
-				// KLUDGE: FIXME: XXX: See Eclipse bug database: 245523
-				// remove the next 3 lines when that bug is fixed, because it is an incorrect workaround
-				// putting -1.01f does not help either, because the closer you get to -1.0 is the worse
-				if (rect.y == 1)
-                    transform.translate(-rect.x, -2f);
-				else
-				    transform.translate(-rect.x, -rect.y);
-				imgc.setTransform(transform);
-				imgc.setClipping(rect.x, rect.y, rect.width, rect.height);
+				try {
+    				imageGC = new GC(image);
+    				transform = new Transform(imageGC.getDevice());
+    				// KLUDGE: FIXME: XXX: See Eclipse bug database: 245523
+    				// remove the next 3 lines when that bug is fixed, because it is an incorrect workaround
+    				// putting -1.01f does not help either, because the closer you get to -1.0 is the worse
+    				if (rect.y == 1)
+                        transform.translate(-rect.x, -2f);
+    				else
+    				    transform.translate(-rect.x, -rect.y);
+    				imageGC.setTransform(transform);
+    				imageGC.setClipping(rect.x, rect.y, rect.width, rect.height);
 
-				paintCachableLayer(new SWTGraphics(imgc));
-
-				transform.dispose();
-				imgc.dispose();
+    		        imageGraphics = createGraphics(imageGC);
+				    paintCachableLayer(imageGraphics);
+    	        }
+    	        finally {
+    	            if (imageGraphics != null)
+    	                imageGraphics.dispose();
+    	            if (transform != null)
+    	                transform.dispose();
+    	            if (imageGC != null)
+    	                imageGC.dispose();
+    	        }
 
 				// draw the image on the screen, and also add it to the cache
 				graphics.drawImage(image, rect.x, rect.y);
