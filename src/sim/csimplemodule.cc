@@ -303,7 +303,8 @@ void cSimpleModule::scheduleStart(simtime_t t)
     // modules dynamically doesn't have to know whether the module is
     // using activity() or handleMessage(); the same code (which
     // contains a call to scheduleStart()) can be used for both.
-    if (usesActivity()) {
+    if (usesActivity())
+    {
         if (timeoutmsg!=NULL)
             throw cRuntimeError("scheduleStart(): module `%s' already started",getFullPath().c_str());
 
@@ -317,7 +318,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
         timeoutmsg->setArrival(this, -1, t);
 
         // use timeoutmsg as the activation message; insert it into the FES
-        Enter_Method("scheduleStart");
+        cContextSwitcher tmp(this);
         EVCB.messageScheduled(timeoutmsg);
         simulation.insertMsg(timeoutmsg);
     }
@@ -332,9 +333,9 @@ void cSimpleModule::deleteModule()
     // another coroutine (i.e. from main). Control is passed there by
     // throwing an exception that gets transferred to the main coroutine
     // by activate(), and handled in cSimulation::transferTo().
-    // execution must be immediately suspended in activity() and handleMessage() 
+    // execution must be immediately suspended in activity() and handleMessage()
     // if deleteModule() is called (i.e. we are deleting ourselves)
-    // the exception will be handled in the doOneEvent loop and the module 
+    // the exception will be handled in the doOneEvent loop and the module
     // will be deleted from the globalContext
     if (simulation.getContextModule()==this)
         throw cDeleteModuleException();

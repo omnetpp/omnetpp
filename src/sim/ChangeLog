@@ -1,3 +1,9 @@
+2010-04-27  Andras Varga
+
+	* removed Enter_Method() from callInitialize() and scheduleStart(), as
+	flashing "method call" arrows made it impossible to run in Tkenv 
+	models that generates lots of modules dynamically.
+
 2010-04-23  Andras Varga
 
 	* fix of bug #43: exponential(), normal(), truncnormal() and geometric()

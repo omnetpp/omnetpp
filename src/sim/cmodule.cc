@@ -1240,7 +1240,7 @@ bool cModule::initializeModules(int stage)
     if (stage < numStages)
     {
         // switch context for the duration of the call
-        Enter_Method("initialize");
+        cContextSwitcher tmp(this);
         ev.componentInitBegin(this, stage);
         try {
             initialize(stage);
