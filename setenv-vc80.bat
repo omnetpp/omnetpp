@@ -5,6 +5,7 @@ if defined LIB set LIB=
 set PATH=%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem
 
 set OMNETPP_ROOT=%~dp0
+set OMNETPP_IMAGE_PATH=%~dp0\images
 
 call %TOOLS_DIR%\vc80\vcvars32.bat
 call %TOOLS_DIR%\setenv.cmd
