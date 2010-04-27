@@ -33,13 +33,16 @@ void Server::initialize()
     gate("in")->setDeliverOnReceptionStart(true);
 
     currentCollisionNumFrames = 0;
+    receiveCounter = 0;
     WATCH(currentCollisionNumFrames);
 
+    receiveBeginSignal = registerSignal("receiveBegin");
     receiveSignal = registerSignal("receive");
     collisionSignal = registerSignal("collision");
     collisionLengthSignal = registerSignal("collisionLength");
 
     emit(receiveSignal, 0.0);
+    emit(receiveBeginSignal, 0.0);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i2",0,"x_off");
@@ -73,6 +76,8 @@ void Server::handleMessage(cMessage *msg)
         }
 
         currentCollisionNumFrames = 0;
+        receiveCounter = 0;
+        emit(receiveBeginSignal, receiveCounter);
 
         // update network graphics
         if (ev.isGUI())
@@ -87,6 +92,9 @@ void Server::handleMessage(cMessage *msg)
 
         ASSERT(pkt->isReceptionStart());
         simtime_t endReceptionTime = simTime() + pkt->getDuration();
+
+        emit(receiveBeginSignal, ++receiveCounter);
+
         if (!channelBusy)
         {
             EV << "started receiving\n";

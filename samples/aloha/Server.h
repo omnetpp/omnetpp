@@ -26,9 +26,11 @@ class Server : public cSimpleModule
     cMessage *endRxEvent;
 
     long currentCollisionNumFrames;
+    long receiveCounter;
     simtime_t recvStartTime;
 
     // statistics
+    simsignal_t receiveBeginSignal;
     simsignal_t receiveSignal;
     simsignal_t collisionLengthSignal;
     simsignal_t collisionSignal;
