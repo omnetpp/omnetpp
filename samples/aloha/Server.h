@@ -29,14 +29,9 @@ class Server : public cSimpleModule
     simtime_t recvStartTime;
 
     // statistics
-    long totalFrames;
-    long collidedFrames;
-    simtime_t totalReceiveTime;
-    simtime_t totalCollisionTime;
-    double currentChannelUtilization;
-
-    simsignal_t beginRxSignal;
-    simsignal_t channelUtilizationSignal;
+    simsignal_t receiveSignal;
+    simsignal_t collisionLengthSignal;
+    simsignal_t collisionSignal;
 
   public:
     Server();

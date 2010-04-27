@@ -33,23 +33,13 @@ void Server::initialize()
     gate("in")->setDeliverOnReceptionStart(true);
 
     currentCollisionNumFrames = 0;
-    totalFrames = 0;
-    collidedFrames = 0;
     WATCH(currentCollisionNumFrames);
-    WATCH(totalFrames);
-    WATCH(collidedFrames);
 
-    totalReceiveTime = 0.0;
-    totalCollisionTime = 0.0;
-    currentChannelUtilization = 0;
-    WATCH(totalReceiveTime);
-    WATCH(totalCollisionTime);
-    WATCH(currentChannelUtilization);
+    receiveSignal = registerSignal("receive");
+    collisionSignal = registerSignal("collision");
+    collisionLengthSignal = registerSignal("collisionLength");
 
-    beginRxSignal = registerSignal("beginRx");
-    channelUtilizationSignal = registerSignal("channelUtilization");
-
-    emit(channelUtilizationSignal, 0.0);
+    emit(receiveSignal, 0.0);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i2",0,"x_off");
@@ -67,17 +57,22 @@ void Server::handleMessage(cMessage *msg)
         simtime_t dt = simTime() - recvStartTime;
         if (currentCollisionNumFrames==0)
         {
-            totalReceiveTime += dt;
+            // start of reception at recvStartTime
+            cTimestampedValue tmp(recvStartTime, 1l);
+            emit(receiveSignal, &tmp);
+            // end of reception now
+            emit(receiveSignal, 0);
         }
         else
         {
-            totalCollisionTime += dt;
+            // start of collision at recvStartTime
+            cTimestampedValue tmp(recvStartTime, currentCollisionNumFrames);
+            emit(collisionSignal, &tmp);
+
+            emit(collisionLengthSignal, dt);
         }
-        currentChannelUtilization = totalReceiveTime/simTime();
-        emit(channelUtilizationSignal, currentChannelUtilization);
 
         currentCollisionNumFrames = 0;
-        emit(beginRxSignal, 0);
 
         // update network graphics
         if (ev.isGUI())
@@ -90,7 +85,6 @@ void Server::handleMessage(cMessage *msg)
     {
         cPacket *pkt = check_and_cast<cPacket *>(msg);
 
-        totalFrames++;
         ASSERT(pkt->isReceptionStart());
         simtime_t endReceptionTime = simTime() + pkt->getDuration();
         if (!channelBusy)
@@ -99,7 +93,6 @@ void Server::handleMessage(cMessage *msg)
             recvStartTime = simTime();
             channelBusy = true;
             scheduleAt(endReceptionTime, endRxEvent);
-            emit(beginRxSignal, 1);
 
             if (ev.isGUI())
             {
@@ -112,7 +105,6 @@ void Server::handleMessage(cMessage *msg)
         {
             EV << "another frame arrived while receiving -- collision!\n";
 
-            collidedFrames++;
             if (currentCollisionNumFrames==0)
                 currentCollisionNumFrames = 2;
             else
@@ -123,8 +115,6 @@ void Server::handleMessage(cMessage *msg)
                 cancelEvent(endRxEvent);
                 scheduleAt(endReceptionTime, endRxEvent);
             }
-
-            emit(beginRxSignal, currentCollisionNumFrames);
 
             // update network graphics
             if (ev.isGUI())
@@ -142,21 +132,11 @@ void Server::handleMessage(cMessage *msg)
     }
 }
 
-
 void Server::finish()
 {
     EV << "duration: " << simTime() << endl;
-    EV << "total frames: " << totalFrames << endl;
-    EV << "collided frames: " << collidedFrames << endl;
-    EV << "total receive time: " << totalReceiveTime << endl;
-    EV << "total collision time: " << totalCollisionTime << endl;
-    EV << "channel utilization: " << currentChannelUtilization << endl;
 
     recordScalar("duration", simTime());
-    recordScalar("total frames", totalFrames);
-    recordScalar("collided frames", collidedFrames);
-    recordScalar("total receive time", totalReceiveTime);
-    recordScalar("total collision time", totalCollisionTime);
 }
 
 }; //namespace

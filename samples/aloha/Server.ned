@@ -14,10 +14,15 @@ simple Server
 {
     parameters:
         @display("i=device/antennatower_l");
-        @signal[beginRx](type="long");
-        @signal[channelUtilization](type="double");
-        @statistic[beginRx](title="begin reception";record=vector,timeavg,max;interpolationmode=sample-hold);
-        @statistic[channelUtilization](title="channel utilization";record=vector,last;interpolationmode=linear);
+        @signal[receive](type="long");  // 1 when receiving a packet, 0 when receive finished
+        @signal[collision](type="long"); // the number of collided frames at the beginning of the collision period
+        @signal[collisionLength](type="double");  // the length of the last collision period at the end of the collision period 
+
+        @statistic[channelUtilization](source="timeavg(receive)"; record=last; interpolationmode=linear; title="channel utilization");
+        @statistic[collisionMultiplicity](source=collision; record=vector?,histogram; title="collision multiplicity");
+        @statistic[collisionLength](record=vector?,histogram,mean,sum,max; title="collision length");
+        @statistic[receivedFrames](source="sum(receive)"; record=last; title="received frames");
+        @statistic[collidedFrames](source="sum(collision)"; record=last; title="collided frames");
     gates:
         input in @directIn;
 }
