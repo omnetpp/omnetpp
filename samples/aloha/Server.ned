@@ -14,7 +14,7 @@ simple Server
 {
     parameters:
         @display("i=device/antennatower_l");
-        @signal[receive](type="long");  // 1 when receiving a packet, 0 when receive finished
+        @signal[receive](type="long");  // for successful receptions (non-collisions): 1 at the start of the reception, 0 at the end of the reception
         @signal[collision](type="long"); // the number of collided frames at the beginning of the collision period
         @signal[collisionLength](type="double");  // the length of the last collision period at the end of the collision period 
 
