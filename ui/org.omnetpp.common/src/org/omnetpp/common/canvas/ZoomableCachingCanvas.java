@@ -193,7 +193,8 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 
 	public double getMaxZoomX() {
         checkAreaAndViewPort();
-        return Long.MAX_VALUE / (maxX - minX);
+        // NOTE: the size of the mantissa in a double
+        return Math.pow(2, 52) / (maxX - minX);
 	}
 
 	public void setZoomX(double zoomX) {
@@ -216,7 +217,8 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 
     public double getMaxZoomY() {
         checkAreaAndViewPort();
-        return Long.MAX_VALUE / (maxY - minY);
+        // NOTE: the size of the mantissa in a double
+        return Math.pow(2, 52) / (maxY - minY);
     }
 
 	public void setZoomY(double zoomY) {
