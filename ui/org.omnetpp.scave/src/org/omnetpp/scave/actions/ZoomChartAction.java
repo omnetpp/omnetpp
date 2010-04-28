@@ -73,9 +73,10 @@ public class ZoomChartAction extends AbstractScaveAction {
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		ChartCanvas canvas = editor.getActiveChartCanvas();
 		if (canvas != null) {
-			return zoomFactor > 1.0 ||
-				   horizontally && canvas.getMinZoomX() < canvas.getZoomX() ||
-				   vertically && canvas.getMinZoomY() < canvas.getZoomY();
+			return zoomFactor > 1.0 && horizontally && canvas.getZoomX() < canvas.getMaxZoomX() ||
+			       zoomFactor > 1.0 && vertically && canvas.getZoomX() < canvas.getMaxZoomX() ||
+			       zoomFactor < 1.0 && horizontally && canvas.getMinZoomX() < canvas.getZoomX() ||
+			       zoomFactor < 1.0 && vertically && canvas.getMinZoomY() < canvas.getZoomY();
 		}
 		return false;
 	}

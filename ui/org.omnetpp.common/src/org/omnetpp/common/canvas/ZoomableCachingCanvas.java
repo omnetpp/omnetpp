@@ -114,12 +114,16 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	}
 
 	public long toCanvasX(double xCoord) {
-		double x = (xCoord - minX)*zoomX - getViewportLeft() + getLeftInset();
+        // NOTE: the extra parenthesis is needed to match with the optimized coords mapping
+        // subtracting two longs from a double one after the other does not necessarily results
+        // in the same double as subtracting a single long (representing the two)
+		double x = (xCoord - minX)*zoomX - (getViewportLeft() - getLeftInset());
 		return toLong(x);
 	}
 
 	public long toCanvasY(double yCoord) {
-		double y = (maxY - yCoord)*zoomY - getViewportTop() + getTopInset();
+	    // NOTE: see comment at toCanvasX
+		double y = (maxY - yCoord)*zoomY - (getViewportTop() - getTopInset());
 		return toLong(y);
 	}
 
@@ -187,9 +191,13 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		return getViewportWidth() / (maxX - minX);
 	}
 
+	public double getMaxZoomX() {
+        checkAreaAndViewPort();
+        return Long.MAX_VALUE / (maxX - minX);
+	}
+
 	public void setZoomX(double zoomX) {
-		double minZoomX = getMinZoomX();
-		double newZoomX = Math.max(zoomX, minZoomX);
+		double newZoomX = Math.min(Math.max(zoomX, getMinZoomX()), getMaxZoomX());
 		if (newZoomX != this.zoomX) {
 			double oldX = getViewportCenterCoordX();
 			double oldZoomX = this.zoomX;
@@ -206,9 +214,13 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		return getViewportHeight() / (maxY - minY);
 	}
 
+    public double getMaxZoomY() {
+        checkAreaAndViewPort();
+        return Long.MAX_VALUE / (maxY - minY);
+    }
+
 	public void setZoomY(double zoomY) {
-		double minZoomY = getMinZoomY();
-		double newZoomY = Math.max(zoomY, minZoomY);
+		double newZoomY = Math.min(Math.max(zoomY, getMinZoomY()), getMaxZoomY());
 		if (newZoomY != this.zoomY) {
 			double oldY = getViewportCenterCoordY();
 			double oldZoomY = this.zoomY;
