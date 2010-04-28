@@ -246,7 +246,7 @@ public class LinearAxis {
 		if (logarithmic)
 			return new LogarithmicTicks(Math.pow(10.0, start), Math.pow(10.0, end));
 		else
-			return pixels != 0 ? new LinearTicks(start, end, 50 * (end-start) / pixels ) : null;
+			return pixels != 0 && start != end ? new LinearTicks(start, end, 50 * (end-start) / pixels ) : null;
 	}
 
 	public Rectangle getBounds() {
