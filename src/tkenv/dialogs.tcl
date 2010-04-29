@@ -301,34 +301,35 @@ proc options_dialog {{defaultpage "g"}} {
     set nb $w.f.nb
 
     notebook_addpage $nb g General
+    notebook_addpage $nb l Layouting
     notebook_addpage $nb a Animation
     notebook_addpage $nb t Timeline
     pack $nb -expand 1 -fill both
 
     notebook_showpage $nb $defaultpage
 
-    frame $nb.g.f1 -relief groove -borderwidth 2
+    # "General" page
+    labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2
     label-entry $nb.g.f1.updfreq_fast    {Display update frequency for Fast Run (ms):}
     label-entry $nb.g.f1.updfreq_express {Display update frequency for Express Run (ms):}
     label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution (ms):}
+    checkbutton $nb.g.f1.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     $nb.g.f1.updfreq_fast.l config -width 0
     $nb.g.f1.updfreq_express.l config -width 0
     $nb.g.f1.stepdelay.l config -width 0
     pack $nb.g.f1.updfreq_fast -anchor w -fill x
     pack $nb.g.f1.updfreq_express -anchor w -fill x
     pack $nb.g.f1.stepdelay -anchor w -fill x
+    pack $nb.g.f1.confirmexit -anchor w
 
-    frame $nb.g.f2 -relief groove -borderwidth 2
+    labelframe $nb.g.f2 -text "Logs" -relief groove -borderwidth 2
     checkbutton $nb.g.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
     checkbutton $nb.g.f2.initbanners -text {Print initialization banners} -variable opp(initbanners)
     checkbutton $nb.g.f2.eventbanners -text {Print event banners} -variable opp(eventbanners)
     checkbutton $nb.g.f2.shortbanners -text {Short event banners} -variable opp(shortbanners)
     label-entry $nb.g.f2.numlines {Scrollback buffer (lines):}
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
-    checkbutton $nb.g.f2.layouting -text {Show layouting process} -variable opp(layouting)
-    checkbutton $nb.g.f2.newlayouter -text {Use new layouting algorithms} -variable opp(newlayouter)
-    checkbutton $nb.g.f2.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
-    checkbutton $nb.g.f2.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
+
     $nb.g.f2.numlines.l config -width 0
     pack $nb.g.f2.usemainwin -anchor w
     pack $nb.g.f2.initbanners -anchor w
@@ -336,12 +337,8 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.g.f2.shortbanners -anchor w -padx 10
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w
-    pack $nb.g.f2.layouting -anchor w
-    pack $nb.g.f2.newlayouter -anchor w
-    pack $nb.g.f2.arrangevectorconnections -anchor w
-    pack $nb.g.f2.confirmexit -anchor w
 
-    frame $nb.g.f3 -relief groove -borderwidth 2
+    labelframe $nb.g.f3 -text "Fonts" -relief groove -borderwidth 2
     label-fontcombo $nb.g.f3.fixedfont  {Text window font:} {}
     label-fontcombo $nb.g.f3.listboxfont  {Listbox font:} {}
     commentlabel $nb.g.f3.note {Examples: fixed, fixed 12, Courier 8, Helvetica 12 bold. NOTE: The font system may substitute another font if the given font is not available.}
@@ -349,7 +346,28 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.g.f3.listboxfont -anchor w -fill x
     pack $nb.g.f3.note -anchor w -fill x
 
-    #frame $nb.t -relief groove -borderwidth 2
+    pack $nb.g.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $nb.g.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $nb.g.f3 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+
+    # "Layouting" page
+    labelframe $nb.l.f1 -text "Layouting" -relief groove -borderwidth 2
+    label $nb.l.f1.layouterlabel -text "Layouting algorithm:"
+    frame $nb.l.f1.layouter
+    radiobutton  $nb.l.f1.layouter.old -text "Fast" -variable opp(newlayouter) -value 0
+    radiobutton  $nb.l.f1.layouter.new -text "Advanced" -variable opp(newlayouter) -value 1
+    checkbutton $nb.l.f1.layouting -text {Show layouting process} -variable opp(layouting)
+    checkbutton $nb.l.f1.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
+
+    pack $nb.l.f1.layouterlabel -anchor w
+    pack $nb.l.f1.layouter -anchor w
+    pack $nb.l.f1.layouter.old -anchor w -padx 10
+    pack $nb.l.f1.layouter.new -anchor w -padx 10
+    pack $nb.l.f1.layouting -anchor w
+    pack $nb.l.f1.arrangevectorconnections -anchor w
+    pack $nb.l.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+
+    # "Timeline" page
     checkbutton $nb.t.tlwantself -text {Display self-messages in the timeline} -variable opp(timeline-wantselfmsgs)
     checkbutton $nb.t.tlwantnonself -text {Display non-self messages in the timeline} -variable opp(timeline-wantnonselfmsgs)
     label-entry-help $nb.t.tlnamepattern {Message name filter:} $helptexts(timeline-namepattern)
@@ -365,40 +383,43 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.t.tlclassnamepattern -anchor w -fill x
     pack $nb.t.c1 -anchor w
 
-    checkbutton $nb.a.anim -text {Animate messages} -variable opp(anim)
-    label-scale $nb.a.speed {Animation speed:}
-    $nb.a.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
-    checkbutton $nb.a.concanim -text {Broadcast animation} -variable opp(concanim)
-    commentlabel $nb.a.ca "Animates send/sendDirect calls concurrently, after processing\neach event (i.e. out of sequence)"
-    checkbutton $nb.a.nextev -text {Show next event markers} -variable opp(nextev)
-    checkbutton $nb.a.sdarrows -text {Show arrows for sendDirect() animation} -variable opp(sdarrows)
-    checkbutton $nb.a.animmeth -text {Animate method calls} -variable opp(animmeth)
-    label-scale $nb.a.methdelay {Method call delay (ms):}
-    $nb.a.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
-    checkbutton $nb.a.msgnam -text {Display message names during animation} -variable opp(msgnam)
-    checkbutton $nb.a.msgclass -text {Display message class during animation} -variable opp(msgclass)
-    checkbutton $nb.a.msgcol -text {Color messages by message kind} -variable opp(msgcol)
-    commentlabel $nb.a.c {Color code (message->kind() mod 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black}
-    checkbutton $nb.a.penguin -text {Penguin mode} -variable opp(penguin)
-    checkbutton $nb.a.bubbles -text {Show bubbles (bubble() calls)} -variable opp(bubbles)
-    pack $nb.a.anim -anchor w
-    pack $nb.a.speed -anchor w -expand 0 -fill x
-    pack $nb.a.concanim -anchor w
-    pack $nb.a.ca -anchor w
-    pack $nb.a.nextev -anchor w
-    pack $nb.a.sdarrows -anchor w
-    pack $nb.a.animmeth -anchor w
-    pack $nb.a.methdelay -anchor w -expand 0 -fill x
-    pack $nb.a.msgnam -anchor w
-    pack $nb.a.msgclass -anchor w
-    pack $nb.a.msgcol -anchor w
-    pack $nb.a.c -anchor w
-    pack $nb.a.penguin -anchor w
-    pack $nb.a.bubbles -anchor w
+    # "Animation" page
+    labelframe $nb.a.f1 -text "General" -relief groove -borderwidth 2
+    checkbutton $nb.a.f1.anim -text {Animate messages} -variable opp(anim)
+    label-scale $nb.a.f1.speed {Animation speed:}
+    $nb.a.f1.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
+    checkbutton $nb.a.f1.concanim -text {Broadcast animation} -variable opp(concanim)
+    commentlabel $nb.a.f1.ca "Animates send/sendDirect calls concurrently, after processing\neach event (i.e. out of sequence)"
+    checkbutton $nb.a.f1.nextev -text {Show next event markers} -variable opp(nextev)
+    checkbutton $nb.a.f1.sdarrows -text {Show arrows for sendDirect animation} -variable opp(sdarrows)
+    checkbutton $nb.a.f1.bubbles -text {Show bubbles (bubble() calls)} -variable opp(bubbles)
+    checkbutton $nb.a.f1.animmeth -text {Animate method calls} -variable opp(animmeth)
+    label-scale $nb.a.f1.methdelay {Method call delay (ms):}
+    $nb.a.f1.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
+    labelframe $nb.a.f2 -text "Messages" -relief groove -borderwidth 2
+    checkbutton $nb.a.f2.msgnam -text {Display message names during animation} -variable opp(msgnam)
+    checkbutton $nb.a.f2.msgclass -text {Display message class during animation} -variable opp(msgclass)
+    checkbutton $nb.a.f2.msgcol -text {Color messages by message kind} -variable opp(msgcol)
+    commentlabel $nb.a.f2.c {Color code (message kind modulo 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black}
+    checkbutton $nb.a.f2.penguin -text {Penguin mode} -variable opp(penguin)
 
-    pack $nb.g.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
-    pack $nb.g.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
-    pack $nb.g.f3 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $nb.a.f1.anim -anchor w
+    pack $nb.a.f1.speed -anchor w -expand 0 -fill x
+    pack $nb.a.f1.concanim -anchor w
+    pack $nb.a.f1.ca -anchor w
+    pack $nb.a.f1.nextev -anchor w
+    pack $nb.a.f1.sdarrows -anchor w
+    pack $nb.a.f1.bubbles -anchor w
+    pack $nb.a.f1.animmeth -anchor w
+    pack $nb.a.f1.methdelay -anchor w -expand 0 -fill x
+    pack $nb.a.f2.msgnam -anchor w
+    pack $nb.a.f2.msgclass -anchor w
+    pack $nb.a.f2.msgcol -anchor w
+    pack $nb.a.f2.c -anchor w
+    pack $nb.a.f2.penguin -anchor w
+
+    pack $nb.a.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $nb.a.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # Configure dialog
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast_ms]
