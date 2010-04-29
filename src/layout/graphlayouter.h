@@ -56,8 +56,8 @@ class LAYOUT_API GraphLayouter
 
     GraphLayouterEnvironment *environment;
 
-    int width, height, border;
-    enum {Free, Confine, Scale} sizingMode;
+    int width, height;  // ==0 means unspecified
+    int border;
 
     double privRand01() { return lcgRandom.next01(); }
 
@@ -106,10 +106,24 @@ class LAYOUT_API GraphLayouter
      */
     //@{
     virtual void setEnvironment(GraphLayouterEnvironment *environment) {this->environment = environment;}
+
+    /**
+     * Set the random number seed used by the algorithm. The layouter has its
+     * own RNG, i.e. does not use the simulation kernel's RNGs. The same seed
+     * and same input results in the same layout.
+     */
     void setSeed(int32 seed) { lcgRandom.setSeed(seed);}
+
+    /**
+     * Return the seed value
+     */
     int32 getSeed() { return lcgRandom.getSeed(); }
-    void setConfineToArea(int width, int height, int border); // TBD currently ignored
-    void setScaleToArea(int width, int height, int border);
+
+    /**
+     * Sets the size of the enclosing module. A zero width or height means
+     * unspecified value.
+     */
+    void setSize(int width, int height, int border);
     //@}
 
     /**

@@ -337,16 +337,18 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
        # not only bg* ones.
        opp_displaystring $dispstr parse tags $ptr 1
 
-       # determine top-left origin
-       if {![info exists tags(bgp)]} {set tags(bgp) {}}
-       set bx [lindex $tags(bgp) 0]
-       set by [lindex $tags(bgp) 1]
-       if {$bx==""} {set bx 0}
-       if {$by==""} {set by 0}
-       if {$scaling != ""} {
-           set bx [expr $scaling*$bx]
-           set by [expr $scaling*$by]
-       }
+       # determine top-left origin (bgp tag; currently not supported)
+       #if {![info exists tags(bgp)]} {set tags(bgp) {}}
+       #set bx [lindex $tags(bgp) 0]
+       #set by [lindex $tags(bgp) 1]
+       #if {$bx==""} {set bx 0}
+       #if {$by==""} {set by 0}
+       #if {$scaling != ""} {
+       #    set bx [expr $scaling*$bx]
+       #    set by [expr $scaling*$by]
+       #}
+       set bx 0
+       set by 0
 
        # determine size
        if {![info exists tags(bgb)]} {set tags(bgb) {{} {} {}}}

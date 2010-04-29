@@ -28,6 +28,13 @@
 
 USING_NAMESPACE
 
+// TODO: for each anchor, store bounding box of anchored nodes; when ensuring
+// all nodes are within the area, this bounding box should be taken into account
+
+// TODO: int x,y --> change to dbl
+
+static bool debug = false;
+
 
 BasicSpringEmbedderLayout::BasicSpringEmbedderLayout()
 {
@@ -57,12 +64,6 @@ void BasicSpringEmbedderLayout::setEnvironment(GraphLayouterEnvironment *environ
     attractionForce = environment->getDoubleParameter("bgl", 1, attractionForce);
     defaultEdgeLen = environment->getLongParameter("bgl", 2, defaultEdgeLen);
     maxIterations = environment->getLongParameter("bgl", 3 , maxIterations);
-
-#ifdef USE_CONTRACTING_BOX
-    boxContractionForce = environment->getDoubleParameter("bpars", 0, 100);
-    boxRepulsiveForce = environment->getDoubleParameter("bpars", 1, 100);
-    boxRepForceRatio = environment->getDoubleParameter("bpars", 2, 1);
-#endif
 }
 
 BasicSpringEmbedderLayout::Node *BasicSpringEmbedderLayout::findNode(cModule *mod)
@@ -146,17 +147,17 @@ void BasicSpringEmbedderLayout::addAnchoredNode(cModule *mod, const char *anchor
     nodes.push_back(n);
 }
 
-void BasicSpringEmbedderLayout::addEdge(cModule *from, cModule *to, int len)
+void BasicSpringEmbedderLayout::addEdge(cModule *src, cModule *target, int len)
 {
-    Assert(findNode(from)!=NULL && findNode(to)!=NULL);
+    Assert(findNode(src)!=NULL && findNode(target)!=NULL);
 
     Edge e;
-    e.from = findNode(from);
-    e.to = findNode(to);
+    e.src = findNode(src);
+    e.target = findNode(target);
     e.len = len>0 ? len : defaultEdgeLen;
 
     // heuristics to take submodule size into account
-    e.len += 2*(std::min(e.from->sx,e.from->sy)+std::min(e.to->sx,e.to->sy));
+    e.len += 2*(std::min(e.src->sx,e.src->sy)+std::min(e.target->sx,e.target->sy));
 
     edges.push_back(e);
 }
@@ -180,15 +181,44 @@ void BasicSpringEmbedderLayout::execute()
     if (nodes.empty() || allNodesAreFixed)
         return;
 
-    Assert(width != 0 && height !=0);  // we are not prepared for this case
+    Assert(width==0 || width >= 2*border); // also ensured in setSize()
+    Assert(height==0 || height >= 2*border);
+
+    // assign random start positions to non-fixed nodes. We distribute them
+    // over the area already occupied by fixed nodes or over a 600x400 area,
+    // whichever is larger. The former is esp. impotant, because during
+    // incremental layout (i.e. when placing newly created modules while
+    // the simulation is running) all existing modules are taken as fixed.
+    int initialAreaWidth = 600;
+    int initialAreaHeight = 400;
+    if (haveFixedNode)
+    {
+        // compute bounding box of fixed nodes
+        double x1=POSITIVE_INFINITY, y1=POSITIVE_INFINITY, x2=NEGATIVE_INFINITY, y2=NEGATIVE_INFINITY;
+        Node& n = *(*nodes.begin());
+        for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
+        {
+            Node& n = *(*i);
+            if (n.fixed)
+            {
+                if (n.x-n.sx < x1) x1 = n.x-n.sx;
+                if (n.y-n.sy < y1) y1 = n.y-n.sy;
+                if (n.x+n.sx > x2) x2 = n.x+n.sx;
+                if (n.y+n.sy > y2) y2 = n.y+n.sy;
+            }
+        }
+        initialAreaWidth = std::max(initialAreaWidth, (int)(x2 + x1));  // x1: leave as much space on the right side as is on the left
+        initialAreaHeight = std::max(initialAreaHeight, (int)(y2 + y1));
+    }
 
     // initialize variables (also randomize start positions)
     for (AnchorList::iterator l=anchors.begin(); l!=anchors.end(); ++l)
     {
         Anchor& a = *(*l);
-        a.x = border + (width -2*border) * privRand01();
-        a.y = border + (height -2*border) * privRand01();
-        a.dx = a.dy = 0;
+        //FIXME this is not entirely correct, because we should consider the bounding box of the nodes attached to the anchor instead!
+        a.x = border + (width==0 ? initialAreaWidth : width-2*border) * privRand01();
+        a.y = border + (height==0 ? initialAreaHeight : height-2*border) * privRand01();
+        a.vx = a.vy = 0;
     }
     for (NodeList::iterator k=nodes.begin(); k!=nodes.end(); ++k)
     {
@@ -204,42 +234,36 @@ void BasicSpringEmbedderLayout::execute()
         }
         else // movable
         {
-            n.x = border + (width -2*border) * privRand01();
-            n.y = border + (height -2*border) * privRand01();
+            n.x = border + (width==0 ? initialAreaWidth : width-2*border) * privRand01();
+            n.y = border + (height==0 ? initialAreaHeight : height-2*border) * privRand01();
         }
-        n.dx = n.dy = 0;
+        n.vx = n.vy = 0;
     }
-
-#ifdef USE_CONTRACTING_BOX
-    // initial box (slightly bigger than bounding box of nodes):
-    box.x1 = -100;
-    box.y1 = -100;
-    box.x2 = 1100;
-    box.y2 = 1100;
-    box.dx1 = box.dy1 = box.dx2 = box.dy2 = 0;
-#endif
 
     // set area
-    if (sizingMode==Confine)
+    if (!haveFixedNode)
     {
-        minx = border;
-        miny = border;
-        maxx = 2*minx + width;
-        maxy = 2*miny + height;
-    }
-    else
-    {
+        // layout on an infinite area, because we can scale/shift the nodes
+        // into the box after layouting
         minx = -100000000;
         miny = -100000000;
         maxx =  100000000;
         maxy =  100000000;
     }
+    else
+    {
+        // we assume the top-left corner is (0,0), as bgp, "bg position" tag is not yet implemented
+        minx = border;
+        miny = border;
+        maxx = width==0  ? 100000000 : (width - border);
+        maxy = height==0 ? 100000000 : (height - border);
+    }
 
-    // partition graph
+    // partition the graph
     doColoring();
 
     // now the real job -- stop if max moved distance is <0.05 at least 20 times in a row
-    //clock_t beg = clock();
+    clock_t beg = clock();
     int i, maxdcounter=0;
     for (i=1; i<maxIterations && maxdcounter<20 && environment->okToProceed(); i++)
     {
@@ -253,16 +277,16 @@ void BasicSpringEmbedderLayout::execute()
         else
             maxdcounter=0;
     }
-    //clock_t end = clock();
-    //printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n",
-    //       (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
+    clock_t end = clock();
+    if (debug)
+        printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n", (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
 
     // scale back if too big -- BUT only if we don't have any fixed (or anchored) nodes,
     // because we don't want to change explicitly given coordinates (or distances
     // between anchored nodes)
-    if (sizingMode==Scale && !haveFixedNode)
+    if (!haveFixedNode)
     {
-        // calculate bounding box
+        // calculate bounding box (x1,y1,x2,y2)
         double x1, y1, x2, y2;
         Node& n = *(*nodes.begin());
         x1 = x2 = n.x;
@@ -276,30 +300,17 @@ void BasicSpringEmbedderLayout::execute()
             if (n.y+n.sy > y2) y2 = n.y+n.sy;
         }
 
-        double bx = border, by = border;
-        if (!haveAnchoredNode)
+        // rescale and shift. We don't rescale (only shift) if:
+        //   - width (height) was unspecified;
+        //   - if x1==x2 (to avoid division by zero);
+        //   - there are anchored nodes (their spacing must be preserved)
+        double xfact = (width==0 || x1==x2 || haveAnchoredNode) ? 1.0 : (width-2*border) / (x2-x1);
+        double yfact = (height==0 || y1==y2 || haveAnchoredNode) ? 1.0 : (height-2*border) / (y2-y1);
+        for (NodeList::iterator j=nodes.begin(); j!=nodes.end(); ++j)
         {
-            // rescale
-            double xfact = (width-2*border) / (x2-x1);
-            double yfact = (height-2*border) / (y2-y1);
-            if (xfact>1) {xfact=1;} // only scale down if needed, but never magnify
-            if (yfact>1) {yfact=1;}
-            for (NodeList::iterator j=nodes.begin(); j!=nodes.end(); ++j)
-            {
-                Node& n = *(*j);
-                n.x = bx + (n.x-x1)*xfact;
-                n.y = by + (n.y-y1)*yfact;
-            }
-        }
-        else
-        {
-            // don't want to rescale with anchored nodes, just shift bounding box to (bx,by)
-            for (NodeList::iterator j=nodes.begin(); j!=nodes.end(); ++j)
-            {
-                Node& n = *(*j);
-                n.x = bx + n.x - x1;
-                n.y = by + n.y - y1;
-            }
+            Node& n = *(*j);
+            n.x = border + (n.x-x1)*xfact;
+            n.y = border + (n.y-y1)*yfact;
         }
     }
 }
@@ -334,10 +345,10 @@ void BasicSpringEmbedderLayout::doColoring()
             for (k=edges.begin(); k!=edges.end(); ++k)
             {
                 Edge& e = *k;
-                if (e.from==n && e.to->color==-1)
-                    todoList.push_back(e.to);
-                else if (e.to==n && e.from->color==-1)
-                    todoList.push_back(e.from);
+                if (e.src==n && e.target->color==-1)
+                    todoList.push_back(e.target);
+                else if (e.target==n && e.src->color==-1)
+                    todoList.push_back(e.src);
             }
         }
 
@@ -353,6 +364,8 @@ double BasicSpringEmbedderLayout::relax()
     //   - ignores connections to parent module
     //   - ignores node sizes altogether
 
+    // Note: USE_CONTRACTING_BOX code was removed in version 4.1 -- if needed, it can be retrieved from earlier version
+
     NodeList::iterator i,j;
     EdgeList::iterator k;
     AnchorList::iterator l;
@@ -360,27 +373,29 @@ double BasicSpringEmbedderLayout::relax()
     double noiseLevel = 0; // noise doesn't seem to help
 
     // edge attraction: calculate if edges are longer or shorter than requested (tension),
-    // and modify their (dx,dy) movement vector accordingly
+    // and modify their (vx,vy) movement vector accordingly
     for (k=edges.begin(); k!=edges.end(); ++k)
     {
         Edge& e = *k;
-        if (e.from->fixed && e.to->fixed)
+        if (e.src->fixed && e.target->fixed)
             continue;
-        double vx = e.to->x - e.from->x;
-        double vy = e.to->y - e.from->y;
-        double len = sqrt(vx * vx + vy * vy);
-        len = (len == 0) ? 1.0 : len;
-        double f = attractionForce * double(e.len - len) / len;
-        double dx = f * vx;
-        double dy = f * vy;
+        if (e.src->anchor && e.src->anchor == e.target->anchor)
+            continue;
+        double deltax = e.target->x - e.src->x;
+        double deltay = e.target->y - e.src->y;
+        double dist = sqrt(deltax * deltax + deltay * deltay);
+        dist = (dist == 0) ? 1.0 : dist;
+        double f = attractionForce * double(e.len - dist) / dist;
+        double vx = f * deltax;
+        double vy = f * deltay;
 
-        e.to->dx += dx;
-        e.to->dy += dy;
-        e.from->dx += -dx;
-        e.from->dy += -dy;
+        e.target->vx += vx;
+        e.target->vy += vy;
+        e.src->vx -= vx;
+        e.src->vy -= vy;
     }
 
-    // nodes repulse each other, update (dx,dy) with this effect
+    // nodes repulse each other, update (vx,vy) with this effect
     //
     // modification to the original algorithm: only nodes that share the
     // same color (i.e., are connected) repulse each other -- repulsion between
@@ -403,100 +418,46 @@ double BasicSpringEmbedderLayout::relax()
                 continue;
 
             Node& n2 = *(*j);
-            double vx = n1.x - n2.x;
-            double vy = n1.y - n2.y;
-            double lensq = vx * vx + vy * vy;
-            if (n1.color==n2.color)
+            if (n1.anchor && n1.anchor == n2.anchor)
+                continue;
+
+            double deltax = n1.x - n2.x;
+            double deltay = n1.y - n2.y;
+            double distsq = deltax * deltax + deltay * deltay;
+
+            // different colors repulse only up to 100 units, so that unconnected networks do not blow up
+            if (n1.color==n2.color || distsq < 100*100)
             {
-                // most frequently firing condition first
-                if (lensq > 2000*2000) // don't repulse if very far
+                if (distsq < 1.0)
                 {
-                }
-                else if (lensq <= 1.0)
-                {
-                    fx += privRand01();
-                    fy += privRand01();
+                    // use 1.0 instead of distsq, to avoid division by (near) zero;
+                    // plus add random noise to help nodes mode aways from each other
+                    fx += deltax + privRand01()-0.5;
+                    fy += deltay + privRand01()-0.5;
                 }
                 else
                 {
-                    fx += vx / lensq;
-                    fy += vy / lensq;
-                }
-            }
-            else // different colors
-            {
-                // most frequently firing condition first
-                if (lensq > 100*100)  // don't repulse if farther than 100
-                {
-                }
-                else if (lensq <= 1.0)
-                {
-                    fx += privRand01();
-                    fy += privRand01();
-                }
-                else
-                {
-                    fx += vx / lensq;
-                    fy += vy / lensq;
+                    fx += deltax / distsq;
+                    fy += deltay / distsq;
                 }
             }
         }
 
-        // we only  use the direction of (dx,dy) -- node dx,dy is (force * unit vector)
-        //double flensq = fx * fx + fy * fy;
-        //if (flensq > 0)
-        //{
-            //double flen = sqrt(flensq);
-            //n1.dx += repulsiveForce * fx / flen;
-            //n1.dy += repulsiveForce * fy / flen;
-            n1.dx += repulsiveForce * fx;
-            n1.dy += repulsiveForce * fy;
-        //}
+        n1.vx += repulsiveForce * fx;
+        n1.vy += repulsiveForce * fy;
     }
 
-#ifdef USE_CONTRACTING_BOX
-    // box contraction
-    box.dx1 += boxContractionForce;
-    box.dy1 += boxContractionForce;
-    box.dx2 -= boxContractionForce;
-    box.dy2 -= boxContractionForce;
-
-    // repulsion between box and nodes
-    for (i=nodes.begin(); i!=nodes.end(); ++i)
+    if (debug)
     {
-        Node& n = *(*i);
-
-        /*
-        double fx1 = boxRepulsiveForce / sqrt(fabs(n.x - box.x1));
-        double fx2 = -boxRepulsiveForce / sqrt(fabs(n.x - box.x2));
-        double fy1 = boxRepulsiveForce / sqrt(fabs(n.y - box.y1));
-        double fy2 = -boxRepulsiveForce / sqrt(fabs(n.y - box.y2));
-        */
-        double fx1 = boxRepulsiveForce / (n.x - box.x1);  // div by zero?
-        double fx2 = boxRepulsiveForce / (n.x - box.x2);
-        double fy1 = boxRepulsiveForce / (n.y - box.y1);
-        double fy2 = boxRepulsiveForce / (n.y - box.y2);
-
-        n.dx += fx1;
-        box.dx1 -= fx1;
-
-        n.dx += fx2;
-        box.dx2 -= fx2;
-
-        n.dy += fy1;
-        box.dy1 -= fy1;
-
-        n.dy += fy2;
-        box.dy2 -= fy2;
+        for (int i=0; i<nodes.size(); ++i)
+        {
+            Node& n = *nodes[i];
+            printf("%d:  pos=(%g,%g) v=(%g,%g)\n", i, n.x, n.y, n.vx, n.vy);
+        }
+        printf("\n");
     }
 
-    box.dx1 /= boxRepForceRatio;
-    box.dy1 /= boxRepForceRatio;
-    box.dx2 /= boxRepForceRatio;
-    box.dy2 /= boxRepForceRatio;
-#endif
-
-    // limit dx,dy into (-50,50); move nodes by (dx,dy);
+    // limit vx,vy into (-50,50); move nodes by (vx,vy);
     // constrain nodes into rectangle (minx, miny, maxx, maxy)
     double maxd = 0;
     for (i=nodes.begin(); i!=nodes.end(); ++i)
@@ -509,64 +470,73 @@ double BasicSpringEmbedderLayout::relax()
         }
         else // movable
         {
-            n.x += std::max(-50.0, std::min(50.0, n.dx)); // speed limit
-            n.y += std::max(-50.0, std::min(50.0, n.dy));
+            n.x += std::max(-50.0, std::min(50.0, n.vx)); // speed limit (actually, movement limit because (vx,vy) is not changed)
+            n.y += std::max(-50.0, std::min(50.0, n.vy));
 
-            n.x += noiseLevel*(privRand01()-0.5); // add noise to push nodes out of local minimums
-            n.y += noiseLevel*(privRand01()-0.5);
-
+/*
+            // move node within bounds. Additional random term is supposed to help prevent
+            // many nodes lining up against the wall, by providing a force component
+            // that is perpendicular to the wall; but it seems ineffectual.
+            if (n.x < minx)
+                n.x = minx + privRand01();
+            if (n.x > maxx)
+                n.x = maxx - privRand01();
+            if (n.y < miny)
+                n.y = miny + privRand01();
+            if (n.y > maxy)
+                n.y = maxy - privRand01();
+*/
+            // move node within bounds
             n.x = std::max(minx, std::min(maxx, n.x));
             n.y = std::max(miny, std::min(maxy, n.y));
         }
 
         // this is used for stopping condition
-        if (maxd<n.dx) maxd=n.dx;
-        if (maxd<n.dy) maxd=n.dy;
+        if (maxd<n.vx) maxd=n.vx;
+        if (maxd<n.vy) maxd=n.vy;
 
-        // "friction" -- nodes stop eventually if not driven by a force
-        n.dx /= 2;
-        n.dy /= 2;
+        // "friction" or "drag" -- nodes stop eventually if not driven by a force
+        n.vx /= 2;
+        n.vy /= 2;
     }
 
     // sum up movements of anchor nodes
     for (l = anchors.begin(); l!=anchors.end(); ++l)
     {
         Anchor& a = *(*l);
-        a.dx = 0;
-        a.dy = 0;
+        a.vx = 0;
+        a.vy = 0;
     }
     for (i=nodes.begin(); i!=nodes.end(); ++i)
     {
         Node& n = *(*i);
         if (n.anchor)
         {
-            n.anchor->dx += n.dx;
-            n.anchor->dy += n.dy;
+            n.anchor->vx += n.vx / n.anchor->refcount;
+            n.anchor->vy += n.vy / n.anchor->refcount;
         }
     }
+
     // move anchor points
     for (l = anchors.begin(); l!=anchors.end(); ++l)
     {
         Anchor& a = *(*l);
-        // double c = sqrt(n.anchor->refcount);
-        a.x += std::max(-50.0, std::min(50.0, a.dx)); // speed limit
-        a.y += std::max(-50.0, std::min(50.0, a.dy));
+        a.x += std::max(-50.0, std::min(50.0, a.vx)); // speed limit (actually, movement limit because vx,vy is not changed)
+        a.y += std::max(-50.0, std::min(50.0, a.vy));
 
-        a.x += noiseLevel*(privRand01()-0.5); // add noise to push nodes out of local minimums
-        a.y += noiseLevel*(privRand01()-0.5);
-
-        a.x = std::max(minx, std::min(maxx, a.y));
+        a.x = std::max(minx, std::min(maxx, a.y));   //FIXME why we apply this to the anchors? should be applied to the nodes instead!!!
         a.y = std::max(miny, std::min(maxy, a.x));
 
         // this is used for stopping condition
-        if (maxd<a.dx) maxd=a.dx;
-        if (maxd<a.dy) maxd=a.dy;
+        if (maxd<a.vx) maxd=a.vx;
+        if (maxd<a.vy) maxd=a.vy;
 
-        // "friction" -- nodes stop eventually if not driven by a force
-        a.dx /= 2;
-        a.dy /= 2;
+        // "friction" or "drag" -- nodes stop eventually if not driven by a force
+        a.vx /= 2;
+        a.vy /= 2;
     }
-    // refresh positions of anchored nodes (and distribute anchor's dx,dy among its nodes)
+
+    // refresh positions of anchored nodes
     for (i=nodes.begin(); i!=nodes.end(); ++i)
     {
         Node& n = *(*i);
@@ -575,41 +545,11 @@ double BasicSpringEmbedderLayout::relax()
             n.x = n.anchor->x + n.offx;
             n.y = n.anchor->y + n.offy;
 
-            n.dx = n.anchor->dx / n.anchor->refcount;
-            n.dy = n.anchor->dy / n.anchor->refcount;
+            n.vx = n.anchor->vx;
+            n.vy = n.anchor->vy;
         }
     }
 
-#ifdef USE_CONTRACTING_BOX
-    // move box by its dx1,dy1,dx2,dy2
-    box.x1 += box.dx1;
-    box.y1 += box.dy1;
-    box.x2 += box.dx2;
-    box.y2 += box.dy2;
-
-    box.dx1 /= 2;
-    box.dy1 /= 2;
-    box.dx2 /= 2;
-    box.dy2 /= 2;
-
-    // calculate bounding rectange and adjust box to be bigger than that
-    double x1, y1, x2, y2;
-    Node& n = *(*nodes.begin());
-    x1 = x2 = n.x;
-    y1 = y2 = n.y;
-    for (i=nodes.begin(); i!=nodes.end(); ++i)
-    {
-        Node& n = *(*i);
-        if (n.x-n.sx < x1) x1 = n.x-n.sx;
-        if (n.y-n.sy < y1) y1 = n.y-n.sy;
-        if (n.x+n.sx > x2) x2 = n.x+n.sx;
-        if (n.y+n.sy > y2) y2 = n.y+n.sy;
-    }
-    if (box.x1 >= x1) box.x1 = x1;
-    if (box.y1 >= y1) box.y1 = y1;
-    if (box.x2 <= x2) box.x2 = x2;
-    if (box.y2 <= y2) box.y2 = y2;
-#endif
     return maxd;
 }
 
@@ -618,10 +558,6 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     if (step % 5 != 0) return;
 
     environment->clearGraphics();
-
-#ifdef USE_CONTRACTING_BOX
-    environment->drawRectangle(box.x1, box.y1, box.x2, box.y2, "{box bbox}", "black");
-#endif
 
     const char *colors[] = {"black","red","blue","green","yellow","cyan","purple","darkgreen"};
     for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
@@ -634,8 +570,8 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     for (EdgeList::iterator j=edges.begin(); j!=edges.end(); ++j)
     {
         Edge& e = *j;
-        const char *color = colors[e.from->color % (sizeof(colors)/sizeof(char*))];
-        environment->drawLine(e.from->x, e.from->y, e.to->x, e.to->y, "{edge bbox}", color);
+        const char *color = colors[e.src->color % (sizeof(colors)/sizeof(char*))];
+        environment->drawLine(e.src->x, e.src->y, e.target->x, e.target->y, "{edge bbox}", color);
     }
 
     char buf[80];

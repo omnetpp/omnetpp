@@ -22,19 +22,14 @@ USING_NAMESPACE
 GraphLayouter::GraphLayouter()
 {
     width = height = border = 0;
-    sizingMode = Free;
 }
 
-void GraphLayouter::setConfineToArea(int w, int h, int bd)
+void GraphLayouter::setSize(int w, int h, int bd)
 {
     width = w; height = h; border = bd;
-    sizingMode = Confine;
-}
 
-void GraphLayouter::setScaleToArea(int w, int h, int bd)
-{
-    width = w; height = h; border = bd;
-    sizingMode = Scale;
+    if ((width!=0 && width < 2*border) || (height!=0 && height < 2*border))
+        throw opp_runtime_error("GraphLayouter::setSize(): required width or height smaller than 2*border");
 }
 
 

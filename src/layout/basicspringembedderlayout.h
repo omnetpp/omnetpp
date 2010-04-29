@@ -25,21 +25,16 @@
 
 NAMESPACE_BEGIN
 
-// currently it works fine without boxing the graph
-//#define USE_CONTRACTING_BOX
-
 
 /**
  * Implementation of the Spring Embedder algorithm. This class is the layouter
  * used in OMNeT++ 3.x.
  *
  * Simplifications:
- *  - ignores node size (this is visible when item is very long, e.g.
+ *  - ignores node sizes (this is visible when item is very long, e.g.
  *    500 x 10 pixels)
  *  - ignores connections to the parent module (nodes which are connected
  *    to the parent may end up in the middle of the layout)
- *  - it is also problematic if the graph is not connected -- disjoint
- *    parts tend to drift far away
  */
 class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
 {
@@ -49,27 +44,27 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
         std::string name; // anchor name
         double x, y;      // position
         int refcount;     // how many nodes are anchored to it
-        double dx, dy;    // internal: movement at each step (NOT preserved across iterations!)
+        double vx, vy;    // internal: distance moved at each step (preserved between relax() calls)
     };
 
     struct Node
     {
         cModule *key;      // node "handle"
         bool fixed;        // allowed to move?
-        Anchor *anchor;    // not NULL for achored nodes
+        Anchor *anchor;    // non-NULL for anchored nodes
         double x, y;       // position (of the center of the shape)
         int offx, offy;    // anchored nodes: offset to anchor point (and x,y are calculated)
         int sx, sy;        // half width/height
 
-        double dx, dy;     // internal: movement at each step
+        double vx, vy;     // interval: distance moved at each step (preserved between relax() calls)
         int color;         // internal: connected nodes share the same color
     };
 
     struct Edge
     {
-        Node *from;
-        Node *to;
-        int len;
+        Node *src;
+        Node *target;
+        double len;        // preferred length; making it "double" reduces the number of int->double conversions during layouting
     };
 
     // AnchorList and NodeList must be vectors because iteration on std::map is very slow
@@ -80,21 +75,6 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     AnchorList anchors;
     NodeList nodes;
     EdgeList edges;
-
-#ifdef USE_CONTRACTING_BOX
-    struct Box
-    {
-        bool fixed;      // allowed to move?
-        double x1, y1;   // coordinates
-        double x2, y2;
-
-        double dx1, dy1; // movement
-        double dx2, dy2;
-    };
-
-    // contracting bounding box
-    Box box;
-#endif
 
     int defaultEdgeLen;
 
@@ -107,13 +87,6 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     int maxIterations;
     double repulsiveForce;
     double attractionForce;
-
-#ifdef USE_CONTRACTING_BOX
-  public:
-    double boxContractionForce;
-    double boxRepulsiveForce;
-    double boxRepForceRatio;
-#endif
 
   protected:
     // utility
@@ -143,8 +116,8 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     void addMovableNode(cModule *mod, int width, int height);
     void addFixedNode(cModule *mod, int x, int y, int width, int height);
     void addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height);
-    void addEdge(cModule *from, cModule *to, int len=0);
-    void addEdgeToBorder(cModule *from, int len=0);
+    void addEdge(cModule *src, cModule *target, int len=0);
+    void addEdgeToBorder(cModule *src, int len=0);
     virtual void execute();
     void getNodePosition(cModule *mod, int& x, int& y);
     //@}

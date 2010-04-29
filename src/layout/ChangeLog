@@ -1,3 +1,16 @@
+2010-04-29  Andras Varga
+
+	* Bugfixes and cleanup of "classic" layouting algorithm
+	- fix: dynamically created modules in Tkenv often ended up outside
+	  the compound module rectangle (see test/anim/dynamic2 test)
+	- initial random placement to use the area already occupied by fixed
+	  nodes (but minimum 600x400)
+	- removed scalingMode, setConfineToArea(), setScaleToArea(); related
+	  functionality is now interal to the layouter class
+	- removed several tweaks and nonlinearities from layouting code
+	- removed unused CONTRACTING_BOX code
+	- renaming of variables ("from"/"to" to "src"/"target", etc)
+
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
 2010-03-14  ------ omnetpp-4.1b3 released ------

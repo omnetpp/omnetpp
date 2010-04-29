@@ -495,14 +495,25 @@ void TGraphicalModWindow::refreshLayout()
     environment.setInterpreter(interp);
 
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
+    // if (getTkenv()->opt_showlayouting)  // for debugging
     if (submodPosMap.empty() && getTkenv()->opt_showlayouting)
         environment.setCanvas(canvas);
     layouter->setEnvironment(&environment);
 
-    // size
-    int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentmodule, 740);
-    int sy = resolveLongDispStrArg(ds.getTagArg("bgb",1), parentmodule, 500);
-    layouter->setScaleToArea(sx,sy,50); // FIXME position "bgp" is ignored here...
+    // background size
+    int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentmodule, 0);
+    int sy = resolveLongDispStrArg(ds.getTagArg("bgb",1), parentmodule, 0);
+    int border = 30;
+    if (sx!=0 && sx < 2*border)
+        border = sx/2;
+    if (sy!=0 && sy < 2*border)
+        border = sy/2;
+    layouter->setSize(sx, sy, border);
+    // TODO support "bgp" tag ("background position")
+
+    //TODO: scaling ("bgs") support for layouter.
+    // Layouter algorithm is NOT scale-independent, so we should divide ALL coordinates
+    // by "scale" before passing them to the layouter, then multiply back the results.
 
     // loop through all submodules, get their sizes and positions and feed them into layouting engine
     for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
