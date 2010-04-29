@@ -242,7 +242,7 @@ proc create_omnetpp_window {} {
 
     frame .toolbar -relief raised -borderwidth 1
 
-    #  {restart  -image $icons(restart) -command {rebuild}}
+    #TODO  {rebuild  -image $icons(rebuild) -command {rebuild}}
 
     foreach i {
       {sep00    -separator}
@@ -252,7 +252,6 @@ proc create_omnetpp_window {} {
       {copy     -image $icons(copy)    -command {edit_copy}}
       {find     -image $icons(find)    -command {edit_find}}
       {save     -image $icons(save)    -command {savefile "."}}
-      {filter   -image $icons(filter)  -command {edit_filterwindowcontents}}
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
       {run      -image $icons(run)     -command {run_normal}}
@@ -266,6 +265,7 @@ proc create_omnetpp_window {} {
       {sep02     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
+      {filter   -image $icons(filter)  -command {edit_filterwindowcontents}}
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggle_timeline}}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
@@ -293,7 +293,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.eventlog) {Eventlog recording on/off}
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
+    set help_tips(.toolbar.objs)    {Find and inspect modules, messages, queues and other objects (Ctrl+S)}
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
