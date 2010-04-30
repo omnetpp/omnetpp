@@ -688,3 +688,15 @@ DEF(nedf_poisson,
     return argv[0];
 })
 
+
+//
+// misc utility functions
+//
+
+DEF(nedf_simTime,
+    "quantity simTime()",
+    "misc",
+    "Returns the current simulation time.",
+{
+    return Value(simTime().dbl(), "s");
+})

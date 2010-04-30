@@ -270,6 +270,9 @@ public final class NedCompletionHelper {
     	makeShortTemplate("fullName()", "function"),
     	makeShortTemplate("parentIndex()", "function"),
     	makeShortTemplate("ancestorIndex(${int})", "function"),
+
+        // misc
+    	makeShortTemplate("simTime()", "function"),
     };
 
     public final static Template[] proposedNedContinuousDistributionsTempl = new Template[] {
