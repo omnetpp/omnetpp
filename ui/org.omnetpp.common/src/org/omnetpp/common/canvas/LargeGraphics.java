@@ -9,7 +9,7 @@ import org.eclipse.draw2d.Graphics;
 /**
  * This utility class provides 'long' coordinate support for graphics. Despite the fact that SWT graphics takes 'int' coordinates
  * it seems to have a limit around 2 million on Windows platforms. Besides we also want to be able to draw arbitrary stuff in the
- * 'long' coordinate rang. Unfortunately simply casting the coordinates/sizes to 'int' is not right, because it just throws away
+ * 'long' coordinate range. Unfortunately simply casting the coordinates/sizes to 'int' is not right, because it just throws away
  * the upper bits and the result might accidentally fall into the clipping region.
  *
  * The idea is to clip all necessary drawing operations to the coordinate range that SWT clearly supports before calling the
@@ -22,13 +22,13 @@ public class LargeGraphics {
      * This must be a coordinate that SWT can always handle safely on any platform.
      * Drawing operations outside this coordinate will not be propagated to the underlying graphics.
      */
-    private static long MIN_COORDINATE = -1000000;
+    private static long MIN_COORDINATE = -10000;  // 10000 because of Cairo
 
     /**
      * This must be a coordinate that SWT can always handle safely on any platform.
      * Drawing operations outside this coordinate will not be propagated to the underlying graphics.
      */
-    private static long MAX_COORDINATE = 1000000;
+    private static long MAX_COORDINATE = 10000;
 
     private static long MAX_SIZE = MAX_COORDINATE - MIN_COORDINATE;
 
@@ -121,7 +121,7 @@ public class LargeGraphics {
     }
 
     /**
-     * Copied from http://en.wikipedia.org/wiki/Cohen–Sutherland and edited somewhat.
+     * Copied from http://en.wikipedia.org/wiki/Cohenï¿½Sutherland and edited somewhat.
      *
      * @author levy
      */
@@ -293,7 +293,8 @@ public class LargeGraphics {
                     }
                 }
                 // make sure that first and last element are the same, we want a closed polygon
-                if (closed && clippedPolygon.firstElement() != clippedPolygon.lastElement())
+                // KLUDGE !clippedPolygon.isEmpty() added to preven NoSuchElementException (is this right?) 
+                if (closed && !clippedPolygon.isEmpty() && clippedPolygon.firstElement() != clippedPolygon.lastElement())
                     clippedPolygon.add(clippedPolygon.firstElement());
                 // we have to keep on working with our new clipped polygon
                 polygon = (Vector<LargePoint>)clippedPolygon.clone();
