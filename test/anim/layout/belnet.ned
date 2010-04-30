@@ -12,7 +12,7 @@ module belnetNode
     connections allowunconnected:
 }
 
-network belnet
+network belnet extends Base
 {
     submodules:
         node0: belnetNode {

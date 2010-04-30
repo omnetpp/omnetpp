@@ -6,7 +6,7 @@ module StandardHostNode
     connections allowunconnected:
 }
 
-network StandardHost
+network StandardHost extends Base
 {
     parameters:
         int numTcpApps = default(2);

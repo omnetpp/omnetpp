@@ -12,7 +12,7 @@ module geantNode
     connections allowunconnected:
 }
 
-network geant
+network geant extends Base
 {
     submodules:
         node0: geantNode {

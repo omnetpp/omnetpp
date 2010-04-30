@@ -8,7 +8,7 @@ module NetNode
     connections allowunconnected:
 }
 
-network NetContinents5
+network NetContinents5 extends Base
 {
   submodules:
     node_4_0 : NetNode;

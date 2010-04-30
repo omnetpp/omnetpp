@@ -17,13 +17,10 @@ module BRITE50Node
 }
 
 //
-// Topology exported from BRITE50. Actual module type to be used as nodes
-// in the network should be supplied in the 'nodetype' parameter.
+// Topology exported from BRITE50.
 //
-module BRITE50Network
+network BRITE50 extends Base
 {
-    parameters:
-        string nodetype;
     submodules:
         node0: BRITE50Node {
             parameters:
@@ -576,16 +573,5 @@ module BRITE50Network
         node49.in[2] <-- {  delay = 1.3128448864319113ms; datarate = 1.0E7; } <-- node23.out[4];
         node49.out[3] --> {  delay = 0.08033287200835651ms; datarate = 1.0E7; } --> node48.in[8];
         node49.in[3] <-- {  delay = 0.08033287200835651ms; datarate = 1.0E7; } <-- node48.out[8];
-}
-
-//
-// Example network that instantiates BRITE50Network. For actual simulation,
-// provide a module type called InetNode with the same interface as
-// BRITE50Node above.
-//
-network aBRITE50Network extends BRITE50Network
-{
-    parameters:
-        nodetype = "InetNode";
 }
 

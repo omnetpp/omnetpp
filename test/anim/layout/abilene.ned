@@ -12,7 +12,7 @@ module abileneNode
     connections allowunconnected:
 }
 
-network abilene
+network abilene extends Base
 {
     submodules:
         node0: abileneNode {
