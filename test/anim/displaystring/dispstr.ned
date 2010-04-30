@@ -24,7 +24,19 @@ network DisplayStringTest
             @display("p=35,200");
         }
         nedParams: NedParams {
-            @display("p=112,47");
+            @display("p=35,40");
+        }
+        emptyStringParams : EmptyStringParams {
+            @display("p=112,49");
+        }
+        nonemptyStringParams : NonemptyStringParams {
+            @display("p=191,40");
+        }
+        numericParams : NumericParams {
+            @display("p=272,49");
+        }
+        paramsWithBraces : ParamsWithBraces {
+            @display("p=350,40");
         }
         scaling: scaling {
             @display("p=191,200");

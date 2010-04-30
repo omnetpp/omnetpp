@@ -1,3 +1,13 @@
+2010-04-30 Andras Varga
+
+	* fix: parameter references ($par,${par}) were not accepted in many
+	display string tags (bgb,bgs,bgg,..); also added related test case
+	in test/anim/displaystring
+
+	* fix: background image clipping was wrong in certain cases, causing
+	Tk's image copy routine to receive a 0,0 as size and go into an
+	infinite loop
+
 2010-04-25 Andras Varga
 
 	* tkenv.cc: fixed bug #107, crash due to reuse of va_list w/o va_copy()
@@ -6,31 +16,31 @@
 
 2010-04-12  Rudolf Hornig, Andras Varga
 
-	* feature: added an option to disable printing of banner messages 
-	about module/channel initializations; see "Print initialization 
+	* feature: added an option to disable printing of banner messages
+	about module/channel initializations; see "Print initialization
 	banners" checkbox in the Options dialog.
 
 2010-04-02  Levente Meszaros
 
-	* feature: toggle eventlog recording interactively (menu item, toolbar 
+	* feature: toggle eventlog recording interactively (menu item, toolbar
 	button); it will then override the "intervals" setting from omnetpp.ini
 
 	* usability: New Network function removed from toolbar, as it was
 	confusing; still available via the File menu
-	
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2010-01-28  Andras Varga
 
-	* improvement: module or channel parameter references may now occur 
-	as substrings in the middle of display string tags, for example: 
+	* improvement: module or channel parameter references may now occur
+	as substrings in the middle of display string tags, for example:
 	    @display("t=my address is $address!").
-	Before, they were only accepted if a whole display string tag was a 
+	Before, they were only accepted if a whole display string tag was a
 	single parameter reference.
 
 	* improvement: parameter references in display strings may now be
-	delimited with braces as well (${par}), if needed to separate it 
-	from subsequent text. For example: 
+	delimited with braces as well (${par}), if needed to separate it
+	from subsequent text. For example:
 	    @display("t=bw:${datarate}bps");
 
 2009-09-15 Rudolf Hornig
@@ -46,7 +56,7 @@
 
 	* New feature: An option was added to enable/disable whether connections
 	attached to a gate vector, connecting the same two modules should be
-	drawn parallel to each other (old behaviour) or just as a single 
+	drawn parallel to each other (old behaviour) or just as a single
 	connection line (new default)
 
 2009-09-01  Andras Varga
@@ -68,7 +78,7 @@
         * fixed: display string for messages made consistent with module display
         strings: "o" tag removed, use b=width,height,shape,color,borderwidth instead.
 
-        * New feature: A special color name "kind" can be used in message 
+        * New feature: A special color name "kind" can be used in message
 	display strings (both in "i" and "b" tags)
 
 2008-12-14  Andras Varga

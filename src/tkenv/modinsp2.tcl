@@ -525,6 +525,9 @@ proc get_cached_image {img zoomfactor x1 y1 x2 y2 targetWidth targetHeight doStr
     set y1 [expr int($y1)]
     set x2 [expr int($x2)]
     set y2 [expr int($y2)]
+    if {$x1>=$x2} {set x2 [expr $x1+1]}  ;# safety: Tk image copy may hang on zero-size source image
+    if {$y1>=$y2} {set y2 [expr $y1+1]}
+
     set targetWidth [expr int($targetWidth)]
     set targetHeight [expr int($targetHeight)]
     if {$targetWidth<1} {set targetWidth 1}

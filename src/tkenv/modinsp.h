@@ -43,13 +43,6 @@
 NAMESPACE_BEGIN
 
 
-// utility functions:
-cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent);
-bool resolveBoolDispStrArg(const char *s, cComponent *component, bool defaultValue);
-long resolveLongDispStrArg(const char *s, cComponent *component, int defaultValue);
-double resolveDoubleDispStrArg(const char *s, cComponent *component, double defaultValue);
-
-
 class TModuleWindow : public TInspector
 {
    protected:
@@ -97,7 +90,6 @@ class TGraphicalModWindow : public TInspector
       bool needsRedraw() {return needs_redraw;}
 
       // implementations of inspector commands:
-      virtual int getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmodQ(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv);

@@ -5,7 +5,7 @@ if defined LIB set LIB=
 set PATH=%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem
 
 set OMNETPP_ROOT=%~dp0
-set OMNETPP_IMAGE_PATH=%~dp0\images
+set OMNETPP_IMAGE_PATH=%~dp0\images;./images
 
 :XXX for stock VS 2008 installation, use:
 :XXX "%VS90COMNTOOLS%vsvars32.bat"

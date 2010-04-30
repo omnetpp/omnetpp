@@ -26,6 +26,7 @@
 #include "cchannel.h"
 #include "tkenv.h"
 #include "tklib.h"
+#include "tkutil.h"
 #include "inspfactory.h"
 #include "arrow.h"
 #include "graphlayouter.h"
@@ -41,58 +42,6 @@ USING_NAMESPACE
 
 void _dummy_for_modinsp() {}
 
-cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent)
-{
-   cPar *par = NULL;
-   int k = component->findPar(parname);
-   if (k>=0)
-      par = &(component->par(k));
-
-   if (!par && searchparent && component->getParentModule())
-   {
-      k = component->getParentModule()->findPar( parname );
-      if (k>=0)
-         par = &(component->getParentModule()->par(k));
-   }
-   if (!par)
-   {
-      const char *what = component->isModule() ? "module" : "channel";
-      if (!searchparent)
-          throw cRuntimeError("%s `%s' has no parameter `%s'", what, component->getFullPath().c_str(), parname);
-      else
-          throw cRuntimeError("%s `%s' and its parent have no parameter `%s'", what, component->getFullPath().c_str(), parname);
-   }
-   return par;
-}
-
-bool resolveBoolDispStrArg(const char *s, cComponent *component, bool defaultValue)
-{
-   if (!s || !*s)
-       return defaultValue;
-   if (*s=='$')
-       return displayStringPar(s+1, component, true)->boolValue();
-   return !strcmp("1", s) || !strcmp("true", s);
-}
-
-long resolveLongDispStrArg(const char *s, cComponent *component, int defaultValue)
-{
-   if (!s || !*s)
-       return defaultValue;
-   if (*s=='$')
-       return displayStringPar(s+1, component, true)->longValue();
-   return (long) atol(s);
-}
-
-double resolveDoubleDispStrArg(const char *s, cComponent *component, double defaultValue)
-{
-   if (!s || !*s)
-       return defaultValue;
-   if (*s=='$')
-       return displayStringPar(s+1, component, true)->doubleValue();
-   return atof(s);
-}
-
-//=======================================================================
 
 class TModuleWindowFactory : public cInspectorFactory
 {
@@ -615,7 +564,10 @@ void TGraphicalModWindow::redrawModules()
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
     const cDisplayString blank;
-    const char *scaling = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
+    std::string buffer;
+    const char *rawScaling = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
+    const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentmodule, true);
+
     for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
     {
         cModule *submod = it();
@@ -883,10 +835,6 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
       TRY(redrawAll());
       return TCL_OK;
    }
-   else if (strcmp(argv[0],"dispstrpar")==0)
-   {
-      return getDisplayStringPar(interp,argc,argv);
-   }
    else if (strcmp(argv[0],"submodulecount")==0)
    {
       return getSubmoduleCount(interp,argc,argv);
@@ -902,34 +850,6 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
    return TCL_ERROR;
 }
 
-// method not used any more
-int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv)
-{
-   // args: <module ptr> <parname> <searchparent>
-   if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
-
-   bool searchparents = atoi(argv[3])!=0;
-   cModule *mod = dynamic_cast<cModule *>(strToPtr( argv[1] ));
-   if (!mod) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-
-   const char *parname = argv[2];
-
-   cPar *par;
-   TRY( par = displayStringPar(parname, mod, searchparents) );
-
-   if (par->getType()=='S')
-   {
-      Tcl_SetResult(interp, TCLCONST(par->stdstringValue().c_str()), TCL_VOLATILE);
-   }
-   else
-   {
-      char buf[30];
-      sprintf(buf, "%g", par->doubleValue());
-      Tcl_SetResult(interp, buf, TCL_VOLATILE);
-   }
-   return TCL_OK;
-}
-
 int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
 {
    int count = 0;
@@ -940,7 +860,6 @@ int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const c
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
-
 
 int TGraphicalModWindow::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
 {

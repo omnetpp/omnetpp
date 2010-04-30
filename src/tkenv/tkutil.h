@@ -27,6 +27,9 @@
 
 NAMESPACE_BEGIN
 
+class cPar;
+class cComponent;
+
 //
 // In some installations Tcl headers files have 'char*' without 'const char*'
 // in arg lists -- we have to cast away 'const char*' from args in our Tcl calls.
@@ -123,6 +126,34 @@ void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *t
 void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget);
 
 void textWidget_clear(Tcl_Interp *interp, const char *textWidget);
+
+/**
+ * Looks up the given parameter
+ */
+cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent);
+
+/**
+ * Returns true if the given (partial or full) display string contains
+ * module or channel parameter references ("$param" or "${param}")
+ */
+bool displayStringContainsParamRefs(const char *dispstr);
+
+/**
+ * If the given string is a single parameter reference in the syntax "$name" or
+ * "${name}", returns the parameter, otherwise returns NULL.
+ */
+cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, bool searchparent);
+
+/**
+ * Substitutes module/channel param references into the given (partial)
+ * display string. The returned string may be the same as the one passed in,
+ * or may point into the buffer std::string.
+ */
+const char *substituteDisplayStringParamRefs(const char *dispstr, std::string& buffer, cComponent *component, bool searchparent);
+
+bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultValue);
+long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue);
+double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue);
 
 NAMESPACE_END
 

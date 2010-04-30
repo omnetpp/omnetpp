@@ -26,6 +26,8 @@
 #include "cownedobject.h"
 #include "cmodule.h"
 #include "csimulation.h"
+#include "stringutil.h"
+#include "opp_ctype.h"
 
 #include "tkenv.h"
 #include "patternmatcher.h"
@@ -280,6 +282,144 @@ void textWidget_clear(Tcl_Interp *interp, const char *textWidget)
 {
     //CHK(Tcl_VarEval(interp, textWidget, " delete 1.0 end", NULL)); -- very slow if content is large
     CHK(Tcl_VarEval(interp, "logtextwidget_clear ", textWidget, NULL));
+}
+
+//----------------------------------------------------------------------
+
+cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent)
+{
+    // look up locally
+    cPar *par = NULL;
+    int k = component->findPar(parname);
+    if (k >= 0)
+        par = &(component->par(k));
+
+    // look up in parent
+    if (!par && searchparent && component->getParentModule())
+    {
+        k = component->getParentModule()->findPar( parname );
+        if (k >= 0)
+            par = &(component->getParentModule()->par(k));
+    }
+    if (!par)
+    {
+        // not found -- generate suitable error message
+        const char *what = component->isModule() ? "module" : "channel";
+        if (!searchparent)
+            throw cRuntimeError("%s `%s' has no parameter `%s'", what, component->getFullPath().c_str(), parname);
+        else
+            throw cRuntimeError("%s `%s' and its parent have no parameter `%s'", what, component->getFullPath().c_str(), parname);
+    }
+    return par;
+}
+
+bool displayStringContainsParamRefs(const char *dispstr)
+{
+    for (const char *s = dispstr; *s; s++)
+        if (*s=='$' && (*(s+1)=='{' || opp_isalpha(*(s+1))))
+            return true;
+    return false;
+}
+
+cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, bool searchparent)
+{
+    if (dispstr[0] != '$')
+        return NULL;
+    cPar *par;
+    if (dispstr[1] != '{')
+        return displayStringPar(dispstr+1, component, searchparent); // rest of string is assumed to be the param name
+    else if (dispstr[strlen(dispstr)-1] != '}')
+        return NULL;  // unterminated brace (or close brace not the last char)
+    else
+        // starts with "${" and ends with "}" -- everything in between is taken to be the parameter name
+        return displayStringPar(std::string(dispstr+2, strlen(dispstr)-3).c_str(), component, searchparent);
+}
+
+const char *substituteDisplayStringParamRefs(const char *src, std::string& buffer, cComponent *component, bool searchparent)
+{
+    if (!strchr(src, '$') || !component)  // cannot resolve args if component==NULL
+        return src;
+
+    // recognize "$param" and "${param}" syntax inside the string
+    buffer = "";
+    for (const char *s = src; *s; )
+    {
+        if (*s != '$')
+            buffer += *s++;
+        else
+        {
+            // extract parameter name
+            s++; // skip '$'
+            std::string name;
+            if (*s == '{')
+            {
+                s++; // skip '{'
+                while (*s && *s != '}')
+                    name += *s++;
+                if (*s)
+                    s++; // skip '}'
+            }
+            else
+            {
+                while (opp_isalnum(*s) || *s == '_')
+                    name += *s++;
+            }
+
+            // append its value
+            cPar *par = displayStringPar(name.c_str(), component, searchparent);
+            switch (par->getType()) {
+              case cPar::BOOL: buffer += (par->boolValue() ? "1" : "0"); break;
+              case cPar::STRING: buffer += par->stdstringValue(); break;
+              case cPar::LONG: buffer += opp_stringf("%ld", par->longValue()); break;
+              case cPar::DOUBLE: buffer += opp_stringf("%g", par->doubleValue()); break;
+              default: throw cRuntimeError("Cannot substitute parameter %s into display string: wrong data type", par->getFullPath().c_str());
+            }
+        }
+    }
+
+    return buffer.c_str();
+}
+
+bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultValue)
+{
+    if (!arg || !*arg)
+        return defaultValue;
+    if (!displayStringContainsParamRefs(arg))
+        return strcmp("0", arg)!=0 && strcmp("false", arg)!=0;  // not 0 and not false
+    cPar *par = resolveDisplayStringParamRef(arg, component, true);
+    if (par && par->getType()==cPar::BOOL)
+        return par->boolValue();
+    std::string buffer;
+    const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
+    return strcmp("0", arg2)!=0 && strcmp("false", arg2)!=0;  // not 0 and not false
+}
+
+long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue)
+{
+    if (!arg || !*arg)
+        return defaultValue;
+    if (!displayStringContainsParamRefs(arg))
+        return (long) atol(arg);
+    cPar *par = resolveDisplayStringParamRef(arg, component, true);
+    if (par && par->isNumeric())
+        return par->longValue();
+    std::string buffer;
+    const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
+    return (long) atol(arg2);
+}
+
+double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue)
+{
+    if (!arg || !*arg)
+        return defaultValue;
+    if (!displayStringContainsParamRefs(arg))
+        return atof(arg);
+    cPar *par = resolveDisplayStringParamRef(arg, component, true);
+    if (par && par->isNumeric())
+        return par->doubleValue();
+    std::string buffer;
+    const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
+    return atof(arg2);
 }
 
 NAMESPACE_END
