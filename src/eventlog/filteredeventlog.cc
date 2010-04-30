@@ -355,7 +355,7 @@ bool FilteredEventLog::isEmpty()
         IEvent *event = eventLog->getEventForEventNumber(tracedEventNumber);
 
         if (event && matchesFilter(event))
-            return true;
+            return false;
     }
 
     return IEventLog::isEmpty();
