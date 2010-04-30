@@ -97,42 +97,40 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 				clientArea.x + clientArea.width - viewport.x - viewport.width);
 	}
 
-	public double fromCanvasX(int x) {
-		Assert.isTrue(-MAXPIX<x && x<MAXPIX);
+	public double fromCanvasX(long x) {
 		return (x + getViewportLeft() - getLeftInset()) / zoomX + minX;
 	}
 
-	public double fromCanvasY(int y) {
-		Assert.isTrue(-MAXPIX<y && y<MAXPIX);
+	public double fromCanvasY(long y) {
 		return maxY - (y + getViewportTop() - getTopInset()) / zoomY;
 	}
 
-	public double fromCanvasDistX(int x) {
+	public double fromCanvasDistX(long x) {
 		return x / zoomX;
 	}
 
-	public double fromCanvasDistY(int y) {
+	public double fromCanvasDistY(long y) {
 		return y / zoomY;
 	}
 
-	public int toCanvasX(double xCoord) {
+	public long toCanvasX(double xCoord) {
 		double x = (xCoord - minX)*zoomX - getViewportLeft() + getLeftInset();
-		return toInt(x);
+		return toLong(x);
 	}
 
-	public int toCanvasY(double yCoord) {
+	public long toCanvasY(double yCoord) {
 		double y = (maxY - yCoord)*zoomY - getViewportTop() + getTopInset();
-		return toInt(y);
+		return toLong(y);
 	}
 
-	public int toCanvasDistX(double xCoord) {
+	public long toCanvasDistX(double xCoord) {
 		double x = xCoord * zoomX;
-		return toInt(x);
+		return toLong(x);
 	}
 
-	public int toCanvasDistY(double yCoord) {
+	public long toCanvasDistY(double yCoord) {
 		double y = yCoord * zoomY;
-		return toInt(y);
+		return toLong(y);
 	}
 
 	public long toVirtualX(double xCoord) {
@@ -161,14 +159,9 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		numCoordinateOverflows = 0;
 	}
 
-	protected int toInt(double c) {
-		return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NAN_PIX : (int)c;
-	}
-
-	private int largeValue(double c) {
-		if (!Double.isInfinite(c)) // infinite is OK and does not count as coordinate overflow
-			numCoordinateOverflows++;
-		return MAXPIX;
+	protected long toLong(double c) {
+        Assert.isTrue(Long.MIN_VALUE <= c && c <= Long.MAX_VALUE);
+        return (long)c;
 	}
 
 	public double getViewportCenterCoordX() {
@@ -352,62 +345,45 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		final long viewportTopMinusTopInset = getViewportTop() - getTopInset();
 
 		ICoordsMapping mapping = new ICoordsMapping() {
-			private int numOverflows; // counts pixel coordinate overflows
-
-			public double fromCanvasX(int x) {
-				Assert.isTrue(-MAXPIX<x && x<MAXPIX);
+			public double fromCanvasX(long x) {
 				return (x + viewportLeftMinusLeftInset) / zoomX + minX;
 			}
 
-			public double fromCanvasY(int y) {
-				Assert.isTrue(-MAXPIX<y && y<MAXPIX);
+			public double fromCanvasY(long y) {
 				return maxY - (y + viewportTopMinusTopInset) / zoomY;
 			}
 
-			public double fromCanvasDistX(int x) {
+			public double fromCanvasDistX(long x) {
 				return x / zoomX;
 			}
 
-			public double fromCanvasDistY(int y) {
+			public double fromCanvasDistY(long y) {
 				return y / zoomY;
 			}
 
-			public int toCanvasX(double xCoord) {
+			public long toCanvasX(double xCoord) {
 				double x = (xCoord - minX)*zoomX - viewportLeftMinusLeftInset;
-				return toInt(x);
+				return toLong(x);
 			}
 
-			public int toCanvasY(double yCoord) {
+			public long toCanvasY(double yCoord) {
 				double y = (maxY - yCoord)*zoomY - viewportTopMinusTopInset;
-				return toInt(y);
+				return toLong(y);
 			}
 
-			public int toCanvasDistX(double xCoord) {
+			public long toCanvasDistX(double xCoord) {
 				double x = xCoord * zoomX;
-				return toInt(x);
+				return toLong(x);
 			}
 
-			public int toCanvasDistY(double yCoord) {
+			public long toCanvasDistY(double yCoord) {
 				double y = yCoord * zoomY;
-				return toInt(y);
+				return toLong(y);
 			}
 
-			private int toInt(double c) {
-				return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NAN_PIX : (int)c;
-			}
-
-			private int largeValue(double c) {
-				if (!Double.isInfinite(c)) // infinite is OK and does not count as coordinate overflow
-					numOverflows++;
-				return MAXPIX;
-			}
-
-			public int getNumCoordinateOverflows() {
-				return numOverflows;
-			}
-
-			public void resetCoordinateOverflowCount() {
-				numOverflows = 0;
+			private long toLong(double c) {
+		        Assert.isTrue(Long.MIN_VALUE <= c && c <= Long.MAX_VALUE);
+			    return (long)c;
 			}
 		};
 

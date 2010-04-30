@@ -9,6 +9,7 @@ package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
+import org.omnetpp.common.canvas.LargeGraphics;
 
 
 /**
@@ -19,7 +20,7 @@ import org.eclipse.swt.SWT;
 public class DiamondSymbol extends ChartSymbol {
 	private int size;
 	private int[] poly;
-	private int[] work = new int[8];
+	private long[] work = new long[8];
 
 	public DiamondSymbol() {
 	}
@@ -37,19 +38,19 @@ public class DiamondSymbol extends ChartSymbol {
 		poly = new int[] {-d,0,0,-d,d,0,0,d};
 	}
 
-	public void drawSymbol(Graphics graphics, int x, int y) {
+	public void drawSymbol(Graphics graphics, long x, long y) {
 		if (size<=0) {
 			// nothing
 		}
 		else if (size==1) {
-			graphics.drawPoint(x, y);
+			LargeGraphics.drawPoint(graphics, x, y);
 		}
 		else if (size==2 || size==3) {
-			graphics.drawPoint(x, y);
-			graphics.drawPoint(x-1, y);
-			graphics.drawPoint(x+1, y);
-			graphics.drawPoint(x, y-1);
-			graphics.drawPoint(x, y+1);
+			LargeGraphics.drawPoint(graphics, x, y);
+			LargeGraphics.drawPoint(graphics, x-1, y);
+			LargeGraphics.drawPoint(graphics, x+1, y);
+			LargeGraphics.drawPoint(graphics, x, y-1);
+			LargeGraphics.drawPoint(graphics, x, y+1);
 		}
 		else {
 			// manual translation; XXX try gc.setTransform(), maybe it's faster?
@@ -62,7 +63,7 @@ public class DiamondSymbol extends ChartSymbol {
 			work[6] = x + poly[6];
 			work[7] = y + poly[7];
 			graphics.setBackgroundColor(graphics.getForegroundColor());
-			graphics.fillPolygon(work); //XXX make filled/unfilled version
+			LargeGraphics.fillPolygon(graphics, work); //XXX make filled/unfilled version
 		}
 	}
 }

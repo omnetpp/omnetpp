@@ -13,45 +13,33 @@ package org.omnetpp.common.canvas;
  * @author Andras
  */
 public interface ICoordsMapping {
-
-	/**
-	 * The largest coordinate the underlying platform graphics can handle.
-	 * This is supposed to be the full 32-bit signed range, but e.g. Windows XP
-	 * has been seen to overflow with coords > ~2 million. (Try zooming a chart.)
-	 */
-	public static final int MAXPIX = 2000000;  //XXX until we have more info
-
 	/**
 	 * We use this to return NaN as a pixel coordinate.
 	 */
-	public static final int NAN_PIX = Integer.MAX_VALUE;
+	public static final long NAN_PIX = Long.MAX_VALUE;
 
-	public double fromCanvasX(int x);
+	public double fromCanvasX(long x);
 
-	public double fromCanvasY(int y);
+	public double fromCanvasY(long y);
 
-	public double fromCanvasDistX(int x);
+	public double fromCanvasDistX(long x);
 
-	public double fromCanvasDistY(int y);
+	public double fromCanvasDistY(long y);
 
 	/**
 	 * Returns canvas coordinate. If result is out of the range GC can
 	 * handle, MAXPIX is returned AND an overflow counter is incremented;
 	 * for +-INF, +-MAXPIX is returned; for NaN, NANPIX is returned.
 	 */
-	public int toCanvasX(double xCoord);
+	public long toCanvasX(double xCoord);
 
 	/** See toCanvasX() documentation */
-	public int toCanvasY(double yCoord);
+	public long toCanvasY(double yCoord);
 
 	/** See toCanvasX() documentation */
-	public int toCanvasDistX(double xCoord);
+	public long toCanvasDistX(double xCoord);
 
 	/** See toCanvasX() documentation */
-	public int toCanvasDistY(double yCoord);
-
-	public int getNumCoordinateOverflows();
-
-	public void resetCoordinateOverflowCount();
+	public long toCanvasDistY(double yCoord);
 }
 

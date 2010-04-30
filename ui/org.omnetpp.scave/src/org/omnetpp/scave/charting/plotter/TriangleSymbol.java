@@ -8,6 +8,7 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
+import org.omnetpp.common.canvas.LargeGraphics;
 
 /**
  * Draws a triangle symbol.
@@ -17,7 +18,7 @@ import org.eclipse.draw2d.Graphics;
 public class TriangleSymbol extends ChartSymbol {
 	private int height;
 	private int[] poly;
-	private int[] work = new int[6];
+	private long[] work = new long[6];
 
 	public TriangleSymbol() {
 	}
@@ -36,18 +37,18 @@ public class TriangleSymbol extends ChartSymbol {
 		poly = new int[] {-halfside, (height-off), 0, -off, halfside, (height-off)};
 	}
 
-	public void drawSymbol(Graphics graphics, int x, int y) {
+	public void drawSymbol(Graphics graphics, long x, long y) {
 		if (sizeHint<=0) {
 			// nothing
 		}
 		else if (sizeHint==1) {
-			graphics.drawPoint(x, y);
+			LargeGraphics.drawPoint(graphics, x, y);
 		}
 		else if (sizeHint==2 || sizeHint==3) {
-			graphics.drawPoint(x, y);
-			graphics.drawPoint(x-1, y);
-			graphics.drawPoint(x+1, y);
-			graphics.drawPoint(x, y-1);
+			LargeGraphics.drawPoint(graphics, x, y);
+			LargeGraphics.drawPoint(graphics, x-1, y);
+			LargeGraphics.drawPoint(graphics, x+1, y);
+			LargeGraphics.drawPoint(graphics, x, y-1);
 		}
 		else {
 			// manual translation; XXX try gc.setTransform(), maybe it's faster?
@@ -58,7 +59,7 @@ public class TriangleSymbol extends ChartSymbol {
 			work[4] = x + poly[4];
 			work[5] = y + poly[5];
 			graphics.setBackgroundColor(graphics.getForegroundColor());
-			graphics.fillPolygon(work);  //XXX make filled/unfilled version
+			LargeGraphics.fillPolygon(graphics, work);  //XXX make filled/unfilled version
 		}
 	}
 }

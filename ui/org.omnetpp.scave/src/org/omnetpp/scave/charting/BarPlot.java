@@ -12,11 +12,12 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_OU
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_PLACEMENT;
 
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.LargeGraphics;
+import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
@@ -75,9 +76,9 @@ class BarPlot {
 		if (!Double.isInfinite(baseline)) {
 			graphics.pushState();
 
-			int y = coordsMapping.toCanvasY(baseline);
+			long y = coordsMapping.toCanvasY(baseline);
 			graphics.setForegroundColor(ChartDefaults.DEFAULT_BAR_BASELINE_COLOR);
-			graphics.drawLine(rect.x + 1, y, rect.x + rect.width - 1, y);
+			LargeGraphics.drawLine(graphics, rect.x + 1, y, rect.x + rect.width - 1, y);
 
 			graphics.popState();
 			graphics.dispose();
@@ -85,14 +86,14 @@ class BarPlot {
 	}
 
 	protected void drawBar(Graphics graphics, int row, int column, ICoordsMapping coordsMapping) {
-		Rectangle rect = getBarRectangle(row, column, coordsMapping);
+		LargeRect rect = getBarRectangle(row, column, coordsMapping);
 		rect.width = Math.max(rect.width, 1);
 		rect.height = Math.max(rect.height, 1);
 		graphics.setBackgroundColor(getBarColor(column));
-		graphics.fillRectangle(rect);
+		LargeGraphics.fillRectangle(graphics, rect.x, rect.y, rect.width, rect.height);
 		if (rect.width >= 4 && rect.height >= 3) {
 			graphics.setForegroundColor(barOutlineColor);
-			graphics.drawRectangle(rect.getCropped(new Insets(0,0,0,0)));
+	        LargeGraphics.drawRectangle(graphics, rect.x, rect.y, rect.width, rect.height);
 		}
 	}
 
@@ -133,7 +134,7 @@ class BarPlot {
 			return ColorFactory.getGoodDarkColor(column);
 	}
 
-	protected Rectangle getBarRectangle(int row, int column, ICoordsMapping coordsMapping) {
+	protected LargeRect getBarRectangle(int row, int column, ICoordsMapping coordsMapping) {
 		RectangularArea bar = bars[row][column];
 		double top =  bar.maxY;
 		double bottom = bar.minY;
@@ -145,11 +146,11 @@ class BarPlot {
 		if (Double.isInfinite(bottom))
 			bottom = bottom < 0.0 ? chart.chartArea.minY : chart.chartArea.maxY;
 
-		int x = coordsMapping.toCanvasX(left);
-		int y = coordsMapping.toCanvasY(top);
-		int width = coordsMapping.toCanvasDistX(right - left);
-		int height = coordsMapping.toCanvasDistY(top - bottom);
-		return new Rectangle(x, y, width, height);
+		long x = coordsMapping.toCanvasX(left);
+		long y = coordsMapping.toCanvasY(top);
+		long width = coordsMapping.toCanvasDistX(right - left);
+		long height = coordsMapping.toCanvasDistY(top - bottom);
+		return new LargeRect(x, y, width, height);
 	}
 
 	protected RectangularArea calculatePlotArea() {

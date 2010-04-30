@@ -14,6 +14,7 @@ import java.util.HashSet;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
@@ -46,21 +47,21 @@ public class LinesVectorPlotter extends VectorPlotter {
 		// when drawing vertical lines. This results in magnitudes faster
 		// execution for large datasets.
 		//
-		int prevX = Integer.MIN_VALUE;
-		int prevY = NAN_PIX;
-		int maxY = prevY;
-		int minY = prevY;
+		long prevX = Long.MIN_VALUE;
+		long prevY = NAN_PIX;
+		long maxY = prevY;
+		long minY = prevY;
 
 		// turn off antialias for vertical lines
 		int origAntialias = graphics.getAntialias();
 
 		// used for preventing painting the same symbol on the same pixels over and over.
-		HashSet<Integer> yset = new HashSet<Integer>();
-		int prevSymbolX = Integer.MIN_VALUE;
+		HashSet<Long> yset = new HashSet<Long>();
+		long prevSymbolX = Long.MIN_VALUE;
 
 		for (int i = first; i <= last; i++) {
-			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
-			int y = mapping.toCanvasY(plot.transformY(dataset.getY(series, i))); // note: this maps +-INF to +-MAXPIX, which works out just fine here
+		    long x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
+		    long y = mapping.toCanvasY(plot.transformY(dataset.getY(series, i))); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			// for testing:
 			// if (i%5==0) y = NANPIX;
@@ -70,18 +71,18 @@ public class LinesVectorPlotter extends VectorPlotter {
 			if (y != NAN_PIX) {
 				if (x != prevX) {
 					if (prevY != NAN_PIX)
-						graphics.drawLine(prevX, prevY, x, y);
+					    LargeGraphics.drawLine(graphics, prevX, prevY, x, y);
 					minY = maxY = y;
 				}
 				else if (y < minY) {
 					graphics.setAntialias(SWT.OFF);
-					graphics.drawLine(x, minY, x, y);
+					LargeGraphics.drawLine(graphics, x, minY, x, y);
 					graphics.setAntialias(origAntialias);
 					minY = y;
 				}
 				else if (y > maxY) {
 					graphics.setAntialias(SWT.OFF);
-					graphics.drawLine(x, maxY, x, y);
+					LargeGraphics.drawLine(graphics, x, maxY, x, y);
 					graphics.setAntialias(origAntialias);
 					maxY = y;
 				}

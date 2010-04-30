@@ -24,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 
@@ -148,15 +149,15 @@ public class LinearAxis {
 			for (BigDecimal tick : ticks) {
 				if (showGrid == ShowGrid.All || ticks.isMajorTick(tick)) {
 					if (vertical) {
-						int y = mapping.toCanvasY(transform(tick.doubleValue()));
+						long y = mapping.toCanvasY(transform(tick.doubleValue()));
 						if (y >= rect.y && y <= rect.bottom()) {
-							graphics.drawLine(rect.x, y, rect.right(), y);
+						    LargeGraphics.drawLine(graphics, rect.x, y, rect.right(), y);
 						}
 					}
 					else {
-						int x = mapping.toCanvasX(transform(tick.doubleValue()));
+					    long x = mapping.toCanvasX(transform(tick.doubleValue()));
 						if (x >= rect.x && x <= rect.right()) {
-							graphics.drawLine(x, rect.y, x, rect.bottom());
+						    LargeGraphics.drawLine(graphics, x, rect.y, x, rect.bottom());
 						}
 					}
 				}
@@ -177,7 +178,7 @@ public class LinearAxis {
 		Point titleSize = GraphicsUtils.getTextExtent(graphics, title);
 		if (vertical) {
 			if (drawAxisToPlot && !logarithmic && mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
-				graphics.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
+			    LargeGraphics.drawLine(graphics, plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
 			graphics.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
 			graphics.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
 			if (drawTitle) {
@@ -192,9 +193,8 @@ public class LinearAxis {
 			}
 		}
 		else {
-			if (drawAxisToPlot && !logarithmic &&
-					mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
-				graphics.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
+			if (drawAxisToPlot && !logarithmic && mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
+			    LargeGraphics.drawLine(graphics, mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
 			graphics.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
 			graphics.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
 			if (drawTitle)
@@ -210,24 +210,24 @@ public class LinearAxis {
 				Point size = GraphicsUtils.getTextExtent(graphics, label);
 				int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength;
 				if (vertical) {
-					int y = mapping.toCanvasY(transform(tick.doubleValue()));
+				    long y = mapping.toCanvasY(transform(tick.doubleValue()));
 					if (y >= plotArea.y && y <= plotArea.bottom()) {
-						graphics.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
-						graphics.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
+					    LargeGraphics.drawLine(graphics, plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
+					    LargeGraphics.drawLine(graphics, plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
 						if (drawTickLabels && ticks.isMajorTick(tick)) {
-							graphics.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2);
-							graphics.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
+							LargeGraphics.drawText(graphics, label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2);
+							LargeGraphics.drawText(graphics, label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
 						}
 					}
 				}
 				else {
-					int x = mapping.toCanvasX(transform(tick.doubleValue()));
+				    long x = mapping.toCanvasX(transform(tick.doubleValue()));
 					if (x >= plotArea.x && x <= plotArea.right()) {
-						graphics.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
-						graphics.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
+					    LargeGraphics.drawLine(graphics, x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
+					    LargeGraphics.drawLine(graphics, x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
 						if (drawTickLabels && ticks.isMajorTick(tick)) {
-							graphics.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1);
-							graphics.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
+						    LargeGraphics.drawText(graphics, label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1);
+						    LargeGraphics.drawText(graphics, label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
 						}
 					}
 				}

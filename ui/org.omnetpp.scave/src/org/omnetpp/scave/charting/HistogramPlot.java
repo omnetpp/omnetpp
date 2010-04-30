@@ -12,14 +12,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -168,16 +169,16 @@ class HistogramPlot {
 					double yb = bars[series][index].minY;
 
                     if (!Double.isInfinite(yt) && !Double.isInfinite(yb)) {
-                        int left = coordsMapping.toCanvasX(xl);
-                        int right = coordsMapping.toCanvasX(xr);
-                        int bottom = coordsMapping.toCanvasY(yb);
-                        int top = coordsMapping.toCanvasY(yt);
+                        long left = coordsMapping.toCanvasX(xl);
+                        long right = coordsMapping.toCanvasX(xr);
+                        long bottom = coordsMapping.toCanvasY(yb);
+                        long top = coordsMapping.toCanvasY(yt);
                         if (top != bottom) {
-                            graphics.fillRectangle(left, top, right-left, bottom-top);
-                            graphics.drawRectangle(left, top, right-left, bottom-top);
+                            LargeGraphics.fillRectangle(graphics, left, top, right-left, bottom-top);
+                            LargeGraphics.drawRectangle(graphics, left, top, right-left, bottom-top);
                         }
                         else {
-                            graphics.drawLine(left, top, right, top);
+                            LargeGraphics.drawLine(graphics, left, top, right, top);
                         }
                     }
                 }
@@ -187,12 +188,12 @@ class HistogramPlot {
 			graphics.setLineWidth(4);
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.setAlpha(128);
-			int baselineY = coordsMapping.toCanvasY(transformedBaseline);
+			long baselineY = coordsMapping.toCanvasY(transformedBaseline);
 			for (int series = 0; series < bars.length; ++series) {
 				graphics.setForegroundColor(getHistogramColor(series));
-				int prevY = baselineY;
+				long prevY = baselineY;
 				int cellCount = bars[series].length;
-				PointList points = new PointList(3*cellCount);
+				ArrayList<Long> points = new ArrayList<Long>(3*cellCount);
 				for (int index = 0 ; index < cellCount; ++index) {
 					double xl = bars[series][index].minX;
 					double xr = bars[series][index].maxX;
@@ -200,28 +201,33 @@ class HistogramPlot {
 					double yb = bars[series][index].minY;
 					double y = yt > transformedBaseline ? yt : yb;
 
-					int left = coordsMapping.toCanvasX(xl);
-					int right = coordsMapping.toCanvasX(xr);
-					int yy;
+					long left = coordsMapping.toCanvasX(xl);
+					long right = coordsMapping.toCanvasX(xr);
+					long yy;
 					if (Double.isInfinite(y)) {
 					    yy = baselineY;
 					    if (yy != prevY) {
-					        points.addPoint(left, prevY);
-					        points.addPoint(left, yy);
+					        points.add(left);
+					        points.add(prevY);
+					        points.add(left);
+					        points.add(yy);
 					    }
-					    graphics.drawPolyline(points);
-					    points.removeAllPoints();
+					    LargeGraphics.drawPolyline(graphics, ArrayUtils.toPrimitive(points.toArray(new Long[0])));
+					    points.clear();
 					}
 					else {
 	                    yy = coordsMapping.toCanvasY(y);
-    					points.addPoint(left, prevY);
-    					points.addPoint(left, yy);
-    					points.addPoint(right, yy);
+    					points.add(left);
+    					points.add(prevY);
+    					points.add(left);
+    					points.add(yy);
+    					points.add(right);
+    					points.add(yy);
 					}
                     prevY = yy;
 				}
 				if (points.size() > 0)
-				    graphics.drawPolyline(points);
+				    LargeGraphics.drawPolyline(graphics, ArrayUtils.toPrimitive(points.toArray(new Long[0])));
 			}
 			break;
 		}

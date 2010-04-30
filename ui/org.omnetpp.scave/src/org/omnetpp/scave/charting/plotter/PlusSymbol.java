@@ -8,6 +8,7 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
+import org.omnetpp.common.canvas.LargeGraphics;
 
 /**
  * Draws a "plus" symbol.
@@ -31,32 +32,32 @@ public class PlusSymbol extends ChartSymbol {
 		size |= 1; // make it an odd number
 	}
 
-	public void drawSymbol(Graphics graphics, int x, int y) {
+	public void drawSymbol(Graphics graphics, long x, long y) {
 		if (size<=0) {
 			// nothing
 		}
 		else if (size==1) {
-			graphics.drawPoint(x, y);
+			LargeGraphics.drawPoint(graphics, x, y);
 		}
 		else if (size==2 || size==3) {
-			graphics.drawPoint(x, y);
-			graphics.drawPoint(x-1, y);
-			graphics.drawPoint(x+1, y);
-			graphics.drawPoint(x, y-1);
-			graphics.drawPoint(x, y+1);
+			LargeGraphics.drawPoint(graphics, x, y);
+			LargeGraphics.drawPoint(graphics, x-1, y);
+			LargeGraphics.drawPoint(graphics, x+1, y);
+			LargeGraphics.drawPoint(graphics, x, y-1);
+			LargeGraphics.drawPoint(graphics, x, y+1);
 		}
 		else if (size<8) {
 			int d = size/2;
-			graphics.drawLine(x-d, y, x+d, y);
-			graphics.drawLine(x, y-d, x, y+d);
+			LargeGraphics.drawLine(graphics, x-d, y, x+d, y);
+			LargeGraphics.drawLine(graphics, x, y-d, x, y+d);
 		}
 		else {
 			int saved = graphics.getLineWidth();
 			graphics.setLineWidth(size/4);
 			//graphics.setLineCap(SWT.FLAT);
 			int d = size/2;
-			graphics.drawLine(x-d, y, x+d, y);
-			graphics.drawLine(x, y-d, x, y+d);
+			LargeGraphics.drawLine(graphics, x-d, y, x+d, y);
+			LargeGraphics.drawLine(graphics, x, y-d, x, y+d);
 			graphics.setLineWidth(saved);
 		}
 	}

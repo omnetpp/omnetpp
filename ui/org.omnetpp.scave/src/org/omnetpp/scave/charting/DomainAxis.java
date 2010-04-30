@@ -29,6 +29,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.common.util.GraphicsUtils;
@@ -73,7 +74,7 @@ class DomainAxis {
 
 	static class LineData {
 		int height;
-		int right;
+		long right;
 		List<LabelData> labels = new ArrayList<LabelData>();
 
 		public LineData() {
@@ -126,14 +127,14 @@ class DomainAxis {
 				int cColumns = dataset.getColumnCount();
 				int cRows = dataset.getRowCount();
 				for (int row = 0; row < cRows; ++row) {
-					int left = plot.getBarRectangle(row, 0, coordsMapping).x;
-					int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
+					long left = plot.getBarRectangle(row, 0, coordsMapping).x;
+					long right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
 
 					LineData line = Collections.min(lines, lineDataRightEdgeComparator);
 					LabelData label;
 
 					if (wrapLabels) {
-						maxSize.width = rotation == 0.0 ? Math.max(right - left, 10) : -1;
+						maxSize.width = rotation == 0.0 ? (int)Math.max(right - left, 10) : -1;
 						label = layoutGroupLabel(row, labelsFont, rotation, graphics, maxSize);
 					}
 					else {
@@ -217,9 +218,9 @@ class DomainAxis {
 
     			// draw lines
     			for (int row = 0; row < cRows; ++row) {
-    				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
-    				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
-    				graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
+    				long left = plot.getBarRectangle(row, 0, coordsMapping).x;
+    				long right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
+    				LargeGraphics.drawLine(graphics, left, rect.y + gap, right, rect.y + gap);
     			}
 
     			// draw labels
@@ -229,8 +230,8 @@ class DomainAxis {
     			for (LineData line : lines) {
     				for (LabelData label : line.labels) {
     					graphics.restoreState();
-    					int left = plot.getBarRectangle(label.row, 0, coordsMapping).x;
-    					int right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
+    					long left = plot.getBarRectangle(label.row, 0, coordsMapping).x;
+    					long right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
     					Dimension size = label.size;
     					Dimension rotatedSize = label.rotatedSize;
 

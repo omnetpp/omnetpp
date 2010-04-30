@@ -265,21 +265,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChar
 
 		doPaintNoncachableLayer(graphics, coordsMapping);
 
-		if (coordsMapping.getNumCoordinateOverflows() > 0)
-			displayCoordinatesOverflowMessage(graphics);
-
 		coordsMapping = null;
 	}
 
 	abstract protected void doPaintCachableLayer(Graphics graphics, ICoordsMapping coordsMapping);
 	abstract protected void doPaintNoncachableLayer(Graphics graphics, ICoordsMapping coordsMapping);
-
-	private void displayCoordinatesOverflowMessage(Graphics graphics) {
-		resetDrawingStylesAndColors(graphics);
-		graphics.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
-		                  "may not be accurate. Please decrease zoom level.",
-		                  getViewportRectangle().x+10, getViewportRectangle().y+10);
-	}
 
 	/**
 	 *

@@ -81,16 +81,16 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		// symbols painted at the last x pixel coordinate. This easily results in 10x-100x
 		// performance improvement.
 		//
-		HashSet<Integer> yset = new HashSet<Integer>();
-		int prevCanvasX = Integer.MIN_VALUE;
+		HashSet<Long> yset = new HashSet<Long>();
+		long prevCanvasX = Long.MIN_VALUE;
 		for (int i = first; i <= last; i++) {
 			double y = plot.transformY(dataset.getY(series, i));
 			if (y < lo || y > hi || Double.isNaN(y))  // even skip coord transform for off-screen values
 				continue;
 
 			double x = plot.transformX(dataset.getX(series, i));
-			int canvasX = mapping.toCanvasX(x);
-			int canvasY = mapping.toCanvasY(y);
+			long canvasX = mapping.toCanvasX(x);
+			long canvasY = mapping.toCanvasY(y);
 
 			if (prevCanvasX != canvasX) {
 				yset.clear();

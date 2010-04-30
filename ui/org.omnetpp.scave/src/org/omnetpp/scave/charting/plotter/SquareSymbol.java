@@ -8,6 +8,7 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
+import org.omnetpp.common.canvas.LargeGraphics;
 
 /**
  * Draws a square symbol.
@@ -31,16 +32,16 @@ public class SquareSymbol extends ChartSymbol {
 	}
 
 
-	public void drawSymbol(Graphics graphics, int x, int y) {
+	public void drawSymbol(Graphics graphics, long x, long y) {
 		if (size<=0) {
 			// nothing
 		}
 		else if (size==1) {
-			graphics.drawPoint(x, y);
+			LargeGraphics.drawPoint(graphics, x, y);
 		}
 		else {
 			graphics.setBackgroundColor(graphics.getForegroundColor());
-			graphics.fillRectangle(x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
+			LargeGraphics.fillRectangle(graphics, x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
 		}
 	}
 }

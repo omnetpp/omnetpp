@@ -10,6 +10,7 @@ package org.omnetpp.scave.charting.plotter;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
@@ -53,13 +54,13 @@ public class PinsVectorPlotter extends VectorPlotter {
 		// sense (doesn't show much) for huge amounts of data points, we don't bother.
 		//
 		Double transformedReferenceLevel = plot.transformY(referenceLevel);
-		int refY = Double.isInfinite(transformedReferenceLevel) || Double.isNaN(transformedReferenceLevel) ?
+		long refY = Double.isInfinite(transformedReferenceLevel) || Double.isNaN(transformedReferenceLevel) ?
 					plot.getPlotRectangle().bottom() :
 					mapping.toCanvasY(referenceLevel);
 
-		int prevX = -1;
-		int maxY = refY;
-		int minY = refY;
+		long prevX = -1;
+		long maxY = refY;
+		long minY = refY;
 
 		// We are drawing solid vertical lines, so antialiasing does not improve
 		// the plot much, but it slows down the plotting by a factor of 2.
@@ -73,21 +74,21 @@ public class PinsVectorPlotter extends VectorPlotter {
 			if ((transformedReferenceLevel < lo && value < lo) || (transformedReferenceLevel > hi && value > hi) || Double.isNaN(value) )
 				continue; // pin is off-screen
 
-			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
-			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
+			long x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
+			long y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			if (prevX != x) {
-				graphics.drawLine(x, refY, x, y);
+			    LargeGraphics.drawLine(graphics, x, refY, x, y);
 				prevX = x;
 				minY = Math.min(y, refY);
 				maxY = Math.max(y, refY);
 			}
 			else if (y < minY) {
-				graphics.drawLine(x, minY, x, y);
+			    LargeGraphics.drawLine(graphics, x, minY, x, y);
 				minY = y;
 			}
 			else if (y > maxY) {
-				graphics.drawLine(x, maxY, x, y);
+			    LargeGraphics.drawLine(graphics, x, maxY, x, y);
 				maxY = y;
 			}
 		}

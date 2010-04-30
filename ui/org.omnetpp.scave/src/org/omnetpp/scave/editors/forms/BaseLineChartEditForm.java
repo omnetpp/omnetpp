@@ -235,11 +235,11 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					updatePreview();
 				}
 			});
-			
+
 			Composite subsubpanel = new Composite(subpanel, SWT.NONE);
 			subsubpanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			subsubpanel.setLayout(new GridLayout(3, false));
-			
+
 			displayNameText = createTextField("Display name:", subsubpanel);
 			new ResultItemNamePatternField(displayNameText);
 			displayNameText.addModifyListener(new ModifyListener() {
@@ -251,10 +251,11 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
                     }
                 }
             });
-			
+
 			Button expandButton = new Button(subsubpanel, SWT.PUSH);
 			expandButton.setText("Expand");
 			expandButton.addSelectionListener(new SelectionAdapter() {
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     IStructuredSelection selection = (IStructuredSelection)linesTableViewer.getSelection();
                     if (selection.size() == 1) {
@@ -264,7 +265,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
                     }
                 }
             });
-			
+
 			lineTypeCombo = createImageComboField("Line type:", subpanel);
 			lineTypeCombo.add(NO_CHANGE, null);
 			lineTypeCombo.add(AUTO, null);
@@ -320,14 +321,14 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			updateLineTitlesFromProperties((VectorChartProperties)properties);
 		}
 	}
-	
+
 	private TableColumn addTableColumn(Table table, String text, int width) {
 	    TableColumn column = new TableColumn(table, SWT.NONE);
 	    column.setText(text);
 	    column.setWidth(width);
 	    return column;
 	}
-	
+
 	protected String getSelectedLineKey() {
 		if (formParameters != null) {
 			Object selection = formParameters.get(PARAM_SELECTED_OBJECT);
@@ -358,7 +359,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		return combo;
 	}
-	
+
 	@Override
 	protected void collectProperties(ChartProperties newProps) {
 		// fill newProps (initially empty) with the updated chart properties from the dialog;
@@ -418,7 +419,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 				newProps.setProperty(PROP_DISPLAY_LINE+"/"+line.key, displayLine);
 			}
 		}
-		
+
 		// DisplayName is not editable if two or more line is selected
 		if (selection.size() == 1) {
 		    Line line = (Line)selection.get(0);
@@ -482,7 +483,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			colorEdit.setText(NO_CHANGE);
 		}
 	}
-	
+
 	private void updateLineTitlesFromProperties(VectorChartProperties properties) {
 	    if (xydataset != null) {
     	    for (Line line : lines) {
@@ -491,14 +492,14 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     	    }
 	    }
 	}
-	
+
 	private void updateLineTitle(Line line, String titleFormat) {
 	    if (linesTableViewer != null) {
             line.title = computeLineTitle(line, titleFormat);
             linesTableViewer.update(line, new String[] {"title"});
 	    }
 	}
-	
+
 	private String computeLineTitle(Line line, String titleFormat) {
         if (xydataset != null) {
             String format = StringUtils.isEmpty(titleFormat) ? null : titleFormat;
@@ -669,43 +670,36 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					return getSize().y;
 				}
 
-				public double fromCanvasDistX(int x) {
+				public double fromCanvasDistX(long x) {
 					return ((double)x)/getWidth();
 				}
 
-				public double fromCanvasDistY(int y) {
+				public double fromCanvasDistY(long y) {
 					return ((double)y)/getHeight();
 				}
 
-				public double fromCanvasX(int x) {
+				public double fromCanvasX(long x) {
 					return ((double)x)/getWidth();
 				}
 
-				public double fromCanvasY(int y) {
+				public double fromCanvasY(long y) {
 					return ((double)(getHeight() - y))/getHeight();
 				}
 
-				public int toCanvasDistX(double coord) {
-					return (int)(coord * getWidth());
+				public long toCanvasDistX(double coord) {
+					return (long)(coord * getWidth());
 				}
 
-				public int toCanvasDistY(double coord) {
-					return (int)(coord * getHeight());
+				public long toCanvasDistY(double coord) {
+					return (long)(coord * getHeight());
 				}
 
-				public int toCanvasX(double coord) {
-					return (int)(coord * getWidth());
+				public long toCanvasX(double coord) {
+					return (long)(coord * getWidth());
 				}
 
-				public int toCanvasY(double coord) {
-					return getHeight() - (int)(coord * getHeight());
-				}
-
-				public int getNumCoordinateOverflows() {
-					return 0;
-				}
-
-				public void resetCoordinateOverflowCount() {
+				public long toCanvasY(double coord) {
+					return getHeight() - (long)(coord * getHeight());
 				}
 			};
 		}

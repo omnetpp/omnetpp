@@ -194,8 +194,8 @@ class CrossHair {
 				IXYDataset dataset = chart.getDataset();
 				double x = chart.transformX(dataset.getX(dataPoint.series, dataPoint.index));
 				double y = chart.transformY(dataset.getY(dataPoint.series, dataPoint.index));
-				canvasX = coordsMapping.toCanvasX(x);
-				canvasY = coordsMapping.toCanvasY(y);
+				canvasX = (int)coordsMapping.toCanvasX(x);
+				canvasY = (int)coordsMapping.toCanvasY(y);
 			}
 
 			// draw crosshair
@@ -347,9 +347,10 @@ class CrossHair {
 				try {
 					double xx = chart.transformX(dataset.getX(series, i));
 					double yy = chart.transformY(dataset.getY(series, i));
-					int dx = coordsMapping.toCanvasX(xx) - x;
-					int dy = coordsMapping.toCanvasY(yy) - y;
-					if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d) {
+					int dx = (int)coordsMapping.toCanvasX(xx) - x;
+					int dy = (int)coordsMapping.toCanvasY(yy) - y;
+					if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d)
+					{
 						totalFound++;
 						if (result.size() < maxCount)  //XXX add at least one point for each series
 							result.add(new DataPoint(series, i));
@@ -363,9 +364,10 @@ class CrossHair {
 				try {
 					double xx = chart.transformX(dataset.getX(series, i));
 					double yy = chart.transformY(dataset.getY(series, i));
-					int dx = coordsMapping.toCanvasX(xx) - x;
-					int dy = coordsMapping.toCanvasY(yy) - y;
-					if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d) {
+					int dx = (int)coordsMapping.toCanvasX(xx) - x;
+					int dy = (int)coordsMapping.toCanvasY(yy) - y;
+					if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d)
+					{
 						totalFound++;
 						if (result.size() < maxCount)
 							result.add(new DataPoint(series, i));

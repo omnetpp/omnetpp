@@ -9,6 +9,7 @@ package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.scave.charting.ILinePlot;
 
 /**
@@ -27,8 +28,8 @@ public class PointsVectorPlotter extends VectorPlotter {
 		// performance, so we just invoke the stock drawSymbol() here.
 		//
 		plotSymbols(plot, series, graphics, mapping, new ChartSymbol() {
-			public void drawSymbol(Graphics graphics, int x, int y) {
-			    graphics.drawPoint(x, y);
+			public void drawSymbol(Graphics graphics, long x, long y) {
+			    LargeGraphics.drawPoint(graphics, x, y);
 			}
 		});
 

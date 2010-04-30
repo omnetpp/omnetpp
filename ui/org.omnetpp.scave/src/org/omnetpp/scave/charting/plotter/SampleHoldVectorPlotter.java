@@ -10,6 +10,7 @@ package org.omnetpp.scave.charting.plotter;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
@@ -44,11 +45,11 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// (instead of calling drawSymbols()), but since "pin" mode doesn't make much
 		// sense (doesn't show much) for huge amounts of data points, we don't bother.
 		//
-		int prevX = mapping.toCanvasX(plot.transformX(dataset.getX(series, first)));
-		int prevY = mapping.toCanvasY(plot.transformY(dataset.getY(series, first)));
+		long prevX = mapping.toCanvasX(plot.transformX(dataset.getX(series, first)));
+		long prevY = mapping.toCanvasY(plot.transformY(dataset.getY(series, first)));
 		boolean prevIsNaN = Double.isNaN(plot.transformY(dataset.getY(series, first)));
-		int maxY = prevY;
-		int minY = prevY;
+		long maxY = prevY;
+		long minY = prevY;
 
 		// We are drawing vertical/horizontal lines, so turn off antialias (it is slow).
 		int origAntialias = graphics.getAntialias();
@@ -58,7 +59,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		graphics.setLineDash(dots);
 
 		if (!prevIsNaN && backward)
-			graphics.drawPoint(prevX, prevY);
+		    LargeGraphics.drawPoint(graphics, prevX, prevY);
 
 		for (int i = first+1; i <= last; i++) {
 			double value = plot.transformY(dataset.getY(series, i));
@@ -68,8 +69,8 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 
 			boolean isNaN = Double.isNaN(value); // see isNaN handling later
 
-			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
-			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
+			long x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
+			long y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			// for testing:
 			//if (i%5==1) x = prevX;
@@ -77,20 +78,20 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			if (x != prevX) {
 				if (!isNaN && backward) {
 					graphics.setLineStyle(SWT.LINE_SOLID);
-					graphics.drawLine(prevX, y, x, y); // horizontal
+					LargeGraphics.drawLine(graphics, prevX, y, x, y); // horizontal
 
 					graphics.setLineDash(dots);
 					if (!prevIsNaN) {
-						graphics.drawLine(prevX, prevY, prevX, y); // vertical
+					    LargeGraphics.drawLine(graphics, prevX, prevY, prevX, y); // vertical
 					}
 				}
 				else if (!prevIsNaN && !backward) { // forward
 					graphics.setLineStyle(SWT.LINE_SOLID);
-					graphics.drawLine(prevX, prevY, x, prevY); // horizontal
+					LargeGraphics.drawLine(graphics, prevX, prevY, x, prevY); // horizontal
 
 					graphics.setLineDash(dots);
 					if (!isNaN) {
-						graphics.drawLine(x, prevY, x, y); // vertical
+					    LargeGraphics.drawLine(graphics, x, prevY, x, y); // vertical
 					}
 				}
 
@@ -99,11 +100,11 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			else if (!isNaN) {
 				// same x coord, only vertical line needs to be drawn
 				if (y < minY) {
-					graphics.drawLine(x, minY, x, y);  // in lineDash(dots) mode
+				    LargeGraphics.drawLine(graphics, x, minY, x, y);  // in lineDash(dots) mode
 					minY = y;
 				}
 				else if (y > maxY) {
-					graphics.drawLine(x, maxY, x, y);  // in lineDash(dots) mode
+				    LargeGraphics.drawLine(graphics, x, maxY, x, y);  // in lineDash(dots) mode
 					maxY = y;
 				}
 			}
@@ -116,7 +117,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		}
 
 		if (!prevIsNaN && !backward)
-			graphics.drawPoint(prevX, prevY);
+		    LargeGraphics.drawPoint(graphics, prevX, prevY);
 
 		// draw symbols
 		graphics.setAntialias(origAntialias);

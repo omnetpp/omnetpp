@@ -36,5 +36,5 @@ public interface IChartSymbol {
 
 	public int getSizeHint();
 	public void setSizeHint(int size);
-	public void drawSymbol(Graphics graphics, int x, int y);
+	public void drawSymbol(Graphics graphics, long x, long y);
 }

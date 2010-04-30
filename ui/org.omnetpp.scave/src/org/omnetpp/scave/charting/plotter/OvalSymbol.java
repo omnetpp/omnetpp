@@ -8,6 +8,7 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
+import org.omnetpp.common.canvas.LargeGraphics;
 
 /**
  * Draws a "oval" symbol.
@@ -32,22 +33,22 @@ public class OvalSymbol extends ChartSymbol {
 	}
 
 
-	public void drawSymbol(Graphics graphics, int x, int y) {
+	public void drawSymbol(Graphics graphics, long x, long y) {
 		if (size<=0) {
 			// nothing
 		}
 		else if (size==1) {
-			graphics.drawPoint(x, y);
+			LargeGraphics.drawPoint(graphics, x, y);
 		}
 		else if (size==2 || size==3) {
-			graphics.drawPoint(x-1, y);
-			graphics.drawPoint(x+1, y);
-			graphics.drawPoint(x, y-1);
-			graphics.drawPoint(x, y+1);
+			LargeGraphics.drawPoint(graphics, x-1, y);
+			LargeGraphics.drawPoint(graphics, x+1, y);
+			LargeGraphics.drawPoint(graphics, x, y-1);
+			LargeGraphics.drawPoint(graphics, x, y+1);
 		}
 		else {
 			graphics.setBackgroundColor(graphics.getForegroundColor());
-			graphics.fillOval(x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
+			LargeGraphics.fillOval(graphics, x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
 		}
 	}
 }
