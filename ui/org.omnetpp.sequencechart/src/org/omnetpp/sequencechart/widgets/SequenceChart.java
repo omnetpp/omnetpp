@@ -939,23 +939,25 @@ public class SequenceChart
             long startEventPtr = eventPtrRange[0];
             long endEventPtr = eventPtrRange[1];
 
-    		// look one event backward
-    		long previousEventPtr = sequenceChartFacade.IEvent_getPreviousEvent(startEventPtr);
-    		if (previousEventPtr != 0)
-    			startEventPtr = previousEventPtr;
+            if (startEventPtr != 0 && endEventPtr != 0) {
+        		// look one event backward
+        		long previousEventPtr = sequenceChartFacade.IEvent_getPreviousEvent(startEventPtr);
+        		if (previousEventPtr != 0)
+        			startEventPtr = previousEventPtr;
 
-    		// and forward so that one additional event scrolling can be done with less distraction
-    		long nextEventPtr = sequenceChartFacade.IEvent_getNextEvent(endEventPtr);
-    		if (nextEventPtr != 0)
-    			endEventPtr = nextEventPtr;
+        		// and forward so that one additional event scrolling can be done with less distraction
+        		long nextEventPtr = sequenceChartFacade.IEvent_getNextEvent(endEventPtr);
+        		if (nextEventPtr != 0)
+        			endEventPtr = nextEventPtr;
 
-    		for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-    			if (eventPtr == event.getCPtr())
-    				found = true;
+        		for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
+        			if (eventPtr == event.getCPtr())
+        				found = true;
 
-    			if (eventPtr == endEventPtr)
-    				break;
-    		}
+        			if (eventPtr == endEventPtr)
+        				break;
+        		}
+            }
 		}
 
 		if (!found)
