@@ -65,6 +65,11 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     bool hasAnchoredNode;
 
     /**
+     * True means there is at least one edge to the border.
+     */
+    bool hasEdgeToBorder;
+
+    /**
      * Use pre embedding to create an initial layout before calling the force directed embedding.
      */
     bool preEmbedding;
@@ -80,15 +85,20 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
      * 0 means don't use 3d coordinates. Higher value means bigger initial 3d coordinates.
      */
     double threeDFactor;
+    double threeDCoefficient;
 
     /**
      * Various measures calculated before the actual layout.
      */
-    double expectedEmbeddingSize;
+    double expectedEmbeddingWidth;
+    double expectedEmbeddingHeight;
     double expectedEdgeLength;
+    bool slippery;
     bool pointLikeDistance;
 
-    // border bodies added only if there are edges connected to the border
+    // border bodies will be added if there are either
+    // fixed nodes or edges connected to the border
+	// or the width or the height of the bounding box is specified
     WallBody *topBorder;
     WallBody *bottomBorder;
     WallBody *leftBorder;
@@ -180,9 +190,9 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     void setRandomPositions();
 
     /**
-     * Executes pre embedding.
+     * Executes pre embedding, it always takes into consideration the bounding box.
      */
-    void setInitialPositions();
+    void executePreEmbedding();
 
     /**
      * Adds border bodies to the force directed embedding.
@@ -197,15 +207,23 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     void setBorderPositions();
 
     /**
-     * Scale coordinates so that average edge length will be the default.
+     * Returns the bounding box of the embedding and the size of bigest right and bottom vertex.
      */
-    void scale();
+    Rc getBoundingBox(Rs &rs);
 
     /**
-     * Translates coordinates so that the smallest x and y value will be equal to border size.
+     * Scale coordinates.
      */
-    void translate();
+    void scale(Pt pt);
 
+    /**
+     * Translates coordinates.
+     */
+    void translate(Pt pt);
+
+    /**
+     * Draws the current state of the layout to a window.
+     */
     void debugDraw();
 };
 

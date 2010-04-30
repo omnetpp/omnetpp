@@ -69,7 +69,7 @@ class LAYOUT_API ForceDirectedEmbedding
         /**
          * Total mass of bodies.
          */
-        double massSum;
+        double totalMass;
 
         /**
          * Last calculated acceleration error.
@@ -194,8 +194,6 @@ class LAYOUT_API ForceDirectedEmbedding
             body->setForceDirectedEmbedding(this);
 
             Variable *variable = body->getVariable();
-            variable->addMass(body->getMass());
-
             if (std::find(variables.begin(), variables.end(), variable) == variables.end()) {
                 variable->setForceDirectedEmbedding(this);
                 variables.push_back(variable);
@@ -239,7 +237,7 @@ class LAYOUT_API ForceDirectedEmbedding
         }
 
         double getEnergyBasedFrictionCoefficient(double time) {
-            return 3 * massSum / time * log((getPotentialEnergy() + getKineticEnergy()) / parameters.velocityRelaxLimit);
+            return 3 * totalMass / time * log((getPotentialEnergy() + getKineticEnergy()) / parameters.velocityRelaxLimit);
         }
 
         Rc getBoundingRectangle();

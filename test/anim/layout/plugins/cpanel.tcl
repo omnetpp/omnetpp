@@ -51,6 +51,7 @@ proc cpanel_createControls {} {
 
     cpanel_addCheckButton preEmbedding "Pre embedding" 1 "pe"
     cpanel_addCheckButton forceDirectedEmbedding "Force directed embedding" 1 "fde"
+    cpanel_addCheckButton slippery "Slippery" 0 "sp"
     cpanel_addCheckButton pointLikeDistance "Point like distance" 0 "pld"
     cpanel_addCheckButton showForces "Show forces" 0 "sf"
     cpanel_addCheckButton showSummaForces "Show summa force" 0 "ssf"

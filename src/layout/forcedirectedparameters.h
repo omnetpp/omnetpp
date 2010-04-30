@@ -65,15 +65,12 @@ class Body : public IBody {
             constructor(variable, mass, charge, size);
         }
 
-        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
-            IBody::setForceDirectedEmbedding(embedding);
-
+        virtual void reinitialize() {
+            IBody::reinitialize();
             if (mass == -1)
                 mass = embedding->parameters.defaultBodyMass;
-
             if (charge == -1)
                 charge = embedding->parameters.defaultBodyCharge;
-
             if (size.isNil())
                 size = embedding->parameters.defaultBodySize;
         }
@@ -128,7 +125,7 @@ class RelativelyPositionedBody : public Body {
             constructor(variable, relativePosition);
         }
 
-        RelativelyPositionedBody(Variable *variable, const Pt& relativePosition, const Rs& size) : Body(variable) {
+        RelativelyPositionedBody(Variable *variable, const Pt& relativePosition, const Rs& size) : Body(variable, size) {
             constructor(variable, relativePosition);
         }
 
@@ -152,7 +149,7 @@ class WallBody : public Body {
         bool horizontal;
 
     public:
-        WallBody(bool horizontal, double position) : Body(new Variable(Pt(horizontal ? NaN : position, horizontal ? position : NaN, NaN))) {
+		WallBody(bool horizontal, double position, bool fixed = false) : Body(NULL) {
             this->horizontal = horizontal;
 
             if (horizontal)
@@ -164,6 +161,11 @@ class WallBody : public Body {
         void setPosition(double position) {
             getVariable()->assignPosition(Pt(horizontal ? NaN : position, horizontal ? position : NaN, NaN));
         }
+
+		void setVariable(Variable *variable) {
+			Assert(!this->variable);
+			this->variable = variable;
+		}
 
         virtual const char *getClassName() {
             return "WallBody";
@@ -198,15 +200,12 @@ class AbstractForceProvider : public IForceProvider {
             constructor(maxForce, -1, slippery);
         }
 
-        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
-            IForceProvider::setForceDirectedEmbedding(embedding);
-
+        virtual void reinitialize() {
+            IForceProvider::reinitialize();
             if (maxForce == -1)
                 maxForce = embedding->parameters.defaultMaxForce;
-
             if (slippery == -1)
                 slippery = embedding->parameters.defaultSlippery;
-
             if (pointLikeDistance == -1)
                 pointLikeDistance = embedding->parameters.defaultPointLikeDistance;
         }
@@ -322,12 +321,10 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
             constructor(charge1, charge2, linearityDistance, maxDistance);
         }
 
-        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
-            AbstractForceProvider::setForceDirectedEmbedding(embedding);
-
+        virtual void reinitialize() {
+            AbstractForceProvider::reinitialize();
             if (linearityDistance == -1)
                 linearityDistance = embedding->parameters.defaultElectricRepulsionLinearityDistance;
-
             if (maxDistance == -1)
                 maxDistance = embedding->parameters.defaultElectricRepulsionMaxDistance;
         }
@@ -456,12 +453,10 @@ class AbstractSpring : public AbstractForceProvider {
             constructor(body1, body2, springCoefficient, reposeLength);
         }
 
-        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
-            AbstractForceProvider::setForceDirectedEmbedding(embedding);
-
+        virtual void reinitialize() {
+            AbstractForceProvider::reinitialize();
             if (springCoefficient == -1)
                 springCoefficient = embedding->parameters.defaultSpringCoefficient;
-
             if (reposeLength == -1)
                 reposeLength = embedding->parameters.defaultSpringReposeLength;
         }
@@ -588,11 +583,14 @@ class LeastExpandedSpring : public AbstractForceProvider {
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             AbstractForceProvider::setForceDirectedEmbedding(embedding);
-
-            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++) {
-                AbstractSpring *spring = *it;
-                spring->setForceDirectedEmbedding(embedding);
-            }
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
+                (*it)->setForceDirectedEmbedding(embedding);
+         }
+ 
+        virtual void reinitialize() {
+            AbstractForceProvider::reinitialize();
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
+                (*it)->reinitialize();
         }
 
         AbstractSpring *findLeastExpandedSpring() {

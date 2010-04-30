@@ -60,6 +60,7 @@ class LAYOUT_API GraphLayouter
     int border;
 
     double privRand01() { return lcgRandom.next01(); }
+    double privUniform(double a, double b) { return a + privRand01() * (b - a); }
 
   public:
     /**

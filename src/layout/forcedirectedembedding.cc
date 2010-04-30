@@ -93,7 +93,7 @@ void ForceDirectedEmbedding::reinitialize() {
     elapsedTicks = 0;
     elapsedCalculationTime = 0;
     kineticEnergySum = 0;
-    massSum = 0;
+    totalMass = 0;
 
     // internal state arrays
     pn = createPtArray();
@@ -108,15 +108,31 @@ void ForceDirectedEmbedding::reinitialize() {
     dvn = createPtArray();
     tvn = createPtArray();
 
-    // set positions and velocities
+    // reinitialize parts
+    for(std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); it++)
+        (*it)->reinitialize();
+    for(std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
+        (*it)->reinitialize();
+    for(std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++)
+        (*it)->reinitialize();
+
+    // reinitialize positions and velocities
     for (int i = 0; i < (int)variables.size(); i++) {
         Variable *variable = variables[i];
         pn[i].assign(variable->getPosition());
         vn[i].assign(variable->getVelocity());
-        massSum += variable->getMass();
+        double variableMass = 0;
+        for(std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++) {
+            IBody *body = *it;
+            if (body->getVariable() == variable) {
+                variableMass += body->getMass();
+            }
+        }
+        variable->setMass(variableMass);
+        totalMass += variable->getMass();
     }
 
-    // initial values
+    // some values needs to be reinitialized
     updatedTimeStep = parameters.timeStep;
 
     if (parameters.frictionCoefficient == -1)

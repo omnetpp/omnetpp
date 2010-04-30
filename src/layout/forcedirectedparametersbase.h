@@ -207,6 +207,8 @@ class Variable {
         }
         virtual ~Variable() {}
 
+        virtual void reinitialize() {};
+
         void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;
         }
@@ -244,8 +246,8 @@ class Variable {
             return mass;
         }
 
-        void addMass(double mass) {
-            this->mass += mass;
+        void setMass(double mass) {
+            this->mass = mass;
         }
 
         Pt getForce() {
@@ -312,6 +314,8 @@ class IBody {
     public:
         virtual ~IBody() {}
 
+        virtual void reinitialize() {};
+
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;
         }
@@ -358,6 +362,8 @@ class IForceProvider {
 
     public:
         virtual ~IForceProvider() {}
+
+        virtual void reinitialize() {};
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;

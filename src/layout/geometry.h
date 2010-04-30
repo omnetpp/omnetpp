@@ -167,6 +167,14 @@ class Pt
             return *this;
         }
 
+        Pt& multiply(const Pt& pt) {
+            this->x *= pt.x;
+            this->y *= pt.y;
+            this->z *= pt.z;
+
+            return *this;
+        }
+
         Pt& reverse() {
             return multiply(-1);
         }
@@ -203,6 +211,10 @@ class Pt
         bool isZero() const {
             return x == 0 && y == 0 && z == 0;
         }
+
+		bool isPositiveQuadrant() const {
+			return x >= 0 && y >= 0;
+		}
 
         static Pt getBasePlaneRadial(double radius, double angle) {
             return Pt(cos(angle) * radius, sin(angle) * radius, 0);

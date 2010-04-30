@@ -48,26 +48,42 @@ void HeapEmbedding::embed()
             Pt pt = pts[j];
 
             // align vertex to candidate points with its various points
-            for (int k = 0; k < 4; k++) {
+            for (int k = 0; k < 8; k++) {
                 Rc candidateRc;
                 Pt ptCopy(pt);
 
                 switch (k) {
                     case 0:
-                        // candidate point is center top
-                        candidateRc = Rc(ptCopy.subtract(rs.width / 2, 0, 0), rs);
+                        // candidate point is top left
+                        candidateRc = Rc(ptCopy.subtract(0, 0, 0), rs);
                         break;
                     case 1:
-                        // candidate point is left center
-                        candidateRc = Rc(ptCopy.subtract(0, rs.height / 2, 0), rs);
+                        // candidate point is top center
+                        candidateRc = Rc(ptCopy.subtract(rs.width / 2, 0, 0), rs);
                         break;
                     case 2:
-                        // candidate point is right center
-                        candidateRc = Rc(ptCopy.subtract(rs.width, rs.height / 2, 0), rs);
+                        // candidate point is top right
+                        candidateRc = Rc(ptCopy.subtract(rs.width, 0, 0), rs);
                         break;
                     case 3:
-                        // candidate point is center bottom
+                        // candidate point is center left
+                        candidateRc = Rc(ptCopy.subtract(0, rs.height / 2, 0), rs);
+                        break;
+                    case 4:
+                        // candidate point is center right
+                        candidateRc = Rc(ptCopy.subtract(rs.width, rs.height / 2, 0), rs);
+                        break;
+                    case 5:
+                        // candidate point is bottom left
+                        candidateRc = Rc(ptCopy.subtract(0, rs.height, 0), rs);
+                        break;
+                    case 6:
+                        // candidate point is bottom center
                         candidateRc = Rc(ptCopy.subtract(rs.width / 2, rs.height, 0), rs);
+                        break;
+                    case 7:
+                        // candidate point is bottom right
+                        candidateRc = Rc(ptCopy.subtract(rs.width, rs.height, 0), rs);
                         break;
                 }
 
@@ -93,8 +109,9 @@ void HeapEmbedding::embed()
                         distance += candidateRc.getCenterCenter().getDistance(neighbour->rc.getCenterCenter());
                 }
 
-                // if better the current best
-                if (distance < bestDistance) {
+                // if better than the current best
+                if (distance < bestDistance)
+				{
                     bestRc = candidateRc;
                     bestDistance = distance;
                 }

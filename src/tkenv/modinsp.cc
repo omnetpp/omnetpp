@@ -459,8 +459,7 @@ void TGraphicalModWindow::refreshLayout()
         border = sy/2;
     layouter->setSize(sx, sy, border);
     // TODO support "bgp" tag ("background position")
-
-    //TODO: scaling ("bgs") support for layouter.
+    // TODO: scaling ("bgs") support for layouter.
     // Layouter algorithm is NOT scale-independent, so we should divide ALL coordinates
     // by "scale" before passing them to the layouter, then multiply back the results.
 
