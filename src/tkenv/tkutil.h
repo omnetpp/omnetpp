@@ -33,15 +33,23 @@ NAMESPACE_BEGIN
 //
 #define TCLCONST(x)   const_cast<char*>(x)
 
+// enable when debugging Tcl errors (causes stack trace to be printed)
+//#define VERBOSE_TCL_ERRORS
+
 //
 // Print error message on console if Tcl code returns error
 //
 #ifdef _NDEBUG
 #define CHK(tcl_eval_statement)   tcl_eval_statement
+#elif defined VERBOSE_TCL_ERRORS
+#define CHK(tcl_eval_statement)    \
+  do { if (tcl_eval_statement==TCL_ERROR) \
+        ::printf("Tcl error: %s#%d: %s\n\n",__FILE__,__LINE__, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY)); \
+  } while(0)
 #else
 #define CHK(tcl_eval_statement)    \
-  do{ if (tcl_eval_statement==TCL_ERROR) \
-        fprintf(stderr,"%s#%d:%s\n",__FILE__,__LINE__,Tcl_GetStringResult(interp)); \
+  do { if (tcl_eval_statement==TCL_ERROR) \
+        ::printf("%s#%d: %s\n",__FILE__,__LINE__, Tcl_GetStringResult(interp)); \
   } while(0)
 #endif
 
