@@ -1,3 +1,8 @@
+2010-05-01 Andras Varga
+
+	* fix: bubble positioning was wrong if zoom or scaling ("bgs" display
+	string tag) was active
+
 2010-04-30 Andras Varga
 
 	* fix: parameter references ($par,${par}) were not accepted in many

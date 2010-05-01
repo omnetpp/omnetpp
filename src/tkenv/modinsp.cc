@@ -806,11 +806,16 @@ void TGraphicalModWindow::bubble(cModule *submod, const char *text)
     if (submodPosMap.find(submod)==submodPosMap.end())
         refreshLayout();
 
+    cModule *parentmodule = static_cast<cModule *>(object);
+    std::string buffer;
+    const char *rawScaling = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
+    const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentmodule, true);
+
     // invoke Tcl code to display bubble
     char coords[32];
     Point& pos = submodPosMap[submod];
     sprintf(coords, " %d %d ", pos.x, pos.y);
-    CHK(Tcl_VarEval(interp, "graphmodwin_bubble ", canvas, coords, TclQuotedString(text).get(),NULL));
+    CHK(Tcl_VarEval(interp, "graphmodwin_bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
 }
 
 int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)

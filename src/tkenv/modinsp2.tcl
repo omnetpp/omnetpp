@@ -1201,7 +1201,15 @@ proc graphmodwin_qlen_rightclick {w X Y} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphmodwin_bubble {c x y txt} {
+proc graphmodwin_bubble {c x y scaling txt} {
+    global inspectordata
+
+    set zoom $inspectordata($c:zoomfactor)
+    if {$scaling == ""} {set scaling 1}
+
+    set x [expr $x*$zoom*$scaling]
+    set y [expr $y*$zoom*$scaling]
+
     while {[string length $txt]<5} {set txt " $txt "}
     set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble"]
     set color #F8F8D8
