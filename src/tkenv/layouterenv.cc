@@ -39,6 +39,7 @@ TGraphLayouterEnvironment::TGraphLayouterEnvironment(cModule *parentModule, cons
 
     canvas = NULL;
     interp = NULL;
+    lastCheck = clock();
 }
 
 bool TGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
@@ -117,6 +118,12 @@ void TGraphLayouterEnvironment::cleanup()
 
 bool TGraphLayouterEnvironment::okToProceed()
 {
+    // only check the UI once a while
+    long now = clock();
+    if (now - lastCheck < CLOCKS_PER_SEC/5)
+        return true;
+    lastCheck = now;
+
     // process UI events; we assume that a "grab" is in effect to the Stop button
     // (ie user can only interact with the Stop button but nothing else)
     Tcl_VarEval(interp, "update\n", NULL);

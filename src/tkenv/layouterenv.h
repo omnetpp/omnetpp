@@ -33,6 +33,7 @@ class TGraphLayouterEnvironment : public GraphLayouterEnvironment
       Tcl_Interp *interp;
       cModule *parentModule;
       const cDisplayString& displayString;
+      long lastCheck;
 
    public:
       TGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString);
