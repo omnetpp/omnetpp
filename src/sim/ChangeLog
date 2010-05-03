@@ -7,6 +7,10 @@
 	this prevents "undisposed object cSimulation" message when simulation
 	is killed via Ctrl+C.
 
+	* disabled "Warning: cStaticFlag flag still set while shutting down"
+	message, as it was always printed when exiting Tkenv via Ctrl+C.
+	Can still be enabled when debugging an app that embeds simulation.
+
 2010-04-30  Rudolf Hornig
 
 	* added simTime() NED function to return the current simulation time 
