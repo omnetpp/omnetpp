@@ -122,7 +122,7 @@ bool TGraphLayouterEnvironment::okToProceed()
     Tcl_VarEval(interp, "update\n", NULL);
     const char *var = Tcl_GetVar(interp, "stoplayouting", TCL_GLOBAL_ONLY);
     bool stopNow = var && var[0] && var[0]!='0';
-    if (stopNow)
-        printf("DBG: telling the layouter to stop...\n");
+    //if (stopNow)
+    //    printf("DBG: telling the layouter to stop...\n");
     return !stopNow;
 }

@@ -6,6 +6,12 @@
 	* Simulation Options dialog: layouting algorithm can now be chosen
 	from Fast, Advanced and Adaptive (default: Adaptive)
 
+	* fixed first half of bug #56: when running a simulation that creates
+	and deletes modules dynamically, hovering the mouse over a just
+	deleted module will crash as Tkenv tries to create tooltip for dead
+	object; mouse event is processed from layouting callback.
+	Fix: activate grab during incremental layouting as well.
+
 2010-05-01 Andras Varga
 
 	* fix: bubble positioning was wrong if zoom or scaling ("bgs" display

@@ -1299,7 +1299,7 @@ proc layouter_startgrab {w} {
     global opp help_tips
 
     # the gabbed widget should be the "Stop" button of the module window
-    set help_tips($w) {Calculating the layout -- click the STOP button to end it and start drawing}
+    set help_tips($w) {Layouting -- click STOP to abort it}
 
     set opp(oldGrab) [grab current $w]
     grab $w

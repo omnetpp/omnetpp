@@ -536,15 +536,15 @@ void TGraphicalModWindow::refreshLayout()
         }
     }
 
-    bool isFullLayout = submodPosMap.empty();
-    if (isFullLayout)
+    // perform incremental layout (nodes laid out previously, i.e. contained in submodPosMap, are taken as fixed)
+    bool isExpressMode = getTkenv()->getSimulationRunMode() == Tkenv::RUNMODE_EXPRESS;
+    if (!isExpressMode)
         Tcl_VarEval(interp, "layouter_startgrab ", windowName(), ".toolbar.stop", NULL);
 
-    // layout the graph -- should be VERY fast if most nodes are fixed!
     Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
     layouter->execute();
 
-    if (isFullLayout)
+    if (!isExpressMode)
         Tcl_VarEval(interp, "layouter_releasegrab ", windowName(), ".toolbar.stop", NULL);
 
     // fill the map with the results
