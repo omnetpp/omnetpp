@@ -25,21 +25,21 @@
 
 proc enable_balloon {name_to_bind {script {}}} {
     if ![llength $script] {
-        bind $name_to_bind <Any-Enter> "+schedule_balloon %W %X %Y"
-        bind $name_to_bind <Any-Motion> "+reset_balloon %W %X %Y"
+        bind $name_to_bind <Any-Enter> "+schedule_balloon %W %X %Y %x %y"
+        bind $name_to_bind <Any-Motion> "+reset_balloon %W %X %Y %x %y"
     } else {
-        bind $name_to_bind <Any-Enter> "+schedule_balloon %W %X %Y \[$script\]"
-        bind $name_to_bind <Any-Motion> "+reset_balloon %W %X %Y \[$script\]"
+        bind $name_to_bind <Any-Enter> "+schedule_balloon %W %X %Y %x %y \[$script\]"
+        bind $name_to_bind <Any-Motion> "+reset_balloon %W %X %Y %x %y \[$script\]"
     }
     bind $name_to_bind <Any-Leave> "+cancel_balloon"
 }
 
-proc schedule_balloon {window x y {item {}}} {
+proc schedule_balloon {window x y winx winy {item {}}} {
     global use_balloons help_tips balloon_after_ID
     if !$use_balloons return
 
     if [info exists help_tips(helptip_proc)] {
-        set tip [$help_tips(helptip_proc) $window $x $y $item]
+        set tip [$help_tips(helptip_proc) $window $winx $winy]
         if [string length $tip] {
             set balloon_after_ID [after $help_tips(delay) [list create_balloon $tip $x $y]]
             return
@@ -55,9 +55,9 @@ proc schedule_balloon {window x y {item {}}} {
     }
 }
 
-proc reset_balloon {window x y {item {}}} {
+proc reset_balloon {window x y winx winy {item {}}} {
     cancel_balloon
-    schedule_balloon $window $x $y $item
+    schedule_balloon $window $x $y $winx $winy $item
 }
 
 proc cancel_balloon {} {
@@ -101,7 +101,7 @@ proc init_balloons {args} {
     enable_balloon Label
     enable_balloon Entry
     enable_balloon Menu "%W index active"
-    enable_balloon Canvas "get_ptrs_under_mouse %W %x %y"
+    enable_balloon Canvas "%W find withtag current"  ;#DO NOT CHANGE THIS
 }
 
 #package provide balloon 1.0

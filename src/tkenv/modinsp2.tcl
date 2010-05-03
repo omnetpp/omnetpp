@@ -995,7 +995,7 @@ proc get_ptrs_under_mouse {c x y} {
 
    set ptrs2 {}
    if {$ptrs != {}} {
-      # remove duplicte pointers and reverse the order
+      # remove duplicate pointers and reverse the order
       # so the topmost element will be the first in the list
       foreach ptr $ptrs {
           if {[lsearch -exact $ptrs2 $ptr] == -1 } {

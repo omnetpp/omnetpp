@@ -557,20 +557,24 @@ proc inspect_componenttype {win {type "(default)"}} {
 # Here we produce help text for canvas items that represent simulation
 # objects.
 #
-proc get_help_tip {w x y items} {
+proc get_help_tip {w x y} {
    if {![winfo exists $w]} {
        return ""
    }
    set tip ""
-   if {[winfo class $w]=="Canvas" && $items!=""} {
+
+   if {[winfo class $w]=="Canvas"} {
+     set canvasx [$w canvasx $x]
+     set canvasy [$w canvasy $y]
+     set items [$w find overlapping [expr $canvasx-2] [expr $canvasy-2] [expr $canvasx+2] [expr $canvasy+2]]
+
      set tip ""
      foreach item $items {
        # if this is a simulation object, get its pointer
        set ptr ""
        set tags [$w gettags $item]
-
        if {[lsearch $tags "tooltip"] == -1} {
-          return ""
+          continue
        }
 
        if {[lsearch $tags "ptr*"] != -1} {
