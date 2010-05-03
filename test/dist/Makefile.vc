@@ -1,10 +1,9 @@
 #
-# OMNeT++/OMNEST Makefile for dist.exe
+# OMNeT++/OMNEST Makefile for dist
 #
 # This file was generated with the command:
-#  opp_makemake --nmake -f
+#  opp_makemake --nmake -f --deep
 #
-
 
 # Name of target to be created (-o option)
 TARGET = dist.exe
@@ -15,7 +14,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH =
+INCLUDE_PATH = -I.
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -24,7 +23,9 @@ EXTRA_OBJS =
 LIBS =
 
 # Output directory
-O = out/$(CONFIGNAME)/
+PROJECT_OUTPUT_DIR = out
+PROJECTRELATIVE_PATH =
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
 OBJS = $O/dist.obj
@@ -32,12 +33,7 @@ OBJS = $O/dist.obj
 # Message files
 MSGFILES =
 
-# C++ files generated from msg files
-MSG_CC_FILES =
-MSG_H_FILES =
-
-# Other makefile variables (-K)
-
+MAKE=nmake -nologo -f Makefile.vc
 
 #------------------------------------------------------------------------------
 
@@ -47,16 +43,14 @@ CONFIGFILE = $(OMNETPP_CONFIGFILE)
 !elseif "$(OMNETPP_ROOT)"!=""
 CONFIGFILE = $(OMNETPP_ROOT)/configuser.vc
 !else
-CONFIGFILE = C:\Work\trunk\omnetpp\\configuser.vc
+CONFIGFILE = C:\home\omnetpp40\omnetpp\bin\\..\configuser.vc
 !endif
 
 !if !exist($(CONFIGFILE))
-!error '$(CONFIGFILE)' does not exist -- specify "configuser.vc" in the OMNETPP_CONFIGFILE variable (as environment variable or command-line nmake argument), or edit or re-generate this makefile.
+!error '$(CONFIGFILE)' does not exist -- set OMNETPP_ROOT or OMNETPP_CONFIGFILE to point to configuser.vc. From the IDE, set the OMNeT++ install location on the Window | Preferences dialog.
 !endif
 
 !include $(CONFIGFILE)
-
-
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
@@ -72,13 +66,15 @@ MSGCOPTS = $(INCLUDE_PATH)
 #------------------------------------------------------------------------------
 
 # Main target
-all: $O/$(TARGET)
+all: $(TARGET)
 
-$O/$(TARGET): generateheaders $(OBJS)  $(EXTRA_OBJS) Makefile.vc
+$(TARGET) : $O/$(TARGET)
+	copy $(O:/=\)\$(TARGET) .
+	-copy $(O:/=\)\$(TARGET).manifest . >NUL
+
+$O/$(TARGET): $(OBJS)  $(EXTRA_OBJS) Makefile.vc
 	-@md $(O:/=\) 2>nul
 	$(LINK) $(LDFLAGS) /out:$O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
-	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
-
 
 .SUFFIXES: .cc
 
@@ -86,20 +82,23 @@ $O/$(TARGET): generateheaders $(OBJS)  $(EXTRA_OBJS) Makefile.vc
 	-@md $(O:/=\) 2>nul
 	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 
-generateheaders: $(MSGFILES)
-	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) $(MSGFILES)
+{.}.cc{$O/.}.obj:
+	-@md $(O:/=\)\. 2>nul
+	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+
+msgheaders: $(MSGFILES:.msg=_m.h)
 
 clean:
 	-rmdir /s /q $(O:/=\) 2>nul
+	-del $(VC_AUX_FILES) 2>nul
+	-del $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.exe=.dll) 2>nul
+	-del .\*_m.cc .\*_m.h 2>nul
+
+cleanall: clean
+	-rmdir /s /q $(PROJECT_OUTPUT_DIR:/=\) 2>nul
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- *.cc
-
-	if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && @popd || exit /b 1
-
-makefiles:
-	opp_makemake --nmake -f
-	if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && @popd || exit /b 1
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- $(MSG_CC_FILES)  ./*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/dist.obj: dist.cc

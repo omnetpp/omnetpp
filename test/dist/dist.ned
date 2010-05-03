@@ -1,6 +1,3 @@
-//-------------------------------------------------------------
-// file: dist.ned
-//-------------------------------------------------------------
 
 simple Dist
 {
@@ -8,10 +5,10 @@ simple Dist
         @isNetwork;
         volatile double variate;
         string excel;
-        volatile double n;
+        int n;
         bool discrete;
-        volatile double numcells;
-        volatile double firstvals;
+        int numcells;
+        int firstvals;
         string file;
 }
 
