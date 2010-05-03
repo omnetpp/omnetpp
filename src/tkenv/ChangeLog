@@ -12,6 +12,14 @@
 	object; mouse event is processed from layouting callback.
 	Fix: activate grab during incremental layouting as well.
 
+	* fixed secord half of bug #56: crash during idle(), when running 
+	a simulation that creates and deletes modules dynamically, using
+	cRuntimeScheduler that calls idle(), running in Fast mode, and 
+	hovering the mouse over a just deleted module. Fix: refresh inspectors
+	just before idle() processes UI updates; also, to prevent excessive
+	inspector refresh, process UI events if at least one second has passed
+	since the last check.
+
 	* fix: crash when closing inspector window during layouting
 
 2010-05-01 Andras Varga

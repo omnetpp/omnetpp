@@ -129,6 +129,7 @@ class TKENV_API Tkenv : public EnvirBase
       cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
 
       bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
+      long idleLastUICheck;        // clock() time when idle() last run the Tk "update" command
 
       typedef std::list<TInspector*> TInspectorList;
       TInspectorList inspectors;   // list of inspector objects

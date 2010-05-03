@@ -127,6 +127,7 @@ Tkenv::Tkenv()
     hasmessagewindow = false;
     isconfigrun = false;
     rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    idleLastUICheck = 0;
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
@@ -1148,6 +1149,24 @@ void Tkenv::askParameter(cPar *par, bool unassigned)
 
 bool Tkenv::idle()
 {
+    // bug #56: refresh inspectors so that there aren't dead objects on the UI
+    // while running Tk "update" (below). This only needs to be done in Fast
+    // mode, because in normal Run mode inspectors are already up to date here
+    // (they are refreshed after every event), and in Express mode all user
+    // interactions are disabled except for the STOP button.
+    if (runmode == RUNMODE_FAST)
+    {
+        // only check the UI once per second at most
+        long now = clock();
+        if (now - idleLastUICheck < CLOCKS_PER_SEC)
+            return false;
+        idleLastUICheck = now;
+
+        // refresh inspectors
+        updateInspectors();
+    }
+
+    // process UI events
     eState origsimstate = simstate;
     simstate = SIM_BUSY;
     Tcl_Eval(interp, "update");
