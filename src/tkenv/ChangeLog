@@ -12,6 +12,8 @@
 	object; mouse event is processed from layouting callback.
 	Fix: activate grab during incremental layouting as well.
 
+	* fix: crash when closing inspector window during layouting
+
 2010-05-01 Andras Varga
 
 	* fix: bubble positioning was wrong if zoom or scaling ("bgs" display

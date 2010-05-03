@@ -1294,27 +1294,35 @@ proc layouter_debugDraw_finish {c msg} {
     update idletasks
 }
 
-proc layouter_startgrab {w} {
-    #puts "grabbing $w"
+proc layouter_startgrab {stopbutton} {
     global opp help_tips
 
-    # the gabbed widget should be the "Stop" button of the module window
-    set help_tips($w) {Layouting -- click STOP to abort it}
+    # tooltip
+    set opp(grabSavedTooltip) $help_tips($stopbutton)
+    set help_tips($stopbutton) {Layouting -- click STOP to abort it}
 
-    set opp(oldGrab) [grab current $w]
-    grab $w
-    focus $w
+    # prevent user from closing window (postpone close operation)
+    set win [winfo toplevel $stopbutton]
+    set opp(grabOrigCloseHandler) [wm protocol $win WM_DELETE_WINDOW]
+    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+
+    set opp(oldGrab) [grab current $stopbutton]
+
+    grab $stopbutton
+    focus $stopbutton
 }
 
-proc layouter_releasegrab {w} {
-    #puts "releasing grab on $w"
+proc layouter_releasegrab {stopbutton} {
     global opp help_tips
 
-    # restore tooltip hijacked in layouter_startgrab
-    set help_tips($w) {Stop the simulation (F8)}
+    # restore everything messed up in layouter_startgrab
+    set help_tips($stopbutton) $opp(grabSavedTooltip)
 
-    catch {grab release $w}
+    catch {grab release $stopbutton}
     catch {grab release [grab current]}
+
+    set win [winfo toplevel $stopbutton]
+    wm protocol $win WM_DELETE_WINDOW $opp(grabOrigCloseHandler)
 }
 
 
