@@ -733,7 +733,7 @@ void cSimpleModule::endSimulation()
     throw cTerminationException(eENDSIM);
 }
 
-bool cSimpleModule::snapshot(cOwnedObject *object, const char *label)
+bool cSimpleModule::snapshot(cObject *object, const char *label)
 {
     return simulation.snapshot(object ? object : &simulation, label);
 }

@@ -3,6 +3,10 @@
 	* std_sim.msg: "contents[]" is now displayed as "defaultList[]"; 
 	group label "general" renamed to "fields"
 
+	* cSimulation doesn't need to be cOwnedObject, cNamedObject is enough;
+	this prevents "undisposed object cSimulation" message when simulation
+	is killed via Ctrl+C.
+
 2010-04-30  Rudolf Hornig
 
 	* added simTime() NED function to return the current simulation time 

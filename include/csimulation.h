@@ -68,7 +68,7 @@ SIM_API extern cDefaultList defaultList; // also in globals.h
  * @ingroup SimCore
  * @ingroup Internals
  */
-class SIM_API cSimulation : public cNoncopyableOwnedObject
+class SIM_API cSimulation : public cNamedObject, noncopyable
 {
     friend class cSimpleModule;
   private:

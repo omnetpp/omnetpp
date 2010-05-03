@@ -59,7 +59,7 @@ void printAllObjects();
 #endif
 
 
-cSimulation::cSimulation(const char *name, cEnvir *env) : cNoncopyableOwnedObject(name, false)
+cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
 {
     ASSERT(cStaticFlag::isSet()); // cannot be instantiated as global variable
 
