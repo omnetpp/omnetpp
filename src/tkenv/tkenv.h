@@ -73,6 +73,12 @@ class TKENV_API Tkenv : public EnvirBase
       };
       typedef std::vector<sPathEntry> PathVec;
 
+      enum LayouterChoice {
+          LAYOUTER_FAST,
+          LAYOUTER_ADVANCED,
+          LAYOUTER_AUTO
+      };
+
    public:
       // options
       opp_string opt_default_config; // automatically set up this config at startup
@@ -91,7 +97,7 @@ class TKENV_API Tkenv : public EnvirBase
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
       bool opt_penguin_mode;       // msg animation: message appearance
       bool opt_showlayouting;      // show layouting process in graphical module inspectors
-      bool opt_usenewlayouter;     // use new layouting algorithms
+      LayouterChoice opt_layouterchoice;  // which new layouting algorithm to use
       bool opt_arrangevectorconnections;     // arrange connections on vector gates parallel to each outher
       bool opt_bubbles;            // show result of bubble() calls
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast

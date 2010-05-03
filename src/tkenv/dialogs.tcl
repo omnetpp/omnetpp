@@ -354,15 +354,17 @@ proc options_dialog {{defaultpage "g"}} {
     labelframe $nb.l.f1 -text "Layouting" -relief groove -borderwidth 2
     label $nb.l.f1.layouterlabel -text "Layouting algorithm:"
     frame $nb.l.f1.layouter
-    radiobutton  $nb.l.f1.layouter.old -text "Fast" -variable opp(newlayouter) -value 0
-    radiobutton  $nb.l.f1.layouter.new -text "Advanced" -variable opp(newlayouter) -value 1
+    radiobutton  $nb.l.f1.layouter.fast -text "Fast" -variable opp(layouterchoice) -value "fast"
+    radiobutton  $nb.l.f1.layouter.advanced -text "Advanced" -variable opp(layouterchoice) -value "advanced"
+    radiobutton  $nb.l.f1.layouter.auto -text "Adaptive (Fast for large networks, Advanced for smaller ones)" -variable opp(layouterchoice) -value "auto"
     checkbutton $nb.l.f1.layouting -text {Show layouting process} -variable opp(layouting)
     checkbutton $nb.l.f1.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
 
     pack $nb.l.f1.layouterlabel -anchor w
     pack $nb.l.f1.layouter -anchor w
-    pack $nb.l.f1.layouter.old -anchor w -padx 10
-    pack $nb.l.f1.layouter.new -anchor w -padx 10
+    pack $nb.l.f1.layouter.fast -anchor w -padx 10
+    pack $nb.l.f1.layouter.advanced -anchor w -padx 10
+    pack $nb.l.f1.layouter.auto -anchor w -padx 10
     pack $nb.l.f1.layouting -anchor w
     pack $nb.l.f1.arrangevectorconnections -anchor w
     pack $nb.l.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
@@ -441,7 +443,7 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
     set opp(penguin)    [opp_getsimoption penguin_mode]
     set opp(layouting)  [opp_getsimoption showlayouting]
-    set opp(newlayouter) [opp_getsimoption usenewlayouter]
+    set opp(layouterchoice) [opp_getsimoption layouterchoice]
     set opp(arrangevectorconnections) [opp_getsimoption arrangevectorconnections]
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
@@ -480,8 +482,8 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption animation_msgcolors $opp(msgcol)
         opp_setsimoption penguin_mode        $opp(penguin)
         opp_setsimoption showlayouting       $opp(layouting)
-        opp_setsimoption usenewlayouter      $opp(newlayouter)
-        opp_setsimoption arrangevectorconnections      $opp(arrangevectorconnections)
+        opp_setsimoption layouterchoice      $opp(layouterchoice)
+        opp_setsimoption arrangevectorconnections  $opp(arrangevectorconnections)
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
         set config(confirm-exit)             $opp(confirmexit)

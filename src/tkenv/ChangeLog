@@ -1,3 +1,11 @@
+2010-05-03 Andras Varga
+
+	* Simulation Options dialog: made a separate "Layouting" page and
+	other minor refinements
+
+	* Simulation Options dialog: layouting algorithm can now be chosen
+	from Fast, Advanced and Adaptive (default: Adaptive)
+
 2010-05-01 Andras Varga
 
 	* fix: bubble positioning was wrong if zoom or scaling ("bgs" display

@@ -145,7 +145,7 @@ Tkenv::Tkenv()
     opt_animation_msgcolors = true;
     opt_penguin_mode = false;
     opt_showlayouting = false;
-    opt_usenewlayouter = false;
+    opt_layouterchoice = LAYOUTER_AUTO;
     opt_arrangevectorconnections = false;
     opt_bubbles = true;
     opt_animation_speed = 1.5;

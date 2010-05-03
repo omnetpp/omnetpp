@@ -433,9 +433,19 @@ void TGraphicalModWindow::refreshLayout()
     const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->getDisplayString() : blank;
 
     // create and configure layouter object
-    GraphLayouter *layouter = getTkenv()->opt_usenewlayouter ?
-                                    (GraphLayouter *) new ForceDirectedGraphLayouter() :
-                                    (GraphLayouter *) new BasicSpringEmbedderLayout();
+    Tkenv::LayouterChoice choice = getTkenv()->opt_layouterchoice;
+    if (choice==Tkenv::LAYOUTER_AUTO)
+    {
+        const int LIMIT = 20; // note: on test/anim/dynamic2, Advanced is already very slow with 30-40 modules
+        int submodCountLimited = 0;
+        for (cModule::SubmoduleIterator submod(parentmodule); !submod.end() && submodCountLimited<LIMIT; submod++)
+            submodCountLimited++;
+        choice = submodCountLimited>=LIMIT ? Tkenv::LAYOUTER_FAST : Tkenv::LAYOUTER_ADVANCED;
+    }
+    GraphLayouter *layouter = choice==Tkenv::LAYOUTER_FAST ?
+                                    (GraphLayouter *) new BasicSpringEmbedderLayout() :
+                                    (GraphLayouter *) new ForceDirectedGraphLayouter();
+
     layouter->setSeed(random_seed);
 
     Tcl_Interp *interp = getTkenv()->getInterp();

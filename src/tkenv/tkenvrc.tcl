@@ -43,7 +43,7 @@ proc save_tkenvrc {fname savesettings saveinspectors {comment ""}} {
                 animation_msgcolors
                 penguin_mode
                 showlayouting
-                usenewlayouter
+                layouterchoice
                 arrangevectorconnections
                 bubbles
                 animation_speed

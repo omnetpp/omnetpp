@@ -1109,8 +1109,13 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_penguin_mode);
    else if (0==strcmp(argv[1], "showlayouting"))
       sprintf(buf,"%d", app->opt_showlayouting);
-   else if (0==strcmp(argv[1], "usenewlayouter"))
-      sprintf(buf,"%d", app->opt_usenewlayouter);
+   else if (0==strcmp(argv[1], "layouterchoice")) {
+      switch (app->opt_layouterchoice) {
+          case Tkenv::LAYOUTER_FAST: strcpy(buf, "fast"); break;
+          case Tkenv::LAYOUTER_ADVANCED: strcpy(buf, "advanced"); break;
+          default: strcpy(buf, "auto");
+      }
+   }
    else if (0==strcmp(argv[1], "arrangevectorconnections"))
       sprintf(buf,"%d", app->opt_arrangevectorconnections);
    else if (0==strcmp(argv[1], "bubbles"))
@@ -1170,8 +1175,12 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_penguin_mode = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "showlayouting"))
       app->opt_showlayouting = (argv[2][0]!='0');
-   else if (0==strcmp(argv[1], "usenewlayouter"))
-      app->opt_usenewlayouter = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "layouterchoice"))  {
+      app->opt_layouterchoice =
+          strcmp(argv[2],"fast")==0 ? Tkenv::LAYOUTER_FAST :
+          strcmp(argv[2],"advanced")==0 ? Tkenv::LAYOUTER_ADVANCED :
+          Tkenv::LAYOUTER_AUTO;
+   }
    else if (0==strcmp(argv[1], "arrangevectorconnections"))
       app->opt_arrangevectorconnections = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "bubbles"))
