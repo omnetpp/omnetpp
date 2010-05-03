@@ -16,6 +16,7 @@ Define_Module(Fork);
 
 void Fork::initialize()
 {
+    setPerformFinalGC(true);
 }
 
 void Fork::handleMessage(cMessage *msg)
