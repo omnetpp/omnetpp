@@ -1,4 +1,9 @@
-2010-04-30 Rudolf Hornig
+2010-05-03  Andras Varga
+
+	* std_sim.msg: "contents[]" is now displayed as "defaultList[]"; 
+	group label "general" renamed to "fields"
+
+2010-04-30  Rudolf Hornig
 
 	* added simTime() NED function to return the current simulation time 
           in NED expessions.

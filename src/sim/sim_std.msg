@@ -90,7 +90,7 @@ class cNoncopyableOwnedObject extends cOwnedObject
 
 class cDefaultList extends cNoncopyableOwnedObject
 {
-    cOwnedObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListSize) @group(contents) @hint("List of objects directly held by this component");
+    cOwnedObject *defaultList[] @getter(defaultListGet) @sizeGetter(defaultListSize) @group(owned objects) @hint("List of objects directly held by this component");
 }
 
 class cDisplayString extends void
@@ -100,8 +100,8 @@ class cDisplayString extends void
 
 class cProperty extends cObject
 {
-    bool isImplicit @getter(isImplicit) @group(general);
-    string index @group(general);
+    bool isImplicit @getter(isImplicit) @group(fields);
+    string index @group(fields);
     string value @getter(info) @hint("Name and value");
 }
 
@@ -115,8 +115,8 @@ class cComponentType extends cOwnedObject;
 
 class cComponent extends cDefaultList
 {
-    bool isModule @getter(isModule) @group(general) @hint("Whether this component is a module or a channel");
-    cComponentType *componentType @group(general) @hint("The object that represents the type declaration for this component");
+    bool isModule @getter(isModule) @group(fields) @hint("Whether this component is a module or a channel");
+    cComponentType *componentType @group(fields) @hint("The object that represents the type declaration for this component");
     cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("Parameters");
     cProperties *props @getter(getProperties) @label("properties") @group(parameters, gates) @hint("Properties");
 }
@@ -124,7 +124,7 @@ class cComponent extends cDefaultList
 class cChannel extends cComponent
 {
     @icon(channel);
-    cDisplayString displayString @group(general) @hint("Controls appearance of this channel in the GUI");
+    cDisplayString displayString @group(fields) @hint("Controls appearance of this channel in the GUI");
 }
 
 class cIdealChannel extends cChannel
@@ -140,27 +140,27 @@ class cDelayChannel extends cChannel
 class cDatarateChannel extends cChannel
 {
     // Note: no need to spell out delay etc, they come from cComponent parameters
-    bool isBusy @getter(isBusy) @group(general) @hint("If channel is currently transmitting");
-    simtime_t transmissionFinishTime @group(general) @hint("If busy: when currently active transmissions will finish");
+    bool isBusy @getter(isBusy) @group(fields) @hint("If channel is currently transmitting");
+    simtime_t transmissionFinishTime @group(fields) @hint("If busy: when currently active transmissions will finish");
 }
 
 class cGate extends cObject;
 
 class cModule extends cComponent
 {
-    int id @group(general) @hint("Unique module ID -- IDs of deleted modules are not issued again");
-    bool isSimple @getter(isSimple) @group(general) @hint("Whether this is a simple module");
-    bool isVector @getter(isVector) @group(general) @hint("Whether this module is part of a module vector");
-    int index @group(general) @hint("If vector: index of this module in its module vector");
-    int size @getter(size) @group(general) @hint("If vector: size of module vector this module belongs to");
-    cDisplayString displayString @group(general) @hint("Controls appearance of this module in the GUI");
+    int id @group(fields) @hint("Unique module ID -- IDs of deleted modules are not issued again");
+    bool isSimple @getter(isSimple) @group(fields) @hint("Whether this is a simple module");
+    bool isVector @getter(isVector) @group(fields) @hint("Whether this module is part of a module vector");
+    int index @group(fields) @hint("If vector: index of this module in its module vector");
+    int size @getter(size) @group(fields) @hint("If vector: size of module vector this module belongs to");
+    cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI");
     cGate *gate[] @getter(getGateCount) @sizeGetter(gateCount) @getter(gateByOrdinal) @group(parameters, gates) @label(gates) @hint("Module gates");
 }
 
 class cSimpleModule extends cModule
 {
     @icon(simple);
-    bool isTerminated @getter(isTerminated) @group(general) @hint("Whether this module has terminated");
+    bool isTerminated @getter(isTerminated) @group(fields) @hint("Whether this module has terminated");
     bool usesActivity @getter(usesActivity) @group(activity) @hint("Whether this simple module was programmed using the \"activity\" or the \"handleMessage\" C++ method");
     unsigned int stackSize @group(activity) @hint("If module uses \"activity\": stack size allocated for this module -- zero means info not available");
     unsigned int stackUsage @group(activity) @hint("If module uses \"activity\": stack actually used by this module -- zero means info not available");
@@ -181,7 +181,7 @@ class cComponentType extends cNoncopyableOwnedObject
 
 class cModuleType extends cComponentType
 {
-    bool isNetwork @getter(isNetwork) @group(general) @hint("Whether this module type can be used as toplevel module");
+    bool isNetwork @getter(isNetwork) @group(fields) @hint("Whether this module type can be used as toplevel module");
 }
 
 class cChannelType extends cComponentType
@@ -198,11 +198,11 @@ class cRegistrationList extends cNamedObject
 class cGate extends cObject
 {
     @icon(gate);
-    char type @group(general) @enum(cGate_Type) @hint("Gate type");
-    int id @group(general) @hint("Gate id, unique within this module");
-    bool isVector @getter(isVector) @group(general) @hint("Whether this gate is part of a gate vector");
-    int index @group(general) @hint("If vector: index of this gate within its gate vector");
-    bool deliverOnReceptionStart @group(general) @hint("Only for simple module input gates, and if message transmission duration is nonzero: whether messages arriving on this gate will be given to the module at the start or the end of the reception");
+    char type @group(fields) @enum(cGate_Type) @hint("Gate type");
+    int id @group(fields) @hint("Gate id, unique within this module");
+    bool isVector @getter(isVector) @group(fields) @hint("Whether this gate is part of a gate vector");
+    int index @group(fields) @hint("If vector: index of this gate within its gate vector");
+    bool deliverOnReceptionStart @group(fields) @hint("Only for simple module input gates, and if message transmission duration is nonzero: whether messages arriving on this gate will be given to the module at the start or the end of the reception");
 
     cChannel *channel @group(connection) @hint("Channel object associated with the connection");
     cGate *previousGate @group(connection) @hint("The gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside");
@@ -220,7 +220,7 @@ class cGate extends cObject
 class cArray extends cOwnedObject
 {
     @icon(container);
-    bool takeOwnership @group(general) @editable @hint("Whether the array should own the objects inserted into it");
+    bool takeOwnership @group(fields) @editable @hint("Whether the array should own the objects inserted into it");
     cOwnedObject *contents[] @getter(get) @sizeGetter(size) @hint("Objects contained in the array");
 }
 
@@ -418,7 +418,7 @@ class cMessageHeap extends cOwnedObject
 class cQueue extends cOwnedObject
 {
     @icon(queue);
-    bool takeOwnership @group(general) @editable @hint("Whether the queue should own the objects inserted into it");
+    bool takeOwnership @group(fields) @editable @hint("Whether the queue should own the objects inserted into it");
     int length @hint("Number of items in the queue");
     cOwnedObject *contents[] @getter(get) @sizeGetter(getLength) @hint("Queue contents");
 }
@@ -505,7 +505,7 @@ class cTopology_LinkOut extends cTopology_Link
 
 class cTopology extends cOwnedObject
 {
-    int numNodes @group(general) @hint("Number of nodes in this topology object");
+    int numNodes @group(fields) @hint("Number of nodes in this topology object");
     cTopology_Node *node[] @sizeGetter(getNumNodes) @hint("List of nodes in this topology object");
 }
 
