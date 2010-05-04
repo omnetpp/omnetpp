@@ -203,6 +203,7 @@ public class InputsPage extends ScaveEditorPage {
 				inputFilesPanel.getRemoveFileButton(),
 				inputFilesPanel.getTreeViewer(),
 				new RemoveAction());
+		inputFilesPanel.getRemoveFileButton().setText("Remove"); // override the text "Delete" that comes from the action
 	}
 
 	/**
