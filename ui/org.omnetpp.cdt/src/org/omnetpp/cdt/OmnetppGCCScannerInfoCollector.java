@@ -7,17 +7,20 @@
 
 package org.omnetpp.cdt;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscoveredPathInfo;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IPerProjectDiscoveredPathInfo;
+import org.eclipse.cdt.make.internal.core.scannerconfig.ScannerConfigUtil;
 import org.eclipse.cdt.make.internal.core.scannerconfig2.PerProjectSICollector;
 import org.eclipse.cdt.managedbuilder.scannerconfig.IManagedScannerInfoCollector;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
 import org.omnetpp.cdt.makefile.MakefileTools;
 
 /**
@@ -32,19 +35,28 @@ public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
 	@Override
 	public IDiscoveredPathInfo createPathInfoObject() {
 		IPerProjectDiscoveredPathInfo pathInfoObject = (IPerProjectDiscoveredPathInfo)super.createPathInfoObject();
-
 		// add include dirs needed for OMNeT++
 		LinkedHashMap includeMap = pathInfoObject.getIncludeMap();
 		try {
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getContext().getProject());
             Assert.isNotNull(projectDescription);
+            
+            // remove the entries that point to a non-existent dir 
+            for (Object location : includeMap.keySet())
+            	if (location instanceof String && !new File((String)location).exists()) 
+                    includeMap.put(location, true);
+            
+            // add the newly discovered entries
             for (IPath path : MakefileTools.getOmnetppIncludeLocationsForProject(projectDescription))
                 includeMap.put(path.toOSString(), false);
+            
             pathInfoObject.setIncludeMap(includeMap);
         }
         catch (CoreException e) {
             Activator.logError(e);
         }
-		return pathInfoObject;
+
+        return pathInfoObject;
 	}
+	
 }

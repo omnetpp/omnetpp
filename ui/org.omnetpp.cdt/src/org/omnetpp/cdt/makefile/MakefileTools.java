@@ -240,7 +240,25 @@ public class MakefileTools {
      * plus source directories from the project and all dependent projects.
      */
     public static List<IPath> getOmnetppIncludeLocationsForProject(ICProjectDescription projectDescription) throws CoreException {
-        List<IPath> result = new ArrayList<IPath>();
+
+    	// TODO improvement: return only directories in which a .h or hpp file is present
+    	
+    	// calculate the project output dir
+    	IProject proj = projectDescription.getProject();
+    	List<IPath> outLocation = new ArrayList<IPath>(); 
+    	BuildSpecification bspec = BuildSpecification.readBuildSpecFile(projectDescription.getProject());
+    	if (bspec != null) 
+    		for(IContainer makemakeFolder : bspec.getMakemakeFolders()) {
+    			MakemakeOptions mo = bspec.getMakemakeOptions(makemakeFolder);
+    			if (mo != null) {
+    				IResource outDir = proj.findMember(mo.outRoot);
+    				if (outDir != null)
+    					outLocation.add(outDir.getLocation());
+    			}
+    			
+    		}
+    		
+    	List<IPath> result = new ArrayList<IPath>();
 
         // add the omnetpp include directory
         result.add(new Path(OmnetppMainPlugin.getOmnetppInclDir()));
@@ -248,8 +266,16 @@ public class MakefileTools {
         // add project source directories as include dirs for the indexer
         // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
         // (i.e. "subdir" might need to be added to the include path too, even if it doesn't contain any header)
-        for (IContainer incDir : MakefileTools.collectDirs(projectDescription, null))
-            result.add(incDir.getLocation());
+        for (IContainer incDir : MakefileTools.collectDirs(projectDescription, null)) {
+        	boolean dirOk = true;
+        	for (IPath outLoc : outLocation)
+        		if (outLoc.isPrefixOf(incDir.getLocation()))
+        			dirOk = false;
+        	// do not add as an include dir if it is under one of the out directories
+        	if (dirOk)
+        		result.add(incDir.getLocation());
+        }
+        
         return result;
     }
 
