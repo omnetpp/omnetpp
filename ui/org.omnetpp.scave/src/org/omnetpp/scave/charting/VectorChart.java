@@ -240,7 +240,7 @@ public class VectorChart extends ChartCanvas {
 
 	public static LineType getLineTypeForInterpolationMode(InterpolationMode mode) {
 		switch (mode) {
-		case None: return LineType.Points;
+		case None: return LineType.Dots;
 		case Linear: return LineType.Linear;
 		case SampleHold: return LineType.SampleHold;
 		case BackwardSampleHold: return LineType.BackwardSampleHold;
