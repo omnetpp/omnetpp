@@ -6,6 +6,7 @@ module ${nodeType} {
         @display("i=misc/node_vs");
     gates:
         inout ${vectorGate}[];
+    connections allowunconnected:
 }
 </#if>
 

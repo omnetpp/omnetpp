@@ -15,6 +15,7 @@ module ${nodeType} {
         inout ${treeParentGate};
         inout ${treeChildGate}[];
 </#if>
+    connections allowunconnected:
 }
 </#if>
 

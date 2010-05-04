@@ -28,6 +28,7 @@ module ${nodeType} {
         @display("i=abstract/router_s");
     gates:
         inout ${gateName}[];
+    connections allowunconnected:
 }
 </#if>
 
@@ -93,8 +94,8 @@ channel ${channelType} extends ned.DatarateChannel {
 <#list 1..numEdges as i>
   <#assign edgeLine = getLine()?trim>
   <#assign fields = StringUtils.substringBefore(edgeLine, "|{").split("[ \t]+")>
-  <#if (fields?size != 3)> 
-    <#stop "Edge lines are expected to contain 3 items plus parameters"> 
+  <#if (fields?size != 3)>
+    <#stop "Edge lines are expected to contain 3 items plus parameters">
   </#if>
   <#assign edge = LangUtils.newMap()>
   <@do edge.put("src", fields[0]) !/>

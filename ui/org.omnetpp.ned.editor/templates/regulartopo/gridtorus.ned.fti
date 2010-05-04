@@ -13,6 +13,7 @@ module ${nodeType} {
         inout ${gridLeftGate};
         inout ${gridRightGate};
 </#if>
+    connections allowunconnected:
 }
 </#if>
 

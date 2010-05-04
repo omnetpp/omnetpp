@@ -28,6 +28,7 @@ module ${nodeType} {
         @display("i=abstract/router_s");
     gates:
         inout ${gateName}[];
+    connections allowunconnected:
 }
 </#if>
 
