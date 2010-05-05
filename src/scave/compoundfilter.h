@@ -91,7 +91,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
         CompoundFilterType& operator=(const CompoundFilterType& other);
         bool equals(const CompoundFilterType& other);
 
-        /** Name, description etc. */
+        /** @name Name, description etc. */
         //@{
         virtual const char *getName() const;
         virtual const char *getCategory() const  {return "custom filter";}
@@ -102,13 +102,13 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
         virtual void setHidden(bool hidden) {_hidden=hidden;}
         //@}
 
-        /** Creation */
+        /** @name Creation */
         //@{
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual Port *getPort(Node *node, const char *portname) const;
         //@}
 
-        /** Attributes, ports */
+        /** @name Attributes, ports */
         //@{
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
@@ -116,7 +116,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
         virtual void removeAttr(const char *name);
         //@}
 
-        /** Subfilters */
+        /** @name Subfilters */
         //@{
         virtual int getNumSubfilters() const;
         /**
@@ -138,7 +138,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
         virtual void removeSubfilter(int pos);
         //@}
 
-        /** Vector attribute mapping */
+        /** @name Vector attribute mapping */
         //@{
         /**
          * Maps attributes of the input vector to attributes of the output vector.

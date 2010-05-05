@@ -110,7 +110,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     virtual ~BasicSpringEmbedderLayout();
     //@}
 
-    /** Redefined GraphLayouter methods */
+    /** @name Redefined GraphLayouter methods */
     //@{
     virtual void setEnvironment(GraphLayouterEnvironment *environment);
     void addMovableNode(cModule *mod, int width, int height);

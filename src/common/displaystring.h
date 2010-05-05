@@ -83,7 +83,7 @@ class COMMON_API DisplayString
     static void strcatescaped(char *d, const char *s);
 
   public:
-    /** Constructors, destructor. */
+    /** @name Constructors, destructor. */
     //@{
 
     /**
@@ -107,7 +107,7 @@ class COMMON_API DisplayString
     ~DisplayString();
     //@}
 
-    /** Assignment, conversions. */
+    /** @name Assignment, conversions. */
     //@{
     /**
      * Assignment operator.
@@ -125,7 +125,7 @@ class COMMON_API DisplayString
     operator const char *() const  {return str();}
     //@}
 
-    /** Getting and setting the stored display string. */
+    /** @name Getting and setting the stored display string. */
     //@{
 
     /**
@@ -152,7 +152,7 @@ class COMMON_API DisplayString
     void updateWith(const char *s);
     //@}
 
-    /** Manipulating tags by name. */
+    /** @name Manipulating tags by name. */
     //@{
 
     /**
@@ -201,7 +201,7 @@ class COMMON_API DisplayString
     bool removeTag(const char *tagname);
     //@}
 
-    /** Manipulating tags by index. */
+    /** @name Manipulating tags by index. */
     //@{
 
     /**

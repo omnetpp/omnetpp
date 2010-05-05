@@ -116,7 +116,7 @@ class SCAVE_API Node
          */
         NodeType *getNodeType() const {return nodetype;}
 
-        /** Execution and scheduling */
+        /** @name Execution and scheduling */
         //@{
         /**
          * Do some amount of work, then return

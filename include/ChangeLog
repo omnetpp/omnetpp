@@ -29,7 +29,9 @@
 	to better describe its function. The old method was left there for 
 	backward compatibility; it is deprecated and delegates to the new 
 	method.
-	
+
+	* cClassFactory renamed to cObjectFactory
+
 2010-04-01  Andras Varga
 
 	* cStringTokenizer: added copy constructor and assignment operator

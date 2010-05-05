@@ -47,7 +47,7 @@ class SIM_API cITimestampedValue
         /** Returns the value's data type for the given signal. */
         virtual Type getValueType(simsignal_t signalID) const = 0;
 
-        /** Returns the value for the given signal. */
+        /** @name Returns the value for the given signal. */
         //@{
         virtual long longValue(simsignal_t signalID) const = 0;
         virtual unsigned long unsignedLongValue(simsignal_t signalID) const = 0;

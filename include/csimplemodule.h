@@ -449,7 +449,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     void error(const char *format,...) const;
     //@}
 
-    /** Coroutine stack info. Useful only if module uses activity(). */
+    /** @name Coroutine stack info. Useful only if module uses activity(). */
     //@{
 
     /**

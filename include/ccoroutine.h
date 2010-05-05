@@ -75,7 +75,7 @@ class SIM_API cCoroutine
 #endif
 
   public:
-    /** Coroutine control */
+    /** @name Coroutine control */
     //@{
 
     /**
@@ -97,7 +97,7 @@ class SIM_API cCoroutine
     static void switchToMain();
     //@}
 
-    /** Constructor, destructor */
+    /** @name Constructor, destructor */
     //@{
 
     /**
@@ -118,7 +118,7 @@ class SIM_API cCoroutine
     virtual ~cCoroutine();
     //@}
 
-    /** Coroutine statistics */
+    /** @name Coroutine statistics */
     //@{
 
     /**

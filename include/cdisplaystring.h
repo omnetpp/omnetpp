@@ -109,7 +109,7 @@ class SIM_API cDisplayString
     void dump() const;
 
   public:
-    /** Constructors, destructor. */
+    /** @name Constructors, destructor. */
     //@{
 
     /**
@@ -133,7 +133,7 @@ class SIM_API cDisplayString
     ~cDisplayString();
     //@}
 
-    /** Assignment, conversions. */
+    /** @name Assignment, conversions. */
     //@{
     /**
      * Assignment operator.
@@ -151,7 +151,7 @@ class SIM_API cDisplayString
     operator const char *() const  {return str();}
     //@}
 
-    /** Getting and setting the stored display string. */
+    /** @name Getting and setting the stored display string. */
     //@{
 
     /**
@@ -183,7 +183,7 @@ class SIM_API cDisplayString
     void updateWith(const char *s);
     //@}
 
-    /** Manipulating tags by name. */
+    /** @name Manipulating tags by name. */
     //@{
 
     /**
@@ -232,7 +232,7 @@ class SIM_API cDisplayString
     bool removeTag(const char *tagname);
     //@}
 
-    /** Manipulating tags by index. */
+    /** @name Manipulating tags by index. */
     //@{
 
     /**
