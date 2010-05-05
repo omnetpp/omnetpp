@@ -2045,7 +2045,8 @@ public class DocumentationGenerator {
         if (dotExecutablePath == null || !new File(dotExecutablePath).exists())
             throw new IllegalStateException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + dotExecutablePath);
 
-        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10);
+        // dot has a width/height limit of 32768 pixels, see bug #149.
+        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-Gsize=300,300", "-Gdpi=96" ,"-o", outputFile.toString()}, ".", dot.toString(), 10);
     }
 
     protected String getParamTypeAsString(ParamElementEx param) {
