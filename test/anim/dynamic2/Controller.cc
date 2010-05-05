@@ -37,6 +37,6 @@ void Controller::handleMessage(cMessage *msg)
     }
     bubble("created a bunch of modules");
 
-    scheduleAt(simTime()+dblrand(), msg);
+    scheduleAt(simTime()+par("waitTime").doubleValue(), msg);
 }
 

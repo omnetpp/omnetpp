@@ -127,7 +127,7 @@ Tkenv::Tkenv()
     hasmessagewindow = false;
     isconfigrun = false;
     rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
-    idleLastUICheck = 0;
+    gettimeofday(&idleLastUICheck, NULL);
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
@@ -1156,13 +1156,14 @@ bool Tkenv::idle()
     // interactions are disabled except for the STOP button.
     if (runmode == RUNMODE_FAST)
     {
-        // only check the UI once per second at most
-        long now = clock();
-        if (now - idleLastUICheck < CLOCKS_PER_SEC)
+        // updateInspectors() may be costly, so do not check the UI too often
+        timeval now;
+        gettimeofday(&now, NULL);
+        if (timeval_msec(now - idleLastUICheck) < 500)
             return false;
-        idleLastUICheck = now;
 
         // refresh inspectors
+        updateSimtimeDisplay();
         updateInspectors();
     }
 
@@ -1174,6 +1175,9 @@ bool Tkenv::idle()
 
     bool stop = stopsimulation_flag;
     stopsimulation_flag = false;
+
+    if (runmode == RUNMODE_FAST)
+        gettimeofday(&idleLastUICheck, NULL);
     return stop;
 }
 
