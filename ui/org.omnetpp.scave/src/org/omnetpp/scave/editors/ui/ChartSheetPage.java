@@ -187,8 +187,11 @@ public class ChartSheetPage extends ScaveEditorPage {
 			}
 
 			// mouse click on the view selects the chart object in the model
+			// We must use the mouse down event to set a new selection otherwise Actions in
+			// the context menu will not see the new selection because they are
+			// displayed right after mause down (and befoe mouse up)
 			@Override
-			public void mouseUp(MouseEvent e) {
+			public void mouseDown(MouseEvent e) {
 				scaveEditor.setSelection(new StructuredSelection(chart));
 			}
 		});
