@@ -193,33 +193,41 @@ SIM_API const char *opp_typename(const std::type_info& t);
 /**
  * Denotes module class member function as callable from other modules.
  *
- * Usage: <tt>Enter_Method("getRoutingTable(node=%d)",node);<tt>
+ * Usage: <tt>Enter_Method(fmt, arg1, arg2...);</tt>
+ *
+ * Example: <tt>Enter_Method("requestPacket(%d)",n);</tt>
  *
  * The macro should be put at the top of every module member function
  * that may be called from other modules. This macro arranges to
- * temporarily switch the context to this getModule(the old context
+ * temporarily switch the context to the called module (the old context
  * will be restored automatically when the method returns),
  * and also lets the graphical user interface animate the method call.
  *
  * The argument(s) should specify the method name (and parameters) --
  * it will be used for the animation. The argument list works as in
- * <tt>printf()</tt>, so it's easy to include the actual parameter values.
+ * <tt>printf()</tt>, so it is easy to include the actual parameter values.
  *
- * @see Enter_Method_Simple() macro
+ * @see Enter_Method_Silent() macro
  */
-#define Enter_Method cMethodCallContextSwitcher __ctx(this, false); __ctx.methodCall
+#define Enter_Method cMethodCallContextSwitcher __ctx(this); __ctx.methodCall
 
 /**
  * Denotes module class member function as callable from other modules.
- * This macro is similar to the Enter_Method() macro, only it does
- * not do animation and thus it doesn't expect the methods name as
- * argument.
+ * This macro is similar to the Enter_Method() macro, only it does not animate
+ * the call on the GUI; the call is still recorded into the the event log file.
  *
- * Usage: <tt>Enter_Method_Silent();<tt>
+ * The macro may be called with or without arguments. When called with arguments,
+ * they should be a printf-style format string, and parameters to be substituted
+ * into it; the resulting string should contain the method name and the actual
+ * arguments.
+ *
+ * Usage: <tt>Enter_Method_Silent();</tt>, <tt>Enter_Method_Silent(fmt, arg1, arg2...);</tt>
+ *
+ * Example: <tt>Enter_Method_Silent("getRouteFor(address=%d)",address);</tt>
  *
  * @see Enter_Method() macro
  */
-#define Enter_Method_Silent() cMethodCallContextSwitcher __ctx(this, true)
+#define Enter_Method_Silent cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent
 
 /**
  * The constructor switches the context to the given component, and the
@@ -254,7 +262,7 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
     /**
      * Switches context to the given module
      */
-    cMethodCallContextSwitcher(const cComponent *newContext, bool notifyEnvir=true);
+    cMethodCallContextSwitcher(const cComponent *newContext);
 
     /**
      * Restores the original context
@@ -262,10 +270,12 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
     ~cMethodCallContextSwitcher();
 
     /**
-     * Tells the user interface about the method call (so that it can be
-     * animated, etc.)
+     * Various ways to tell the user interface about the method call so that
+     * the call can be animated, recorded into the event log, etc.
      */
-    void methodCall(const char *fmt,...);
+    void methodCall(const char *methodFmt,...);
+    void methodCallSilent(const char *methodFm,...);
+    void methodCallSilent();
 };
 
 /**

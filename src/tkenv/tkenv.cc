@@ -1325,14 +1325,14 @@ void Tkenv::messageDeleted(cMessage *msg)
     EnvirBase::messageDeleted(msg);
 }
 
-void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va)
+void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va, bool silent)
 {
     va_list va2;
     va_copy(va2, va); // see bug #107
-    EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2);
+    EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
     va_end(va2);
 
-    if (!animating || !opt_anim_methodcalls)
+    if (silent || !animating || !opt_anim_methodcalls)
         return;
 
     if (!methodFmt)

@@ -1252,7 +1252,7 @@ void EnvirBase::messageDeleted(cMessage *msg)
         eventlogmgr->messageDeleted(msg);
 }
 
-void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)
+void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
 {
     if (record_eventlog)
         eventlogmgr->componentMethodBegin(from, to, methodFmt, va);

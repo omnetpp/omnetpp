@@ -395,11 +395,9 @@ cContextSwitcher::~cContextSwitcher()
 
 static va_list dummy_va;
 
-cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newContext, bool notifyEnvir) :
+cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newContext) :
   cContextSwitcher(newContext)
 {
-    if (notifyEnvir && newContext!=callerContext)
-        EVCB.componentMethodBegin(callerContext, const_cast<cComponent *>(newContext), NULL, dummy_va);
 }
 
 void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)
@@ -409,9 +407,28 @@ void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)
     {
         va_list va;
         va_start(va, methodFmt);
-        EVCB.componentMethodBegin(callerContext, newContext, methodFmt, va);
+        EVCB.componentMethodBegin(callerContext, newContext, methodFmt, va, false);
         va_end(va);
     }
+}
+
+void cMethodCallContextSwitcher::methodCallSilent(const char *methodFmt,...)
+{
+    cComponent *newContext = simulation.getContext();
+    if (newContext!=callerContext)
+    {
+        va_list va;
+        va_start(va, methodFmt);
+        EVCB.componentMethodBegin(callerContext, newContext, methodFmt, va, true);
+        va_end(va);
+    }
+}
+
+void cMethodCallContextSwitcher::methodCallSilent()
+{
+    cComponent *newContext = simulation.getContext();
+    if (newContext!=callerContext)
+        EVCB.componentMethodBegin(callerContext, newContext, NULL, dummy_va, true);
 }
 
 cMethodCallContextSwitcher::~cMethodCallContextSwitcher()

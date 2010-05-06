@@ -766,7 +766,7 @@ class StaticEnv : public cEnvir
     virtual void endSend(cMessage *msg)  {}
     virtual void messageDeleted(cMessage *msg)  {}
     virtual void moduleReparented(cModule *module, cModule *oldparent)  {}
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)  {}
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)  {}
     virtual void componentMethodEnd()  {}
     virtual void moduleCreated(cModule *newmodule)  {}
     virtual void moduleDeleted(cModule *module)  {}

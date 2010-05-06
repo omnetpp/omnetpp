@@ -243,7 +243,7 @@ class SIM_API cEnvir
      * interface to animate the method call in the network diagram.
      * Pass methodFmt==NULL for Enter_Method_Silent.
      */
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va) = 0;
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) = 0;
 
     /**
      * Notifies the environment that the method entered in the last
