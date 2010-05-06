@@ -136,12 +136,12 @@ class EVENTLOG_API IEventLog
          */
         virtual IEvent *getLastEvent() = 0;
         /**
-         * Returns the requested event or NULL if there's no such event included in the log.
+         * Returns the requested event or NULL if there is no such event included in the log.
          * The given event number may not be included in the log.
          */
         virtual IEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT) = 0;
         /**
-         * Returns the requested event or NULL if there's no such event included in the log.
+         * Returns the requested event or NULL if there is no such event included in the log.
          * The given simulation time may not be included in the log.
          */
         virtual IEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT) = 0;

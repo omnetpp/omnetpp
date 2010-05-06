@@ -30,7 +30,7 @@ NAMESPACE_BEGIN
 /**
  * Creates x-y plot. Has one "x" and several "y" input ports. Values of these
  * ports are grouped by time -- when (t,x) and (t',y) arrive where t==t', it
- * outputs (x,y). (The t, t' times don't appear in the output).
+ * outputs (x,y). (The t, t' times do not appear in the output).
  *
  * Note: the output will *not* be ordered by x, so one should be very cautious
  * with further processing. Connecting an ArrayBuilder is fine.

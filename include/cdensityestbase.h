@@ -78,7 +78,7 @@ class SIM_API cDensityEstBase : public cStdDev
         RANGE_AUTOLOWER, // like RANGE_AUTO, but upper limit is fixed
         RANGE_AUTOUPPER, // like RANGE_AUTO, but lower limit is fixed
         RANGE_FIXED,     // fixed range (lower, upper)
-        RANGE_NOTSET     // not set, but it's OK (cVarHistogram only)
+        RANGE_NOTSET     // not set, but it is OK (cVarHistogram only)
     };
 
     /**
@@ -136,7 +136,7 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual ~cDensityEstBase();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cDensityEstBase& operator=(const cDensityEstBase& res);
     //@}

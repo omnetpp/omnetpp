@@ -243,11 +243,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
     bool buildInsideCalled() const {return flags&FL_BUILDINSIDE_CALLED;}
 
     // internal: called from callInitialize(). Does one stage for this submodule
-    // tree, and returns true if there's more stages to do
+    // tree, and returns true if there are more stages to do
     virtual bool initializeModules(int stage);
 
     // internal: called from callInitialize(). Does one stage for channels in this
-    // submodule tree, and returns true if there's more stages to do
+    // submodule tree, and returns true if there are more stages to do
     virtual bool initializeChannels(int stage);
 
     // internal: called when a message arrives at a gate which is no further
@@ -587,7 +587,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns the ID of the gate specified by name and index. Inout gates
      * cannot be specified (since they are actually two gate objects, not one),
-     * only with a "$i" or "$o" suffix. Returns -1 if the gate doesn't exist.
+     * only with a "$i" or "$o" suffix. Returns -1 if the gate does not exist.
      * The presence of the index parameter decides whether a vector or a scalar
      * gate will be looked for.
      */
@@ -646,7 +646,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * Returns the size of the gate vector with the given name. It returns 1 for
-     * non-vector gates, and 0 if the gate doesn't exist or the vector has size 0.
+     * non-vector gates, and 0 if the gate does not exist or the vector has size 0.
      * (Zero-size vectors are represented by a single gate whose size() returns 0.)
      * Gate names with the "$i" or "$o" suffix are also accepted.  Throws an error if
      * there is no such gate or gate vector.
@@ -669,7 +669,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * For compound modules, it checks if all gates are connected inside
-     * the getModule(it returns <tt>true</tt> if they are OK); for simple
+     * the module (it returns <tt>true</tt> if they are OK); for simple
      * modules, it returns <tt>true</tt>. This function is called during
      * network setup.
      */
@@ -713,8 +713,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * Pure virtual function; it is redefined in both cCompoundModule
-     * and cSimpleModule. It creates starting message for dynamically
-     * created getModule(or recursively for its submodules). See the user
+     * and cSimpleModule. It creates a starting message for a dynamically
+     * created module (and recursively for its submodules). See the user
      * manual for explanation how to use dynamically created modules.
      */
     virtual void scheduleStart(simtime_t t) = 0;

@@ -117,7 +117,7 @@ class SIM_API cVarHistogram : public cHistogramBase
     virtual ~cVarHistogram();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cVarHistogram& operator=(const cVarHistogram& res);
     //@}

@@ -205,7 +205,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cModule *getModuleByPath(const char *modulepath) const;
 
     /**
-     * Looks up a module by ID. If the module doesn't exist, returns NULL.
+     * Looks up a module by ID. If the module does not exist, returns NULL.
      */
     cModule *getModule(int id) const  {return id>=0 && id<size ? vect[id] : NULL;}
 
@@ -231,7 +231,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      *
      * These functions delegate to the netbuilder part of the simulation kernel,
      * and they are present so that cEnvir and other libs outside the simkernel
-     * don't need to directly depend on nedxml or netbuilder classes, and
+     * do not need to directly depend on nedxml or netbuilder classes, and
      * conditional compilation (\#ifdef WITH_NETBUILDER) can be limited to the
      * simkernel.
      */
@@ -386,9 +386,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * The scheduler function. Returns the module to which the
      * next event (lowest timestamp event in the FES) belongs.
      *
-     * If there's no more event (FES is empty), it throws cTerminationException.
+     * If there is no more event (FES is empty), it throws cTerminationException.
      *
-     * A NULL return value means that there's no error but execution
+     * A NULL return value means that there is no error but execution
      * was stopped by the user (e.g. with STOP button on the GUI)
      * while selectNextModule() --or rather, the installed cScheduler object--
      * was waiting for external synchronization.

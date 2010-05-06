@@ -98,7 +98,7 @@ COMMON_API std::string opp_trim(const char *txt);
 /**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
  *
- * Throws an exception if there's a parse error. If there's anything
+ * Throws an exception if there is a parse error. If there is anything
  * (non-whitespace) in the input after the string literal, endp is set to
  * that character; otherwise endp is set to point to the terminating zero
  * of the string.
@@ -108,7 +108,7 @@ COMMON_API std::string opp_parsequotedstr(const char *txt, const char *&endp);
 /**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
  *
- * Throws an exception if there's a parse error.
+ * Throws an exception if there is a parse error.
  */
 COMMON_API std::string opp_parsequotedstr(const char *txt);
 

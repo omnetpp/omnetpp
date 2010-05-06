@@ -200,7 +200,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Assignment operator. Duplication and the assignment operator work all right with cMessage.
-     * The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cMessage& operator=(const cMessage& msg);
     //@}
@@ -302,8 +302,8 @@ class SIM_API cMessage : public cOwnedObject
      *
      * When the message is duplicated or copied, copies will have their
      * control info set to NULL because the cObject interface
-     * doesn't define dup/copy operations.
-     * The assignment operator doesn't change control info.
+     * does not define dup/copy operations.
+     * The assignment operator does not change control info.
      */
     void setControlInfo(cObject *p);
 
@@ -388,7 +388,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Returns the nth object in the message's object list, converting it to a cMsgPar.
-     * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
+     * If the object does not exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
      * the method throws a cRuntimeError.
      *
      * <i>NOTE: This is a convenience function: one may use getParList() and
@@ -402,7 +402,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns the object with the given name in the message's object list,
      * converting it to a cMsgPar.
-     * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
+     * If the object does not exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
      * the method throws a cRuntimeError.
      *
      * <i>NOTE: This is a convenience function: one may use getParList() and
@@ -473,7 +473,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Remove the object with the given name from the message's object list, and
-     * return its pointer. If the object doesn't exist, NULL is returned.
+     * return its pointer. If the object does not exist, NULL is returned.
      *
      * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::remove() instead. See also class description for discussion about
@@ -485,7 +485,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Remove the object with the given name from the message's object list, and
-     * return its pointer. If the object doesn't exist, NULL is returned.
+     * return its pointer. If the object does not exist, NULL is returned.
      *
      * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::remove() instead. See also class description for discussion about
@@ -511,7 +511,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Returns a pointer to the sender module. It returns NULL if the message
-     * hasn't been sent/scheduled yet, or if the sender module got deleted
+     * has not been sent/scheduled yet, or if the sender module got deleted
      * in the meantime.
      */
     cModule *getSenderModule() const {return simulation.getModule(frommod);}
@@ -525,7 +525,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Returns a pointer to the arrival module. It returns NULL if the message
-     * hasn't been sent/scheduled yet, or if the module got deleted
+     * has not been sent/scheduled yet, or if the module got deleted
      * in the meantime.
      */
     cModule *getArrivalModule() const {return simulation.getModule(tomod);}
@@ -539,25 +539,25 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Returns sender module's index in the module vector or -1 if the
-     * message hasn't been sent/scheduled yet.
+     * message has not been sent/scheduled yet.
      */
     int getSenderModuleId() const {return frommod;}
 
     /**
      * Returns index of gate sent through in the sender module or -1
-     * if the message hasn't been sent/scheduled yet.
+     * if the message has not been sent/scheduled yet.
      */
     int getSenderGateId() const   {return fromgate;}
 
     /**
      * Returns receiver module's index in the module vector or -1 if
-     * the message hasn't been sent/scheduled yet.
+     * the message has not been sent/scheduled yet.
      */
     int getArrivalModuleId() const {return tomod;}
 
     /**
      * Returns index of gate the message arrived on in the sender module
-     * or -1 if the message hasn't sent/scheduled yet.
+     * or -1 if the message has not sent/scheduled yet.
      */
     int getArrivalGateId() const  {return togate;}
 
@@ -568,14 +568,14 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Returns time when the message was sent/scheduled or 0 if the message
-     * hasn't been sent yet.
+     * has not been sent yet.
      */
     simtime_t_cref getSendingTime()  const {return sent;}
 
     /**
      * Returns time when the message arrived (or will arrive if it
      * is currently scheduled or is underway), or 0 if the message
-     * hasn't been sent/scheduled yet.
+     * has not been sent/scheduled yet.
      *
      * When the message has nonzero length and it travelled though a
      * channel with nonzero data rate, arrival time may represent either
@@ -595,7 +595,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Return true if the message arrived on the gate given with its name.
-     * If it's a vector gate, the method returns true if the message arrived
+     * If it is a vector gate, the method returns true if the message arrived
      * on any gate in the vector.
      */
     bool arrivedOn(const char *gatename) const;
@@ -709,11 +709,11 @@ class SIM_API cPacket : public cMessage
     void setReceptionStart(bool b) {setFlag(FL_ISRECEPTIONSTART, b);}
 
     // internal convenience method: returns the getId() of the innermost encapsulated message,
-    // or itself if there's no encapsulated message
+    // or itself if there is no encapsulated message
     long getEncapsulationId() const;
 
     // internal convenience method: returns getTreeId() of the innermost encapsulated message,
-    // or itself if there's no encapsulated message
+    // or itself if there is no encapsulated message
     long getEncapsulationTreeId() const;
 
     // internal: if encapmsg is shared (sharecount>0), creates a private copy for this packet,
@@ -752,7 +752,7 @@ class SIM_API cPacket : public cMessage
 
     /**
      * Assignment operator. Duplication and the assignment operator work all right with cPacket.
-     * The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cPacket& operator=(const cPacket& packet);
     //@}

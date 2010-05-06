@@ -140,7 +140,7 @@ inline bool ResultItemField::equal(const ResultItem &d1, const ResultItem &d2) c
     case MODULE_ID:     return d1.moduleNameRef == d2.moduleNameRef;
     case NAME_ID:       return d1.nameRef == d2.nameRef;
                         // KLUDGE using strcmp() here causes an INTERNAL COMPILER ERROR with MSVC71, i don't know why
-    case ATTR_ID:   return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
+    case ATTR_ID:       return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
     case RUN_ATTR_ID:   return strcmpFIXME(getRunAttribute(d1, name), getRunAttribute(d2, name)) == 0;
     case RUN_PARAM_ID:  return strcmpFIXME(getRunParam(d1, name), getRunParam(d2, name)) == 0;
     }

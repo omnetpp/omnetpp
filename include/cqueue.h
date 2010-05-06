@@ -155,7 +155,7 @@ class SIM_API cQueue : public cOwnedObject
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      *
-     * The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cQueue& operator=(const cQueue& queue);
     //@}

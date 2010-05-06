@@ -37,7 +37,7 @@ class cOwnedObject;
 
 /**
  * Root of the \opp class hierarcy. cObject is a lightweight class, it
- * doesn't contain any data members.
+ * does not contain any data members.
  *
  * Note: In OMNeT++ 2.x and 3.x, cObject was called cPolymorphic.
  * Class cObject in 2.x and 3.x has been renamed to cOwnedObject.
@@ -46,7 +46,7 @@ class cOwnedObject;
  * that has at least one virtual member function. This makes the class more
  * interoperable with \opp, and causes no extra overhead at all.
  * sizeof(cObject) should yield 4 on a 32-bit architecture (4-byte vptr),
- * and using cObject as a base class doesn't add anything to the size
+ * and using cObject as a base class does not add anything to the size
  * of an object, because a class with a virtual function already has a vptr.
  *
  * cObject allows the object to be displayed in graphical user
@@ -85,13 +85,13 @@ class SIM_API cObject
 
   public:
     /**
-     * Constructor. It has an empty body. (The class doesn't have data members
-     * and there's nothing special to do at construction time.)
+     * Constructor. It has an empty body. (The class does not have data members
+     * and there is nothing special to do at construction time.)
      */
     cObject() {}
 
     /**
-     * Destructor. It has an empty body (the class doesn't have data members.)
+     * Destructor. It has an empty body (the class does not have data members.)
      * It is declared here only to make the class polymorphic and make its
      * destructor virtual.
      */
@@ -257,7 +257,7 @@ class SIM_API cObject
      * Finds the object with the given name. This function is useful when called
      * on subclasses that are containers. This method
      * finds the object with the given name in a container object and
-     * returns a pointer to it or NULL if the object hasn't
+     * returns a pointer to it or NULL if the object has not
      * been found. If deep is false, only objects directly
      * contained will be searched, otherwise the function searches the
      * whole subtree for the object. It uses the forEachChild() mechanism.
@@ -272,8 +272,8 @@ class SIM_API cObject
     //@{
     /**
      * Convenience function: throws a cRuntimeError ("copying not supported")
-     * stating that assignment, copy constructor and dup() won't work
-     * for this object. You can call this from operator=() if you don't want to
+     * stating that assignment, copy constructor and dup() will not work
+     * for this object. You can call this from operator=() if you do not want to
      * implement object copying.
      */
     void copyNotSupported() const;

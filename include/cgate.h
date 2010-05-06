@@ -312,7 +312,7 @@ class SIM_API cGate : public cObject, noncopyable
     int size() const  {return getVectorSize();}
 
     /**
-     * Returns the channel object attached to this gate, or NULL if there's
+     * Returns the channel object attached to this gate, or NULL if there is
      * no channel. This is the channel between this gate and this->getNextGate(),
      * that is, channels are stored on the "from" side of the connections.
      */
@@ -432,7 +432,7 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Returns the display string for the gate, which controls the appearance
      * of the connection arrow starting from gate. The display string is stored
-     * in the channel associated with the connection. If there's no channel,
+     * in the channel associated with the connection. If there is no channel,
      * this call creates an installs a cIdealChannel to hold the display string.
      */
     cDisplayString& getDisplayString();

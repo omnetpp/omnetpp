@@ -61,15 +61,15 @@ class cPacket;
  *
  *    - a message object can be at one place only at any given time.
  *      When you try to insert the same cMessage again into another (or the same)
- *      cQueue, you'll get an error message that it's already in a cQueue --
+ *      cQueue, you'll get an error message that it is already in a cQueue --
  *      sparing you a sure crash later.
  *
  *    - similarly, if you try to send the same message, you'll get an error
- *      message that it cannot be sent because it's still enqueued --
+ *      message that it cannot be sent because it is still enqueued --
  *      another crash scenario eliminated. Like the previous one, this
  *      test is done by checking the owner pointer in cMessage.
  *
- *    - even if you try to delete the message while it's in the queue,
+ *    - even if you try to delete the message while it is in the queue,
  *      you'll get an error message instead of just a crash. This is because
  *      cOwnedObject destructor asks for the owner's blessing -- but cQueue will
  *      protest by throwing an exception.
@@ -93,7 +93,7 @@ class cPacket;
  * The above ownership mechanisms are at work when any cOwnedObject-subclass object
  * gets inserted into any cOwnedObject-subclass container (cQueue, cArray).
  *
- * Some more details, in case you're writing a class that acts as a container:
+ * Some more details, in case you are writing a class that acts as a container:
  *
  *    - you should use the functions take(), drop() on inserting/removing objects
  *    - you should delete the owned objects in the destructor
@@ -118,7 +118,7 @@ class SIM_API cOwnedObject : public cNamedObject
     unsigned int pos;  // used only when owner is a cDefaultList
 
   private:
-    // list in which objects are accumulated if there's no simple module in context
+    // list in which objects are accumulated if there is no simple module in context
     // (see also setDefaultOwner() and cSimulation::setContextModule())
     static cDefaultList *defaultowner;
 

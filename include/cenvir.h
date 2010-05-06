@@ -265,7 +265,7 @@ class SIM_API cEnvir
      * is already lost at this point, however getName(), getFullName(), getFullPath(),
      * gates, parameters (everything that comes from cModule) are still valid.
      *
-     * If a compound getModule(or a module with dynamically created submodules)
+     * If a compound module (or a module with dynamically created submodules)
      * is deleted, one should not assume anything about the relative order
      * moduleDeleted() is called for the module and its submodules.
      */
@@ -302,10 +302,10 @@ class SIM_API cEnvir
 
     /**
      * Called from module destructors, to notify the environment about objects
-     * that the user didn't delete in the module destructor.
+     * that the user did not delete in the module destructor.
      */
     // Note: this may not be pure virtual, as it may get called even after main()
-    // exited and StaticEnv was destructed, and we don't want to get a "pure virtual
+    // exited and StaticEnv was destructed, and we do not want to get a "pure virtual
     // method called" error
     virtual void undisposedObject(cObject *obj) {}
     //@}
@@ -344,7 +344,7 @@ class SIM_API cEnvir
      * the XML document. If path is not present, the root element is returned.
      *
      * See documentation of cXMLElement::getElementByPath() for path syntax.
-     * There's a difference however: paths starting with "." are not
+     * There is a difference however: paths starting with "." are not
      * accepted, and the first path component must name the root element
      * of the document (with getElementByPath() it would match a child element
      * of the current element). That is, a leading "/" is always assumed
@@ -353,7 +353,7 @@ class SIM_API cEnvir
      *
      * The method throws an exception if the document cannot be found or the
      * given path expression is invalid. Returns NULL if the element denoted
-     * by the path expression doesn't exist in the document.
+     * by the path expression does not exist in the document.
      *
      * The returned object tree should not be modified because cEnvir may
      * cache the file and return the same pointer to several callers.

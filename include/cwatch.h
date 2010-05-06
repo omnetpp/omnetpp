@@ -309,7 +309,7 @@ inline cWatchBase *createWatch_cObject(const char *varname, cObject& obj) {
 // (SomeDerivedType*&) are unrelated, so we have to force the cast
 // in the WATCH_PTR() macro. But to stay type-safe, we include a 3rd arg
 // of type cObject*: the compiler has to be able to cast that
-// implicitly from SomeDerivedType* -- this way we don't accept pointers
+// implicitly from SomeDerivedType* -- this way we do not accept pointers
 // that are REALLY unrelated.
 inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, cObject *p) {
     ASSERT(refp==p);

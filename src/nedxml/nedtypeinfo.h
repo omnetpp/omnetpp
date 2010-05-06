@@ -54,7 +54,7 @@ class NEDXML_API NEDTypeInfo
     NEDElement *tree; // points into resolver
 
     // tree with inheritance flattened out.
-    // may be NULL (-->not initialized), or ==tree (when there's no super types);
+    // may be NULL (-->not initialized), or ==tree (when there is no super types);
     // otherwise it's a constructed tree that gets disposed of in the destructor
     mutable NEDElement *flattenedTree;
 

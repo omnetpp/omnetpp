@@ -91,7 +91,7 @@ class NEDXML_API NEDErrorStore
         void add(const char *location, int severity, const char *messagefmt, ...);
 
         /**
-         * Return true if there're no messages stored.
+         * Return true if there are no messages stored.
          */
         bool empty() const {return entries.empty();}
 
@@ -101,7 +101,7 @@ class NEDXML_API NEDErrorStore
         int numMessages() const {return entries.size();}
 
         /**
-         * Returns true if there's an error or fatal error stored.
+         * Returns true if there is an error or fatal error stored.
          */
         bool containsError() const;
 

@@ -29,7 +29,7 @@ class cCoroutine;
 
 /**
  * Base class for all simple module classes. cSimpleModule, although packed
- * with simulation-related functionality, doesn't do anything useful by itself:
+ * with simulation-related functionality, does not do anything useful by itself:
  * one has to subclass from it and redefine one or more virtual member
  * functions to make it do useful work. These functions are:
  *
@@ -128,7 +128,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
 
     /**
      * COMPATIBILITY. This constructor is only provided to make it possible
-     * to write simple modules that don't use the Module_Class_Members
+     * to write simple modules that do not use the Module_Class_Members
      * macro and can also be compiled with OMNeT++ versions earlier than
      * 3.2. The first two args are unused in this and later versions.
      */

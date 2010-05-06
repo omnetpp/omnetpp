@@ -74,7 +74,7 @@ class SCAVE_API NodeType
 
         /**
          * Fills the string map with attribute names and their default values.
-         * (Doesn't necessarily supply default value for every attribute).
+         * (Does not necessarily supply default value for every attribute).
          */
         virtual void getAttrDefaults(StringMap& attrs) const {}
 
@@ -86,7 +86,7 @@ class SCAVE_API NodeType
 
         /**
          * Create a node instance of this type. Also adds the node to the
-         * data-flow network, so you don't need to call mgr->addNode() afterwards.
+         * data-flow network, so you do not need to call mgr->addNode() afterwards.
          */
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const = 0;
 

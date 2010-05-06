@@ -57,7 +57,7 @@ class COMMON_API UnitConversion
      *
      * Syntax: <number> | (<number> <unit>)+
      *
-     * If there's a syntax error, or if unit mismatch is found (i.e. distance
+     * If there is a syntax error, or if unit mismatch is found (i.e. distance
      * is given instead of time), the method throws an exception.
      */
     static double parseQuantity(const char *str, std::string& outActualUnit);

@@ -133,7 +133,7 @@ class SIM_API cMsgPar : public cOwnedObject
     virtual ~cMsgPar();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cOwnedObject's
+     * Assignment operator. The name member is not copied; see cOwnedObject's
      * operator=() for more details.
      *
      * The behavior with redirected cMsgPar objects is the following. This function
@@ -168,7 +168,7 @@ class SIM_API cMsgPar : public cOwnedObject
     virtual std::string detailedInfo() const;
 
     /**
-     * Calls v->visit(this) for the contained object, if there's any.
+     * Calls v->visit(this) for the contained object, if there is any.
      * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v);

@@ -65,7 +65,7 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual ~cPSquare();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cPSquare& operator=(const cPSquare& res);
     //@}
@@ -122,31 +122,31 @@ class SIM_API cPSquare : public cDensityEstBase
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     * (the algorithm does not require them), but they could not remain pure virtual.
      */
     virtual void setRange(double,double) {giveError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     * (the algorithm does not require them), but they could not remain pure virtual.
      */
     virtual void setRangeAuto(int,double) {giveError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     * (the algorithm does not require them), but they could not remain pure virtual.
      */
     virtual void setRangeAutoLower(double,int,double) {giveError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     * (the algorithm does not require them), but they could not remain pure virtual.
      */
     virtual void setRangeAutoUpper(double,int,double) {giveError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     * (the algorithm does not require them), but they could not remain pure virtual.
      */
     virtual void setNumFirstVals(int) {giveError();}
 

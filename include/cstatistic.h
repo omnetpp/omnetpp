@@ -74,7 +74,7 @@ class SIM_API cStatistic : public cOwnedObject
 
     /**
      * Assignment operator. It is present since descendants may refer to it.
-     * The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cStatistic& operator=(const cStatistic& res);
     //@}

@@ -95,7 +95,7 @@ class ENVIR_API Scenario
     void gotoRun(int runNumber);
 
     /**
-     * Restarts the iteration. Returns false if there's no valid config at all,
+     * Restarts the iteration. Returns false if there is no valid config at all,
      * that is, get() and next() may not be called.
      */
     bool restart();

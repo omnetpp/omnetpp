@@ -34,7 +34,7 @@ NAMESPACE_BEGIN
  *   - no support for NED constructs (sizeof(), index, this, default(), etc)
  *   - no support for xmldoc() and the XML data type
  *   - "unit" support for numeric values removed
- *   - doesn't use stringpool
+ *   - does not use stringpool
  *   - added resolver
  *   - $ and @ accepted in identifier names
  */
@@ -68,7 +68,7 @@ class COMMON_API Expression
       public:
         // Types:
         //  - bool
-        //  - double (there's no long -- we calculate everything in double)
+        //  - double (there is no long -- we calculate everything in double)
         //  - string
         //  - math operator (+-*/%^...)
         //  - functor
@@ -174,7 +174,7 @@ class COMMON_API Expression
 
     /**
      * The dynamic expression evaluator calculates in Values.
-     * There's no "long" field in it: all numeric calculations are performed
+     * There is no "long" field in it: all numeric calculations are performed
      * in double. XXX This is fine for 32-bit longs, but not for 64-bit ones,
      * as double's mantissa is only 53 bits.
      */

@@ -68,7 +68,7 @@ class SIM_API cEnum : public cOwnedObject
     virtual ~cEnum();
 
     /**
-     * Assignment operator. The name member doesn't get copied;
+     * Assignment operator. The name member is not copied;
      * see cOwnedObject's operator=() for more details.
      */
     cEnum& operator=(const cEnum& list);

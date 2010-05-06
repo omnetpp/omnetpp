@@ -66,7 +66,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     virtual ~cHistogramBase();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cHistogramBase& operator=(const cHistogramBase& res);
     //@}
@@ -217,7 +217,7 @@ class SIM_API cHistogram : public cHistogramBase
     explicit cHistogram(const char *name=NULL, int numcells=-1, Mode mode=MODE_AUTO);
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
     cHistogram& operator=(const cHistogram& res);
     //@}

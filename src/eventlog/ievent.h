@@ -84,11 +84,11 @@ class EVENTLOG_API IEvent
         virtual eventnumber_t getCauseEventNumber() = 0;
 
         /**
-         * Returns the immediately preceding event or NULL if there's no such event.
+         * Returns the immediately preceding event or NULL if there is no such event.
          */
         virtual IEvent *getPreviousEvent() = 0;
         /**
-         * Returns the immediately following event or NULL if there's no such event.
+         * Returns the immediately following event or NULL if there is no such event.
          */
         virtual IEvent *getNextEvent() = 0;
 

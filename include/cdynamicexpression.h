@@ -66,7 +66,7 @@ class SIM_API cDynamicExpression : public cExpression
       private:
         // Types:
         //  - bool
-        //  - double (there's no long -- we calculate everything in double)
+        //  - double (there is no long -- we calculate everything in double)
         //  - string
         //  - pointer to an "external" cXMLElement
         //  - cMathFunction: function with 0/1/2/3/4 double arguments
@@ -187,7 +187,7 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * The dynamic expression evaluator calculates in Values.
      *
-     * Note: There's no <tt>long</tt> field in it: all numeric calculations are
+     * Note: There is no <tt>long</tt> field in it: all numeric calculations are
      * performed in floating point (<tt>double</tt>). While this is fine on 32-bit
      * architectures, on 64-bit architectures some precision will be lost
      * because IEEE <tt>double</tt>'s mantissa is only 53 bits.

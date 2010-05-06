@@ -68,18 +68,18 @@ class SCAVE_API Channel
 
         /**
          * Returns true if producer has already called close() which means
-         * there won't be any more data except those already in the buffer
+         * there will not be any more data except those already in the buffer
          */
         bool isClosing()  {return producerfinished;}
 
         /**
-         * Returns true if close() has been called and there's no buffered data
+         * Returns true if close() has been called and there is no buffered data
          */
         bool eof()  {return producerfinished && length()==0;}
 
         /**
          * Called by the producer to declare it will not write any more --
-         * if also there's no more buffered data (length()==0), that means EOF.
+         * if also there is no more buffered data (length()==0), that means EOF.
          */
         void close()  {producerfinished=true;}
 

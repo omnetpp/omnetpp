@@ -82,7 +82,7 @@
  *    - cArray: a dynamic array
  *
  * In addition, one can also use standard C++ container classes like
- * std::vector or std::map. Note that these containers won't show up
+ * std::vector or std::map. Note that these containers will not show up
  * in Tkenv's inspectors unless you use the WATCH_VECTOR(), WATCH_MAP()
  * macros.
  */
@@ -209,7 +209,7 @@
  * They are normally of very little interest to the simulation programmer.
  * Note that although these internal classes do have a documented API,
  * they may change more often than other classes, simply because
- * they aren't used in simulation models and thus backwards compatibility
+ * they are not used in simulation models and thus backwards compatibility
  * is less important.
  *
  * Classes associated with simulation execution:

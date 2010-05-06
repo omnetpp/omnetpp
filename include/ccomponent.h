@@ -221,7 +221,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Constructor. Note that module and channel objects should not be created
      * directly, via their cComponentType objects. cComponentType::create()
-     * will do all housekeeping associated with creating the getModule(assigning
+     * will do all housekeeping associated with creating the module (assigning
      * an ID to the module, inserting it into the <tt>simulation</tt> object,
      * etc.).
      */

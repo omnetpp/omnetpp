@@ -116,7 +116,7 @@ class SIM_API cMessageHeap : public cOwnedObject
     virtual ~cMessageHeap();
 
     /**
-     * Assignment operator. The name member doesn't get copied;
+     * Assignment operator. The name member is not copied;
      * see cOwnedObject's operator=() for more details.
      */
     cMessageHeap& operator=(const cMessageHeap& msgqueue);

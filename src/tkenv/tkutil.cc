@@ -223,14 +223,14 @@ class cInspectByNameVisitor : public cVisitor
     }
     virtual void visit(cObject *obj) {
         // we have to do exhaustive search here... optimization, such as checking
-        // if objpath matches beginning of fullpath to see if we're on the
+        // if objpath matches beginning of fullpath to see if we are on the
         // right track is not usable, because some objects (simulation, modules'
         // paramv, gatev members) don't appear in object's getFullPath()...
 
         std::string objpath = obj->getFullPath();
 
         // however, a module's name and the future event set's name is not hidden,
-        // so if this obj is a getModule(or cMessageHeap) and its name doesn't match
+        // so if this obj is a module (or cMessageHeap) and its name does not match
         // the beginning of fullpath, we can cut the search here.
         if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
             && strncmp(objpath.c_str(), fullpath, strlen(objpath.c_str()))!=0)

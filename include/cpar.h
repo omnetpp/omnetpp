@@ -95,7 +95,7 @@ class SIM_API cPar : public cObject
     void afterChange();
 
   public:
-    // internal: applies the default value if there's one
+    // internal: applies the default value if there is one
     void acceptDefault();
     // internal
     void setImpl(cParImpl *p);

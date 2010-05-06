@@ -1121,7 +1121,7 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
     std::string procIds = getConfig()->getAsString(parname, CFGID_PARTITION_ID, "");
     if (procIds.empty())
     {
-        // modules inherit the setting from their parents, except when the parent is the system getModule(the network) itself
+        // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
         if (!parentmod->getParentModule())
             throw cRuntimeError("incomplete partitioning: missing value for '%s'",parname);
         // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into

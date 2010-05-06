@@ -91,7 +91,7 @@ class SIM_API cConfiguration : public cObject
     /** @name String-based getters for configuration options */
     //@{
     /**
-     * Returns a configuration value. Valid keys don't contain dots or wildcard characters.
+     * Returns a configuration value. Valid keys do not contain dots or wildcard characters.
      * Returns NULL if key is not found.
      */
     virtual const char *getConfigValue(const char *key) const = 0;
@@ -109,7 +109,7 @@ class SIM_API cConfiguration : public cObject
     virtual const KeyValue& getConfigEntry(const char *key) const = 0;
 
     /**
-     * Returns a per-object configuration value. Valid keysuffixes don't contain
+     * Returns a per-object configuration value. Valid keysuffixes do not contain
      * dots or wildcard characters. Returns NULL if key is not found.
      * keySuffix is something like "vector-recording-intervals", "ev-output", etc.
      */
@@ -304,7 +304,7 @@ class SIM_API cConfigurationEx : public cConfiguration
      * declared using cConfigOptions. The list is space-separated, and items may
      * contain wildcards. Typically, this list will contain "cmdenv-*" when
      * Cmdenv is unavailable (not linked in), "tkenv-*" when Tkenv is unavailable,
-     * etc, so that validate() doesn't report those keys in omnetpp.ini as errors.
+     * etc, so that validate() does not report those keys in omnetpp.ini as errors.
      */
     virtual void validate(const char *ignorableConfigKeys=NULL) const = 0;
 
@@ -316,7 +316,7 @@ class SIM_API cConfigurationEx : public cConfiguration
     virtual std::vector<std::string> getConfigNames() = 0;
 
     /**
-     * Activates the [Config \<name\>] section. If it doesn't exist, an error
+     * Activates the [Config \<name\>] section. If it does not exist, an error
      * gets thrown. [General] is treated as short for [Config General].
      * The runNumber must be between 0 and getNumRunsInConfig(name)-1.
      */

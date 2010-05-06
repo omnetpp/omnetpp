@@ -63,7 +63,7 @@ class SIM_API cException : public std::exception
     // Helper, called from cException constructors.
     //
     // If an exception occurs in initialization code (during construction of
-    // global objects, before main() is called), there's nobody who could
+    // global objects, before main() is called), there is nobody who could
     // catch the error, so it would just cause a program abort.
     // Here we handle this case manually: if cException ctor is invoked before
     // main() has started, we print the error message and call exit(1).

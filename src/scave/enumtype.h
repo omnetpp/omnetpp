@@ -52,7 +52,7 @@ class SCAVE_API EnumType
     virtual ~EnumType();
 
     /**
-     * Assignment operator. The name member doesn't get copied;
+     * Assignment operator. The name member is not copied;
      * see cOwnedObject's operator=() for more details.
      */
     EnumType& operator=(const EnumType& list);

@@ -113,7 +113,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
     /**
      * Returns the descriptor object for the given object. This can return
-     * descriptor for a base class, if there isn't an exact match.
+     * descriptor for a base class, if there is no exact match.
      * The returned descriptor object is a singleton, and must not be deleted.
      */
     static cClassDescriptor *getDescriptorFor(cObject *object);
@@ -141,13 +141,13 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
     /**
      * Returns the number of base classes up to the root -- as far as
-     * it's reflected in the descriptors.
+     * it is reflected in the descriptors.
      */
     int getInheritanceChainLength() const;
 
     /**
      * Returns the value of the given property of the descriptor as a single string.
-     * Returns NULL if there's no such property. For structured property values
+     * Returns NULL if there is no such property. For structured property values
      * (with multiple keys and/or list(s) inside), the value is returned as a
      * single unparsed string.
      */
@@ -205,7 +205,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
     /**
      * Returns the value of the given property of the field as a single string.
-     * Returns NULL if there's no such property. For structured property values
+     * Returns NULL if there is no such property. For structured property values
      * (with multiple keys and/or list(s) inside), the value is returned as a
      * single unparsed string.
      */

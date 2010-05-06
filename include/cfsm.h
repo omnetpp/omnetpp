@@ -211,7 +211,7 @@ class SIM_API cFSM : public cOwnedObject
     cFSM(const cFSM& vs) : cOwnedObject() {setName(vs.getName());operator=(vs);}
 
     /**
-     * Assignment operator. The name member doesn't get copied;
+     * Assignment operator. The name member is not copied;
      * see cOwnedObject's operator=() for more details.
      */
     cFSM& operator=(const cFSM& vs);

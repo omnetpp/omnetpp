@@ -128,7 +128,7 @@ class SIM_API cArray : public cOwnedObject
     virtual ~cArray();
 
     /**
-     * Assignment operator. The name member doesn't get copied;
+     * Assignment operator. The name member is not copied;
      * see cNamedObject's operator=() for more details.
      * Duplication and assignment work all right with cArray.
      * Contained objects that are owned by cArray will be duplicated

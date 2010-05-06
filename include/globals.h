@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
 // Global objects
 //
 
-//< Internal: list in which objects are accumulated if there's no simple module in context.
+//< Internal: list in which objects are accumulated if there is no simple module in context.
 //< @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
 SIM_API extern cDefaultList defaultList;
 

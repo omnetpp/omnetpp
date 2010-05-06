@@ -141,7 +141,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const;
     //@}
 
-    /** @name Caching of pre-built cParImpls, so that we we don't have to build them from NEDElements every time */
+    /** @name Caching of pre-built cParImpls, so that we we do not have to build them from NEDElements every time */
     //@{
     virtual cParImpl *getSharedParImplFor(NEDElement *node);
     virtual void putSharedParImplFor(NEDElement *node, cParImpl *value);

@@ -276,7 +276,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     virtual ~cTDExpandingWindows();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cOwnedObject's
+     * Assignment operator. The name member is not copied; see cOwnedObject's
      * operator=() for more details.
      */
     cTDExpandingWindows& operator=(const cTDExpandingWindows& res);
@@ -381,7 +381,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     virtual ~cADByStddev()  {}
 
     /**
-     * Assignment operator. The name member doesn't get copied;
+     * Assignment operator. The name member is not copied;
      * see cOwnedObject's operator=() for more details.
      */
     cADByStddev& operator=(const cADByStddev& res);

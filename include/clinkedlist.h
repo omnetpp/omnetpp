@@ -145,7 +145,7 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
      * Copy constructor. Contained items that are owned by the list will
      * be duplicated using the function passed in configPointer()
      * so that the new list will have its own copy of them. By default,
-     * there's no duplication function so only the pointers are copied.
+     * there is no duplication function so only the pointers are copied.
      */
     cLinkedList(const cLinkedList& llist);
 
@@ -160,7 +160,7 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
     virtual ~cLinkedList();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cOwnedObject's
+     * Assignment operator. The name member is not copied; see cOwnedObject's
      * operator=() for more details.
      * Duplication and assignment work all right with cLinkedList.
      * Contained items are treated as configured with configPointer().
@@ -241,13 +241,13 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
     void insertAfter(void *where, void *item);
 
     /**
-     * Returns the first item in the list or NULL pointer if the list
+     * Returns the first item in the list, or NULL pointer if the list
      * is empty.
      */
     void *head() const  {return n!=0 ? headp->item : NULL;}
 
     /**
-     * Returns the last item in the list or NULL pointer if the list
+     * Returns the last item in the list, or NULL pointer if the list
      * is empty.
      */
     void *tail() const  {return n!=0 ? tailp->item : NULL;}

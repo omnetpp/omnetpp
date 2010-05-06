@@ -22,8 +22,8 @@
  * This documentation describes the architecture of the distributed
  * parallel simulation implementation in \opp.
  *
- * All classes documented here are used internally -- if you're into
- * writing simulation models, there's nothing interesting for you here.
+ * All classes documented here are used internally -- if you are into
+ * writing simulation models, there is nothing interesting for you here.
  *
  * Click the following link for details: @ref Parsim
  */

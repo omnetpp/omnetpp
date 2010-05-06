@@ -58,7 +58,7 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Returns true if all data in buffer was used up during unpacking.
      * Returns false if there was underflow (too much data unpacked)
-     * or still there's unpacked data in the buffer.
+     * or still there are unpacked data in the buffer.
      */
     virtual bool isBufferEmpty() const = 0;
 

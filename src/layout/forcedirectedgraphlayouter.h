@@ -82,7 +82,7 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     /**
      * Use 3d coordinates and return the base plane projection coordinates.
      * Add springs connected to the base plane.
-     * 0 means don't use 3d coordinates. Higher value means bigger initial 3d coordinates.
+     * 0 means do not use 3d coordinates. Higher value means bigger initial 3d coordinates.
      */
     double threeDFactor;
     double threeDCoefficient;
@@ -98,7 +98,7 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
 
     // border bodies will be added if there are either
     // fixed nodes or edges connected to the border
-	// or the width or the height of the bounding box is specified
+    // or the width or the height of the bounding box is specified
     WallBody *topBorder;
     WallBody *bottomBorder;
     WallBody *leftBorder;

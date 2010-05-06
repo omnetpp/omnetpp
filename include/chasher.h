@@ -31,9 +31,9 @@ NAMESPACE_BEGIN
 /**
  * Utility class to calculate the "fingerprint" of a simulation.
  *
- * We're trying to achieve that the same simulation gives the same fingerprint
+ * We are trying to achieve that the same simulation gives the same fingerprint
  * on a 32-bit machine and on a 64-bit machine. Longs can be either 32-bit or
- * 64-bit, so we always convert them to 64 bits. We don't try to convert
+ * 64-bit, so we always convert them to 64 bits. We do not try to convert
  * endianness, it would be too costly.
  */
 class SIM_API cHasher : noncopyable

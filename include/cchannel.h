@@ -50,7 +50,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     int getConnectionId() {return connId;}
 
     // internal: called from callInitialize(). Does one stage for this
-    // channel, and returns true if there's more stages to do
+    // channel, and returns true if there are more stages to do
     virtual bool initializeChannel(int stage);
 
     // internal: overridden to perform additional checks

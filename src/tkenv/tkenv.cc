@@ -1632,7 +1632,7 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
 {
     // for animation purposes, we assume that the message travels up
     // in the module hierarchy until it finds the first compound module
-    // that also contains the destination getModule(possibly somewhere deep),
+    // that also contains the destination module (possibly somewhere deep),
     // and then it descends to the destination module. We have to find the
     // list of modules visited during the travel.
 
