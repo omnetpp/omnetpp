@@ -145,6 +145,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public final static String IMAGE_SHOW_SELF_MESSAGES = TOOL_IMAGE_DIR + "selfmessages.png";
     public final static String IMAGE_SHOW_MESSAGE_SENDS = TOOL_IMAGE_DIR + "messagesends.png";
     public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOL_IMAGE_DIR + "messagenames.png";
+    public final static String IMAGE_SHOW_REUSE_SELF_MESSAGES = TOOL_IMAGE_DIR + "selfmsgreusearrows.png";
     public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOL_IMAGE_DIR + "reusearrows.png";
     public final static String IMAGE_SHOW_MODULE_METHOD_CALLS = TOOL_IMAGE_DIR + "modulemethodcall.png";
     public final static String IMAGE_SHOW_TRANSMISSION_DURATIONS = TOOL_IMAGE_DIR + "transmissiondurations.png";
@@ -401,7 +402,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
         toolBarManager.add(showMessageSendsAction);
+        toolBarManager.add(showSelfMessagesAction);
         toolBarManager.add(showOtherMessageReusesAction);
+        toolBarManager.add(showSelfMessageReusesAction);
         toolBarManager.add(showModuleMethodCallsAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(increaseSpacingAction);
@@ -851,7 +854,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createShowSelfMessageReusesAction() {
-        return new SequenceChartAction("Show Self-Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+        return new SequenceChartAction("Show Self-Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_SELF_MESSAGES)) {
             @Override
             protected void doRun() {
                 sequenceChart.setShowSelfMessageReuses(!sequenceChart.getShowSelfMessageReuses());
