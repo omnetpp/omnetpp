@@ -308,6 +308,8 @@ void cSimpleModule::scheduleStart(simtime_t t)
         if (timeoutmsg!=NULL)
             throw cRuntimeError("scheduleStart(): module `%s' already started",getFullPath().c_str());
 
+        Enter_Method_Silent("scheduleStart()");
+
         // create timeoutmsg, used as internal timeout message
         char buf[24];
         sprintf(buf,"starter-%d", getId());
@@ -318,7 +320,6 @@ void cSimpleModule::scheduleStart(simtime_t t)
         timeoutmsg->setArrival(this, -1, t);
 
         // use timeoutmsg as the activation message; insert it into the FES
-        cContextSwitcher tmp(this);
         EVCB.messageScheduled(timeoutmsg);
         simulation.insertMsg(timeoutmsg);
     }

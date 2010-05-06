@@ -1240,7 +1240,7 @@ bool cModule::initializeModules(int stage)
     if (stage < numStages)
     {
         // switch context for the duration of the call
-        cContextSwitcher tmp(this);
+        Enter_Method_Silent("initialize(%d)", stage);
         ev.componentInitBegin(this, stage);
         try {
             initialize(stage);
@@ -1285,6 +1285,7 @@ void cModule::callFinish()
     cContextTypeSwitcher tmp2(CTX_FINISH);
     try {
         recordParametersAsScalars();
+        //Enter_Method_Silent("finish()");
         finish();
         fireFinish();
     } catch (cException&) {
