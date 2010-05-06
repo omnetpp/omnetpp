@@ -68,8 +68,10 @@ public class GeneratorConfigurationDialog
     private CheckboxTableViewer selectedProjects;
 
     private Button generateNedTypeFigures;
-    private Button generateInheritanceDiagrams;
-    private Button generateUsageDiagrams;
+    private Button generatePerTypeInheritanceDiagrams;
+    private Button generatePerTypeUsageDiagrams;
+    private Button generateFullInheritanceDiagrams;
+    private Button generateFullUsageDiagrams;
     private Button generateSourceContent;
 
     private Button generateDoxy;
@@ -227,14 +229,18 @@ public class GeneratorConfigurationDialog
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
         boolean dotAvailable = OmnetppPreferencePage.isGraphvizDotAvailable();
-        generateNedTypeFigures = createCheckbox(group, "Network diagrams (requires Graphviz)", configuration.generateNedTypeFigures && dotAvailable);
-        generateInheritanceDiagrams = createCheckbox(group, "Inheritance diagrams (requires Graphviz)", configuration.generateInheritanceDiagrams && dotAvailable);
-        generateUsageDiagrams = createCheckbox(group, "Usage diagrams (requires Graphviz)", configuration.generateUsageDiagrams && dotAvailable);
-        generateNedTypeFigures.setEnabled(dotAvailable);
-        generateInheritanceDiagrams.setEnabled(dotAvailable);
-        generateUsageDiagrams.setEnabled(dotAvailable);
+        generateNedTypeFigures = createCheckbox(group, "Network diagrams", configuration.generateNedTypeFigures && dotAvailable);
+        generatePerTypeInheritanceDiagrams = createCheckbox(group, "Per-type inheritance diagrams (requires Graphviz)", configuration.generatePerTypeInheritanceDiagrams && dotAvailable);
+        generatePerTypeUsageDiagrams = createCheckbox(group, "Per-type usage diagrams (requires Graphviz)", configuration.generatePerTypeUsageDiagrams && dotAvailable);
+        generateFullInheritanceDiagrams = createCheckbox(group, "Full inheritance diagrams (requires Graphviz)", configuration.generateFullInheritanceDiagrams && dotAvailable);
+        generateFullUsageDiagrams = createCheckbox(group, "Full usage diagrams (requires Graphviz)", configuration.generateFullUsageDiagrams && dotAvailable);
 
-        generateSourceContent = createCheckbox(group, "Source listings", configuration.generateSourceContent);
+        generatePerTypeInheritanceDiagrams.setEnabled(dotAvailable);
+        generatePerTypeUsageDiagrams.setEnabled(dotAvailable);
+        generateFullInheritanceDiagrams.setEnabled(dotAvailable);
+        generateFullUsageDiagrams.setEnabled(dotAvailable);
+        
+        generateSourceContent = createCheckbox(group, "Source listings (NED, MSG)", configuration.nedSourceListings);
 
         boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
         generateDoxy = createCheckbox(group, "C++ documentation (requires Doxygen)", configuration.generateDoxy && doxygenAvailable);
@@ -243,7 +249,7 @@ public class GeneratorConfigurationDialog
         Label label = new Label(group, SWT.NONE);
         label.setText("   Note: Doxygen configuration file locations can be configured in the Project Properties dialog");
 
-        doxySourceBrowser = createCheckbox(group, "Doxygen source browser", configuration.doxySourceBrowser);
+        doxySourceBrowser = createCheckbox(group, "Source listings (C++)", configuration.cppSourceListings);
         doxySourceBrowser.setEnabled(doxygenAvailable);
 
         label = new Label(group, SWT.NONE);
@@ -328,12 +334,14 @@ public class GeneratorConfigurationDialog
         generators =  new ArrayList<DocumentationGenerator>();
 
         configuration.generateNedTypeFigures = generateNedTypeFigures.getSelection();
-        configuration.generateUsageDiagrams = generateUsageDiagrams.getSelection();
-        configuration.generateInheritanceDiagrams = generateInheritanceDiagrams.getSelection();
-        configuration.generateSourceContent = generateSourceContent.getSelection();
+        configuration.generatePerTypeUsageDiagrams = generatePerTypeUsageDiagrams.getSelection();
+        configuration.generatePerTypeInheritanceDiagrams = generatePerTypeInheritanceDiagrams.getSelection();
+        configuration.generateFullUsageDiagrams = generateFullUsageDiagrams.getSelection();
+        configuration.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams.getSelection();
+        configuration.nedSourceListings = generateSourceContent.getSelection();
 
         configuration.generateDoxy = generateDoxy.getSelection();
-        configuration.doxySourceBrowser = doxySourceBrowser.getSelection();
+        configuration.cppSourceListings = doxySourceBrowser.getSelection();
 
         Object[] selectedElements = selectedProjects.getCheckedElements();
         configuration.projects = new IProject[selectedElements.length];
@@ -362,8 +370,15 @@ public class GeneratorConfigurationDialog
             catch (CoreException e) {
                 throw new RuntimeException(e);
             }
-
-            generator.setConfiguration(configuration);
+           
+            generator.setGenerateNedTypeFigures(configuration.generateNedTypeFigures);
+            generator.setGeneratePerTypeUsageDiagrams(configuration.generatePerTypeUsageDiagrams);
+            generator.setGenerateFullUsageDiagrams(configuration.generateFullUsageDiagrams);
+            generator.setGeneratePerTypeInheritanceDiagrams(configuration.generatePerTypeInheritanceDiagrams);
+            generator.setGenerateFullInheritanceDiagrams(configuration.generateFullInheritanceDiagrams);
+            generator.setGenerateNedSourceListings(configuration.nedSourceListings);
+            generator.setGenerateDoxy(configuration.generateDoxy);
+            generator.setGenerateCppSourceListings(configuration.cppSourceListings);
             generators.add(generator);
         }
 

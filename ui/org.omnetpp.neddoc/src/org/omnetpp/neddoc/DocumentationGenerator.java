@@ -181,12 +181,23 @@ public class DocumentationGenerator {
     private static final boolean APPLY_CC = !IConstants.IS_COMMERCIAL;
 
     // matches @externalpage with name and URL
-    protected Pattern externalPagesPattern = Pattern.compile("(?m)^//[ \t]*@externalpage +([^,\n]+),? *(.*?)$");
+    private static final Pattern externalPagesPattern = Pattern.compile("(?m)^//[ \t]*@externalpage +([^,\n]+),? *(.*?)$");
 
     // matches name and URL after a @page
-    protected Pattern pagePattern = Pattern.compile(" *([^,\n]+),? *(.*?)\n(?s)(.*)");
+    private static final Pattern pagePattern = Pattern.compile(" *([^,\n]+),? *(.*?)\n(?s)(.*)");
 
-    protected String dotExecutablePath;
+    // configuration flags
+    protected boolean generateNedTypeFigures = true;
+	protected boolean generatePerTypeUsageDiagrams = true;
+	protected boolean generatePerTypeInheritanceDiagrams = true;
+    protected boolean generateFullUsageDiagrams = false;
+    protected boolean generateFullInheritanceDiagrams = false;
+    protected boolean generateNedSourceListings = true;
+    protected boolean generateDoxy = true;
+    protected boolean generateCppSourceListings = false;
+
+    // path vars
+	protected String dotExecutablePath;
     protected String doxyExecutablePath;
     protected IPath documentationRootPath;
     protected IPath rootRelativeDoxyPath;
@@ -210,7 +221,7 @@ public class DocumentationGenerator {
     protected Map<String, ITypeElement> typeNamesMap = new HashMap<String, ITypeElement>();
     protected Map<String, String> doxyMap = new HashMap<String, String>();
     protected Pattern typeNamesPattern;
-    protected GeneratorConfiguration configuration;
+
     protected ArrayList<String> packageNames;
     protected int treeFolderIndex = 0;
 
@@ -229,6 +240,38 @@ public class DocumentationGenerator {
         doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
     }
 
+    public void setGenerateNedTypeFigures(boolean generateNedTypeFigures) {
+		this.generateNedTypeFigures = generateNedTypeFigures;
+	}
+
+    public void setGeneratePerTypeInheritanceDiagrams(boolean generatePerTypeInheritanceDiagrams) {
+    	this.generatePerTypeInheritanceDiagrams = generatePerTypeInheritanceDiagrams;
+    }
+    
+	public void setGeneratePerTypeUsageDiagrams(boolean generatePerTypeUsageDiagrams) {
+		this.generatePerTypeUsageDiagrams = generatePerTypeUsageDiagrams;
+	}
+
+	public void setGenerateFullUsageDiagrams(boolean generateFullUsageDiagrams) {
+		this.generateFullUsageDiagrams = generateFullUsageDiagrams;
+	}
+
+	public void setGenerateFullInheritanceDiagrams(boolean generateFullInheritanceDiagrams) {
+		this.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams;
+	}
+
+	public void setGenerateNedSourceListings(boolean generateNedSourceListings) {
+		this.generateNedSourceListings = generateNedSourceListings;
+	}
+
+	public void setGenerateDoxy(boolean generateDoxy) {
+		this.generateDoxy = generateDoxy;
+	}
+
+	public void setGenerateCppSourceListings(boolean generateCppSourceListings) {
+		this.generateCppSourceListings = generateCppSourceListings;
+	}
+	
     public void setDocumentationRootPath(IPath documentationRootPath) {
         this.documentationRootPath = documentationRootPath;
     }
@@ -249,10 +292,6 @@ public class DocumentationGenerator {
 
     public void setCustomCssPath(IPath customCssPath) {
         this.customCssPath = customCssPath;
-    }
-
-    public void setConfiguration(GeneratorConfiguration configuration) {
-        this.configuration = configuration;
     }
 
     public void generate() throws Exception {
@@ -532,7 +571,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateDoxy() throws Exception {
-        if (configuration.generateDoxy && isCppProject(project)) {
+        if (generateDoxy && isCppProject(project)) {
             if (doxyExecutablePath == null || !new File(doxyExecutablePath).exists())
                 throw new IllegalStateException("The Doxygen executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + doxyExecutablePath);
 
@@ -557,7 +596,7 @@ public class DocumentationGenerator {
                     content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", fullPath.toOSString());
                     content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "HTML_STYLESHEET", fullPath.append("opp.css").toOSString());
                     content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", fullPath.append("doxytags.xml").toOSString());
-                    content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "SOURCE_BROWSER", (configuration.doxySourceBrowser ? "YES" : "NO"));
+                    content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "SOURCE_BROWSER", (generateCppSourceListings ? "YES" : "NO"));
                     File modifiedDoxyConfigFile = documentationRootPath.append("temp-doxy.cfg").toFile();
 
                     try {
@@ -812,7 +851,7 @@ public class DocumentationGenerator {
     }
 
     private void generateCppIndex() throws Exception {
-        if (isCppProject(project) && configuration.generateDoxy)
+        if (isCppProject(project) && generateDoxy)
             withGeneratingNavigationMenuContainer("C++", new Runnable() {
                 public void run() throws Exception {
                     generateCppMenuItem("Main Page", "main.html");
@@ -936,15 +975,15 @@ public class DocumentationGenerator {
             }
         }
 
-        if (found && (configuration.generateUsageDiagrams || configuration.generateInheritanceDiagrams)) {
+        if (found && (generateFullUsageDiagrams || generateFullInheritanceDiagrams)) {
             withGeneratingNavigationMenuContainer("diagrams", new Runnable() {
                 public void run() throws Exception {
                     for (ITypeElement typeElement : typeElements) {
                         if (typeElement instanceof INedTypeElement) {
-                            if (configuration.generateUsageDiagrams)
+                            if (generateFullUsageDiagrams)
                                 generateNavigationMenuItem("Full NED Usage Diagram", "full-ned-usage-diagram.html");
 
-                            if (configuration.generateInheritanceDiagrams)
+                            if (generateFullInheritanceDiagrams)
                                 generateNavigationMenuItem("Full NED Inheritance Diagram", "full-ned-inheritance-diagram.html");
 
                             break;
@@ -953,10 +992,10 @@ public class DocumentationGenerator {
 
                     for (ITypeElement typeElement : typeElements) {
                         if (typeElement instanceof IMsgTypeElement) {
-                            if (configuration.generateUsageDiagrams)
+                            if (generateFullUsageDiagrams)
                                 generateNavigationMenuItem("Full MSG Usage Diagram", "full-msg-usage-diagram.html");
 
-                            if (configuration.generateInheritanceDiagrams)
+                            if (generateFullInheritanceDiagrams)
                                 generateNavigationMenuItem("Full MSG Inheritance Diagram", "full-msg-inheritance-diagram.html");
 
                             break;
@@ -1123,7 +1162,7 @@ public class DocumentationGenerator {
                             generatePropertiesTable(msgTypeElement);
                         }
 
-                        if (configuration.generateSourceContent)
+                        if (generateNedSourceListings)
                             generateSourceContent(typeElement);
 
                         monitor.worked(1);
@@ -1532,7 +1571,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateNedTypeFigures() throws InterruptedException, CoreException {
-        if (configuration.generateNedTypeFigures) {
+        if (generateNedTypeFigures) {
             ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResources.getNedFiles(project));
 
             final ExportImagesOfDiagramFilesOperation exportOperation =
@@ -1621,7 +1660,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
-        if (configuration.generateNedTypeFigures) {
+        if (generateNedTypeFigures) {
             out("<img src=\"" + getOutputFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
             DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
                 public void run() {
@@ -1660,7 +1699,7 @@ public class DocumentationGenerator {
 
     protected void generateFullDiagrams() throws Exception {
         try {
-            monitor.beginTask("Generating full diagrams...", (configuration.generateUsageDiagrams ? 2 : 0) + (configuration.generateInheritanceDiagrams ? 2 : 0));
+            monitor.beginTask("Generating full diagrams...", (generateFullUsageDiagrams ? 2 : 0) + (generateFullInheritanceDiagrams ? 2 : 0));
             final ArrayList<INedTypeElement> nedTypeElements = new ArrayList<INedTypeElement>();
             final ArrayList<IMsgTypeElement> msgTypeElements = new ArrayList<IMsgTypeElement>();
 
@@ -1671,7 +1710,7 @@ public class DocumentationGenerator {
                     msgTypeElements.add((IMsgTypeElement)typeElement);
             }
 
-            if (configuration.generateUsageDiagrams) {
+            if (generateFullUsageDiagrams) {
                 withGeneratingHTMLFile("full-ned-usage-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\r\n" +
@@ -1683,7 +1722,7 @@ public class DocumentationGenerator {
                 monitor.worked(1);
             }
 
-            if (configuration.generateInheritanceDiagrams) {
+            if (generateFullInheritanceDiagrams) {
                 withGeneratingHTMLFile("full-ned-inheritance-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\r\n" +
@@ -1695,7 +1734,7 @@ public class DocumentationGenerator {
                 monitor.worked(1);
             }
 
-            if (configuration.generateUsageDiagrams) {
+            if (generateFullUsageDiagrams) {
                 withGeneratingHTMLFile("full-msg-usage-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\r\n" +
@@ -1707,7 +1746,7 @@ public class DocumentationGenerator {
                 monitor.worked(1);
             }
 
-            if (configuration.generateInheritanceDiagrams) {
+            if (generateFullInheritanceDiagrams) {
                 withGeneratingHTMLFile("full-msg-inheritance-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\r\n" +
@@ -1725,7 +1764,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateUsageDiagram(ITypeElement typeElement) throws IOException {
-        if (configuration.generateUsageDiagrams) {
+        if (generatePerTypeUsageDiagrams) {
             ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
             typeElements.add(typeElement);
 
@@ -1733,15 +1772,16 @@ public class DocumentationGenerator {
 
             out("<h3 class=\"subtitle\">Usage diagram:</h3>\r\n" +
                 "<p>The following diagram shows usage relationships between types.\r\n" +
-                "Unresolved types are missing from the diagram.\r\n" +
-                "Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
+                "Unresolved types are missing from the diagram.\r\n");
+            if (generateFullUsageDiagrams)
+            	out("Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
 
             generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".png"), getOutputFileName(typeElement, "usage", ".map"));
         }
     }
 
     protected void generateUsageDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
-        if (configuration.generateUsageDiagrams) {
+        if (generatePerTypeUsageDiagrams || generateFullUsageDiagrams) {
             DotGraph dot = new DotGraph();
 
             dot.append("digraph opp {\r\n" +
@@ -1778,7 +1818,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateInheritanceDiagram(ITypeElement typeElement) throws IOException {
-        if (configuration.generateInheritanceDiagrams) {
+        if (generatePerTypeInheritanceDiagrams) {
             ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
             typeElements.add(typeElement);
 
@@ -1786,15 +1826,16 @@ public class DocumentationGenerator {
 
             out("<h3 class=\"subtitle\">Inheritance diagram:</h3>\r\n" +
                 "<p>The following diagram shows inheritance relationships for this type.\r\n" +
-                "Unresolved types are missing from the diagram.\r\n" +
-                "Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.</p>\r\n");
+                "Unresolved types are missing from the diagram.\r\n");
+            if (generateFullInheritanceDiagrams)
+            	out("Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.</p>\r\n");
 
             generateInheritanceDiagram(typeElements, getOutputFileName(typeElement, "inheritance", ".png"), getOutputFileName(typeElement, "inheritance", ".map"));
         }
     }
 
     protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
-        if (configuration.generateInheritanceDiagrams) {
+        if (generatePerTypeInheritanceDiagrams || generateFullInheritanceDiagrams) {
             DotGraph dot = new DotGraph();
 
             dot.append("digraph opp {\r\n" +
