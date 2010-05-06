@@ -1,0 +1,351 @@
+%description:
+Test that various events during simulation are properly recorded into the event log file.
+
+Involves one "active" Node module that does various things, including sending
+messages to an inactive Node peer (which is wrapped into a compound module,
+to be able to test sendHops as well).
+
+%file: test.ned
+
+simple Node
+{
+    parameters:
+        bool isActive = default(false);
+        string peer = default("");
+    gates:
+        output out;
+        output outv[];
+        input in[];
+        input directIn @directIn;
+}
+
+module Compound
+{
+    gates:
+        input in[];
+        output out;
+    submodules:
+        node: Node;
+    connections:
+        for i=0..sizeof(in)-1 {
+            in[i] --> {delay = 1ms;} --> node.in++;
+        }
+        node.out --> out;
+}
+
+network Test
+{
+    submodules:
+        compound: Compound;
+        node: Node {
+            isActive = true;
+            peer = "compound.node";
+        }
+    connections:
+        node.out --> {delay = 1ms; datarate = 1Mbps;} --> compound.in++;
+        compound.out --> node.in++;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule
+{
+  protected:
+    enum Kind {Default=0, Send, SendDirect, Schedule, Cancel, Bubble, MethodCalls, CreateModule, DeleteModule};
+    cMessage *timer;
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
+    Node *getPeer();
+    void createSomeModule();
+    void deleteSomeModule();
+  public:
+    bool publicMethod(const char *arg1, int arg2);
+    bool publicSilentMethod(const char *arg1, int arg2);
+    bool publicSilent2Method(const char *arg1, int arg2);
+};
+
+Define_Module(Node);
+
+void Node::initialize()
+{
+    EV << "initializing...\n";
+    if (par("isActive"))
+    {
+        scheduleAt(simTime()+1, new cMessage("send", Send));
+        scheduleAt(simTime()+2, new cMessage("sendDirect", SendDirect));
+        scheduleAt(simTime()+3, new cMessage("schedule", Schedule));
+        scheduleAt(simTime()+4, new cMessage("cancel", Cancel));
+        scheduleAt(simTime()+5, new cMessage("bubble", Bubble));
+        scheduleAt(simTime()+6, new cMessage("methodCalls", MethodCalls));
+        scheduleAt(simTime()+7, new cMessage("createModule", CreateModule));
+        scheduleAt(simTime()+8, new cMessage("deleteModule", DeleteModule));
+    }
+    timer = NULL;
+}
+
+Node *Node::getPeer()
+{
+    cModule *peer = simulation.getModuleByPath(par("peer").stdstringValue().c_str());
+    Node *peerNode = check_and_cast<Node *>(peer);
+    return peerNode;
+}
+
+void Node::handleMessage(cMessage *msg)
+{
+    switch (msg->getKind())
+    {
+    case Send:
+        EV << "sending pk\n";
+        send(new cPacket("pk1", 99, 4096), "out");
+        break;
+    case SendDirect:
+        EV << "sending msg directly\n";
+        sendDirect(new cMessage("directMsg"), getPeer()->gate("directIn"));
+        EV << "sending pk directly\n";
+        sendDirect(new cPacket("directPk", 99, 4096), 0.001, 4096/1e6, getPeer()->gate("directIn"));
+        break;
+    case Schedule:
+        EV << "scheduling timer\n";
+        timer = new cMessage("timer");
+        scheduleAt(simTime()+100, timer);
+        break;
+    case Cancel:
+        EV << "canceling timer\n";
+        ASSERT(timer!=NULL);
+        delete cancelEvent(timer);
+        break;
+    case Bubble:
+        EV << "displaying bubbles\n";
+        bubble("this is the bubble text");
+        getPeer()->bubble("this is the peer's bubble text");
+        break;
+    case MethodCalls:
+        EV << "making three method calls\n";
+        getPeer()->publicMethod("dummy",42);
+        getPeer()->publicSilentMethod("dummy",42);
+        getPeer()->publicSilent2Method("dummy",42);
+        break;
+    case CreateModule:
+        EV << "creating and connecting a module\n";
+        createSomeModule();
+        break;
+    case DeleteModule:
+        EV << "deleting a module\n";
+        deleteSomeModule();
+        break;
+    default:
+        EV << "message received: " << msg->getName() << "\n";
+        break;
+    }
+    delete msg;
+}
+
+void Node::createSomeModule()
+{
+    cModuleType *selfType = getModuleType();
+    cModule *newModule = selfType->createScheduleInit("dy", getParentModule());
+    Node *newNode = check_and_cast<Node*>(newModule);
+    //TODO
+}
+
+void Node::deleteSomeModule()
+{
+    cModule *mod = getParentModule()->getSubmodule("dy");
+    ASSERT(mod);
+    mod->deleteModule();
+}
+
+void Node::finish()
+{
+    EV << "finishing...\n";
+}
+
+bool Node::publicMethod(const char *arg1, int arg2)
+{
+    Enter_Method("publicMethod(\"%s\", %d)", arg1, arg2);
+    EV << "sending a message from the called method\n";
+    send(new cMessage("msg1"), "out");
+    return true;
+}
+
+bool Node::publicSilentMethod(const char *arg1, int arg2)
+{
+    Enter_Method_Silent();
+    EV << "sending a message from the called method\n";
+    send(new cMessage("msg2"), "out");
+    return true;
+}
+
+bool Node::publicSilent2Method(const char *arg1, int arg2)
+{
+    Enter_Method_Silent("publicMethod(\"%s\", %d)", arg1, arg2);
+    EV << "sending a message from the called method\n";
+    send(new cMessage("msg3"), "out");
+    return true;
+}
+
+}; //namespace
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+record-eventlog = true
+
+%subst: /(SB v 1025 rid) .*/$1 SOME_RUN_ID/
+
+%contains: results/General-0.elog
+MC id 1 c cCompoundModule t Test n Test cm 1
+GC m 2 g 3 n out o 1
+MC id 2 c cCompoundModule t Compound pid 1 n compound cm 1
+GC m 3 g 1 n out o 1
+GC m 3 g 6 n directIn o 0
+MC id 3 c @TESTNAME@::Node t Node pid 1 n node
+GC m 2 g 1048576 n in i 0 o 0
+CC sm 3 sg 1 dm 2 dg 1048576
+GC m 3 g 3145728 n in i 0 o 0
+CC sm 2 sg 3 dm 3 dg 3145728
+GC m 4 g 1 n out o 1
+GC m 4 g 6 n directIn o 0
+MC id 4 c @TESTNAME@::Node t Node pid 2 n node
+GC m 4 g 3145728 n in i 0 o 0
+CC sm 2 sg 1048576 dm 4 dg 3145728
+CC sm 4 sg 1 dm 2 dg 3
+
+E # 0 t 0 m 1 msg -1
+SB v 1025 rid SOME_RUN_ID
+MB sm 1 tm 2 m initialize(0)
+ME
+MB sm 1 tm 4 m initialize(0)
+- initializing...
+ME
+MB sm 1 tm 3 m initialize(0)
+- initializing...
+BS id 0 tid 0 eid 0 etid 0 c cMessage n send k 1
+ES t 1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n sendDirect k 2
+ES t 2
+BS id 2 tid 2 eid 2 etid 2 c cMessage n schedule k 3
+ES t 3
+BS id 3 tid 3 eid 3 etid 3 c cMessage n cancel k 4
+ES t 4
+BS id 4 tid 4 eid 4 etid 4 c cMessage n bubble k 5
+ES t 5
+BS id 5 tid 5 eid 5 etid 5 c cMessage n methodCalls k 6
+ES t 6
+BS id 6 tid 6 eid 6 etid 6 c cMessage n createModule k 7
+ES t 7
+BS id 7 tid 7 eid 7 etid 7 c cMessage n deleteModule k 8
+ES t 8
+ME
+
+E # 1 t 1 m 3 ce 0 msg 0
+- sending pk
+BS id 8 tid 8 eid 8 etid 8 c cPacket n pk1 k 99 l 4096
+SH sm 3 sg 1 pd 0.001 td 0.004096
+SH sm 2 sg 1048576 pd 0.001
+ES t 1.006096
+DM id 0 pe 1
+
+E # 2 t 1.006096 m 4 ce 1 msg 8
+- message received: pk1
+DM id 8 pe 2
+
+E # 3 t 2 m 3 ce 0 msg 1
+- sending msg directly
+BS id 9 tid 9 eid 9 etid 9 c cMessage n directMsg
+SD sm 3 dm 4 dg 6
+ES t 2
+- sending pk directly
+BS id 10 tid 10 eid 10 etid 10 c cPacket n directPk k 99 l 4096
+SD sm 3 dm 4 dg 6 pd 0.001 td 0.004096
+ES t 2.005096
+DM id 1 pe 3
+
+E # 4 t 2 m 4 ce 3 msg 9
+- message received: directMsg
+DM id 9 pe 4
+
+E # 5 t 2.005096 m 4 ce 3 msg 10
+- message received: directPk
+DM id 10 pe 5
+
+E # 6 t 3 m 3 ce 0 msg 2
+- scheduling timer
+BS id 11 tid 11 eid 11 etid 11 c cMessage n timer
+ES t 103
+DM id 2 pe 6
+
+E # 7 t 4 m 3 ce 0 msg 3
+- canceling timer
+CE id 11 pe 6
+DM id 11 pe 7
+DM id 3 pe 7
+
+E # 8 t 5 m 3 ce 0 msg 4
+- displaying bubbles
+BU id 3 txt "this is the bubble text"
+BU id 4 txt "this is the peer's bubble text"
+DM id 4 pe 8
+
+E # 9 t 6 m 3 ce 0 msg 5
+- making three method calls
+MB sm 3 tm 4 m "publicMethod(\"dummy\", 42)"
+- sending a message from the called method
+BS id 12 tid 12 eid 12 etid 12 c cMessage n msg1
+SH sm 4 sg 1
+SH sm 2 sg 3
+ES t 6
+ME
+MB sm 3 tm 4 m ""
+- sending a message from the called method
+BS id 13 tid 13 eid 13 etid 13 c cMessage n msg2
+SH sm 4 sg 1
+SH sm 2 sg 3
+ES t 6
+ME
+MB sm 3 tm 4 m "publicMethod(\"dummy\", 42)"
+- sending a message from the called method
+BS id 14 tid 14 eid 14 etid 14 c cMessage n msg3
+SH sm 4 sg 1
+SH sm 2 sg 3
+ES t 6
+ME
+DM id 5 pe 9
+
+E # 10 t 6 m 3 ce 9 msg 12
+- message received: msg1
+DM id 12 pe 10
+
+E # 11 t 6 m 3 ce 9 msg 13
+- message received: msg2
+DM id 13 pe 11
+
+E # 12 t 6 m 3 ce 9 msg 14
+- message received: msg3
+DM id 14 pe 12
+
+E # 13 t 7 m 3 ce 0 msg 6
+- creating and connecting a module
+GC m 5 g 1 n out o 1
+GC m 5 g 6 n directIn o 0
+MC id 5 c @TESTNAME@::Node t Node pid 1 n dy
+MB sm 3 tm 5 m initialize(0)
+- initializing...
+ME
+DM id 6 pe 13
+
+E # 14 t 8 m 3 ce 0 msg 7
+- deleting a module
+MD id 5
+GD m 5 g 1
+GD m 5 g 6
+DM id 7 pe 14
+- finishing...
+- finishing...
+SE
