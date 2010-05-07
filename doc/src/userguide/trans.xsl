@@ -7,17 +7,22 @@
 <!-- "html" or "pdf" -->
 <xsl:param name="output" select="'html'"/>
 
+<!-- DO NOT change the line below. It is replaced by the
+     makedist script to make the paragrphs between <commercial>
+     tags available for the OMNEST build. -->
+<xsl:param name="what">omnetpp</xsl:param>
+
 <xsl:template match="@*|node()">
    <xsl:copy>
       <xsl:apply-templates select="@*|node()"/>
    </xsl:copy>
 </xsl:template>
 
-<!-- DO NOT change the line below. It is replaced by the
-     makedist script to make the paragrphs between <commercial>
-     tags available for the OMNEST build. An identity transf is 
-     inserted for OMNEST: <xsl:apply-templates select="@*|node()"/> -->
-<xsl:template match="commercial"></xsl:template>
+<xsl:template match="commercial">
+<xsl:if test="$what='omnest'">
+    <xsl:apply-templates select="@*|node()"/>
+</xsl:if>
+</xsl:template>
 
 
 <xsl:template match="picture">
