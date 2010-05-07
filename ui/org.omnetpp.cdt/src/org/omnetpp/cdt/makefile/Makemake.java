@@ -152,7 +152,7 @@ public class Makemake {
 
         // determine outDir (defaults to "out")
         String outDir;
-        IPath outRootPath = new Path(StringUtils.isEmpty(options.outRoot) ? "out" : options.outRoot);
+        IPath outRootPath = new Path(StringUtils.defaultIfEmpty(options.outRoot, "out"));
         IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
         IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
         outDir = outRootRel.toString();
@@ -422,7 +422,7 @@ public class Makemake {
         // collect source files
         if (options.isDeep) {
             String outDir;
-            IPath outRootPath = new Path(StringUtils.isEmpty(options.outRoot) ? "out" : options.outRoot);
+            IPath outRootPath = new Path(StringUtils.defaultIfEmpty(options.outRoot, "out"));
             IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
             IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
             outDir = outRootRel.toString();

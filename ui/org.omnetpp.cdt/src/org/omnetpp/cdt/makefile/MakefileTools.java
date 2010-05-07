@@ -251,7 +251,8 @@ public class MakefileTools {
     		for(IContainer makemakeFolder : bspec.getMakemakeFolders()) {
     			MakemakeOptions mo = bspec.getMakemakeOptions(makemakeFolder);
     			if (mo != null) {
-    				IResource outDir = proj.findMember(mo.outRoot);
+    			    String outRoot = StringUtils.defaultIfEmpty(mo.outRoot, "out");
+    				IResource outDir = proj.findMember(outRoot);
     				if (outDir != null)
     					outLocation.add(outDir.getLocation());
     			}

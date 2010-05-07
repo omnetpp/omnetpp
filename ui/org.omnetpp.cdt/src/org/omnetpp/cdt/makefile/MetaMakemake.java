@@ -140,8 +140,8 @@ public class MetaMakemake {
                     for (IContainer f : refBuildSpec.getMakemakeFolders()) {
                         MakemakeOptions opt = refBuildSpec.getMakemakeOptions(f);
                         if (opt!=null && (opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB) && opt.metaExportLibrary) {
-                            String libname = StringUtils.isEmpty(opt.target) ? f.getProject().getName() : opt.target;
-                            String outdir = StringUtils.isEmpty(opt.outRoot) ? "out" : opt.outRoot; //FIXME hardcoded default!!!
+                            String libname = StringUtils.defaultIfEmpty(opt.target, f.getProject().getName());
+                            String outdir = StringUtils.defaultIfEmpty(opt.outRoot, "out");
                             String libdir = makeRelativePath(f.getProject(), makefileFolder) + "/" + new Path(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
                             translatedOptions.libs.add(libname);
                             translatedOptions.libDirs.add(libdir);
