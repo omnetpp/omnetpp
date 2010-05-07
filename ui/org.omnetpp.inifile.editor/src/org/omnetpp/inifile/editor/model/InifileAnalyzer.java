@@ -75,6 +75,7 @@ import org.omnetpp.ned.model.pojo.ParamElement;
  *
  * @author Andras
  */
+//XXX TODO: consider making a copy of the inifile, and analyze that from a background thread! This would eliminate UI lockup during analyzing.
 //XXX Issue. Consider the following:
 //  **.ppp[1].queueType = "Foo"
 //  **.ppp[*].queueType = "DropTailQueue"
@@ -860,7 +861,7 @@ public class InifileAnalyzer {
 			v.parvar = m.group(5);
 			v.section = section;
 			v.key = key;
-			Debug.println("itervar found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
+			//Debug.println("itervar found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
 			if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(v.varname))
 				addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
 			else if (sectionData.namedIterations.containsKey(v.varname))
@@ -1473,7 +1474,13 @@ public class InifileAnalyzer {
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 			for (String section : sectionChain) {
 				SectionData sectionData = (SectionData) doc.getSectionData(section);
-				if (!sectionData.iterations.isEmpty())
+				if (sectionData == null)
+				    // XXX Note: sectionData is NOT supposed to be null here. However, it sometimes is;
+				    // this occurs with large models and ini files (e.g.INETMANET), and seems to be timing dependent;
+				    // and also with greater probability when typing introduces a syntax error in the file.
+				    // Workaround: check for null manually here.
+				    Debug.println("WARNING: no sectionData for section " + section + " in InifileAnalyzer.containsIteration()!");
+				if (sectionData != null && sectionData.iterations.isEmpty())
 					return true;
 			}
 			return false;
