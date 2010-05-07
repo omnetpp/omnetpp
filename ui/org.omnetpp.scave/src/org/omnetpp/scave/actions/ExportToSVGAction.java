@@ -16,6 +16,7 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.scave.charting.ChartCanvas;
@@ -47,7 +48,8 @@ public class ExportToSVGAction extends AbstractScaveAction {
 	}
 
     private String askFileName(ScaveEditor editor) {
-        FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
+        Shell activeShell = Display.getCurrent().getActiveShell();
+		FileDialog fileDialog = new FileDialog(activeShell, SWT.SAVE);
         IEditorInput editorInput = editor.getEditorInput();
         if (editorInput instanceof FileEditorInput) {
             IPath location = ((FileEditorInput)editorInput).getFile().getLocation().makeAbsolute();
@@ -58,7 +60,7 @@ public class ExportToSVGAction extends AbstractScaveAction {
         if (fileName != null) {
             File file = new File(fileName);
             if (file.exists()) {
-                MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
+                MessageBox messageBox = new MessageBox(activeShell, SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
                 messageBox.setText("File already exists");
                 messageBox.setMessage("The file " + fileName + " already exists and will be overwritten. Do you want to continue the operation?");
                 if (messageBox.open() == SWT.CANCEL)

@@ -236,11 +236,16 @@ class DomainAxis {
     					Dimension rotatedSize = label.rotatedSize;
 
     					if (isRectangularAngle(rotation)) // center into the cell
-    						graphics.translate((left + right) / 2, rect.y + gap + 1 + label.centerY);
+    						graphics.translate((int)(left + right) / 2, rect.y + gap + 1 + label.centerY);
     					else // left at the bottom of the bar
-    						graphics.translate((left + right) / 2 + rotatedSize.width / 2, rect.y + gap + 1 + label.centerY);
-    					graphics.rotate((float)-rotation);
-    					graphics.drawTextLayout(label.textLayout, - size.width / 2, - size.height/2);
+    						graphics.translate((int)(left + right) / 2 + rotatedSize.width / 2, rect.y + gap + 1 + label.centerY);
+    					try {
+    					    graphics.rotate((float)-rotation);
+    					    graphics.drawTextLayout(label.textLayout, - size.width / 2, - size.height/2);
+    					} catch (RuntimeException e) {
+    						// Fallback for Graphics SVG (does not implement rotate and textLayout).
+    						graphics.drawText(label.textLayout.getText(), - size.width / 2, - size.height/2);
+    					}
     				}
     			}
     			graphics.popState();
@@ -256,7 +261,6 @@ class DomainAxis {
 		}
 
 		graphics.popState();
-		graphics.dispose();
 	}
 
 	private static boolean isRectangularAngle(double degree) {

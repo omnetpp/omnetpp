@@ -142,10 +142,11 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
     }
 
     public void exportToSVG(String fileName) {
+    	;
+    	int width = getClientArea().width, height = getClientArea().height;
+    	GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
         try {
-            int width = getClientArea().width, height = getClientArea().height;
-            GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
-            SVGGraphics2D g = graphics.getSVGGraphics2D();
+        	SVGGraphics2D g = graphics.getSVGGraphics2D();
             g.setClip(0, 0, width, height);
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             graphics.setAntialias(SWT.ON);
@@ -154,6 +155,9 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
         }
         catch (Exception e) {
             throw new RuntimeException(e);
+        }
+        finally {
+        	graphics.dispose();
         }
     }
 

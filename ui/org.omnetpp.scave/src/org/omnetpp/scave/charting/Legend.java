@@ -427,7 +427,6 @@ public class Legend implements ILegend {
 		}
 		finally {
 			graphics.popState();
-			graphics.dispose();
 		}
 	}
 }

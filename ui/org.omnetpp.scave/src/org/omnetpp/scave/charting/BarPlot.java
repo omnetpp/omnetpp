@@ -67,7 +67,6 @@ class BarPlot {
 				drawBar(graphics, row, column, coordsMapping);
 			}
 			graphics.popState();
-			graphics.dispose();
 		}
 	}
 
@@ -81,7 +80,6 @@ class BarPlot {
 			LargeGraphics.drawLine(graphics, rect.x + 1, y, rect.x + rect.width - 1, y);
 
 			graphics.popState();
-			graphics.dispose();
 		}
 	}
 
