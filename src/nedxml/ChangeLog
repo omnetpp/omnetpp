@@ -6,6 +6,10 @@
 	the getter, setter, array size getter and array size setter methods
 	as well.
 
+	* msg2.y: keywords "int", "char", "unsigned" etc are not accepted in
+	property values. Useful for @sizetype (above). Without this change,
+	type would need to be enclosed in quotes: @sizetype("unsigned short").
+
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
 2010-03-31  Andras Varga

@@ -629,6 +629,8 @@ property_value_token
         | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE
         | DOUBLECOLON | OR | AND | XOR | NOT
         | BIN_AND | BIN_OR | BIN_XOR BIN_COMPL | SHIFT_LEFT | SHIFT_RIGHT
+        | MESSAGE | PACKET | CLASS | STRUCT | ENUM | NONCOBJECT
+        | BOOLTYPE | CHARTYPE | SHORTTYPE | INTTYPE | LONGTYPE | DOUBLETYPE | UNSIGNED_ | STRINGTYPE
         ;
 
 /*
