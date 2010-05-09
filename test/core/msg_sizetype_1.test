@@ -1,0 +1,45 @@
+%description:
+Test the @sizetype property for array fields.
+
+It should affect the type of the arraysize variable, the type of the index
+in the getter and setter, and type in the array size setter and getter
+method.
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+message MyMessage
+{
+    int foo[] @sizetype(unsigned char);
+};
+
+%includes:
+#include "test_m.h"
+
+%activity:
+
+MyMessage x;
+
+#define PRINT(X)  ev << #X << ":" << (int)(X) << endl
+
+PRINT(x.getFooArraySize());
+x.setFooArraySize(3);
+PRINT(x.getFooArraySize());
+x.setFoo(2,99);
+PRINT(x.getFoo(2));
+
+%contains: stdout
+x.getFooArraySize():0
+x.getFooArraySize():3
+x.getFoo(2):99
+
+%contains: test_m.h
+    unsigned char foo_arraysize;
+
+%contains: test_m.h
+    virtual void setFooArraySize(unsigned char size);
+    virtual unsigned char getFooArraySize() const;
+    virtual int getFoo(unsigned char k) const;
+    virtual void setFoo(unsigned char k, int foo_var);
+

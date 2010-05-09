@@ -714,7 +714,7 @@ sub processFile($)
                     $isarray = 1;
                     $arraysize = $1;
                     if ($arraysize !~ /^[0-9]*$/ && $arraysize !~ /^[A-Za-z_][A-Za-z0-9_]*$/) {
-                        print "$filename: Error: array size must be numeric or symbolic constant (not '$arraysize') in '$msgname'\n"; $ret=1;
+                        print "$filename: Error: array size must be numeric or a symbolic constant (not '$arraysize') in '$msgname'\n"; $ret=1;
                     }
                     if ($arraysize eq '' && $keyword eq 'struct') {
                         print "$filename: Error: a struct cannot have dynamic array fields in '$msgname'\n"; $ret=1;
@@ -877,6 +877,7 @@ sub processFile($)
 #  %fispointer{$fieldname}
 #  %fisarray{fieldname}
 #  %farraysize{fieldname}
+#  %fsizetype{fieldname}
 #  %fprops{fieldname}->{propname}
 #
 #  %fkind{fieldname}
@@ -1011,7 +1012,10 @@ sub prepareForCodeGeneration()
         } else {
             $var{$fieldname} = $fieldname."_var";
         }
+
         $varsize{$fieldname} = $fieldname."_arraysize";
+        my $sizetypeprop = $fprops{$fieldname}->{sizetype};
+        $fsizetype{$fieldname} = ($sizetypeprop ne '') ? $sizetypeprop : "unsigned int";
 
         # method names
         if ($classtype ne 'struct') {
@@ -1194,7 +1198,7 @@ sub generateClass
                 print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print H "    $datatype{$fieldname} *$var{$fieldname}; // array ptr\n";
-                print H "    unsigned int $varsize{$fieldname};\n";
+                print H "    $fsizetype{$fieldname} $varsize{$fieldname};\n";
             } else {
                 print H "    $datatype{$fieldname} $var{$fieldname};\n";
             }
@@ -1248,16 +1252,16 @@ sub generateClass
         $isstruct = ($fkind{$fieldname} eq 'struct');
         $constifprimitivetype = (!$isstruct ? ' const' : '');
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-            print H "    virtual unsigned int $getsize{$fieldname}() const$pure;\n";
-            print H "    virtual $rettype{$fieldname} $getter{$fieldname}(unsigned int k)$constifprimitivetype$pure;\n";
-            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}(unsigned int k) const {return const_cast<$msgclass*>(this)->$getter{$fieldname}(k);}\n" if ($isstruct);
-            print H "    virtual void $setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
+            print H "    virtual $fsizetype{$fieldname} $getsize{$fieldname}() const$pure;\n";
+            print H "    virtual $rettype{$fieldname} $getter{$fieldname}($fsizetype{$fieldname} k)$constifprimitivetype$pure;\n";
+            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}($fsizetype{$fieldname} k) const {return const_cast<$msgclass*>(this)->$getter{$fieldname}(k);}\n" if ($isstruct);
+            print H "    virtual void $setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-            print H "    virtual void $alloc{$fieldname}(unsigned int size)$pure;\n";
-            print H "    virtual unsigned int $getsize{$fieldname}() const$pure;\n";
-            print H "    virtual $rettype{$fieldname} $getter{$fieldname}(unsigned int k)$constifprimitivetype$pure;\n";
-            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}(unsigned int k) const {return const_cast<$msgclass*>(this)->$getter{$fieldname}(k);}\n" if ($isstruct);
-            print H "    virtual void $setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
+            print H "    virtual void $alloc{$fieldname}($fsizetype{$fieldname} size)$pure;\n";
+            print H "    virtual $fsizetype{$fieldname} $getsize{$fieldname}() const$pure;\n";
+            print H "    virtual $rettype{$fieldname} $getter{$fieldname}($fsizetype{$fieldname} k)$constifprimitivetype$pure;\n";
+            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}($fsizetype{$fieldname} k) const {return const_cast<$msgclass*>(this)->$getter{$fieldname}(k);}\n" if ($isstruct);
+            print H "    virtual void $setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
         } else {
             print H "    virtual $rettype{$fieldname} $getter{$fieldname}()$constifprimitivetype$pure;\n";
             print H "    virtual const $rettype{$fieldname} $getter{$fieldname}() const {return const_cast<$msgclass*>(this)->$getter{$fieldname}();}\n" if ($isstruct);
@@ -1310,11 +1314,11 @@ sub generateClass
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 if ($fkind{$fieldname} eq 'basic') {
-                    print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
+                    print CC "    for ($fsizetype{$fieldname} i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        this->$var{$fieldname}\[i\] = $fval{$fieldname};\n";
                 }
                 if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
-                  print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
+                  print CC "    for ($fsizetype{$fieldname} i=0; i<$farraysize{$fieldname}; i++)\n";
                   print CC "        take(&(this->$var{$fieldname}\[i\]));\n";
                 }
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
@@ -1345,7 +1349,7 @@ sub generateClass
       if (!$fisabstract{$fieldname}) {
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
           if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
-            print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
+            print CC "    for ($fsizetype{$fieldname} i=0; i<$farraysize{$fieldname}; i++)\n";
             print CC "        take(&(this->$var{$fieldname}\[i\]));\n";
           }
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
@@ -1367,10 +1371,10 @@ sub generateClass
                 if (!$fisarray{$fieldname}) {
                     print CC "    drop(&(this->$var{$fieldname}));\n";
                 } elsif ($farraysize{$fieldname} ne '') {
-                    print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
+                    print CC "    for ($fsizetype{$fieldname} i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        drop(&(this->$var{$fieldname}\[i\]));\n";
                 } else {
-                    print CC "    for (unsigned int i=0; i<$varsize{$fieldname}; i++)\n";
+                    print CC "    for ($fsizetype{$fieldname} i=0; i<$varsize{$fieldname}; i++)\n";
                     print CC "        drop(&(this->$var{$fieldname}\[i\]));\n";
                 }
             }
@@ -1390,17 +1394,17 @@ sub generateClass
     {
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
+                print CC "    for ($fsizetype{$fieldname} i=0; i<$farraysize{$fieldname}; i++)\n";
                 print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
                 if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
-                    print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
+                    print CC "    for ($fsizetype{$fieldname} i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        this->$var{$fieldname}\[i\].setName(other.$var{$fieldname}\[i\].getName());\n";
                 }
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    delete [] this->$var{$fieldname};\n";
                 print CC "    this->$var{$fieldname} = (other.$varsize{$fieldname}==0) ? NULL : new $datatype{$fieldname}\[other.$varsize{$fieldname}\];\n";
                 print CC "    $varsize{$fieldname} = other.$varsize{$fieldname};\n";
-                print CC "    for (unsigned int i=0; i<$varsize{$fieldname}; i++)\n";
+                print CC "    for ($fsizetype{$fieldname} i=0; i<$varsize{$fieldname}; i++)\n";
                 if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
                     print CC "    {\n";
                     print CC "        take(&(this->$var{$fieldname}\[i\]));\n";
@@ -1494,49 +1498,49 @@ sub generateClass
             $isstruct = ($fkind{$fieldname} eq 'struct');
             $constifprimitivetype = (!$isstruct ? ' const' : '');
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                print CC "unsigned int $msgclass\:\:$getsize{$fieldname}() const\n";
+                print CC "$fsizetype{$fieldname} $msgclass\:\:$getsize{$fieldname}() const\n";
                 print CC "{\n";
                 print CC "    return $farraysize{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$constifprimitivetype\n";
+                print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}($fsizetype{$fieldname} k)$constifprimitivetype\n";
                 print CC "{\n";
-                print CC "    if (k>=$farraysize{$fieldname}) throw cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
+                print CC "    if (k>=$farraysize{$fieldname}) throw cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%lu\", (unsigned long)k);\n";
                 print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
+                print CC "void $msgclass\:\:$setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
-                print CC "    if (k>=$farraysize{$fieldname}) throw cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
+                print CC "    if (k>=$farraysize{$fieldname}) throw cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%lu\", (unsigned long)k);\n";
                 print CC "    this->$var{$fieldname}\[k\] = $var{$fieldname};\n";
                 print CC "}\n\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                print CC "void $msgclass\:\:$alloc{$fieldname}(unsigned int size)\n";
+                print CC "void $msgclass\:\:$alloc{$fieldname}($fsizetype{$fieldname} size)\n";
                 print CC "{\n";
                 print CC "    $datatype{$fieldname} *$var{$fieldname}2 = (size==0) ? NULL : new $datatype{$fieldname}\[size\];\n";
-                print CC "    unsigned int sz = $varsize{$fieldname} < size ? $varsize{$fieldname} : size;\n";
-                print CC "    for (unsigned int i=0; i<sz; i++)\n";
+                print CC "    $fsizetype{$fieldname} sz = $varsize{$fieldname} < size ? $varsize{$fieldname} : size;\n";
+                print CC "    for ($fsizetype{$fieldname} i=0; i<sz; i++)\n";
                 print CC "        $var{$fieldname}2\[i\] = this->$var{$fieldname}\[i\];\n";
                 if ($fkind{$fieldname} eq 'basic') {
-                    print CC "    for (unsigned int i=sz; i<size; i++)\n";
+                    print CC "    for ($fsizetype{$fieldname} i=sz; i<size; i++)\n";
                     print CC "        $var{$fieldname}2\[i\] = 0;\n";
                 }
                 if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
-                    print CC "    for (unsigned int i=sz; i<size; i++)\n";
+                    print CC "    for ($fsizetype{$fieldname} i=sz; i<size; i++)\n";
                     print CC "        take(&($var{$fieldname}2\[i\]));\n";
                 }
                 print CC "    $varsize{$fieldname} = size;\n";
                 print CC "    delete [] this->$var{$fieldname};\n";
                 print CC "    this->$var{$fieldname} = $var{$fieldname}2;\n";
                 print CC "}\n\n";
-                print CC "unsigned int $msgclass\:\:$getsize{$fieldname}() const\n";
+                print CC "$fsizetype{$fieldname} $msgclass\:\:$getsize{$fieldname}() const\n";
                 print CC "{\n";
                 print CC "    return $varsize{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$constifprimitivetype\n";
+                print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}($fsizetype{$fieldname} k)$constifprimitivetype\n";
                 print CC "{\n";
                 print CC "    if (k>=$varsize{$fieldname}) throw cRuntimeError(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
                 print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
+                print CC "void $msgclass\:\:$setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
                 print CC "    if (k>=$varsize{$fieldname}) throw cRuntimeError(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
                 print CC "    this->$var{$fieldname}\[k\]=$var{$fieldname};\n";
@@ -1598,7 +1602,7 @@ sub generateStruct
         die "dynamic array not possible in struct" if ($fisarray{$fieldname} && $farraysize{$fieldname} eq '');
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
             if ($fkind{$fieldname} eq 'basic') {
-                print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
+                print CC "    for ($fsizetype{$fieldname} i=0; i<$farraysize{$fieldname}; i++)\n";
                 print CC "        $var{$fieldname}\[i\] = $fval{$fieldname};\n";
             }
         } else {
