@@ -490,8 +490,8 @@ sub testcase_run()
                 else {
                     $infname = $testname."/".$values{$key};
                 }
-
-                if (-f $workdir."/".$infname) {
+                my $isgenerated = !($infname =~ /\.(cc|h|msg|ned|ini)$/);
+                if ($isgenerated && -f $workdir."/".$infname) {
                     print "  deleting old copy of file `$infname'\n" if ($debug);
                     unlink $workdir."/".$infname;
                 }
