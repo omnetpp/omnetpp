@@ -1,3 +1,10 @@
+2010-05-09  Andras Varga
+
+	* cPar: isNumeric() now returns false for boolean parameters. This is
+	done for consistency, as calling doubleValue() and longValue() has
+	already resulted in a "cannot cast non-numeric type" exception in the
+	4.0 version.
+
 2010-05-03  Andras Varga
 
 	* std_sim.msg: "contents[]" is now displayed as "defaultList[]"; 

@@ -146,7 +146,7 @@ cPar::Type cBoolParImpl::getType() const
 
 bool cBoolParImpl::isNumeric() const
 {
-    return true;
+    return false;  // because doubleValue() and longValue() throws error
 }
 
 void cBoolParImpl::convertToConst(cComponent *context)

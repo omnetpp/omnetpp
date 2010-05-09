@@ -231,16 +231,17 @@ void cComponent::recordParametersAsScalars()
     {
         if (ev.getConfig()->getAsBool(par(i).getFullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false))
         {
-            //XXX the following checks should probably produce a WARNING not an error
-            if (!par(i).isNumeric())
-                throw cRuntimeError(this, "cannot record non-numeric parameter `%s' as an output scalar", par(i).getName());
-            if (par(i).isVolatile() && (par(i).doubleValue()!=par(i).doubleValue() || par(i).doubleValue()!=par(i).doubleValue()))
-                throw cRuntimeError(this, "recording volatile parameter `%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).getName());
-
-            if (par(i).getType() == cPar::BOOL)
-                recordScalar(par(i).getName(), par(i).boolValue()); // note: no implicit conversion from bool to double
+            //TODO the following checks should probably produce a WARNING not an error;
+            //TODO also, the values should probably be recorded as "param" in the scalar file
+            if (par(i).getType() == cPar::BOOL) // note: a bool is not considered to be numeric
+                recordScalar(par(i).getName(), par(i).boolValue());
+            else if (par(i).isNumeric()) {
+                if (par(i).isVolatile() && (par(i).doubleValue()!=par(i).doubleValue() || par(i).doubleValue()!=par(i).doubleValue())) // crude check for random variates
+                    throw cRuntimeError(this, "recording volatile parameter `%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).getName());
+                recordScalar(par(i).getName(), par(i).doubleValue());
+            }
             else
-                recordScalar(par(i).getName(), par(i).doubleValue());  //XXX mark value specially (as being a "param") in the file?
+                throw cRuntimeError(this, "cannot record non-numeric parameter `%s' as an output scalar", par(i).getName());
         }
     }
 }
