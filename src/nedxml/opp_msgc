@@ -308,21 +308,37 @@ sub processFile($)
     $CPLUSPLUS_BLOCK = '\bcplusplus\s+{{(.*?)}};?';  # 1 group (contains body)
     $NAMESPACE_DECL = '\bnamespace\s+([A-Za-z0-9_:]+)\s*;'; # 1 group (contains name)
 
-    # generate cplusplus {{...}} blocks that are above the namespace declaration
-    if ($msg =~ /(.*)$NAMESPACE_DECL(.*)/s ) {
+    # encode cplusplus blocks in a copy of msg, so that we don't accidentally match namespace keywords in them
+    $tmp = $msg;
+    %cppblocks = {};
+    $counter = 0;
+    $tmp =~ s/($CPLUSPLUS_BLOCK)/$cppblocks{++$counter}=$1;"cplusplus-$counter;"/gse;
+
+    # split file to parts above and below the namespace declaration.
+    # This is important because the namespace should only apply to cplusplus{{ }}
+    # blocks after the namespace declaration.
+    if ($tmp =~ /(.*)$NAMESPACE_DECL(.*)/s ) {
         $cpp_above_namespace = $1;
         $cpp_below_namespace = $3;
     } else {
-        $cpp_above_namespace = $msg;
+        $cpp_above_namespace = $tmp;
         $cpp_below_namespace = '';
     }
-    $msg =~ s/$CPLUSPLUS_BLOCK//sg; # not needed in $msg any more, remove them
 
+    # restore cplusplus blocks in $cpp_above_namespace and $cpp_below_namespace
+    $cpp_above_namespace =~ s/cplusplus-(\d+);/$cppblocks{$1}/gse;
+    $cpp_below_namespace =~ s/cplusplus-(\d+);/$cppblocks{$1}/gse;
+
+    $msg =~ s/$CPLUSPLUS_BLOCK//sg; # cplusplus blocks not needed in $msg any more, remove them
+
+    # generate cplusplus {{...}} blocks that are above the namespace declaration
     while ($cpp_above_namespace =~ s/$CPLUSPLUS_BLOCK//s)
     {
-        print H "// cplusplus {{ ... }} section:\n";
-        print H "$1";
-        print H "// end cplusplus\n\n";
+        my $block = $1;
+        $block =~ s/^\s*(.*?)\s*$/$1/s; # trim
+        print H "// cplusplus {{\n";
+        print H "$block\n";
+        print H "// }}\n\n";
     }
     print H "\n";
 
@@ -355,9 +371,11 @@ sub processFile($)
     # cplusplus {{...}} blocks below the namespace declaration
     while ($cpp_below_namespace =~ s/$CPLUSPLUS_BLOCK//s)
     {
-        print H "// cplusplus {{ ... }} section:\n";
-        print H "$1";
-        print H "// end cplusplus\n\n";
+        my $block = $1;
+        $block =~ s/^\s*(.*?)\s*$/$1/s; # trim
+        print H "// cplusplus {{\n";
+        print H "$block\n";
+        print H "// }}\n\n";
     }
 
     # parse imports

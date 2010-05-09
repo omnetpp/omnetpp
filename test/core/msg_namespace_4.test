@@ -1,0 +1,41 @@
+%description:
+Test that stray "namespace" words inside cplusplus {{ }} sections do not mess
+up parsing.
+
+%file: test_ns.h
+namespace std_before { int foo(); };
+namespace std_after { int foo(); };
+
+%file: test.msg
+
+cplusplus {{
+#include "test_ns.h"
+using namespace std_before;
+}}
+
+namespace foo;
+
+cplusplus {{
+using namespace std_after;
+}}
+
+message Dummy {
+}
+
+%includes:
+#include "test_m.h"
+
+%activity:
+// nothing
+
+%contains-regex: test_m.h
+.*
+using namespace std_before;
+.*
+namespace foo {
+.*
+using namespace std_after;
+.*
+class Dummy.*
+
+

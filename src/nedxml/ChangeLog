@@ -10,6 +10,9 @@
 	property values. Useful for @sizetype (above). Without this change,
 	type would need to be enclosed in quotes: @sizetype("unsigned short").
 
+	* opp_msgc: fixed bug #136: a "using namespace" line inside a 
+	cplusplus {{...}} block messed up parsing
+
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
 2010-03-31  Andras Varga
