@@ -1,3 +1,8 @@
+2010-05-10 Rudolf Hornig
+	* cDynamicExpression: assigning an integer parameter to a double parameter
+	lost the unit during conversion resulting in a 'cannot convert none to XXX 
+	unit' error message.
+
 2010-05-09  Andras Varga
 
 	* cPar: isNumeric() now returns false for boolean parameters. This is
