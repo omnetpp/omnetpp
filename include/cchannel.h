@@ -239,6 +239,30 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) = 0;
 
     /**
+     * For transmission channels: Calculates the transmission duration
+     * of the message with the current channel configuration (datarate, etc);
+     * it does not check or modify channel state. For non-transmission channels
+     * this method returns zero.
+     *
+     * This method is useful for transmitter modules that need to determine
+     * the transmission time of a packet without actually sending the packet.
+     *
+     * Caveats: this method is "best-effort" -- there is no guarantee that
+     * transmission time when the packet is actually sent will be the same as
+     * the value returned by this method. The difference may be caused by
+     * changed channel parameters (i.e. "datarate" being overwritten), or by
+     * a non-time-invariant transmission algorithm.
+     *
+     * Note that there is no requirement that processMessage() relies on this
+     * method to calculated the packet duration. That is, to change the
+     * duration computation algorithm via subclassing you need to redefine
+     * BOTH the processMessage() and calculateDuration() methods.
+     *
+     * @see isTransmissionChannel(), cDatarateChannel
+     */
+    virtual simtime_t calculateDuration(cMessage *msg) const = 0;
+
+    /**
      * For transmission channels: Returns the simulation time
      * the sender gate will finish transmitting. If the gate is not
      * currently transmitting, the result is unspecified but less or equal
@@ -304,6 +328,11 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
 
     /**
      * The cIdealChannel implementation of this method always returns zero.
+     */
+    virtual simtime_t calculateDuration(cMessage *msg) const {return SIMTIME_ZERO;}
+
+    /**
+     * Returns zero.
      */
     virtual simtime_t getTransmissionFinishTime() const {return SIMTIME_ZERO;}
 

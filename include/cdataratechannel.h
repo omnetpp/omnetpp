@@ -176,6 +176,15 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /** @name Transmission state. */
     //@{
     /**
+     * Returns the message length in bits divided by the datarate.
+     *
+     * Note that processMessage() does NOT call this method, so in order to
+     * change the duration computation algorithm via subclassing you need
+     * to redefine both this and processMessage().
+     */
+    virtual simtime_t calculateDuration(cMessage *msg) const;
+
+    /**
      * Returns the simulation time the sender gate will finish transmitting.
      * If the gate is not currently transmitting, the result is undefined but
      * less or equal the current simulation time.

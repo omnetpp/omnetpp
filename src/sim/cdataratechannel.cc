@@ -125,6 +125,14 @@ void cDatarateChannel::setDisabled(bool d)
     par("disabled").setBoolValue(d);
 }
 
+simtime_t cDatarateChannel::calculateDuration(cMessage *msg) const
+{
+    if (flags & FL_DATARATE_NONZERO && msg->isPacket())
+        return ((cPacket *)msg)->getBitLength() / datarate;
+    else
+        return SIMTIME_ZERO;
+}
+
 void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
