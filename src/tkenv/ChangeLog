@@ -1,3 +1,6 @@
+2010-05-12 Rudolf Hornig
+	* Implemented bilinear filtering for image resize.
+
 2010-05-03 Andras Varga
 
 	* Simulation Options dialog: made a separate "Layouting" page and

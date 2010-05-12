@@ -1,6 +1,10 @@
 What's New
 ==========
 
+OMNeT++ 4.1 rc1 (May 2010)
+--------------------------
+Tkenv:
+ - Implemented bilinear filtering for image/icon resize in Tkenv.
 
 OMNeT++ 4.1 beta 4 (April 2010)
 -------------------------------

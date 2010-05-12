@@ -2047,20 +2047,47 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    {
        for (int destx=0; destx<destimg.width; destx++)
        {
-           int srcx = (destx * srcimg.width) / destimg.width;
-           int srcy = (desty * srcimg.height) / destimg.height;
+           // double source coordinates. may point between pixels
+           double u = (double)(destx * srcimg.width) / destimg.width; 
+           double v = (double)(desty * srcimg.height) / destimg.height;
+           // determining the pixels to the left, top, right bottom
+           int left = floor(u);
+           int top = floor(v);
+           double u_ratio = u - left;
+           double v_ratio = v - top;
+           double u_opposite = 1 - u_ratio;
+           double v_opposite = 1 - v_ratio;
+           // on the right and bottom, we treat the source like it would have an additional
+           // row or column with the same colors as the last row/col
+           int right = left + 1 < srcimg.width ? left + 1 : left; 
+           int bottom = top + 1 < srcimg.height ? top + 1 : top;
 
-           unsigned char *srcpixel = srcimg.pixelPtr + srcy*srcimg.pitch + srcx*srcimg.pixelSize;
+           unsigned char *srcpixel_tl = srcimg.pixelPtr + top*srcimg.pitch + left*srcimg.pixelSize;
+           unsigned char *srcpixel_tr = srcimg.pixelPtr + top*srcimg.pitch + right*srcimg.pixelSize;
+           unsigned char *srcpixel_bl = srcimg.pixelPtr + bottom*srcimg.pitch + left*srcimg.pixelSize;
+           unsigned char *srcpixel_br = srcimg.pixelPtr + bottom*srcimg.pitch + right*srcimg.pixelSize;
+
+           #define INTERPOLATE(channel_offset) \
+                   ((srcpixel_tl[channel_offset] * u_opposite + srcpixel_tr[channel_offset] * u_ratio) * v_opposite + \
+                    (srcpixel_bl[channel_offset] * u_opposite + srcpixel_br[channel_offset] * u_ratio) * v_ratio)
+
+           int r = INTERPOLATE(srcredoffset);
+           int g = INTERPOLATE(srcgreenoffset);
+           int b = INTERPOLATE(srcblueoffset);
+           int a = INTERPOLATE(srcalphaoffset);
+
+           #undef INTERPOLATE
+
            unsigned char *destpixel = destimg.pixelPtr + desty*destimg.pitch + destx*destimg.pixelSize;
-
-           int r = srcpixel[srcredoffset];
-           int g = srcpixel[srcgreenoffset];
-           int b = srcpixel[srcblueoffset];
-           int a = srcpixel[srcalphaoffset];
-
            destpixel[destredoffset] = r;
            destpixel[destgreenoffset] = g;
            destpixel[destblueoffset] = b;
+           // on the border we assume that there are an additional row/col of fully transparent pixles
+           // so we use only half of the transparency
+           if (destx == 0 || destx == destimg.width-1) 
+               a /= 2;
+           if (desty == 0 || desty == destimg.height-1)
+               a /= 2;
            destpixel[destalphaoffset] = a;
        }
    }
