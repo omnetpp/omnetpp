@@ -1,7 +1,7 @@
 //
 // Generated network with random topology (50 nodes, 80 edges).
 //
-network RandomNet50
+network RandomNet50 extends Base
 {
     types:
         channel Link extends ned.DatarateChannel

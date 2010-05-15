@@ -1,0 +1,90 @@
+#!/bin/sh
+
+#
+# Starts Tkenv with all networks one-by-one, and takes screenshots of them.
+# Screenshots are saved into the screenshots-free/, screenshots-box/,
+# screenshots-fixed/ and screenshots-fixed-and-box directories.
+#
+# Taking the screenshot is actually done by the plugins/screenshot.tcl
+# script that Tkenv automatically loads on startup.
+#
+
+configs="
+abilene
+Anchors
+belnet
+BinaryTree31
+BinaryTree127
+BinaryTree511
+Brite50
+Brite100
+Chain10
+Chain500
+ChainToBorder10
+ChainToBorder100
+Complex
+Dyna3
+Dyna50
+Ethernet10
+Ethernet100
+EthernetWithRing10
+EthernetWithRing50
+FixedAndFreeNodes
+FullGraph10
+FullGraph30
+geant
+HexMesh16
+HexMesh240
+Mesh
+Net60
+NetContinents5
+NetworkLayersWrapper
+Protocols1
+R37
+RandomGraph30
+Ring8
+Ring200
+SixNodes
+StandardHost
+Star
+TriangleGrid25
+TriangleGrid400
+Wireless20
+Wireless400
+RandomNet50
+RandomNet200
+RegularTree255
+"
+# RandomNet1000
+# HexMesh880
+# FullGraph100
+
+rm -rf screenshots
+mkdir screenshots
+
+for i in $configs; do
+  opp_run -c $i
+done
+rm -rf screenshots-free
+mv screenshots screenshots-free
+
+mkdir screenshots
+for i in $configs; do
+  opp_run -c $i omnetpp.ini test-fixed.ini
+done
+rm -rf screenshots-fixed
+mv screenshots screenshots-fixed
+
+mkdir screenshots
+for i in $configs; do
+  opp_run -c $i omnetpp.ini test-box.ini
+done
+rm -rf screenshots-box
+mv screenshots screenshots-box
+
+mkdir screenshots
+for i in $configs; do
+  opp_run -c $i omnetpp.ini test-fixed.ini test-box.ini
+done
+rm -rf screenshots-fixed-and-box
+mv screenshots screenshots-fixed-and-box

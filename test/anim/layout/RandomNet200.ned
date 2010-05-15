@@ -1,7 +1,7 @@
 //
 // Generated network with random topology (200 nodes, 250 edges).
 //
-network RandomNet200
+network RandomNet200 extends Base
 {
     types:
         module Node

@@ -1,7 +1,7 @@
 //
 // A generated network with k-ary tree topology.
 //
-network RegularTree
+network RegularTree extends Base
 {
     parameters:
         int levels = default(4);  // 1 = root only

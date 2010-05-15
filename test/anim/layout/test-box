@@ -1,0 +1,2 @@
+#!/bin/sh
+opp_run $* omnetpp.ini test-box.ini

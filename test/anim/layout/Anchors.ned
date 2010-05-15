@@ -46,7 +46,7 @@ network Anchors extends Base
             vec2[3*i+j].out[0] --> vec2[(3*i+j)+1].in[0];
             vec2[3*i+j].out[1] --> vec2[(3*i+j)+3].in[1];
         };
-        for i=0..sizeRing {
+        for i=0..sizeRing-1 {
             vec3[i].out[0] --> vec3[(i+1)%10].in[0];
         };
 }

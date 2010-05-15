@@ -1,4 +1,4 @@
-network Net60
+network Net60 extends Base
 {
     types:
         channel C extends ned.DatarateChannel
@@ -8,13 +8,14 @@ network Net60
                 datarate = 1Gbps;
         }
 	module Node {
+            @display("i=abstract/router_s");
 	    gates:
 		inout port[];
 	    connections allowunconnected:
 	}
     submodules:
         rte[57]: Node;
-	
+
     connections allowunconnected:
         rte[0].port++ <--> C <--> rte[1].port++;
         rte[1].port++ <--> C <--> rte[2].port++;
