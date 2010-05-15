@@ -99,6 +99,7 @@ class TKENV_API Tkenv : public EnvirBase
       bool opt_showlayouting;      // show layouting process in graphical module inspectors
       LayouterChoice opt_layouterchoice;  // which new layouting algorithm to use
       bool opt_arrangevectorconnections;     // arrange connections on vector gates parallel to each outher
+      int opt_iconminsize;         // minimum size of icons when zooming out
       bool opt_bubbles;            // show result of bubble() calls
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
       long opt_stepdelay;          // Delay between steps in ms

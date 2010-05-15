@@ -1167,6 +1167,102 @@ proc center {w} {
     focus $w
 }
 
+#
+# Returns the bounds of the space of the screen that is commonly available for
+# application windows. This is the screen area minus the system menu area,
+# taskbar area, etc if they exist. This method tries to err on the safe side,
+# i.e. rather report a smaller area as usable.
+#
+proc wm_getdesktopbounds {w arrayname} {
+    global tcl_platform
+    upvar $arrayname a
+
+    set a(x) [winfo vrootx $w]
+
+    set topmargin 0
+    if {$tcl_platform(platform) != "windows"} {set topmargin 20}  ;# menu bar of OS X, Gnome, etc.
+    set rooty [winfo vrooty $w]
+    set a(y) [expr $rooty + $topmargin]
+
+    set screenwidth [winfo screenwidth $w]
+    set a(width) $screenwidth
+
+    set vmargin 50  ;# lost space at top+bottom (due to system menu, taskbar, etc)
+    set screenheight [winfo screenheight $w]
+    set a(height) [expr $screenheight-$vmargin]
+
+    set a(x2) [expr $a(x)+$a(width)]
+    set a(y2) [expr $a(y)+$a(height)]
+
+    #puts "desktop: $a(width)x$a(height) at ($a(x),$a(y))"
+}
+
+#
+# Returns the typical sizes of window decoration (title bar, resize borders, etc.)
+#
+proc wm_getdecorationsize {arrayname} {
+    upvar $arrayname a
+    set a(left) 10
+    set a(top) 25
+    set a(right) 10
+    set a(bottom) 10
+    set a(width) [expr $a(left)+$a(right)]
+    set a(height) [expr $a(top)+$a(bottom)]
+}
+
+# move_to_screen --
+#
+# utility function: move a toplevel window so that it is fully on the screen
+#
+proc move_to_screen {w} {
+    global tcl_platform
+
+    puts "CHECKING WHETHER $w NEEDS TO BE MOVED TO BE FULLY ON THE SCREEN"
+
+    # Note:
+    # - winfo width/height returns the size WITHOUT window manager decorations (title bar, handle border)
+    # - winfo x/y returns the position WITHOUT window manager decorations
+    # - wm geometry:
+    #   - gets/sets the size WITHOUT window manager decorations (title bar, handle border);
+    #   - BUT position is WITH decorations, i.e. top-left coordinate of the window's title bar
+    # That is, "winfo x/y" and "wm geometry" are NOT compatible!
+    # This seems to apply on all platforms. (Tested on Win7, KDE, OS X.)
+    #
+
+    update idletasks  ;# needed to get "winfo" and "geom" information updated
+
+    set geom [wm geom $w]
+    regexp -- {.*\+(-?[0-9]+)\+(-?[0-9]+)} $geom dummy x y
+    set oldx $x
+    set oldy $y
+    set width [winfo width $w]
+    set height [winfo height $w]
+    wm_getdesktopbounds $w "desktop"
+    wm_getdecorationsize "border"
+
+    # note: x,y are top-left of the wm title bar, unlike width/height which are size of the window contents
+
+    if {$width+$border(width) >= $desktop(width) || $x < $desktop(x)} {
+        set x $desktop(x)
+    } elseif {$x+$width+$border(width) > $desktop(x2)} {
+        set x [expr $desktop(x2)-$border(width)-$width]
+    }
+
+    if {$height+$border(height) >= $desktop(height) || $y < $desktop(y)} {
+        set y $desktop(y)
+    } elseif {$y+$height+$border(height) > $desktop(y2)} {
+        set y [expr $desktop(y2)-$border(height)-$height]
+    }
+
+    if {$x!=$oldx || $y!=$oldy} {
+        puts "MOVING $w: SETTING GEOM TO +$x+$y"
+        # move the window
+        if {$tcl_platform(platform) != "windows"} {wm withdraw $w}
+        update idletasks  ;#FIXME needed???
+        wm geom $w +$x+$y
+        if {$tcl_platform(platform) != "windows"} {wm deiconify $w}
+    }
+}
 
 # createOkCancelDialog --
 #

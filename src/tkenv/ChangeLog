@@ -8,6 +8,21 @@
 	window state (normal, zoomed, iconic, etc.) as well, to be able to
 	handle zoomed (=maximized) windows better.
 
+	* Feature: implemented minimum icon size, resize window on layout and
+	auto-adjust zoom options. New controls in the Simulation Options
+	dialog:
+	- "[] Resize window to fit network with current zoom level first"
+	- "[] Adjust zoom so that network fills window"
+	- "Minimum icon size when zoomed out (pixels)"
+
+	* Added hotkeys for zoom in/out: Ctrl+N and Ctrl+M. Ctrl+N was already
+	used by "Toggle module name", it was reassigned to Ctrl+D.
+
+	* Fix: Simulation Options dialog came up behind the current window
+	when opened via canvas context menu.
+
+	* Steps of zoom made smaller (1.1x)
+
 2010-05-12 Rudolf Hornig
 
 	* Implemented bilinear filtering for image resize.

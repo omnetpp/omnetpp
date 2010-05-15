@@ -45,6 +45,7 @@ proc save_tkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
                 showlayouting
                 layouterchoice
                 arrangevectorconnections
+                iconminsize
                 bubbles
                 animation_speed
                 expressmode_autoupdate

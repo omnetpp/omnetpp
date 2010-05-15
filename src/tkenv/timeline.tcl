@@ -141,7 +141,7 @@ proc timeline_popup {cx cy x y} {
     if {$ids=={}} {
         catch {destroy .popup}
         menu .popup -tearoff 0
-        .popup add command -label "Timeline options..." -command "options_dialog t"
+        .popup add command -label "Timeline options..." -command "options_dialog . t"
         tk_popup .popup $x $y
     }
 }

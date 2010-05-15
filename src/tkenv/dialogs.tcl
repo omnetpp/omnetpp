@@ -290,12 +290,18 @@ proc remove_stopdialog {} {
     }
 }
 
-proc options_dialog {{defaultpage "g"}} {
+proc options_dialog {parent {defaultpage "g"}} {
     global opp config fonts help_tips helptexts
 
-    set w .optionsdialog
+    set parent [winfo toplevel $parent]
 
-    createOkCancelDialog $w {Simulation options}
+    if {$parent == "."} {
+        set w .optionsdialog
+    } else {
+        set w $parent.optionsdialog
+    }
+
+    createOkCancelDialog $w {Simulation Options}
 
     notebook $w.f.nb
     set nb $w.f.nb
@@ -358,7 +364,12 @@ proc options_dialog {{defaultpage "g"}} {
     radiobutton  $nb.l.f1.layouter.advanced -text "Advanced" -variable opp(layouterchoice) -value "advanced"
     radiobutton  $nb.l.f1.layouter.auto -text "Adaptive (Fast for large networks, Advanced for smaller ones)" -variable opp(layouterchoice) -value "auto"
     checkbutton $nb.l.f1.layouting -text {Show layouting process} -variable opp(layouting)
-    checkbutton $nb.l.f1.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
+    labelframe $nb.l.f2 -text "Display" -relief groove -borderwidth 2
+    checkbutton $nb.l.f2.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
+    checkbutton $nb.l.f2.allowresize -text {Resize window to fit network with current zoom level first} -variable opp(allowresize)
+    checkbutton $nb.l.f2.allowzoom -text {Adjust zoom so that network fills window} -variable opp(allowzoom)
+    label-entry $nb.l.f2.iconminsize  {Minimum icon size when zoomed out (pixels):}
+    $nb.l.f2.iconminsize.l config -width 0
 
     pack $nb.l.f1.layouterlabel -anchor w
     pack $nb.l.f1.layouter -anchor w
@@ -366,8 +377,12 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.l.f1.layouter.advanced -anchor w -padx 10
     pack $nb.l.f1.layouter.auto -anchor w -padx 10
     pack $nb.l.f1.layouting -anchor w
-    pack $nb.l.f1.arrangevectorconnections -anchor w
+    pack $nb.l.f2.arrangevectorconnections -anchor w
+    pack $nb.l.f2.iconminsize -anchor w -fill x
+    pack $nb.l.f2.allowresize -anchor w
+    pack $nb.l.f2.allowzoom -anchor w
     pack $nb.l.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $nb.l.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # "Timeline" page
     checkbutton $nb.t.tlwantself -text {Display self-messages in the timeline} -variable opp(timeline-wantselfmsgs)
@@ -428,6 +443,7 @@ proc options_dialog {{defaultpage "g"}} {
     $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express_ms]
     $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
     $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
+    $nb.l.f2.iconminsize.e insert 0 [opp_getsimoption iconminsize]
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(eventbanners) [opp_getsimoption event_banners]
     set opp(initbanners) [opp_getsimoption init_banners]
@@ -448,6 +464,9 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(confirmexit) $config(confirm-exit)
+    set opp(allowresize) $config(layout-may-resize-window)
+    set opp(allowzoom)   $config(layout-may-change-zoom)
+
     $nb.t.tlnamepattern.e insert 0      $config(timeline-msgnamepattern)
     $nb.t.tlclassnamepattern.e insert 0 $config(timeline-msgclassnamepattern)
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
@@ -480,6 +499,8 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption animation_msgnames  $opp(msgnam)
         opp_setsimoption animation_msgclassnames $opp(msgclass)
         opp_setsimoption animation_msgcolors $opp(msgcol)
+        set old_iconminsize [opp_getsimoption iconminsize]
+        opp_setsimoption iconminsize         [$nb.l.f2.iconminsize.e get]
         opp_setsimoption penguin_mode        $opp(penguin)
         opp_setsimoption showlayouting       $opp(layouting)
         opp_setsimoption layouterchoice      $opp(layouterchoice)
@@ -487,6 +508,9 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
         set config(confirm-exit)             $opp(confirmexit)
+        set config(layout-may-resize-window) $opp(allowresize)
+        set config(layout-may-change-zoom)   $opp(allowzoom)
+
         setIfPatternIsValid config(timeline-msgnamepattern)  [$nb.t.tlnamepattern.e get]
         setIfPatternIsValid config(timeline-msgclassnamepattern) [$nb.t.tlclassnamepattern.e get]
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
@@ -504,7 +528,9 @@ proc options_dialog {{defaultpage "g"}} {
             applyFont Listbox $font
             applyFont TreeView $font  ;# BTL treeview
         }
-
+        if {$old_iconminsize != [opp_getsimoption iconminsize]} {
+            #TODO redraw all graphical inspectors
+        }
         opp_updateinspectors
         redraw_timeline
     }

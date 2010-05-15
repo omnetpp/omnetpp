@@ -44,8 +44,9 @@ proc dispstr_getimage {tags_i tags_is zoomfactor imagesizefactor} {
     global icons bitmaps imagecache
 
     set zoomfactor [expr $zoomfactor * $imagesizefactor]
+    set iconminsize [opp_getsimoption iconminsize]
 
-    set key "[join $tags_i ,]:[join $tags_is ,]:$zoomfactor"
+    set key "[join $tags_i ,]:[join $tags_is ,]:$zoomfactor:$iconminsize"
     if {![info exist imagecache($key)]} {
         # look up base image
         set imgsize [lindex $tags_is 0]
@@ -82,10 +83,23 @@ proc dispstr_getimage {tags_i tags_is zoomfactor imagesizefactor} {
         if {$zoomfactor!=1} {
             set isx [image width $img]
             set isy [image height $img]
+
+            # iconminsize should not cause icon to grow above its original size
+            if {$isx < $iconminsize } { set iconminsize $isx}
+            if {$isy < $iconminsize } { set iconminsize $isy}
+
+            # modify zoomfactor so that both width/height > iconwidthsize, and aspect ratio is kept
+            if {$zoomfactor * $isx < $iconminsize} {
+                set zoomfactor [expr $iconminsize / double($isx)]
+            }
+            if {$zoomfactor * $isy < $iconminsize} {
+                set zoomfactor [expr $iconminsize / double($isy)]
+            }
+
             set newisx [expr int($zoomfactor * $isx)]
             set newisy [expr int($zoomfactor * $isy)]
-            if {$newisx<1} {set newisx 1}
-            if {$newisy<1} {set newisy 1}
+            if {$newisx < 1} {set newisx 1}
+            if {$newisy < 1} {set newisy 1}
             if {$newisx>500 || $newisy>500} {
                 set img $icons(imagetoobig)
             } else {
@@ -495,12 +509,6 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
 
        $c lower mod
 
-       # scrolling region
-       set bb [$c bbox all]
-       $c config -scrollregion [list [expr [lindex $bb 0]-10] [expr [lindex $bb 1]-10] \
-                                     [expr [lindex $bb 2]+10] [expr [lindex $bb 3]+10]]
-
-
    } errmsg] {
        tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of $name: $errmsg"
@@ -810,8 +818,13 @@ proc animcontrol {w} {
 }
 
 proc create_graphicalmodwindow {name geom} {
-    global icons help_tips inspectordata
+    global icons help_tips inspectordata config
     global B2 B3
+
+    if {$config(layout-may-resize-window)} {
+        # remove size from geom
+        regsub -- {^[0-9]+x[0-9]+} $geom {} geom
+    }
 
     set w $name
     create_inspector_toplevel $w $geom
@@ -827,9 +840,9 @@ proc create_graphicalmodwindow {name geom} {
     pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
     pack_iconbutton $w.toolbar.sep2    -separator
-    pack_iconbutton $w.toolbar.redraw  -image $icons(redraw) -command "opp_inspectorcommand $w relayout"
-    pack_iconbutton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphmodwin_zoomby $w 1.25"
-    pack_iconbutton $w.toolbar.zoomout -image $icons(zoomout) -command "graphmodwin_zoomby $w 0.8"
+    pack_iconbutton $w.toolbar.redraw  -image $icons(redraw) -command "graphmodwin_relayout $w"
+    pack_iconbutton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphmodwin_zoomin $w"
+    pack_iconbutton $w.toolbar.zoomout -image $icons(zoomout) -command "graphmodwin_zoomout $w"
     pack_iconbutton $w.toolbar.showlabels -image $icons(modnames) -command "graphmodwin_togglelabels $w"
     pack_iconbutton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "graphmodwin_togglearrowheads $w"
 
@@ -838,10 +851,14 @@ proc create_graphicalmodwindow {name geom} {
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.redraw)  {Re-layout (Ctrl+R)}
     set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
-    set help_tips($w.toolbar.zoomin)  {Zoom in}
-    set help_tips($w.toolbar.zoomout) {Zoom out}
-    set help_tips($w.toolbar.showlabels) {Show module names (Ctrl+N)}
+    set help_tips($w.toolbar.zoomin)  {Zoom in (Ctrl+M)}
+    set help_tips($w.toolbar.zoomout) {Zoom out (Ctrl+N}
+    set help_tips($w.toolbar.showlabels) {Show module names (Ctrl+D)}
     set help_tips($w.toolbar.showarrowheads) {Show arrowheads (Ctrl+A)}
+
+    # add zoom status
+    label $w.infobar.zoominfo -text "" -anchor e -relief flat -justify right
+    pack $w.infobar.zoominfo -anchor n -side right -expand 0 -fill none -pady 1
 
     # create canvas
     set c $w.c
@@ -882,10 +899,12 @@ proc create_graphicalmodwindow {name geom} {
     $c bind qlen <$B3> "graphmodwin_qlen_rightclick $w %X %Y %x %y"
 
     # keyboard shortcuts
+    bind $w <Control-m> "graphmodwin_zoomin $w"
+    bind $w <Control-n> "graphmodwin_zoomout $w"
     bind $w <Control-i> "graphmodwin_zoomiconsby $w 1.25"
     bind $w <Control-o> "graphmodwin_zoomiconsby $w 0.8"
-    bind $w <Control-r> "opp_inspectorcommand $w relayout"
-    bind $w <Control-n> "graphmodwin_togglelabels $w"
+    bind $w <Control-r> "graphmodwin_relayout $w"
+    bind $w <Control-d> "graphmodwin_togglelabels $w"
     bind $w <Control-a> "graphmodwin_togglearrowheads $w"
 
     if {$inspectordata($c:showlabels)} {
@@ -904,27 +923,185 @@ proc create_graphicalmodwindow {name geom} {
                      -message "Error displaying network graphics: $errmsg"
     }
 
-    if {$geom==""} {
-        # adjust window size to size of graphics
-        set bb [$c cget -scrollregion]
-        set w [expr [lindex $bb 2]-[lindex $bb 0]]
-        set h [expr [lindex $bb 3]-[lindex $bb 1]]
-        if {$w>900} {set w 900}
-        if {$h>600} {set h 600}
-        $c config -width $w
-        $c config -height $h
+    graphmodwin_adjust_windowsize_and_zoom $w
+}
+
+proc graphmodwin_adjust_windowsize_and_zoom {w} {
+    global config
+
+    if {!$config(layout-may-resize-window) && !$config(layout-may-change-zoom)} {
+        graphmodwin_setscrollregion $w 1
+        return
+    }
+
+    set c $w.c
+
+    # if needed, resize window to fit graphics; if not enough, additionally zoom out as well
+    set bb [$c bbox "mod"] ;# bounding box of the compound module
+    set graphicswidth [expr [lindex $bb 2]-[lindex $bb 0]]
+    set graphicsheight [expr [lindex $bb 3]-[lindex $bb 1]]
+
+    if {!$config(layout-may-resize-window)} {
+        # do not resize, but change zoom so that graphics fills the window
+        set canvaswidth [winfo width $c]
+        set canvasheight [winfo height $c]
+        set canvaswidth2 [expr $canvaswidth - 20]  ;# deduce 10px border around compound module
+        set canvasheight2 [expr $canvasheight - 20]
+
+        set zoomx [expr $canvaswidth2 / double($graphicswidth)]
+        set zoomy [expr $canvasheight2 / double($graphicsheight)]
+        set zoom [math_min $zoomx $zoomy]
+
+        graphmodwin_zoomby $w $zoom
+        graphmodwin_setscrollregion $w 1
+
+    } else {
+        # we'll need to resize the window, and then either zoom out or not
+
+        # compute maximum available canvas size first that would fit on the screen
+        wm_getdesktopbounds $w desktop ;# fills $desktop(top), $desktop(width), etc.
+        wm_getdecorationsize border    ;# fills $border(top), $border(left), etc.
+        set maxwinwidth [expr $desktop(width) - $border(left) - $border(right) - 30]
+        set maxwinheight [expr $desktop(height) - $border(top) - $border(bottom) - 20]
+
+        set chromewidth [expr [winfo width $w] - [winfo width $c]]
+        set chromeheight [expr [winfo height $w] - [winfo height $c]]
+        set scrollbarwidth 24
+        set scrollbarheight 24
+
+        set margin 10  ;# 10px space around compound module
+
+        set maxcanvaswidth [expr $maxwinwidth - $chromewidth - $scrollbarwidth - $margin]
+        set maxcanvasheight [expr $maxwinheight - $chromeheight - $scrollbarheight - $margin]
+
+        # compute zoomby factor; this is either 1.0 (no change), or less than 1.0 (zoom out)
+        if {!$config(layout-may-change-zoom)} {
+            set zoom 1
+        } else {
+            set zoomx 1.0
+            set zoomy 1.0
+            if {$graphicswidth > $maxcanvaswidth} {
+                set zoomx [expr $maxcanvaswidth / double($graphicswidth)]
+            }
+            if {$graphicsheight > $maxcanvasheight} {
+                set zoomy [expr $maxcanvasheight / double($graphicsheight)]
+            }
+            if {$zoomx < $zoomy} {set zoom $zoomx} else {set zoom $zoomy}
+        }
+
+        set zoomedgraphicswidth [expr $zoom * $graphicswidth]
+        set zoomedgraphicsheight [expr $zoom * $graphicsheight]
+
+        set canvaswidth [expr [math_min $zoomedgraphicswidth $maxcanvaswidth] + 30]
+        set canvasheight [expr [math_min $zoomedgraphicsheight $maxcanvasheight] + 30]
+
+        # set size and zoom
+        $c config -width $canvaswidth
+        $c config -height $canvasheight
+        graphmodwin_zoomby $w $zoom
+
+        # allow the window to appear, so that scrollbars know their real size;
+        # this is needed for "$c xview moveto" inside graphmodwin_setscrollregion
+        # to work properly
+        update idletasks
+
+        graphmodwin_setscrollregion $w 1
+
+        # move the window so that it is fully on the screen -- this is not
+        # such a good idea in practice (can be annoying/confusing)
+        #move_to_screen $w
     }
 }
 
-proc graphmodwin_zoomby {w mult} {
+#
+# Sets the scrolling region for a graphical module inspector.
+# NOTE: This method is invoked from C++.
+#
+proc graphmodwin_setscrollregion {w moveToOrigin} {
+    set c $w.c
+
+    # scrolling region
+    set bb [$c bbox all]
+    set x1 [expr [lindex $bb 0]-10]
+    set y1 [expr [lindex $bb 1]-10]
+    set x2 [expr [lindex $bb 2]+10]
+    set y2 [expr [lindex $bb 3]+10]
+    $c config -scrollregion [list $x1 $y1 $x2 $y2]
+
+    # scroll to top-left corner of compound module to top-left corner of window
+    if {$moveToOrigin} {
+        set enclosingmodbb [$c bbox mod]
+        set mx1 [expr [lindex $enclosingmodbb 0]-10]
+        set my1 [expr [lindex $enclosingmodbb 1]-10]
+
+        $c xview moveto [expr ($mx1 - $x1) / double($x2 - $x1)]
+        $c yview moveto [expr ($my1 - $y1) / double($y2 - $y1)]
+    }
+}
+
+proc math_min {a b} {
+    return [expr ($a < $b) ? $a : $b]
+}
+
+proc math_max {a b} {
+    return [expr ($a > $b) ? $a : $b]
+}
+
+proc graphmodwin_zoomin {w} {
+    global config
+    graphmodwin_zoomby $w $config(zoomby-factor) 1
+}
+
+proc graphmodwin_zoomout {w} {
+    global config
+    graphmodwin_zoomby $w [expr 1.0 / $config(zoomby-factor)] 1
+}
+
+proc graphmodwin_zoomby {w mult {snaptoone 0}} {
     global inspectordata
     set c $w.c
     if {($mult<1 && $inspectordata($c:zoomfactor)>0.001) || ($mult>1 && $inspectordata($c:zoomfactor)<1000)} {
+        # update zoom factor and redraw
         set inspectordata($c:zoomfactor) [expr $inspectordata($c:zoomfactor) * $mult]
-        if {abs($inspectordata($c:zoomfactor)-1.0) < 0.1} {set inspectordata($c:zoomfactor) 1}
+
+        # snap to 1 (note: this is not desirable when zoom is set programmatically to fit network into window)
+        if {$snaptoone} {
+            set m [expr $mult < 1 ? 1.0/$mult : $mult]
+            set a [expr  1 - 0.9*(1 - 1.0/$m)]
+            set b [expr  1 + 0.9*($m - 1)]
+            if {$inspectordata($c:zoomfactor) > $a && $inspectordata($c:zoomfactor) < $b} {
+                set inspectordata($c:zoomfactor) 1
+            }
+        }
+
         opp_inspectorcommand $w redraw
+        graphmodwin_setscrollregion $w 0
+
+        # update status display
+        set value [format "%.2f" $inspectordata($c:zoomfactor)]
+        $w.infobar.zoominfo config -text "Zoom: ${value}x"
     }
-    #puts "zoom: $inspectordata($c:zoomfactor)"
+
+    graphmodwin_pop_out_toolbar_buttons $w
+}
+
+proc graphmodwin_pop_out_toolbar_buttons {w} {
+    # in Run or Fast mode with dynamic module creation, toolbar buttons may get stuck
+    # after clicking in "sunken" or "raised" state instead of returning to "flat",
+    # likely because events get lost during the grab during incremental layouting.
+    # No idea how this can be fixed properly.
+    # This is a weak attempt to fix it for the most commonly clicked buttons.
+    # This could be called from many more places for better results.
+    $w.toolbar.minfo config -relief flat
+    $w.toolbar.type config -relief flat
+    $w.toolbar.objs config -relief flat
+    $w.toolbar.owner config -relief flat
+    $w.toolbar.ascont config -relief flat
+    $w.toolbar.win config -relief flat
+    $w.toolbar.stop config -relief flat
+    $w.toolbar.redraw config -relief flat
+    $w.toolbar.zoomin config -relief flat
+    $w.toolbar.zoomout config -relief flat
 }
 
 proc graphmodwin_zoomiconsby {w mult} {
@@ -1029,7 +1206,7 @@ proc graphmodwin_rightclick {w X Y x y} {
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
       $popup add separator
-      $popup add checkbutton -label "Show module names" -command "graphmodwin_togglelabels $w" -accel "Ctrl+N" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show module names" -command "graphmodwin_togglelabels $w" -accel "Ctrl+D" -variable tmp($c:showlabels)
       $popup add checkbutton -label "Show arrowheads" -command "graphmodwin_togglearrowheads $w" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
 
       $popup add separator
@@ -1037,17 +1214,33 @@ proc graphmodwin_rightclick {w X Y x y} {
       $popup add command -label "Decrease icon size" -accel "Ctrl+O" -command "graphmodwin_zoomiconsby $w 0.8"
 
       $popup add separator
-      $popup add command -label "Zoom in" -command "graphmodwin_zoomby $w 1.25"
-      $popup add command -label "Zoom out" -command "graphmodwin_zoomby $w 0.8"
+      $popup add command -label "Zoom in"  -accel "Ctrl+M" -command "graphmodwin_zoomin $w"
+      $popup add command -label "Zoom out" -accel "Ctrl+N" -command "graphmodwin_zoomout $w"
       $popup add command -label "Re-layout" -accel "Ctrl+R" -command "opp_inspectorcommand $w relayout"
 
       $popup add separator
-      $popup add command -label "Animation options..." -command "options_dialog a"
+      $popup add command -label "Layouting options..." -command "options_dialog $w l"
+      $popup add command -label "Animation options..." -command "options_dialog $w a"
 
       tk_popup $popup $X $Y
    }
 }
 
+# graphmodwin_relayout --
+#
+# Relayout the compound module, and resize the window accordingly.
+#
+proc graphmodwin_relayout {w} {
+    global config
+
+    opp_inspectorcommand $w relayout
+
+    if {$config(layout-may-resize-window)} {
+        wm geometry $w ""
+    }
+
+    graphmodwin_adjust_windowsize_and_zoom $w
+}
 
 # graphmodwin_draw_message_on_gate --
 #

@@ -148,6 +148,7 @@ Tkenv::Tkenv()
     opt_showlayouting = false;
     opt_layouterchoice = LAYOUTER_AUTO;
     opt_arrangevectorconnections = false;
+    opt_iconminsize = 5;
     opt_bubbles = true;
     opt_animation_speed = 1.5;
     opt_event_banners = true;

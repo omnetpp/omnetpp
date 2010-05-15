@@ -604,6 +604,7 @@ void TGraphicalModWindow::redrawModules()
         }
     }
     CHK(Tcl_VarEval(interp, canvas, " raise bubble",NULL));
+    CHK(Tcl_VarEval(interp, "graphmodwin_setscrollregion ", windowname, " 0",NULL));
 }
 
 void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, int x, int y, const char *scaling)

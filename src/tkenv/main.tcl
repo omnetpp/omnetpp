@@ -53,6 +53,9 @@ set config(mainwin-state) "normal"
 set config(mainwin-geom) ""
 set config(concurrent-anim) 1
 set config(logwindow-scrollbacklines) 100000
+set config(zoomby-factor) 1.1
+set config(layout-may-resize-window) 0
+set config(layout-may-change-zoom) 1
 
 set pluginlist {}
 

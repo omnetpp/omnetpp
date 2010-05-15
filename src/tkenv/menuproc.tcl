@@ -656,7 +656,7 @@ proc inspect_functions {} {
 }
 
 proc simulation_options {} {
-    options_dialog
+    options_dialog .
     opp_updateinspectors
 }
 
