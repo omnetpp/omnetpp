@@ -103,7 +103,8 @@ proc inspectorlist_add {w} {
     set pil_name($key)   $objname
     set pil_class($key)  $classname
     set pil_type($key)   $type
-    set pil_geom($key)   [winfo geometry $w]  ;# NOTE: "wm geometry" is bogus when window is maximized!
+    set pil_geom($key)   [inspectorlist_get_geom $w 1]
+
     #debug "$key added to insp list"
 }
 
@@ -130,15 +131,15 @@ proc inspectorlist_remove {w} {
     }
 }
 
-proc inspectorlist_tkenvrc_get_contents {} {
+proc inspectorlist_tkenvrc_get_contents {allowdestructive} {
     global pil_name pil_class pil_type pil_geom
 
     set res ""
-    foreach win [winfo children .] {
-       if [regexp {\.(ptr.*)-([0-9]+)} $win match object type] {
+    foreach w [winfo children .] {
+       if [regexp {\.(ptr.*)-([0-9]+)} $w match object type] {
            set objname [opp_getobjectfullpath $object]
            set class [opp_getobjectshorttypename $object]
-           set geom [winfo geometry $win]
+           set geom [inspectorlist_get_geom $w $allowdestructive]
 
            append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
        }
@@ -183,5 +184,29 @@ proc inspectorlist_tkenvrc_process_line {line} {
     set pil_class($key)  $class
     set pil_type($key)   $type
     set pil_geom($key)   $geom
+}
+
+#
+# Utility function: returns a "geometry:state" string for the given window.
+# The geometry corresponds to the "normal" (non-zoomed) state of the
+# window, so that can be restored from .tkenvrc as well.
+#
+proc inspectorlist_get_geom {w allowdestructive} {
+    set state [wm state $w]
+    if {$state == "normal"} {
+        return "[wm geometry $w]:$state"
+    } else {
+        # Return the "restored" pos and size, not the zoomed or iconized one.
+        # For this, we have to temporarily restore the window from the current
+        # state (zoomed, iconic, etc.) If Tkenv is exiting or $w is being closed,
+        # we don't bother to restore the original state afterwards, as it would
+        # only cause more screen flicker.
+        wm state $w normal
+        set result "[wm geometry $w]:$state"
+        if {!$allowdestructive} {
+            wm state $w $state ;# restore original state
+        }
+        return $result
+    }
 }
 

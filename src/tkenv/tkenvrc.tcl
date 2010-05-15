@@ -18,7 +18,7 @@
 # save_tkenvrc --
 #
 #
-proc save_tkenvrc {fname savesettings saveinspectors {comment ""}} {
+proc save_tkenvrc {fname savesettings saveinspectors atexit {comment ""}} {
     global config fonts defaultfonts
 
     if [catch {
@@ -69,7 +69,7 @@ proc save_tkenvrc {fname savesettings saveinspectors {comment ""}} {
         }
 
         if {$saveinspectors} {
-            puts $fout [inspectorlist_tkenvrc_get_contents]
+            puts $fout [inspectorlist_tkenvrc_get_contents $atexit]
         }
 
         close $fout

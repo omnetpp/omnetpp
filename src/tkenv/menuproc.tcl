@@ -129,8 +129,8 @@ proc exit_omnetpp {} {
     }
 
     # save settings (fonts etc) globally, and inspector list locally
-    save_tkenvrc "~/.tkenvrc" 1 0
-    save_tkenvrc ".tkenvrc"   0 1  "# Partial Tkenv config file -- see \$HOME/.tkenvrc as well"
+    save_tkenvrc "~/.tkenvrc" 1 0 1
+    save_tkenvrc ".tkenvrc"   0 1 1 "# Partial Tkenv config file -- see \$HOME/.tkenvrc as well"
 
     opp_exitomnetpp
 }
@@ -141,7 +141,7 @@ proc create_snapshot {} {
     if {[network_present] == 0} return
 
     set label ""
-    set ok [inputbox {Snapshot} {Give a label to current simulation snapshot:} label]
+    set ok [inputbox {Snapshot} {Enter label for current simulation snapshot:} label]
     if {$ok == 1} {
         if [catch {opp_createsnapshot $label} err] {
           messagebox {Error} "Error: $err" error ok
@@ -667,7 +667,7 @@ proc save_tkenv_config {} {
                   -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
 
     if {$filename!=""} {
-       save_tkenvrc $filename 1 1 "# Tkenv config file"
+       save_tkenvrc $filename 1 1 0 "# Tkenv config file"
     }
 }
 

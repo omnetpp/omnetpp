@@ -3,6 +3,11 @@
 	* Added application icon to Tkenv. To make it easier to tell windows
 	apart in the task bar, the main window has a different icon.
 
+	* Fix: inspector window positions were stored incorrectly (should have
+	used "wm geom" instead of "winfo geom"); also, now we also save the
+	window state (normal, zoomed, iconic, etc.) as well, to be able to
+	handle zoomed (=maximized) windows better.
+
 2010-05-12 Rudolf Hornig
 
 	* Implemented bilinear filtering for image resize.
