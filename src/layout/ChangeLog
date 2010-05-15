@@ -1,6 +1,32 @@
+2010-05-15  Andras Varga
+
+	* Improvements on the "classic" layouting algorithm:
+
+	- Correctly take into account the bounding box of anchored nodes when
+	  clipping anchor positions to background boundaries. See new fields
+	  x1off, y1off, x2off, y2off fields of Node.
+
+	- Subgraphs that are not connected to any fixed node are now allowed
+	  to stretch to negative coordinates during layouting, and will get
+	  shifted back to positive coordinates afterwards. This is only done
+	  if there is no background size given, otherwise there was no
+	  guarantee that the layouted subgraph would fit into the background
+	  area. See new field connectedToFixed of Node.
+
+	- Initial random distribution of nodes: area is now basically
+	  proportional to the number of nodes (i.e. one side is proportional
+	  to the square root of #nodes), instead of being fixed 600x400.
+	  We take the union of that area and the area already occupied by
+	  fixed nodes, and there is also a minimum size.
+
+	- Fix: addEdge(): module size was taken into account incorrectly
+
+	- Refactoring: bounding box calculation, creating the initial random
+	  distribution, etc. factored out to separate methods.
+
 2010-04-29  Andras Varga
 
-	* Bugfixes and cleanup of "classic" layouting algorithm
+	* Bugfixes and cleanup of "classic" layouting algorithm:
 	- fix: dynamically created modules in Tkenv often ended up outside
 	  the compound module rectangle (see test/anim/dynamic2 test)
 	- initial random placement to use the area already occupied by fixed

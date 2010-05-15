@@ -44,6 +44,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
         std::string name; // anchor name
         double x, y;      // position
         int refcount;     // how many nodes are anchored to it
+        double x1off, y1off, x2off, y2off; // bounding box of anchored nodes, relative to (x,y)
         double vx, vy;    // internal: distance moved at each step (preserved between relax() calls)
     };
 
@@ -56,8 +57,9 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
         int offx, offy;    // anchored nodes: offset to anchor point (and x,y are calculated)
         int sx, sy;        // half width/height
 
-        double vx, vy;     // interval: distance moved at each step (preserved between relax() calls)
+        double vx, vy;     // internal: distance moved at each step (preserved between relax() calls)
         int color;         // internal: connected nodes share the same color
+        bool connectedToFixed; // internal: whether the node is connected (maybe indirectly) to a fixed node
     };
 
     struct Edge
@@ -92,14 +94,31 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     // utility
     Node *findNode(cModule *mod);
 
-    // mark connected nodes with same color (needed by relax())
-    virtual void doColoring();
+    // mark connected nodes with same color; return number of colors used
+    virtual int doColoring();
+
+    // fill in the x1off, y1off, x2off, y2off fields of the anchors
+    virtual void computeAnchorBoundingBoxes();
+
+    // assign an initial layout that relax() will improve
+    virtual void assignInitialPositions();
+
+    // fill in the connectedToFixed fields of nodes
+    virtual void markNodesConnectedToFixed(int numColors);
+
+    // calculate bounding box (x1,y1,x2,y2)
+    virtual void computeBoundingBox(double& x1, double& y1, double& x2, double& y2, bool (*predicate)(Node*));
 
     // main algorithm (modified spring embedder)
     virtual double relax();
 
     // for debugging: draw whole thing in a window
     void debugDraw(int step);
+
+    // predicates for computeBoundingBox()
+    static bool anyNode(Node *n) {return true;}
+    static bool isFixedNode(Node *n) {return n->fixed;}
+    static bool isNotConnectedToFixed(Node *n) {return !n->connectedToFixed;}
 
   public:
     /**

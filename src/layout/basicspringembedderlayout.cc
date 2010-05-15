@@ -21,6 +21,7 @@
 #include <float.h>
 #include <stdlib.h>
 #include <sstream>
+#include <set>
 #include <deque>
 
 #include "commonutil.h"
@@ -28,10 +29,6 @@
 
 USING_NAMESPACE
 
-// TODO: for each anchor, store bounding box of anchored nodes; when ensuring
-// all nodes are within the area, this bounding box should be taken into account
-
-// TODO: int x,y --> change to dbl
 
 static bool debug = false;
 
@@ -157,7 +154,7 @@ void BasicSpringEmbedderLayout::addEdge(cModule *src, cModule *target, int len)
     e.len = len>0 ? len : defaultEdgeLen;
 
     // heuristics to take submodule size into account
-    e.len += 2*(std::min(e.src->sx,e.src->sy)+std::min(e.target->sx,e.target->sy));
+    e.len += std::min(e.src->sx,e.src->sy)/2 + std::min(e.target->sx,e.target->sy)/2;
 
     edges.push_back(e);
 }
@@ -184,61 +181,12 @@ void BasicSpringEmbedderLayout::execute()
     Assert(width==0 || width >= 2*border); // also ensured in setSize()
     Assert(height==0 || height >= 2*border);
 
-    // assign random start positions to non-fixed nodes. We distribute them
-    // over the area already occupied by fixed nodes or over a 600x400 area,
-    // whichever is larger. The former is esp. impotant, because during
-    // incremental layout (i.e. when placing newly created modules while
-    // the simulation is running) all existing modules are taken as fixed.
-    int initialAreaWidth = 600;
-    int initialAreaHeight = 400;
-    if (haveFixedNode)
-    {
-        // compute bounding box of fixed nodes
-        double x1=POSITIVE_INFINITY, y1=POSITIVE_INFINITY, x2=NEGATIVE_INFINITY, y2=NEGATIVE_INFINITY;
-        Node& n = *(*nodes.begin());
-        for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
-        {
-            Node& n = *(*i);
-            if (n.fixed)
-            {
-                if (n.x-n.sx < x1) x1 = n.x-n.sx;
-                if (n.y-n.sy < y1) y1 = n.y-n.sy;
-                if (n.x+n.sx > x2) x2 = n.x+n.sx;
-                if (n.y+n.sy > y2) y2 = n.y+n.sy;
-            }
-        }
-        initialAreaWidth = std::max(initialAreaWidth, (int)(x2 + x1));  // x1: leave as much space on the right side as is on the left
-        initialAreaHeight = std::max(initialAreaHeight, (int)(y2 + y1));
-    }
+    computeAnchorBoundingBoxes();
 
-    // initialize variables (also randomize start positions)
-    for (AnchorList::iterator l=anchors.begin(); l!=anchors.end(); ++l)
-    {
-        Anchor& a = *(*l);
-        //FIXME this is not entirely correct, because we should consider the bounding box of the nodes attached to the anchor instead!
-        a.x = border + (width==0 ? initialAreaWidth : width-2*border) * privRand01();
-        a.y = border + (height==0 ? initialAreaHeight : height-2*border) * privRand01();
-        a.vx = a.vy = 0;
-    }
-    for (NodeList::iterator k=nodes.begin(); k!=nodes.end(); ++k)
-    {
-        Node& n = *(*k);
-        if (n.fixed)
-        {
-            // nop
-        }
-        else if (n.anchor)
-        {
-            n.x = n.anchor->x + n.offx;
-            n.y = n.anchor->y + n.offy;
-        }
-        else // movable
-        {
-            n.x = border + (width==0 ? initialAreaWidth : width-2*border) * privRand01();
-            n.y = border + (height==0 ? initialAreaHeight : height-2*border) * privRand01();
-        }
-        n.vx = n.vy = 0;
-    }
+    // assign random start positions to non-fixed nodes; we distribute them
+    // over an area that is proportional to the number of nodes, and also
+    // takes into account the area already covered by fixed nodes.
+    assignInitialPositions();
 
     // set area
     if (!haveFixedNode)
@@ -260,7 +208,8 @@ void BasicSpringEmbedderLayout::execute()
     }
 
     // partition the graph
-    doColoring();
+    int numColors = doColoring();
+    markNodesConnectedToFixed(numColors);
 
     // now the real job -- stop if max moved distance is <0.05 at least 20 times in a row
     clock_t beg = clock();
@@ -281,24 +230,15 @@ void BasicSpringEmbedderLayout::execute()
     if (debug)
         printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n", (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
 
-    // scale back if too big -- BUT only if we don't have any fixed (or anchored) nodes,
-    // because we don't want to change explicitly given coordinates (or distances
-    // between anchored nodes)
+    // if area width or height was specified by the user, we may need to scale back
+    // the positions so that the picture fita into the given area -- BUT we can only
+    // do that if we don't have any fixed (or anchored) nodes, because we don't want
+    // to change explicitly given coordinates (or distances between anchored nodes)
     if (!haveFixedNode)
     {
-        // calculate bounding box (x1,y1,x2,y2)
+        // determine bounding box
         double x1, y1, x2, y2;
-        Node& n = *(*nodes.begin());
-        x1 = x2 = n.x;
-        y1 = y2 = n.y;
-        for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
-        {
-            Node& n = *(*i);
-            if (n.x-n.sx < x1) x1 = n.x-n.sx;
-            if (n.y-n.sy < y1) y1 = n.y-n.sy;
-            if (n.x+n.sx > x2) x2 = n.x+n.sx;
-            if (n.y+n.sy > y2) y2 = n.y+n.sy;
-        }
+        computeBoundingBox(x1, y1, x2, y2, &anyNode);
 
         // rescale and shift. We don't rescale (only shift) if:
         //   - width (height) was unspecified;
@@ -313,9 +253,120 @@ void BasicSpringEmbedderLayout::execute()
             n.y = border + (n.y-y1)*yfact;
         }
     }
+    else if (width==0 && height==0)
+    {
+        // if no bgsize is given, we've let some movable nodes (those not connected to
+        // any fixed node directly or indirectly) escape towards top and left for a better layout;
+        // now we need to shift them back.
+        double x1, y1, x2, y2;
+        computeBoundingBox(x1, y1, x2, y2, &isNotConnectedToFixed);
+
+        // if bounding box is off the screen top and/or left, shift them back
+        int dx = 0, dy = 0;
+        if (x1 < border)
+            dx = border-x1;
+        if (y1 < border)
+            dy = border-y1;
+
+        for (NodeList::iterator j=nodes.begin(); j!=nodes.end(); ++j)
+        {
+            Node& n = *(*j);
+            if (!n.connectedToFixed) {
+                n.x += dx;
+                n.y += dy;
+            }
+        }
+    }
 }
 
-void BasicSpringEmbedderLayout::doColoring()
+void BasicSpringEmbedderLayout::assignInitialPositions()
+{
+    // assign random start positions to non-fixed nodes. We distribute them
+    // over the area already occupied by fixed nodes or over an area calculated
+    // from the number of nodes (x square-pixels per node) whichever is larger.
+    // The former is esp. impotant, because during incremental layout
+    // (i.e. when placing newly created modules while the simulation is running)
+    // all existing modules are taken as fixed.
+    //
+    int initialAreaWidth, initialAreaHeight;
+    int initialAreaOffsetX, initialAreaOffsetY;
+
+    if (width!=0 && height!=0)
+    {
+        initialAreaWidth = width - 2*border;
+        initialAreaHeight = height - 2*border;
+        initialAreaOffsetX = initialAreaOffsetY = border;
+    }
+    else
+    {
+        // compute initialAreaWidth/height/offsetX/offsetY
+        double area = std::max(60.0 * 60.0 * nodes.size(), 600.0 * 400.0);  // assume 1 node needs 60x60 pixels of space
+        double aspectRatio = 1.5;
+        initialAreaWidth = (int)(sqrt(area)*aspectRatio);
+        initialAreaHeight = (int)(sqrt(area)/aspectRatio);
+
+        int margin = 0.25 * std::min(initialAreaWidth, initialAreaHeight);
+        initialAreaOffsetX = initialAreaOffsetY = margin; // leave some space (25%) top and left side, to reduce movable nodes getting pushed against the wall
+        if (haveFixedNode)
+        {
+            // compute bounding box of fixed nodes
+            double x1, y1, x2, y2;
+            computeBoundingBox(x1, y1, x2, y2, &isFixedNode);
+
+            // shrink this bb somewhat, so that nodes don't get placed near the borders of this area
+            // (because other nodes could push them out, therefore resulting in a larger bounding box
+            // in the next round of incremental layouting)
+            double xmargin = std::min(150.0, (x2-x1)/2);
+            double ymargin = std::min(150.0, (y2-y1)/2);
+            x1 += xmargin; x2 -= xmargin;
+            y1 += ymargin; y2 -= ymargin;
+
+            // union with initial area
+            int initialAreaRight = initialAreaOffsetX + initialAreaWidth;
+            int initialAreaBottom = initialAreaOffsetY + initialAreaHeight;
+            initialAreaOffsetX = std::min((int)x1, initialAreaOffsetX);
+            initialAreaOffsetY = std::min((int)y1, initialAreaOffsetY);
+            initialAreaRight = std::max((int)x2, initialAreaRight);
+            initialAreaBottom = std::max((int)y2, initialAreaBottom);
+            initialAreaWidth = initialAreaRight - initialAreaOffsetX;
+            initialAreaHeight = initialAreaBottom - initialAreaOffsetY;
+        }
+    }
+
+    // initialize variables (also randomize start positions over the initial area)
+    for (AnchorList::iterator l=anchors.begin(); l!=anchors.end(); ++l)
+    {
+        Anchor& a = *(*l);
+        double nodesBBWidth = a.x2off - a.x1off;
+        double nodesBBHeight = a.y2off - a.y1off;
+        double nodesBBLeft = initialAreaOffsetX + std::max(0.0, initialAreaWidth-nodesBBWidth) * privRand01();
+        double nodesBBTop = initialAreaOffsetY + std::max(0.0, initialAreaHeight-nodesBBHeight) * privRand01();
+        a.x = nodesBBLeft - a.x1off;
+        a.y = nodesBBTop - a.y1off;
+        a.vx = a.vy = 0;
+    }
+    for (NodeList::iterator k=nodes.begin(); k!=nodes.end(); ++k)
+    {
+        Node& n = *(*k);
+        if (n.fixed)
+        {
+            // nop
+        }
+        else if (n.anchor)
+        {
+            n.x = n.anchor->x + n.offx;
+            n.y = n.anchor->y + n.offy;
+        }
+        else // movable
+        {
+            n.x = initialAreaOffsetX + initialAreaWidth * privRand01();
+            n.y = initialAreaOffsetY + initialAreaHeight * privRand01();
+        }
+        n.vx = n.vy = 0;
+    }
+}
+
+int BasicSpringEmbedderLayout::doColoring()
 {
     NodeList::iterator i;
     for (i=nodes.begin(); i!=nodes.end(); ++i)
@@ -354,6 +405,71 @@ void BasicSpringEmbedderLayout::doColoring()
 
         // next color
         currentColor++;
+    }
+
+    // return the number of colors used
+    return currentColor;
+}
+
+void BasicSpringEmbedderLayout::markNodesConnectedToFixed(int numColors)
+{
+    // compute the set of colors (connected graph partitions) that contain at least one fixed node
+    std::set<int> colorsWithFixedNodes;
+    for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
+    {
+        Node *n = *i;
+        if (n->fixed)
+            colorsWithFixedNodes.insert(n->color);
+    }
+
+    //  set the connectedToFixed fields of nodes
+    for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
+    {
+        Node *n = *i;
+        n->connectedToFixed = colorsWithFixedNodes.find(n->color) != colorsWithFixedNodes.end();
+    }
+}
+
+void BasicSpringEmbedderLayout::computeAnchorBoundingBoxes()
+{
+    // fills in x1off, y1off, x2off, y2off fields of anchors
+    for (AnchorList::iterator i = anchors.begin(); i!=anchors.end(); ++i)
+    {
+        Anchor& a = *(*i);
+        a.x1off = POSITIVE_INFINITY; a.y1off = POSITIVE_INFINITY;
+        a.x2off = NEGATIVE_INFINITY, a.y2off = NEGATIVE_INFINITY;
+    }
+
+    for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
+    {
+        Node& n = *(*i);
+        if (n.anchor)
+        {
+            Anchor& a = *(n.anchor);
+            if (n.offx-n.sx < a.x1off) a.x1off = n.offx - n.sx;
+            if (n.offy-n.sy < a.y1off) a.y1off = n.offy - n.sy;
+            if (n.offx+n.sx > a.x2off) a.x2off = n.offx + n.sx;
+            if (n.offy+n.sy > a.y2off) a.y2off = n.offy + n.sy;
+        }
+    }
+}
+
+void BasicSpringEmbedderLayout::computeBoundingBox(double& x1, double& y1, double& x2, double& y2, bool (*predicate)(Node*))
+{
+    x1 = POSITIVE_INFINITY; y1 = POSITIVE_INFINITY;
+    x2 = NEGATIVE_INFINITY; y2 = NEGATIVE_INFINITY;
+
+    for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
+    {
+        Node& n = *(*i);
+        bool movable = !n.fixed;
+        if (predicate(&n))
+        {
+            if (n.x-n.sx < x1) x1 = n.x-n.sx;
+            if (n.y-n.sy < y1) y1 = n.y-n.sy;
+            if (n.x+n.sx > x2) x2 = n.x+n.sx;
+            if (n.y+n.sy > y2) y2 = n.y+n.sy;
+        }
     }
 }
 
@@ -457,6 +573,8 @@ double BasicSpringEmbedderLayout::relax()
         printf("\n");
     }
 
+    bool bgsizeGiven = (width!=0 || height!=0);
+
     // limit vx,vy into (-50,50); move nodes by (vx,vy);
     // constrain nodes into rectangle (minx, miny, maxx, maxy)
     double maxd = 0;
@@ -487,8 +605,14 @@ double BasicSpringEmbedderLayout::relax()
                 n.y = maxy - privRand01();
 */
             // move node within bounds
-            n.x = std::max(minx, std::min(maxx, n.x));
-            n.y = std::max(miny, std::min(maxy, n.y));
+            // Note: minx2, miny2 exist because when no bg size is given, we want to allow
+            // nodes NOT connected to any fixed node to slip out at the top and left,
+            // in order to achieve a better layout. We'd shift them back eventually.
+            bool letThemOutTopLeft = !bgsizeGiven && !n.connectedToFixed;
+            double minx2 = letThemOutTopLeft ? -100000000 : minx;
+            double miny2 = letThemOutTopLeft ? -100000000 : miny;
+            n.x = std::max(minx2, std::min(maxx, n.x));
+            n.y = std::max(miny2, std::min(maxy, n.y));
         }
 
         // this is used for stopping condition
@@ -524,8 +648,11 @@ double BasicSpringEmbedderLayout::relax()
         a.x += std::max(-50.0, std::min(50.0, a.vx)); // speed limit (actually, movement limit because vx,vy is not changed)
         a.y += std::max(-50.0, std::min(50.0, a.vy));
 
-        a.x = std::max(minx, std::min(maxx, a.y));   //FIXME why we apply this to the anchors? should be applied to the nodes instead!!!
-        a.y = std::max(miny, std::min(maxy, a.x));
+        // move nodes back within bounds; check right/bottom first, so if room is too small, top/left gets aligned
+        if (a.x+a.x2off > maxx)  a.x = maxx - a.x2off;
+        if (a.y+a.y2off > maxy)  a.y = maxy - a.y2off;
+        if (a.x+a.x1off < minx)  a.x = minx - a.x1off;
+        if (a.y+a.y1off < miny)  a.y = miny - a.y1off;
 
         // this is used for stopping condition
         if (maxd<a.vx) maxd=a.vx;
