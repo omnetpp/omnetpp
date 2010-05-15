@@ -1,4 +1,10 @@
+2010-05-15 Andras Varga
+
+	* Added application icon to Tkenv. To make it easier to tell windows
+	apart in the task bar, the main window has a different icon.
+
 2010-05-12 Rudolf Hornig
+
 	* Implemented bilinear filtering for image resize.
 
 2010-05-03 Andras Varga
@@ -15,9 +21,9 @@
 	object; mouse event is processed from layouting callback.
 	Fix: activate grab during incremental layouting as well.
 
-	* fixed secord half of bug #56: crash during idle(), when running 
+	* fixed secord half of bug #56: crash during idle(), when running
 	a simulation that creates and deletes modules dynamically, using
-	cRuntimeScheduler that calls idle(), running in Fast mode, and 
+	cRuntimeScheduler that calls idle(), running in Fast mode, and
 	hovering the mouse over a just deleted module. Fix: refresh inspectors
 	just before idle() processes UI updates; also, to prevent excessive
 	inspector refresh, process UI events if at least one second has passed

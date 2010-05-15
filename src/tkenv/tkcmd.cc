@@ -173,6 +173,7 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int colorizeImage_cmd(ClientData, Tcl_Interp *, int, const char **);
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
+int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int setWindowProperty_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
 // command table
@@ -276,11 +277,12 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_functions",    objectFunctions_cmd    },
    { "opp_object_enums",        objectEnums_cmd        },
    { "opp_object_configentries",objectConfigEntries_cmd},
-   // NEDXML
+
+   // Misc
    { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
-   // experimental
    { "opp_colorizeimage",       colorizeImage_cmd      },   // args: <image> ... ret: -
    { "opp_resizeimage",         resizeImage_cmd        },   // args: <destimage> <srcimage>
+   { "opp_swapredandblue",      imageSwapRedAndBlue_cmd},   // args: <image>
    { "opp_setwindowproperty",   setWindowProperty_cmd  },   // args: <window> <propertyname> <value>
    // end of list
    { NULL, },
@@ -2104,6 +2106,44 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    //
    Tk_PhotoHandle destimghandle = Tk_FindPhoto(interp, TCLCONST(destimgname));
    Tk_PhotoPutBlock(INTERP_IF_TK85 destimghandle, &destimg, 0, 0, destimg.width, destimg.height, TK_PHOTO_COMPOSITE_SET);
+
+   return TCL_OK;
+}
+
+
+int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   // swaps the R and B channels of an image; this is needed to work around a "wm iconphoto"
+   // bug in Tk 8.4, see #1467997 "[wm iconphoto] issues on Win XP".
+   // http://sourceforge.net/tracker/index.php?func=detail&aid=1467997&group_id=12997&atid=112997
+
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC); return TCL_ERROR;}
+   const char *imgname = argv[1];
+
+   Tk_PhotoImageBlock img;
+   if (getTkPhotoImageBlock(interp, imgname, &img)!=TCL_OK) return TCL_ERROR;
+
+   int redoffset = img.offset[0];
+   int blueoffset = img.offset[2];
+
+   for (int y=0; y<img.height; y++)
+   {
+       for (int x=0; x<img.width; x++)
+       {
+           unsigned char *pixel = img.pixelPtr + y*img.pitch + x*img.pixelSize;
+           int r = pixel[redoffset];
+           int b = pixel[blueoffset];
+           pixel[redoffset] = b;
+           pixel[blueoffset] = r;
+       }
+   }
+
+   // Put back the image "onto itself", otherwise the internal
+   // masterPtr->validRegion data item is not updated, and the
+   // image will have no "valid region" and nothing will appear
+   // on the canvas when the icon is drawn.
+   Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
+   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }

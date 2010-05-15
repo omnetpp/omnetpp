@@ -73,7 +73,8 @@ proc debug {str} {
 
 proc create_omnetpp_window {} {
 
-    global icons fonts tcl_version help_tips widgets config priv
+    global tcl_version tk_version tk_patchLevel tcl_platform
+    global icons fonts help_tips widgets config priv
     global B2 B3
 
     wm focusmodel . passive
@@ -85,6 +86,37 @@ proc create_omnetpp_window {} {
     wm deiconify .
     wm title . "OMNeT++/Tkenv"
     wm protocol . WM_DELETE_WINDOW {exit_omnetpp}
+
+    # set the application icon
+    set iconphoto_main $icons(logo128m)
+    set iconphoto_other $icons(logo128w)
+    if {$tcl_platform(platform) == "windows"} {
+        if {[string compare $tk_patchLevel "8.5.6"] < 0} {
+            # Bug #2504402: "On Windows the wm iconphoto command only works with 32-bit color
+            # displays. Other display settings produce a black icon."
+            # This bug appears to have been fixed in 8.5.6. For earlier versions, only turn on icon for 32-bit displays.
+            if {[winfo screendepth .] == 32} {
+                # Bug #1467997: "the displayed icons have red and blue colors transposed."
+                # This bug was was fixed in 8.4.16. For earlier versions, we manually swap
+                # the R and B channels.
+                if {[string compare $tk_patchLevel "8.4.16"] < 0} {
+                    opp_swapredandblue $iconphoto_other
+                    opp_swapredandblue $iconphoto_main
+                }
+                # note: on win7, without the "after" command wm iconphoto causes startup glitches (empty window+delay)
+                after 200 "wm iconphoto . -default $iconphoto_other; wm iconphoto . $iconphoto_main"
+            }
+        } else {
+            # note: on win7, without the "after" command wm iconphoto causes startup glitches (empty window+delay)
+            after 200 "wm iconphoto . -default $iconphoto_other; wm iconphoto . $iconphoto_main"
+        }
+    } else {
+        # On linux, 8.4.19 was tested and known to be working.
+        if {[string compare $tk_patchLevel "8.4.19"] >= 0} {
+            wm iconphoto . -default $iconphoto_other
+            wm iconphoto . $iconphoto_main
+        }
+    }
 
     #################################
     # Menu bar
