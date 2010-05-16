@@ -14,6 +14,7 @@ import java.net.URISyntaxException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -38,6 +39,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	private static OmnetppMainPlugin plugin;
 	
 	protected OmnetppDynamicPluginLoader omnetppDynamicPluginLoader;
+	protected OmnetppProjectOpenListener omnetppProjectOpenListener;
 
 	/**
 	 * The constructor
@@ -62,6 +64,9 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         }
         ResourcesPlugin.getWorkspace().addResourceChangeListener(omnetppDynamicPluginLoader);
 
+        Assert.isTrue(omnetppProjectOpenListener == null);
+        omnetppProjectOpenListener = new OmnetppProjectOpenListener();
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(omnetppProjectOpenListener);
 	}
 
     protected void uninstallOmnetppBundlesWithoutProject() throws BundleException {
