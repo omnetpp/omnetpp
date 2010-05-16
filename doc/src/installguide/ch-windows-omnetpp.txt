@@ -1,11 +1,11 @@
 == Windows
 
-=== Supported Windows versions
+=== Supported Windows Versions
 
 The supported Windows versions are the Intel 32-bit versions of Windows XP,
 and later Windows versions such as Vista and Windows 7.
 
-=== Installing the prerequisites
+=== Installing the Prerequisites
 
 The only software that you need to download and install beforehand is the
 Java runtime (JRE). All other software, including a C++ compiler, is
@@ -38,7 +38,7 @@ directories named `doc`, `images`, `include`, `msys`, etc., and files named
 `mingwenv.cmd`, `configure`, `Makefile`, and others.
 
 
-=== Configuring and building @OMNETPP@
+=== Configuring and Building @OMNETPP@
 
 Start `mingwenv.cmd` in the `@omnetpp@-@version@` directory by double-clicking
 it in Windows Explorer. It will bring up a console with the MSYS 'bash' shell,
@@ -61,7 +61,7 @@ Then the usual GNU-like stuff:
 This will create both debug and release binaries.
 
 
-=== Verifying the installation
+=== Verifying the Installation
 
 You should now test all samples and check they run correctly. As an example,
 the dyna example is started by entering the following commands:
@@ -99,7 +99,7 @@ _____________________________________________________________________
 So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
 
 
-=== Environment variables
+=== Environment Variables
 
 If you want to start @OMNETPP@ simulations outside the shell as well
 (for example from Exlorer), you need to add @OMNETPP@'s `bin` directory
@@ -121,7 +121,7 @@ Hit Enter to accept.
 You need to close and re-open any Command windows for the changes to take effect in them.
 
 
-=== Reconfiguring the libraries
+=== Reconfiguring the Libraries
 
 If you need to recompile the @OMNETPP@ components with different flags (e.g.
 different optimization), then change the top-level @OMNETPP@ directory, edit
@@ -155,7 +155,7 @@ NOTE: The built libraries and programs are immediately copied
 to the `lib/` and `bin/` subdirs.
 
 
-=== Portability issues
+=== Portability Issues
 
 @OMNETPP@ has been tested with the MinGW gcc compiler. The current distribution
 contains gcc 4.4 version.
@@ -163,7 +163,7 @@ contains gcc 4.4 version.
 Microsoft Visual C++ is not supported in the Academic Edition.
 
 
-=== Additional packages
+=== Additional Packages
 
 Note that Doxygen and GraphViz are already included in the @OMNETPP@ package,
 and do not need to be downloaded.

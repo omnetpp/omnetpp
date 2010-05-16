@@ -1,6 +1,6 @@
 == OpenSUSE 12
 
-=== Supported releases
+=== Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
 OpenSUSE installations. The overall installation procedure is described

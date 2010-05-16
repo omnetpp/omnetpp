@@ -1,7 +1,7 @@
 == Mac OS X 10.5 and 10.6
 
 
-=== Installing the prerequisite packages
+=== Installing the Prerequisite Packages
 
 Install Xcode 3.0 or later on your machine. Xcode is available free of charge from
 Apple Inc.
@@ -12,7 +12,7 @@ Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
 
 
-=== Downloading and unpacking @OMNETPP@
+=== Downloading and Unpacking @OMNETPP@
 
 Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
 the generic archive, `@omnetpp@-@version@-src.tgz`.
@@ -36,7 +36,7 @@ folder.
 ===============================================================
 
 
-=== Environment variables
+=== Environment Variables
 
 @OMNETPP@ needs its `bin/` directory to be in the path. To add `bin/` to
 `PATH` temporarily (in the current shell only), change into the @OMNETPP@
@@ -74,7 +74,7 @@ export variables.
 ===============================================================
 
 
-=== Configuring and building @OMNETPP@
+=== Configuring and Building @OMNETPP@
 
 Check `configure.user` to make sure it contains the settings you need.
 In most cases you don't need to change anything in it.
@@ -144,7 +144,7 @@ If you only want to build one set of the libraries, specify
 ===============================================================
 
 
-=== Verifying the installation
+=== Verifying the Installation
 
 You can now verify that the sample simulations run correctly. For example,
 the dyna simulation is started by entering the following commands:
@@ -191,7 +191,7 @@ _____________________________________________________________________
 So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
 
 
-=== Reconfiguring the libraries
+=== Reconfiguring the Libraries
 
 If you need to recompile the @OMNETPP@ components with different flags (e.g.
 different optimization), then change the top-level @OMNETPP@ directory, edit
@@ -239,7 +239,7 @@ and are working on the solution.
 ===============================================================
 
 
-=== Additional packages
+=== Additional Packages
 
 Note that OpenMPI is already bundled with OS X, so you do not need to manually install MPI.
 

@@ -1,6 +1,6 @@
 == Fedora Core  11 and 12
 
-=== Supported releases
+=== Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
 Fedora Core installations. The overall installation procedure is described
@@ -15,16 +15,16 @@ They were tested on the following architectures:
 
 * Intel 32-bit and 64-bit
 
-=== Opening a terminal
+=== Opening a Terminal
 
 Choose 'Applications -> System Tools -> Terminal' from the menu.
 
-=== Installing the prerequisite packages
+=== Installing the Prerequisite Packages
 
 You can perform the installation using the graphical user interface or
 from the terminal, whichever you prefer.
 
-==== Command-line installation
+==== Command-Line Installation
 
 To install the required packages, type in the terminal:
 
@@ -34,7 +34,7 @@ To install the required packages, type in the terminal:
 
 then follow the instruction on the console.
 
-==== Graphical installation
+==== Graphical Installation
 
 The graphical installer can be launched by choosing
 'System -> Administration -> Add/Remove Software' from the menu.

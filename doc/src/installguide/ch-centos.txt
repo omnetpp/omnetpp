@@ -1,6 +1,6 @@
 == CentOS 5.4
 
-=== Supported releases
+=== Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
 CentOS installations. The overall installation procedure is described
@@ -24,16 +24,16 @@ as well, also known as RHEL 5.4.
 // from CentOS, while it seems to be part of RHEL 5.1 at least.
 
 
-=== Opening a terminal
+=== Opening a Terminal
 
 Choose 'Applications -> Accessories -> Terminal' from the menu.
 
-=== Installing the prerequisite packages
+=== Installing the Prerequisite Packages
 
 You can perform the installation using the graphical user interface or
 from the terminal, whichever you prefer.
 
-==== Command-line installation
+==== Command-Line Installation
 
 To install the required packages, type in the terminal:
 
@@ -66,7 +66,7 @@ the resulting documentation to contain diagrams.
 ===============================================================
 
 
-==== Graphical installation
+==== Graphical Installation
 
 The graphical installer can be launched by choosing
 'System -> Administration -> Add/Remove Software' from the menu.

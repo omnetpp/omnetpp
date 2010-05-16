@@ -1,6 +1,6 @@
 == Linux
 
-=== Supported Linux distributions
+=== Supported Linux Distributions
 
 This chapter provides instructions for installing @OMNETPP@ on selected Linux
 distributions:
@@ -19,7 +19,7 @@ If you have a Linux distribution not listed above, consult the 'Generic Unix'
 chapter of this Installation Guide.
 
 
-=== Installing the prerequisite packages
+=== Installing the Prerequisite Packages
 
 @OMNETPP@ requires several packages to be installed on the computer. These packages
 include the C++ compiler (gcc), the Java runtime, and several other libraries and
@@ -37,7 +37,7 @@ installed manually. See the section 'Additional Packages' later in this
 chapter.
 
 
-=== Downloading and unpacking
+=== Downloading and Unpacking
 
 Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
 the generic archive, `@omnetpp@-@version@-src.tgz`.
@@ -57,7 +57,7 @@ specific to your Linux distribution.
 ===============================================================
 
 
-=== Environment variables
+=== Environment Variables
 
 @OMNETPP@ needs its `bin/` directory to be in the path. To add `bin/` to
 `PATH` temporarily (in the current shell only), change into the @OMNETPP@
@@ -93,7 +93,7 @@ use 'bash' unless the user has explicitly selected another shell.
 ===============================================================
 
 
-=== Configuring and building @OMNETPP@
+=== Configuring and Building @OMNETPP@
 
 In the top-level @OMNETPP@ directory, type:
 
@@ -156,7 +156,7 @@ If you only want to build one set of the libraries, specify
 ===============================================================
 
 
-=== Verifying the installation
+=== Verifying the Installation
 
 You can now verify that the sample simulations run correctly. For example,
 the dyna simulation is started by entering the following commands:
@@ -200,7 +200,7 @@ _____________________________________________________________________
 So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
 
 
-=== Reconfiguring the libraries
+=== Reconfiguring the Libraries
 
 If you need to recompile the @OMNETPP@ components with different flags (e.g.
 different optimization), then change the top-level @OMNETPP@ directory, edit
@@ -232,7 +232,7 @@ libraries, use:
 
 NOTE: For detailed description of all options please read the 'Build Options' chapter.
 
-=== Additional packages
+=== Additional Packages
 
 Note that at this point, MPI, Doxygen and GraphViz have been installed as part of the prerequisites.
 

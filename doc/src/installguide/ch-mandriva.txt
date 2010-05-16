@@ -1,6 +1,6 @@
 == Mandriva 2009.1
 
-=== Supported releases
+=== Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
 Mandriva installations. The overall installation procedure is described

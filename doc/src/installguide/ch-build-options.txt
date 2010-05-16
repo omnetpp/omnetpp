@@ -1,6 +1,6 @@
 == Build Options
 
-=== configure.user options
+=== configure.user Options
 
 The `configure.user` file contains several options that can be used to fine-tune
 the simulation libraries.
@@ -100,7 +100,7 @@ compiler command line using the `-DSYMBOLNAME` syntax. You can add these options
   the old behavior (i.e. having a single `cMessage` class only), define the
   `WITHOUT_CPACKET` symbol.
 
-=== Moving the installation
+=== Moving the Installation
 
 When you build @OMNETPP@ on your machine, several directory names are compiled
 into the binaries. This makes it easier to set up @OMNETPP@ in the first place,
@@ -135,7 +135,7 @@ NOTE: On Mac OS X, `DYLD_LIBRARY_PATH` is used instead of `LD_LIBRARY_PATH`.
 On Windows, the `PATH` variable must contain the directory where shared
 libraries (DLLs) are present.
 
-=== Using different compilers
+=== Using Different Compilers
 
 By default, the configure script detects the following compilers automatically in the path:
 

@@ -1,6 +1,6 @@
 == Debian 5.0
 
-=== Supported releases
+=== Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
 Debian Linux installations. The overall installation procedure is described
@@ -19,18 +19,18 @@ which are the defaults. If you use another desktop environment or shell,
 you may need to adjust the instructions accordingly.
 
 
-=== Opening a terminal
+=== Opening a Terminal
 
 Choose 'Applications -> Accessories -> Terminal' from the menu.
 
 This only applies if you use the Gnome Desktop (default).
 
-=== Installing the prerequisite packages
+=== Installing the Prerequisite Packages
 
 You can perform the installation using the graphical user interface or
 from the terminal, whichever you prefer.
 
-==== Command-line installation
+==== Command-Line Installation
 
 Before starting the installation, refresh the database of available packages.
 Type in the terminal:
@@ -63,7 +63,7 @@ of the package to install.
 ===============================================================
 
 
-==== Graphical installation
+==== Graphical Installation
 
 The graphical installer, 'Synaptic', can be started
 with the 'System -> Administration -> Synaptic package manager' menu item.

@@ -88,7 +88,7 @@ Akaroa::
 
 The exact names of these packages may differ across distributions.
 
-=== Determining package names
+=== Determining Package Names
 
 If you have a distro unrelated to the ones covered in this Installation Guide,
 you need to figure out what is the established way of installing packages
@@ -177,7 +177,7 @@ Java version 5.0 (i.e. JRE 1.5) or later is required.
 @OMNETPP@ is not sensitive to the particular MPI implementation. You may use
 OpenMPI, or any other standards-compliant MPI package.
 
-=== Downloading and unpacking
+=== Downloading and Unpacking
 
 Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
 the generic archive, `@omnetpp@-@version@-src.tgz`.
@@ -190,7 +190,7 @@ using the following command:
 
 This will create an `@omnetpp@-@version@` subdirectory with the @OMNETPP@ files in it.
 
-=== Environment variables
+=== Environment Variables
 
 In general @OMNETPP@ requires that its bin directory should be in the PATH. You should
 add a line something like this to your `.bashrc` or `.bashprofile`
@@ -210,7 +210,7 @@ If you use a shell other than bash, consult the man page of that shell
 to find out which startup file to edit, and how to set and export variables.
 ===============================================================
 
-=== Configuring and building @OMNETPP@
+=== Configuring and Building @OMNETPP@
 
 In the top-level @OMNETPP@ directory, type:
 
@@ -281,7 +281,7 @@ If you only want to build one set of the libraries, specify
 ===============================================================
 
 
-=== Verifying the installation
+=== Verifying the Installation
 
 You can now verify that the sample simulations run correctly. For example,
 the dyna simulation is started by entering the following commands:
@@ -318,7 +318,7 @@ The above commands assume that your system has the `xdg` commands,
 which most modern distributions do.
 ===============================================================
 
-=== Optional packages
+=== Optional Packages
 
 ==== Akaroa
 

@@ -1,11 +1,11 @@
-== General information
+== General Information
 
 === Introduction
 
 This document describes how to install @OMNETPP@ on various platforms.
 One chapter is dedicated to each operating system.
 
-=== Supported platforms
+=== Supported Platforms
 
 @OMNETPP@ has been tested and is supported on the following operating systems:
 
