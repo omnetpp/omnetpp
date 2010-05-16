@@ -154,21 +154,18 @@ NOTE: Different compilers may have different command line options. If you use a 
 
 ifdef::OMNEST[]
 
-=== Using MS Visual C/C++
+=== Using Microsoft Visual C++
 
-If you are using Microsoft Visual C/C++ compiler on Windows platform,
+If you are using the Microsoft Visual C++ compiler on Windows,
 the build procedure is slightly different than the one used on Unix platforms.
 
 The major differences are:
 
  * The file `configuser.vc` must be used to specify your build options instead
    of `configure.user`
- * There is no automatic configuration for MS Visual C/C++ builds. You must
+ * There is no automatic configuration (`./configure`) for Visual C++ builds. You must
    review and specify each options in `configuser.vc` before compiling @OMNETPP@.
-   (i.e. It is not necessary to run the `configure` script.)
- * The build process must be started with the `nmake -f Makefile.vc` command
-    instead of simply typing `make`.
-
+ * The build process is initiated with the command `nmake -f Makefile.vc` instead of `make`.
 
 endif::OMNEST[]
 
