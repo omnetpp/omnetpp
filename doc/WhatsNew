@@ -3,8 +3,51 @@ What's New
 
 OMNeT++ 4.1 rc1 (May 2010)
 --------------------------
+Partial list of changes since 4.1b4 (see ChangeLog files in individual folders
+for a more complete list):
+
+Simulation kernel:
+ - Enter_Method_Silent() may now take arguments (a printf-like arg list),
+   and it logs the call into the event log file.
+ - Re-added cChannel::calculateDuration() that was removed in 4.1b3
+ - Fix: exponential(), normal(), truncnormal() and geometric() could produce
+   +INF, due to log(dblrand()) in their code where dblrand() can produce zero.
+   As a side-effect of the fix, the fingerprints of all simulations that use
+   those distributions as input have changed.
+
+NED:
+ - New NED function: expand(). It substitutes ${} config variables into a string.
+   Example usage in a NED parameter:
+   string fileName = default(expand("${resultdir}/${configname}-${runnumber}.txt"));
+
+MSG:
+ - Implemented @sizetype property for array fields; it can be used to specify
+   the C++ type of the array size and array indices (by default it is unsigned
+   int).
+ - Fix: A "using namespace" line inside a cplusplus {{...}} block confused the
+   parser.
+
 Tkenv:
  - Implemented bilinear filtering for image/icon resize in Tkenv.
+ - Simulation Options dialog: layouting algorithm can now be chosen
+   from Fast, Advanced and Adaptive (default: Adaptive)
+ - Implemented minimum icon size, resize window on layout and auto-adjust zoom
+   options. New controls in the Simulation Options dialog:
+    - "[] Resize window to fit network with current zoom level first"
+    - "[] Adjust zoom so that network fills window"
+    - "Minimum icon size when zoomed out (pixels)"
+ - Added hotkeys for zoom in/out: Ctrl+N and Ctrl+M. Ctrl+N was already
+   used by "Toggle module name", it was reassigned to Ctrl+D.
+ - Improvements on the classic ("fast") layouting algorithm
+ - Application icon for Tkenv
+ - Several bug fixes (see ChangeLog)
+
+IDE:
+ - Analysis Tool: charts now support a much higher zoom level
+ - NED Documentation Generator: generating full inheritance and usage diagrams
+   can now be turned off (they were often too busy to be useful)
+ - Several other bug fixes
+
 
 OMNeT++ 4.1 beta 4 (April 2010)
 -------------------------------
