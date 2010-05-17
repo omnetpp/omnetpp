@@ -16,14 +16,18 @@ import org.omnetpp.common.util.StringUtils;
 
 public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
     public final static String[] VC_VERSIONS = {
-        "9.0","8.0","7.1","7.0",
+        "10.0","9.0","8.0","7.1","7.0",
     };
     public final static String[] SDK_VERSIONS = {
+        "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v7.1",
+        "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v7.0",
         "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.1",
         "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A",
         "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0",
     };
     public final static String[] SDK_VC_VERSIONS = {
+        "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v7.1\\WinSDKCompiler",
+        "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v7.0\\WinSDKCompiler",
         "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.1\\WinSDKCompiler",
         "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A\\WinSDKCompiler",
         "SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0\\WinSDKCompiler",
@@ -45,7 +49,7 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
         String vsDir = StringUtils.nullToEmpty(detectVSDir());
         store.setDefault(MSVCPreferencePage.PREFKEY_VSDIR, vsDir);
 
-        store.setDefault(MSVCPreferencePage.PREFKEY_APPENDPATH, false);
+        store.setDefault(MSVCPreferencePage.PREFKEY_APPENDPATH, true);
     }
 
     /**
