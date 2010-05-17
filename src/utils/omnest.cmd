@@ -4,4 +4,4 @@ SET LAUNCHER=omnest
 cd %IDEDIR%
 SET PATH=%~dp0;%~dp0\..\msys\bin;%~dp0\..\mingw\bin;%PATH%
 echo Starting the OMNEST IDE...
-start .\win32\%LAUNCHER% >out.log
+start .\%LAUNCHER% >out.log
