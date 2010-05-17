@@ -542,7 +542,7 @@
       <title>Name Mode</title>
       <para>
 	There are three different ways to display names in the Eventlog Table; it is
-	configurable with the ``Name Mode'' <icon name="namemode.gif"/>
+	configurable with the ``Name Mode'' <icon name="NameMode.gif"/>
 	option. Full path and full name shows what you would expect. The smart mode uses
 	the context of the line to decide whether a full path or a full name should
 	be displayed. For each event line, this mode always displays the full path. For all
@@ -685,7 +685,7 @@
       The content of an eventlog can be filtered within the &Omnetpp; IDE. This is
       on-the-fly filtering as opposed to the file content filtering provided by the [[Eventlog]]
       tool. To use on the fly filtering, open the filter configuration dialog with the
-      button <icon name="Filter.png"/> on the toolbar, enable some of the range, module,
+      button <icon name="filter.png"/> on the toolbar, enable some of the range, module,
       message, or trace filters, set the various filter parameters, and apply the settings. The
       result is another eventlog, resident in memory, that filters out some events.
       <note>

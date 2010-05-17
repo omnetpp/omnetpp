@@ -377,15 +377,23 @@
     <sect2>
       <title>General</title>
       <picture file="pictures/Tkenv-sim-opts1.png">General Tkenv options</picture>
-      <para>The General options tab can be used to set default layouting and logging behavior. It is
-        possible to set how often the user interface will be updated during the simulation run. The user can also configure default font
-        size and family here.</para>
+      <para>The ``General'' tab can be used to set the default display and logging behavior. It is
+        possible to set how often the user interface will be updated during the simulation run. 
+        The user can also configure default font size and family here.
+      </para>
     </sect2>
     <sect2>
-      <title>Configuring animations</title>
-      <picture file="pictures/Tkenv-sim-opts2.png">Animation options</picture>
-      <para> Tkenv provides automatic animation when you run your simulation. You can fine-tune your animation
-        settings using the ``Animation'' tab on the configuration dialog. If you do not need all the visual
+      <title>Configuring the layouting algorithm</title>
+      <picture file="pictures/Tkenv-sim-opts2.png">Layouting options</picture>
+      <para>Tkenv provides automatic layouting for your submodules when you do not specify their location 
+        in the NED file. The layouting algorithm can be fine-tuned on the ``Layouting'' tab 
+        of the configuration dialog.</para>
+    </sect2>
+    <sect2>
+      <title>Configuring animation</title>
+      <picture file="pictures/Tkenv-sim-opts3.png">Animation options</picture>
+      <para>Tkenv provides automatic animation when you run the simulation. You can fine-tune your animation
+        settings using the ``Animation'' tab on the configuration dialog. If you do not need all visual
         feedback Tkenv provides, you can selectively turn off some of the features:</para>
       <itemizedlist>
         <listitem>
