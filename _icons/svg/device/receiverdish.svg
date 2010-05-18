@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="0.24in" height="0.24in" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 0.24 0.24">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str0 {stroke:#4D5356;stroke-width:0.003;stroke-linecap:round;stroke-linejoin:round}
+    .str8 {stroke:#757B80;stroke-width:0.003}
+    .str9 {stroke:#989A9F;stroke-width:0.003}
+    .str10 {stroke:#4D5356;stroke-width:0.00666535;stroke-linecap:round;stroke-linejoin:round}
+    .str2 {stroke:#747A7F;stroke-width:0.00666535;stroke-linecap:round;stroke-linejoin:round}
+    .str5 {stroke:#757B80;stroke-width:0.00666535;stroke-linecap:round;stroke-linejoin:round}
+    .str6 {stroke:#82858B;stroke-width:0.00666535;stroke-linecap:round;stroke-linejoin:round}
+    .str7 {stroke:#9C9FA3;stroke-width:0.00666535;stroke-linecap:round;stroke-linejoin:round}
+    .str1 {stroke:#B6B7BC;stroke-width:0.00666535;stroke-linecap:round;stroke-linejoin:round}
+    .str3 {stroke:#D8DADD;stroke-width:0.00666535}
+    .str4 {stroke:#EDEEF1;stroke-width:0.00666535}
+    .fil4 {fill:none}
+    .fil2 {fill:url(#id0)}
+    .fil3 {fill:url(#id1)}
+    .fil1 {fill:url(#id2)}
+    .fil0 {fill:url(#id3)}
+   ]]>
+  </style>
+  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="0.192319" y1="0.0509449" x2="0.0348386" y2="0.144583">
+   <stop offset="0" style="stop-color:#9C9EA3"/>
+   <stop offset="1" style="stop-color:#E5E6E9"/>
+  </linearGradient>
+  <linearGradient id="id1" gradientUnits="userSpaceOnUse" x1="0.135898" y1="0.197614" x2="0.210961" y2="0.144339">
+   <stop offset="0" style="stop-color:#85888C"/>
+   <stop offset="1" style="stop-color:#ABADB3"/>
+  </linearGradient>
+  <linearGradient id="id2" gradientUnits="userSpaceOnUse" x1="0.0425709" y1="0.200551" x2="0.215437" y2="0.00207087">
+   <stop offset="0" style="stop-color:#7B7F82"/>
+   <stop offset="1" style="stop-color:#BFC1C6"/>
+  </linearGradient>
+  <linearGradient id="id3" gradientUnits="userSpaceOnUse" x1="0.110035" y1="0.208587" x2="0.175547" y2="0.133366">
+   <stop offset="0" style="stop-color:#AFB2B5"/>
+   <stop offset="1" style="stop-color:#CCD0D7"/>
+  </linearGradient>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <polygon class="fil0 str0" points="0.114012,0.204618 0.146142,0.212051 0.171575,0.129902 "/>
+  <path class="fil1 str0" d="M0.155555 0.0220394c-0.0455984,-0.015685 -0.117906,0.127173 -0.0839528,0.151449 0.0915748,0.0227795 0.148752,-0.0917008 0.0839528,-0.151449z"/>
+  <ellipse class="fil2 str1" transform="matrix(0.874565 0.484908 -0.484908 0.874565 0.113579 0.0977638)" rx="0.0333819" ry="0.0865827"/>
+  <polygon class="fil3 str0" points="0.171575,0.129902 0.146142,0.212051 0.20072,0.208673 "/>
+  <line class="fil4 str2" x1="0.0392795" y1="0.0577795" x2="0.0931339" y2= "0.125799" />
+  <path class="fil4 str3" d="M0.0716024 0.173488c0.018311,0.00587008 0.0411181,-0.0096063 0.0711772,-0.0595197 0.0240197,-0.0467953 0.0282402,-0.0778937 0.0127756,-0.0919291"/>
+  <path class="fil4 str4" d="M0.14278 0.113969c0.0240197,-0.0467953 0.0282402,-0.0778937 0.0127756,-0.0919291"/>
+  <polyline class="fil4 str5" points="0.122264,0.130413 0.0392795,0.0577795 0.0973346,0.108594 "/>
+  <line class="fil4 str5" x1="0.133953" y1="0.0775157" x2="0.0392795" y2= "0.0577795" />
+  <polyline class="fil4 str6" points="0.104055,0.114476 0.0392795,0.0577795 0.0743661,0.102685 "/>
+  <line class="fil4 str6" x1="0.113122" y1="0.0731732" x2="0.0392795" y2= "0.0577795" />
+  <polyline class="fil4 str7" points="0.089311,0.101571 0.0392795,0.0577795 0.055752,0.0778307 "/>
+  <line class="fil4 str7" x1="0.0987953" y1="0.070189" x2="0.0392795" y2= "0.0577795" />
+  <line class="fil4 str8" x1="0.167256" y1="0.143846" x2="0.151969" y2= "0.19324" />
+  <line class="fil4 str9" x1="0.163894" y1="0.154705" x2="0.156787" y2= "0.177665" />
+  <path class="fil4 str10" d="M0.0758228 0.174445c-0.0173228,-0.00478346 -0.0171654,-0.0300748 -0.0014685,-0.0723661l-0.0350748 -0.0442992 0.0527559 0.011c0.0228386,-0.0329291 0.0445512,-0.054185 0.0635197,-0.0467402 0.0305276,0.0233307 0.0361142,0.0636063 0.0160197,0.107862l0.0291457 0.0787717 -0.0545787 0.00337795 -0.0321299 -0.00743307 0.0397835 -0.0516417c-0.0215354,0.0195709 -0.0376417,0.0299055 -0.0779724,0.0214685z"/>
+ </g>
+</svg>

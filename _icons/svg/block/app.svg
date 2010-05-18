@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW -->
+<?xml-stylesheet type="text/css" href="user.css" ?>  
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="72px" height="72px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 72 72">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str7 {stroke:black;stroke-width:1.99961}
+    .str6 {stroke:#050505;stroke-width:1.99961}
+    .str3 {stroke:#9C9C9C;stroke-width:1.99961}
+    .str4 {stroke:#9C9C9C;stroke-width:1.99961;stroke-linejoin:round}
+    .str1 {stroke:#D9D9D9;stroke-width:1.99961}
+    .str2 {stroke:#D9D9D9;stroke-width:1.99961;stroke-linejoin:round}
+    .str5 {stroke:#E0E0E0;stroke-width:1.99961;stroke-linejoin:round}
+    .fil1 {fill:none}
+    .fil5 {fill:#6666FF}
+    .fil4 {fill:#9999FF}
+    .fil2 {fill:#CCCCCC}
+    .fil3 {fill:#E5E5E5}
+    .fil0 {fill:url(#id0)}
+   ]]>
+  </style>
+  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="65.3315" y1="66.1937" x2="6.66969" y2="5.80748">
+   <stop offset="0" class="background-br"/>
+   <stop offset="0.619608" class="background-c"/>
+   <stop offset="1" class="background-tl"/>
+  </linearGradient>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <rect class="fil0 str0" x="2.92559" y="2.92559" width="66.15" height="66.15" rx="9.39803" ry="9.39803"/>
+ </g>
+ <g id="Layer_x0020_2">
+  <metadata id="CorelCorpID_1Corel-Layer"/>
+  <polyline class="fil1 str1" points="51.0957,9.60709 50.7047,45.698 10.0843,45.6957 "/>
+  <polyline class="fil1 str2" points="64.9984,20.85 64.6087,56.9398 25.0016,56.7803 "/>
+  <polyline class="fil1 str3" points="24.5315,56.0799 24.6886,20.3799 64.2165,20.1484 "/>
+  <polyline class="fil1 str4" points="8.5311,43.9713 8.45433,8.27126 47.8276,8.35276 "/>
+  <polyline class="fil1 str5" points="64.7634,41.5535 64.6087,56.9398 50.5996,56.9374 "/>
+  <rect class="fil2 str6" x="10.5815" y="15.1417" width="37.8319" height="28.2543"/>
+  <rect class="fil3 str7" x="26.0622" y="26.7909" width="36.7972" height="28.2555"/>
+  <rect class="fil4 str6" x="25.9512" y="21.6508" width="36.7972" height="5.02913"/>
+  <rect class="fil5 str7" x="10.5815" y="10.2614" width="37.8319" height="4.8815"/>
+ </g>
+</svg>

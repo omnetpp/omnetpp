@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="0.24in" height="0.24in" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 0.24 0.24">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str0 {stroke:#1F1A17;stroke-width:0.003}
+    .str1 {stroke:#4D5356;stroke-width:0.003}
+    .str4 {stroke:#656B6F;stroke-width:0.003}
+    .str6 {stroke:#7D8286;stroke-width:0.003}
+    .str3 {stroke:#B2B4B7;stroke-width:0.003}
+    .str2 {stroke:#CCCED1;stroke-width:0.003}
+    .str5 {stroke:#E7E8EA;stroke-width:0.003}
+    .str7 {stroke:#4D5356;stroke-width:0.00666535;stroke-linecap:round;stroke-linejoin:round}
+    .fil4 {fill:none}
+    .fil0 {fill:url(#id0)}
+    .fil2 {fill:url(#id1)}
+    .fil1 {fill:url(#id2)}
+    .fil3 {fill:url(#id3)}
+   ]]>
+  </style>
+  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="0.134031" y1="0.194366" x2="0.228228" y2="0.0456339">
+   <stop offset="0" style="stop-color:#506273"/>
+   <stop offset="1" style="stop-color:#898CA5"/>
+  </linearGradient>
+  <linearGradient id="id1" gradientUnits="userSpaceOnUse" x1="0.0510157" y1="0.197965" x2="0.140441" y2="0.0567677">
+   <stop offset="0" style="stop-color:#53818C"/>
+   <stop offset="1" style="stop-color:#8FB8CB"/>
+  </linearGradient>
+  <linearGradient id="id2" gradientUnits="userSpaceOnUse" x1="0.0671102" y1="0.235898" x2="0.125882" y2="0.143102">
+   <stop offset="0" style="stop-color:#7D8286"/>
+   <stop offset="1" style="stop-color:#CCCED1"/>
+  </linearGradient>
+  <linearGradient id="id3" gradientUnits="userSpaceOnUse" x1="0.0729291" y1="0.0669016" x2="0.117551" y2="-0.00354724">
+   <stop offset="0" style="stop-color:#989B9F"/>
+   <stop offset="1" style="stop-color:#CCCED1"/>
+  </linearGradient>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <g id="_123324712">
+   <polygon id="_122945384" class="fil0 str0" points="0.205406,0.199634 0.205984,0.0255984 0.156272,0.0116969 0.157429,0.228299 "/>
+   <polygon id="_122944936" class="fil1 str1" points="0.035563,0.150701 0.078815,0.15272 0.0794843,0.205098 0.0970236,0.206291 0.0970236,0.15272 0.157039,0.155902 0.157429,0.228299 0.0363307,0.217295 "/>
+   <polygon id="_122944624" class="fil2 str1" points="0.156465,0.0484409 0.0344134,0.0516575 0.035563,0.150701 0.078815,0.15272 0.0794843,0.205098 0.0970236,0.206291 0.0970236,0.15272 0.157039,0.155902 "/>
+   <polygon id="_122944312" class="fil3 str1" points="0.0340197,0.0177795 0.156272,0.0116969 0.156465,0.0484409 0.0344134,0.0516575 "/>
+   <line id="_122943816" class="fil4 str2" x1="0.0750906" y1="0.172315" x2="0.0754134" y2= "0.208673" />
+   <line id="_122943336" class="fil4 str3" x1="0.0969291" y1="0.209638" x2="0.0754094" y2= "0.208157" />
+   <line id="_122942880" class="fil4 str4" x1="0.147598" y1="0.0486772" x2="0.148461" y2= "0.155445" />
+   <line id="_122942424" class="fil4 str4" x1="0.139783" y1="0.0488819" x2="0.14065" y2= "0.155031" />
+   <line id="_122941984" class="fil4 str4" x1="0.132559" y1="0.0490748" x2="0.133185" y2= "0.154634" />
+   <line id="_123314064" class="fil4 str4" x1="0.125335" y1="0.0492638" x2="0.125358" y2= "0.15422" />
+   <line id="_123313728" class="fil4 str4" x1="0.117815" y1="0.0494606" x2="0.118378" y2= "0.15385" />
+   <line id="_123313136" class="fil4 str4" x1="0.110331" y1="0.0496575" x2="0.110921" y2= "0.153457" />
+   <line id="_123312680" class="fil4 str4" x1="0.103102" y1="0.0498504" x2="0.10426" y2= "0.153102" />
+   <line id="_123312224" class="fil4 str4" x1="0.0954409" y1="0.0500512" x2="0.0970236" y2= "0.15272" />
+   <line id="_123311768" class="fil4 str4" x1="0.0874843" y1="0.0502598" x2="0.0882559" y2= "0.205693" />
+   <line id="_123311312" class="fil4 str4" x1="0.0788228" y1="0.0504882" x2="0.078815" y2= "0.15272" />
+   <line id="_123310856" class="fil4 str4" x1="0.071878" y1="0.0506732" x2="0.0724843" y2= "0.152421" />
+   <line id="_123310568" class="fil4 str4" x1="0.064626" y1="0.0508622" x2="0.0657992" y2= "0.15211" />
+   <line id="_123310296" class="fil4 str4" x1="0.0580079" y1="0.0510394" x2="0.0597165" y2= "0.151827" />
+   <line id="_122961768" class="fil4 str4" x1="0.0516339" y1="0.0512047" x2="0.052752" y2= "0.1515" />
+   <line id="_122961600" class="fil4 str4" x1="0.0455866" y1="0.0513661" x2="0.046189" y2= "0.151197" />
+   <line id="_122961296" class="fil4 str4" x1="0.0386496" y1="0.0515472" x2="0.0399291" y2= "0.150902" />
+   <line id="_124357352" class="fil4 str5" x1="0.152504" y1="0.0142126" x2="0.152508" y2= "0.0451024" />
+   <polyline id="_123815920" class="fil4 str5" points="0.124283,0.157268 0.154165,0.158504 0.154476,0.224862 "/>
+   <line id="_123822376" class="fil4 str6" x1="0.156272" y1="0.0116969" x2="0.157039" y2= "0.155902" />
+   <polygon id="_18502984" class="fil4 str7" points="0.0340197,0.0177795 0.156272,0.0116969 0.205984,0.0255984 0.205406,0.199634 0.157429,0.228299 0.0363307,0.217295 "/>
+  </g>
+ </g>
+</svg>

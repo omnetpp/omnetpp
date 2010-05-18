@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created with Sodipodi ("http://www.sodipodi.com/") -->
+<svg
+   id="svg548"
+   sodipodi:version="0.32"
+   width="400pt"
+   height="400pt"
+   sodipodi:docbase="/home/nicu/svg_gal/computers/"
+   sodipodi:docname="/home/nicu/svg_gal/computers/floppy.svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs
+     id="defs550" />
+  <sodipodi:namedview
+     id="base"
+     showgrid="true" />
+  <path
+     style="fill:#00007b;fill-rule:evenodd;stroke:black;stroke-opacity:1;stroke-width:3.75;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;stroke-dasharray:none;"
+     d="M 52.5712 53.9929 L 407.003 53.9929 L 443.463 89.6056 L 441.768 447.429 L 53.4191 445.733 L 52.5712 53.9929 z "
+     id="path551" />
+  <path
+     style="fill:#a3a6a6;fill-rule:evenodd;stroke:black;stroke-opacity:1;stroke-width:2.32865;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;stroke-dasharray:none;"
+     d="M 371.39 53.9929 L 371.39 145.569 C 371.39 145.569 368.846 159.135 355.279 163.375 C 341.713 164.222 156.866 164.223 156.866 164.223 C 156.018 165.071 144.995 157.439 144.147 152.352 C 143.299 147.264 142.451 145.569 142.451 145.569 C 142.451 145.569 144.147 53.145 143.299 53.145 C 142.451 53.145 372.238 53.9929 371.39 53.9929 z "
+     id="path552"
+     sodipodi:nodetypes="cccccccc"
+     transform="matrix(1.000000,0.000000,0.000000,1.152582,0.000000,-6.413116)" />
+  <rect
+     style="font-size:12;fill:#ffffff;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect553"
+     width="321.362518"
+     height="185.694977"
+     x="89.879768"
+     y="249.862976" />
+  <rect
+     style="font-size:12;fill:#808080;fill-rule:evenodd;stroke-width:1pt;"
+     id="rect554"
+     width="0.00000000"
+     height="9.32714844"
+     x="410.394348"
+     y="240.535797" />
+  <path
+     style="fill:#00007b;fill-rule:evenodd;stroke:black;stroke-opacity:1;stroke-width:2.5;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;stroke-dasharray:none;"
+     d="M 334.929 76.0389 C 334.081 76.0389 282.358 76.0389 282.358 76.0389 L 282.358 165.071 L 334.929 165.071 L 334.929 76.0389 z "
+     id="path555" />
+  <rect
+     style="font-size:12;fill:#dd8080;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect556"
+     width="321.362549"
+     height="55.1149292"
+     x="89.8797607"
+     y="249.862946" />
+  <rect
+     style="font-size:12;fill:#dd8080;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect557"
+     width="287.445648"
+     height="6.783386"
+     x="105.142365"
+     y="335.503052" />
+  <rect
+     style="font-size:12;fill:#dd8080;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect558"
+     width="287.445648"
+     height="5.935455"
+     x="104.294426"
+     y="371.115822" />
+  <rect
+     style="font-size:12;fill:#df8080;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect559"
+     width="286.597717"
+     height="5.935455"
+     x="105.142365"
+     y="406.728516" />
+  <rect
+     style="font-size:12;fill:#000000;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect567"
+     width="78.8567657"
+     height="5.08750916"
+     x="159.409393"
+     y="75.1909637" />
+  <rect
+     style="font-size:12;fill:#000000;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect568"
+     width="58.5066528"
+     height="5.08754730"
+     x="161.105225"
+     y="87.9097748" />
+  <rect
+     style="font-size:12;fill:#180003;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect569"
+     width="76.3130035"
+     height="5.08750916"
+     x="161.105225"
+     y="100.628624" />
+  <rect
+     style="font-size:12;fill:#ffffff;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect570"
+     width="114.469490"
+     height="5.93548584"
+     x="105.990288"
+     y="261.733826" />
+  <rect
+     style="font-size:12;fill:#ffffff;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect571"
+     width="44.0919495"
+     height="5.08752441"
+     x="106.838211"
+     y="277.844360" />
+  <rect
+     style="font-size:12;fill:#ffffff;fill-rule:evenodd;stroke-width:1pt;fill-opacity:1;"
+     id="rect572"
+     width="33.916901"
+     height="5.087512"
+     x="178.063675"
+     y="277.844386" />
+  <path
+     style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-opacity:1;stroke-width:1pt;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:0.5;"
+     d="M 150.317 158.228 C 151.899 153.481 148.734 63.2911 155.063 63.2911 C 161.392 63.2911 292.722 61.7089 292.722 61.7089 C 232.595 68.038 164.557 66.4557 150.317 158.228 z "
+     id="path566"
+     sodipodi:nodetypes="cccc" />
+
+  <rdf:RDF 
+   xmlns="http://web.resource.org/cc/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <Work rdf:about="">
+    <dc:title>Clipart by Nicu Buculei - antenna</dc:title>
+    <dc:rights>
+       <Agent>
+         <dc:title>Nicu Buculei</dc:title>
+       </Agent>
+    </dc:rights>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+    <license rdf:resource="http://web.resource.org/cc/PublicDomain" />
+  </Work>
+   
+  <License rdf:about="http://web.resource.org/cc/PublicDomain">
+     <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+     <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+     <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+  </License>
+
+</rdf:RDF>
+</svg>
