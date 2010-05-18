@@ -1188,7 +1188,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    else if (0==strcmp(argv[1], "arrangevectorconnections"))
       app->opt_arrangevectorconnections = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "iconminsize"))
-      app->opt_iconminsize = std::min(16, std::max(1, atoi(argv[2])));
+      app->opt_iconminsize = std::min(40, std::max(1, atoi(argv[2])));
    else if (0==strcmp(argv[1], "bubbles"))
       app->opt_bubbles = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_speed"))
