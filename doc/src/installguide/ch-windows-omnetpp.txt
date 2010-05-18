@@ -48,29 +48,29 @@ NOTE: If you want to start simulations from outside the shell as well
 (for example from Explorer), you need to add @OMNETPP@'s `bin` directory
 to the path; instructions are provided later.
 
-First, check the `configure.user` file to make sure it contains the settings
-you need. In most cases you don't need to change anything:
+First, check the contents of the `configure.user` file to make sure
+it contains the settings you need. In most cases you don't need to change anything.
 
     notepad configure.user
 
-Then the usual GNU-like stuff:
+Then enter the following commands:
 
     $ ./configure
     $ make
 
-This will create both debug and release binaries.
+The build process will create both debug and release binaries.
 
 
 === Verifying the Installation
 
 You should now test all samples and check they run correctly. As an example,
-the dyna example is started by entering the following commands:
+the 'dyna' example is started by entering the following commands:
 
     $ cd samples/dyna
     $ ./dyna
 
-By default, the samples will run using the Tcl/Tk environment. You should see
-nice gui windows and dialogs.
+By default, the samples will run using the graphical Tkenv environment.
+You should see GUI windows and dialogs.
 
 
 === Starting the IDE
@@ -191,11 +191,5 @@ that you use Linux, OS X, or another unix-like platform.
 Akaroa 2.6.7, which is the latest version at the time of writing, does not
 support Windows. You may try to port it using the porting guide from the
 Akaroa distribution.
-
-ifdef::OMNEST[]
-==== SystemC
-
-TODO
-endif::OMNEST[]
 
 

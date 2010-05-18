@@ -29,11 +29,10 @@ all: pdf html
 include ../cover/cover.makefrag.vc
 
 docbook:
-	asciidoc -b docbook -d book -f asciidoc.conf $(DEFINE_OMNEST) installguide.txt
+	asciidoc -b docbook -d book -f asciidoc.conf $(DEFINE_OMNEST) -a DOWNLOADSITE=$(DOWNLOADSITE) installguide.txt
 	perl -i~ -pe "s/\@OMNETPP\@/$(WHAT_REPL)/g" installguide.xml
 	perl -i~ -pe "s/\@omnetpp\@/$(what_repl)/g" installguide.xml
 	perl -i~ -pe "s/\@version\@/$(VERSION_REPL)/g" installguide.xml
-	perl -i~ -pe "s,\@DOWNLOADSITE\@,$(DOWNLOADSITE),g" installguide.xml
 
 html: catalog docbook
 	$(XSLTPROC) --nonet --xinclude --output tmp1.xml trans.xsl installguide.xml

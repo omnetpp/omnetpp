@@ -135,8 +135,8 @@ into your `~/.bash_profile`.
 
 
 If you still have problems installing Tcl/Tk, we recommend visiting the @OMNETPP@ site's
-wiki packages for further troubleshooting tips.
-Visit: 'http://www.omnetpp.org/pmwiki/index.php?n=Main.TclTkRelatedProblems'
+wiki packages for further troubleshooting tips:
+http://www.omnetpp.org/pmwiki/index.php?n=Main.TclTkRelatedProblems
 
 ==== BLT
 
@@ -145,7 +145,7 @@ distro does not have it, then your can either use Tkenv without BLT
 (not a big problem), or download and build BLT yourself.
 
 You can get the source tarball, `BLT2.4z.tar.gz` from the Sourceforge
-BLT project page, 'http://sourceforge.net/projects/blt'.
+BLT project page, http://sourceforge.net/projects/blt.
 
 Unpack the source tgz, change into its directory, then type `./configure`,
 then `make` and `make install`. (For the last step you'll need root privileges --
@@ -161,7 +161,7 @@ in it.
 
 If you don't have root privileges or you get an error during the build,
 please check the following page:
-'http://www.omnetpp.org/pmwiki/index.php?n=Main.TclTkRelatedProblems'
+http://www.omnetpp.org/pmwiki/index.php?n=Main.TclTkRelatedProblems
 
 ==== The Java Runtime
 
@@ -179,7 +179,7 @@ OpenMPI, or any other standards-compliant MPI package.
 
 === Downloading and Unpacking
 
-Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
+Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
 the generic archive, `@omnetpp@-@version@-src.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
@@ -328,7 +328,7 @@ compiled and installed manually before installing @OMNETPP@;.
 NOTE: Akaroa 2.7.6 is supported only on Linux and Solaris platforms.
 
 Download Akaroa 2.7.6 from:
-  'http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/'
+  http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/
 
 Extract it into a temporary directory:
 
@@ -350,4 +350,15 @@ Configure, build and install the Akaroa library. By default, it will be installe
 
 Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
+
+ifdef::OMNEST[]
+
+==== SystemC
+
+The SystemC integration component with examples is found under the
+`extensions/systemc` directory of the @OMNETPP@ installation. Please
+follow the instructions in the `README` file.
+
+endif::OMNEST[]
+
 

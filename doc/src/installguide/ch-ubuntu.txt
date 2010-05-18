@@ -10,6 +10,7 @@ The following Ubuntu releases are covered:
 
 * Ubuntu 8.04 LTS ('Hardy Heron')
 * Ubuntu 9.10 ('Karmic Koala')
+* Ubuntu 10.04 ('Lucid Lynx')
 
 They were tested on the following architectures:
 
@@ -93,27 +94,5 @@ Click 'Apply', then in the 'Apply the following changes?' window, click 'Apply' 
 In the 'Changes applied' window, click 'Close'.
 
 
-=== IDE Quirk on Ubuntu 9.10
-
-If you are using Ubuntu 9.10, you may find that some buttons do not work
-in the @OMNETPP@ IDE. Clicking has no effect but keyboard shortcuts still work.
-
-This bug is the result of an unfortunate interference of a new GTK feature
-and the way Eclipse (on which the IDE is based) handles buttons internally.
-This bug is fixed in Eclipse 3.6M2, but the IDE is based on Eclipse 3.5.
-You can work around the issue in Eclipse 3.5 by setting an environment
-variable:
-
-  $ export GDK_NATIVE_WINDOWS=1
-
-We have added the above line to the `bin/@omnetpp@` script. However, if you bypass
-the script by running `ide/@omnetpp@` directly, then you have to make ensure
-yourself that then environment variable is set.
-
-Related links:
-
-* https://bugs.eclipse.org/bugs/show_bug.cgi?id=287307
-* http://www.norio.be/blog/2009/10/problems-eclipse-buttons-ubuntu-910
-* http://blog.export.be/2009/10/fixing-eclipse-for-ubuntu-karmic-koala-9-10/
 
 

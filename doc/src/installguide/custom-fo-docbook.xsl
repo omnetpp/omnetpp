@@ -73,6 +73,23 @@
 
 <!-- ***************  Cross References  *********************  -->
 <!-- ***************************************************  -->
+<!-- make links blue, see http://www.sagehill.net/docbookxsl/CustomXrefs.html#CustomXrefStyle -->
+<xsl:attribute-set name="xref.properties">
+  <xsl:attribute name="color">
+    <xsl:choose>
+      <xsl:when test="self::ulink">#0000e0</xsl:when>
+      <xsl:otherwise>inherit</xsl:otherwise>
+    </xsl:choose>
+  </xsl:attribute>
+<!--
+  <xsl:attribute name="font-style">
+    <xsl:choose>
+      <xsl:when test="self::ulink">italic</xsl:when>
+      <xsl:otherwise>inherit</xsl:otherwise>
+    </xsl:choose>
+  </xsl:attribute>
+-->
+</xsl:attribute-set>
 
 <!-- ***************  EBNF  *********************  -->
 <!-- ***************************************************  -->

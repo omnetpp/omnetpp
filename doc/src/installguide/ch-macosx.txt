@@ -14,7 +14,7 @@ the 'Additional packages' section at the end of this chapter.
 
 === Downloading and Unpacking @OMNETPP@
 
-Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
+Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
 the generic archive, `@omnetpp@-@version@-src.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
@@ -188,7 +188,8 @@ Project menu, and activate a different build configuration. (You may need to swi
 to the C/C++ perspective first, so that the required menu items appear in the Project menu.)
 _____________________________________________________________________
 
-So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
+If you encounter this message, choose Project -> Properties -> C/C++ Build ->
+Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
 
 
 === Reconfiguring the Libraries
@@ -250,8 +251,8 @@ that you generate from NED files in the IDE ('Generate NED Documentation...'
 item in the project context menu).
 
 Download and install the GraphViz OS X binaries from http://www.pixelglow.com/graphviz/download/.
-(Download the latest, version 2.x package; at the time of writing,
-the link is at the top of the page.)
+Download the latest, version 2.x package; at the time of writing,
+the link is at the top of the page.
 
 After installation, make sure that the `dot` program is available
 from the command line. Open a terminal, and type
@@ -290,11 +291,13 @@ support Mac OS X. You may try to port it using the porting guide from the
 Akaroa distribution.
 
 ifdef::OMNEST[]
-////
+
 ==== SystemC
 
-TODO
-////
+The SystemC integration component with examples is found under the
+`extensions/systemc` directory of the @OMNETPP@ installation. Please
+follow the instructions in the `README` file.
+
 endif::OMNEST[]
 
 

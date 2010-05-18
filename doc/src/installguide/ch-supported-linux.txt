@@ -5,7 +5,7 @@
 This chapter provides instructions for installing @OMNETPP@ on selected Linux
 distributions:
 
-* Ubuntu 8.04 LTS and 9.10
+* Ubuntu 8.04 LTS, 9.10, 10.04 LTS
 * Debian 5.0
 * Fedora Core 11 and 12
 * CentOS 5.4
@@ -39,7 +39,7 @@ chapter.
 
 === Downloading and Unpacking
 
-Download @OMNETPP@ from @DOWNLOADSITE@. Make sure you select to download
+Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
 the generic archive, `@omnetpp@-@version@-src.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
@@ -197,7 +197,8 @@ Project menu, and activate a different build configuration. (You may need to swi
 to the C/C++ perspective first, so that the required menu items appear in the Project menu.)
 _____________________________________________________________________
 
-So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
+If you encounter this message, choose Project -> Properties -> C/C++ Build ->
+Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
 
 
 === Reconfiguring the Libraries
@@ -243,7 +244,7 @@ manually before installing @OMNETPP@.
 
 Download Akaroa 2.7.6 (which is the latest version at the time of writing)
 from the project's web site:
-'http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/'
+http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/
 
 Extract it into a temporary directory:
 
@@ -267,11 +268,13 @@ Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will 
 automatically detected if you installed it to the default location.
 
 ifdef::OMNEST[]
-////
+
 ==== SystemC
 
-TODO
-////
+The SystemC integration component with examples is found under the
+`extensions/systemc` directory of the @OMNETPP@ installation. Please
+follow the instructions in the `README` file.
+
 endif::OMNEST[]
 
 
