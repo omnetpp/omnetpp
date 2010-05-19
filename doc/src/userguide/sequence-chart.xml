@@ -40,7 +40,7 @@
   </sect1>
 
   <sect1>
-    <title>Creating an eventlog file</title>
+    <title>Creating an Eventlog File</title>
     <para>
       The INI File Editor in the &Omnetpp; IDE provides a group of widgets in the
       ``Output Files'' section to configure automatic eventlog
@@ -123,17 +123,17 @@
 	      <entry>module full path as axis label</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-InitializationEvent.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-InitializationEvent.png"/>
 	        (hollow circle)</entry>
 	      <entry>initialization event</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessageProcessingEvent.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessageProcessingEvent.png"/>
 	        (green disc)</entry>
 	      <entry>self-message processing event</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-MessageProcessingEvent.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageProcessingEvent.png"/>
 	        (red disc)</entry>
 	      <entry>message processing event</entry>
 	    </row>
@@ -142,17 +142,17 @@
 	      <entry>event number</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessage.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessage.png"/>
 	        (blue arrow, arched)</entry>
 	      <entry>self-message</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-MessageSend.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageSend.png"/>
 	        (blue arrow)</entry>
 	      <entry>message send</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-MessageReuse.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageReuse.png"/>
 	        (green dotted arrow)</entry>
 	      <entry>message reuse</entry>
 	    </row>
@@ -162,32 +162,32 @@
 	      <entry>method call</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SplitArrow.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-SplitArrow.png"/>
 	        <para>(arrow with a dashed segment)</para></entry>
 	      <entry>message send that goes far away; split arrow</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/>
 	        <para>(arrow with zigzag)</para></entry>
 	      <entry>virtual message send; zigzag arrow</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-TransmissionDuration-ReceptionAtStart.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-TransmissionDuration-ReceptionAtStart.png"/>
 	        <para>(blue parallelogram)</para></entry>
 	      <entry>transmission duration; reception at start</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-TransmissionDuration-ReceptionAtEnd.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-TransmissionDuration-ReceptionAtEnd.png"/>
 	        <para>(blue parallelogram)</para></entry>
 	      <entry>transmission duration; reception at end</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SplitTransmissionDuration-ReceptionAtStart.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-SplitTransmissionDuration-ReceptionAtStart.png"/>
 	        <para>(blue strips)</para></entry>
 	      <entry>split transmission duration; reception at start</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SplitTransmissionDuration-ReceptionAtEnd.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-SplitTransmissionDuration-ReceptionAtEnd.png"/>
 	        <para>(blue strips)</para></entry>
 	      <entry>split transmission duration; reception at end</entry>
 	    </row>
@@ -202,12 +202,12 @@
 	      <entry>method name</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-ZeroSimulationTimeRegion.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-ZeroSimulationTimeRegion.png"/>
 	        (gray background)</entry>
 	      <entry>zero simulation time region</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SimulationTimeHairline.png"/> 
+	      <entry><icon file="pictures/SequenceChart-Legend-SimulationTimeHairline.png"/>
 	        (dashed gray line)</entry>
 	      <entry>simulation time hairline</entry>
 	    </row>
@@ -715,7 +715,7 @@
       Filter Dialog
     </picture>
     <sect2>
-      <title>Range filter</title>
+      <title>Range Filter</title>
       <para>
 	This is the simplest filter, which filters out events from the beginning and
 	end of the eventlog. It might help to reduce the computation time dramatically
@@ -724,7 +724,7 @@
       </para>
     </sect2>
     <sect2>
-      <title>Module filter</title>
+      <title>Module Filter</title>
       <para>
 	With this kind of filter, you can filter out events that did not occur in any of
 	the specified modules. The modules which will be included in the result can be
@@ -734,7 +734,7 @@
       </para>
     </sect2>
     <sect2>
-      <title>Message filter</title>
+      <title>Message Filter</title>
       <para>
 	This filter is the most complicated one. It allows filtering for events, which
 	either process or send specific messages. The messages can be selected based on
@@ -753,7 +753,7 @@
       </para>
     </sect2>
     <sect2>
-      <title>Tracing causes/consequences</title>
+      <title>Tracing Causes/Consequences</title>
       <para>
 	The trace filter allows filtering for causes and consequence of a particular event
 	specified by its event number. The cause/consequence relation between two events
@@ -771,7 +771,7 @@
       </warning>
     </sect2>
     <sect2>
-      <title>Collection limits</title>
+      <title>Collection Limits</title>
       <para>
 	When an in-memory filter is applied to an eventlog, it does not only filter out
 	events, but it also provides automatic discovery for virtual message sends. It
@@ -788,7 +788,7 @@
       </para>
     </sect2>
     <sect2>
-      <title>Long Running Operations</title>
+      <title>Long-Running Operations</title>
       <para>
 	Sometimes, computing the filter's result takes a lot of time, especially when
 	tracing causes/consequences without specifying proper range limits in terms of
@@ -805,7 +805,7 @@
   </sect1>
 
   <sect1>
-    <title>Other features</title>
+    <title>Other Features</title>
     <para>
       Both the Sequence Chart and the Eventlog Table tools can be used as an editor and
       also as a view. The difference between an editor or a view is quite important
@@ -865,7 +865,7 @@
       </para>
     </sect2>
     <sect2>
-      <title>Viewing a running simulation's results</title>
+      <title>Viewing a Running Simulation's Results</title>
       <para>
 	Even though the simulation kernel keeps the eventlog file open for writing while the
 	simulation is running, it may be open in the &Omnetpp; IDE simultaneously. Both
@@ -1137,7 +1137,7 @@
   <eventnumber>5000</eventnumber>.
       </para>
       <sect3>
-  <title>Preparing the result</title>
+  <title>Preparing the Result</title>
   <para>
     When you open the Sequence Chart, it will show a couple of self-messages named
     'move' being scheduled regularly. These are self-messages that control the
@@ -1184,7 +1184,7 @@
   </para>
       </sect3>
       <sect3>
-  <title>Successful ping</title>
+  <title>Successful Ping</title>
   <para>
     The first message sent by 'host1' is not a ping request but an ARP request. The
     processing of this message in 'host0' generates the corresponding ARP
@@ -1251,7 +1251,7 @@
   </commercial>
       </sect3>
       <sect3>
-  <title>Unsuccessful ping</title>
+  <title>Unsuccessful Ping</title>
   <para>
     To see how the chart looks when the ping messages get lost in the air, first
     turn off range filtering. Then, go to <eventnumber>1269</eventnumber> by

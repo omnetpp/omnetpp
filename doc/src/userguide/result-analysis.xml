@@ -51,7 +51,7 @@
       apply, and what kind of charts to create from them. The pages (tabs) of the editor roughly correspond to
       these steps.</para>
     <sect2>
-      <title>Input files</title>
+      <title>Input Files</title>
       <sect3>
         <title>Selecting input files</title>
         <para> The first page displays the result files that serve as input for the analysis. The upper half

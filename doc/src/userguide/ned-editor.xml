@@ -9,11 +9,26 @@
       The new NED editor is a dual-mode editor. In the editor's graphical mode, you can edit the network using the
       mouse. The textual mode allows you to work directly on the NED source.
     </para>
+    <para> When the IDE detects errors in a NED file, the problem will be flagged with an error marker in the
+      ``Project Explorer'' and the ``Problems View'' will be updated to show the description and location of the
+      problem. In addition, error markers will appear in the text window or on the graphical representation of the
+      problematic component. Opening a NED file which contains an error will open the file in text mode.
+      Switching to graphical mode is possible only if the NED file is syntactically correct.
+    </para>
+    <note>
+      As a side effect, if there are two modules with the same name and package in related projects,
+      they will collide and both will be marked with an error. Furthermore, the name will be treated as undefined
+      and any other modules depending on it will also generate an error (thus, a "no such module type" error
+      may mean that there are actually multiple definitions which nullify each other).
+    </note>
+  </sect1>
+  <sect1>
+    <title>Opening Older NED Files</title>
     <para>
       The syntax of NED files has changed significantly from the 3.x version.
       The NED editor primarily supports the new syntax. However, it is still possible
       to read and display NED files with the old syntax. It is important to note that many of the advanced features (syntax
-      highlighting, content assistance, etc.) will not work. There is automatic conversion from the old syntax
+      highlighting, content assistance, etc.) will not work with the old syntax. There is automatic conversion from the old syntax
       to the new, available both from the NED editor and as an external utility program (
       <command>nedtool</command>
       ).
@@ -29,18 +44,6 @@
       modules, so it is only possible to display a compound module correctly if all related NED definitions
       are available.
     </para>
-    <para> When the IDE detects errors in a NED file, the problem will be flagged with an error marker in the
-      ``Project Explorer'' and the ``Problems View'' will be updated to show the description and location of the
-      problem. In addition, error markers will appear in the text window or on the graphical representation of the
-      problematic component. Opening a NED file which contains an error will open the file in text mode.
-      Switching to graphical mode is possible only if the NED file is syntactically correct.
-    </para>
-    <note>
-      As a side effect, if there are two modules with the same name and package in related projects,
-      they will collide and both will be marked with an error. Furthermore, the name will be treated as undefined
-      and any other modules depending on it will also generate an error (thus, a "no such module type" error
-      may mean that there are actually multiple definitions which nullify each other).
-    </note>
   </sect1>
   <sect1>
     <title>Creating New NED Files</title>
@@ -91,7 +94,7 @@
       switching back and forth.
     </para>
     <sect2>
-      <title>Editing in graphical mode</title>
+      <title>Editing in Graphical Mode</title>
       <para> The graphical editor displays the visible elements of the loaded NED file. Simple modules,
         compound modules and networks are represented by figures or icons. Each NED file can contain more than
         one module or network. If it does, the corresponding figures will appear in the same order as they
@@ -128,13 +131,13 @@
         reading.
       </para>
       <sect3>
-        <title>Creating modules</title>
+        <title>Creating Modules</title>
         <para> To create a module or a submodule, click on the appropriate palette item and then click where
           you want to place the new element. Submodules can be placed only inside compound modules or networks,
           while other types can be dropped directly into the editor window.</para>
       </sect3>
       <sect3>
-        <title>Creating and changing connections</title>
+        <title>Creating and Changing Connections</title>
         <para> Select the ``connection tool'' (if there are channels defined in the project, you can use the
           dropdown to select the connection channel type). First, click the source module and
           then, the destination. A popup menu will appear, asking which gates should be connected on the two
@@ -142,14 +145,14 @@
           connect two output gates).</para>
       </sect3>
       <sect3>
-        <title>Reconnecting modules</title>
+        <title>Reconnecting Modules</title>
         <para>Clicking and dragging a connection end point to another module will reconnect it (optionally,
           asking which gate should be connected). If you want to change only the gate, drag the
           connection end point and drop it over the original module. A popup will appear asking for the source
           or destination gate.</para>
       </sect3>
       <sect3>
-        <title>Selecting elements</title>
+        <title>Selecting Elements</title>
         <para>
           Selecting an element is done by clicking on it or by dragging a rectangle over the target modules.
           A compound module can be selected by clicking on its border or title. If you want to select only
@@ -164,7 +167,7 @@
         </para>
       </sect3>
       <sect3>
-        <title>Undo, redo, deleting elements</title>
+        <title>Undo, Redo, Deleting Elements</title>
         <para>
           Use
           <keycap>Ctrl+Z</keycap> and
@@ -175,7 +178,7 @@
         </para>
       </sect3>
       <sect3>
-        <title>Moving and resizing elements</title>
+        <title>Moving and Resizing Elements</title>
         <para>
           You can move/resize the selected elements with the mouse. Holding down
           <keycap>SHIFT</keycap>
@@ -190,7 +193,7 @@
           both in the ``View'' menu and in the context menu).</para>
       </sect3>
       <sect3>
-        <title>Copying elements</title>
+        <title>Copying Elements</title>
         <para>
           Holding down
           <keycap>CTRL</keycap>
@@ -211,7 +214,7 @@
         </para>
       </sect3>
       <sect3>
-        <title>Pinning and unpinning, re-layouting</title>
+        <title>Pinning, Unpinning, Re-Layouting</title>
         <para> A submodule display string may or may not contain explicit coordinates for the submodule; if it
           does not, then the location of the submodule will be determined by the layouting algorithm. A
           submodule with explicit coordinates is pinned; one without is unpinned. The Pin action inserts the
@@ -222,7 +225,7 @@
           submodules may appear at different locations next time the same NED file is opened.</para>
       </sect3>
       <sect3>
-        <title>Choosing an icon for a module</title>
+        <title>Choosing an Icon for a Module</title>
         <para> To choose an icon for a module, right-click on it and select the ``Choose an Icon...'' menu item
           from the context menu or select the module and modify the icon property in the ``Properties View''.
         </para>
@@ -239,7 +242,7 @@
           on it. Choose ``Show In'' from the context menu, and select the desired view.</para>
       </sect3>
       <sect3>
-        <title>Opening a NED type</title>
+        <title>Opening a NED Type</title>
         <para>
           If you know only the name of a module type or other NED element, you can use the ``Open NED
           Type'' dialog by pressing
@@ -250,7 +253,7 @@
         </para>
       </sect3>
       <sect3>
-        <title>Setting properties</title>
+        <title>Setting Properties</title>
         <para>
           Elements of the display string and other properties associated with the selected elements can be
           edited in the ``Properties View''. The Property View is grouped and hierarchically organized; however,
@@ -289,7 +292,7 @@
       </note>
     </sect2>
     <sect2>
-      <title>Editing in source mode</title>
+      <title>Editing in Source Mode</title>
       <para> The NED source editor supports all functionality that one can expect from an Eclipse-based text
         editor, such as syntax highlighting (for the new NED syntax), clipboard cut/copy/paste and unlimited
         undo/redo. Here is a summary of these features:</para>
@@ -350,13 +353,13 @@
         .
       </para>
       <sect3>
-        <title>Converting to the new NED format</title>
+        <title>Converting to the New NED Syntax</title>
         <para> If you have an NED file with older syntax, you can still open it. A context menu item allows you
           to convert it to the new syntax. If the NED file is already using the new syntax, the ``Convert to
           4.x Format'' menu item is disabled.</para>
       </sect3>
       <sect3>
-        <title>Content assist</title>
+        <title>Content Assist</title>
         <para>
           If you need help, just press
           <keycap>Ctrl+SPACE</keycap>
@@ -376,7 +379,7 @@
         </para>
       </sect3>
       <sect3>
-        <title>Organizing imports</title>
+        <title>Organizing Imports</title>
         <para>
           Sometimes, it is very inconvenient to add the necessary import statements to the beginning of the NED
           file by hand. The IDE can do it for you (almost) automatically. Pressing
@@ -386,14 +389,14 @@
         </para>
       </sect3>
       <sect3>
-        <title>Cleaning up NED files</title>
+        <title>Cleaning Up NED Files</title>
         <para> This function does a general repair on all selected NED files by throwing out or adding import
           statements as needed, checking (and fixing) the file's package declaration, and
           reformatting the source code. It can be activated by clicking on the ``Project | Clean Up NED Files''
           menu item from the main menu.</para>
       </sect3>
       <sect3>
-        <title>Formatting the source code</title>
+        <title>Formatting the Source Code</title>
         <para>
           It is possible to reformat the whole NED file according to the recommended coding guidelines by
           activating the ``Format Source'' context menu item or by pressing the
@@ -420,7 +423,7 @@
     </sect2>
     <commercial>
       <sect2>
-        <title>Other features</title>
+        <title>Other Features</title>
 <!--FIXME TODO
         <sect3>
           <title>Printing</title>
@@ -428,7 +431,7 @@
         </sect3>
 -->
         <sect3>
-          <title>Exporting images</title>
+          <title>Exporting Images</title>
           <para> To export a compound module as a picture, select the compound module and bring up its context
             menu, select ``Export Image...'' and choose file name and type. The module will be exported to the
             file system. BMP, PNG, JPEG, SVG and PDF formats are supported.</para>

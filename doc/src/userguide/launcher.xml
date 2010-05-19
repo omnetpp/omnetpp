@@ -12,7 +12,7 @@
       IDE allows for running simulations and simulation batches directly from the IDE.
     </para>
     <sect2>
-      <title>Creating launch configuration</title>
+      <title>Creating a Launch Configuration</title>
       <para> &Omnetpp;
         IDE adds a new Eclipse launch configuration type that supports launching simulation executables. This
         launch type, &Omnetpp;
@@ -161,7 +161,7 @@
         </listitem>
       </itemizedlist>
       <sect3>
-        <title>Related command line arguments</title>
+        <title>Related Command-Line Arguments</title>
         <!-- TODO add some troubleshooting -->
         <para> Most settings in the dialog simply translate to command-line options to the simulation
           executable. This is summarized in the following list:</para>
@@ -290,7 +290,7 @@
   </sect1>
 
   <sect1>
-    <title>Controlling the execution and progress reporting</title>
+    <title>Controlling the Execution and Progress Reporting</title>
     <para>
       After starting a simulation process or simulation batch you can keep track of the
       started processes in the ``Debug View''. To open the ``Debug View'' automatically during
@@ -327,7 +327,7 @@
     </note>
 
     <sect3>
-    <title>Progress reporting</title>
+    <title>Progress Reporting</title>
       <para>
         If you have executed the simulation in the command line environment, you can
         monitor the progress of the simulation in the ``Progress View''. See the status line
