@@ -83,7 +83,7 @@ to start the IDE by typing:
 
 We recommend that you create a shortcut for starting the IDE. To do so, locate
 the `omnetpp.exe` program in the `@omnetpp@-@version@/ide` directory in Windows
-Explorer, right-click it, and choose 'Send To -> Desktop (create shortcut)' from
+Explorer, right-click it, and choose 'Send To > Desktop (create shortcut)' from
 the menu. On Windows 7, you can right-click the taskbar icon while the IDE is running,
 and select 'Pin this program to taskbar' from the context menu.
 
@@ -96,7 +96,8 @@ Project menu, and activate a different build configuration. (You may need to swi
 to the C/C++ perspective first, so that the required menu items appear in the Project menu.)
 _____________________________________________________________________
 
-So: Project->Properties -> C/C++ Build -> Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
+If you encounter this message, choose 'Project > Properties > C/C++ Build >
+Tool Chain Editor > Current toolchain > GCC for @OMNETPP@'.
 
 
 === Environment Variables
@@ -107,7 +108,7 @@ to the path.
 
 First, open the 'Environment Variables' dialog.
 
-* On Windows XP and Vista: Right click on My Computer. Choose 'Properties | Advanced | Environment variables'.
+* On Windows XP and Vista: Right-click 'My Computer', and choose 'Properties > Advanced > Environment variables'.
 
 * On Windows 7: Click the Start button, then start typing `environment variables`
 into the search box. Choose 'Edit environment variables for your account' when it
@@ -118,7 +119,7 @@ In the dialog, select `path` or `PATH` in the list, click 'Edit'. Append
 is the name of the @OMNETPP@ root directory (for example `C:\@omnetpp@-@version@`).
 Hit Enter to accept.
 
-You need to close and re-open any Command windows for the changes to take effect in them.
+You need to close and re-open any command windows for the changes to take effect in them.
 
 
 === Reconfiguring the Libraries

@@ -17,7 +17,7 @@ They were tested on the following architectures:
 
 === Opening a Terminal
 
-Choose 'Applications -> System Tools -> Terminal' from the menu.
+Choose 'Applications > System Tools > Terminal' from the menu.
 
 === Installing the Prerequisite Packages
 
@@ -37,7 +37,7 @@ then follow the instruction on the console.
 ==== Graphical Installation
 
 The graphical installer can be launched by choosing
-'System -> Administration -> Add/Remove Software' from the menu.
+'System > Administration > Add/Remove Software' from the menu.
 
 image::pictures/fedora-packageman.png[title="Add/Remove Software",align="center",scaledwidth="75%"]
 

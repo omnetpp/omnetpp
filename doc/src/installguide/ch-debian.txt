@@ -21,7 +21,7 @@ you may need to adjust the instructions accordingly.
 
 === Opening a Terminal
 
-Choose 'Applications -> Accessories -> Terminal' from the menu.
+Choose 'Applications > Accessories > Terminal' from the menu.
 
 This only applies if you use the Gnome Desktop (default).
 
@@ -66,7 +66,7 @@ of the package to install.
 ==== Graphical Installation
 
 The graphical installer, 'Synaptic', can be started
-with the 'System -> Administration -> Synaptic package manager' menu item.
+with the 'System > Administration > Synaptic package manager' menu item.
 
 Since software installation requires root permissions, Synaptic will ask you
 to type your password.

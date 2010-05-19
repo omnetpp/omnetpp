@@ -197,8 +197,8 @@ Project menu, and activate a different build configuration. (You may need to swi
 to the C/C++ perspective first, so that the required menu items appear in the Project menu.)
 _____________________________________________________________________
 
-If you encounter this message, choose Project -> Properties -> C/C++ Build ->
-Tool Chain Editor -> Current toolchain -> GCC for @OMNETPP@.
+If you encounter this message, choose 'Project > Properties > C/C++ Build >
+Tool Chain Editor > Current toolchain > GCC for @OMNETPP@'.
 
 
 === Reconfiguring the Libraries

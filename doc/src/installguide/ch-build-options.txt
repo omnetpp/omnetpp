@@ -1,6 +1,6 @@
 == Build Options
 
-=== configure.user Options
+=== Configure.user Options
 
 The `configure.user` file contains several options that can be used to fine-tune
 the simulation libraries.

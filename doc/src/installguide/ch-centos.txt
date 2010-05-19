@@ -26,7 +26,7 @@ as well, also known as RHEL 5.4.
 
 === Opening a Terminal
 
-Choose 'Applications -> Accessories -> Terminal' from the menu.
+Choose 'Applications > Accessories > Terminal' from the menu.
 
 === Installing the Prerequisite Packages
 
@@ -69,7 +69,7 @@ the resulting documentation to contain diagrams.
 ==== Graphical Installation
 
 The graphical installer can be launched by choosing
-'System -> Administration -> Add/Remove Software' from the menu.
+'System > Administration > Add/Remove Software' from the menu.
 
 Search for the following packages in the list. Select the checkboxes
 in front of the names, and pick the latest version of each package.
@@ -90,7 +90,7 @@ for more info about these packages.
 === SELinux
 
 You may need to turn off SELinux when running certain simulations.
-To do so, click on 'System -> Administration -> Security Level -> Firewall',
+To do so, click on 'System > Administration > Security Level > Firewall',
 go to the 'SELinux' tab, and choose 'Disabled'.
 
 You can verify the SELinux status by typing the `sestatus` command in a terminal.
