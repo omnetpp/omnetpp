@@ -14,9 +14,9 @@ One chapter is dedicated to each operating system.
 * Linux distributions covered in this Installation Guide
 
 ifdef::OMNEST[]
-Precompiled binaries are provided for the following platforms:
+32-bit precompiled binaries are provided for the following platforms:
 
-* Windows 7, Vista and XP with Microsoft Visual C++ version 7 (2003 .NET), 8 (2005) and 9 (2008)
+* Windows 7, Vista and XP with Microsoft Visual C++ version 8 (2005) and 9 (2008)
 * Windows 7, Vista and XP with the bundled MinGW GCC 4.x compiler
 
 On other platforms, @OMNETPP@ needs to be compiled from source.
