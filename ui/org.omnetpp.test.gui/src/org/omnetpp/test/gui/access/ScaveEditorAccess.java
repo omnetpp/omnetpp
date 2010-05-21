@@ -25,7 +25,7 @@ public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 	}
 
 	public BrowseDataPageAccess ensureBrowseDataPageActive() {
-		return (BrowseDataPageAccess)ensureActivePage("Browse data");
+		return (BrowseDataPageAccess)ensureActivePage("Browse Data");
 	}
 
 	public DatasetsAndChartsPageAccess ensureDatasetsPageActive() {

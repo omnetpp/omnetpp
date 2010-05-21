@@ -37,7 +37,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 
 /**
- * This is the "Browse data" page of Scave Editor
+ * This is the "Browse Data" page of Scave Editor
  */
 public class BrowseDataPage extends ScaveEditorPage {
 
@@ -84,8 +84,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 
 	private void initialize() {
 		// set up UI
-		setPageTitle("Browse data");
-		setFormTitle("Browse data");
+		setPageTitle("Browse Data");
+		setFormTitle("Browse Data");
 		//setBackground(ColorFactory.WHITE);
 		setExpandHorizontal(true);
 		setExpandVertical(true);

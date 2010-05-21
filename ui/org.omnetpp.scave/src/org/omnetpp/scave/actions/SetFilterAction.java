@@ -22,7 +22,7 @@ import org.omnetpp.scave.model2.RunAttributePayload;
 import org.omnetpp.scave.model2.RunPayload;
 
 /**
- * Sets the filters on the "Browse data" page with the attributes of the
+ * Sets the filters on the "Browse Data" page with the attributes of the
  * selected object.
  *
  * @author tomi
@@ -31,7 +31,7 @@ public class SetFilterAction extends AbstractScaveAction {
 
 	public SetFilterAction() {
 		setText("Set Filter");
-		setToolTipText("Set the filter on the \"Browse data\" page from the current selection.");
+		setToolTipText("Set the filter on the \"Browse Data\" page from the current selection.");
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class SetFilterAction extends AbstractScaveAction {
 
 	/**
 	 * Returns a filter object with the attributes of the selected object and their ancestors.
-	 * Returns non-null if the filter is to be applied on the "Browse data" page.
+	 * Returns non-null if the filter is to be applied on the "Browse Data" page.
 	 */
 	protected FilterUtil getFilterParams(Object object) {
 
