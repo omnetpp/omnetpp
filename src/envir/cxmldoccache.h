@@ -56,6 +56,17 @@ class ENVIR_API cXMLDocCache : public cObject
      * root element, not the root element itself.
      */
     virtual cXMLElement *getDocument(const char *filename);
+
+    /**
+     * Removes the given document from the cache, and deletes its cXMLElement
+     * tree. Nothing happens if the file has not been loaded.
+     */
+    virtual void forgetDocument(const char *filename);
+
+    /**
+     * Empties the document cache.
+     */
+    virtual void flushCache();
 };
 
 NAMESPACE_END

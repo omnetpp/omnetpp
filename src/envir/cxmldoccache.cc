@@ -19,6 +19,7 @@
 #include "cxmldoccache.h"
 #include "cxmlelement.h"
 #include "cexception.h"
+#include "fileutil.h"
 #include "../nedxml/saxparser.h"
 
 USING_NAMESPACE
@@ -166,16 +167,37 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
 cXMLElement *cXMLDocCache::getDocument(const char *filename)
 {
     // if found, return it from cache
-    XMLDocMap::iterator i = cache.find(std::string(filename));
-    if (i!=cache.end())
-        return i->second;
+    XMLDocMap::iterator it = cache.find(std::string(filename));
+    if (it != cache.end())
+        return it->second;
 
     // load and store in cache
     // TODO resolve <xi:include>
     cXMLElement *documentnode = parseDocument(filename);
-    cache[filename] = documentnode;
+
+    std::string key = tidyFilename(toAbsolutePath(filename).c_str());
+    cache[key] = documentnode;
 
     return documentnode;
 }
 
+void cXMLDocCache::forgetDocument(const char *filename)
+{
+    std::string key = tidyFilename(toAbsolutePath(filename).c_str());
+
+    XMLDocMap::iterator it = cache.find(key);
+    if (it != cache.end())
+    {
+        cXMLElement *node = it->second;
+        cache.erase(it);
+        delete node;
+    }
+}
+
+void cXMLDocCache::flushCache()
+{
+    for (XMLDocMap::iterator i=cache.begin(); i!=cache.end(); ++i)
+        delete i->second;
+    cache.clear();
+}
 

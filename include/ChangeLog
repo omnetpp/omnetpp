@@ -1,3 +1,12 @@
+2010-05-22  Andras Varga
+
+	* added forgetXMLDocument(filename) and flushXMLDocumentCache() to
+	cEnvir (see bug #131)
+
+	* cPar: added a note to the xmlValue() method that the lifetime of
+	the returned objects may be limited. Modules should NOT hang on to
+	cXMLElement pointers between events!
+
 2010-05-07  Andras Varga
 
 	* restored cChannel::calculateDuration() that was removed in 4.1b3,
@@ -13,7 +22,7 @@
 
 	* added cComponent::isChannel() utility method
 
-	* cChannel: introduced MessageSentSignalValue to make transmission 
+	* cChannel: introduced MessageSentSignalValue to make transmission
 	details (result_t) available in listeners of the "messageSent"
 	channel signal
 
@@ -37,8 +46,8 @@
 	in subclasses
 
 	* cPacket: getEncapsulatedMsg() renamed to getEncapsulatedPacket()
-	to better describe its function. The old method was left there for 
-	backward compatibility; it is deprecated and delegates to the new 
+	to better describe its function. The old method was left there for
+	backward compatibility; it is deprecated and delegates to the new
 	method.
 
 	* cClassFactory renamed to cObjectFactory
@@ -49,7 +58,7 @@
 
 2010-03-31  Rudolf Hornig
 
-	* handleParameterChange() is called for each component with 
+	* handleParameterChange() is called for each component with
 	parameterName=NULL after the last stage of the initialization phase.
 	This allows the components to refresh their cached parameter values
 	if some parameters were changed during the initialization phase.
@@ -60,12 +69,12 @@
 
 2010-03-10  Andras Varga
 
-	* When recording a histogram object into the scalars file (see 
+	* When recording a histogram object into the scalars file (see
 	cComponent::recordStatistic(), cStatistics::record(), etc.),
 	its transform() method gets invoked to force it set up the histogram
 	cells, provided it was not already invoked.
 
-	* cVarHistogram: createEquiProbableCells() renamed to 
+	* cVarHistogram: createEquiProbableCells() renamed to
 	createEquiprobableCells() (lowercase "p")
 
 	* cOutVector: added setRecordDuringWarmupPeriod() and getRecordDuring-
@@ -87,8 +96,8 @@
 
 2010-02-15  Andras Varga
 
-	* cChannel: deliver() method semantics changed, method renamed to 
-	process(), and argument list changed. Reason is to decrease the 
+	* cChannel: deliver() method semantics changed, method renamed to
+	process(), and argument list changed. Reason is to decrease the
 	amount of code that needs to be written when implementing a new
 	channel class, and to improve reusability via subclassing.
 	See documentation in the code.

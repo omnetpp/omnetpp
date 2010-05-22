@@ -180,6 +180,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void readParameter(cPar *parameter);
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
+    virtual void forgetXMLDocument(const char *filename);
+    virtual void flushXMLDocumentCache();
     // leave to subclasses: virtual unsigned getExtraStackForEnvir();
     virtual cConfiguration *getConfig();
     virtual cConfigurationEx *getConfigEx();

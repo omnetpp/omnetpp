@@ -65,7 +65,6 @@
 #include "commonutil.h"
 #include "../common/ver.h"
 
-
 #include "timeutil.h"
 #include "platmisc.h"
 #include "fileutil.h"  // splitFileName
@@ -1173,6 +1172,16 @@ cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
         // returns the root element (child of the document node)
         return documentnode->getFirstChild();
     }
+}
+
+void EnvirBase::forgetXMLDocument(const char *filename)
+{
+    xmlcache->forgetDocument(filename);
+}
+
+void EnvirBase::flushXMLDocumentCache()
+{
+    xmlcache->flushCache();
 }
 
 cConfiguration *EnvirBase::getConfig()

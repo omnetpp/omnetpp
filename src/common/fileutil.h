@@ -35,7 +35,7 @@ COMMON_API std::string fileNameToSlash(const char *fileName);
 
 /**
  * Splits the last segment of the given path. Use only with canonical absolute paths!
- * (In extreme cases and irregularities in the path the result is unpredicateble)
+ * (In extreme cases and irregularities in the path the result is unpredictable)
  */
 COMMON_API void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly);
 
@@ -43,6 +43,14 @@ COMMON_API void splitFileName(const char *pathname, std::string& dir, std::strin
  * Calls splitFileName() and returns the dir part of the result
  */
 COMMON_API std::string directoryOf(const char *pathname);
+
+/**
+ * Canonicalizes the given path. For example, changes backslashes to slashes
+ * (or the other way round, depending on the slashes arg), kills off multiple slashes,
+ * dot and dot-dot components ((foo//bar --> foo/bar, foo/./bar --> foo/bar,
+ * foo/../bar --> bar), etc. You may want to convert the path to absolute
+ * (toAbsolutePath()) before calling this function.
+ */
 COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
 COMMON_API std::string toAbsolutePath(const char *pathname);
 COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);

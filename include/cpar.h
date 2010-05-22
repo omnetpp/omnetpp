@@ -286,6 +286,17 @@ class SIM_API cPar : public cObject
 
     /**
      * Returns value as pointer to cXMLElement. The cPar type must be XML.
+     *
+     * The lifetime of the returned object tree is undefined, but it is
+     * valid at least until the end of the current simulation event or
+     * initialize() call. Modules are expected to process their XML
+     * configurations at once (within one event or within initialize()),
+     * and not hang on to pointers returned from this method. The reason
+     * for the limited lifetime is that this method may return pointers to
+     * objects stored in an internal XML document cache, and the simulation
+     * kernel reserves the right to discard cached XML documents at any time
+     * to free up memory, and re-load them on demand (i.e. when xmlValue() is
+     * called again).
      */
     cXMLElement *xmlValue() const;
 
@@ -474,7 +485,8 @@ class SIM_API cPar : public cObject
     operator std::string() const  {return stdstringValue();}
 
     /**
-     * Equivalent to xmlValue().
+     * Equivalent to xmlValue(). NOTE: The lifetime of the returned object tree
+     * is limited; see xmlValue() for details.
      */
     operator cXMLElement *() const  {return xmlValue();}
     //@}

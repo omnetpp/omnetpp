@@ -361,6 +361,30 @@ class SIM_API cEnvir
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL) = 0;
 
     /**
+     * Removes the given document from the XML document cache (if cached), and
+     * deletes the object tree from memory. Further getXMLDocument() calls will
+     * reload the file from the disk. After forgetXMLDocument(), cXMLElement
+     * objects returned for the same document by getXMLDocument() should
+     * no longer be referenced. The call has no effect if the given file
+     * does not exist or has not yet been loaded.
+     *
+     * CAUTION: As of version 4.1, this is not a safe operation, as module
+     * parameters (cPar) of type "xml" hold pointers to the element trees
+     * returned by getXMLDocument().
+     */
+    virtual void forgetXMLDocument(const char *filename) = 0;
+
+    /**
+     * Clears the XML document cache, and deletes the cached cXMLElement trees.
+     *
+     * CAUTION: As of version 4.1, this is not a safe operation, as module
+     * parameters (cPar) of type "xml" hold pointers to the element trees
+     * returned by getXMLDocument(), and this method makes those pointers
+     * invalid.
+     */
+    virtual void flushXMLDocumentCache() = 0;
+
+    /**
      * Called from cSimpleModule, it returns how much extra stack space
      * the user interface recommends for activity() simple modules.
      */
