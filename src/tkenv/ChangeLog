@@ -1,3 +1,8 @@
+2010-05-25 Andras Varga
+
+	* Fix: "wm iconphoto" does not exist on OS X 10.5, and does not work
+	on 10.6.
+
 2010-05-15 Andras Varga
 
 	* Added application icon to Tkenv. To make it easier to tell windows

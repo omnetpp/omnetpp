@@ -60,7 +60,8 @@ proc setupTkOptions {} {
    # test for BLT
    set HAVE_BLT 0
    catch {package require BLT; set HAVE_BLT 1}
-   if {!$HAVE_BLT} {
+   if {!$HAVE_BLT && ![string equal [tk windowingsystem] aqua]} {
+      # no BLT on OS X Tk Aqua, so skip the warning
       puts "\n*** BLT Tcl/Tk extension not found -- please make sure it is installed, and TCL_LIBRARY is set properly."
    }
    if {$HAVE_BLT} {
@@ -1217,8 +1218,6 @@ proc wm_getdecorationsize {arrayname} {
 proc move_to_screen {w} {
     global tcl_platform
 
-    puts "CHECKING WHETHER $w NEEDS TO BE MOVED TO BE FULLY ON THE SCREEN"
-
     # Note:
     # - winfo width/height returns the size WITHOUT window manager decorations (title bar, handle border)
     # - winfo x/y returns the position WITHOUT window manager decorations
@@ -1255,10 +1254,9 @@ proc move_to_screen {w} {
     }
 
     if {$x!=$oldx || $y!=$oldy} {
-        puts "MOVING $w: SETTING GEOM TO +$x+$y"
         # move the window
         if {$tcl_platform(platform) != "windows"} {wm withdraw $w}
-        update idletasks  ;#FIXME needed???
+        update idletasks  ;# needed
         wm geom $w +$x+$y
         if {$tcl_platform(platform) != "windows"} {wm deiconify $w}
     }
