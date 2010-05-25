@@ -18,6 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.misc.ConnectionLabelLocator;
 
 /**
@@ -30,7 +31,14 @@ public class ConnectionFigure extends PolylineConnection {
 	protected int localLineStyle = Graphics.LINE_SOLID;
 	protected int localLineWidth = 1;
 	protected Color localLineColor = null;
-    protected Label textFigure = new Label();
+    protected Label textFigure = new Label() {
+        // KLUDGE: we don't want to allow selecting a connection by clicking on its visible label
+        // NOTE: overriding findFigureAt does not work
+        @Override
+        public boolean containsPoint(int x, int y) {
+            return false;
+        };
+    };
     protected ConnectionLabelLocator labelLocator = new ConnectionLabelLocator(this);
     protected TooltipFigure tooltipFigure;
 	protected boolean isArrowHeadEnabled;
@@ -113,9 +121,10 @@ public class ConnectionFigure extends PolylineConnection {
 
         if (textFigure == null)
             return;
-        textFigure.setVisible(text != null && !"".equals(text));
+        boolean isEmpty = StringUtils.isEmpty(text);
+        textFigure.setVisible(!isEmpty);
         // we add an extra space, because label ends might be clipped because of antialiasing
-        textFigure.setText(text+" ");
+        textFigure.setText(isEmpty ? "" : text + " ");
         textFigure.setForegroundColor(color);
         // set position
         if (alignment != null) {

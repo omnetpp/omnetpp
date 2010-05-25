@@ -172,10 +172,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
             if (!isGroup && parent.getFirstLoopChild() != null)
                 isGroup = true;
         }
-        
-        ConnectionKindFigure figure = new ConnectionKindFigure(isConditional, isGroup);
-
-        cfig.setMidpointDecoration(figure);
+        if (isConditional || isGroup)
+            cfig.setMidpointDecoration(new ConnectionKindFigure(isConditional, isGroup));
     }
 
     public void setEditable(boolean editable) {
