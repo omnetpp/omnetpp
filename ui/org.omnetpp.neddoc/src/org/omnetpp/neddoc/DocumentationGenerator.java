@@ -247,7 +247,7 @@ public class DocumentationGenerator {
     public void setGeneratePerTypeInheritanceDiagrams(boolean generatePerTypeInheritanceDiagrams) {
     	this.generatePerTypeInheritanceDiagrams = generatePerTypeInheritanceDiagrams;
     }
-    
+
 	public void setGeneratePerTypeUsageDiagrams(boolean generatePerTypeUsageDiagrams) {
 		this.generatePerTypeUsageDiagrams = generatePerTypeUsageDiagrams;
 	}
@@ -271,7 +271,7 @@ public class DocumentationGenerator {
 	public void setGenerateCppSourceListings(boolean generateCppSourceListings) {
 		this.generateCppSourceListings = generateCppSourceListings;
 	}
-	
+
     public void setDocumentationRootPath(IPath documentationRootPath) {
         this.documentationRootPath = documentationRootPath;
     }
@@ -422,6 +422,8 @@ public class DocumentationGenerator {
 
     protected void collectTypes() throws CoreException, IOException {
         monitor.subTask("Collecting types");
+        for (INedTypeInfo nedTypeInfo : nedResources.getBuiltInDeclarations())
+            typeElements.add(nedTypeInfo.getNedElement());
         for (IFile file : files) {
             if (nedResources.isNedFile(file))
                 typeElements.addAll(nedResources.getNedFileElement(file).getTopLevelTypeNodes());
@@ -1119,7 +1121,10 @@ public class DocumentationGenerator {
                             out("<br/>");
                         }
 
-                        generateFileReference(getNedOrMsgFile(typeElement));
+                        if (typeElement instanceof INedTypeElement && nedResources.isBuiltInDeclaration(((INedTypeElement)typeElement).getNedTypeInfo()))
+                            generateBuiltinTypeReference();
+                        else
+                            generateFileReference(getNedOrMsgFile(typeElement));
                         out("<br/>");
 
                         if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
@@ -1537,6 +1542,10 @@ public class DocumentationGenerator {
             out(label);
     }
 
+    protected void generateBuiltinTypeReference() throws IOException {
+        out("<b>Built-in type</b>");
+    }
+
     protected void generateFileReference(IFile file) throws IOException {
         out("<b>File: <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a></b>");
     }
@@ -1660,7 +1669,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
-        if (generateNedTypeFigures) {
+        if (generateNedTypeFigures && !nedResources.isBuiltInDeclaration(typeElement.getNedTypeInfo())) {
             out("<img src=\"" + getOutputFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
             DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
                 public void run() {
