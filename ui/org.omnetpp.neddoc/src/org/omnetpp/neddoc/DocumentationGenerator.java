@@ -1781,9 +1781,10 @@ public class DocumentationGenerator {
 
             out("<h3 class=\"subtitle\">Usage diagram:</h3>\r\n" +
                 "<p>The following diagram shows usage relationships between types.\r\n" +
-                "Unresolved types are missing from the diagram.\r\n");
+                "Unresolved types are missing from the diagram.");
             if (generateFullUsageDiagrams)
-            	out("Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
+            	out(" Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.");
+            out("</p>\r\n");
 
             generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".png"), getOutputFileName(typeElement, "usage", ".map"));
         }
@@ -1835,9 +1836,10 @@ public class DocumentationGenerator {
 
             out("<h3 class=\"subtitle\">Inheritance diagram:</h3>\r\n" +
                 "<p>The following diagram shows inheritance relationships for this type.\r\n" +
-                "Unresolved types are missing from the diagram.\r\n");
+                "Unresolved types are missing from the diagram.");
             if (generateFullInheritanceDiagrams)
-            	out("Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.</p>\r\n");
+            	out(" Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.");
+            out("</p>\r\n");
 
             generateInheritanceDiagram(typeElements, getOutputFileName(typeElement, "inheritance", ".png"), getOutputFileName(typeElement, "inheritance", ".map"));
         }
