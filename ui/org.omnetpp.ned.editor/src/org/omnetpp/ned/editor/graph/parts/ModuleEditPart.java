@@ -14,7 +14,6 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
-
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.parts.policies.NedNodeEditPolicy;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
@@ -45,11 +44,11 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
 	/**
 	 * Returns a connection anchor registered for the given gate
 	 */
-	public abstract GateAnchor getConnectionAnchor(String gate);
+	public abstract GateAnchor getConnectionAnchor(ConnectionElementEx connection, String gate);
 
 	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
-		ConnectionElementEx conn = (ConnectionElementEx) connEditPart.getModel();
-		return getConnectionAnchor(conn.getSrcGateWithIndex());
+		ConnectionElementEx connection = (ConnectionElementEx) connEditPart.getModel();
+		return getConnectionAnchor(connection, connection.getSrcGateWithIndex());
 	}
 
 	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
@@ -58,8 +57,8 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
 	}
 
 	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
-		ConnectionElementEx conn = (ConnectionElementEx) connEditPart.getModel();
-		return getConnectionAnchor(conn.getDestGateWithIndex());
+		ConnectionElementEx connection = (ConnectionElementEx) connEditPart.getModel();
+		return getConnectionAnchor(connection, connection.getDestGateWithIndex());
 	}
 
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
