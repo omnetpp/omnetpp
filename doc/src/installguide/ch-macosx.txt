@@ -79,14 +79,6 @@ export variables.
 Check `configure.user` to make sure it contains the settings you need.
 In most cases you don't need to change anything in it.
 
-[NOTE]
-===============================================================
-If you want to build 64-bit binaries, you should add the `-m64` option to
-the `CFLAGS_RELEASE`, `CFLAGS_DEBUG` and `LDFLAGS` variables in `configure.user`.
-Set `NO_TCL=1` in `configure.user` too, because Tcl/Tk does not have a 64-bit
-version. You will not be able to use Tkenv, the graphical simulation runtime;
-simulations will run using the command line environment, Cmdenv.
-===============================================================
 
 In the top-level @OMNETPP@ directory, type:
 
@@ -116,6 +108,12 @@ it in an editor and search for phrases like 'error' or the name of the package
 associated with the problem.
 ===============================================================
 
+[NOTE]
+===============================================================
+The BLT toolkit is not required for @OMNETPP@ on Mac OS X, because
+the native (Aqua) version of Tcl/Tk on Mac OS X does not support it.
+===============================================================
+
 When `./configure` has finished, you can compile @OMNETPP@.
 Type in the terminal:
 
@@ -141,6 +139,18 @@ If you only want to build one set of the libraries, specify
 `MODE=debug` or `MODE=release`:
 
   $ make MODE=release
+===============================================================
+
+[NOTE]
+===============================================================
+The @OMNETPP@ build process creates 32-bit executables on both
+OS X 10.5 and 10.6. If you want to build a 64-bit executable on
+OS X 10.6, you must remove the `-m32` flag from the `CFLAGS_RELEASE`,
+`CFLAGS_DEBUG` and `LDFLAGS` variables in the `Makefile.inc` file.
+Please note that you will not be able to debug your 64-bit code
+from the @OMNETPP@ IDE, because the version of CDT (C/C++
+Development Toolkit) bundled with the IDE does not support 64-bit 
+targets.
 ===============================================================
 
 

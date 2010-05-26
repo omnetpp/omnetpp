@@ -242,6 +242,12 @@ else
            CFLAGS_ARCH="$CFLAGS_ARCH -arch ppc -arch i386"
            LDFLAGS_ARCH="$LDFLAGS_ARCH -arch ppc -arch i386"
         fi
+        # CDT 6.x does not support 64 bit debugging so we force 
+        # the compiler to build 32 bit executable because on OS X 10.6, 
+        # gcc builds 64 bit executables by default. After upgrading to
+        # CDT 7.0 these lines can be removed.
+        CFLAGS_ARCH="$CFLAGS_ARCH -m32"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -m32"
         ;;
     *)
         ;;
@@ -848,8 +854,11 @@ else  #matching "fi" is after BLT testing
         HAVE_BLT=yes
     else
         HAVE_BLT=no
-        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
-        AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), BLT not installed?])
+        # Native Tcl/Tk (aqua) on Mac OS does not support BLT so we do not annoy the users
+        if test "$PLATFORM" != "macosx"; then
+            OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
+            AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), BLT not installed?])
+        fi
     fi
 
     # if we got through until here, enable building of the following progs:
