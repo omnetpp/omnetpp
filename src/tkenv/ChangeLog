@@ -1,3 +1,13 @@
+2010-05-26 Andras Varga
+
+	* Tkenv: fix: during layouting, allow no UI interaction in first
+	three seconds. Reason: During Run or Fast mode, grab behaves strangely:
+	it may cause window focus to wander around; loses UI events so toolbar
+	buttons stay in their pushed or raised state, one cannot interact with
+	toolbar buttons such as Refresh Layout, and so on. We minimize these
+	problems by only activating grab if layouting lasts more than 3 seconds
+	(not typical during running the simulation.)
+
 2010-05-25 Andras Varga
 
 	* Fix: "wm iconphoto" does not exist on OS X 10.5, and does not work

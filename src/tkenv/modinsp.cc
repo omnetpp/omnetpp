@@ -448,17 +448,6 @@ void TGraphicalModWindow::refreshLayout()
 
     layouter->setSeed(random_seed);
 
-    Tcl_Interp *interp = getTkenv()->getInterp();
-
-    TGraphLayouterEnvironment environment(parentmodule, ds);
-    environment.setInterpreter(interp);
-
-    // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
-    // if (getTkenv()->opt_showlayouting)  // for debugging
-    if (submodPosMap.empty() && getTkenv()->opt_showlayouting)
-        environment.setCanvas(canvas);
-    layouter->setEnvironment(&environment);
-
     // background size
     int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentmodule, 0);
     int sy = resolveLongDispStrArg(ds.getTagArg("bgb",1), parentmodule, 0);
@@ -536,16 +525,23 @@ void TGraphicalModWindow::refreshLayout()
         }
     }
 
-    // perform incremental layout (nodes laid out previously, i.e. contained in submodPosMap, are taken as fixed)
+    // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
+    Tcl_Interp *interp = getTkenv()->getInterp();
+    TGraphLayouterEnvironment environment(interp, parentmodule, ds);
+
+    std::string stopButton = std::string(windowName()) + ".toolbar.stop";
     bool isExpressMode = getTkenv()->getSimulationRunMode() == Tkenv::RUNMODE_EXPRESS;
     if (!isExpressMode)
-        Tcl_VarEval(interp, "layouter_startgrab ", windowName(), ".toolbar.stop", NULL);
+        environment.setWidgetToGrab(stopButton.c_str());
 
-    Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
+    // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
+    // if (getTkenv()->opt_showlayouting)  // for debugging
+    if (submodPosMap.empty() && getTkenv()->opt_showlayouting)
+        environment.setCanvas(canvas);
+
+    layouter->setEnvironment(&environment);
     layouter->execute();
-
-    if (!isExpressMode)
-        Tcl_VarEval(interp, "layouter_releasegrab ", windowName(), ".toolbar.stop", NULL);
+    environment.cleanup();
 
     // fill the map with the results
     submodPosMap.clear();
@@ -559,7 +555,6 @@ void TGraphicalModWindow::refreshLayout()
     }
 
     random_seed = layouter->getSeed();
-    environment.cleanup();
 
     delete layouter;
 }

@@ -17,6 +17,7 @@
 #ifndef __LAYOUTERENV_H
 #define __LAYOUTERENV_H
 
+#include "timeutil.h"   // must precede <tk.h>, due to collision with <windows.h>
 #include <tk.h>
 #include "graphlayouter.h"
 
@@ -29,17 +30,23 @@ class cDisplayString;
 class TGraphLayouterEnvironment : public GraphLayouterEnvironment
 {
    protected:
+      // configuration
+      const char *widgetToGrab;
       const char *canvas;
       Tcl_Interp *interp;
       cModule *parentModule;
       const cDisplayString& displayString;
-      long lastCheck;
+
+      // state
+      struct timeval beginTime;
+      struct timeval lastCheck;
+      bool grabActive;
 
    public:
-      TGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString);
+      TGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString);
 
+      void setWidgetToGrab(const char *w) { this->widgetToGrab = w; }
       void setCanvas(const char *canvas) { this->canvas = canvas; }
-      void setInterpreter(Tcl_Interp *interp) { this->interp = interp; }
 
       void cleanup();
 

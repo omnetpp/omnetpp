@@ -31,15 +31,18 @@
 USING_NAMESPACE
 
 
-
-TGraphLayouterEnvironment::TGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString)
+TGraphLayouterEnvironment::TGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
     : displayString(displayString)
 {
+    this->interp = interp;
     this->parentModule = parentModule;
-
+    widgetToGrab = NULL;
     canvas = NULL;
     interp = NULL;
-    lastCheck = clock();
+
+    gettimeofday(&beginTime, NULL);
+    gettimeofday(&lastCheck, NULL);
+    grabActive = false;
 }
 
 bool TGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
@@ -104,6 +107,41 @@ void TGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, d
     }
 }
 
+bool TGraphLayouterEnvironment::okToProceed()
+{
+    //
+    // Strategy: do not interact with UI for up to 3 seconds. At the end of the
+    // 3rd second, start grab on the "STOP" button, and read its state
+    // occasionally (5 times per second). At the end (in cleanup()) we have to
+    // release the grab. Do not set a grab in Express mode (i.e. if widgetToGrab==NULL),
+    // because Express mode's large STOP button already has one.
+    //
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    if (timeval_msec(now - beginTime) < 3000)
+        return true;  // no UI interaction for up to 3 sec
+
+    if (!grabActive && widgetToGrab)
+    {
+        // start grab
+        grabActive = true;
+        Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
+        Tcl_VarEval(interp, "layouter_startgrab ", widgetToGrab, NULL);
+    }
+
+    // only check the UI once a while
+    if (timeval_msec(now - lastCheck) < 200)
+        return true;
+    lastCheck = now;
+
+    // process UI events; we assume that a "grab" is in effect to the Stop button
+    // (i.e. the user can only interact with the Stop button, but nothing else)
+    Tcl_VarEval(interp, "update\n", NULL);
+    const char *var = Tcl_GetVar(interp, "stoplayouting", TCL_GLOBAL_ONLY);
+    bool stopNow = var && var[0] && var[0]!='0';
+    return !stopNow;
+}
+
 void TGraphLayouterEnvironment::cleanup()
 {
     if (inspected())
@@ -114,22 +152,10 @@ void TGraphLayouterEnvironment::cleanup()
                             canvas, " yview moveto 0\n",
                             NULL);
     }
+    if (grabActive)
+    {
+        Tcl_VarEval(interp, "layouter_releasegrab ", widgetToGrab, NULL);
+    }
 }
 
-bool TGraphLayouterEnvironment::okToProceed()
-{
-    // only check the UI once a while
-    long now = clock();
-    if (now - lastCheck < CLOCKS_PER_SEC/5)
-        return true;
-    lastCheck = now;
 
-    // process UI events; we assume that a "grab" is in effect to the Stop button
-    // (ie user can only interact with the Stop button but nothing else)
-    Tcl_VarEval(interp, "update\n", NULL);
-    const char *var = Tcl_GetVar(interp, "stoplayouting", TCL_GLOBAL_ONLY);
-    bool stopNow = var && var[0] && var[0]!='0';
-    //if (stopNow)
-    //    printf("DBG: telling the layouter to stop...\n");
-    return !stopNow;
-}
