@@ -98,6 +98,7 @@ struct SCAVE_API ScalarResult : public ResultItem
  * Represents an output vector. This is only the declaration,
  * actual vector data are not kept in memory.
  */
+// TODO: there's a missing superclass between vectors and histograms that provides statistics, see the various sort<foo>By<bar> methods we need to make it work
 struct SCAVE_API VectorResult : public ResultItem
 {
     int vectorId;
@@ -125,6 +126,7 @@ struct SCAVE_API VectorResult : public ResultItem
 /**
  * Represents a histogram.
  */
+// TODO: there's a missing superclass between vectors and histograms that provides statistics, see the various sort<foo>By<bar> methods we need to make it work
 struct SCAVE_API HistogramResult : public ResultItem
 {
     Statistics stat;
