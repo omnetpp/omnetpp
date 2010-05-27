@@ -105,10 +105,10 @@ void InifileReader::readFile(const char *filename)
     if (defaultbasedir.empty())
         defaultbasedir = directoryOf(rootfilename.c_str());
 
-    internalReadFile(filename);
+    internalReadFile(filename, NULL);
 }
 
-void InifileReader::internalReadFile(const char *filename)
+void InifileReader::internalReadFile(const char *filename, Section *currentSection)
 {
     // create an entry for this file, checking against circular inclusion
     std::string tmpfname = tidyFilename(toAbsolutePath(filename).c_str(),true);
@@ -129,8 +129,6 @@ void InifileReader::internalReadFile(const char *filename)
         throw cRuntimeError("Cannot open ini file `%s'", filename);
 
     int lineNumber = 0;
-    Section *currentSection = NULL;
-
     std::set<std::string> sectionsInFile; // we'll check for uniqueness
 
     std::string rawLine;
@@ -185,7 +183,7 @@ void InifileReader::internalReadFile(const char *filename)
             PushDir d(directoryOf(filename).c_str());
 
             // process included inifile
-            internalReadFile(includeFilename.c_str());
+            internalReadFile(includeFilename.c_str(), currentSection);
         }
         else if (*line=='[')
         {
