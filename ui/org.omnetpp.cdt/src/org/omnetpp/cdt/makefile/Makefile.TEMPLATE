@@ -128,7 +128,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {sharedlib:}{~nmake:}	@mkdir -p $O
 {gcclongline:}{sharedlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) && $(SHLIB_LD) {-out}$O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
 {~gcclongline:}{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
-{sharedlib:}{~nmake:}	-$(CHCON) -t textrel_shlib_t $O/$(TARGET) || echo "You can probably safely ignore the above message."
+{sharedlib:}{~nmake:}	opp_shlib_postprocess $O/$(TARGET)
 {staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O

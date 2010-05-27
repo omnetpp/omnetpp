@@ -1,0 +1,30 @@
+#!/bin/sh
+
+usage ()
+{
+     echo "$0 : post-process a shared library"
+     echo "Usage: $0 shared_library_file_name"
+}
+
+# test if we have two arguments on the command line
+if [ $# != 1 ]
+then
+    usage
+    exit 1
+fi
+
+# set the context for the library on security enhanced linux
+if [ chcon --version >/dev/null 2>/dev/null ]; then
+  echo "chcon -t textrel_shlib_t $1"
+  chcon -t textrel_shlib_t $1
+fi
+
+# the install name must be rpath relative on Mac OS so the 
+# rpath mechanism can correctly find the library
+if [ "`uname`" = "Darwin" ];  then
+  libname=`basename $1`
+  echo "install_name_tool -id @rpath/$libname $1"
+  install_name_tool -id @rpath/$libname $1
+fi
+
+true
