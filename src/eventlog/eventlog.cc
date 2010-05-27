@@ -456,8 +456,7 @@ void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
 void EventLog::uncacheEventLogEntry(EventLogEntry *eventLogEntry)
 {
     // collect module created entries
-    ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
-
+//    ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
 //    if (moduleCreatedEntry)
 //        moduleIdToModuleCreatedEntryMap.erase(moduleCreatedEntry->moduleId);
 

@@ -462,7 +462,6 @@ void BasicSpringEmbedderLayout::computeBoundingBox(double& x1, double& y1, doubl
     for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
     {
         Node& n = *(*i);
-        bool movable = !n.fixed;
         if (predicate(&n))
         {
             if (n.x-n.sx < x1) x1 = n.x-n.sx;
@@ -485,8 +484,6 @@ double BasicSpringEmbedderLayout::relax()
     NodeList::iterator i,j;
     EdgeList::iterator k;
     AnchorList::iterator l;
-
-    double noiseLevel = 0; // noise doesn't seem to help
 
     // edge attraction: calculate if edges are longer or shorter than requested (tension),
     // and modify their (vx,vy) movement vector accordingly
@@ -565,7 +562,7 @@ double BasicSpringEmbedderLayout::relax()
 
     if (debug)
     {
-        for (int i=0; i<nodes.size(); ++i)
+        for (int i=0; i<(int)nodes.size(); ++i)
         {
             Node& n = *nodes[i];
             printf("%d:  pos=(%g,%g) v=(%g,%g)\n", i, n.x, n.y, n.vx, n.vy);

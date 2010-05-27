@@ -59,6 +59,7 @@ int Expression::Elem_getNumArgs(const Elem& e)
                 case IIF: return 3;
                 default: return 2;
             }
+        default: Assert(false); return 0;
     }
 }
 
@@ -137,7 +138,6 @@ void Expression::setExpression(Elem e[], int n)
 
 Expression::Value Expression::evaluate() const
 {
-    //XXX printf("    evaluating: %s\n", str().c_str());
     const int stksize = 20;
     Value stk[stksize];
 
@@ -352,8 +352,6 @@ Expression::Value Expression::evaluate() const
     }
     if (tos!=0)
         throw opp_runtime_error(eBADEXP);
-
-    //XXX printf("        ==> returning %s\n", stk[tos].str().c_str());
 
     return stk[tos];
 }

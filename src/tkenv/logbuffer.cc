@@ -128,7 +128,7 @@ void LogBuffer::discardIfMemoryLimitExceeded()
 
 void LogBuffer::dump() const
 {
-    printf("LogBuffer: %d entries\n", numEntries);
+    printf("LogBuffer: %lu entries\n", (unsigned long)numEntries);
 
     int k=0;
     for (std::list<Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)

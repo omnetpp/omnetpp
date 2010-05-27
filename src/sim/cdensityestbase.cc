@@ -370,7 +370,7 @@ void cDensityEstBase::saveToFile(FILE *f) const
     fprintf(f, "%g\t #= range_ext_factor\n", range_ext_factor);
     fprintf(f, "%g %g\t #= range\n", rangemin, rangemax);
     fprintf(f, "%lu %lu\t #= cell_under, cell_over\n", cell_under, cell_over);
-    fprintf(f, "%ld\t #= num_firstvals\n", num_firstvals);
+    fprintf(f, "%d\t #= num_firstvals\n", num_firstvals);
 
     fprintf(f, "%d\t #= firstvals[] exists\n", firstvals!=NULL);
     if (firstvals)

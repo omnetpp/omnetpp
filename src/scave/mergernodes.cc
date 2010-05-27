@@ -117,7 +117,7 @@ AggregatorNode::AggregatorNode(const std::string &function)
     else if (function == "count") fn = Count;
     else if (function == "minimum") fn = Minimum;
     else if (function == "maximum") fn = Maximum;
-    else fn = Average;
+    else fn = Average; //TODO why not error?
 }
 
 void AggregatorNode::init()
@@ -129,6 +129,7 @@ void AggregatorNode::init()
         case Count:   count = 0; break;
         case Minimum: acc = POSITIVE_INFINITY; break;
         case Maximum: acc = NEGATIVE_INFINITY; break;
+        default: Assert(false);
     }
 }
 
@@ -141,6 +142,7 @@ void AggregatorNode::collect(double value)
         case Count:   count++; break;
         case Minimum: acc = std::min(value, acc); break;
         case Maximum: acc = std::max(value, acc); break;
+        default: Assert(false);
     }
 }
 
@@ -153,6 +155,7 @@ double AggregatorNode::result()
         case Count:   return count;
         case Minimum:
         case Maximum: return acc;
+        default: Assert(false); return NaN;
     }
 }
 

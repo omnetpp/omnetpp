@@ -253,7 +253,7 @@ simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
     simtime_t transmissionDelay = BigDecimal::Zero;
 
     // there is at most one entry which specifies a transmission delay
-    while (index < eventLogEntries.size()) {
+    while (index < (int)eventLogEntries.size()) {
         EventLogEntry *eventLogEntry = eventLogEntries[++index];
 
         if (dynamic_cast<SendDirectEntry *>(eventLogEntry))

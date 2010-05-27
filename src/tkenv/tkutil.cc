@@ -325,7 +325,6 @@ cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, b
 {
     if (dispstr[0] != '$')
         return NULL;
-    cPar *par;
     if (dispstr[1] != '{')
         return displayStringPar(dispstr+1, component, searchparent); // rest of string is assumed to be the param name
     else if (dispstr[strlen(dispstr)-1] != '}')

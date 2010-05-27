@@ -2171,8 +2171,6 @@ int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    return TCL_OK;
 }
 
-static char tmpbuf[16384];  //XXX
-
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY

@@ -214,7 +214,7 @@ void BurstyApp::updateDisplayString()
 {
     // update status string above icon
     char txt[64];
-    sprintf(txt, "sent:%ld received:%ld", numSent, numReceived);
+    sprintf(txt, "sent:%d received:%d", numSent, numReceived);
     getDisplayString().setTagArg("t", 0, txt);
 }
 

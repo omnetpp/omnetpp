@@ -355,7 +355,7 @@ cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
     // but the number of signals that have listeners is likely to be small (<10),
     // so linear search is probably faster.
     if (signalTable)
-        for (int i=0; i<signalTable->size(); i++)
+        for (int i=0; i<(int)signalTable->size(); i++)
             if ((*signalTable)[i].signalID == signalID)
                 return &(*signalTable)[i];
     return NULL;
@@ -399,12 +399,12 @@ void cComponent::removeSignalData(simsignal_t signalID)
     if (signalTable) {
         // find in signal table
         int i;
-        for (i=0; i<signalTable->size(); i++)
+        for (i=0; i<(int)signalTable->size(); i++)
             if ((*signalTable)[i].signalID == signalID)
                 break;
 
         // if found, remove
-        if (i<signalTable->size()) {
+        if (i<(int)signalTable->size()) {
             ASSERT(!(*signalTable)[i].hasListener()); // must not have listeners
             signalTable->erase(signalTable->begin()+i);
         }
@@ -491,7 +491,7 @@ void cComponent::fire(cComponent *source, simsignal_t signalID, T x)
 void cComponent::fireFinish()
 {
     if (signalTable)
-        for (int i=0; i<signalTable->size(); i++)
+        for (int i=0; i<(int)signalTable->size(); i++)
             for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
                 (*lp)->finish(this, (*signalTable)[i].signalID);
 }
@@ -632,7 +632,7 @@ std::vector<simsignal_t> cComponent::getLocalListenedSignals() const
 {
     std::vector<simsignal_t> result;
     if (signalTable)
-        for (int i=0; i<signalTable->size(); i++)
+        for (int i=0; i<(int)signalTable->size(); i++)
             result.push_back((*signalTable)[i].signalID);
     return result;
 }
