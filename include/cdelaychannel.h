@@ -87,7 +87,12 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     virtual bool isTransmissionChannel() const {return false;}
 
     /**
-     * Returns zero.
+     * The cDelayChannel implementation of this method always returns zero.
+     */
+    virtual double getNominalDatarate() const {return 0;}
+
+    /**
+     * The cDelayChannel implementation of this method always returns zero.
      */
     virtual simtime_t calculateDuration(cMessage *msg) const {return 0;}
 

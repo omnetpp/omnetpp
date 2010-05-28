@@ -239,6 +239,18 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) = 0;
 
     /**
+     * For transmission channels: Returns the nominal data rate of the channel.
+     * The number returned from this method should be treated as informative;
+     * there is no strict requirement that the channel calculates packet
+     * duration by dividing the packet length by the nominal data rate.
+     * For example, specialized channels may add the length of a lead-in
+     * signal to the duration.
+     *
+     * @see isTransmissionChannel(), cDatarateChannel
+     */
+    virtual double getNominalDatarate() const = 0;
+
+    /**
      * For transmission channels: Calculates the transmission duration
      * of the message with the current channel configuration (datarate, etc);
      * it does not check or modify channel state. For non-transmission channels
@@ -273,8 +285,8 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual simtime_t getTransmissionFinishTime() const = 0;
 
     /**
-     * For channels that support datarate: Returns whether the sender gate
-     * is currently transmitting, ie. whether transmissionFinishTime()
+     * For transmission channels: Returns whether the sender gate
+     * is currently transmitting, ie. whether getTransmissionFinishTime()
      * is greater than the current simulation time.
      *
      * @see isTransmissionChannel(), getTransmissionFinishTime(), cDatarateChannel
@@ -322,6 +334,11 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     virtual void processMessage(cMessage *msg, simtime_t t, result_t& result) {}
 
     /**
+     * The cIdealChannel implementation of this method does nothing.
+     */
+    virtual double getNominalDatarate() const {return 0;}
+
+    /**
      * The cIdealChannel implementation of this method always returns false.
      */
     virtual bool isTransmissionChannel() const {return false;}
@@ -332,7 +349,7 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     virtual simtime_t calculateDuration(cMessage *msg) const {return SIMTIME_ZERO;}
 
     /**
-     * Returns zero.
+     * The cIdealChannel implementation of this method always returns zero.
      */
     virtual simtime_t getTransmissionFinishTime() const {return SIMTIME_ZERO;}
 

@@ -1,3 +1,8 @@
+2010-05-28  Andras Varga
+
+	* cChannel: added getNominalDatarate(). This is often needed in models,
+	for example in INET to fill in the interface entry.
+
 2010-05-22  Andras Varga
 
 	* added forgetXMLDocument(filename) and flushXMLDocumentCache() to

@@ -176,6 +176,11 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /** @name Transmission state. */
     //@{
     /**
+     * Same as getDatarate().
+     */
+    virtual double getNominalDatarate() const {return getDatarate();}
+
+    /**
      * Returns the message length in bits divided by the datarate.
      *
      * Note that processMessage() does NOT call this method, so in order to
