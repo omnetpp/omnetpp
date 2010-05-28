@@ -3653,7 +3653,7 @@ LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether linker supports -rpath" >&5
 $as_echo_n "checking whether linker supports -rpath... " >&6; }
 LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR):."
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
