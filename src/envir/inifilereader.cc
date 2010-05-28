@@ -86,10 +86,10 @@ const InifileReader::Section& InifileReader::getSection(int sectionId) const
     return sections[sectionId];
 }
 
-const InifileReader::Section& InifileReader::getOrCreateSection(std::string &sectionName)
+const InifileReader::Section& InifileReader::getOrCreateSection(const char *sectionName)
 {
     for (int i=0; i<(int)sections.size(); i++)
-        if (sections[i].name == sectionName)
+        if (!strcmp(sections[i].name.c_str(), sectionName))
             return sections[i];
     Section section;
     section.name = sectionName;
@@ -201,13 +201,13 @@ void InifileReader::internalReadFile(const char *filename, Section *currentSecti
             sectionsInFile.insert(sectionName);
 
             // add section of not yet seen (in another file)
-            currentSection = (Section *)&getOrCreateSection(sectionName);
+            currentSection = (Section *)&getOrCreateSection(sectionName.c_str());
         }
         else
         {
             // key = value
             if (currentSection==NULL)
-                currentSection = (Section *)&getOrCreateSection(std::string("General"));
+                currentSection = (Section *)&getOrCreateSection("General");
             const char *endPos = findEndContent(line, filename, lineNumber);
             const char *equalSignPos = strchr(line, '=');
             if (equalSignPos==NULL || equalSignPos > endPos)
