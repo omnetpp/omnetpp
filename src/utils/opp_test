@@ -435,19 +435,30 @@ sub testcase_generatesources
     }
 
     # ini file
-    foreach $key (keys(%values))
-    {
+    my @inifilekeys = ();
+    foreach my $key (keys(%values)) {
         if ($key =~ /^inifile\([0-9]+\)/) {
-            $inifname = $workdir."/".$testname."/".$values{$key};
-            $inifile = $bodies{$key};
-            if ($inifile =~ /^\s*$/s)
-            {
-                 $inifile = $INITemplate;
-                 $inifile =~ s/\@TESTNAME\@/$testname/g;
-                 $inifile =~ s/\@NETWORKNAME\@/$networkname/g;
-            }
-            writefile($inifname, $inifile);
+            push(@inifilekeys,$key);
         }
+    }
+    if (!@inifilekeys) {
+        # pretend there is an "%inifile: test.ini" line in the file
+        my $key = "inifile0";
+        push(@inifilekeys,$key);
+        $values{$key} = "test.ini";
+        $bodies{$key} = ""; # default content
+    }
+
+    foreach my $key (@inifilekeys)
+    {
+        my $inifname = $workdir."/".$testname."/".$values{$key};
+        my $inifile = $bodies{$key};
+        if ($inifile =~ /^\s*$/s) {
+            $inifile = $INITemplate;
+        }
+        $inifile =~ s/\@TESTNAME\@/$testname/g;
+        $inifile =~ s/\@NETWORKNAME\@/$networkname/g;
+        writefile($inifname, $inifile);
     }
 
     # source files (export them after the templated files,
