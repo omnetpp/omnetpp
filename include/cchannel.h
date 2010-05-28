@@ -105,7 +105,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         virtual long longValue(simsignal_t signalID) const {error(); return 0;}
         virtual unsigned long unsignedLongValue(simsignal_t signalID) const {error(); return 0;}
         virtual double doubleValue(simsignal_t signalID) const {error(); return 0;}
-        virtual const SimTime& simtimeValue(simsignal_t signalID) const {error(); return timestamp;}
+        virtual SimTime simtimeValue(simsignal_t signalID) const {error(); return timestamp;}
         virtual const char *stringValue(simsignal_t signalID) const {error(); return NULL;}
         void error() const;
         //@}

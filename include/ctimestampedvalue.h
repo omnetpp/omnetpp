@@ -52,7 +52,7 @@ class SIM_API cITimestampedValue
         virtual long longValue(simsignal_t signalID) const = 0;
         virtual unsigned long unsignedLongValue(simsignal_t signalID) const = 0;
         virtual double doubleValue(simsignal_t signalID) const = 0;
-        virtual const SimTime& simtimeValue(simsignal_t signalID) const = 0;
+        virtual SimTime simtimeValue(simsignal_t signalID) const = 0;
         virtual const char *stringValue(simsignal_t signalID) const = 0;
         virtual cObject *objectValue(simsignal_t signalID) const = 0;
         //@}
@@ -110,7 +110,7 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         virtual long longValue(simsignal_t signalID) const {return l;}
         virtual unsigned long unsignedLongValue(simsignal_t signalID) const {return ul;}
         virtual double doubleValue(simsignal_t signalID) const {return d;}
-        virtual const SimTime& simtimeValue(simsignal_t signalID) const {return t;}
+        virtual SimTime simtimeValue(simsignal_t signalID) const {return t;}
         virtual const char *stringValue(simsignal_t signalID) const {return s;}
         virtual cObject *objectValue(simsignal_t signalID) const {return obj;}
         //@}
