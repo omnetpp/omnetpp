@@ -478,12 +478,13 @@ cChannel *cGate::getTransmissionChannel() const
 
     // datarate channel not found, try to issue a helpful error message
     if (nextgatep)
-        throw cRuntimeError("No datarate channel found in the connection path "
-                            "between gates %s and %s", getFullPath().c_str(),
+        throw cRuntimeError(this, "getTransmissionChannel(): no transmission channel "
+                            "found in the connection path between gates %s and %s",
+                            getFullPath().c_str(),
                             getPathEndGate()->getFullPath().c_str());
     else if (getType()==OUTPUT)
-        throw cRuntimeError("No datarate channel found: gate %s is not connected",
-                            getFullPath().c_str());
+        throw cRuntimeError(this, "getTransmissionChannel(): no transmission channel found: "
+                            "gate is not connected");
     else
         throw cRuntimeError(this, "getTransmissionChannel(): cannot be invoked on a "
                             "simple module input gate (or a compound module "
