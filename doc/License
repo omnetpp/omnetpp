@@ -1,6 +1,6 @@
                          ACADEMIC PUBLIC LICENSE
 
-                    Copyright (C) 2003, 2009 Andras Varga
+                    Copyright (C) 2003, 2010 Andras Varga
 
 
                                 Preamble
@@ -13,9 +13,11 @@ similar to the well-known GNU General Public License, yet it retains the
 possibility for OMNeT++ authors to financially support the development
 by selling commercial licenses. In fact, if you intend to use OMNeT++
 in a "for-profit" environment, where research is conducted to develop
-or enhance a product, or it is used in a commercial service offering,
-then you need to obtain a commercial license for OMNeT++ which is also
-available from the Author.
+or enhance a product, is used in a commercial service offering,
+or when a commercial company uses OMNeT++ to participate in a research
+project (for example government-funded or EU-funded research projects),
+then you need to obtain a commercial license for OMNeT++. In that case,
+please contact the Author to inquire about commercial licenses.
 
   What are the rights given to noncommercial users? Similarly to GPL, you
 have the right to use the software, to distribute copies, to receive source
@@ -68,11 +70,11 @@ noncommercial purpose, including teaching and research at universities,
 colleges and other educational institutions, research at non-profit
 research institutions, and personal non-profit purposes. For using the
 Program for commercial purposes, including but not restricted to consulting
-activities and design of commercial hardware or software networking
-products, you have to contact the Author for an appropriate license.
-Permission is also granted to use the Program for a reasonably limited
-period of time for the purpose of evaluating its usefulness for a
-particular purpose.
+activities, design of commercial hardware or software networking products,
+and a commercial entity participating in research projects, you have to
+contact the Author for an appropriate license. Permission is also granted
+to use the Program for a reasonably limited period of time for the purpose
+of evaluating its usefulness for a particular purpose.
 
   2. You may copy and distribute verbatim copies of the Program's
 source code as you receive it, in any medium, provided that you
