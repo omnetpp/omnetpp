@@ -115,7 +115,7 @@ accuracy. At this time, before the program exits, the user
 will typically want to record statistics into output files.
 
 
-\subsection{Events in {\opp}}
+\subsection{Events and Event Execution Order in {\opp}}
 \label{sec:simple-modules:events-in-opp}
 
 {\opp} uses messages\index{message} to represent
@@ -1635,7 +1635,7 @@ initialization of the given module}.
   stage of the initialization of the component is finished,
   \ffunc{handleParameterChange()} is called by the simulation kernel
   with \ttt{NULL} as a parameter name. This allows the component
-  to react to parameter changes occurred during the initialzaion phase.
+  to react to parameter changes occurred during the initialization phase.
 \end{note}
 
 The method signature is the following:
@@ -2440,7 +2440,7 @@ to wait until the channel has finished transmitting before it can
 send another packet.
 
 You can get a pointer to the transmission channel by calling the
-\ffunc{getDatarateChannel()} method on the output gate.
+\ffunc{getTransmissionChannel()} method on the output gate.
 The channel's \ffunc{isBusy()} and \ffunc{getTransmissionFinishTime()}
 methods can tell you whether a channel is currently transmitting,
 and when the transmission is going to finish. (When the latter is
@@ -2453,7 +2453,8 @@ A code example to illustrate the above process:
 
 \begin{cpp}
 cPacket *pkt = ...; // packet to be transmitted
-simtime_t txFinishTime = gate("out")->getTransmissionFinishTime();
+cChannel *txChannel = gate("out")->getTransmissionChannel();
+simtime_t txFinishTime = txChannel->getTransmissionFinishTime();
 if (txFinishTime <= simTime())
 {
     // channel free; send out packet immediately
@@ -2468,17 +2469,8 @@ else
 }
 \end{cpp}
 
-Note that the above code invokes \ttt{getTransmissionFinishTime()} on the
-output gate, not on the channel. \cclass{cGate}'s
-\ffunc{getTransmissionFinishTime()} and \ffunc{isBusy()} methods are
-shortcuts to \ttt{getDatarate\-Channel()->isBusy()} and
-\ttt{getDatarate\-Channel()->\-getTrans\-mission\-FinishTime()}, provided for
-convenience.
-
 \begin{note}
-  \cclass{cGate}'s \ffunc{getTransmissionFinishTime()} function just
-  delegates to the similar method of the transmission channel in the path, so
-  one should be careful: if there is a channel with a propagation delay in
+  If there is a channel with a propagation delay in
   the path before the transmission channel, the delay should be manually
   substracted from the value returned by \ffunc{getTransmissionFinishTime()}!
   The same applies to \ffunc{isBusy()}: it tells whether the channel is
@@ -2487,12 +2479,9 @@ convenience.
   in front of a transmission channel in a path.
 \end{note}
 
-The \ttt{getDatarateChannel()} method searches the connection path each
-time it is called, so the performance of the gate's
-\ttt{getTransmissionFinishTime()} method is not as optimal as it could be.
-If performance is important, it is recommended that you obtain the
-transmission channel pointer once, and then call \ffunc{isBusy()} and
-\ffunc{getTransmissionFinishTime()} on the channel. When the network topology
+The \ttt{getTransmissionChannel()} method searches the connection path each
+time it is called. If performance is important, it is recommended that you
+obtain the transmission channel pointer once, and cache it. When the network topology
 changes, the cached channel pointer needs to be updated; section
 \ref{sec:ch-simple-modules:model-change} describes the mechanism that can
 be used to get notifications about topology changes.
