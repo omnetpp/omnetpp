@@ -403,16 +403,44 @@ public class DataTable extends Table implements IDataControl {
 			idList.sortScalarsByValue(manager, ascending);
 		else if (COL_VECTOR_ID.equals(column))
 			idList.sortVectorsByVectorId(manager, ascending);
-		else if (COL_COUNT.equals(column))
-			idList.sortVectorsByLength(manager, ascending);
-		else if (COL_MEAN.equals(column))
-			idList.sortVectorsByMean(manager, ascending);
-		else if (COL_STDDEV.equals(column))
-			idList.sortVectorsByStdDev(manager, ascending);
-		else if (COL_MIN.equals(column))
-			idList.sortVectorsByMin(manager, ascending);
-		else if (COL_MAX.equals(column))
-			idList.sortVectorsByMax(manager, ascending);
+		// TODO: the following 6 if branches have some code duplication due to the fact that
+		// vector and histogram results do not share a common superclass that provides statistics
+		else if (COL_COUNT.equals(column)) {
+		    if (idList.areAllHistograms())
+	            idList.sortHistogramsByLength(manager, ascending);
+		    else if (idList.areAllVectors())
+		        idList.sortVectorsByLength(manager, ascending);
+		}
+		else if (COL_MEAN.equals(column)) {
+            if (idList.areAllHistograms())
+                idList.sortHistogramsByMean(manager, ascending);
+            else if (idList.areAllVectors())
+                idList.sortVectorsByMean(manager, ascending);
+		}
+		else if (COL_STDDEV.equals(column)) {
+            if (idList.areAllHistograms())
+                idList.sortHistogramsByStdDev(manager, ascending);
+            else if (idList.areAllVectors())
+                idList.sortVectorsByStdDev(manager, ascending);
+		}
+		else if (COL_MIN.equals(column)) {
+            if (idList.areAllHistograms())
+                idList.sortHistogramsByMin(manager, ascending);
+            else if (idList.areAllVectors())
+                idList.sortVectorsByMin(manager, ascending);
+		}
+		else if (COL_MAX.equals(column)) {
+            if (idList.areAllHistograms())
+                idList.sortHistogramsByMax(manager, ascending);
+            else if (idList.areAllVectors())
+                idList.sortVectorsByMax(manager, ascending);
+		}
+        else if (COL_VARIANCE.equals(column)) {
+            if (idList.areAllHistograms())
+                idList.sortHistogramsByVariance(manager, ascending);
+            else if (idList.areAllVectors())
+                idList.sortVectorsByVariance(manager, ascending);
+        }
 		else if (COL_EXPERIMENT.equals(column))
 			idList.sortByRunAttribute(manager, EXPERIMENT, ascending);
 		else if (COL_MEASUREMENT.equals(column))

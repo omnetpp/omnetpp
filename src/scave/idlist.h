@@ -57,6 +57,7 @@ class SCAVE_API IDList
         template <class T> void sortBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator);
         template <class T> void sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator);
+        template <class T> void sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& comparator);
 
     public:
         IDList()  {v = new V;}
@@ -83,6 +84,7 @@ class SCAVE_API IDList
         bool areAllVectors() const;
         bool areAllHistograms() const;
         // sorting
+        // TODO: there's a duplication between vector and histogram sorting due to not having a proper superclass with the statistics inside
         void sortByFileAndRun(ResultFileManager *mgr, bool ascending);
         void sortByRunAndFile(ResultFileManager *mgr, bool ascending);
         void sortByDirectory(ResultFileManager *mgr, bool ascending);
@@ -97,8 +99,15 @@ class SCAVE_API IDList
         void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMin(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMax(ResultFileManager *mgr, bool ascending);
+        void sortVectorsByVariance(ResultFileManager *mgr, bool ascending);
         void sortVectorsByStartTime(ResultFileManager *mgr, bool ascending);
         void sortVectorsByEndTime(ResultFileManager *mgr, bool ascending);
+        void sortHistogramsByLength(ResultFileManager *mgr, bool ascending);
+        void sortHistogramsByMean(ResultFileManager *mgr, bool ascending);
+        void sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending);
+        void sortHistogramsByMin(ResultFileManager *mgr, bool ascending);
+        void sortHistogramsByMax(ResultFileManager *mgr, bool ascending);
+        void sortHistogramsByVariance(ResultFileManager *mgr, bool ascending);
         void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending);
         void reverse();
         void toByteArray(char *array, int n) const;

@@ -34,7 +34,8 @@ public class CompoundModuleGateAnchor extends GateAnchor {
 	 * @param reference The reference point
 	 * @return The anchor location
 	 */
-	public Point getLocation(Point reference) {
+	@Override
+    public Point getLocation(Point reference) {
 		Rectangle box = Rectangle.SINGLETON;
 		box.setBounds(getBox());
 		box.translate(-1, -1);
@@ -88,17 +89,18 @@ public class CompoundModuleGateAnchor extends GateAnchor {
 	 * Returns the anchor's reference point.
 	 */
 	// TODO handle the reference point calculation correctly
-	public Point getReferencePoint() {
+	@Override
+    public Point getReferencePoint() {
 		Point ref = tempRefPoint.getCopy();
 		getOwner().translateToAbsolute(ref);
 		return ref;
 	}
 
 	/**
-	 * Sets the edges where the connection is free to move
-	 * @param edges  TODO what the heck does "edges" mean ????
+	 * Sets the edge constraint that specifies where the connection anchor is free to move.
+	 * See PositionConstants for valid values.
 	 */
-	public void setFreeEdge(int edges) {
-		edgeConstraint = edges;
+	public void setEdgeConstraint(int edgeConstraint) {
+		this.edgeConstraint = edgeConstraint;
 	}
 }

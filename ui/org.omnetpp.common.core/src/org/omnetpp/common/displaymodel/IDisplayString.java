@@ -60,7 +60,7 @@ public interface IDisplayString {
         t(COMPOUNDMODULE | SUBMODULE | CONNECTION, "Text"),
         tt(COMPOUNDMODULE | SUBMODULE | CONNECTION, "Tooltip"),
 
-//        m(CONNECTION, "Routing mode"),
+        m(CONNECTION, "Routing mode"),
 //        bp(CONNECTION, "Bend points");
 //        a(CONNECTION, "Anchor"),
         ls(CONNECTION, "Line style");
@@ -274,8 +274,8 @@ public interface IDisplayString {
 
         // START of CONNECTION properties
         // do not change the first and last element of the property group
-        // ROUTING_MODE(Tag.m, 0, PropType.STRING, PropGroup.Connection, "routing", "Routing mode", "todo: [m]anual, manhatta[n], [s]hortestpath"),
-        // ROUTING_CONSTRAINT(Tag.m, 1, PropType.STRING, PropGroup.Connection, "Routing constraint", "Routing constraint", "todo: [s]outh, [n]orth, [e]ast, [w]est"),
+        // ROUTING_MODE(Tag.m, xxx, PropType.STRING, PropGroup.Connection, "routing", "Routing mode", "todo: [m]anual, manhatta[n], [s]hortestpath"),
+        ROUTING_CONSTRAINT(Tag.m, 0, PropType.STRING, PropGroup.Connection, "routing constraint", "Connection routing constraint", "auto=a.*,a; south=s.*,s; north=n.*,n; east=e.*,e; west=w.*,w"),
         // a tag (anchoring)
         // ANCHOR_SRCX(Tag.a, 0, PropType.INTEGER, PropGroup.Position, "source anchor x", "Relative horizontal position of the anchor on the source module side"),
         // ANCHOR_SRCY(Tag.a, 1, PropType.INTEGER, PropGroup.Position, "source anchor y", "Relative vertical position of the anchor on the source module side"),

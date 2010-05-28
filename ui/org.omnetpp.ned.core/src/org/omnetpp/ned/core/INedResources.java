@@ -7,6 +7,8 @@
 
 package org.omnetpp.ned.core;
 
+import java.util.Collection;
+
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
@@ -20,7 +22,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 
 /**
- * Represents all NED files in the workspace, and makes them available. 
+ * Represents all NED files in the workspace, and makes them available.
  * It listens to workspace resource changes and modifies its content based on
  * change notifications.
  *
@@ -49,38 +51,38 @@ public interface INedResources extends INedTypeResolver {
                    ((IModuleTypeElement)component.getNedElement()).isNetwork();
         }
     };
-    
+
     /**
      * Adds a listener that will be notified about changes anywhere
      * in the loaded NED files.
      */
     public void addNedModelChangeListener(INedChangeListener listener);
-    
+
     /**
      * Removes the listener added with addNedModelChangeListener().
      */
     public void removeNedModelChangeListener(INedChangeListener listener);
-    
+
     /**
      * NED editors should call this when they get opened.
      */
     public void connect(IFile file);
-    
+
     /**
      * NED editors should call this when they get closed.
      */
     public void disconnect(IFile file);
-    
+
     /**
      * Returns the number of editors editing the given NED file.
      */
     public int getConnectCount(IFile file);
-    
+
     /**
      * Returns true if there are editors editing the given NED file.
      */
     public boolean hasConnectedEditor(IFile file);
-    
+
     /**
      * NED text editors should call this when editor content changes.
      * Parses the given text, and synchronizes the stored NED model tree to it.
@@ -91,23 +93,23 @@ public interface INedResources extends INedTypeResolver {
     /**
      * Should be called at the beginning of a batch update to a NED tree.
      * It fires a NedBeginModelChangeEvent with source == null.
-     * Begin/end notifications enable listeners to optimize display updates, 
+     * Begin/end notifications enable listeners to optimize display updates,
      * i.e. they may choose to only update the display after receiving the
      * matching NedEndModelChangeEvent. fireBeginChangeEvent() and
      * fireEndChangeEvent() must be fired in pairs, i.e. fireEndChangeEvent()
-     * must be fired even if there is an exception if the code path between 
+     * must be fired even if there is an exception if the code path between
      * the two calls.
      */
     public void fireBeginChangeEvent();
-    
+
     /**
-     * Fires a NedBeginModelChangeEvent with source == null. Allows for 
+     * Fires a NedBeginModelChangeEvent with source == null. Allows for
      * optimizing batch updates of a NED tree; see fireBeginChangeEvent().
      */
     public void fireEndChangeEvent();
-    
+
     /**
-     * Executes the given runnable, surrounding it with fireBeginChangeEvent() 
+     * Executes the given runnable, surrounding it with fireBeginChangeEvent()
      * and fireEndChangeEvent() calls. The latter is called even if the runnable
      * throws an exception.
      */
@@ -116,7 +118,7 @@ public interface INedResources extends INedTypeResolver {
     /**
      * Operations that change the NED tree without having it open in an editor
      * (see connect()/disconnect()) must call this method with argument==true
-     * before the changes, and with argument==false afterwards. Calls cannot be nested. 
+     * before the changes, and with argument==false afterwards. Calls cannot be nested.
      */
     public void setRefactoringInProgress(boolean refactoringInProgress);
 
@@ -125,4 +127,14 @@ public interface INedResources extends INedTypeResolver {
      * setRefactoringInProgress() calls.
      */
     public boolean isRefactoringInProgress();
+
+    /**
+     * Returns all built-in types' type infos.
+     */
+    public Collection<INedTypeInfo> getBuiltInDeclarations();
+
+    /**
+     * Returns true if the given ned type info is a descriptor for a built-in type.
+     */
+    public boolean isBuiltInDeclaration(INedTypeInfo typeInfo);
 }

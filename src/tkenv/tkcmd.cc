@@ -2031,70 +2031,103 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("2 args expected"), TCL_STATIC); return TCL_ERROR;}
-   const char *destimgname = argv[1];
-   const char *srcimgname = argv[2];
+   const char *destImageName = argv[1];
+   const char *srcImageName = argv[2];
+   unsigned char transparentPixel[] = {0, 0, 0, 0};
 
-   Tk_PhotoImageBlock srcimg;
-   Tk_PhotoImageBlock destimg;
-   if (getTkPhotoImageBlock(interp, srcimgname, &srcimg)!=TCL_OK) return TCL_ERROR;
-   if (getTkPhotoImageBlock(interp, destimgname, &destimg)!=TCL_OK) return TCL_ERROR;
+   Tk_PhotoImageBlock srcImage;
+   Tk_PhotoImageBlock destImage;
+   if (getTkPhotoImageBlock(interp, srcImageName, &srcImage)!=TCL_OK) return TCL_ERROR;
+   if (getTkPhotoImageBlock(interp, destImageName, &destImage)!=TCL_OK) return TCL_ERROR;
 
-   int srcredoffset = srcimg.offset[0];
-   int srcgreenoffset = srcimg.offset[1];
-   int srcblueoffset = srcimg.offset[2];
-   int srcalphaoffset = srcimg.offset[3];
+   int srcRedOffset = srcImage.offset[0];
+   int srcGreenOffset = srcImage.offset[1];
+   int srcBlueOffset = srcImage.offset[2];
+   int srcAlphaOffset = srcImage.offset[3];
 
-   int destredoffset = destimg.offset[0];
-   int destgreenoffset = destimg.offset[1];
-   int destblueoffset = destimg.offset[2];
-   int destalphaoffset = destimg.offset[3];
+   // the valid floating point source pixel coordinates are in the range
+   // horizontally: [0, srcWidth]
+   // vertically: [0, srcHeight]
+   // the top left source pixel's center is at 0.5, 0.5 in the source coordinate system
+   // pixels outside this range are considered completely transparent
+   int srcWidth = srcImage.width;
+   int srcHeight = srcImage.height;
 
-   for (int desty=0; desty<destimg.height; desty++)
+   int destRedOffset = destImage.offset[0];
+   int destGreenOffset = destImage.offset[1];
+   int destBlueOffset = destImage.offset[2];
+   int destAlphaOffset = destImage.offset[3];
+
+   // the valid floating point destination pixel coordinates are in the range
+   // horizontally: [0, destWidth]
+   // vertically: [0, destHeight]
+   // the top left destination pixel's center is at 0.5, 0.5 in the destination coordinate system
+   // pixels outside this range are considered completely transparent
+   int destWidth = destImage.width;
+   int destHeight = destImage.height;
+
+   // the destination coordinate system is mapped to the source coordinate system as follows
+   // in one direction the pixels completely cover each other
+   // but in the other direction the destination may be bigger to keep the original aspect ratio
+   double dest2SrcXRatio = (double)srcWidth / (double)destWidth;
+   double dest2SrcYRatio = (double)srcHeight / (double)destHeight;
+   double dest2SrcXOffset = (srcWidth - dest2SrcXRatio * destWidth) / 2.0;
+   double dest2SrcYOffset = (srcHeight - dest2SrcYRatio * destHeight) / 2.0;
+
+   // use these to get a pointer for a given pair of indices
+   #define srcPixel(xIndex, yIndex) (0 <= xIndex && xIndex < srcWidth && 0 <= yIndex && yIndex < srcHeight ? (srcImage.pixelPtr + yIndex * srcImage.pitch + xIndex * srcImage.pixelSize) : &transparentPixel[0])
+   #define destPixel(xIndex, yIndex) (destImage.pixelPtr + yIndex * destImage.pitch + xIndex * destImage.pixelSize)
+
+   for (int destXIndex = 0; destXIndex < destWidth; destXIndex++)
    {
-       for (int destx=0; destx<destimg.width; destx++)
+	   for (int destYIndex = 0; destYIndex < destHeight; destYIndex++)
        {
-           // double source coordinates. may point between pixels
-           double u = (double)(destx * srcimg.width) / destimg.width; 
-           double v = (double)(desty * srcimg.height) / destimg.height;
-           // determining the pixels to the left, top, right bottom
-           int left = floor(u);
-           int top = floor(v);
-           double u_ratio = u - left;
-           double v_ratio = v - top;
-           double u_opposite = 1 - u_ratio;
-           double v_opposite = 1 - v_ratio;
-           // on the right and bottom, we treat the source like it would have an additional
-           // row or column with the same colors as the last row/col
-           int right = left + 1 < srcimg.width ? left + 1 : left; 
-           int bottom = top + 1 < srcimg.height ? top + 1 : top;
+    	   double destX = destXIndex + 0.5;
+    	   double destY = destYIndex + 0.5;
+    	   double srcX = destX * dest2SrcXRatio + dest2SrcXOffset;
+    	   double srcY = destY * dest2SrcYRatio + dest2SrcYOffset;
 
-           unsigned char *srcpixel_tl = srcimg.pixelPtr + top*srcimg.pitch + left*srcimg.pixelSize;
-           unsigned char *srcpixel_tr = srcimg.pixelPtr + top*srcimg.pitch + right*srcimg.pixelSize;
-           unsigned char *srcpixel_bl = srcimg.pixelPtr + bottom*srcimg.pitch + left*srcimg.pixelSize;
-           unsigned char *srcpixel_br = srcimg.pixelPtr + bottom*srcimg.pitch + right*srcimg.pixelSize;
+    	   // these are the source floating point coordinates of the left, right, top, bottom edges
+    	   // for the 2x2 pixels which will be used in the interpolation
+    	   double srcLeft = floor(srcX - 0.5);
+    	   double srcRight = ceil(srcX + 0.5);
+    	   double srcTop = floor(srcY - 0.5);
+    	   double srcBottom = ceil(srcY + 0.5);
 
-           #define INTERPOLATE(channel_offset) \
-                   ((srcpixel_tl[channel_offset] * u_opposite + srcpixel_tr[channel_offset] * u_ratio) * v_opposite + \
-                    (srcpixel_bl[channel_offset] * u_opposite + srcpixel_br[channel_offset] * u_ratio) * v_ratio)
+    	   int srcLeftIndex = srcLeft;
+    	   int srcRightIndex = srcRight - 1;
+    	   int srcTopIndex = srcTop;
+    	   int srcBottomIndex = srcBottom - 1;
 
-           int r = INTERPOLATE(srcredoffset);
-           int g = INTERPOLATE(srcgreenoffset);
-           int b = INTERPOLATE(srcblueoffset);
-           int a = INTERPOLATE(srcalphaoffset);
+    	   double weightLeft = srcRight - srcX;
+    	   double weightRight = srcX - srcLeft;
+    	   double weightTop = srcBottom - srcY;
+    	   double weightBottom = srcY - srcTop;
+
+           double weightHorizontal = weightLeft + weightRight;
+           double weightVertical = weightTop + weightBottom;
+
+           unsigned char *srcTopLeftPixel = srcPixel(srcLeftIndex, srcTopIndex);
+           unsigned char *srcTopRightPixel = srcPixel(srcRightIndex, srcTopIndex);
+           unsigned char *srcBottomLeftPixel = srcPixel(srcLeftIndex, srcBottomIndex);
+           unsigned char *srcBottomRightPixel = srcPixel(srcRightIndex, srcBottomIndex);
+
+           #define INTERPOLATE(channelOffset) \
+                   ((srcTopLeftPixel[channelOffset] * weightLeft + srcTopRightPixel[channelOffset] * weightRight) / weightHorizontal * weightTop + \
+                    (srcBottomLeftPixel[channelOffset] * weightLeft + srcBottomRightPixel[channelOffset] * weightRight) / weightHorizontal * weightBottom) / weightVertical
+
+           int red = INTERPOLATE(srcRedOffset);
+           int green = INTERPOLATE(srcGreenOffset);
+           int blue = INTERPOLATE(srcBlueOffset);
+           int alpha = INTERPOLATE(srcAlphaOffset);
 
            #undef INTERPOLATE
 
-           unsigned char *destpixel = destimg.pixelPtr + desty*destimg.pitch + destx*destimg.pixelSize;
-           destpixel[destredoffset] = r;
-           destpixel[destgreenoffset] = g;
-           destpixel[destblueoffset] = b;
-           // on the border we assume that there are an additional row/col of fully transparent pixles
-           // so we use only half of the transparency
-           if (destx == 0 || destx == destimg.width-1) 
-               a /= 2;
-           if (desty == 0 || desty == destimg.height-1)
-               a /= 2;
-           destpixel[destalphaoffset] = a;
+           unsigned char *destpixel = destPixel(destXIndex, destYIndex);
+           destpixel[destRedOffset] = red;
+           destpixel[destGreenOffset] = green;
+           destpixel[destBlueOffset] = blue;
+           destpixel[destAlphaOffset] = alpha;
        }
    }
 
@@ -2108,8 +2141,8 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    // because masterPtr->validRegion is not accessible outside the
    // tkImgPhoto.c Tk source file...
    //
-   Tk_PhotoHandle destimghandle = Tk_FindPhoto(interp, TCLCONST(destimgname));
-   Tk_PhotoPutBlock(INTERP_IF_TK85 destimghandle, &destimg, 0, 0, destimg.width, destimg.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoHandle destImageHandle = Tk_FindPhoto(interp, TCLCONST(destImageName));
+   Tk_PhotoPutBlock(INTERP_IF_TK85 destImageHandle, &destImage, 0, 0, destWidth, destHeight, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
@@ -2415,4 +2448,3 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
 #endif
    return TCL_OK;
 }
-

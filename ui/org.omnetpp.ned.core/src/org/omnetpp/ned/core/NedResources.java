@@ -54,8 +54,8 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedBeginModelChangeEvent;
@@ -189,14 +189,18 @@ public class NedResources implements INedResources, IResourceChangeListener {
         Assert.isTrue(errorStore.getNumProblems()==0);
     }
 
-    // currently unused
-    protected INedTypeInfo getBuiltInDeclaration(String name) {
-        for (INedElement child : builtInDeclarationsFile)
-            if (child instanceof INedTypeElement && ((INedTypeElement)child).getName().equals(name))
-                return ((INedTypeElement)child).getNedTypeInfo();
-        return null;
+    public boolean isBuiltInDeclaration(INedTypeInfo typeInfo) {
+        return typeInfo.getNedElement().getContainingNedFileElement() == builtInDeclarationsFile;
     }
 
+    public ArrayList<INedTypeInfo> getBuiltInDeclarations() {
+        ArrayList<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
+        for (INedElement child : builtInDeclarationsFile)
+            if (child instanceof INedTypeElement)
+                result.add(((INedTypeElement)child).getNedTypeInfo());
+
+        return result;
+    }
 
     public boolean isRefactoringInProgress() {
         return refactoringInProgress;

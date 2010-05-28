@@ -86,6 +86,17 @@ const InifileReader::Section& InifileReader::getSection(int sectionId) const
     return sections[sectionId];
 }
 
+const InifileReader::Section& InifileReader::getOrCreateSection(std::string &sectionName)
+{
+    for (int i=0; i<(int)sections.size(); i++)
+        if (sections[i].name == sectionName)
+            return sections[i];
+    Section section;
+    section.name = sectionName;
+    sections.push_back(section);
+    return sections.back();
+}
+
 void InifileReader::readFile(const char *filename)
 {
     rootfilename = filename;
@@ -94,10 +105,10 @@ void InifileReader::readFile(const char *filename)
     if (defaultbasedir.empty())
         defaultbasedir = directoryOf(rootfilename.c_str());
 
-    internalReadFile(filename);
+    internalReadFile(filename, NULL);
 }
 
-void InifileReader::internalReadFile(const char *filename)
+void InifileReader::internalReadFile(const char *filename, Section *currentSection)
 {
     // create an entry for this file, checking against circular inclusion
     std::string tmpfname = tidyFilename(toAbsolutePath(filename).c_str(),true);
@@ -118,8 +129,6 @@ void InifileReader::internalReadFile(const char *filename)
         throw cRuntimeError("Cannot open ini file `%s'", filename);
 
     int lineNumber = 0;
-    Section *currentSection = NULL;
-
     std::set<std::string> sectionsInFile; // we'll check for uniqueness
 
     std::string rawLine;
@@ -174,7 +183,7 @@ void InifileReader::internalReadFile(const char *filename)
             PushDir d(directoryOf(filename).c_str());
 
             // process included inifile
-            internalReadFile(includeFilename.c_str());
+            internalReadFile(includeFilename.c_str(), currentSection);
         }
         else if (*line=='[')
         {
@@ -192,23 +201,13 @@ void InifileReader::internalReadFile(const char *filename)
             sectionsInFile.insert(sectionName);
 
             // add section of not yet seen (in another file)
-            currentSection = NULL;
-            for (int i=0; i<(int)sections.size(); i++)
-                if (sections[i].name == sectionName)
-                    {currentSection = &sections[i]; break;}
-            if (currentSection==NULL)
-            {
-                Section section;
-                section.name = sectionName;
-                sections.push_back(section);
-                currentSection = &sections.back();
-            }
+            currentSection = (Section *)&getOrCreateSection(sectionName);
         }
         else
         {
             // key = value
             if (currentSection==NULL)
-                throw cRuntimeError(ERRPREFIX "no section header seen yet", filename, lineNumber);
+                currentSection = (Section *)&getOrCreateSection(std::string("General"));
             const char *endPos = findEndContent(line, filename, lineNumber);
             const char *equalSignPos = strchr(line, '=');
             if (equalSignPos==NULL || equalSignPos > endPos)

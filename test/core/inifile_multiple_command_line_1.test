@@ -1,0 +1,35 @@
+%description:
+Test multiple inifiles with implicit General sections.
+The second inifile should be read into the General section
+instead of the last section of the first inifile.
+
+%file: test.ned
+import testlib.Dump;
+
+network Test {
+    parameters:
+        int a;
+        int b;
+    submodules:
+        dump: Dump;
+}
+
+%inifile: test1.ini
+network = Test
+*.a = 1
+
+[Config Test]
+
+%inifile: test2.ini
+# This should be read into the General section
+# instead of the last section of the first inifile.
+*.b = 2
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        a = 1
+        b = 2
+    submodules:
+}

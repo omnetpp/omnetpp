@@ -268,13 +268,20 @@ CMP(ModuleLess, less(*(uncheckedGetItem(a).moduleNameRef), *(uncheckedGetItem(b)
 CMP(NameLess, less(*(uncheckedGetItem(a).nameRef), *(uncheckedGetItem(b).nameRef)))
 CMP(ValueLess, uncheckedGetScalar(a).value < uncheckedGetScalar(b).value)
 CMP(VectorIdLess, uncheckedGetVector(a).vectorId < uncheckedGetVector(b).vectorId)
-CMP(CountLess, uncheckedGetVector(a).getCount() < uncheckedGetVector(b).getCount())
-CMP(MeanLess, uncheckedGetVector(a).getMean() < uncheckedGetVector(b).getMean())
-CMP(StddevLess, uncheckedGetVector(a).getStddev() < uncheckedGetVector(b).getStddev())
-CMP(MinLess, uncheckedGetVector(a).getMin() < uncheckedGetVector(b).getMin())
-CMP(MaxLess, uncheckedGetVector(a).getMax() < uncheckedGetVector(b).getMax())
+CMP(VectorCountLess, uncheckedGetVector(a).getCount() < uncheckedGetVector(b).getCount())
+CMP(VectorMeanLess, uncheckedGetVector(a).getMean() < uncheckedGetVector(b).getMean())
+CMP(VectorStddevLess, uncheckedGetVector(a).getStddev() < uncheckedGetVector(b).getStddev())
+CMP(VectorMinLess, uncheckedGetVector(a).getMin() < uncheckedGetVector(b).getMin())
+CMP(VectorMaxLess, uncheckedGetVector(a).getMax() < uncheckedGetVector(b).getMax())
+CMP(VectorVarianceLess, uncheckedGetVector(a).getVariance() < uncheckedGetVector(b).getVariance())
 CMP(StartTimeLess, uncheckedGetVector(a).startTime < uncheckedGetVector(b).startTime)
 CMP(EndTimeLess, uncheckedGetVector(a).endTime < uncheckedGetVector(b).endTime)
+CMP(HistogramCountLess, uncheckedGetHistogram(a).getCount() < uncheckedGetHistogram(b).getCount())
+CMP(HistogramMeanLess, uncheckedGetHistogram(a).getMean() < uncheckedGetHistogram(b).getMean())
+CMP(HistogramStddevLess, uncheckedGetHistogram(a).getStddev() < uncheckedGetHistogram(b).getStddev())
+CMP(HistogramMinLess, uncheckedGetHistogram(a).getMin() < uncheckedGetHistogram(b).getMin())
+CMP(HistogramMaxLess, uncheckedGetHistogram(a).getMax() < uncheckedGetHistogram(b).getMax())
+CMP(HistogramVarianceLess, uncheckedGetHistogram(a).getVariance() < uncheckedGetHistogram(b).getVariance())
 
 template <class T>
 void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
@@ -309,6 +316,20 @@ void IDList::sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator
 {
     READER_MUTEX
     checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), comparator);
+    else
+        std::sort(v->begin(), v->end(), flipArgs(comparator));
+}
+
+template <class T>
+void IDList::sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& comparator)
+{
+    READER_MUTEX
+    checkIntegrityAllHistograms(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
     if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
        reverse();
@@ -373,34 +394,39 @@ void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending)
     sortVectorsBy(mgr, ascending, compare);
 }
 
-
 void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending)
 {
-    CountLess compare(mgr);
+	VectorCountLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending)
 {
-    MeanLess compare(mgr);
+	VectorMeanLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending)
 {
-    StddevLess compare(mgr);
+	VectorStddevLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending)
 {
-    MinLess compare(mgr);
+	VectorMinLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
 void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending)
 {
-    MaxLess compare(mgr);
+	VectorMaxLess compare(mgr);
+    sortVectorsBy(mgr, ascending, compare);
+}
+
+void IDList::sortVectorsByVariance(ResultFileManager *mgr, bool ascending)
+{
+	VectorVarianceLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
 }
 
@@ -414,6 +440,42 @@ void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending)
 {
     EndTimeLess compare(mgr);
     sortVectorsBy(mgr, ascending, compare);
+}
+
+void IDList::sortHistogramsByLength(ResultFileManager *mgr, bool ascending)
+{
+	HistogramCountLess compare(mgr);
+    sortHistogramsBy(mgr, ascending, compare);
+}
+
+void IDList::sortHistogramsByMean(ResultFileManager *mgr, bool ascending)
+{
+	HistogramMeanLess compare(mgr);
+    sortHistogramsBy(mgr, ascending, compare);
+}
+
+void IDList::sortHistogramsByStdDev(ResultFileManager *mgr, bool ascending)
+{
+	HistogramStddevLess compare(mgr);
+    sortHistogramsBy(mgr, ascending, compare);
+}
+
+void IDList::sortHistogramsByMin(ResultFileManager *mgr, bool ascending)
+{
+	HistogramMinLess compare(mgr);
+    sortHistogramsBy(mgr, ascending, compare);
+}
+
+void IDList::sortHistogramsByMax(ResultFileManager *mgr, bool ascending)
+{
+	HistogramMaxLess compare(mgr);
+    sortHistogramsBy(mgr, ascending, compare);
+}
+
+void IDList::sortHistogramsByVariance(ResultFileManager *mgr, bool ascending)
+{
+	HistogramVarianceLess compare(mgr);
+    sortHistogramsBy(mgr, ascending, compare);
 }
 
 void IDList::sortByRunAttribute(ResultFileManager *mgr, const char* runAttribute, bool ascending) {

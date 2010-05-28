@@ -1,0 +1,39 @@
+%description:
+Test multiple inifiles with implicit sections.
+The included inifile should be read into the Test section
+instead of the General section.
+
+%extraargs: -c Test
+
+%file: test.ned
+import testlib.Dump;
+
+network Test {
+    parameters:
+        int a;
+        int b;
+    submodules:
+        dump: Dump;
+}
+
+%inifile: test.ini
+network = Test
+*.b = 0
+
+[Config Test]
+*.a = 1
+include include.ini
+
+%file: include.ini
+# The should be read into the Test section 
+# instead of the General section.
+*.b = 2
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        a = 1
+        b = 2
+    submodules:
+}

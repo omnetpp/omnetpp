@@ -55,7 +55,7 @@ b=has body, f=value is filename)
     'module_b'           => '1vb',
 
     'file'               => 'vbf',
-    'inifile'            => '1vbf',
+    'inifile'            => 'vbf',
     'network'            => '1v',
 
     'subst'              => 'v',
@@ -435,20 +435,20 @@ sub testcase_generatesources
     }
 
     # ini file
-    $inifname = $values{'inifile(1)'};
-    if ($inifname eq '') {
-        $inifname = "test.ini";
-    }
-    $inifname = $workdir."/".$testname."/".$inifname;
-
-    $inifile = $bodies{'inifile(1)'};
-    if ($inifile =~ /^\s*$/s)
+    foreach $key (keys(%values))
     {
-        $inifile = $INITemplate;
-        $inifile =~ s/\@TESTNAME\@/$testname/g;
-        $inifile =~ s/\@NETWORKNAME\@/$networkname/g;
+        if ($key =~ /^inifile\([0-9]+\)/) {
+            $inifname = $workdir."/".$testname."/".$values{$key};
+            $inifile = $bodies{$key};
+            if ($inifile =~ /^\s*$/s)
+            {
+                 $inifile = $INITemplate;
+                 $inifile =~ s/\@TESTNAME\@/$testname/g;
+                 $inifile =~ s/\@NETWORKNAME\@/$networkname/g;
+            }
+            writefile($inifname, $inifile);
+        }
     }
-    writefile($inifname, $inifile);
 
     # source files (export them after the templated files,
     # so that user can overwrite them if needed)
@@ -499,12 +499,6 @@ sub testcase_run()
         }
     }
 
-    # ini file
-    $inifname = $values{'inifile(1)'};
-    if ($inifname eq '') {
-        $inifname = "test.ini";
-    }
-
     # restore original env vars
     foreach my $envvar (keys(%ENV)) {delete $ENV{$envvar};}
     foreach my $envvar (keys(%savedENV)) {$ENV{$envvar} = $savedENV{$envvar};}
@@ -526,6 +520,18 @@ sub testcase_run()
     # run the program
     if ($mode eq 'run') {
         my $myargs = $values{'extraargs(1)'};
+
+        $inifilenames = '';
+        foreach $key (sort(keys(%values)))
+        {
+            if ($key =~ /^inifile\([0-9]+\)/) {
+                $inifilenames = $inifilenames." ".$values{$key};
+            }
+        }
+        if ($inifilenames eq '') {
+            $inifilenames = "test.ini";
+        }
+
         if ($values{'testprog(1)'} ne '') {
             $exitcode = exec_program($values{'testprog(1)'}." $myargs $extraargs", "$workdir/$testname", $outfname, $errfname);
         }
@@ -537,7 +543,7 @@ sub testcase_run()
                 print STDERR "$arg0: error: test program '$workdir/$testprogram' is not executable\n"; exit(1);
             }
             $sep = $isWindows ? "\\" : "/";
-            $exitcode = exec_program("..$sep$testprogram -u Cmdenv $myargs $extraargs -f $inifname", "$workdir/$testname", $outfname, $errfname);
+            $exitcode = exec_program("..$sep$testprogram -u Cmdenv $myargs $extraargs $inifilenames", "$workdir/$testname", $outfname, $errfname);
         }
         if ($exitcode != 0) {
             if ($exitcode == -1) {

@@ -13,7 +13,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
@@ -39,7 +38,7 @@ public class ChannelPropertySource extends MergedPropertySource {
             this.model = model;
             // define which properties should be displayed in the property sheet
             // we do not support all properties currently, just color, width and style
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL,
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.ROUTING_CONSTRAINT,
                     								 DisplayString.Prop.CONNECTION_STYLE));
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTPOS));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);

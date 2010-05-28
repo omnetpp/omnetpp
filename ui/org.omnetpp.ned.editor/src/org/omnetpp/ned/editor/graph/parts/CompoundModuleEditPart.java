@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.ConnectionEditPart;
@@ -25,6 +26,7 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
+import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigureEx;
@@ -46,8 +48,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     // stores  the connection model - connection editPart mapping for the compound module
     private final Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
 
-    protected CompoundModuleGateAnchor gateAnchor;
-
     @Override
     public void activate() {
         super.activate();
@@ -66,9 +66,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected IFigure createFigure() {
-        IFigure fig = new CompoundModuleFigureEx();
-        gateAnchor = new CompoundModuleGateAnchor(fig);
-        return fig;
+        return new CompoundModuleFigureEx();
     }
 
     /**
@@ -166,8 +164,10 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         super.refreshVisuals();
         // define the properties that determine the visual appearance
-        getCompoundModuleFigure().setName(getCompoundModuleModel().getName());
-    	getCompoundModuleFigure().setDisplayString(getCompoundModuleModel().getDisplayString());
+        CompoundModuleFigureEx compoundModuleFigure = getCompoundModuleFigure();
+        CompoundModuleElementEx compoundModuleModel = getCompoundModuleModel();
+        compoundModuleFigure.setName(compoundModuleModel.getName());
+    	compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString());
     }
 
 	/**
@@ -187,16 +187,36 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 */
 	@Override
     public ConnectionAnchor getConnectionAnchorAt(Point p) {
-        return gateAnchor;
+        return new CompoundModuleGateAnchor(getFigure());
 	}
 
 	/**
 	 * Returns a connection anchor registered for the given gate
 	 */
 	@Override
-    public GateAnchor getConnectionAnchor(String gate) {
+    public GateAnchor getConnectionAnchor(ConnectionElementEx connection, String gate) {
+	    CompoundModuleGateAnchor gateAnchor = new CompoundModuleGateAnchor(getFigure());
+        gateAnchor.setEdgeConstraint(getRoutingConstraintPosition(connection.getDisplayString().getAsString(Prop.ROUTING_CONSTRAINT)));
         return gateAnchor;
 	}
+
+    private int getRoutingConstraintPosition(String routingConstraint) {
+        int position;
+        if (routingConstraint == null || routingConstraint.equals("a"))
+            position = PositionConstants.NSEW;
+        else if (routingConstraint.equals("n"))
+            position = PositionConstants.NORTH;
+        else if (routingConstraint.equals("s"))
+            position = PositionConstants.SOUTH;
+        else if (routingConstraint.equals("e"))
+            position = PositionConstants.EAST;
+        else if (routingConstraint.equals("w"))
+            position = PositionConstants.WEST;
+        else
+            // default;
+            position = PositionConstants.NSEW;
+        return position;
+    }
 
     /**
      * Returns the current scaling factor of the compound module

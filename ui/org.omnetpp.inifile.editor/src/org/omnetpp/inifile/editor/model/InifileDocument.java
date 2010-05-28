@@ -260,9 +260,9 @@ public class InifileDocument implements IInifileDocument {
                 }
 
                 public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
-                    if (currentSection==null)
-                        addError(currentFile, lineNumber, "Entry occurs before first section heading");
-                    else if (currentSection.entries.containsKey(key)) {
+                    if (currentSection == null)
+                        sectionHeadingLine(0, 1, "", ConfigRegistry.GENERAL, ""); // implicit general section
+                    if (currentSection.entries.containsKey(key)) {
                         KeyValueLine line = currentSection.entries.get(key);
                         String location = (line.file==currentFile ? "" : line.file.getName()+" ") + "line " + line.lineNumber;
                         addWarning(currentFile, lineNumber, "Duplicate key, ignored (see "+location+")");
@@ -697,7 +697,7 @@ public class InifileDocument implements IInifileDocument {
                     hasUndeletableParts = true;
                 else {
                     try {
-                        int offset = document.getLineOffset(line.lineNumber-1);
+                        int offset = line.lineNumber == 0 ? 0 : document.getLineOffset(line.lineNumber-1);
                         int length = document.getLineOffset(line.lastLine-1+line.numLines) - offset;
                         document.replace(offset, length, "");
                         deletedSomething = true;
@@ -724,8 +724,11 @@ public class InifileDocument implements IInifileDocument {
             if (!isEditable(line))
                 throw new IllegalArgumentException("Cannot rename section ["+sectionName+"], because it is (or part of it is) in an included file ("+line.file.getName()+")");
         for (SectionHeadingLine line : section.headingLines) {
-            //XXX big problem if line numbers change as the result of replacing!!!!! ie original section name was on two lines using backslash...
-            replaceLine(line, "[" + newName + "]" + line.rawComment);
+            //XXX big problem if line numbers change as the result of replacing/adding lines!!!!! i.e. original section name was on two lines using backslash...
+            if (line.lineNumber == 0)
+                addLineAt(1, "[" + newName + "]" + line.rawComment);
+            else
+                replaceLine(line, "[" + newName + "]" + line.rawComment);
         }
     }
 
