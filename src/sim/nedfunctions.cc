@@ -698,5 +698,5 @@ DEF(nedf_simTime,
     "misc",
     "Returns the current simulation time.",
 {
-    return Value(simTime().dbl(), "s");
+    return Value(SIMTIME_DBL(simTime()), "s");
 })
