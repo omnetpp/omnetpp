@@ -1,4 +1,14 @@
-2010-04026  Andras Varga
+2010-05-28  Levente Meszaros
+
+	* Ini file inclusion now behaves as textual substition: if an included 
+	ini file does not contain [General] or [Config XXX] lines, the file's  
+	content will be treated as if copy/pasted into the section containing
+	the include. Ini files that do not start with a section heading will
+	now be accepted and treated as if they started with [General].
+	Rationale: allow factoring out orthogonal pieces of config into 
+	separate files.
+
+2010-04-26  Andras Varga
 
 	* ValueIterator: fix bug #115: "1..4 step 0.1" went only up to 3.9 
 	not 4, due to floating-point rounding error.
@@ -16,7 +26,7 @@
 	* in the record= list of @statistic, now you can make items optional
 	by appending "?" to them. By default, only non-optional items
 	are used
-
+	
 	* result-recording-modes has changed: there are two keywords that
 	are accepted in the list: "all" and "default". "all" copies all items
 	from record= of @statistic() including optional ones (those suffixed

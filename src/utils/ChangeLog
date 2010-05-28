@@ -1,3 +1,7 @@
+2010-05-28  Levente Meszaros
+
+	* opp_test: support multiple %inifile entries in the .test file
+
 2010-05-09  Andras Varga
 
 	* opp_test: do not delete "%contains" files that look like source files
