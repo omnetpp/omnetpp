@@ -110,8 +110,16 @@ associated with the problem.
 
 [NOTE]
 ===============================================================
-The BLT toolkit is not required for @OMNETPP@ on Mac OS X, because
-the native (Aqua) version of Tcl/Tk on Mac OS X does not support it.
+@OMNETPP@ builds without the BLT Tcl/Tk extension, because BLT is
+not available for the native (Aqua) version of Tcl/Tk.
+
+As an alternative to the Aqua version of Tcl/Tk, you may also use
+the X11 version from the Fink project (http://finkproject.org).
+The Fink version does not have the look and feel of OS X applications,
+but it may provide better performance with animations, and it also has BLT.
+To select Fink, you will need to adjust the Tcl/Tk settings in
+@OMNETPP@'s `configure.user` file. Please note that we do not provide support
+for using the Fink version of Tcl/Tk.
 ===============================================================
 
 When `./configure` has finished, you can compile @OMNETPP@.
@@ -149,7 +157,7 @@ OS X 10.6, you must remove the `-m32` flag from the `CFLAGS_RELEASE`,
 `CFLAGS_DEBUG` and `LDFLAGS` variables in the `Makefile.inc` file.
 Please note that you will not be able to debug your 64-bit code
 from the @OMNETPP@ IDE, because the version of CDT (C/C++
-Development Toolkit) bundled with the IDE does not support 64-bit 
+Development Toolkit) bundled with the IDE does not support 64-bit
 targets.
 ===============================================================
 
