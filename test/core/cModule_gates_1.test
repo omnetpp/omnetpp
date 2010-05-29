@@ -279,9 +279,9 @@ deleting gate1[]
 deleting gate0[]
 creating gate2
 creating gate3[]
-resizing gate3[0] to [1]
-resizing gate3[1] to [19]
-resizing gate3[19] to [2]
+resizing gate3[0] to [7]
+resizing gate3[7] to [22]
+resizing gate3[22] to [77]
 deleting gate3[]
 creating gate4
 creating gate5[]
@@ -293,18 +293,18 @@ deleting gate7
 deleting gate4
 deleting gate2
 resizing gate6[0] to [3]
-resizing gate6[3] to [23]
+resizing gate6[3] to [18]
 creating gate9
 creating gate10
 creating gate11[]
 deleting gate10
 creating gate12
 creating gate13
-resizing gate11[0] to [3]
+resizing gate11[0] to [69]
 deleting gate12
 deleting gate8
-resizing gate6[23] to [10]
-resizing gate11[3] to [34]
+resizing gate6[18] to [0]
+resizing gate11[69] to [11]
 deleting gate11[]
 deleting gate9
 creating gate14[]
@@ -312,41 +312,41 @@ creating gate15[]
 creating gate16[]
 creating gate17[]
 creating gate18
-resizing gate17[0] to [7]
-resizing gate15[0] to [55]
+resizing gate17[0] to [1]
+resizing gate15[0] to [5]
 deleting gate18
 deleting gate13
 deleting gate15[]
 creating gate19[]
-resizing gate14[0] to [2]
-resizing gate17[7] to [11]
-resizing gate14[2] to [0]
-resizing gate19[0] to [22]
-resizing gate14[0] to [2]
-resizing gate16[0] to [117]
+resizing gate14[0] to [4]
+resizing gate17[1] to [33]
+resizing gate14[4] to [18]
+resizing gate19[0] to [18]
+resizing gate14[18] to [4]
+resizing gate16[0] to [0]
 creating gate20
-resizing gate19[22] to [10]
-resizing gate19[10] to [63]
+resizing gate19[18] to [0]
+resizing gate19[0] to [3]
 deleting gate17[]
-resizing gate6[10] to [39]
-resizing gate16[117] to [2]
+resizing gate6[0] to [9]
+resizing gate16[0] to [76]
 deleting gate6[]
-resizing gate19[63] to [5]
-resizing gate14[2] to [12]
-resizing gate14[12] to [10]
-resizing gate14[10] to [6]
-resizing gate19[5] to [2]
-resizing gate14[6] to [54]
+resizing gate19[3] to [1]
+resizing gate14[4] to [33]
+resizing gate14[33] to [37]
+resizing gate14[37] to [1]
+resizing gate19[1] to [4]
+resizing gate14[1] to [5]
 creating gate21[]
-resizing gate14[54] to [1]
-resizing gate19[2] to [39]
-resizing gate19[39] to [6]
-resizing gate14[1] to [41]
+resizing gate14[5] to [5]
+resizing gate19[4] to [9]
+resizing gate19[9] to [1]
+resizing gate14[5] to [8]
 creating gate22[]
 creating gate23
-resizing gate14[41] to [7]
+resizing gate14[8] to [1]
 creating gate24[]
-resizing gate14[7] to [0]
+resizing gate14[1] to [9]
 deleting gate20
 creating gate25[]
 deleting gate23
@@ -354,8 +354,8 @@ creating gate26
 creating gate27[]
 deleting gate14[]
 creating gate28
-resizing gate25[0] to [0]
-resizing gate22[0] to [13]
+resizing gate25[0] to [15]
+resizing gate22[0] to [30]
 creating gate29
 creating gate30[]
 deleting gate26
@@ -363,28 +363,28 @@ deleting gate28
 creating gate31
 deleting gate21[]
 creating gate32[]
-resizing gate32[0] to [2]
+resizing gate32[0] to [4]
 creating gate33
 deleting gate31
-resizing gate24[0] to [5]
-resizing gate27[0] to [1]
-resizing gate16[2] to [69]
+resizing gate24[0] to [2]
+resizing gate27[0] to [6]
+resizing gate16[76] to [3]
 creating gate34[]
-resizing gate27[1] to [57]
+resizing gate27[6] to [4]
 creating gate35
-resizing gate24[5] to [53]
+resizing gate24[2] to [5]
 deleting gate24[]
-resizing gate27[57] to [4]
-resizing gate25[0] to [26]
+resizing gate27[4] to [2]
+resizing gate25[15] to [15]
 deleting gate34[]
 deleting gate32[]
-resizing gate22[13] to [0]
-resizing gate25[26] to [0]
+resizing gate22[30] to [10]
+resizing gate25[15] to [111]
 deleting gate33
 deleting gate29
 deleting gate27[]
-resizing gate22[0] to [3]
-resizing gate19[6] to [32]
+resizing gate22[10] to [3]
+resizing gate19[1] to [12]
 creating gate36[]
 done.
 
