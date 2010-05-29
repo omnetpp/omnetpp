@@ -205,6 +205,13 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      */
     virtual bool isBusy() const {return simTime() < txfinishtime;}
 
+    /**
+     * Forcibly overwrites the finish time of the current transmission in the
+     * channel (see getTransmissionFinishTime()). This method can be used for
+     * implementing transmission abortion; see declaration in base class
+     * (cChannel::forceTransmissionFinishTime()) for more information.
+     */
+    virtual void forceTransmissionFinishTime(simtime_t t);
     //@}
 
     /** @name Implementation methods */

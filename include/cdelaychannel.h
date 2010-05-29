@@ -105,6 +105,11 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      * The cDelayChannel implementation of this method always returns false.
      */
     virtual bool isBusy() const {return false;}
+
+    /**
+     * The cDelayChannel implementation of this method does nothing.
+     */
+    virtual void forceTransmissionFinishTime(simtime_t t) {}
     //@}
 
     /** @name Setting and getting channel parameters. */

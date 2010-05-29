@@ -187,3 +187,9 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     }
 }
 
+void cDatarateChannel::forceTransmissionFinishTime(simtime_t t)
+{
+    //TODO record this into the eventlog so that it can be visualized in the sequence chart
+    txfinishtime = t;
+}
+

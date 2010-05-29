@@ -292,6 +292,26 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * @see isTransmissionChannel(), getTransmissionFinishTime(), cDatarateChannel
      */
     virtual bool isBusy() const;
+
+    /**
+     * For transmission channels: Forcibly overwrites the finish time of the
+     * current transmission in the channel (see getTransmissionFinishTime()).
+     *
+     * This method is a crude device that allows for implementing aborting
+     * transmissions; it is not needed for normal packet transmissions.
+     * Calling this method with the current simulation time will allow
+     * you to immediately send another packet on the channel without the
+     * channel reporting error due to its being busy.
+     *
+     * Note that this call does NOT affect the delivery of the packet being
+     * transmitted: the packet object is delivered to the target module
+     * at the time it would without the call to this method. The sender
+     * needs to inform the target module in some other way that the
+     * transmission was aborted and the packet should be treated accordingly
+     * (i.e. discarded as incomplete); for example by sending an out-of-band
+     * cMessage that the receiver has to understand.
+     */
+    virtual void forceTransmissionFinishTime(simtime_t t) = 0;
     //@}
 };
 
@@ -357,6 +377,11 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
      * The cIdealChannel implementation of this method always returns false.
      */
     virtual bool isBusy() const {return false;}
+
+    /**
+     * The cIdealChannel implementation of this method does nothing.
+     */
+    virtual void forceTransmissionFinishTime(simtime_t t) {}
     //@}
 };
 

@@ -1,3 +1,8 @@
+2010-05-29  Andras Varga
+
+	* cChannel: added forceTransmissionFinishTime(simtime t), so that 
+	channels can support aborted transmissions (needed e.g. for Ethernet).
+
 2010-05-28  Andras Varga
 
 	* cChannel: added getNominalDatarate(). This is often needed in models,
