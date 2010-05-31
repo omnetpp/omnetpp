@@ -1,4 +1,4 @@
-== CentOS 5.4
+== CentOS
 
 === Supported Releases
 

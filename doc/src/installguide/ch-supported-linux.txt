@@ -7,9 +7,9 @@ distributions:
 
 * Ubuntu 8.04 LTS, 9.10, 10.04 LTS
 * Debian 5.0
-* Fedora Core 11 and 12
+* Fedora Core 12 and 13
 * CentOS 5.4
-* OpenSUSE 12
+* OpenSUSE 11.2
 
 This chapter describes the overall process:
 distro-specific information, such as how to install the prerequisite

@@ -1,5 +1,18 @@
-== Mac OS X 10.5 and 10.6
+== Mac OS X 
 
+=== Supported Releases
+
+This chapter provides additional information for installing @OMNETPP@ on
+Mac OS X.
+
+The following releases are covered:
+
+* Mac OS X 10.5 ('Leopard')
+* Mac OS X 10.6 ('Snow Leopard')
+
+They were tested on the following architectures:
+
+* Intel 32-bit
 
 === Installing the Prerequisite Packages
 
@@ -220,7 +233,7 @@ different optimization), then change the top-level @OMNETPP@ directory, edit
     $ make clean
     $ make
 
-NOTE: To take advantage of multiple processor cores, add the `-j2` option to the
+TIP: To take advantage of multiple processor cores, add the `-j2` option to the
 `make` command line.
 
 If you want to recompile just a single library, then change to the directory

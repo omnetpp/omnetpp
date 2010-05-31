@@ -1,4 +1,4 @@
-== Fedora Core  11 and 12
+== Fedora Core
 
 === Supported Releases
 
@@ -8,8 +8,8 @@ in the 'Linux' chapter.
 
 The following Fedora releases are covered:
 
-* Fedora Core 11
 * Fedora Core 12
+* Fedora Core 13
 
 They were tested on the following architectures:
 

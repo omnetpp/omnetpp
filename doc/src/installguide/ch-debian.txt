@@ -1,4 +1,4 @@
-== Debian 5.0
+== Debian
 
 === Supported Releases
 

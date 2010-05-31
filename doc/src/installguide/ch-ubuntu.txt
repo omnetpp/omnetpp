@@ -1,4 +1,4 @@
-== Ubuntu 8.04 and 9.10
+== Ubuntu
 
 === Supported Releases
 

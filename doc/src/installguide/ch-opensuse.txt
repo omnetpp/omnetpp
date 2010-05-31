@@ -1,4 +1,4 @@
-== OpenSUSE 12
+== OpenSUSE
 
 === Supported Releases
 
@@ -8,7 +8,7 @@ in the 'Linux' chapter.
 
 The following OpenSUSE release is covered:
 
-* OpenSUSE 12
+* OpenSUSE 11.2
 
 It was tested on the following architectures:
 
