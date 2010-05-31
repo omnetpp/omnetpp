@@ -1,51 +1,105 @@
 What's New
 ==========
 
+OMNeT++ 4.1 rc2 (June 2010)
+-------------------------------
+
+Simulation kernel:
+
+ - cChannel: added forceTransmissionFinishTime(simtime t), so that 
+   channels can support aborted transmissions (needed e.g. for Ethernet).
+
+ - cChannel: added getNominalDatarate(). This is often needed in models,
+   for example in INET to fill in the interface entry.
+
+ - added forgetXMLDocument(filename) and flushXMLDocumentCache() to 
+   cEnvir (see bug #131)
+
+ - cPar: added a note to the xmlValue() method that the lifetime of
+   the returned objects may be limited. Modules should NOT hang on to
+   cXMLElement pointers between events!
+
+Envir:
+
+ - Ini file inclusion now behaves as textual substition: if an included 
+   ini file does not contain [General] or [Config XXX] lines, the file's  
+   content will be treated as if copy/pasted into the section containing
+   the include. Ini files that do not start with a section heading will
+   now be accepted and treated as if they started with [General].
+   Rationale: allow factoring out orthogonal pieces of config into 
+   separate files.
+
+IDE:
+
+ - Added support for the `m` tag on connections allowing to set the preferred 
+   directions of a connection between a submodule and its compound module.
+
+Misc:
+
+ - various fixes on Tkenv, the IDE and the build system
+
+
 OMNeT++ 4.1 rc1 (May 2010)
 --------------------------
 Partial list of changes since 4.1b4 (see ChangeLog files in individual folders
 for a more complete list):
 
 Simulation kernel:
+
  - Enter_Method_Silent() may now take arguments (a printf-like arg list),
    and it logs the call into the event log file.
+
  - Re-added cChannel::calculateDuration() that was removed in 4.1b3
+
  - Fix: exponential(), normal(), truncnormal() and geometric() could produce
    +INF, due to log(dblrand()) in their code where dblrand() can produce zero.
    As a side-effect of the fix, the fingerprints of all simulations that use
    those distributions as input have changed.
 
 NED:
+
  - New NED function: expand(). It substitutes ${} config variables into a string.
    Example usage in a NED parameter:
    string fileName = default(expand("${resultdir}/${configname}-${runnumber}.txt"));
 
 MSG:
+
  - Implemented @sizetype property for array fields; it can be used to specify
    the C++ type of the array size and array indices (by default it is unsigned
    int).
+
  - Fix: A "using namespace" line inside a cplusplus {{...}} block confused the
    parser.
 
 Tkenv:
+
  - Implemented bilinear filtering for image/icon resize in Tkenv.
+
  - Simulation Options dialog: layouting algorithm can now be chosen
    from Fast, Advanced and Adaptive (default: Adaptive)
+
  - Implemented minimum icon size, resize window on layout and auto-adjust zoom
    options. New controls in the Simulation Options dialog:
     - "[] Resize window to fit network with current zoom level first"
     - "[] Adjust zoom so that network fills window"
     - "Minimum icon size when zoomed out (pixels)"
+
  - Added hotkeys for zoom in/out: Ctrl+N and Ctrl+M. Ctrl+N was already
    used by "Toggle module name", it was reassigned to Ctrl+D.
+
  - Improvements on the classic ("fast") layouting algorithm
+
  - Application icon for Tkenv
+
  - Several bug fixes (see ChangeLog)
 
 IDE:
+
  - Analysis Tool: charts now support a much higher zoom level
+
  - NED Documentation Generator: generating full inheritance and usage diagrams
    can now be turned off (they were often too busy to be useful)
+
  - Several other bug fixes
 
 
