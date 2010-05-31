@@ -1,3 +1,5 @@
+2010-05-31  ------ omnetpp-4.1rc2 released ------
+
 2010-05-29  Andras Varga
 
 	* cChannel: added forceTransmissionFinishTime(simtime t), so that 

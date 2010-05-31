@@ -1,3 +1,5 @@
+2010-05-31  ------ omnetpp-4.1rc2 released ------
+
 2010-05-28  Levente Meszaros
 
 	* Ini file inclusion now behaves as textual substition: if an included 
