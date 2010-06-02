@@ -94,14 +94,15 @@
         after startup. If there is no such option, Tkenv will ask.
       </listitem>
       <listitem>
-        [[tkenv-image-path]] : Specifies which directories should be scanned when Tkenv wants to load an
-        image. This is a semicolon-separated list of directories. This setting can be overridden by the
-        [[OMNETPP_IMAGE_PATH]] environment variable.
+        [[tkenv-image-path]] : Specifies which directories (in addition to [[OMNETPP_IMAGE_PATH]]
+        or its built-in default value) Tkenv will load images from. This is a semicolon-separated
+        list of directories. The directories will be scanned recursively, and subdirectory names
+        become part of the icon name; for example, if an [[images/]] directory is listed,
+        [[images/misc/foo.png]] will be registered as icon [[misc/foo]]. PNG and GIF files are accepted.
       </listitem>
       <listitem>
-        [[tkenv-plugin-path]] : Specifies which directories should be scanned when Tkenv wants to load an
-        extension plugin. Plugins are small Tcl script fragments that contribute additional behavior to
-        Tkenv.
+        [[tkenv-plugin-path]] : Specifies which directories (in addition to [[OMNETPP_PLUGIN_PATH]]
+        or its built-in default value) will be scanned for Tkenv plugins written in Tcl.
       </listitem>
     </itemizedlist>
     <para>The rest of the Tkenv options are saved into the [[.tkenvrc]] file in the user's home directory.</para>
@@ -113,6 +114,9 @@
     <para> The default path from where the icons are loaded can be changed with the [[OMNETPP_IMAGE_PATH]]
       variable, which is a semicolon-separated list of directories that defaults to
       [[omnetpp-dir/images;./images]].</para>
+    <para> The path from where Tkenv plugins written in Tcl are loaded can be changed
+      with the [[OMNETPP_PLUGIN_PATH]] variable, which is a semicolon-separated list of directories
+      that defaults to [[./plugins]].</para>
   </sect1>
   <sect1>
     <title>The Main Window</title>
