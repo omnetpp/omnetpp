@@ -14,7 +14,7 @@ then
 fi
 
 # set the context for the library on security enhanced linux
-if [ chcon --version >/dev/null 2>/dev/null ]; then
+if chcon --version >/dev/null 2>/dev/null ; then
   echo "chcon -t textrel_shlib_t $1"
   chcon -t textrel_shlib_t $1
 fi
