@@ -966,12 +966,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 			@Override
 			protected void doRun() {
+                if (!eventLogTable.hasInput())
+                    return;
 				eventLogTable.setLineFilterMode((eventLogTable.getLineFilterMode() + 1) % 5);
 				update();
 			}
 
 			@Override
 			protected int getMenuIndex() {
+                if (!eventLogTable.hasInput())
+                    return 0;
 				return eventLogTable.getLineFilterMode();
 			}
 
@@ -989,6 +993,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 								@Override
                                 public void widgetSelected(SelectionEvent e) {
 									MenuItem menuItem = (MenuItem)e.widget;
+					                if (!eventLogTable.hasInput())
+					                    return;
 
 									if (menuItem.getSelection()) {
 										InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c(MyMessage))\nSee Event Log Table Raw Mode for other fields and entry types.", null, null) {
@@ -1036,6 +1042,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 									MenuItem menuItem = (MenuItem)e.widget;
 
 									if (menuItem.getSelection()) {
+									    if (!eventLogTable.hasInput())
+									        return;
 										eventLogTable.setLineFilterMode(lineFilterMode);
 										update();
 									}
@@ -1114,7 +1122,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             }
 
 			private void removeFilter() {
-				final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
+                if (!eventLogTable.hasInput())
+                    return;
+
+                final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
 				eventLogInput.runWithProgressMonitor(new Runnable() {
 					public void run() {
 						eventLogInput.removeFilter();
@@ -1127,8 +1138,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 
 			private void filter() {
-				final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
+                if (!eventLogTable.hasInput())
+                    return;
 
+                final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
 				if (eventLogInput.openFilterDialog() == Window.OK) {
                     eventLogInput.runWithProgressMonitor(new Runnable() {
                         public void run() {

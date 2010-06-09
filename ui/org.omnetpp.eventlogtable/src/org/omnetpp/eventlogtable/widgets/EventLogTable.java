@@ -169,7 +169,8 @@ public class EventLogTable
 	@Override
 	public void refresh() {
         internalErrorHappenedDuringPaint = false;
-		eventLogInput.resetCanceled();
+        if (eventLogInput != null)
+            eventLogInput.resetCanceled();
 		super.refresh();
 	}
 
@@ -280,6 +281,10 @@ public class EventLogTable
 		return eventLogInput;
 	}
 
+	public boolean hasInput() {
+	    return eventLogInput != null;   // input may be null, e.g. when editor is not a Sequence Chart
+	}
+	
 	public IEventLog getEventLog() {
 		return eventLog;
 	}
