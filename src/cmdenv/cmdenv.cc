@@ -561,8 +561,8 @@ void Cmdenv::sputn(const char *s, int n)
     if (disable_tracing)
         return;
 
-    cModule *ctxmod = simulation.getContextModule();  //FIXME shouldn't this be "component" ?
-    if (!ctxmod || (opt_modulemsgs && ctxmod->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
+    cComponent *ctx = simulation.getContext();
+    if (!ctx || (opt_modulemsgs && ctx->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
     {
         ::fwrite(s,1,n,fout);
         if (opt_autoflush)
@@ -653,7 +653,7 @@ void Cmdenv::simulationEvent(cMessage *msg)
 
     if (!opt_expressmode && opt_messagetrace)
     {
-        ::fprintf(fout, "DELIVD: %s\n", msg->info().c_str());  //FIXME can go out!!!
+        ::fprintf(fout, "DELIVD: %s\n", msg->info().c_str());  //TODO can go out!
         if (opt_autoflush)
             ::fflush(fout);
     }
