@@ -343,7 +343,7 @@ class SIM_API cGate : public cObject, noncopyable
     /** @name Transmission state. */
     //@{
     /**
-     * Usually invoked on an output gate, this method returns <i>the</i>
+     * Typically invoked on an output gate, this method returns <i>the</i>
      * channel in the connection path that supports datarate (as determined
      * by cChannel::isTransmissionChannel(); it is guaranteed that there can be
      * at most one such channel per path). If there is no such channel,
@@ -357,8 +357,33 @@ class SIM_API cGate : public cObject, noncopyable
      * performance-critical places it may be better to cache its return
      * value (provided that connections are not removed or created dynamically
      * during simulation.)
+     *
+     * @see cChannel::isTransmissionChannel()
      */
     cChannel *getTransmissionChannel() const;
+
+    /**
+     * Like getTransmissionChannel(), but returns NULL instead of throwing
+     * an error if there is no transmission channel in the path.
+     */
+    cChannel *findTransmissionChannel() const;
+
+    /**
+     * Typically invoked on an input gate, this method searches the reverse
+     * path (i.e. calls getPreviousGate() repeatedly) for the transmission
+     * channel. It is guaranteed that there can be at most one such channel
+     * per path. If no transmission channel is found, the method throws an error.
+     *
+     * @see getTransmissionChannel(), cChannel::isTransmissionChannel()
+     */
+    cChannel *getIncomingTransmissionChannel() const;
+
+    /**
+     * Like getIncomingTransmissionChannel(), but returns NULL instead of
+     * throwing an error if there is no transmission channel in the reverse
+     * path.
+     */
+    cChannel *findIncomingTransmissionChannel() const;
     //@}
 
     /** @name Gate connectivity. */

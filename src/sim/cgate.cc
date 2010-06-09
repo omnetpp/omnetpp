@@ -470,13 +470,21 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
     }
 }
 
-cChannel *cGate::getTransmissionChannel() const
+cChannel *cGate::findTransmissionChannel() const
 {
     for (const cGate *g=this; g->nextgatep!=NULL; g=g->nextgatep)
         if (g->channelp && g->channelp->isTransmissionChannel())
             return g->channelp;
+    return NULL;
+}
 
-    // datarate channel not found, try to issue a helpful error message
+cChannel *cGate::getTransmissionChannel() const
+{
+    cChannel *chan = findTransmissionChannel();
+    if (chan)
+        return chan;
+
+    // transmission channel not found, try to issue a helpful error message
     if (nextgatep)
         throw cRuntimeError(this, "getTransmissionChannel(): no transmission channel "
                             "found in the connection path between gates %s and %s",
@@ -489,6 +497,35 @@ cChannel *cGate::getTransmissionChannel() const
         throw cRuntimeError(this, "getTransmissionChannel(): cannot be invoked on a "
                             "simple module input gate (or a compound module "
                             "input gate which is not connected on the inside)");
+}
+
+cChannel *cGate::findIncomingTransmissionChannel() const
+{
+    for (const cGate *g=this->prevgatep; g!=NULL; g=g->prevgatep)
+        if (g->channelp && g->channelp->isTransmissionChannel())
+            return g->channelp;
+    return NULL;
+}
+
+cChannel *cGate::getIncomingTransmissionChannel() const
+{
+    cChannel *chan = findIncomingTransmissionChannel();
+    if (chan)
+        return chan;
+
+    // transmission channel not found, try to issue a helpful error message
+    if (prevgatep)
+        throw cRuntimeError(this, "getIncomingTransmissionChannel(): no transmission channel "
+                            "found in the connection path between gates %s and %s",
+                            getFullPath().c_str(),
+                            getPathStartGate()->getFullPath().c_str());
+    else if (getType()==INPUT)
+        throw cRuntimeError(this, "getIncomingTransmissionChannel(): no transmission channel found: "
+                            "gate is not connected");
+    else
+        throw cRuntimeError(this, "getIncomingTransmissionChannel(): cannot be invoked on a "
+                            "simple module output gate (or a compound module "
+                            "output gate which is not connected on the inside)");
 }
 
 bool cGate::pathContains(cModule *mod, int gate)
