@@ -397,3 +397,11 @@ cDensityEstBase::Cell cDensityEstBase::getCellInfo(int k) const
     return c;
 }
 
+const cDensityEstBase::Cell& cDensityEstBase::internalGetCellInfo(int k) const
+{
+    // only for use in sim_std.msg (each call overwrites the static buffer!)
+    static Cell buf;
+    buf = getCellInfo(k);
+    return buf;
+}
+

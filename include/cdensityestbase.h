@@ -115,6 +115,9 @@ class SIM_API cDensityEstBase : public cStdDev
 
     // part of merge(); to be implemented in subclasses
     virtual void doMergeCellValues(const cDensityEstBase *other) = 0;
+  public:
+    // internal, for use in sim_std.msg; note: each call overwrites the previous value!
+    const Cell& internalGetCellInfo(int k) const;
 
   public:
     /** @name Constructors, destructor, assignment. */

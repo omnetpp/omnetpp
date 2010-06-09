@@ -292,7 +292,7 @@ class cDensityEstBase extends cStdDev
     unsigned long underflowCell @group(histogram) @hint(Number of observations below the first histogram cell);
     unsigned long overflowCell @group(histogram) @hint(Number of observations above the last histogram cell);
     int numCells @group(histogram) @hint(Number of cells in the histogram);
-    cDensityEstBase_Cell cellInfo[] @sizeGetter(getNumCells) @group(histogram) @hint(Histogram cell bounds, observation count in the cell, and density estimate in the cell);
+    cDensityEstBase_Cell cellInfo[] @getter(internalGetCellInfo) @sizeGetter(getNumCells) @group(histogram) @hint(Histogram cell bounds, observation count in the cell, and density estimate in the cell);
 }
 
 class cHistogramBase extends cDensityEstBase
