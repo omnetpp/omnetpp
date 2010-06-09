@@ -597,6 +597,9 @@ JNI_LIB_SUFFIX
 SHARED_LIB_SUFFIX
 A_LIB_SUFFIX
 SHARED_LIBS
+SHLIB_POSTPROCESS
+MKPATH
+LN
 MAKEDEPEND
 STRIP
 DLLTOOL
@@ -2259,6 +2262,9 @@ WHOLE_ARCHIVE_OFF=
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
 MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
+LN=${LN:-ln -sf}
+MKPATH=${MKPATH:-mkdir -p}
+SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
 
 #----------------------
 # Check compiler
@@ -6270,6 +6276,9 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
+
+
 
 
 

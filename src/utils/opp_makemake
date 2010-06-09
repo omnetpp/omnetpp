@@ -1206,25 +1206,25 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {~nolink:}{nmake:}	copy $(O:/=\)\$(TARGET) .
 {~nolink:}{nmake:}	-copy $(O:/=\)\$(TARGET).manifest . >NUL
 {sharedlib:}{nmake:}	-copy $(O:/=\)\$(TARGET:.dll=.lib) . >NUL
-{~nolink:}{~nmake:}	ln -s -f $O/$(TARGET) .
+{~nolink:}{~nmake:}	$(LN) $O/$(TARGET) .
 {~nolink:}
 ### Rules for $TARGET. Note that end product will be softlinked into the
 ### Makefile's directory; on systems that don't support soft links it will
 ### be copied. Note that MinGW's "ln -s" also actually copies the file.
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
-{exe:}{~nmake:}	@mkdir -p $O
+{exe:}{~nmake:}	@$(MKPATH) $O
 {gcclongline:}{exe:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) && $(CXX) $(LDFLAGS) {-out}$O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
 {~gcclongline:}{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
 {sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
-{sharedlib:}{~nmake:}	@mkdir -p $O
+{sharedlib:}{~nmake:}	@$(MKPATH) $O
 {gcclongline:}{sharedlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) && $(SHLIB_LD) {-out}$O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
 {~gcclongline:}{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
-{sharedlib:}{~nmake:}	opp_shlib_postprocess $O/$(TARGET)
+{sharedlib:}{~nmake:}	$(SHLIB_POSTPROCESS) $O/$(TARGET)
 {staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
-{staticlib:}{~nmake:}	@mkdir -p $O
+{staticlib:}{~nmake:}	@$(MKPATH) $O
 {gcclongline:}{staticlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) $O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
 {~gcclongline:}{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) {nmake_inlineend}
 {nolink:}all: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {makefile}
@@ -1250,7 +1250,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ### for nmake we need per-directory rules, plus one for "." (even though
 ### "." is in sourcedirs), because nmake doesn't recognize "$O/." as "$O"
 {sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc}
-{sourcedirs:}{~nmake:}	@mkdir -p $(dir $@)
+{sourcedirs:}{~nmake:}	@$(MKPATH) $(dir $@)
 {sourcedirs:}{~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
 {sourcedirs:}{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
 {sourcedirs:}{nmake:}	-@md $(O:/=\) 2>nul
