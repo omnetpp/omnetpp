@@ -149,7 +149,7 @@ else
     endif
   endif
 
-  # add the Carbon framework if we are building statically on MAC OS X as Tct/Tk needs it
+  # add the Carbon framework if we are building statically on Mac OS X, because Tcl/Tk needs it
   #FIXME why not in ./configure?
   ifeq ($(PLATFORM),macosx)
     TKENV_LIBS += -framework Carbon

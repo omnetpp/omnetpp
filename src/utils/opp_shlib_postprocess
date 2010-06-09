@@ -2,24 +2,23 @@
 
 usage ()
 {
-     echo "$0 : post-process a shared library"
-     echo "Usage: $0 shared_library_file_name"
+  echo "`basename $0`: post-process a shared library"
+  echo "Usage: `basename $0` FILENAME"
 }
 
-# test if we have two arguments on the command line
-if [ $# != 1 ]
-then
-    usage
-    exit 1
+# assert that we have one argument on the command line
+if [ $# != 1 ]; then
+  usage
+  exit 1
 fi
 
-# set the context for the library on security enhanced linux
+# set the context for the library on Security Enhanced Linux
 if chcon --version >/dev/null 2>/dev/null ; then
   echo "chcon -t textrel_shlib_t $1"
   chcon -t textrel_shlib_t $1
 fi
 
-# the install name must be rpath relative on Mac OS so the 
+# the install name must be rpath-relative on Mac OS X, so the 
 # rpath mechanism can correctly find the library
 if [ "`uname`" = "Darwin" ];  then
   libname=`basename $1`
@@ -28,3 +27,4 @@ if [ "`uname`" = "Darwin" ];  then
 fi
 
 true
+
