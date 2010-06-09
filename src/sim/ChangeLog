@@ -1,9 +1,14 @@
+2010-06-09  Andras Varga
+
+	* eliminated warning while compiling sim_std_m.cc
+
 2010-05-31  ------ omnetpp-4.1rc2 released ------
 
-2010-05-10 Rudolf Hornig
-	* cDynamicExpression: assigning an integer parameter to a double parameter
-	lost the unit during conversion resulting in a 'cannot convert none to XXX 
-	unit' error message.
+2010-05-10  Rudolf Hornig
+
+	* cDynamicExpression: assigning an integer parameter to a double 
+	parameter lost the unit during conversion, resulting in a 'cannot
+	convert none to unit XXX' error message.
 
 2010-05-09  Andras Varga
 
