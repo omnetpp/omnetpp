@@ -242,8 +242,8 @@ else
            CFLAGS_ARCH="$CFLAGS_ARCH -arch ppc -arch i386"
            LDFLAGS_ARCH="$LDFLAGS_ARCH -arch ppc -arch i386"
         fi
-        # CDT 6.x does not support 64 bit debugging so we force 
-        # the compiler to build 32 bit executable because on OS X 10.6, 
+        # CDT 6.x does not support 64 bit debugging so we force
+        # the compiler to build 32 bit executable because on OS X 10.6,
         # gcc builds 64 bit executables by default. After upgrading to
         # CDT 7.0 these lines can be removed.
         CFLAGS_ARCH="$CFLAGS_ARCH -m32"
@@ -301,9 +301,16 @@ else
     cc_candidates="icc gcc cc xlc"
     cxx_candidates="icpc g++ c++ cxx xlC"
 fi
+
 # the below macros should be present only ONCE in the whole file (otherwise bad things will happen)
 AC_PROG_CC($cc_candidates)
 AC_PROG_CXX($cxx_candidates)
+
+AC_CHECK_PROG(tmp_CXX, $CXX, $CXX, not found)
+if test "$tmp_CXX" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES g++"
+   AC_MSG_ERROR([No C++ compiler found -- one is required to build OMNeT++/OMNEST, and also for model development.])
+fi
 
 if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
@@ -995,7 +1002,7 @@ fi
 
 #----------------------
 # Check for PTHREAD.
-# On MinGW, add "-mthread" to PTHREAD_CFLAGS and PTHREAD_LIBS to force using 
+# On MinGW, add "-mthread" to PTHREAD_CFLAGS and PTHREAD_LIBS to force using
 # the multithreaded standard libraries.
 #----------------------
 
