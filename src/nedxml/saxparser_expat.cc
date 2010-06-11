@@ -144,6 +144,7 @@ bool SAXParser::parse(const char *filename)
 
     // cleanup and return
     XML_ParserFree(parser);
+    fclose(f);
     return !err;
 }
 

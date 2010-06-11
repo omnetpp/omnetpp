@@ -339,7 +339,7 @@ bool SAXParser::parse(const char *filename)
 
     int n;
     char Buffer[512];
-    while (0 != (n=fread(Buffer,  sizeof(char), 512,  f)))
+    while (0 != (n=fread(Buffer,  sizeof(char), 512, f)))
     {
         xmlParseChunk(ctxt, Buffer, n, 0);
     }
@@ -366,6 +366,8 @@ bool SAXParser::parse(const char *filename)
     ctxt->sax = NULL;
 
     xmlFreeParserCtxt(ctxt);
+    fclose(f);
+
     return ok;
 }
 
@@ -375,3 +377,4 @@ int SAXParser::getCurrentLineNumber()
 }
 
 #endif
+

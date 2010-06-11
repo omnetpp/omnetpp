@@ -1,3 +1,7 @@
+2010-06-11  Andras Varga
+
+	* fix: SAX parsers did not close the input file
+
 2010-05-31  ------ omnetpp-4.1rc2 released ------
 
 2010-05-09  Andras Varga
