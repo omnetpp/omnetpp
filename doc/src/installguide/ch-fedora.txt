@@ -1,15 +1,14 @@
-== Fedora Core
+== Fedora 13
 
 === Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
-Fedora Core installations. The overall installation procedure is described
+Fedora installations. The overall installation procedure is described
 in the 'Linux' chapter.
 
 The following Fedora releases are covered:
 
-* Fedora Core 12
-* Fedora Core 13
+* Fedora 13
 
 They were tested on the following architectures:
 
@@ -28,11 +27,21 @@ from the terminal, whichever you prefer.
 
 To install the required packages, type in the terminal:
 
-  $ su -c 'yum install gcc gcc-c++ bison flex perl tcl-devel \
-      tk-devel blt libxml2-devel zlib-devel xulrunner make \
-      java-1.6.0-openjdk doxygen graphviz openmpi-devel'
+  $ su -c 'yum install make gcc gcc-c++ bison flex perl \
+      tcl-devel tk-devel blt libxml2-devel zlib-devel \
+      java-1.6.0-openjdk doxygen graphviz openmpi-devel libpcap-devel'
 
 then follow the instruction on the console.
+
+Note that 'openmpi' will not be available by default, it needs to be 
+activated in every session with the
+
+  $ module load openmpi_<arch>
+
+command, where `<arch>` is your architecture (usually `i386` or `x86_64`).
+When in doubt, use `module avail` to display the list of available 
+modules. If you need MPI in every session, you may add the `module load`
+command to your startup script (`.bashrc`).`
 
 ==== Graphical Installation
 
@@ -48,7 +57,7 @@ The packages:
 
 * bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, blt, libxml2-devel,
 zlib-devel, xulrunner, make, java-1.6.0-openjdk,
-doxygen, graphviz, openmpi-devel
+doxygen, graphviz, openmpi-devel, libpcap-devel
 
 Click 'Apply', then follow the instructions.
 

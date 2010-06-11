@@ -3,20 +3,68 @@
 === Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
-OpenSUSE installations. The overall installation procedure is described
+openSUSE installations. The overall installation procedure is described
 in the 'Linux' chapter.
 
-The following OpenSUSE release is covered:
+The following openSUSE releases are covered:
 
-* OpenSUSE 11.2
+* openSUSE 11.2
 
-It was tested on the following architectures:
+They were tested on the following architectures:
 
 * Intel 32-bit and 64-bit
 
-////
-TODO
+=== Opening a Terminal
 
-TODO: make sure graphviz, doxygen and mpi covered
-////
+Choose 'Applications > System > Terminal > Terminal' from the menu.
+
+=== Installing the Prerequisite Packages
+
+You can perform the installation using the graphical user interface or
+from the terminal, whichever you prefer.
+
+==== Command-Line Installation
+
+To install the required packages, type in the terminal:
+
+  $ sudo zypper install make gcc gcc-c++ bison flex perl \
+      tcl-devel tk-devel libxml2-devel zlib-devel \
+      java-1_6_0-openjdk doxygen graphviz openmpi-devel libpcap-devel
+
+then follow the instruction on the console.
+
+Note that 'openmpi' will not be available by default, first you need to
+log out and log in again, or source your `.profile` script:
+
+  $ . ~/.profile
+
+[NOTE]
+===============================================================
+OpenSUSE provides no BLT package, so it is missing from the above list.
+BLT is optional in @OMNETPP@ and its absence will not result in loss
+of functionality, but you can download a BLT source package from sourceforge.net,
+and compile and install it yourself if you wish. See the 'Generic Unix'
+chapter of this Installation Guide for more information on BLT.
+===============================================================
+
+==== Graphical Installation
+
+The graphical installer can be launched by choosing
+'Computer > Yast > System > Software > Software Management' from the menu.
+
+image::pictures/opensuse-yast.png[title="Yast Software Management",align="center",scaledwidth="75%"]
+
+Search for the following packages in the list. Select the checkboxes
+in front of the names, and pick the latest version of each package.
+
+The packages:
+
+* make, gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, 
+libxml2-devel, zlib-devel, java-1_6_0-openjdk, doxygen, graphviz,
+openmpi-devel, libpcap-devel
+
+Click 'Accept', then follow the instructions.
+
+
+
 

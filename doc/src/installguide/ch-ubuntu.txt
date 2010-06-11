@@ -9,7 +9,6 @@ in the 'Linux' chapter.
 The following Ubuntu releases are covered:
 
 * Ubuntu 8.04 LTS ('Hardy Heron')
-* Ubuntu 9.10 ('Karmic Koala')
 * Ubuntu 10.04 ('Lucid Lynx')
 
 They were tested on the following architectures:
@@ -42,29 +41,12 @@ Type in the terminal:
 To install the required packages, type in the terminal:
 
  $ sudo apt-get install build-essential gcc g++ bison flex perl \
-     tcl8.4-dev tk8.4-dev blt libxml2-dev zlib1g-dev \
-     sun-java6-jre xulrunner graphviz doxygen openmpi-bin \
-     libopenmpi-dev
+       tcl-dev tk-dev blt libxml2-dev zlib1g-dev \
+       openjdk-6-jre doxygen graphviz openmpi-bin libopenmpi-dev libpcap-dev
 
 At the confirmation questions ('Do you want to continue? [Y/N]'), answer 'Y'.
-The installer will also require you to accept the 'sun-java6' agreement.
 
 image::pictures/terminal-package-install.png[title="Synaptic Package Manager",align="center",scaledwidth="75%"]
-
-[NOTE]
-===============================================================
-You may get the following error message:
-
-  Package <package name> is not available, but is referred to
-  by another package. This may mean that the package is missing,
-  has been obsoleted, or is only available from another source.
-  E: Package <package name> has no installation candidate
-
-If this happens, then it is possible that a newer version of the
-package exists. In that case, start Ubuntu's graphical installer
-(`Synaptic`, see next section), and use it to determine which version
-of the package to install.
-===============================================================
 
 
 ==== Graphical Installation
@@ -82,11 +64,8 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 
 The packages:
 
-* build-essential, bison, gcc, g++, flex, perl, tcl8.4-dev, tk8.4-dev,
-blt, libxml2-dev, zlib1g-dev, sun-java6-jre, xulrunner, graphviz, doxygen,
-openmpi-bin, libopenmpi-dev
-
-'sun-java6-jre' will require you accept the license agreement.
+* build-essential, gcc, g++, bison, flex, perl, tcl-dev, tk-dev, blt, libxml2-dev,
+zlib1g-dev, openjdk-6-jre, doxygen, graphviz, openmpi-bin, libopenmpi-dev, libpcap-dev
 
 image::pictures/ubuntu-synaptic.png[title="Synaptic Package Manager",align="center",scaledwidth="75%"]
 

@@ -18,15 +18,9 @@ include::ch-ubuntu.txt[]
 
 include::ch-fedora.txt[]
 
-include::ch-centos.txt[]
+include::ch-redhat.txt[]
 
-include::ch-debian.txt[]
-
-ifdef::TODO[]
 include::ch-opensuse.txt[]
-
-include::ch-mandriva.txt[]
-endif::TODO[]
 
 include::ch-generic-unix.txt[]
 
