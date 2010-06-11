@@ -4,7 +4,7 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  contains:  OmnetTkApp member functions
+//  contains:  Tkenv member functions
 //
 //==========================================================================
 
@@ -351,13 +351,13 @@ void Tkenv::doOneStep()
     {
         simstate = SIM_TERMINATED;
         stoppedWithTerminationException(e);
-        displayMessage(e);
+        displayException(e);
     }
     catch (std::exception& e)
     {
         simstate = SIM_ERROR;
         stoppedWithException(e);
-        displayError(e);
+        displayException(e);
     }
     stopClock();
     stopsimulation_flag = false;
@@ -416,13 +416,13 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     {
         simstate = SIM_TERMINATED;
         stoppedWithTerminationException(e);
-        displayMessage(e);
+        displayException(e);
     }
     catch (std::exception& e)
     {
         simstate = SIM_ERROR;
         stoppedWithException(e);
-        displayError(e);
+        displayException(e);
     }
     stopClock();
     stopsimulation_flag = false;
@@ -658,7 +658,7 @@ void Tkenv::finishSimulation()
     }
     catch (std::exception& e)
     {
-        displayError(e);
+        displayException(e);
     }
 
     // then endrun
@@ -668,7 +668,7 @@ void Tkenv::finishSimulation()
     }
     catch (std::exception& e)
     {
-        displayError(e);
+        displayException(e);
     }
     simstate = SIM_FINISHCALLED;
 
@@ -685,7 +685,7 @@ void Tkenv::loadNedFile(const char *fname, const char *expectedPackage, bool isX
     }
     catch (std::exception& e)
     {
-        displayError(e);
+        displayException(e);
     }
 }
 
@@ -719,7 +719,7 @@ void Tkenv::newNetwork(const char *networkname)
     }
     catch (std::exception& e)
     {
-        displayError(e);
+        displayException(e);
         simstate = SIM_ERROR;
     }
 
@@ -767,7 +767,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
     }
     catch (std::exception& e)
     {
-        displayError(e);
+        displayException(e);
         simstate = SIM_ERROR;
     }
 

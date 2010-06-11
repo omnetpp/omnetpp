@@ -284,7 +284,7 @@ void Cmdenv::run()
         {
             had_error = true;
             stoppedWithException(e);
-            displayError(e);
+            displayException(e);
         }
 
         // call endRun()
@@ -297,7 +297,7 @@ void Cmdenv::run()
             catch (std::exception& e)
             {
                 had_error = true;
-                displayError(e);
+                displayException(e);
             }
         }
 
@@ -311,7 +311,7 @@ void Cmdenv::run()
             catch (std::exception& e)
             {
                 had_error = true;
-                displayError(e);
+                displayException(e);
             }
         }
 
@@ -419,7 +419,7 @@ void Cmdenv::simulate()
         deinstallSignalHandler();
 
         stoppedWithTerminationException(e);
-        displayMessage(e);
+        displayException(e);
         return;
     }
     catch (std::exception& e)

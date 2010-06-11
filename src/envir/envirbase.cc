@@ -412,7 +412,7 @@ bool EnvirBase::setup()
     }
     catch (std::exception& e)
     {
-        displayError(e);
+        displayException(e);
         return false; // don't run the app
     }
     return true;
@@ -763,7 +763,7 @@ void EnvirBase::shutdown()
     }
     catch (std::exception& e)
     {
-        displayError(e);
+        displayException(e);
     }
 }
 
@@ -1618,26 +1618,13 @@ unsigned long EnvirBase::getUniqueNumber()
     return nextuniquenumber++;
 }
 
-void EnvirBase::displayError(std::exception& ex)
+void EnvirBase::displayException(std::exception& ex)
 {
     cException *e = dynamic_cast<cException *>(&ex);
-    if (!e || !e->hasContext())
+    if (!e)
         ev.printfmsg("Error: %s.", ex.what());
-    else if (e->getModuleID()==-1)
-        ev.printfmsg("Error in component (%s) %s: %s.", e->getContextClassName(), e->getContextFullPath(), e->what());
     else
-        ev.printfmsg("Error in module (%s) %s (id=%d): %s.", e->getContextClassName(), e->getContextFullPath(), e->getModuleID(), e->what());
-}
-
-void EnvirBase::displayMessage(std::exception& ex)
-{
-    cException *e = dynamic_cast<cException *>(&ex);
-    if (!e || !e->hasContext())
-        ev.printfmsg("%s.", ex.what());
-    else if (e->getModuleID()==-1)
-        ev.printfmsg("Component (%s) %s: %s.", e->getContextClassName(), e->getContextFullPath(), e->what());
-    else
-        ev.printfmsg("Module (%s) %s (id=%d): %s.", e->getContextClassName(), e->getContextFullPath(), e->getModuleID(), e->what());
+        ev.printfmsg("%s", e->getFormattedMessage().c_str());
 }
 
 bool EnvirBase::idle()

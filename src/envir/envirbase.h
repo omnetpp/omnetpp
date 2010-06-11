@@ -289,14 +289,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     ArgList *argList()  {return args;}
 
     /**
-     * Display error message.
+     * Display the exception.
      */
-    virtual void displayError(std::exception& e);
-
-    /**
-     * Like displayError(), but for normal termination messages, not errors.
-     */
-    virtual void displayMessage(std::exception& e);
+    virtual void displayException(std::exception& e);
 
     /** @name Measuring elapsed time. */
     //@{
