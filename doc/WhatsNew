@@ -1,9 +1,23 @@
 What's New
 ==========
 
+OMNeT++ 4.1 (June 2010)
+-----------------------
+Changes after 4.1rc2:
+
+ - Testing on various Linux distros, updated Installation Guide
+
+ - Simulation error messages now contain the event number and the simulation
+   time
+
+ - Tkenv: contents of simulation error dialogs are now inserted into the
+   main window as well, for reference and easier copy/paste
+
+ - Various bug fixes
+
+
 OMNeT++ 4.1 rc2 (June 2010)
 -------------------------------
-
 Simulation kernel:
 
  - cChannel: added forceTransmissionFinishTime(simtime t), so that 
@@ -41,6 +55,7 @@ Misc:
 
 OMNeT++ 4.1 rc1 (May 2010)
 --------------------------
+
 Partial list of changes since 4.1b4 (see ChangeLog files in individual folders
 for a more complete list):
 
