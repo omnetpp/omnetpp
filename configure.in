@@ -921,19 +921,13 @@ if test -n "$MPI_LIBS"; then
 else
     mpi_ok=no
     # LAM and OpenMPI support mpic++ -showme
-    # NOTE: on Fedora 12 (and maybe others), OpenMPI is not in the PATH by default
-    opp_save_PATH="$PATH"
-    PATH="$PATH:/usr/lib/openmpi/bin"
+    # NOTE: on some systems (e.g. RHEL and Fedora), "module load openmpi_i386" or similar command may be additionally needed to make MPI accessible
     AC_CHECK_PROG(MPICPP, mpic++, mpic++, not found)
     if test "$MPICPP" != "not found"; then
         MPI_CFLAGS=`mpic++ -showme:compile`
         MPI_LIBS=`mpic++ -showme:link`
         OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
-        if test -d /usr/lib/openmpi/bin; then
-            AC_MSG_WARN([To use MPI, you may need to ensure that /usr/lib/openmpi/bin is in the PATH.])
-        fi
     fi
-    PATH="$opp_save_PATH"
 
     if test $mpi_ok = no; then
           # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
@@ -1267,18 +1261,25 @@ fi
 #----------------------
 
 if test "$OPP_PROBLEM_PACKAGES" != ""; then
-      cat 1>&2 << EOT
+  cat 1>&2 << EOT
 
 WARNING: The configuration script could not detect the following packages:
 
   $OPP_PROBLEM_PACKAGES
 
-Scroll up to see the warning messages (use shift+PgUp key), and see config.log
-for more details. While you can use $OMNETPP_PRODUCT in the current
-configuration, please be aware that some functionality may be unavailable
-or incomplete.
+Scroll up to see the warning messages (use shift+PgUp), and search config.log
+for more details. While you can use $OMNETPP_PRODUCT in the current configuration, 
+be aware that some functionality may be unavailable or incomplete.
 
 EOT
+  if module avail >/dev/null 2>/dev/null; then
+    cat 1>&2 << EOT
+NOTE: Some packages like MPI may need to be loaded explicitly using a 
+"module load <MODULENAME>" command  prior to running ./configure. 
+Enter "module avail" to see the list of available modules on your system.
+
+EOT
+  fi
 fi
 
 
