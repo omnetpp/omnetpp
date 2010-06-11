@@ -18,12 +18,11 @@ if chcon --version >/dev/null 2>/dev/null ; then
   chcon -t textrel_shlib_t $1
 fi
 
-# the install name must be rpath-relative on Mac OS X, so the 
-# rpath mechanism can correctly find the library
+# the install name must be absolute on Mac OS X
 if [ "`uname`" = "Darwin" ];  then
   libname=`basename $1`
-  echo "install_name_tool -id @rpath/$libname $1"
-  install_name_tool -id @rpath/$libname $1
+  echo "install_name_tool -id `abspath $1` $1"
+  install_name_tool -id `abspath $1` $1
 fi
 
 true

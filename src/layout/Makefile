@@ -43,7 +43,7 @@ $O/%.o: %.cc
 # Targets
 #
 all: $L/$(LIBNAME)$(LIB_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	mkdir -p $L
@@ -54,8 +54,10 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	mkdir -p $L
 	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
-	opp_shlib_postprocess $O/$(LIBNAME)$(SO_LIB_SUFFIX)
+	$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX) $L
+	rm -f $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX) && $(LN) $L/$(LIBNAME)$(SO_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+	$(SHLIB_POSTPROCESS) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	mkdir -p $L
