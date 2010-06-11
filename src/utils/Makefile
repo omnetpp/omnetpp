@@ -74,5 +74,6 @@ $O/abspath.o: abspath.cc \
   ../common/ver.h
 $O/opp_lcg32_seedtool.o: opp_lcg32_seedtool.cc \
   ../common/ver.h
+$O/opp_pefileversion.o: opp_pefileversion.cc
 $O/ln.o: ln.c
 $O/opp_replace.o: opp_replace.c

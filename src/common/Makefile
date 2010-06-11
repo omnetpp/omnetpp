@@ -98,6 +98,7 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.o: bigdecimal.cc \
   bigdecimal.h \
+  commonutil.h \
   commondefs.h \
   opp_ctype.h \
   exception.h
@@ -219,4 +220,3 @@ $O/unitconversion.o: unitconversion.cc \
   stringutil.h \
   opp_ctype.h \
   exception.h
-$O/x.o: x.cc

@@ -79,6 +79,14 @@ $O/basicspringembedderlayout.o: basicspringembedderlayout.cc \
   ../common/lcgrandom.h \
   layoutdefs.h \
   ../common/commondefs.h
+$O/concentrictreeembedding.o: concentrictreeembedding.cc \
+  geometry.h \
+  concentrictreeembedding.h \
+  ../common/exception.h \
+  ../common/commonutil.h \
+  graphcomponent.h \
+  ../common/commondefs.h \
+  layoutdefs.h
 $O/forcedirectedembedding.o: forcedirectedembedding.cc \
   geometry.h \
   ../common/exception.h \

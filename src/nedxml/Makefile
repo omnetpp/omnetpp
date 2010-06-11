@@ -116,26 +116,6 @@ clean:
 	cd $(OMNETPP_BIN_DIR) && rm -f nedtool$(EXE_SUFFIX) opp_msgc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/cppexprgenerator.o: cppexprgenerator.cc \
-  cppexprgenerator.h \
-  nedelement.h \
-  nederror.h \
-  nedelements.h \
-  nedxmldefs.h
-$O/cppgenerator.o: cppgenerator.cc \
-  cppexprgenerator.h \
-  cppgenerator.h \
-  nedelement.h \
-  nederror.h \
-  nedelements.h \
-  nedxmldefs.h
-$O/cppmsggenerator.o: cppmsggenerator.cc \
-  cppexprgenerator.h \
-  cppgenerator.h \
-  nedelement.h \
-  nederror.h \
-  nedelements.h \
-  nedxmldefs.h
 $O/lex.msg2yy.o: lex.msg2yy.cc \
   msg2.tab.hh \
   nedyydefs.h \
@@ -147,23 +127,17 @@ $O/lex.ned1yy.o: lex.ned1yy.cc \
   nedexception.h \
   nedxmldefs.h
 $O/lex.ned2yy.o: lex.ned2yy.cc \
-  nederror.h \
-  nedfilebuffer.h \
-  nedelements.h \
-  nedutil.h \
-  nedparser.h \
   ned2.tab.hh \
   nedyydefs.h \
-  nedelement.h \
   nedexception.h \
-  nedxmldefs.h \
-  nedyylib.h
+  nedxmldefs.h
 $O/msg2.tab.o: msg2.tab.cc \
   nedfilebuffer.h \
   nederror.h \
   nedelements.h \
   nedutil.h \
   nedparser.h \
+  msg2.tab.hh \
   nedyydefs.h \
   nedelement.h \
   nedexception.h \
@@ -188,8 +162,8 @@ $O/ned1generator.o: ned1generator.cc \
   nedelement.h \
   nedxmldefs.h
 $O/ned2.tab.o: ned2.tab.cc \
-  nederror.h \
   nedfilebuffer.h \
+  nederror.h \
   nedelements.h \
   nedutil.h \
   nedparser.h \
@@ -334,17 +308,6 @@ $O/nedtypeinfo.o: nedtypeinfo.cc \
   nedresourcecache.h \
   nedelement.h \
   nedexception.h \
-  ned2generator.h \
-  nederror.h \
-  nedelements.h \
-  nedutil.h \
-  nedtypeinfo.h \
-  nedxmldefs.h
-$O/nedtypeinfo2.o: nedtypeinfo2.cc \
-  nedresourcecache.h \
-  nedelement.h \
-  nedexception.h \
-  nedtypeinfo2.h \
   ned2generator.h \
   nederror.h \
   nedelements.h \

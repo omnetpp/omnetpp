@@ -72,14 +72,13 @@ clean:
 $O/cmdenv.o: cmdenv.cc \
   ../../include/regmacros.h \
   ../envir/args.h \
-  ../../include/ccoroutine.h \
   cmdenv.h \
   ../../include/platdep/platdefs.h \
   ../envir/envirdefs.h \
-  ../../include/cobjectfactory.h \
   ../../include/cmathfunction.h \
-  ../../include/cexpression.h \
+  ../envir/resultlistener.h \
   ../../include/cnamedobject.h \
+  ../../include/cexpression.h \
   ../envir/eventlogfilemgr.h \
   cmddefs.h \
   ../../include/cgate.h \
@@ -106,6 +105,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cobject.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
+  ../../include/clistener.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \
@@ -113,11 +113,12 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cdefaultlist.h \
   ../../include/cvisitor.h \
   ../../include/csimplemodule.h \
+  ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../../include/simutil.h \
-  ../../include/cmessageheap.h \
   ../../include/cexception.h \
+  ../../include/cmessageheap.h \
+  ../../include/simutil.h \
   ../../include/cproperty.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h

@@ -187,6 +187,7 @@ $O/datasorter.o: datasorter.cc \
   ../common/commonutil.h \
   enumtype.h \
   resultfilemanager.h \
+  ../common/rwlock.h \
   ../common/bigdecimal.h \
   statistics.h
 $O/diffquot.o: diffquot.cc \
@@ -208,6 +209,7 @@ $O/enumtype.o: enumtype.cc \
   ../common/commondefs.h \
   scaveutils.h \
   ../common/stringtokenizer.h \
+  ../common/commonutil.h \
   ../common/exception.h \
   enumtype.h \
   ../common/bigdecimal.h
@@ -225,8 +227,9 @@ $O/export.o: export.cc \
   ../common/patternmatcher.h \
   ../common/exception.h \
   ../common/commonutil.h \
-  resultfilemanager.h \
   enumtype.h \
+  resultfilemanager.h \
+  ../common/rwlock.h \
   ../common/bigdecimal.h \
   statistics.h
 $O/fields.o: fields.cc \
@@ -242,6 +245,7 @@ $O/fields.o: fields.cc \
   resultfilemanager.h \
   enumtype.h \
   ../common/bigdecimal.h \
+  ../common/rwlock.h \
   statistics.h
 $O/filewriter.o: filewriter.cc \
   scavedefs.h \
@@ -283,6 +287,7 @@ $O/idlist.o: idlist.cc \
   enumtype.h \
   resultfilemanager.h \
   ../common/bigdecimal.h \
+  ../common/rwlock.h \
   statistics.h
 $O/indexedvectorfile.o: indexedvectorfile.cc \
   idlist.h \
@@ -296,15 +301,16 @@ $O/indexedvectorfile.o: indexedvectorfile.cc \
   channel.h \
   ../common/commonutil.h \
   ../common/exception.h \
-  ../common/progressmonitor.h \
   resultfilemanager.h \
+  ../common/progressmonitor.h \
   enumtype.h \
   dataflowmanager.h \
   ../common/linetokenizer.h \
+  ../common/rwlock.h \
   ../common/bigdecimal.h \
   indexedvectorfile.h \
-  statistics.h \
-  ../common/filereader.h
+  ../common/filereader.h \
+  statistics.h
 $O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
   idlist.h \
   ../common/opp_ctype.h \
@@ -325,6 +331,7 @@ $O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
   ../common/linetokenizer.h \
   dataflowmanager.h \
   indexedvectorfilereader.h \
+  ../common/rwlock.h \
   ../common/bigdecimal.h \
   ../common/filereader.h \
   statistics.h
@@ -348,6 +355,7 @@ $O/indexedvectorfilereader2.o: indexedvectorfilereader2.cc \
   enumtype.h \
   ../common/linetokenizer.h \
   dataflowmanager.h \
+  ../common/rwlock.h \
   ../common/bigdecimal.h \
   ../common/filereader.h \
   statistics.h
@@ -368,6 +376,7 @@ $O/mergernodes.o: mergernodes.cc \
   scavedefs.h \
   ../common/commondefs.h \
   mergernodes.h \
+  scaveutils.h \
   commonnodes.h \
   nodetype.h \
   node.h \
@@ -412,6 +421,7 @@ $O/nodetyperegistry.o: nodetyperegistry.cc \
   dataflowmanager.h \
   indexedvectorfilereader.h \
   arraybuilder.h \
+  ../common/rwlock.h \
   statistics.h \
   filternodes.h \
   xyplotnode.h \
@@ -451,6 +461,7 @@ $O/resultfilemanager.o: resultfilemanager.cc \
   enumtype.h \
   resultfilemanager.h \
   ../common/linetokenizer.h \
+  ../common/rwlock.h \
   statistics.h \
   idlist.h \
   scavedefs.h \
@@ -482,6 +493,7 @@ $O/scavetool.o: scavetool.cc \
   dataflowmanager.h \
   ../common/linetokenizer.h \
   arraybuilder.h \
+  ../common/rwlock.h \
   statistics.h \
   filternodes.h \
   fields.h \
@@ -502,6 +514,7 @@ $O/scaveutils.o: scaveutils.cc \
   ../common/commondefs.h \
   scaveutils.h \
   scavedefs.h \
+  ../common/commonutil.h \
   ../common/exception.h \
   ../common/bigdecimal.h
 $O/slidingwinavg.o: slidingwinavg.cc \
@@ -562,6 +575,7 @@ $O/vectorfileindexer.o: vectorfileindexer.cc \
   ../common/progressmonitor.h \
   dataflowmanager.h \
   ../common/linetokenizer.h \
+  ../common/rwlock.h \
   statistics.h \
   idlist.h \
   scavedefs.h \
@@ -586,6 +600,7 @@ $O/vectorfilereader.o: vectorfilereader.cc \
   enumtype.h \
   ../common/linetokenizer.h \
   dataflowmanager.h \
+  ../common/rwlock.h \
   statistics.h \
   idlist.h \
   scavedefs.h \
@@ -605,6 +620,7 @@ $O/vectorfilewriter.o: vectorfilewriter.cc \
   ../common/progressmonitor.h \
   enumtype.h \
   dataflowmanager.h \
+  ../common/rwlock.h \
   statistics.h \
   vectorfilewriter.h \
   idlist.h \
@@ -615,6 +631,7 @@ $O/vectorfilewriter.o: vectorfilewriter.cc \
   ../common/bigdecimal.h
 $O/windowavg.o: windowavg.cc \
   ../common/commondefs.h \
+  scaveutils.h \
   node.h \
   channel.h \
   windowavg.h \
