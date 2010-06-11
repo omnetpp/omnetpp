@@ -15,27 +15,6 @@ Solaris, etc.) and architectures may still be used as simulation
 platforms, without the IDE.
 ===============================================================
 
-If your Linux distribution is not listed in this Installation Guide
-but it is a derivative of one that is, you may be able to use the
-distro-specific instructions in this Guide.
-
-Some Ubuntu derivatives (Ubuntu instructions may apply):
-
-* Kubuntu, Xubuntu, Edubuntu
-* Linux Mint
-* Linspire/Freespire
-
-Some Debian-based distros (Debian instructions may apply):
-
-* Ubuntu and derivatives
-* Knoppix and derivatives
-* Mepis
-
-Some Fedora-based distros (Fedora instructions may apply):
-
-* Simplis
-* Eeedora
-
 === Dependencies
 
 The following packages are required for @OMNETPP@ to work:
@@ -86,6 +65,12 @@ Akaroa::
   Implements Multiple Replications In Parallel (MRIP). Akaroa can be downloaded
   from the project's website.
 
+Pcap::
+   Allows simulation models to capture and transmit network packets bypassing 
+   the operating system's protocol stack. It is not used directly by @OMNETPP@, 
+   but @OMNETPP@ detects the necessary compiler and linker options for models 
+   in case they need it.
+
 The exact names of these packages may differ across distributions.
 
 === Determining Package Names
@@ -131,7 +116,7 @@ contains `init.tcl`. That is, you probably want to put a line like
 
   export TCL_LIBRARY=/usr/lib/tcl8.4
 
-into your `~/.bash_profile`.
+into your `~/.bashrc`.
 
 
 If you still have problems installing Tcl/Tk, we recommend visiting the @OMNETPP@ site's
@@ -193,7 +178,7 @@ This will create an `@omnetpp@-@version@` subdirectory with the @OMNETPP@ files 
 === Environment Variables
 
 In general @OMNETPP@ requires that its bin directory should be in the PATH. You should
-add a line something like this to your `.bashrc` or `.bashprofile`
+add a line something like this to your `.bashrc`:
 
   $ export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
 
@@ -304,7 +289,7 @@ You can run the IDE by typing the following command in the terminal:
 
   $ @omnetpp@
 
-image::pictures/ide-initial.png[title="Integrated Development Environment",align="center",scaledwidth="75%"]
+image::pictures/ide-initial.png[title="The Simulation IDE",align="center",scaledwidth="75%"]
 
 If you would like to be able to access the IDE from the application launcher or via
 a desktop shortcut, run one or both of the commands below:
@@ -350,6 +335,13 @@ Configure, build and install the Akaroa library. By default, it will be installe
 
 Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
+
+==== PCAP
+
+The optional Pcap library allows simulation models to capture and 
+transmit network packets bypassing the operating system's protocol stack. 
+It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary 
+compiler and linker options for models in case they need it.
 
 ifdef::OMNEST[]
 

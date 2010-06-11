@@ -222,6 +222,7 @@ _____________________________________________________________________
 If you encounter this message, choose 'Project > Properties > C/C++ Build >
 Tool Chain Editor > Current toolchain > GCC for @OMNETPP@'.
 
+The IDE is documented in detail in the 'User Guide'.
 
 === Reconfiguring the Libraries
 

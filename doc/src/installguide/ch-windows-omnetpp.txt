@@ -187,6 +187,13 @@ After installing DeinoMPI, adjust the `MPI_DIR` setting in @OMNETPP@'s
 NOTE: In general, if you would like to run parallel simulations, we recommend
 that you use Linux, OS X, or another unix-like platform.
 
+==== PCAP
+
+The optional WinPcap library allows simulation models to capture and 
+transmit network packets bypassing the operating system's protocol stack. 
+It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary 
+compiler and linker options for models in case they need it.
+
 ==== Akaroa
 
 Akaroa 2.6.7, which is the latest version at the time of writing, does not

@@ -5,19 +5,36 @@
 This chapter provides instructions for installing @OMNETPP@ on selected Linux
 distributions:
 
-* Ubuntu 8.04 LTS, 9.10, 10.04 LTS
-* Debian 5.0
-* Fedora Core 12 and 13
-* CentOS 5.4
+* Ubuntu 8.04 LTS, 10.04 LTS
+* Fedora Core 13
+* Red Hat Enterprise Linux Desktop Workstation 5.5
 * OpenSUSE 11.2
 
-This chapter describes the overall process:
-distro-specific information, such as how to install the prerequisite
+This chapter describes the overall process.
+Distro-specific information, such as how to install the prerequisite
 packages, are covered by distro-specific chapters.
 
-If you have a Linux distribution not listed above, consult the 'Generic Unix'
-chapter of this Installation Guide.
+[NOTE]
+===============================================================================
+If your Linux distribution is not listed above, you still may be able to use some
+distro-specific instructions in this Guide.
 
+Ubuntu derivatives (Ubuntu instructions may apply):
+
+* Kubuntu, Xubuntu, Edubuntu, ...
+* Linux Mint
+
+Some Debian-based distros (Ubuntu instructions may apply, as Ubuntu itself 
+is based on Debian):
+
+* Knoppix and derivatives
+* Mepis
+
+Some Fedora-based distros (Fedora instructions may apply):
+
+* Simplis
+* Eeedora
+===============================================================================
 
 === Installing the Prerequisite Packages
 
@@ -175,7 +192,7 @@ in the terminal:
 
   $ @omnetpp@
 
-image::pictures/ide-initial.png[title="Integrated Development Environment",align="center",scaledwidth="75%"]
+image::pictures/ide-initial.png[title="The Simulation IDE",align="center",scaledwidth="75%"]
 
 If you would like to be able to access the IDE from the application launcher
 or via a desktop shortcut, run one or both of the commands below:
@@ -200,6 +217,7 @@ _____________________________________________________________________
 If you encounter this message, choose 'Project > Properties > C/C++ Build >
 Tool Chain Editor > Current toolchain > GCC for @OMNETPP@'.
 
+The IDE is documented in detail in the 'User Guide'.
 
 === Reconfiguring the Libraries
 
@@ -266,6 +284,13 @@ Configure, build, and install the Akaroa library. By default, it will be install
 
 Go to the @OMNETPP@ directory, and (re-)run the `configure` script. Akaroa will be
 automatically detected if you installed it to the default location.
+
+==== PCAP
+
+The optional Pcap library allows simulation models to capture and 
+transmit network packets bypassing the operating system's protocol stack. 
+It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary 
+compiler and linker options for models in case they need it.
 
 ifdef::OMNEST[]
 

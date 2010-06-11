@@ -9,7 +9,7 @@ in the 'Linux' chapter.
 The following Ubuntu releases are covered:
 
 * Ubuntu 8.04 LTS ('Hardy Heron')
-* Ubuntu 10.04 ('Lucid Lynx')
+* Ubuntu 10.04 LTS ('Lucid Lynx')
 
 They were tested on the following architectures:
 
@@ -41,12 +41,12 @@ Type in the terminal:
 To install the required packages, type in the terminal:
 
  $ sudo apt-get install build-essential gcc g++ bison flex perl \
-       tcl-dev tk-dev blt libxml2-dev zlib1g-dev \
-       openjdk-6-jre doxygen graphviz openmpi-bin libopenmpi-dev libpcap-dev
+       tcl-dev tk-dev blt libxml2-dev zlib1g-dev openjdk-6-jre \
+       doxygen graphviz openmpi-bin libopenmpi-dev libpcap-dev
 
 At the confirmation questions ('Do you want to continue? [Y/N]'), answer 'Y'.
 
-image::pictures/terminal-package-install.png[title="Synaptic Package Manager",align="center",scaledwidth="75%"]
+image::pictures/terminal-package-install.png[title="Command-Line Package Installation",align="center",scaledwidth="75%"]
 
 
 ==== Graphical Installation
@@ -57,7 +57,7 @@ with the 'System > Administration > Synaptic package manager' menu item.
 Since software installation requires root permissions, Synaptic will ask you
 to type your password.
 
-Search for the following packages in the list, click the square before the names,
+Search for the following packages in the list, click the squares before the names,
 then choose 'Mark for installation' or 'Mark for upgrade'.
 
 If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' button.

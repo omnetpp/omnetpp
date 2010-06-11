@@ -41,7 +41,7 @@ activated in every session with the
 command, where `<arch>` is your architecture (usually `i386` or `x86_64`).
 When in doubt, use `module avail` to display the list of available 
 modules. If you need MPI in every session, you may add the `module load`
-command to your startup script (`.bashrc`).`
+command to your startup script (`.bashrc`).
 
 ==== Graphical Installation
 
@@ -60,7 +60,4 @@ zlib-devel, xulrunner, make, java-1.6.0-openjdk,
 doxygen, graphviz, openmpi-devel, libpcap-devel
 
 Click 'Apply', then follow the instructions.
-
-
-
 
