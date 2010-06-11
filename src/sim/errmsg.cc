@@ -62,7 +62,7 @@ const char *cErrorMessages::get(OppErrorCode e)
       case eSIMTIME:   return "Simulation time limit reached -- simulation stopped";
       case eSTATECHG:  return "FSM: state changed during state entry code (now in state %s)";
       case eSTOPSIMRCVD: return "Simulation stopped by partition %d: %s";
-      case eUSER:      return "User error: %s";
+      case eUSER:      return "Model error: %s";
       case eWRONGSIM:  return "cSimulation instance not activated before invoked (need setActiveSimulation())";
       default:         return "<missing error text>";
     }
