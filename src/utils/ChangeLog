@@ -1,3 +1,5 @@
+2010-06-11  ------ omnetpp-4.1 released ------
+
 2010-06-09  Andras Varga
 
 	* opp_makemake: in generated makefiles, ln -sf, mkdir -p and 
