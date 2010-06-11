@@ -67,7 +67,9 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
     activitymodp = NULL;
     contextmodp = NULL;
-    contexttype = CTX_EVENT;
+
+    simulationstage = CTX_NONE;
+    contexttype = CTX_NONE;
 
     systemmodp = NULL;
     schedulerp = NULL;
@@ -354,6 +356,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
     objectlist.clear();
 #endif
+
     checkActive();
     if (!network)
         throw cRuntimeError(eNONET);
@@ -366,6 +369,8 @@ void cSimulation::setupNetwork(cModuleType *network)
     // just to be sure
     msgQueue.clear();
     cComponent::clearSignalState();
+
+    simulationstage = CTX_BUILD;
 
     try
     {
@@ -401,6 +406,8 @@ void cSimulation::startRun()
     event_num = 0; // initialize() has event number 0
     cMessage::resetMessageCounters();
 
+    simulationstage = CTX_INITIALIZE;
+
     // init the scheduler. Note this may insert events into the FES (see e.g. cNullMessageProtocol)
     getScheduler()->startRun();
 
@@ -418,11 +425,15 @@ void cSimulation::startRun()
     }
 
     event_num = 1; // events are numbered from 1
+
+    simulationstage = CTX_EVENT;
 }
 
 void cSimulation::callFinish()
 {
     checkActive();
+
+    simulationstage = CTX_FINISH;
 
     // call user-defined finish() functions for all modules recursively
     if (systemmodp)
@@ -445,6 +456,8 @@ void cSimulation::deleteNetwork()
     if (getContextModule()!=NULL)
         throw cRuntimeError("Attempt to delete network during simulation");
 
+    simulationstage = CTX_CLEANUP;
+
     // delete all modules recursively
     systemmodp->deleteModule();
 
@@ -465,6 +478,8 @@ void cSimulation::deleteNetwork()
 
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     msgQueue.clear();
+
+    simulationstage = CTX_NONE;
 
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());

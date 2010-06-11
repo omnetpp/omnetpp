@@ -34,7 +34,7 @@ NAMESPACE_BEGIN
 class cComponent;
 
 // logically belongs to csimulation.h but must be here because of declaration order
-enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
+enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH, CTX_CLEANUP};
 
 
 #ifdef USE_DOUBLE_SIMTIME
@@ -288,13 +288,13 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
 class SIM_API cContextTypeSwitcher
 {
   private:
-    int contexttype;
-  public:
+    int savedcontexttype;
 
+  public:
     /**
      * Switches the context type (see CTX_xxx constants)
      */
-    cContextTypeSwitcher(int ctxtype);
+    cContextTypeSwitcher(int contexttype);
 
     /**
      * Restores the original context type

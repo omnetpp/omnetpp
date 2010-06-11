@@ -440,16 +440,16 @@ cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 
 //----
 
-cContextTypeSwitcher::cContextTypeSwitcher(int ctxtype)
+cContextTypeSwitcher::cContextTypeSwitcher(int contexttype)
 {
     // save current context type and switch to new one
-    contexttype = simulation.getContextType();
-    simulation.setContextType(ctxtype);
+    savedcontexttype = simulation.getContextType();
+    simulation.setContextType(contexttype);
 }
 
 cContextTypeSwitcher::~cContextTypeSwitcher()
 {
-    simulation.setContextType(contexttype);
+    simulation.setContextType(savedcontexttype);
 }
 
 NAMESPACE_END

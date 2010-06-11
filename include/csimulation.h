@@ -88,11 +88,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cModule *systemmodp;      // pointer to system (root) module
     cSimpleModule *activitymodp; // the module currently executing activity() (NULL if handleMessage() or in main)
     cComponent *contextmodp;  // component in context (or NULL)
-    int contexttype;          // CTX_BUILD, CTX_EVENT, CTX_INITIALIZE or CTX_FINISH
+    int contexttype;          // the innermost context type (one of CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH)
     cModuleType *networktype; // network type
     cScheduler *schedulerp;   // event scheduler
     simtime_t warmup_period;  // warm-up period
 
+    int simulationstage;      // simulation stage (one of CTX_NONE, CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH or CTX_CLEANUP)
     simtime_t sim_time;       // simulation time (time of current event)
     eventnumber_t event_num;  // sequence number of current event
 
@@ -339,6 +340,14 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /** @name Information about the current simulation run. */
     //@{
     /**
+     * Returns the current simulation stage: network building (CTX_BUILD),
+     * network initialization (CTX_INIT), simulation execution (CTX_EVENT),
+     * simulation finalization (CTX_FINISH), network cleanup (CTX_CLEANUP),
+     * or other (CTX_NONE).
+     */
+    int getSimulationStage() const  {return simulationstage;}
+
+    /**
      * Returns the cModuleType object that was instantiated to set up
      * the current simulation model.
      */
@@ -489,8 +498,10 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /**
      * Returns value only valid if getContextModule()!=NULL. Returns one of:
-     * CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH depending on
-     * what the module in context is doing.
+     * CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH, depending on
+     * what the module in context is doing. In case of nested contexts
+     * (e.g. when a module is dynamically created, initialized or manually
+     * finalized during simulation), the innermost context type is returned.
      */
     int getContextType() const {return contexttype;}
 
