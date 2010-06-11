@@ -1048,6 +1048,21 @@ void Tkenv::printLastLogLine()
     }
 }
 
+void Tkenv::displayException(std::exception& ex)
+{
+    // print exception text into main window
+    cException *e = dynamic_cast<cException *>(&ex);
+    if (e && e->getSimulationStage()!=CTX_NONE)
+    {
+        std::string txt = opp_stringf("<!> %s\n", e->getFormattedMessage().c_str());
+        logBuffer.addInfo(TclQuotedString(txt.c_str()).get());
+        printLastLogLine();
+    }
+
+    // dialog via our printfmsg()
+    EnvirBase::displayException(ex);
+}
+
 void Tkenv::componentInitBegin(cComponent *component, int stage)
 {
     if (!opt_init_banners || runmode == RUNMODE_EXPRESS)

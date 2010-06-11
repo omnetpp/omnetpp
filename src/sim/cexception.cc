@@ -180,31 +180,32 @@ std::string cException::getFormattedMessage() const
     std::string when;
     switch (getSimulationStage())
     {
-        case CTX_BUILD: when = "during network setup"; break;
-        case CTX_INITIALIZE: when = "during network initialization"; break;
-        case CTX_EVENT: when = opp_stringf("at event #%"LL"d, t=%s",getEventNumber(), SIMTIME_STR(getSimtime())); break;
-        case CTX_FINISH: when = "during finalization"; break;
-        case CTX_CLEANUP: when = "during network cleanup"; break;
+        case CTX_NONE: when = ""; break;
+        case CTX_BUILD: when = " during network setup"; break; // note leading spaces
+        case CTX_INITIALIZE: when = " during network initialization"; break;
+        case CTX_EVENT: when = opp_stringf(" at event #%"LL"d, t=%s",getEventNumber(), SIMTIME_STR(getSimtime())); break; // note we say "at" and not "in", because error may have occurred outside handleMessage()
+        case CTX_FINISH: when = " during finalization"; break;
+        case CTX_CLEANUP: when = " during network cleanup"; break;
     }
 
     std::string result;
     if (isError())
     {
         if (!hasContext())
-            result = opp_stringf("Error: %s.", what());  // note: "when" omitted, as it can be misleading when exception was thrown from an arbitrary place unrelated to simulation execution
+            result = opp_stringf("Error%s: %s.", when.c_str(), what());
         else if (getModuleID()==-1)
-            result = opp_stringf("Error in component (%s) %s %s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
+            result = opp_stringf("Error in component (%s) %s%s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
         else
-            result = opp_stringf("Error in module (%s) %s (id=%d) %s: %s.", getContextClassName(), getContextFullPath(), getModuleID(), when.c_str(), what());
+            result = opp_stringf("Error in module (%s) %s (id=%d)%s: %s.", getContextClassName(), getContextFullPath(), getModuleID(), when.c_str(), what());
     }
     else
     {
         if (!hasContext())
-            result = opp_stringf("%s.", what());  // note: "when" omitted, as it can be misleading when exception was thrown from an arbitrary place unrelated to simulation execution
+            result = opp_stringf("%s%s.", what(), when.c_str());
         else if (getModuleID()==-1)
-            result = opp_stringf("Component (%s) %s %s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
+            result = opp_stringf("Component (%s) %s%s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
         else
-            result = opp_stringf("Module (%s) %s (id=%d) %s: %s.", getContextClassName(), getContextFullPath(), getModuleID(), when.c_str(), what());
+            result = opp_stringf("Module (%s) %s (id=%d)%s: %s.", getContextClassName(), getContextFullPath(), getModuleID(), when.c_str(), what());
     }
 
     return result;

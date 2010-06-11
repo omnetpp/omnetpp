@@ -1247,7 +1247,7 @@ bool cModule::initializeModules(int stage)
         } catch (cException&) {
             throw;
         } catch (std::exception& e) {
-            throw cRuntimeError("%s during initialize(): %s", opp_typename(typeid(e)), e.what());
+            throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
         }
     }
 
@@ -1291,7 +1291,7 @@ void cModule::callFinish()
     } catch (cException&) {
         throw;
     } catch (std::exception& e) {
-        throw cRuntimeError("%s during finish(): %s", opp_typename(typeid(e)), e.what());
+        throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
     }
 }
 

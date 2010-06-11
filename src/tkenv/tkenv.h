@@ -189,6 +189,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void readPerRunOptions();
       virtual void askParameter(cPar *par, bool unassigned);
       virtual void printLastLogLine();
+      virtual void displayException(std::exception& e);
 
   public:
       // New functions:
