@@ -3,6 +3,8 @@
 	* Tkenv: copy error messages into the main window (makes it easier to
 	copy/paste it into an email)
 
+	* Do not automatically zoom in network graphics
+
 2010-05-31  ------ omnetpp-4.1rc2 released ------
 
 2010-05-26 Andras Varga

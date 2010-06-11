@@ -367,7 +367,7 @@ proc options_dialog {parent {defaultpage "g"}} {
     labelframe $nb.l.f2 -text "Display" -relief groove -borderwidth 2
     checkbutton $nb.l.f2.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
     checkbutton $nb.l.f2.allowresize -text {Resize window to fit network with current zoom level first} -variable opp(allowresize)
-    checkbutton $nb.l.f2.allowzoom -text {Adjust zoom so that network fills window} -variable opp(allowzoom)
+    checkbutton $nb.l.f2.allowzoom -text {Zoom out if necessary to fit network into window} -variable opp(allowzoom)
     label-entry $nb.l.f2.iconminsize  {Minimum icon size when zoomed out (pixels):}
     $nb.l.f2.iconminsize.l config -width 0
 

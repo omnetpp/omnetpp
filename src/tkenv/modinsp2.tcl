@@ -943,6 +943,7 @@ proc graphmodwin_adjust_windowsize_and_zoom {w} {
 
     if {!$config(layout-may-resize-window)} {
         # do not resize, but change zoom so that graphics fills the window
+        # note: $config(layout-may-change-zoom) is TRUE here because of the above "if"
         set canvaswidth [winfo width $c]
         set canvasheight [winfo height $c]
         set canvaswidth2 [expr $canvaswidth - 20]  ;# deduce 10px border around compound module
@@ -952,7 +953,9 @@ proc graphmodwin_adjust_windowsize_and_zoom {w} {
         set zoomy [expr $canvasheight2 / double($graphicsheight)]
         set zoom [math_min $zoomx $zoomy]
 
-        graphmodwin_zoomby $w $zoom
+        if {$zoom < 1.0} {
+            graphmodwin_zoomby $w $zoom
+        }
         graphmodwin_setscrollregion $w 1
 
     } else {
