@@ -23,6 +23,7 @@
 #include <exception>
 #include <stdexcept>
 #include "simkerneldefs.h"
+#include "simtime_t.h"
 #include "errmsg.h"
 #include "opp_string.h"
 
@@ -41,6 +42,11 @@ class SIM_API cException : public std::exception
   protected:
     int errorcode;
     std::string msg;
+
+    int simulationstage;
+    eventnumber_t eventnumber;
+    simtime_t simtime;
+
     bool hascontext;
     std::string contextclassname;
     std::string contextfullpath;
@@ -119,8 +125,26 @@ class SIM_API cException : public std::exception
     virtual ~cException() throw() {}
     //@}
 
+    /** @name Updating the exception message */
+    //@{
+    /**
+     * Overwrites the message text with the given one.
+     */
+    virtual void setMessage(const char *txt) {msg = txt;}
+
+    /**
+     * Prefixes the message with the given text and a colon.
+     */
+    virtual void prependMessage(const char *txt) {msg = std::string(txt) + ": " + msg;}
+    //@}
+
     /** @name Getting exception info */
     //@{
+    /**
+     * Whether the exception represents an error or a normal (non-error)
+     * terminating condition (e.g. "Simulation completed").
+     */
+    virtual bool isError() const {return true;}
 
     /**
      * Returns the error code.
@@ -133,14 +157,29 @@ class SIM_API cException : public std::exception
     virtual const char *what() const throw() {return msg.c_str();}
 
     /**
-     * Modifies the error text.
+     * Returns a formatted message that includes the "Error" word, context
+     * information, the event number and simulation time if available
+     * and relevant, in addition to the exception message (what()).
      */
-    virtual void setMessage(const char *txt) {msg = txt;}
+    virtual std::string getFormattedMessage() const;
 
     /**
-     * Prepends the message with given text and a colon.
+     * Returns in which stage of the simulation the exception object was created:
+     * during network building (CTX_BUILD), network initialization (CTX_INITIALIZE),
+     * simulation execution (CTX_EVENT), finalization (CTX_FINISH), or network
+     * cleanup (CTX_CLEANUP).
      */
-    virtual void prependMessage(const char *txt) {msg = std::string(txt) + ": " + msg;}
+    virtual int getSimulationStage() const {return simulationstage;}
+
+    /**
+     * Returns the event number at the creation of the exception object.
+     */
+    virtual eventnumber_t getEventNumber() const {return eventnumber;}
+
+    /**
+     * Returns the simulation time at the creation of the exception object.
+     */
+    virtual simtime_t getSimtime() const {return simtime;}
 
     /**
      * Returns true if the exception has "context info", that is, it occurred
@@ -205,6 +244,12 @@ class SIM_API cTerminationException : public cException
      * when handing them back from an activity().
      */
     virtual cTerminationException *dup() const {return new cTerminationException(*this);}
+
+    /**
+     * Termination exceptions are generally not errors, but messages like
+     * "Simulation completed".
+     */
+    virtual bool isError() const {return false;}
 };
 
 /**
@@ -289,6 +334,11 @@ class SIM_API cDeleteModuleException : public cException
      * when handing them back from an activity().
      */
     virtual cDeleteModuleException *dup() const {return new cDeleteModuleException(*this);}
+
+    /**
+     * This exception type does not represent an error condition.
+     */
+    virtual bool isError() const {return false;}
 };
 
 /**
@@ -318,6 +368,11 @@ class SIM_API cStackCleanupException : public cException
      * when handing them back from an activity().
      */
     virtual cStackCleanupException *dup() const {return new cStackCleanupException(*this);}
+
+    /**
+     * This exception type does not represent an error condition.
+     */
+    virtual bool isError() const {return false;}
 };
 
 NAMESPACE_END

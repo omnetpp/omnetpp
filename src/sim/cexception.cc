@@ -28,6 +28,7 @@
 #include "cmodule.h"
 #include "cenvir.h"
 #include "cconfiguration.h"
+#include "stringutil.h"
 #include "commonutil.h"
 
 USING_NAMESPACE
@@ -45,6 +46,7 @@ USING_NAMESPACE
 static char buffer[BUFLEN];
 static char buffer2[BUFLEN];
 
+#define LL  INT64_PRINTF_FORMAT
 
 cException::cException() : std::exception()
 {
@@ -89,6 +91,11 @@ cException::cException(const cException& e)
 {
     errorcode = e.errorcode;
     msg = e.msg;
+
+    simulationstage = e.simulationstage;
+    eventnumber = e.eventnumber;
+    simtime = e.simtime;
+
     hascontext = e.hascontext;
     contextclassname = e.contextclassname;
     contextfullpath = e.contextfullpath;
@@ -98,6 +105,20 @@ cException::cException(const cException& e)
 void cException::storeCtx()
 {
     cSimulation *sim = cSimulation::getActiveSimulation();
+
+    if (!sim)
+    {
+        simulationstage = CTX_NONE;
+        eventnumber = 0;
+        simtime = SIMTIME_ZERO;
+    }
+    else
+    {
+        simulationstage = sim->getSimulationStage();
+        eventnumber = sim->getEventNumber();
+        simtime = sim->getSimTime();
+    }
+
     if (!sim || !sim->getContext())
     {
         hascontext = false;
@@ -127,7 +148,7 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
     // store error code
     errorcode = errorcode;
 
-    // print "(%s)%s:" conditionally:
+    // prefix message with "where" object conditionally, as "(%s)%s:"
     //  - if object is the module itself: skip
     //  - if object is local in module: use getFullName()
     //  - if object is somewhere else: use getFullPath()
@@ -152,6 +173,41 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
     // if a global object's ctor/dtor throws an exception, there won't be
     // anyone around to catch it, so print it and abort here.
     exitIfStartupError();
+}
+
+std::string cException::getFormattedMessage() const
+{
+    std::string when;
+    switch (getSimulationStage())
+    {
+        case CTX_BUILD: when = "during network setup"; break;
+        case CTX_INITIALIZE: when = "during network initialization"; break;
+        case CTX_EVENT: when = opp_stringf("at event #%"LL"d, t=%s",getEventNumber(), SIMTIME_STR(getSimtime())); break;
+        case CTX_FINISH: when = "during finalization"; break;
+        case CTX_CLEANUP: when = "during network cleanup"; break;
+    }
+
+    std::string result;
+    if (isError())
+    {
+        if (!hasContext())
+            result = opp_stringf("Error: %s.", what());  // note: "when" omitted, as it can be misleading when exception was thrown from an arbitrary place unrelated to simulation execution
+        else if (getModuleID()==-1)
+            result = opp_stringf("Error in component (%s) %s %s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
+        else
+            result = opp_stringf("Error in module (%s) %s (id=%d) %s: %s.", getContextClassName(), getContextFullPath(), getModuleID(), when.c_str(), what());
+    }
+    else
+    {
+        if (!hasContext())
+            result = opp_stringf("%s.", what());  // note: "when" omitted, as it can be misleading when exception was thrown from an arbitrary place unrelated to simulation execution
+        else if (getModuleID()==-1)
+            result = opp_stringf("Component (%s) %s %s: %s.", getContextClassName(), getContextFullPath(), when.c_str(), what());
+        else
+            result = opp_stringf("Module (%s) %s (id=%d) %s: %s.", getContextClassName(), getContextFullPath(), getModuleID(), when.c_str(), what());
+    }
+
+    return result;
 }
 
 //---
@@ -233,14 +289,8 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
                "runtime error.\n\n"
 #endif
                );
-        if (!hascontext)
-            printf("<!> Error: %s.\n", what());
-        else if (getModuleID()==-1)
-            printf("<!> Error in component (%s) %s: %s.\n",
-                   getContextClassName(), getContextFullPath(), what());
-        else
-            printf("<!> Error in module (%s) %s (id=%d): %s.\n",
-                   getContextClassName(), getContextFullPath(), getModuleID(), what());
+
+        printf("<!> %s\n", getFormattedMessage().c_str());
         printf("\nTRAPPING on the exception above, due to a debug-on-errors=true configuration option. Is your debugger ready?\n");
         fflush(stdout);
 
