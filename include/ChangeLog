@@ -1,3 +1,11 @@
+2010-06-11  Andras Varga
+
+	* cSimulation: added getSimulationStage()
+
+	* cException: exception object now stores simulation stage, event 
+	number and simulation time as well; also added getFormattedMessage()
+	method that puts together the complete error message from its pieces.
+
 2010-06-09  Andras Varga
 
 	* cGate: added utility functions findTransmissionChannel(),

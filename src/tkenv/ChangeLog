@@ -1,3 +1,8 @@
+2010-06-11  Andras Varga
+
+	* Tkenv: copy error messages into the main window (makes it easier to
+	copy/paste it into an email)
+
 2010-05-31  ------ omnetpp-4.1rc2 released ------
 
 2010-05-26 Andras Varga
@@ -12,7 +17,7 @@
 
 2010-05-25 Andras Varga
 
-	* Fix: "wm iconphoto" does not exist on OS X 10.5, and does not work
+	* Fix: "wm iconphoto" does not exist on Mac OS X 10.5, and does not work
 	on 10.6.
 
 2010-05-15 Andras Varga
