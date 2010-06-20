@@ -101,7 +101,7 @@
         point="org.eclipse.core.runtime.products">
      <product
            application="org.eclipse.ui.ide.workbench"
-           name="OMNeT++ Scalar and Vector Analyser">
+           name="OMNeT++ Result Analysis Tool">
         <property
               name="preferenceCustomization"
               value="plugin_customization.ini"/>
@@ -122,7 +122,7 @@
               value="10,20,500,25"/>
         <property
               name="appName"
-              value="OMNeT++ Scalar and Vector Analyser">
+              value="OMNeT++ Result Analysis Tool">
         </property>
      </product>
   </extension>

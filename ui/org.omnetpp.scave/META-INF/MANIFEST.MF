@@ -24,4 +24,5 @@ Bundle-Vendor: OpenSim Ltd.
 Bundle-ClassPath: .
 Export-Package: org.omnetpp.scave,
  org.omnetpp.scave.charting,
- org.omnetpp.scave.model2
+ org.omnetpp.scave.model2,
+ org.omnetpp.scave.wizard
