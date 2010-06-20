@@ -11,6 +11,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -47,7 +48,7 @@ public class FileLink extends Composite implements IWidgetAdapter {
         IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         if (workbenchPage != null) {  // note: may be null during platform startup...
             try {
-                IViewPart view = workbenchPage.showView(IConstants.PROJECT_EXPLORER_ID);
+                IViewPart view = workbenchPage.showView(IPageLayout.ID_PROJECT_EXPLORER);
                 view.getSite().getSelectionProvider().setSelection(new StructuredSelection(resource));
             }
             catch (Exception e) {
