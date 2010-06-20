@@ -8,9 +8,6 @@
 package org.omnetpp.scave.wizard;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -19,12 +16,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -39,12 +31,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
-import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ISetSelectionTarget;
-import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.InputFile;
-import org.omnetpp.scave.model.Inputs;
-import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 
 
@@ -57,8 +45,6 @@ import org.omnetpp.scave.model.provider.ScaveEditPlugin;
  */
 //XXX uses property file from the model package
 public class ScaveModelWizard extends Wizard implements INewWizard {
-
-	private static final String ENCODING = "UTF-8";
 	private static final String FILENAME_EXTENSION = "anf";
 
 	/**
@@ -157,22 +143,7 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 	 * Create a new analysis file.
 	 */
 	protected EObject createAnalysisNode() {
-		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-		Analysis analysis = factory.createAnalysis();
-		Inputs inputs = factory.createInputs();
-		analysis.setInputs(inputs);
-		analysis.setDatasets(factory.createDatasets());
-		analysis.setChartSheets(factory.createChartSheets());
-
-		if (initialInputFiles != null) {
-			for (String fileName : initialInputFiles) {
-				InputFile inputFile = factory.createInputFile();
-				inputFile.setName(fileName);
-				inputs.getInputs().add(inputFile);
-			}
-		}
-
-		return analysis;
+	    return ScaveWizardUtil.createAnalysisNode(initialInputFiles);
 	}
 
 	/**
@@ -182,40 +153,16 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
     public boolean performFinish() {
 		try {
 			// Remember the file.
-			//
 			final IFile modelFile = getAnalysisFile();
 
 			// Do the work within an operation.
-			//
 			WorkspaceModifyOperation operation =
 				new WorkspaceModifyOperation() {
 					@Override
                     protected void execute(IProgressMonitor progressMonitor) {
 						try {
-							// Create a resource set
-							//
-							ResourceSet resourceSet = new ResourceSetImpl();
-
-							// Get the URI of the model file.
-							//
-							URI fileURI = URI.createPlatformResourceURI(modelFile.getFullPath().toString(), true);
-
-							// Create a resource for this file.
-							//
-							Resource resource = resourceSet.createResource(fileURI);
-
-							// Add the initial model object to the contents.
-							//
-							EObject rootObject = createAnalysisNode();
-							if (rootObject != null) {
-								resource.getContents().add(rootObject);
-							}
-
-							// Save the contents of the resource to the file system.
-							//
-							Map<Object,Object> options = new HashMap<Object,Object>();
-							options.put(XMLResource.OPTION_ENCODING, ENCODING);
-							resource.save(options);
+						    EObject rootObject = createAnalysisNode();
+					        ScaveWizardUtil.saveAnfFile(modelFile, rootObject);
 						}
 						catch (Exception exception) {
 							ScaveEditPlugin.INSTANCE.log(exception);
@@ -229,14 +176,12 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 			getContainer().run(false, false, operation);
 
 			// Select the new file resource in the current view.
-			//
 			IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
 			IWorkbenchPage page = workbenchWindow.getActivePage();
 			final IWorkbenchPart activePart = page.getActivePart();
 			if (activePart instanceof ISetSelectionTarget) {
 				final ISelection targetSelection = new StructuredSelection(modelFile);
-				getShell().getDisplay().asyncExec
-					(new Runnable() {
+				getShell().getDisplay().asyncExec(new Runnable() {
 						 public void run() {
 							 ((ISetSelectionTarget)activePart).selectReveal(targetSelection);
 						 }
@@ -244,11 +189,8 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 			}
 
 			// Open an editor on the new file.
-			//
 			try {
-				page.openEditor
-					(new FileEditorInput(modelFile),
-					 workbench.getEditorRegistry().getDefaultEditor(modelFile.getFullPath().toString()).getId());
+			    IDE.openEditor(page, modelFile);
 			}
 			catch (PartInitException exception) {
 				MessageDialog.openError(workbenchWindow.getShell(), ScaveEditPlugin.INSTANCE.getString("_UI_OpenEditorError_label"), exception.getMessage());
