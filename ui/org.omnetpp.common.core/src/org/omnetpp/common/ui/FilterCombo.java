@@ -1,5 +1,6 @@
 package org.omnetpp.common.ui;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -115,7 +116,13 @@ public class FilterCombo extends Combo {
     }
     
     protected void internalSetForeground(Color color) {
-        super.setForeground(color);
+        // Problem on Ubuntu 10.04: in the default theme, combo editfield is black-on-white 
+        // and dropdown list is white-on-black, so calling setForeground() will inevitably 
+        // make at least one of them unreadable. 
+        // Workaround: do NOT call getForeground() on any Linux/GTK setup. 
+        boolean isPlatformOK = !Platform.getWS().equals(Platform.WS_GTK);
+        if (isPlatformOK)
+            super.setForeground(color);
     }
 
     @Override
