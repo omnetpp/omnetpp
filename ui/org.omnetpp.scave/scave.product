@@ -36,7 +36,6 @@ http://www.omnetpp.org.
       </win>
    </launcher>
 
-
    <vm>
    </vm>
 
@@ -171,6 +170,9 @@ http://www.omnetpp.org.
       <plugin id="org.omnetpp.common"/>
       <plugin id="org.omnetpp.common.core"/>
       <plugin id="org.omnetpp.ide.nativelibs"/>
+      <plugin id="org.omnetpp.ide.nativelibs.linux.x86" fragment="true"/>
+      <plugin id="org.omnetpp.ide.nativelibs.linux.x86_64" fragment="true"/>
+      <plugin id="org.omnetpp.ide.nativelibs.macosx" fragment="true"/>
       <plugin id="org.omnetpp.ide.nativelibs.win32.x86" fragment="true"/>
       <plugin id="org.omnetpp.scave"/>
       <plugin id="org.omnetpp.scave.autoimport"/>

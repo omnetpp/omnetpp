@@ -23,14 +23,20 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IViewPart;
@@ -53,12 +59,51 @@ import org.omnetpp.scave.wizard.ScaveWizardUtil;
  */
 public class ScaveStartup implements IStartup {
     public static final int ARGS_NONE = 0;
-    public static final int ARGS_ANFFILES = 1;
-    public static final int ARGS_RESULTFILES = 2;
-    public static final int ARGS_ANFFILE_AND_RESULTSFILES = 3; // 1stf arg is ANF, followed by result files
+    public static final int ARGS_HELP = 1;
+    public static final int ARGS_ANFFILES = 2;
+    public static final int ARGS_RESULTFILES = 3;
+    public static final int ARGS_ANFFILE_AND_RESULTSFILES = 4; // 1stf arg is ANF, followed by result files
     
     private int invocationType;  // one of the ARGS_ constants above
     private String[] cleansedArgs;
+    
+    public static final String SYNOPSIS = 
+        "scave -h or --help\n" + 
+        "scave ANFFILE...\n" + 
+        "scave [RESULTFILE | DIR]...\n" + 
+        "scave NEW_ANFFILE [RESULTFILE | DIR]...\n";
+    
+    public static final String DESCRIPTION =  // note: only per-paragraph newlines! 
+        "Opens the given ANFFILE(s) in editors, or create and open NEW_ANFFILE " + 
+        "with the given RESULTFILE(s) and DIR(s) as input. If only RESULTFILE(s) " + 
+        "and DIR(s) are specified, the program will prompt for the name of the " + 
+        "new ANF file to be created." + 
+        "\n" + 
+        "The -h option displays the synopsis. The --help option displays the " + 
+        "synopsis and the full description (this message)." + 
+        "\n" + 
+        "ANFFILE should be an existing analysis file with the .anf extension. " + 
+        "The .anf file name extension is mandatory and case sensitive. ANF files " + 
+        "are created with this program, and describe the \"recipe\" for the result " + 
+        "analysis (list of input files, processing steps to take, charts to " + 
+        "create.)" + 
+        "\n" + 
+        "NEW_ANFFILE should be the name of an ANF file to be created. If NEW_ANFFILE " + 
+        "exists, the user will be prompted for confirmation to overwrite the file. " + 
+        "\n" + 
+        "RESULTFILE should be an OMNeT++ output vector file (.vec extension) or " + 
+        "an output scalar file (.sca extension). The file name extensions are " + 
+        "mandatory and case sensitive. Wildcards are also accepted (e.g. " + 
+        "Foo-*.vec or results/*.sca); note that wildcard characters need to be " + 
+        "protected against shell expansion (e.g. 'Foo-*.vec' or Foo-\\*.vec). " + 
+        "The file name(s) or pattern(s) will be stored in the ANF file as inputs. " + 
+        "The pattern(s) will expanded and the result file(s) loaded dynamically " + 
+        "for the result analysis, so RESULTFILEs that do not name currently " + 
+        "existing files will also be accepted." + 
+        "\n" + 
+        "DIR should be the the name of an existing directory. It will be added " + 
+        "to the ANF file as DIR/*.vec and DIR/*.sca, that is, it will expand to " + 
+        "all result files in that directory.\n";
     
     /**
      * Entry point. Invoked by the platform.
@@ -77,7 +122,12 @@ public class ScaveStartup implements IStartup {
     private void processCommandLine() {
         // fill in invocationType and cleansedArgs
         analyzeCommandLine();  
-        
+
+        if (invocationType == ARGS_HELP) {
+            displayHelp();
+            return;
+        }
+
         // import or open projects to make files accessible
         if (!ensureFilesAreAvailableInWorkspace())
             return;
@@ -85,6 +135,7 @@ public class ScaveStartup implements IStartup {
         // open or create ANF files, etc.
         switch (invocationType) {
             case ARGS_NONE: break;
+            case ARGS_HELP: break; // already handled
             case ARGS_ANFFILES: openAnfFiles(cleansedArgs); break;
             case ARGS_RESULTFILES: createAnfFileForResults(cleansedArgs); break;
             case ARGS_ANFFILE_AND_RESULTSFILES: createAnfFileForResults(cleansedArgs[0], (String[]) ArrayUtils.remove(cleansedArgs, 0)); break;
@@ -107,6 +158,13 @@ public class ScaveStartup implements IStartup {
         if (args.length >= 2 && args[0].equals("-product"))
             args = (String[]) ArrayUtils.subarray(args, 2, args.length);
 
+        // recognize -h and --help
+        if (args.length > 0 && (args[0].equals("-h") || args[0].equals("--help"))) {
+            invocationType = ARGS_HELP;
+            cleansedArgs = args;
+            return;
+        }
+        
         // we only deal with directories, and ANF, VEC and SCA files
         List<String> bogusArgs = new ArrayList<String>();
         for (String arg : args)
@@ -166,6 +224,42 @@ public class ScaveStartup implements IStartup {
         }
         
         cleansedArgs = args;
+    }
+
+    private void displayHelp() {
+        String[] args = cleansedArgs;
+        if (args[0].equals("-h")) {
+            // synopsis
+            String synopsys = 
+                "Usage:\n" + StringUtils.indentLines(SYNOPSIS, "   ") + "\n" +
+                "Type scave --help for more information.";
+            MessageDialog.openInformation(getParentShell(), "Usage", synopsys);
+        }
+        else {
+            // full help
+            String synopsis = "Usage:\n" + StringUtils.indentLines(SYNOPSIS, "   ");
+            final String description = "Description:\n\n" + DESCRIPTION.replace("\n", "\n\n");
+            MessageDialog dialog = new MessageDialog(getParentShell(), "Usage", null, synopsis, MessageDialog.INFORMATION, new String[] { IDialogConstants.OK_LABEL }, 0) {
+                @Override
+                protected Control createCustomArea(Composite parent) {
+                    Text text = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
+                    text.setText(description);
+                    GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+                    gridData.widthHint = this.getMinimumMessageWidth();
+                    text.setLayoutData(gridData);
+                    return text;
+                }
+                @Override
+                protected int getShellStyle() {
+                    return super.getShellStyle() | SWT.RESIZE;
+                }
+                @Override
+                protected boolean customShouldTakeFocus() {
+                    return false;
+                }
+            };
+            dialog.open();
+        }
     }
 
     /**
