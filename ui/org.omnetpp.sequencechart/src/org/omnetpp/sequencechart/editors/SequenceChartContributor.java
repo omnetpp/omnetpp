@@ -160,7 +160,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 	private static SequenceChartContributor singleton;
 	protected SequenceChart sequenceChart;
-	
+
 	protected Separator separatorAction;
 	protected SequenceChartMenuAction timelineModeAction;
 	protected SequenceChartMenuAction axisOrderingModeAction;
@@ -168,9 +168,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	protected SequenceChartAction showEventNumbersAction;
 	protected SequenceChartAction showMessageNamesAction;
     protected SequenceChartAction showMessageSendsAction;
-    protected SequenceChartAction showSelfMessagesAction;
+    protected SequenceChartAction showMessageReusesAction;
+    protected SequenceChartAction showSelfMessageSendsAction;
     protected SequenceChartAction showSelfMessageReusesAction;
-	protected SequenceChartAction showOtherMessageReusesAction;
 	protected SequenceChartAction showArrowHeadsAction;
     protected SequenceChartAction showZeroSimulationTimeRegionsAction;
     protected SequenceChartAction showAxisLabelsAction;
@@ -206,8 +206,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
 		this.showMessageSendsAction = createShowMessageSendsAction();
-        this.showSelfMessagesAction = createShowSelfMessagesAction();
-		this.showOtherMessageReusesAction = createShowOtherMessageReusesAction();
+        this.showMessageReusesAction = createShowMessageReusesAction();
+        this.showSelfMessageSendsAction = createShowSelfMessageSendsAction();
 		this.showSelfMessageReusesAction = createShowSelfMessageReusesAction();
 		this.showArrowHeadsAction = createShowArrowHeadsAction();
         this.showZeroSimulationTimeRegionsAction = createShowZeroSimulationTimeRegionsAction();
@@ -327,8 +327,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				// Show/Hide submenu
 				IMenuManager showHideSubmenu = new MenuManager("Show/Hide");
                 showHideSubmenu.add(showMessageSendsAction);
-                showHideSubmenu.add(showSelfMessagesAction);
-                showHideSubmenu.add(showOtherMessageReusesAction);
+                showHideSubmenu.add(showSelfMessageSendsAction);
+                showHideSubmenu.add(showMessageReusesAction);
                 showHideSubmenu.add(showSelfMessageReusesAction);
                 showHideSubmenu.add(showModuleMethodCallsAction);
                 showHideSubmenu.add(separatorAction);
@@ -354,7 +354,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 zoomSubmenu.add(zoomToFitAction);
                 zoomSubmenu.add(zoomInAction);
                 zoomSubmenu.add(zoomOutAction);
-                
+
                 // Show In submenu
                 MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
                 IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -367,16 +367,16 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 menuManager.add(timelineModeAction);
                 menuManager.add(axisOrderingModeAction);
                 menuManager.add(separatorAction);
-                
+
                 menuManager.add(createFindTextCommandContributionItem());
                 menuManager.add(createFindNextCommandContributionItem());
                 menuManager.add(separatorAction);
-                
+
                 menuManager.add(spacingSubmenu);
                 menuManager.add(zoomSubmenu);
                 menuManager.add(changeFontAction);
                 menuManager.add(separatorAction);
-                
+
                 menuManager.add(toggleBookmarkAction);
                 menuManager.add(copyToClipboardAction);
                 if (IConstants.IS_COMMERCIAL)
@@ -402,8 +402,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
         toolBarManager.add(showMessageSendsAction);
-        toolBarManager.add(showSelfMessagesAction);
-        toolBarManager.add(showOtherMessageReusesAction);
+        toolBarManager.add(showSelfMessageSendsAction);
+        toolBarManager.add(showMessageReusesAction);
         toolBarManager.add(showSelfMessageReusesAction);
         toolBarManager.add(showModuleMethodCallsAction);
 		toolBarManager.add(separatorAction);
@@ -823,32 +823,32 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         };
     }
 
-	private SequenceChartAction createShowSelfMessagesAction() {
+	private SequenceChartAction createShowSelfMessageSendsAction() {
 		return new SequenceChartAction("Show Self-Messages", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_SELF_MESSAGES)) {
 			@Override
 			protected void doRun() {
-				sequenceChart.setShowSelfMessages(!sequenceChart.getShowSelfMessages());
+				sequenceChart.setShowSelfMessageSends(!sequenceChart.getShowSelfMessageSends());
 				update();
 			}
 
 			@Override
 			public void update() {
-				setChecked(sequenceChart.getShowSelfMessages());
+				setChecked(sequenceChart.getShowSelfMessageSends());
 			}
 		};
 	}
 
-    private SequenceChartAction createShowOtherMessageReusesAction() {
-        return new SequenceChartAction("Show Other Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+    private SequenceChartAction createShowMessageReusesAction() {
+        return new SequenceChartAction("Show Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
             @Override
             protected void doRun() {
-                sequenceChart.setShowOtherMessageReuses(!sequenceChart.getShowOtherMessageReuses());
+                sequenceChart.setShowMessageReuses(!sequenceChart.getShowMessageReuses());
                 update();
             }
 
             @Override
             public void update() {
-                setChecked(sequenceChart.getShowOtherMessageReuses());
+                setChecked(sequenceChart.getShowMessageReuses());
             }
         };
     }

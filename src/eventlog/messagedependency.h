@@ -150,7 +150,7 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
 
         virtual simtime_t getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
         virtual simtime_t getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
-        virtual BeginSendEntry *getBeginSendEntry() { return isReuse ? getConsequenceBeginSendEntry() : getCauseBeginSendEntry(); }
+        virtual BeginSendEntry *getBeginSendEntry() { return getCauseBeginSendEntry(); }
         virtual BeginSendEntry *getCauseBeginSendEntry();
         virtual BeginSendEntry *getConsequenceBeginSendEntry();
 

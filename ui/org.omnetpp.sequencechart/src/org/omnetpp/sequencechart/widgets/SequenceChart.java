@@ -200,9 +200,9 @@ public class SequenceChart
 	private boolean showArrowHeads = true; // show or hide arrow heads
 	private boolean showMessageNames = true; // show or hide message names
     private boolean showMessageSends = true; // show or hide message send arrows
-    private boolean showSelfMessages = true; // show or hide self message arrows
+    private boolean showMessageReuses = false; // show or hide message reuse arrows
+    private boolean showSelfMessageSends = true; // show or hide self message send arrows
     private boolean showSelfMessageReuses = false; // show or hide self message reuse arrows
-	private boolean showOtherMessageReuses = false; // show or hide reuse message arrows
     private boolean showModuleMethodCalls = false; // show or hide module method call arrows
 	private boolean showEventNumbers = true;
     private boolean showZeroSimulationTimeRegions = true;
@@ -529,34 +529,34 @@ public class SequenceChart
     }
 
     /**
+     * Returns whether reuse messages are shown on the chart.
+     */
+    public boolean getShowMessageReuses() {
+        return showMessageReuses;
+    }
+
+    /**
+     * Shows/Hides reuse messages.
+     */
+    public void setShowMessageReuses(boolean showMessageReuses) {
+        this.showMessageReuses = showMessageReuses;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /**
      * Returns whether self messages are shown on the chart.
      */
-    public boolean getShowSelfMessages() {
-        return showSelfMessages;
+    public boolean getShowSelfMessageSends() {
+        return showSelfMessageSends;
     }
 
     /**
      * Shows/Hides self messages.
      */
-    public void setShowSelfMessages(boolean showSelfMessages) {
-        this.showSelfMessages = showSelfMessages;
+    public void setShowSelfMessageSends(boolean showSelfMessageSends) {
+        this.showSelfMessageSends = showSelfMessageSends;
         clearCanvasCacheAndRedraw();
     }
-
-	/**
-	 * Returns whether reuse messages are shown on the chart.
-	 */
-	public boolean getShowOtherMessageReuses() {
-		return showOtherMessageReuses;
-	}
-
-	/**
-	 * Shows/Hides reuse messages.
-	 */
-	public void setShowOtherMessageReuses(boolean showOtherMessageReuses) {
-		this.showOtherMessageReuses = showOtherMessageReuses;
-		clearCanvasCacheAndRedraw();
-	}
 
     /**
      * Returns whether reuse messages are shown on the chart.
@@ -1322,10 +1322,10 @@ public class SequenceChart
 						setShowEventNumbers(sequenceChartState.showEventNumbers);
                     if (sequenceChartState.showMessageSends != null)
                         setShowMessageSends(sequenceChartState.showMessageSends);
-					if (sequenceChartState.showOtherMessageReuses != null)
-						setShowOtherMessageReuses(sequenceChartState.showOtherMessageReuses);
-					if (sequenceChartState.showSelfMessages != null)
-                        setShowSelfMessages(sequenceChartState.showSelfMessages);
+					if (sequenceChartState.showMessageReuses != null)
+						setShowMessageReuses(sequenceChartState.showMessageReuses);
+					if (sequenceChartState.showSelfMessageSends != null)
+                        setShowSelfMessageSends(sequenceChartState.showSelfMessageSends);
 					if (sequenceChartState.showSelfMessageReuses != null)
                         setShowSelfMessageReuses(sequenceChartState.showSelfMessageReuses);
                     if (sequenceChartState.showModuleMethodCalls != null)
@@ -1413,8 +1413,8 @@ public class SequenceChart
                 sequenceChartState.showMessageNames = getShowMessageNames();
                 sequenceChartState.showEventNumbers = getShowEventNumbers();
                 sequenceChartState.showMessageSends = getShowMessageSends();
-                sequenceChartState.showOtherMessageReuses = getShowOtherMessageReuses();
-                sequenceChartState.showSelfMessages = getShowSelfMessages();
+                sequenceChartState.showMessageReuses = getShowMessageReuses();
+                sequenceChartState.showSelfMessageSends = getShowSelfMessageSends();
                 sequenceChartState.showSelfMessageReuses = getShowSelfMessageReuses();
                 sequenceChartState.showModuleMethodCalls = getShowModuleMethodCalls();
                 sequenceChartState.showArrowHeads = getShowArrowHeads();
@@ -2997,10 +2997,13 @@ public class SequenceChart
 		long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
 
-		if (sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr) && !showOtherMessageReuses)
+		boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
+        boolean isSelfMessageReuse = sequenceChartFacade.IMessageDependency_isSelfMessageReuse(messageDependencyPtr);
+
+        if (isReuse && !isSelfMessageReuse && !showMessageReuses)
 			return false;
 
-		if (sequenceChartFacade.IMessageDependency_isSelfMessageReuse(messageDependencyPtr) && !showSelfMessageReuses)
+        if (isSelfMessageReuse && !showSelfMessageReuses)
 		    return false;
 
 		// events may be omitted from the log
@@ -3029,7 +3032,7 @@ public class SequenceChart
         // TODO: what about integer overflow in (int) casts? now that we have converted to long
         int invalid = Integer.MAX_VALUE;
         int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ?
-            y1 = getInitializationEventYViewportCoordinate(messageDependencyPtr) :
+            getInitializationEventYViewportCoordinate(messageDependencyPtr) :
                 beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
                     getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
@@ -3083,7 +3086,7 @@ public class SequenceChart
 
 		// line color and style depends on message kind
 		if (graphics != null) {
-			if (sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr)) {
+			if (isReuse) {
 				graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
 				graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
 			}
@@ -3096,7 +3099,7 @@ public class SequenceChart
 		// test if self-message
         if (y1 == y2) {
             // FIXME: this filters out non self messages too, e.g. filtered and returns to same module
-		    if (!showSelfMessages)
+		    if (!showSelfMessageSends)
 		        return false;
 
 		    long eventNumberDelta = messageId + consequenceEventNumber - causeEventNumber;
@@ -3216,7 +3219,7 @@ public class SequenceChart
 			}
 		}
 		else {
-            if (!showMessageSends)
+            if (!showMessageSends && !isReuse)
                 return false;
 
             int y = (y2 + y1) / 2;
@@ -3304,7 +3307,7 @@ public class SequenceChart
 			if (showMessageNames) {
 			    int mx = (x1 + x2) / 2;
 			    int my = (y1 + y2) / 2;
-			    int rowCount = Math.min(7, Math.max(1, Math.abs(y2 - y1) / fontHeight - 8));
+			    int rowCount = Math.min(7, Math.max(1, Math.abs(y2 - y1) / fontHeight - 7));
 			    int rowIndex = ((int)(messageId + causeEventNumber + consequenceEventNumber) % rowCount) - rowCount / 2;
 			    int dy = rowIndex * fontHeight;
 			    int dx = y2 == y1 ? 0 : (int)((double)(x2 - x1) / (y2 - y1) * dy);
@@ -4724,11 +4727,11 @@ class SequenceChartState implements Serializable {
     public SequenceChart.AxisSpacingMode axisSpacingMode;
 	public SequenceChart.AxisOrderingMode axisOrderingMode;
 	public String[] moduleFullPathesManualAxisOrder;
-	public Boolean showOtherMessageReuses;
 	public Boolean showEventNumbers;
 	public Boolean showMessageNames;
 	public Boolean showMessageSends;
-    public Boolean showSelfMessages;
+    public Boolean showMessageReuses;
+    public Boolean showSelfMessageSends;
     public Boolean showSelfMessageReuses;
     public Boolean showModuleMethodCalls;
     public Boolean showArrowHeads;
