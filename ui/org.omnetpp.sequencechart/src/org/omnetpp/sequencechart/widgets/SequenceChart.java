@@ -1040,7 +1040,7 @@ public class SequenceChart
 	public void gotoClosestElement(IEvent event) {
 	    if (eventLog instanceof FilteredEventLog) {
     	    FilteredEventLog filteredEventLog = (FilteredEventLog)eventLogInput.getEventLog();
-            IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber(), false);
+            IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(event.getEventNumber(), false);
 
             if (closestEvent != null)
                 gotoElement(closestEvent);

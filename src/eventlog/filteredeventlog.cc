@@ -467,7 +467,7 @@ EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const c
     do {
         eventLogEntry = eventLog->findEventLogEntry(eventLogEntry, search, forward, caseSensitive);
     }
-    while (!matchesFilter(eventLogEntry->getEvent()));
+    while (eventLogEntry && !matchesFilter(eventLogEntry->getEvent()));
 
     return eventLogEntry;
 }
