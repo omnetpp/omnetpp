@@ -2254,6 +2254,9 @@ public class SequenceChart
 
 	@Override
 	protected void paint(final GC gc) {
+	    if (eventLogInput == null)
+	        return; //XXX TODO clear?
+	    
 	    paintHasBeenFinished = false;
 
         if (internalErrorHappenedDuringPaint)

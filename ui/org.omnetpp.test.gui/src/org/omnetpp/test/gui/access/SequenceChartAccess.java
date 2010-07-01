@@ -46,7 +46,7 @@ public class SequenceChartAccess
     protected Point getEventLocation(long eventPtr) {
         SequenceChart sequenceChart = getControl();
         int x = (int)sequenceChart.getEventXViewportCoordinate(eventPtr);
-        int y = sequenceChart.getEventYViewportCoordinate(eventPtr) + SequenceChart.GUTTER_HEIGHT;
+        int y = sequenceChart.getEventYViewportCoordinate(eventPtr) + sequenceChart.getGutterHeight(null);
         return new Point(x, y);
     }
 }

@@ -38,7 +38,7 @@ import com.simulcraft.test.gui.access.ClickableAccess;
 public class AnimationEffects  {
     private static final String HTML_PROLOG =
         "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
-        "html   { font-family: 'Tahoma',sans-serif; font-size: 16pt; font-style: normal; font-weight: normal; }\n" +
+        "html   { font-family: 'Tahoma',sans-serif; font-size: 14pt; font-style: normal; font-weight: normal; }\n" +
         "pre    { font-family: monospace; }\n" +
         "body   { overflow: auto; margin: 10px;}\n" +
         "</style></head>\n" +

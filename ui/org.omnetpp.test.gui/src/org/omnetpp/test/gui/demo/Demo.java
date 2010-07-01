@@ -24,7 +24,6 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
 import org.omnetpp.test.gui.access.ChartCanvasAccess;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
-import org.omnetpp.test.gui.access.DatasetsAndChartsPageAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
 import org.omnetpp.test.gui.access.InifileEditorAccess;
 import org.omnetpp.test.gui.access.InputsPageAccess;
@@ -56,9 +55,9 @@ import com.simulcraft.test.gui.util.WorkspaceUtils;
 public class Demo extends GUITestCase {
     private static String RECORDER = "C:\\Program Files\\TechSmith\\Camtasia Studio 4\\CamRecorder.exe" ;
     protected String name = "demo";
-    protected String logFileName = name + "-0.log";
+    protected String logFileName = name + "-0.elog";
     protected boolean delay = true;
-    protected int readingSpeed = 70;
+    protected int readingMillisecPerWord = 300; // time to read a word, in milliseconds
 
     @Override
     protected void setUp() throws Exception {
@@ -68,19 +67,22 @@ public class Demo extends GUITestCase {
         workbenchWindow.assertNoOpenEditorParts();
         System.clearProperty("com.simulcraft.test.running");
         setWorkbenchSize();
-        setupPreferences();
+//        setupPreferences();
         WorkspaceUtils.ensureProjectNotExists(name);
-        sleep(12);
-//        setTimeScale(0.3);  //FIXME remove
+//        sleep(12);
+        sleep(1);
+//        setTimeScale(0.3); 
 //        setMouseMoveDuration(1000);
 //        setTimeScale(0.0);
 //        setDelayAfterMouseMove(0);
 //        setDelayBeforeMouseMove(0);
 //        setMouseClickAnimation(false);
+        readingMillisecPerWord = 10; // fast
+        
     }
 
     public void testPlay() throws Throwable {
-        startRecording();
+//        startRecording();
         sleep(2);
         welcome();
         openPerspective();
@@ -92,7 +94,7 @@ public class Demo extends GUITestCase {
         analyzeResults();
         showSequenceChart();
         goodBye();
-        stopRecording();
+//        stopRecording();
         sleep(3);
     }
 
@@ -124,10 +126,10 @@ public class Demo extends GUITestCase {
     private void openPerspective() {
         showMessage(
                 "The OMNeT++ IDE is built on Eclipse. First of all, we select " +
-                "the <b>OMNeT++ Perspective</b>, which switches the Eclipse workbench " +
+                "the <b>Simulation Perspective</b>, which switches the Eclipse workbench " +
                 "to a layout optimized for OMNeT++, and adds OMNeT++-specific " +
                 "menu items.", 4);
-        Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|OMNeT\\+\\+");
+        Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|Simulation");
     }
 
     private void createProject() throws Throwable {
@@ -136,16 +138,19 @@ public class Demo extends GUITestCase {
                 "<b>OMNeT++ Project wizard</b>. This project will hold the files " +
                 "we work with.", 3);
         // create project
-        Access.getWorkbenchWindow().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNeT\\+\\+ Project");
-        ShellAccess shell = Access.findShellWithTitle("New OMNeT\\+\\+ project");
+        Access.getWorkbenchWindow().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNeT\\+\\+ Project...");
+        ShellAccess shell = Access.findShellWithTitle("New OMNeT\\+\\+ Project");
         sleep(1);
         showMessage("Let's name the project \"Demo\".", 1);
         shell.findTextAfterLabel("Project name:").clickAndTypeOver(name);
         sleep(2);
+        shell.findButtonWithLabel("Next >").selectWithMouseClick();
+        shell.findTree().findTreeItemByContent("Empty project").click();
+        sleep(1);
         shell.findButtonWithLabel("Finish").selectWithMouseClick();
 
         sleep(1);
-        TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
+        TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Project Explorer").getComposite().findTree();
         TreeItemAccess treeItem = tree.findTreeItemByContent(name);
         treeItem.ensureExpanded();
 
@@ -156,7 +161,7 @@ public class Demo extends GUITestCase {
                 "in the \"queueinglib\" project, so we have to include it in our " +
                 "project's dependencies. We can do so in the <b>Project Properties</b> " +
                 "dialog.", 5);
-        treeItem.reveal().chooseFromContextMenu("Properties");
+        treeItem.reveal().chooseFromContextMenu("Properties\tAlt\\+Enter");
         ShellAccess shell2 = Access.findShellWithTitle("Properties for demo");
         TreeAccess tree2 = shell2.findTree();
         sleep(1);
@@ -176,17 +181,17 @@ public class Demo extends GUITestCase {
                 "The next step is to create a new NED file with an empty network, " +
         		"using the <b>NED File wizard</b>.", 2);
         WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
-        TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
-        tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Network Description File \\(ned\\)");
+        TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Project Explorer").getComposite().findTree();
+        tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Network Description File \\(NED\\)");
         sleep(1);
         ShellAccess shell = Access.findShellWithTitle("New NED File");
         shell.findTree().findTreeItemByContent(name).click();
-        sleep(1);
         TextAccess text = shell.findTextAfterLabel("File name:");
         text.clickAndTypeOver(name);
+        shell.findButtonWithLabel("Next >").selectWithMouseClick();
+
         showMessage("We'll start from an empty network.", 1);
-        shell.findButtonWithLabel("A new toplevel Network").selectWithMouseClick();
-        sleep(1);
+        shell.findTree().findTreeItemByContent("Empty NED file").click();
         shell.findButtonWithLabel("Finish").selectWithMouseClick();
         sleep(2);
     }
@@ -254,7 +259,7 @@ public class Demo extends GUITestCase {
         // create with wizard
         WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-        TreeAccess tree = workbenchWindow.findViewPartByTitle("Navigator").getComposite().findTree();
+        TreeAccess tree = workbenchWindow.findViewPartByTitle("Project Explorer").getComposite().findTree();
         tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Initialization File \\(ini\\)");
         ShellAccess shell = Access.findShellWithTitle("New Ini File");
         showMessage("We choose the network to be simulated.", 1);
@@ -465,7 +470,7 @@ public class Demo extends GUITestCase {
         ScaveEditorAccess scaveEditor = ScaveEditorUtils.findScaveEditor("demo\\.anf");
         InputsPageAccess ip = scaveEditor.ensureInputsPageActive();
         showMessage("First, add all generated result files to the analysis. " +
-        		"We could specify exact filenames or drag files from the Navigator, " +
+        		"We could specify exact filenames or drag files from the Project Explorer, " +
         		"but it is now much simpler to use wildcards.", 3);
         ip.findButtonWithLabel("Wildcard.*").selectWithMouseClick();
         Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
@@ -591,7 +596,7 @@ public class Demo extends GUITestCase {
 
         showMessage("Let's open one of the log files, and take a look at the <b>Sequence Chart</b>!", 2);
 
-        TreeAccess tree = WorkbenchUtils.ensureViewActivated("General", "Navigator").getComposite().findTree();
+        TreeAccess tree = WorkbenchUtils.ensureViewActivated("General", "Project Explorer").getComposite().findTree();
         TreeItemAccess treeItem = tree.findTreeItemByContent(name);
         treeItem.ensureExpanded();
         tree.findTreeItemByContent(logFileName).doubleClick();
@@ -669,17 +674,22 @@ public class Demo extends GUITestCase {
     }
 
     void showMessage(String msg, int lines, int verticalDisplacement) {
-        if (readingSpeed == 0)
+        if (readingMillisecPerWord == 0)
             return;
 
-        int width = 600;
-        int height = lines * 24 + 30;
+        //int width = 600;
+        //int height = lines * 24 + 30;
+        int width = 800;
+        int height = lines * 30 + 50;
         Rectangle bounds = Access.getWorkbenchWindow().getShell().getAbsoluteBounds();
         int x = bounds.x + bounds.width/2 - width/2;
         int y = bounds.y + bounds.height/3;
         msg = msg.replace("\n", "<br/>");
-        if (delay)
-            AnimationEffects.showMessage(msg, x, y + verticalDisplacement, width, height, msg.length()*Access.rescaleTime(readingSpeed));
+        if (delay) {
+            int numWords = msg.split("[^A-Za-z0-9]+").length;
+            int delayMillis = 2000 + Access.rescaleTime(numWords*readingMillisecPerWord);
+            AnimationEffects.showMessage(msg, x, y + verticalDisplacement, width, height, delayMillis);
+        }
     }
 
     private void startRecording() {

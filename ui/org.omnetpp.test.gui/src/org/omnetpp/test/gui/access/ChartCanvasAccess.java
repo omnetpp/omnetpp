@@ -27,12 +27,13 @@ public class ChartCanvasAccess extends CanvasAccess {
 
     @UIStep
     public Rectangle getViewportRectangle() {
-        return getControl().getViewportRectangle();
+        org.eclipse.draw2d.geometry.Rectangle rect = getControl().getViewportRectangle();
+        return new Rectangle(rect.x, rect.y, rect.width, rect.height);
     }
 
     @UIStep
     public Rectangle getViewportRectangleAbsolute() {
-        Rectangle rect = getControl().getViewportRectangle();
+        org.eclipse.draw2d.geometry.Rectangle rect = getControl().getViewportRectangle();
         Point tmp = getControl().toDisplay(rect.x, rect.y);
         return new Rectangle(tmp.x, tmp.y, rect.width, rect.height);
     }
