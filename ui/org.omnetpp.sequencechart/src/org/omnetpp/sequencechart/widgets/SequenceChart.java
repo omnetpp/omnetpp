@@ -3101,8 +3101,7 @@ public class SequenceChart
 
 		// test if self-message
         if (y1 == y2) {
-            // FIXME: this filters out non self messages too, e.g. filtered and returns to same module
-		    if (!showSelfMessageSends)
+		    if (!showSelfMessageSends && !isReuse)
 		        return false;
 
 		    long eventNumberDelta = messageId + consequenceEventNumber - causeEventNumber;
