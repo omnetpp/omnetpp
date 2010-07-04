@@ -1,8 +1,13 @@
-/**
- * 
- */
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.sequencechart.widgets.axisorder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,11 +15,26 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.dialogs.ListDialog;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.dialogs.SelectionDialog;
 
 /**
  * List dialog for in-place ordering of a list.
@@ -22,7 +42,7 @@ import org.eclipse.ui.dialogs.ListDialog;
  * @author Andras
  */
 @SuppressWarnings("unchecked")
-public class ListReorderDialog extends ListDialog {
+public class ListReorderDialog extends SelectionDialog {
     private static final int BUTTON_TOP         = IDialogConstants.CLIENT_ID;
     private static final int BUTTON_UP          = IDialogConstants.CLIENT_ID + 1;
     private static final int BUTTON_DOWN        = IDialogConstants.CLIENT_ID + 2;
@@ -33,19 +53,34 @@ public class ListReorderDialog extends ListDialog {
     private Object[] originalOrder;
     private List listToReorder;
 
+    private IStructuredContentProvider contentProvider;
+    private ILabelProvider labelProvider;
+    private TableViewer tableViewer;
+    private int widthInChars = 40;
+    private int heightInChars = 15;
+
     public ListReorderDialog(Shell parent) {
         super(parent);
+    }
+
+    public void setContentProvider(IStructuredContentProvider sp) {
+        contentProvider = sp;
+    }
+
+    public void setLabelProvider(ILabelProvider lp) {
+        labelProvider = lp;
     }
 
     /**
      * Set the items to reorder in place. Must be a mutable List object.
      */
-    @Override
-    public void setInput(Object input) {
-        super.setInput(input);
-        this.listToReorder = (List) input;
+    public void setInput(List listToReorder) {
+        this.listToReorder = listToReorder;
     }
-    
+
+    /**
+     * This is a reference ordering to which the "Use Current" button resets ordering
+     */
     public void setOriginalOrder(Object[] originalOrder) {
         this.originalOrder = originalOrder;
     }
@@ -60,26 +95,92 @@ public class ListReorderDialog extends ListDialog {
         return super.getShellStyle() | SWT.RESIZE;
     }
     
-    @Override
     protected int getTableStyle() {
         return SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
     }
-    
-    @Override
-    protected void createButtonsForButtonBar(Composite parent) {
+
+    public TableViewer getTableViewer() {
+        return tableViewer;
+    }
+
+    protected Control createDialogArea(Composite container) {
+        Composite parent = (Composite) super.createDialogArea(container);
+        createMessageArea(parent);
         
-        createButton(parent, BUTTON_TOP, "Top", false);
-    	createButton(parent, BUTTON_UP, "Up", false);
-    	createButton(parent, BUTTON_DOWN, "Down", false);
-        createButton(parent, BUTTON_BOTTOM, "Bottom", false);
-        createButton(parent, BUTTON_REVERSE, "Reverse", false);
-    	createButton(parent, BUTTON_USE_CURRENT, "Use Current", false);
-    	super.createButtonsForButtonBar(parent);
+        Composite tableArea = new Composite(parent, SWT.NONE);
+        tableArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridLayout layout = new GridLayout(2, false);
+        layout.marginWidth = layout.marginHeight = 0;
+        tableArea.setLayout(layout);
+        
+        
+        // table
+        tableViewer = new TableViewer(tableArea, getTableStyle());
+        tableViewer.setContentProvider(contentProvider);
+        tableViewer.setLabelProvider(labelProvider);
+        tableViewer.setInput(listToReorder);
+        tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+            public void doubleClick(DoubleClickEvent event) {
+                okPressed();
+            }
+        });
+        List initialSelection = getInitialElementSelections();
+        if (initialSelection != null) {
+            tableViewer.setSelection(new StructuredSelection(initialSelection));
+        }
+        GridData gd = new GridData(GridData.FILL_BOTH);
+        gd.heightHint = convertHeightInCharsToPixels(heightInChars);
+        gd.widthHint = convertWidthInCharsToPixels(widthInChars);
+        Table table = tableViewer.getTable();
+        table.setLayoutData(gd);
+        table.setFont(container.getFont());
+
+        // buttons
+        Composite buttonsArea = new Composite(tableArea, SWT.NONE);
+        buttonsArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+        buttonsArea.setLayout(new GridLayout(1, false));
+
+        createSideButton(buttonsArea, BUTTON_TOP, "&Top");
+        createSideButton(buttonsArea, BUTTON_UP, "&Up");
+        createSideButton(buttonsArea, BUTTON_DOWN, "&Down");
+        createSideButton(buttonsArea, BUTTON_BOTTOM, "&Bottom");
+        new Label(buttonsArea, SWT.NONE);
+        createSideButton(buttonsArea, BUTTON_REVERSE, "&Reverse");
+        if (originalOrder != null)
+            createSideButton(buttonsArea, BUTTON_USE_CURRENT, "Use &Current");
+
+        return parent;
+    }
+
+    private Button createSideButton(Composite parent, final int buttonID, String label) {
+        Button button = new Button(parent, SWT.PUSH);
+        button.setText(label);
+        button.setFont(JFaceResources.getDialogFont());
+        button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        button.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent event) {
+                buttonPressed(buttonID);
+            }
+        });
+        return button;
+    }
+
+    /*
+     * Overrides method from Dialog
+     */
+    protected void okPressed() {
+        // Build a list of selected children.
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+        setResult(selection.toList());
+        super.okPressed();
     }
 
     @Override
     protected void buttonPressed(int buttonId) {
-        if (buttonId >= IDialogConstants.CLIENT_ID) {
+        if (buttonId < IDialogConstants.CLIENT_ID) {
+            super.buttonPressed(buttonId);
+        }
+        else {
             StructuredSelection selection = (StructuredSelection)getTableViewer().getSelection();
 
             if (buttonId == BUTTON_USE_CURRENT) {
@@ -88,6 +189,12 @@ public class ListReorderDialog extends ListDialog {
                         return ArrayUtils.indexOf(originalOrder, o1) - ArrayUtils.indexOf(originalOrder, o2);
                     }
                 });
+            }
+            else if (buttonId == BUTTON_REVERSE) {
+                List selectionAsList = selection.toList();
+                List list = selectionAsList.size()>=2 ? selectionAsList : new ArrayList(listToReorder);
+                for (int i = 0; i < list.size() / 2; i++)
+                    swap(list.get(i), list.get(list.size() - i - 1));
             }
             else if (selection.size() != 0) {
                 List selectionAsList = selection.toList();
@@ -109,19 +216,12 @@ public class ListReorderDialog extends ListDialog {
                     case BUTTON_BOTTOM:
                         move(selectionAsList, listToReorder.size() - listToReorder.indexOf(lastSelectionElement) - 1);
                         break;
-                    case BUTTON_REVERSE:
-                        for (int i = 0; i < selectionAsList.size() / 2; i++)
-                            swap(selectionAsList.get(i), selectionAsList.get(selectionAsList.size() - i - 1));
-                        break;
     			}
-
-                getTableViewer().getTable().setFocus();
             }
 
+            getTableViewer().getTable().setFocus();
             getTableViewer().refresh();
         }
-        else
-            super.buttonPressed(buttonId);
     }
 
     private void move(List<?> selection, int delta) {
@@ -161,5 +261,33 @@ public class ListReorderDialog extends ListDialog {
         int index2 = listToReorder.indexOf(module2);
         listToReorder.set(index1, module2);
         listToReorder.set(index2, module1);
+    }
+
+    /**
+     * Returns the initial height of the dialog in number of characters.
+     */
+    public int getHeightInChars() {
+        return heightInChars;
+    }
+
+    /**
+     * Returns the initial width of the dialog in number of characters.
+     */
+    public int getWidthInChars() {
+        return widthInChars;
+    }
+
+    /**
+     * Sets the initial height of the dialog in number of characters.
+     */
+    public void setHeightInChars(int heightInChars) {
+        this.heightInChars = heightInChars;
+    }
+
+    /**
+     * Sets the initial width of the dialog in number of characters.
+     */
+    public void setWidthInChars(int widthInChars) {
+        this.widthInChars = widthInChars;
     }
 }
