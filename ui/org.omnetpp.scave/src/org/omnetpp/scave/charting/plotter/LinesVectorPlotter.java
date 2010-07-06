@@ -25,11 +25,11 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  */
 public class LinesVectorPlotter extends VectorPlotter {
 
-	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
+	public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
 		IXYDataset dataset = plot.getDataset();
 		int n = dataset.getItemCount(series);
 		if (n==0)
-			return;
+			return true;
 
 		// Note: for performance (this is most commonly used plotter), we don't use plotSymbols()
 		// from the base class, but draw lines and symbols in a single loop instead
@@ -58,8 +58,13 @@ public class LinesVectorPlotter extends VectorPlotter {
 		// used for preventing painting the same symbol on the same pixels over and over.
 		HashSet<Long> yset = new HashSet<Long>();
 		long prevSymbolX = Long.MIN_VALUE;
+		
+		long startTime = System.currentTimeMillis();
 
 		for (int i = first; i <= last; i++) {
+		    if ((i & 255)==0 && System.currentTimeMillis() - startTime > timeLimitMillis)
+		        return false; // timed out
+
 		    long x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
 		    long y = mapping.toCanvasY(plot.transformY(dataset.getY(series, i))); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
@@ -111,5 +116,6 @@ public class LinesVectorPlotter extends VectorPlotter {
 			}
 			prevSymbolX = x;
 		}
+		return true;
 	}
 }

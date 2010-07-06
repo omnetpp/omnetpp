@@ -38,11 +38,6 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		return new int[] {first, last};
 	}
 
-	public int getNumPointsInXRange(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping) {
-		int range[] = indexRange(plot, series, graphics, mapping);
-		return range[1] - range[0] + 1;
-	}
-
 	public int[] canvasYRange(Graphics graphics, IChartSymbol symbol) {
 		Rectangle clip = GraphicsUtils.getClip(graphics);
 		int extra = symbol==null ? 0 : 2*symbol.getSizeHint(); // to be safe
@@ -62,9 +57,9 @@ public abstract class VectorPlotter implements IVectorPlotter {
 	/**
 	 * Utility function to plot the symbols
 	 */
-	protected void plotSymbols(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
+	protected boolean plotSymbols(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
 		if (symbol == null)
-			return;
+			return true;
 
 		// dataset index range to iterate over
 		IXYDataset dataset = plot.getDataset();
@@ -81,10 +76,14 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		// symbols painted at the last x pixel coordinate. This easily results in 10x-100x
 		// performance improvement.
 		//
+		long startTime = System.currentTimeMillis();
 		HashSet<Long> yset = new HashSet<Long>();
 		long prevCanvasX = Long.MIN_VALUE;
 		for (int i = first; i <= last; i++) {
-			double y = plot.transformY(dataset.getY(series, i));
+            if ((i & 255)==0 && System.currentTimeMillis() - startTime > timeLimitMillis)
+                return false; // timed out
+
+		    double y = plot.transformY(dataset.getY(series, i));
 			if (y < lo || y > hi || Double.isNaN(y))  // even skip coord transform for off-screen values
 				continue;
 
@@ -105,5 +104,6 @@ public abstract class VectorPlotter implements IVectorPlotter {
 				}
 			}
 		}
+		return true;
 	}
 }

@@ -31,7 +31,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 		this.referenceLevel = referenceLevel;
 	}
 
-	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
+	public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
 		// dataset index range to iterate over
 		int[] range = indexRange(plot, series, graphics, mapping);
 		int first = range[0], last = range[1];
@@ -69,8 +69,13 @@ public class PinsVectorPlotter extends VectorPlotter {
 
 		// draw pins
 		IXYDataset dataset = plot.getDataset();
+		long startTime = System.currentTimeMillis();
+		
 		for (int i = first; i <= last; i++) {
-			double value = plot.transformY(dataset.getY(series, i));
+            if ((i & 255)==0 && System.currentTimeMillis() - startTime > timeLimitMillis)
+                return false; // timed out
+
+            double value = plot.transformY(dataset.getY(series, i));
 			if ((transformedReferenceLevel < lo && value < lo) || (transformedReferenceLevel > hi && value > hi) || Double.isNaN(value) )
 				continue; // pin is off-screen
 
@@ -97,6 +102,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 		graphics.setAntialias(origAntialias);
 
 		// and draw symbols
-		plotSymbols(plot, series, graphics, mapping, symbol);
+        int remainingTime = Math.max(0, timeLimitMillis - (int)(System.currentTimeMillis()-startTime));
+		return plotSymbols(plot, series, graphics, mapping, symbol, remainingTime);
 	}
 }

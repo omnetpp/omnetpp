@@ -655,7 +655,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					graphics.setBackgroundColor(color);
 
 					if (line.series >= 0);
-						plotter.plot(this, line.series, graphics, coordsMapping, symbol);
+						plotter.plot(this, line.series, graphics, coordsMapping, symbol, 1000);
 				}
 			}
 		}

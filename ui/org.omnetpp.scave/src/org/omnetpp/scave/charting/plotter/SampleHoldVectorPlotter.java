@@ -27,11 +27,11 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		this.backward = backward;
 	}
 
-	public void plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {
+	public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
 		IXYDataset dataset = plot.getDataset();
 		int n = dataset.getItemCount(series);
 		if (n==0)
-			return;
+			return true;
 
 		// dataset index range to iterate over
 		int[] range = indexRange(plot, series, graphics, mapping);
@@ -61,8 +61,13 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		if (!prevIsNaN && backward)
 		    LargeGraphics.drawPoint(graphics, prevX, prevY);
 
+		long startTime = System.currentTimeMillis();
+		
 		for (int i = first+1; i <= last; i++) {
-			double value = plot.transformY(dataset.getY(series, i));
+            if ((i & 255)==0 && System.currentTimeMillis() - startTime > timeLimitMillis)
+                return false; // timed out
+
+            double value = plot.transformY(dataset.getY(series, i));
 
 			// for testing:
 			//if (i%5==0) value = 0.0/0.0; //NaN
@@ -122,6 +127,8 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// draw symbols
 		graphics.setAntialias(origAntialias);
 		graphics.setLineStyle(SWT.LINE_SOLID);
-		plotSymbols(plot, series, graphics, mapping, symbol);
+
+		int remainingTime = Math.max(0, timeLimitMillis - (int)(System.currentTimeMillis()-startTime));
+		return plotSymbols(plot, series, graphics, mapping, symbol, remainingTime);
 	}
 }

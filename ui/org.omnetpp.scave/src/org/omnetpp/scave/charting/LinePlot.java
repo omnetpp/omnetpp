@@ -132,12 +132,14 @@ class LinePlot implements ILinePlot {
 		return area;
 	}
 
-
-	protected void draw(Graphics graphics, ICoordsMapping coordsMapping) {
+	protected boolean draw(Graphics graphics, ICoordsMapping coordsMapping, int totalTimeLimitMillis, int perLineTimeLimitMillis) {
 		if (getDataset() != null) {
 			IXYDataset dataset = getDataset();
+
 			long startTime = System.currentTimeMillis();
-			for (int series=0; series<dataset.getSeriesCount(); series++) {
+			boolean ok = true;
+			
+			for (int series = 0; series < dataset.getSeriesCount(); series++) {
 				LineProperties props = chart.getLineProperties(series);
 				if (props.getDisplayLine()) {
 
@@ -149,7 +151,11 @@ class LinePlot implements ILinePlot {
 					graphics.setForegroundColor(color);
 					graphics.setBackgroundColor(color);
 
-					plotter.plot(this, series, graphics, coordsMapping, symbol);
+					int remainingTime = totalTimeLimitMillis - (int)(System.currentTimeMillis() - startTime);
+					int lineTimeout = Math.min(Math.max(100, remainingTime), perLineTimeLimitMillis); // give it at least 100ms, even if time is over
+					
+                    boolean lineOK = plotter.plot(this, series, graphics, coordsMapping, symbol, lineTimeout);
+                    ok = ok && lineOK; // do NOT merge with previous line! lazy evaluation would prevent lines after 1st timeout to be drawn
 
 					// if drawing is taking too long, display busy cursor
 					if (System.currentTimeMillis() - startTime > 1000) {
@@ -161,6 +167,8 @@ class LinePlot implements ILinePlot {
 			}
 			chart.getShell().setCursor(null);
 			if (debug) Debug.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+			return ok;
 		}
+		return true;
 	}
 }
