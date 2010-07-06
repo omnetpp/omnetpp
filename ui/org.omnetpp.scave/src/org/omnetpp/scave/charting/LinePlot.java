@@ -27,8 +27,6 @@ class LinePlot implements ILinePlot {
 
 	private VectorChart chart;
 	private Rectangle rect = new Rectangle(0,0,1,1);
-	private boolean smartMode = true; // whether smartModeLimit is enabled
-	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
 
 	public LinePlot(VectorChart chart) {
 		this.chart = chart;
@@ -150,13 +148,6 @@ class LinePlot implements ILinePlot {
 					graphics.setAntialias(chart.antialias ? SWT.ON : SWT.OFF);
 					graphics.setForegroundColor(color);
 					graphics.setBackgroundColor(color);
-
-					if (smartMode && plotter.getNumPointsInXRange(this, series, graphics, coordsMapping) >= smartModeLimit) {
-						//XXX this may have unwanted effects when caching is on,
-						// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
-						if (debug) Debug.println("\"smart mode\": turning off symbols");
-						symbol = null;
-					}
 
 					plotter.plot(this, series, graphics, coordsMapping, symbol);
 
