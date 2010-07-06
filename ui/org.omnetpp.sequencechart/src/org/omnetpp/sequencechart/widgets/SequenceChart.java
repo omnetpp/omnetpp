@@ -3561,7 +3561,7 @@ public class SequenceChart
 	}
 
 	/**
-	 * Returns the maximum width after which message dependencies are draws as a split arrow.
+	 * Returns the maximum width after which message dependencies are drawn as a split arrow.
 	 */
     private int getMaximumMessageDependencyDisplayWidth() {
         return 3 * getViewportWidth();

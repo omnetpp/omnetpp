@@ -206,7 +206,6 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			updateVirtualSize(); // includes clearCache + redraw
 			centerXOn(oldX);
 			firePropertyChangeEvent(PROP_ZOOM_X, oldZoomX, newZoomX);
-			Debug.println("zoomX set to "+zoomX);
 		}
 	}
 
@@ -230,7 +229,6 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			updateVirtualSize(); // includes clearCache + redraw
 			centerYOn(oldY);
 			firePropertyChangeEvent(PROP_ZOOM_Y, oldZoomY, newZoomY);
-			Debug.println("zoomY set to "+zoomY);
 		}
 	}
 
