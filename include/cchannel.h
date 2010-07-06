@@ -95,7 +95,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
         //@}
 
         /** Returns the message (packet). */
-        cObject *getMessage() const {return msg;}
+        cMessage *getMessage() const {return msg;}
 
         /** Returns the channel result. */
         result_t *getChannelResult() const {return result;}
