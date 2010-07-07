@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
@@ -55,6 +56,7 @@ import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
@@ -65,6 +67,7 @@ import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.properties.LineProperties.LineType;
 import org.omnetpp.scave.charting.properties.LineProperties.SymbolType;
+import org.omnetpp.scave.preferences.ScavePreferenceConstants;
 
 
 /**
@@ -574,7 +577,18 @@ public class VectorChart extends ChartCanvas {
 		graphics.fillRectangle(GraphicsUtils.getClip(graphics));
 		xAxis.drawGrid(graphics, coordsMapping);
 		yAxis.drawGrid(graphics, coordsMapping);
-		plot.draw(graphics, coordsMapping);
+
+        IPreferenceStore store = ScavePlugin.getDefault().getPreferenceStore();
+        int totalTimeLimitMillis = store.getInt(ScavePreferenceConstants.TOTAL_DRAW_TIME_LIMIT_MILLIS);
+        int perLineTimeLimitMillis = store.getInt(ScavePreferenceConstants.PER_LINE_DRAW_TIME_LIMIT_MILLIS);
+		
+		boolean completed = plot.draw(graphics, coordsMapping, totalTimeLimitMillis, perLineTimeLimitMillis);
+		
+		if (!completed) {
+		    Rectangle clip = GraphicsUtils.getClip(graphics);
+		    graphics.setForegroundColor(ColorFactory.BLACK);
+		    graphics.drawText("Drawing operation timed out, plot is incomplete! Change zoom level to refresh.", clip.x+2, clip.y+2);
+		}
 	}
 
 	@Override

@@ -151,5 +151,20 @@
          </view>
      </perspectiveExtension>
   </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer
+           class="org.omnetpp.scave.preferences.ScavePreferenceInitializer">
+     </initializer>
+  </extension>
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           category="org.omnetpp.cdt.OmnetppCdtPreferencePage"
+           class="org.omnetpp.scave.preferences.ScavePreferencePage"
+           id="org.omnetpp.scave.preferences.ScavePreferencePage"
+           name="Result Analysis">
+     </page>
+  </extension>
 
 </plugin>
