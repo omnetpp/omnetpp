@@ -28,6 +28,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
+import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.ChartSheets;
@@ -76,6 +77,9 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		Analysis analysis = scaveEditor.getAnalysis();
 		getDatasetsTreeViewer().setInput(analysis.getDatasets());
         getChartSheetsTreeViewer().setInput(analysis.getChartSheets());
+
+        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
+        setFocusManager(new FocusManager(this));
 
         if (enableGuiTest) {
         	getDatasetsTreeViewer().getTree().setData(WIDGET_ID, DATASETS_TREE_ID);

@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -60,6 +61,10 @@ public class BrowseDataPage extends ScaveEditorPage {
 	public void dispose() {
 		unhookListeners();
 		super.dispose();
+	}
+
+	public FilteredDataPanel getAllPanel() {
+	    return tabFolder.getAllPanel();
 	}
 
 	public FilteredDataPanel getScalarsPanel() {
@@ -109,6 +114,10 @@ public class BrowseDataPage extends ScaveEditorPage {
 		// set up contents
 		ResultFileManagerEx manager = scaveEditor.getResultFileManager();
 		tabFolder.setResultFileManager(manager);
+		
+        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
+        setFocusManager(new FocusManager(this));
+
 	}
 
 	private void configureContextMenu(FilteredDataPanel panel) {
@@ -227,7 +236,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	 * ResultFileManager, updates the data controls with them, and updates
 	 * the tab labels as well.
 	 */
-	protected void refreshPage(final ResultFileManager manager) {
+	protected void refreshPage(ResultFileManager manager) {
 	    IDList items = manager.getAllItems(false, false);
 		IDList vectors = manager.getAllVectors(false);
 		IDList scalars = manager.getAllScalars(false, true);

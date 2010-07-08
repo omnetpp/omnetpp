@@ -18,6 +18,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Dataset;
@@ -73,6 +74,9 @@ public class DatasetPage extends ScaveEditorPage {
 		TreeViewer treeViewer = getDatasetTreeViewer();
 		scaveEditor.configureTreeViewer(treeViewer);
 		treeViewer.setInput(dataset);
+		
+        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
+        setFocusManager(new FocusManager(this));
 	}
 
 	@Override

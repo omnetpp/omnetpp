@@ -252,4 +252,8 @@ public class ToolButton extends Canvas {
 		selectionListeners.remove(listener);
 	}
 
+	@Override
+	public String toString() {
+	    return getClass().getSimpleName() + " {" + getText() + "}";
+	}
 }

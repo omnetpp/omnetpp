@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.ILayoutExtension;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
+import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
@@ -279,6 +280,10 @@ public class ChartSheetPage extends ScaveEditorPage {
 
 		for (Property property : chartSheet.getProperties())
 		    setChartSheetProperty(property.getName(), property.getValue());
+		
+        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
+        setFocusManager(new FocusManager(this));
+		
 	}
 
 	@Override

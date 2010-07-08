@@ -1,6 +1,8 @@
 package org.omnetpp.scave.editors.datatable;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TabFolder;
@@ -56,6 +58,13 @@ public class FilteredDataTabFolder extends TabFolder {
         histogramsTab = addItem(histogramsPanel);
         refreshPanelTitles();
         setActivePanel(allPanel);
+
+        // when tab gets clicked, transfer focus to its panel
+        addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                getActivePanel().setFocus();
+            }
+        });
     }
 
     protected TabItem addItem(Control control) {

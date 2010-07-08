@@ -20,6 +20,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.common.ui.IHasFocusManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -44,13 +46,14 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author andras
  */
-public class FilteredDataPanel extends Composite {
+public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
 	private FilteringPanel filterPanel;
 	private IDataControl data;
 	private IDList idlist; // the unfiltered data list
     private ResultType type;
-
+    private FocusManager focusManager;
+    
 	public FilteredDataPanel(Composite parent, int style, ResultType type) {
 		super(parent, style);
 		this.type = type;
@@ -112,6 +115,8 @@ public class FilteredDataPanel extends Composite {
 					switchToAdvancedFilter();
 			}
 		});
+		
+		focusManager = new FocusManager(this);
 	}
 
 	protected void configureFilterPanel() {
@@ -275,5 +280,13 @@ public class FilteredDataPanel extends Composite {
 	public boolean isFilterPanelVisible() {
 		GridData data = (GridData)filterPanel.getLayoutData();
 		return !data.exclude;
+	}
+	
+	@Override
+	public boolean setFocus() {
+	    // try to restore focus where it was last time
+	    if (focusManager.setFocus())
+	        return true;
+	    return super.setFocus();
 	}
 }

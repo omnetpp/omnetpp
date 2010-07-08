@@ -29,6 +29,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
+import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.actions.AddResultFileAction;
 import org.omnetpp.scave.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave.actions.EditAction;
@@ -145,6 +146,9 @@ public class InputsPage extends ScaveEditorPage {
         getRunFileTreeViewer().setInput(manager);
         getLogicalDataTreeViewer().setInput(manager);
 
+        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
+        setFocusManager(new FocusManager(this));
+        
         if (enableGuiTest) {
         	getInputFilesTreeViewer().getTree().setData(WIDGET_ID, INPUT_FILES_TREE);
         	getFileRunTreeViewer().getTree().setData(WIDGET_ID, FILE_RUN_VIEW_TREE_ID);

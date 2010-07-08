@@ -24,6 +24,7 @@ import org.eclipse.ui.IMemento;
 import org.omnetpp.common.canvas.LargeScrollableCanvas;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
+import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
@@ -115,6 +116,9 @@ public class ChartPage extends ScaveEditorPage {
 
 		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
 		chartView.setMenu(menuManager.createContextMenu(chartView));
+
+		// ensure that focus gets restored correctly after user goes somewhere else and then comes back
+        setFocusManager(new FocusManager(this));
 	}
 
 	private void hookListeners() {

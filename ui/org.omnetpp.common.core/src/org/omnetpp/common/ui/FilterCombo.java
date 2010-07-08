@@ -137,4 +137,9 @@ public class FilterCombo extends Combo {
         return textColor;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " {" + getMessage() + "}";
+    }
+    
 }

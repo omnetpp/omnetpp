@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.charting.ChartCanvas;
@@ -59,6 +60,8 @@ public class ScaveEditorPage extends ScrolledForm {
 
 	protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
 	private String pageTitle = "untitled";
+	
+	protected FocusManager focusManager = null;
 
 	public ScaveEditorPage(Composite parent, int style, ScaveEditor scaveEditor) {
 		super(parent, style);
@@ -84,6 +87,22 @@ public class ScaveEditorPage extends ScrolledForm {
 	public void setPageTitle(String title) {
 		pageTitle = title;
 		scaveEditor.setPageTitle(this, title);
+	}
+	
+	public FocusManager getFocusManager() {
+        return focusManager;
+    }
+	
+	public void setFocusManager(FocusManager focusManager) {
+        this.focusManager = focusManager;
+    }
+	
+	@Override
+	public boolean setFocus() {
+        // try to restore focus where it was last time
+	    if (getFocusManager() != null && getFocusManager().setFocus())
+	        return true;
+	    return super.setFocus();
 	}
 
 	/**
