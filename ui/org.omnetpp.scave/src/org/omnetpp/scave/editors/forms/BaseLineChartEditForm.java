@@ -238,7 +238,10 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 
 			Composite subsubpanel = new Composite(subpanel, SWT.NONE);
 			subsubpanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			subsubpanel.setLayout(new GridLayout(3, false));
+            GridLayout gridLayout = new GridLayout(3, false);
+            gridLayout.marginWidth = 0;
+            gridLayout.marginHeight = 0;
+            subsubpanel.setLayout(gridLayout);
 
 			displayNameText = createTextField("Display name:", subsubpanel);
 			new ResultItemNamePatternField(displayNameText);
