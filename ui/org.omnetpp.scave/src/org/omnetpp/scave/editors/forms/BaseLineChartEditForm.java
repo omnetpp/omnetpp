@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
@@ -460,33 +461,68 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		updateLineTitlesFromProperties(properties);
 	}
 
-	private void updateLinePropertyEditFields(VectorChartProperties props) {
+    private void updateLinePropertyEditFields(VectorChartProperties props) {
 		// initializes form contents from the model (i.e. props)
 		previewCanvas.props = props;
 		IStructuredSelection selection = (IStructuredSelection) linesTableViewer.getSelection();
-		if (selection.size() == 1) {
-			Line line = (Line) selection.getFirstElement();
-			LineProperties lineProps = props.getLineProperties(line.key);
-			displayLineCheckbox.setSelection(lineProps.getDisplayLine());
-			displayLineCheckbox.setGrayed(false);
-			displayNameText.setEnabled(true);
-			displayNameText.setText(lineProps.getDisplayName()==null ? "" : lineProps.getDisplayName());
-			symbolTypeCombo.setText(lineProps.getSymbolType()==null ? AUTO : lineProps.getSymbolType().toString());
-			symbolSizeCombo.setText(lineProps.getSymbolSize()==null ? AUTO : lineProps.getSymbolSize().toString());
-			lineTypeCombo.setText(lineProps.getLineType()==null ? AUTO : lineProps.getLineType().toString());
-			colorEdit.setText(lineProps.getLineColor()==null ? AUTO : lineProps.getLineColor());
+		
+		if (selection.isEmpty()) {
+            displayLineCheckbox.setGrayed(true);
+            displayNameText.setText("");
+            displayNameText.setEnabled(false);
+            symbolTypeCombo.setText(NO_CHANGE);
+            symbolSizeCombo.setText(NO_CHANGE);
+            lineTypeCombo.setText(NO_CHANGE);
+            colorEdit.setText(NO_CHANGE);
 		}
 		else {
-			displayLineCheckbox.setGrayed(true);
-			displayNameText.setText("");
-			displayNameText.setEnabled(false);
-			symbolTypeCombo.setText(NO_CHANGE);
-			symbolSizeCombo.setText(NO_CHANGE);
-			lineTypeCombo.setText(NO_CHANGE);
-			colorEdit.setText(NO_CHANGE);
+		    @SuppressWarnings("unchecked")
+	        List<Line> selectedLines = (List<Line>)selection.toList();
+	        Line firstLine = selectedLines.get(0);
+	        LineProperties lineProps = props.getLineProperties(firstLine.key);
+	        boolean displayLine = lineProps.getDisplayLine();
+	        String displayName = lineProps.getDisplayName();
+	        SymbolType symbolType = lineProps.getSymbolType();
+	        Integer symbolSize = lineProps.getSymbolSize();
+	        LineType lineType = lineProps.getLineType();
+	        String lineColor = lineProps.getLineColor();
+		    
+	        boolean sameSymbolType = true, sameSymbolSize = true, sameLineType = true, sameLineColor = true;
+	        for (int i = 1; i < selectedLines.size(); ++i) {
+	            Line line = selectedLines.get(i);
+	            lineProps = props.getLineProperties(line.key);
+	            if (sameSymbolType && !ObjectUtils.equals(symbolType, lineProps.getSymbolType()))
+	                sameSymbolType = false;
+	            if (sameSymbolSize && !ObjectUtils.equals(symbolSize, lineProps.getSymbolSize()))
+	                sameSymbolSize = false;
+	            if (sameLineType && !ObjectUtils.equals(lineType, lineProps.getLineType()))
+	                sameLineType = false;
+	            if (sameLineColor && !ObjectUtils.equals(lineColor, lineProps.getLineColor()))
+	                sameLineColor = false;
+	        }
+	        
+	        // use default if not set for the lines
+	        LineProperties defaultProps = props.getLineProperties(null);
+	        if (sameSymbolType && symbolType == null)
+	            symbolType = defaultProps.getSymbolType();
+	        if (sameSymbolSize && symbolSize == null)
+	            symbolSize = defaultProps.getSymbolSize();
+	        if (sameLineType && lineType == null)
+	            lineType = defaultProps.getLineType();
+	        if (sameLineColor && lineColor == null)
+	            lineColor = defaultProps.getLineColor();
+	        
+	        displayLineCheckbox.setSelection(selection.size() == 1 && displayLine);
+	        displayLineCheckbox.setGrayed(selection.size() > 1);
+	        displayNameText.setEnabled(selection.size() == 1);
+	        displayNameText.setText(selection.size() == 1 ? StringUtils.defaultString(displayName) : "");
+	        symbolTypeCombo.setText(sameSymbolType ? (symbolType == null ? AUTO : symbolType.toString()) : NO_CHANGE);
+	        symbolSizeCombo.setText(sameSymbolSize ? (symbolSize == null ? AUTO : symbolSize.toString()) : NO_CHANGE);
+	        lineTypeCombo.setText(sameLineType ? (lineType == null ? AUTO : lineType.toString()) : NO_CHANGE);
+	        colorEdit.setText(sameLineColor ? (lineColor == null ? AUTO : lineColor) : NO_CHANGE);
 		}
 	}
-
+    
 	private void updateLineTitlesFromProperties(VectorChartProperties properties) {
 	    if (xydataset != null) {
     	    for (Line line : lines) {

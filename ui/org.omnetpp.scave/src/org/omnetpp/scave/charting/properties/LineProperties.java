@@ -104,9 +104,9 @@ public class LineProperties extends PropertySource {
 
 	@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE,
 			description="The size of the symbol drawn at the data points.")
-	public Integer getSymbolSize() { return chartProps.getIntegerProperty(propertyName(PROP_SYMBOL_SIZE)); }
+	public Integer getSymbolSize() { return chartProps.getIntegerProperty(propertyName(PROP_SYMBOL_SIZE), lineId==null); }
 	public void setSymbolSize(Integer size) { chartProps.setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
-	public Integer defaultSymbolSize() { return ChartDefaults.DEFAULT_SYMBOL_SIZE; }
+	public Integer defaultSymbolSize() { return lineId == null ? ChartDefaults.DEFAULT_SYMBOL_SIZE : null; }
 
 	@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true,
 			description="Line drawing method. One of Linear, Pins, Dots, Points, Sample-Hold or Backward Sample-Hold.")

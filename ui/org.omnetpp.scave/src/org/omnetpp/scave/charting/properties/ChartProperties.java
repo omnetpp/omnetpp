@@ -293,10 +293,11 @@ public class ChartProperties extends PropertySource {
 								  getDefaultColorProperty(propertyName);
 	}
 
-	public Integer getIntegerProperty(String propertyName) {
+	public Integer getIntegerProperty(String propertyName, boolean useDefault) {
 		Property property = getProperty(propertyName);
 		return property != null ? Converter.stringToInteger(property.getValue()) :
-									getDefaultIntegerProperty(propertyName);
+		       useDefault       ? getDefaultIntegerProperty(propertyName) :
+		                          null;
 	}
 
 	public Double getDoubleProperty(String propertyName) {
