@@ -11,7 +11,6 @@ import static org.omnetpp.scave.engine.ResultItemField.FILE;
 import static org.omnetpp.scave.engine.ResultItemField.MODULE;
 import static org.omnetpp.scave.engine.ResultItemField.NAME;
 import static org.omnetpp.scave.engine.ResultItemField.RUN;
-import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,37 +71,22 @@ public class FilterUtil {
 	}
 
 	public FilterUtil(ResultItem item, String[] filterFields) {
+	    Assert.isNotNull(item);
+	    Assert.isNotNull(filterFields);
+	    
 		ResultFile file = item.getFileRun().getFile();
 		Run run = item.getFileRun().getRun();
-		if (filterFields==null) {
-			if (run.getRunName().length()>0) {
-				// default: identify run with runName
-				setField(RUN, run.getRunName());
-			}
-			else {
-				// fallback for old files that don't have runName yet
-				setField(FILE, file.getFilePath());
-				String runNumber = run.getAttribute(RUNNUMBER);
-				if (runNumber != null)
-					setField(RUNNUMBER, runNumber);
-			}
-			setField(MODULE, item.getModuleName());
-			setField(NAME, item.getName());
-		}
-		else {
-			// explicit selection of filter fields
-			for (String field : filterFields) {
-				if (field == FILE)
-					setField(field, file.getFilePath());
-				else if (field == RUN)
-					setField(field, run.getRunName());
-				else if (field == MODULE)
-					setField(MODULE, item.getModuleName());
-				else if (field == NAME)
-					setField(NAME, item.getName());
-				else if (RunAttribute.isAttributeName(field))
-					setField(field, run.getAttribute(field));
-			}
+		for (String field : filterFields) {
+			if (field == FILE)
+				setField(field, file.getFilePath());
+			else if (field == RUN)
+				setField(field, run.getRunName());
+			else if (field == MODULE)
+				setField(MODULE, item.getModuleName());
+			else if (field == NAME)
+				setField(NAME, item.getName());
+			else if (RunAttribute.isAttributeName(field))
+				setField(field, run.getAttribute(field));
 		}
 	}
 

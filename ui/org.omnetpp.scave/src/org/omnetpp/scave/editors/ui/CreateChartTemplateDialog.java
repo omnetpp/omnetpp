@@ -11,9 +11,8 @@ import static org.omnetpp.scave.engine.ResultItemField.FILE;
 import static org.omnetpp.scave.engine.ResultItemField.MODULE;
 import static org.omnetpp.scave.engine.ResultItemField.NAME;
 import static org.omnetpp.scave.engine.ResultItemField.RUN;
-import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
+import static org.omnetpp.scave.engine.RunAttribute.CONFIGNAME;
+import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -120,9 +119,8 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		filterFieldsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		createFilterFieldItem(group, "By Run Id", RUN);
 		createFilterFieldItem(group, "By File Name", FILE);
-		createFilterFieldItem(group, "Experiment", EXPERIMENT);
-		createFilterFieldItem(group, "Measurement", MEASUREMENT);
-		createFilterFieldItem(group, "Replication", REPLICATION);
+		createFilterFieldItem(group, "Config name", CONFIGNAME);
+		createFilterFieldItem(group, "Run number", RUNNUMBER);
 		TableItem moduleNameItem = createFilterFieldItem(group, "Module name", MODULE);
 		TableItem dataNameItem = createFilterFieldItem(group, "Data name", NAME);
 		moduleNameItem.setChecked(true);

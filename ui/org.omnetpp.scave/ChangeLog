@@ -6,6 +6,11 @@ Fixes:
    + Line type on vector chart did get reflected in the Chart Properties dialog (issue 182).
      When the line property has the same value for each selected line in the Properties dialog,
      then that value is displayed in the control, instead of 'No change'.
+     
+   + Empty chart if refreshing a temp chart after re-running simulation (issue 186).
+     When creating a temp chart, runs was identified by runname, now they are identified
+     by file/configname/runnumber. 'Add Selected Data to Dataset' and 'Convert to Dataset'
+     actions also use the file/configname/runnumber fields for consistency.
 
 2010-06-11  ------ omnetpp-4.1 released ------
 

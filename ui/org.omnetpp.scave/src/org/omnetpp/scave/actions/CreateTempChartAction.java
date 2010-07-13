@@ -8,6 +8,10 @@
 
 package org.omnetpp.scave.actions;
 
+import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.RunAttribute.CONFIGNAME;
+import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
+
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
@@ -63,7 +67,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
     protected void openChart(final ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
         Chart chart = ResultFileManager.callWithReadLock(manager, new Callable<Chart>() {
 			public Chart call() {
-			    Dataset dataset = ScaveModelUtil.createTemporaryDataset("dataset", idList, null, manager);
+			    Dataset dataset = ScaveModelUtil.createTemporaryDataset("dataset", idList, new String[] { FILE, CONFIGNAME, RUNNUMBER }, manager);
 		        String chartTitle = StringUtils.defaultIfEmpty(DatasetManager.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), "temp" + ++counter);
 		        Chart chart = ScaveModelUtil.createChart(chartTitle, type);
 		        dataset.getItems().add(chart);

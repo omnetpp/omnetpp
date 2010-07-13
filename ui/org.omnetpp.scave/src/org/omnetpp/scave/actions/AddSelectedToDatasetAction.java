@@ -7,6 +7,10 @@
 
 package org.omnetpp.scave.actions;
 
+import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.RunAttribute.CONFIGNAME;
+import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -91,7 +95,8 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 					ResultFileManager manager = control.getResultFileManager();
 					addItems = ResultFileManager.callWithReadLock(manager, new Callable<Collection<Add>>() {
 						public Collection<Add> call() {
-							return ScaveModelUtil.createAdds(control.getSelectedItems(), null);
+							return ScaveModelUtil.createAdds(control.getSelectedItems(),
+							                                 new String[] { FILE, CONFIGNAME, RUNNUMBER });
 						}
 					});
 				}

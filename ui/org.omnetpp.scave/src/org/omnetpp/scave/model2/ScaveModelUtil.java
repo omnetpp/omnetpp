@@ -95,6 +95,7 @@ public class ScaveModelUtil {
 	}
 
 	public static Dataset createTemporaryDataset(String name, IDList ids, String[] runidFields, ResultFileManager manager) {
+	    Assert.isNotNull(runidFields);
 		Dataset dataset = createDataset(name);
 		dataset.getItems().addAll(createAdds(ids, runidFields, manager, true));
 		return dataset;
@@ -145,6 +146,7 @@ public class ScaveModelUtil {
 	 * @param filterFields may be null (meaning run/module/name)
 	 */
 	public static Add createAdd(ResultItem item, String[] filterFields) {
+	    Assert.isNotNull(filterFields);
 		return createAdd(new FilterUtil(item,filterFields).getFilterPattern(), getTypeOf(item));
 	}
 
@@ -153,10 +155,12 @@ public class ScaveModelUtil {
 	 * @param runidFields  may be null (meaning autoselect)
 	 */
 	public static Collection<Add> createAdds(ResultItem[] items, String[] runidFields) {
+	    Assert.isNotNull(runidFields);
 		return createAddsWithFields(items, getFilterFieldsFor(runidFields));
 	}
 
 	public static Collection<Add> createAdds(IDList ids, String[] runidFields, ResultFileManager manager, boolean cacheIDs) {
+	    Assert.isNotNull(runidFields);
 		String[] filterFields = getFilterFieldsFor(runidFields);
 		List<Add> adds = new ArrayList<Add>(ids.size());
 		for (int i = 0; i < ids.size(); ++i) {
@@ -173,6 +177,7 @@ public class ScaveModelUtil {
 	}
 
 	public static Collection<Add> createAddsWithFields(ResultItem[] items, String[] filterFields) {
+	    Assert.isNotNull(filterFields);
 		List<Add> adds = new ArrayList<Add>(items.length);
 		for (ResultItem item : items)
 			adds.add(createAdd(item, filterFields));
@@ -180,14 +185,12 @@ public class ScaveModelUtil {
 	}
 
 	private static String[] getFilterFieldsFor(String[] runidFields) {
-		String[] filterFields = null;
-		if (runidFields != null) {
-			int runidFieldCount = runidFields.length;
-			filterFields = new String[runidFieldCount];
-			System.arraycopy(runidFields, 0, filterFields, 0, runidFieldCount);
-			filterFields[runidFieldCount] = MODULE;
-			filterFields[runidFieldCount + 1] = NAME;
-		}
+	    Assert.isNotNull(runidFields);
+		int runidFieldCount = runidFields.length;
+		String[] filterFields = new String[runidFieldCount+2];
+		System.arraycopy(runidFields, 0, filterFields, 0, runidFieldCount);
+		filterFields[runidFieldCount] = MODULE;
+		filterFields[runidFieldCount + 1] = NAME;
 		return filterFields;
 	}
 
