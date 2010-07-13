@@ -1,3 +1,8 @@
+2010-07-13  Tamas Borbely
+
+	* added "substractFirstValue" filter, it substracts the first finite value
+	  from the first and all subsequent values. 
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-05-31  ------ omnetpp-4.1rc2 released ------

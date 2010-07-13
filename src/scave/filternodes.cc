@@ -1105,3 +1105,64 @@ void TimeToSerialNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*
 {
 }
 
+//-----
+
+bool SubstractFirstValueNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void SubstractFirstValueNode::process()
+{
+    int n = in()->length();
+    Datum d;
+
+    int i = 0;
+    for (; !firstValueSeen && i<n; i++)
+    {
+        in()->read(&d,1);
+        if (!isNaN(d.y) && !isPositiveInfinity(d.y) && !isNegativeInfinity(d.y))
+        {
+            firstValue = d.y;
+            d.y = 0.0;
+            firstValueSeen = true;
+        }
+        out()->write(&d,1);
+    }
+
+    for (; i<n; i++)
+    {
+        in()->read(&d,1);
+        d.y -= firstValue;
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *SubstractFirstValueNodeType::getDescription() const
+{
+    return "Substract the first value from every subsequent values: yout[k] = y[k] - y[0]";
+}
+
+void SubstractFirstValueNodeType::getAttributes(StringMap& attrs) const
+{
+}
+
+Node *SubstractFirstValueNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    Node *node = new SubstractFirstValueNode();
+    node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}
+
+void SubstractFirstValueNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+{
+    if (attrs["type"] == "enum")
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
+    else if (attrs["type"] == "")
+        attrs["type"] = "double";
+}

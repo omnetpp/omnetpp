@@ -544,6 +544,33 @@ class SCAVE_API TimeToSerialNodeType : public FilterNodeType
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
 };
 
+//----
+
+/**
+ * Processing node which substracts the first finite value from every value.
+ */
+class SCAVE_API SubstractFirstValueNode : public FilterNode
+{
+    protected:
+        bool firstValueSeen;
+        double firstValue;
+    public:
+        SubstractFirstValueNode() : firstValueSeen(false) {}
+        virtual ~SubstractFirstValueNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class SCAVE_API SubstractFirstValueNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *getName() const {return "substractFirstValue";}
+        virtual const char *getDescription() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+};
+
 NAMESPACE_END
 
 #endif
