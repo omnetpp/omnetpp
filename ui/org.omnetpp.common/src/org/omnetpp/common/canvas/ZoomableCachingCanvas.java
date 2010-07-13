@@ -164,8 +164,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	}
 
 	protected long toLong(double c) {
-        Assert.isTrue(Long.MIN_VALUE <= c && c <= Long.MAX_VALUE);
-        return (long)c;
+        return c < -MAX_PIX ? -MAX_PIX : c > MAX_PIX ? MAX_PIX : Double.isNaN(c) ? NAN_PIX : (long)c;
 	}
 
 	public double getViewportCenterCoordX() {
@@ -394,8 +393,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			}
 
 			private long toLong(double c) {
-		        Assert.isTrue(Long.MIN_VALUE <= c && c <= Long.MAX_VALUE);
-			    return (long)c;
+			    return c < -MAX_PIX ? -MAX_PIX : c > MAX_PIX ? MAX_PIX : Double.isNaN(c) ? NAN_PIX : (long)c;
 			}
 		};
 

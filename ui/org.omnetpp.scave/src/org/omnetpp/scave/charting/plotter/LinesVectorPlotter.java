@@ -94,7 +94,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 				prevX = x;
 			}
 			else {
-				prevX = Integer.MIN_VALUE; // invalidate minX/maxX
+				prevX = Long.MIN_VALUE; // invalidate minX/maxX
 			}
 			prevY = y;
 

@@ -16,7 +16,12 @@ public interface ICoordsMapping {
 	/**
 	 * We use this to return NaN as a pixel coordinate.
 	 */
-	public static final long NAN_PIX = Long.MAX_VALUE;
+	public static final long NAN_PIX = Long.MIN_VALUE;
+	
+    /**
+     * We use +-MAX_PIX to return +-Infinite as a pixel coordinate.
+     */
+	public static final long MAX_PIX = Long.MAX_VALUE;
 
 	public double fromCanvasX(long x);
 
