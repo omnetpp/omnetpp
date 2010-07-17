@@ -1,3 +1,8 @@
+2010-07-17  Andras Varga
+
+	* platdep/sockets.h: closesocket() was incorrectly defined as no-op
+	on platforms other than Windows
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-06-11  Andras Varga

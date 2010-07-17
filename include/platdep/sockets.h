@@ -80,7 +80,7 @@ inline int initsocketlibonce() {
 
 #define SOCKET int
 inline int initsocketlibonce() {return 0;}
-inline void closesocket(int) {}
+inline void closesocket(int fd) {close(fd);}
 inline int sock_errno()  {return errno;}
 #define SOCKETERR(x)  x
 #define INVALID_SOCKET -1
