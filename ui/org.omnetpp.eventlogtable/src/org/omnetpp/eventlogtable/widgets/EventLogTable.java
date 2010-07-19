@@ -131,8 +131,7 @@ public class EventLogTable
 	 */
 
 	@Override
-	protected void paint(final GC gc)
-	{
+	protected void paint(final GC gc) {
 	    paintHasBeenFinished = false;
 
         if (internalErrorHappenedDuringPaint)
@@ -284,7 +283,7 @@ public class EventLogTable
 	public boolean hasInput() {
 	    return eventLogInput != null;   // input may be null, e.g. when editor is not a Sequence Chart
 	}
-	
+
 	public IEventLog getEventLog() {
 		return eventLog;
 	}

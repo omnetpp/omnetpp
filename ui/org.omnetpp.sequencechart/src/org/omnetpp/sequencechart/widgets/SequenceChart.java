@@ -2254,13 +2254,14 @@ public class SequenceChart
 
 	@Override
 	protected void paint(final GC gc) {
-	    if (eventLogInput == null)
-	        return; //XXX TODO clear?
-	    
 	    paintHasBeenFinished = false;
 
         if (internalErrorHappenedDuringPaint)
             drawNotificationMessage(gc, "Internal error happened during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
+        else if (eventLogInput == null) {
+            super.paint(gc);
+            paintHasBeenFinished = true;
+        }
         else if (eventLogInput.isCanceled())
 	        drawNotificationMessage(gc,
                 "Processing of a long running eventlog operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
