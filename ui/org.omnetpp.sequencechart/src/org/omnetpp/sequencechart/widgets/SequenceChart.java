@@ -3029,9 +3029,11 @@ public class SequenceChart
         int invalid = Integer.MAX_VALUE;
         int x1 = invalid;
         int x2 = invalid;
-        int beginSendEntryContextModuleY = beginSendEntryPtr == 0 ? 0 : getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr)));
-        int y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : !isReuse && beginSendEntryPtr != 0 ? beginSendEntryContextModuleY : getEventYViewportCoordinate(causeEventPtr);
-        int y2 = isReuse && beginSendEntryPtr != 0 ? beginSendEntryContextModuleY : getEventYViewportCoordinate(consequenceEventPtr);
+        int y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) :
+            !isReuse && beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
+                getEventYViewportCoordinate(causeEventPtr);
+        int y2 = isReuse && beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
+            getEventYViewportCoordinate(consequenceEventPtr);
         int fontHeight = getFontHeight(graphics);
 
         // calculate horizontal coordinates based on timeline coordinate limit
