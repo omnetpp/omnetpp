@@ -34,6 +34,8 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/evmain.obj $O/envirbase.obj $O
       $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj \
       $O/statisticparser.obj $O/visitor.obj
 
+#TODO make configurable
+OBJS= $(OBJS) $O/mongoose.obj
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DENVIR_EXPORT
@@ -87,6 +89,9 @@ eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentri
 	$(Q)$(PERL) eventlogwriter.pl
 
 $O/envirbase.obj: eventlogwriter.h
+
+$O/mongoose.obj : mongoose.c mongoose.h
+	$(CXX) /Fo"$@" $(COPTS) /DHAVE_STRTOUI64 /c /TC mongoose.c
 
 # default opp_run target - called only at the end once tkenv and cmdenv is done
 # opp_run is useless with static libs
