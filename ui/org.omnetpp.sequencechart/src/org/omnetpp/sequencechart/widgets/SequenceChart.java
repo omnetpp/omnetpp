@@ -3001,20 +3001,12 @@ public class SequenceChart
 		long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
 
-		boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
-        boolean isSelfMessageReuse = sequenceChartFacade.IMessageDependency_isSelfMessageReuse(messageDependencyPtr);
-
-        if (isReuse && !isSelfMessageReuse && !showMessageReuses)
-			return false;
-
-        if (isSelfMessageReuse && !showSelfMessageReuses)
-		    return false;
-
 		// events may be omitted from the log
 		if (causeEventPtr == 0 || consequenceEventPtr == 0)
 			return false;
 
 		// cache message dependency state
+        boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
 		long beginSendEntryPtr = sequenceChartFacade.IMessageDependency_getBeginSendEntry(messageDependencyPtr);
         long endSendEntryPtr = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getEndSendEntry(beginSendEntryPtr);
 		int messageId = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getMessageId(beginSendEntryPtr);
@@ -3038,7 +3030,7 @@ public class SequenceChart
         int x1 = invalid;
         int x2 = invalid;
         int beginSendEntryContextModuleY = beginSendEntryPtr == 0 ? 0 : getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr)));
-        int y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : beginSendEntryPtr != 0 ? beginSendEntryContextModuleY : getEventYViewportCoordinate(causeEventPtr);
+        int y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : !isReuse && beginSendEntryPtr != 0 ? beginSendEntryContextModuleY : getEventYViewportCoordinate(causeEventPtr);
         int y2 = isReuse && beginSendEntryPtr != 0 ? beginSendEntryContextModuleY : getEventYViewportCoordinate(consequenceEventPtr);
         int fontHeight = getFontHeight(graphics);
 
@@ -3102,8 +3094,8 @@ public class SequenceChart
 
 		// test if self-message
         if (y1 == y2) {
-		    if (!showSelfMessageSends && !isReuse)
-		        return false;
+            if (isReuse ? !showSelfMessageReuses : !showSelfMessageSends)
+                return false;
 
 		    long eventNumberDelta = messageId + consequenceEventNumber - causeEventNumber;
 			int numberOfPossibleEllipseHeights = Math.max(1, (int)Math.round((getAxisSpacing() - fontHeight) / (fontHeight + 10)));
@@ -3222,7 +3214,7 @@ public class SequenceChart
 			}
 		}
 		else {
-            if (!showMessageSends && !isReuse)
+            if (isReuse ? !showMessageReuses : !showMessageSends)
                 return false;
 
             int y = (y2 + y1) / 2;
