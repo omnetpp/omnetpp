@@ -3035,11 +3035,11 @@ public class SequenceChart
         // calculate pixel coordinates for message arrow endings
         // TODO: what about integer overflow in (int) casts? now that we have converted to long
         int invalid = Integer.MAX_VALUE;
-        int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ?
-            getInitializationEventYViewportCoordinate(messageDependencyPtr) :
-                beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
-                    getEventYViewportCoordinate(causeEventPtr);
-        int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
+        int x1 = invalid;
+        int x2 = invalid;
+        int beginSendEntryContextModuleY = beginSendEntryPtr == 0 ? 0 : getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr)));
+        int y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : beginSendEntryPtr != 0 ? beginSendEntryContextModuleY : getEventYViewportCoordinate(causeEventPtr);
+        int y2 = isReuse && beginSendEntryPtr != 0 ? beginSendEntryContextModuleY : getEventYViewportCoordinate(consequenceEventPtr);
         int fontHeight = getFontHeight(graphics);
 
         // calculate horizontal coordinates based on timeline coordinate limit
