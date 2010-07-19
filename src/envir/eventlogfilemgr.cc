@@ -151,20 +151,23 @@ void EventlogFileManager::recordSimulation()
 void EventlogFileManager::recordMessages()
 {
     const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
-    EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
     std::vector<cMessage *> messages;
     for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++)
         messages.push_back(it());
     std::stable_sort(messages.begin(), messages.end(), compareMessageEventNumbers);
-    eventnumber_t currentEvent = -1;
+    eventnumber_t currentEventNumber = -1;
     for (std::vector<cMessage *>::iterator it = messages.begin(); it != messages.end(); it++) {
         cMessage *message = *it;
-        if (currentEvent != message->getPreviousEventNumber()) {
-            currentEvent = message->getPreviousEventNumber();
-            EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, currentEvent, message->getSendingTime(), currentEvent == 0 ? simulation.getSystemModule()->getId() : message->getSenderModuleId(), -1);
+        if (currentEventNumber != message->getPreviousEventNumber()) {
+        	currentEventNumber = message->getPreviousEventNumber();
+            EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, currentEventNumber, message->getSendingTime(), currentEventNumber == 0 ? simulation.getSystemModule()->getId() : message->getSenderModuleId(), -1);
+            if (currentEventNumber == 0)
+                EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
         }
-        if (currentEvent == 0)
-            componentMethodBegin(simulation.getSystemModule(), message->getSenderModule(), "initialize", empty_va);
+        if (currentEventNumber == 0) {
+        	cModule *senderModule = message->getSenderModule();
+            componentMethodBegin(simulation.getSystemModule(), senderModule ? senderModule : message->getArrivalModule(), senderModule ? "initialize(0)" : "scheduleStart()", empty_va);
+        }
         if (message->isSelfMessage())
             messageScheduled(message);
         else if (!message->getSenderGate()) {
@@ -183,7 +186,7 @@ void EventlogFileManager::recordMessages()
             messageSendHop(message, message->getSenderGate());
             endSend(message);
         }
-        if (currentEvent == 0)
+        if (currentEventNumber == 0)
             componentMethodEnd();
     }
 }
