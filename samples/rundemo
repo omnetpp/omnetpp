@@ -339,7 +339,7 @@ proc font_bindings {} {
    set colors(banner)      #e0e0a0
    set colors(unselbutton) #c0c0c0
    set colors(selbutton)   #ffffff
-   set colors(startbutton) #e0e0a0
+   set colors(startbutton) #70e070
 
    #
    # fonts() array elements:
