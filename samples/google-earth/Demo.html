@@ -1,0 +1,43 @@
+<html>
+<head>
+   <title>OMNeT++ Google Earth Demo</title>
+   <script src="http://maps.google.com/jsapi?key=ABQIAAAAChcjJ7DNhuYTdo9QvbdTzhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxR5YFOIwZIVqRr1oDD2rWLRoBQfuw" type="text/javascript"></script>
+   <script type="text/javascript">
+      var ge;
+      var networkLink;  // for setTimeout()
+      google.load("earth", "1");
+
+      function init() {
+         google.earth.createInstance('map3d', initCB, failureCB);
+      }
+
+      function initCB(instance) {
+         ge = instance;
+         ge.getWindow().setVisibility(true);
+         ge.getNavigationControl().setVisibility(true);
+
+         // add NetworkLink to snapshot.kml
+         var link = ge.createLink('');
+         var href = 'http://localhost:4242/snapshot.kml';
+         link.setHref(href);
+         link.setRefreshMode(ge.REFRESH_ON_INTERVAL);
+         link.setRefreshInterval(0.1);  // reload every 0.1s, or as frequently as possible
+         networkLink = ge.createNetworkLink('');
+         networkLink.set(link, false, true); // sets link, refreshVisibility, and flyToView
+         ge.getFeatures().appendChild(networkLink);
+
+         setTimeout("networkLink.setFlyToView(false)", 2000);
+      }
+
+      function failureCB(errorCode) {
+      }
+
+      google.setOnLoadCallback(init);
+   </script>
+
+</head>
+<body>
+   <div id="map3d" style="height: 660px; width: 1000px;"></div>
+</body>
+
+</html>
