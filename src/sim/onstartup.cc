@@ -22,6 +22,32 @@
 USING_NAMESPACE
 
 
+// Checks whether an other instance of the shared library has already loaded
+// this can happen if som eparts of the simulation are linked with debug
+// while others are linked with the release version of the oppsim shared library
+// This is an error and we must warn the user about it.
+class StartupChecker
+{
+    public:
+        StartupChecker()
+        {
+            if (getenv("__OPPSIM_LOADED__") != NULL) {
+                fprintf(stderr,
+                       "\n<!> Attempt to load the oppsim shared library more than once. "
+                       "This usually happens if part of your simulation is using release libraries "
+                       "while other parts are using the debug version. Make sure to rebuild all parts "
+                       "of your model in either release or debug mode!\n");
+                exit(1);
+            }
+
+            // we set the environment variable so a new instance will be able to detect it
+            setenv("__OPPSIM_LOADED__","yes",1);
+        }
+};
+
+StartupChecker startupChecker;
+
+
 ExecuteOnStartup *ExecuteOnStartup::head;
 
 
