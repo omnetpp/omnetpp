@@ -291,13 +291,13 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Send a message directly to another module.
      *
-     * If the gate is further connected (i.e. getNextGate()!=NULL), the
-     * message will follow the connections that start at that gate.
+     * If the target gate is further connected (i.e. getNextGate()!=NULL),
+     * the message will follow the connections that start at that gate.
      * For example, when sending to an input gate of a compound module,
-     * the message will follow the connections to the inside of the compound module.
+     * the message will follow the connections inside the compound module.
      *
-     * It is permitted to send to an output gate, which will also cause the
-     * message to follow the connections starting at that gate.
+     * It is permitted to send to an output gate, which will also cause
+     * the message to follow the connections starting at that gate.
      * This can be useful, for example, when several submodules are sending
      * to a single output gate of their parent module.
      *
@@ -325,7 +325,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * transmission.
      *
      * For messages that are not packets (i.e. not subclassed from cPacket),
-     * the duration parameter is ignored, that is, it will be taken as zero.
+     * the duration parameter must be zero.
      */
     int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);
     //@}
