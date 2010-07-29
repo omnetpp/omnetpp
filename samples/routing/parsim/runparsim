@@ -1,0 +1,17 @@
+#! /bin/sh
+echo
+echo '*** Distributed execution of the Routing example simulation ***'
+echo 'IMPORTANT: If you'"'"'re running the simulation under the Tkenv GUI,'
+echo 'you'"'"'ll have to click [Run] in all windows to start the simulation.'
+echo 'See Readme.txt for more info.'
+echo
+
+rm -rf comm
+mkdir comm
+mkdir comm/read
+
+export NEDPATH=..
+../routing -p0,2 $* > routing-0.log &
+../routing -p1,2 $* > routing-1.log &
+
+

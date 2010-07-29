@@ -21,8 +21,8 @@ network Net60
         channel C extends DatarateChannel
         {
             parameters:
-                delay = 0.1ms;
-                datarate = 1Gbps;
+                delay = default(0.1ms);
+                datarate = default(1Gbps);
         }
     submodules:
         rte[57]: Node {

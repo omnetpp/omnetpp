@@ -20,8 +20,8 @@ network Mesh
         channel C extends ned.DatarateChannel
         {
             parameters:
-                delay = 0.1ms;
-                datarate = 1Gbps;
+                delay = default(0.1ms);
+                datarate = default(1Gbps);
         }
     submodules:
         node[height*width]: Node {
