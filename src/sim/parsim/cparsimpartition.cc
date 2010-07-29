@@ -109,7 +109,7 @@ void cParsimPartition::connectRemoteGates()
                     // pack gate name
                     buffer->pack(ing->getOwnerModule()->getFullPath().c_str());
                     buffer->pack(ing->getName());
-                    buffer->pack(ing->getIndex());
+                    buffer->pack(ing->isVector() ? ing->getIndex() : -1);
                 }
             }
         }
@@ -153,10 +153,13 @@ void cParsimPartition::connectRemoteGates()
             // find corresponding output gate (if we have it) and set remote
             // gate address to the received one
             cModule *m = sim->getModuleByPath(moduleFullPath);
-            cGate *g = m ? m->gate(gateName,gateIndex) : NULL;
+            cGate *g = !m ? NULL : gateIndex==-1 ? m->gate(gateName) : m->gate(gateName,gateIndex);
             cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
 
-            ev << "    gate: " << moduleFullPath << "." << gateName << "["  << gateIndex << "] - ";
+            ev << "    gate: " << moduleFullPath << "." << gateName;
+            if (gateIndex>=0)
+                ev << "["  << gateIndex << "]";
+             ev << " - ";
             if (!pg)
                 ev << "not here\n";
             else
