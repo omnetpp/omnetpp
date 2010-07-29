@@ -412,13 +412,13 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
 
     EVCB.beginSend(msg);
     bool keepit = outgate->deliver(msg, delayEndTime);
+    EVCB.messageSent_OBSOLETE(msg); // TODO: Tkenv currently takes animation input from this call; to be rewritten
     if (!keepit)
     {
         delete msg; // event log for this sending will end with "DM" (DeleteMessage) instead of "ES" (EndSend)
     }
     else
     {
-        EVCB.messageSent_OBSOLETE(msg); //FIXME obsolete
         EVCB.endSend(msg);
     }
     return 0;
