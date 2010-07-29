@@ -1,3 +1,19 @@
+2010-07-29  Andras Varga
+
+	* fixed a number of parallel simulation related bugs:
+	 - bug #193 issue 1: parallel simulation did not work with inout gates
+	   (cGates were not replaced with cProxyGates on partition boundary)
+	 - bug #193 issue 2: partitioning didn't work with scalar modules
+	   (cause: for scalar modules, ev.isModuleLocal() was incorrectly
+	   invoked with index==0 instead of -1)
+	 - bug #193 issue 3: parallel simulation didn't work with scalar gates
+	   on partition boundary (cause: scalar gates were not handled properly
+	   by connectRemoteGates(): they were mashalled with index==0 which
+	   peer interpreted as element[0] in gate vector)
+	 - bug #194: Tkenv didn't animate messages send out of a parsim
+	   partition, nor messages deleted by a channel (cause: missing cEnvir
+	   call from cSimpleModule)
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-06-09  Andras Varga
@@ -8,7 +24,7 @@
 
 2010-05-10  Rudolf Hornig
 
-	* cDynamicExpression: assigning an integer parameter to a double 
+	* cDynamicExpression: assigning an integer parameter to a double
 	parameter lost the unit during conversion, resulting in a 'cannot
 	convert none to unit XXX' error message.
 
@@ -21,7 +37,7 @@
 
 2010-05-03  Andras Varga
 
-	* std_sim.msg: "contents[]" is now displayed as "defaultList[]"; 
+	* std_sim.msg: "contents[]" is now displayed as "defaultList[]";
 	group label "general" renamed to "fields"
 
 	* cSimulation doesn't need to be cOwnedObject, cNamedObject is enough;
@@ -34,28 +50,28 @@
 
 2010-04-30  Rudolf Hornig
 
-	* added simTime() NED function to return the current simulation time 
+	* added simTime() NED function to return the current simulation time
           in NED expessions.
 
 2010-04-27  Andras Varga
 
 	* removed Enter_Method() from callInitialize() and scheduleStart(), as
-	flashing "method call" arrows made it impossible to run in Tkenv 
+	flashing "method call" arrows made it impossible to run in Tkenv
 	models that generates lots of modules dynamically.
 
 2010-04-23  Andras Varga
 
 	* fix of bug #43: exponential(), normal(), truncnormal() and geometric()
-	could  produce +INF, due to log(dblrand()) in their code where dblrand() 
+	could  produce +INF, due to log(dblrand()) in their code where dblrand()
 	can produce zero. Solution: use 1.0-dblrand() instead, i.e. (0,1] instead
-	of [0,1). Side effect: fingerprint change for all simulations that use 
+	of [0,1). Side effect: fingerprint change for all simulations that use
 	those distributions as input.
 
 2010-04-20  ------ omnetpp-4.1b4 released ------
 
 2010-03-29  Andras Varga
 
-	* histogram classes (cHistogram, cLongHistogram, cDoubleHistogram): 
+	* histogram classes (cHistogram, cLongHistogram, cDoubleHistogram):
 	 - fix: setNumFirstVals() took no effect if no setRange..() method was
 	   called
 	 - save/load/pack/unpack used slots in firstvals[] only
@@ -64,7 +80,7 @@
 	   the lower bound of a cell is inclusive, the upper limit is exclusive
 	   just as with doubles
 	 - default number of cells changed (30 in integer mode, 200 in dbl mode)
-	 - in result files, an integer histogram is now denoted with the line 
+	 - in result files, an integer histogram is now denoted with the line
 	   "attr type int" instead of "attr isDiscrete 1".
 
 2010-03-14  ------ omnetpp-4.1b3 released ------

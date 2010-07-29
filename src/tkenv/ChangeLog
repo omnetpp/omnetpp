@@ -1,3 +1,8 @@
+2010-07-29  Andras Varga
+
+	* fixed for bug #195: broadcast animation crashes if msg gets deleted 
+	by the end of event processing.
+    
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-06-11  Andras Varga
