@@ -270,8 +270,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: removes a submodule
     void removeSubmodule(cModule *mod);
 
-    // internal: "virtual ctor" for cGate, because in cPlaceholderModule
-    // we'll need different gate objects
+    // internal: "virtual ctor" for cGate, because in cPlaceholderModule we need
+    // different gate objects; type should be INPUT or OUTPUT, but not INOUT
     virtual cGate *createGateObject(cGate::Type type);
 
     // internal: called from deleteGate()

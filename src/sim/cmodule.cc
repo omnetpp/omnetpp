@@ -511,15 +511,15 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
     if (!isVector)
     {
         cGate *newGate;
-        if (type!=cGate::OUTPUT)
+        if (type!=cGate::OUTPUT)  // that is, INPUT or INOUT
         {
-            newGate = createGateObject(type);
+            newGate = createGateObject(cGate::INPUT);
             desc->setInputGate(newGate);
             EVCB.gateCreated(newGate);
         }
-        if (type!=cGate::INPUT)
+        if (type!=cGate::INPUT)  // that is, OUTPUT or INOUT
         {
-            newGate = createGateObject(type);
+            newGate = createGateObject(cGate::OUTPUT);
             desc->setOutputGate(newGate);
             EVCB.gateCreated(newGate);
         }
@@ -642,12 +642,12 @@ void cModule::setGateSize(const char *gatename, int newSize)
         for (int i=oldSize; i<newSize; i++)
         {
             if (type!=cGate::OUTPUT) {
-                cGate *newGate = createGateObject(type);
+                cGate *newGate = createGateObject(cGate::INPUT);
                 desc->setInputGate(newGate, i);
                 EVCB.gateCreated(newGate);
             }
             if (type!=cGate::INPUT) {
-                cGate *newGate = createGateObject(type);
+                cGate *newGate = createGateObject(cGate::OUTPUT);
                 desc->setOutputGate(newGate, i);
                 EVCB.gateCreated(newGate);
             }
