@@ -133,7 +133,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     try {
         // create the new module object
 #ifdef WITH_PARSIM
-        bool isLocal = ev.isModuleLocal(parentmod, modname, index);
+        bool isLocal = ev.isModuleLocal(parentmod, modname, vectorsize<0 ? -1 : index);
         mod = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
         mod = createModuleObject();

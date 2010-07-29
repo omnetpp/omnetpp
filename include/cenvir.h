@@ -329,7 +329,8 @@ class SIM_API cEnvir
     /**
      * Used for parallel distributed simulation. Returns true if the
      * named future submodule of parentmod is (or will have any submodule)
-     * in the local partition, and false otherwise.
+     * in the local partition, and false otherwise. index should be -1
+     * if the submodule is not in a module vector.
      *
      * Note that for compound modules that contain simple modules in
      * several partitions, this function will return true on all those
