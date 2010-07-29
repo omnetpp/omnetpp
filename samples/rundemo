@@ -61,7 +61,8 @@ foreach line {
    {color5  "Hypercube"        "hypercube"        "./hypercube"     "hypercube"}
    {color5  "Routing"          "routing"          "./routing"       "routing"}
    {color6  "Google Earth"     "google-earth"     "./google-earth-demo" "google-earth-demo"}
-   {color6  "Parallel CQN"     "cqn/parsim"       "./runparsim"     "runparsim"}
+   {color6  "CQN/ParSim"       "cqn/parsim"       "./runparsim"     "runparsim"}
+   {color6  "Routing/Parsim"   "routing/parsim"   "./runparsim -c Net60-parsim" "runparsim -c Net60-parsim"}
    {color6  "Dyna/RealTime"    "dyna/realtime"    "./run"           "run"}
    {color6  "Sockets/HTTP"     "sockets"          "./sockets -c HTTPExample"    "sockets -c HTTPExample"}
    {color6  "Sockets/Telnet"   "sockets"          "./sockets -c TelnetExample"  "sockets -c TelnetExample"}
