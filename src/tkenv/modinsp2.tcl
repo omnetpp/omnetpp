@@ -690,13 +690,22 @@ proc draw_connection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_
 # This function is invoked from the message animation code.
 #
 proc draw_message {c msgptr x y} {
-    global fonts inspectordata
+    global fonts inspectordata anim_msg
 
     set zoomfactor $inspectordata($c:zoomfactor)
     set imagesizefactor $inspectordata($c:imagesizefactor)
 
-    set dispstr [opp_getobjectfield $msgptr displayString]
-    set msgkind [opp_getobjectfield $msgptr kind]
+    if {[info exists anim_msg($msgptr:name)]} {
+        set msgname $anim_msg($msgptr:name)
+        set msgtype $anim_msg($msgptr:type)
+        set msgkind $anim_msg($msgptr:kind)
+        set dispstr $anim_msg($msgptr:disp)
+    } else {
+        set msgname [opp_getobjectfullname $msgptr]
+        set msgtype [opp_getobjectshorttypename $msgptr]
+        set msgkind [opp_getobjectfield $msgptr kind]
+        set dispstr [opp_getobjectfield $msgptr displayString]
+    }
 
     if {$dispstr=="" && [opp_getsimoption penguin_mode]} {
         # following lines were used for testing only...
@@ -795,10 +804,10 @@ proc draw_message {c msgptr x y} {
     # display message label: "(classname)name"
     set msglabel ""
     if [opp_getsimoption animation_msgclassnames] {
-        set msglabel "([opp_getobjectshorttypename $msgptr])"
+        set msglabel "($msgtype)"
     }
     if [opp_getsimoption animation_msgnames] {
-        append msglabel "[opp_getobjectfullname $msgptr]"
+        append msglabel $msgname
     }
     if {$msglabel!=""} {
         $c create text $labelx $labely -text $msglabel -anchor n -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"

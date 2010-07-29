@@ -25,6 +25,7 @@ proc graphmodwin_animate_on_conn {win msgptr gateptr mode} {
     # animated immediately, regardless of $config(concurrent-anim).
     if {$mode!="end" && $config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
+        anim_remember_msg $msgptr
         lappend tkenv(animjobs) [list on_conn $win $msgptr $gateptr $mode]
         return
     }
@@ -56,6 +57,7 @@ proc graphmodwin_animate_senddirect_horiz {win msgptr mod1ptr mod2ptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
+        anim_remember_msg $msgptr
         lappend tkenv(animjobs) [list senddirect_horiz $win $msgptr $mod1ptr $mod2ptr $mode]
         return
     }
@@ -80,6 +82,7 @@ proc graphmodwin_animate_senddirect_ascent {win msgptr parentmodptr modptr mode}
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
+        anim_remember_msg $msgptr
         lappend tkenv(animjobs) [list senddirect_ascent $win $msgptr $parentmodptr $modptr $mode]
         return
     }
@@ -103,6 +106,7 @@ proc graphmodwin_animate_senddirect_descent {win msgptr parentmodptr modptr mode
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
+        anim_remember_msg $msgptr
         lappend tkenv(animjobs) [list senddirect_descent $win $msgptr $parentmodptr $modptr $mode]
         return
     }
@@ -118,6 +122,20 @@ proc graphmodwin_animate_senddirect_descent {win msgptr parentmodptr modptr mode
     graphmodwin_do_animate_senddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
 }
 
+#
+# Remember properties of the message so we can perform the "send" animation
+# even if the message object has been deleted by then
+#
+proc anim_remember_msg {msgptr} {
+    global anim_msg
+
+    if {![info exists anim_msg($msgptr:name)]} {
+        set anim_msg($msgptr:name) [opp_getobjectfullname $msgptr]
+        set anim_msg($msgptr:type) [opp_getobjectshorttypename $msgptr]
+        set anim_msg($msgptr:kind) [opp_getobjectfield $msgptr kind]
+        set anim_msg($msgptr:disp) [opp_getobjectfield $msgptr displayString]
+    }
+}
 
 #
 # Called from C++ code.
@@ -378,10 +396,11 @@ proc animate2:move {c ball dx dy i} {
 # Called from C++ code
 #
 proc perform_animations {} {
-    global config tkenv
+    global config tkenv anim_msg
     if {$config(concurrent-anim)} {
         do_concurrent_animations $tkenv(animjobs)
         set tkenv(animjobs) {}
+        array unset anim_msg
     }
 }
 
