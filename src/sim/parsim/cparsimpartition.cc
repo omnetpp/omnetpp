@@ -182,8 +182,8 @@ void cParsimPartition::connectRemoteGates()
 
 void cParsimPartition::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
-    if (debug) ev << "sending message '" << msg->getFullName() << "' (for T=" <<
-                 msg->getArrivalTime() << " to procId=" << procId << "\n";
+    if (debug) ev << "sending message '" << msg->getFullName() << "' (for T="
+                  << msg->getArrivalTime() << " to procId=" << procId << ")\n";
 
     synch->processOutgoingMessage(msg, procId, moduleId, gateId, data);
 }

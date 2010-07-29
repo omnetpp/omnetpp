@@ -414,7 +414,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     bool keepit = outgate->deliver(msg, delayEndTime);
     if (!keepit)
     {
-        delete msg; //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
+        delete msg; // event log for this sending will end with "DM" (DeleteMessage) instead of "ES" (EndSend)
     }
     else
     {
