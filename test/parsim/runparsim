@@ -1,0 +1,6 @@
+#! /bin/sh
+export NEDPATH=.
+./parsim -p0,2 $* > parsim-0.log &
+./parsim -p1,2 $* > parsim-1.log &
+
+
