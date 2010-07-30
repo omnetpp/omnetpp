@@ -453,13 +453,21 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
             std::string qname = context.qname;
             NEDElement *topLevelCompoundModule = context.element->getParent()->getParentWithTag(NED_COMPOUND_MODULE);
             if (topLevelCompoundModule) {
+                // if context is already an inner type, look up nedtypename in its enclosing toplevel NED type
                 int index = qname.rfind('.');
                 Assert(index != -1);
                 qname.replace(index, qname.length() - index, "");
             }
+            /* TODO new code for the above, using NEDTypeInfo:
+            NEDTypeInfo *contextNedType = getDecl(context.qname.c_str()) const;
+            if (contextNedType->isInnerType())
+                contextNedType = getDecl(contextNedType->getEnclosingTypeName());
+            qname = std::string(contextNedType->getFullName()) + "." + nedtypename;
+            */
             qname = qname + "." + nedtypename;
             if (qnames->contains(qname.c_str()))
                 return qname;
+            //TODO: try with ancestor types (i.e. maybe nedtypename is an inherited inner type)
         }
 
         NedFileElement *nedfileNode = dynamic_cast<NedFileElement *>(context.element->getParentWithTag(NED_NED_FILE));
