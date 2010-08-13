@@ -20,7 +20,6 @@ import org.omnetpp.queueing.Source;
 //
 network AllocDealloc
 {
-    @display("bgb=525,357");
     submodules:
         source: Source {
             @display("p=50,82");
