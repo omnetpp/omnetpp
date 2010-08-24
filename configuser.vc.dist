@@ -409,16 +409,16 @@ CLVER_PROG=perl $(OMNETPP_SRC_DIR)/utils/opp_msvcver.pl $(CXX)
 
 !if "$(TOOLCHAIN_NAME)"!=""
 # respect user's setting
-!elseif [$(CLVER_PROG)] == 14
-TOOLCHAIN_NAME = vc80
+!elseif [$(CLVER_PROG)] == 16
+TOOLCHAIN_NAME = vc100
 !elseif [$(CLVER_PROG)] == 15
 TOOLCHAIN_NAME = vc90
-!elseif [$(CLVER_PROG)] == 13
-TOOLCHAIN_NAME = vc71
+!elseif [$(CLVER_PROG)] == 14
+TOOLCHAIN_NAME = vc80
 !elseif [$(CLVER_PROG)] == -1
 !error Visual C++ compiler $(CXX) not found (not in the PATH?)
 !else
-!error Unsupported Visual C++ compiler version (8.x and 9.x supported)
+!error Unsupported Visual C++ compiler version (8.x, 9.x and 10.x supported)
 !endif
 
 #
