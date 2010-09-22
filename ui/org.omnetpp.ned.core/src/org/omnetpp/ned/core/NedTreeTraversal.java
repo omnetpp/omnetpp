@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
@@ -63,11 +64,8 @@ public class NedTreeTraversal {
 	 */
 	public void traverse(ISubmoduleOrConnection element) {
 		visitedTypes.clear();
-		String elementTypeName = resolveEffectiveTypeName(element);
-		INedTypeInfo elementType = StringUtils.isEmpty(elementTypeName) ? null : resolver.lookupNedType(elementTypeName, element.getEnclosingLookupContext());
-		if (elementType == null)
-			visitor.unresolvedType(element, elementTypeName);
-		else
+		INedTypeInfo elementType = resolveEffectiveType(element, element.getEnclosingLookupContext());
+		if (elementType != null)
 			doTraverse(element, elementType);
 	}
 
@@ -78,28 +76,27 @@ public class NedTreeTraversal {
 
 		// traverse submodules
 		if (recurse && effectiveTypeInfo.getNedElement() instanceof CompoundModuleElementEx) {
-            CompoundModuleElementEx compoundModul = (CompoundModuleElementEx)effectiveTypeInfo.getNedElement();
+            CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)effectiveTypeInfo.getNedElement();
 
-            List<SubmoduleElementEx> submodules = compoundModul.getSubmodules();
+            List<SubmoduleElementEx> submodules = compoundModule.getSubmodules();
             ArrayList<ISubmoduleOrConnection> elements = new ArrayList<ISubmoduleOrConnection>();
             elements.addAll(submodules);
-            elements.addAll(compoundModul.getSrcConnections());
+            elements.addAll(compoundModule.getSrcConnections());
 
             for (SubmoduleElementEx submodule : submodules)
-                elements.addAll(compoundModul.getSrcConnectionsFor(submodule.getName()));
+                elements.addAll(compoundModule.getSrcConnectionsFor(submodule.getName()));
 
 			for (ISubmoduleOrConnection childElement : elements) {
 				// dig out type info (NED declaration)
-				String typeName = resolveEffectiveTypeName(childElement);
-				INedTypeInfo typeInfo = StringUtils.isEmpty(typeName) ? null : resolver.lookupNedType(typeName, compoundModul);
+			    INedTypeInfo typeInfo = resolveEffectiveType(childElement, compoundModule);
 
 				// recursive call
-				if (typeInfo == null)
-					visitor.unresolvedType(childElement, typeName);
-				else if (visitedTypes.contains(typeInfo)) // cycle detection
-					visitor.recursiveType(childElement, typeInfo);
-				else
-					doTraverse(childElement, typeInfo);
+				if (typeInfo != null) {
+				    if (visitedTypes.contains(typeInfo)) // cycle detection
+				        visitor.recursiveType(childElement, typeInfo);
+				    else
+				        doTraverse(childElement, typeInfo);
+				}
 			}
 		}
 
@@ -109,29 +106,44 @@ public class NedTreeTraversal {
 	}
 
 	/**
-	 * The returned type name can be null or empty, and can be a short name which
-	 * needs to be looked up in the enclosing compound module's context.
-	 * However, if the module is a "like" submodule, resolving the type to fully
-	 * qualified name needs to be done here.
+	 * Return the actual type of a submodule or connection. If it is a concrete type,
+	 * it is looked up in the compound module as context (using imports, inner types, etc).
+	 * If it is a parametric type ("<param> like IInterface"), we obtain the value for
+	 * the parameter using visitor.resolveLikeType(), and choose a module with that 
+	 * name from the ones that implement the given interface.
+	 * 
+	 * The return value may be null ("could not be resolved"); in that case this method
+	 * already calls visitor.unresolvedType().
 	 */
-	protected String resolveEffectiveTypeName(ISubmoduleOrConnection element) {
-		String typeName = element.getType();
-		if (StringUtils.isEmpty(typeName)) {
-		    // resolve "like" type
-			typeName = visitor.resolveLikeType(element);
-			if (typeName == null)
-				typeName = element.getEffectiveType();
-			else {
-			    // submoduleTypeName is likely an unqualified name -- look it up according to
-			    // the "like" type name resolution rules
-			    INedTypeInfo interfaceType = resolver.lookupNedType(element.getLikeType(), element.getEnclosingLookupContext());
-			    if (interfaceType != null) {
-	                INedTypeInfo actualType = resolver.lookupLikeType(typeName, interfaceType, contextProject);
-			        if (actualType != null)
-			            typeName = actualType.getFullyQualifiedName();
-			    }
-			}
-		}
-		return typeName;
+	protected INedTypeInfo resolveEffectiveType(ISubmoduleOrConnection element, INedTypeLookupContext compoundModule) {
+	    INedTypeInfo result;
+	    if (StringUtils.isEmpty(element.getLikeType())) {
+	        result = element.getNedTypeInfo();  // note: this resolves connections with getType()==null as well (to ned.IdealChannel)
+	        if (result == null)
+	            visitor.unresolvedType(element, element.getType());
+	    }
+	    else
+	    {
+	        // resolve "like" type
+	        INedTypeInfo interfaceType = resolver.lookupNedType(element.getLikeType(), element.getEnclosingLookupContext());
+	        if (interfaceType == null) {
+	            visitor.unresolvedType(element, element.getLikeType()); // undefined interface
+	            result = null;
+	        }
+	        else {
+	            String effectiveTypeName = visitor.resolveLikeType(element);  // value of the "like" parameter
+	            if (effectiveTypeName == null) {
+	                result = interfaceType; // no actual type given, return the interface
+	            }
+	            else {
+	                // effectiveTypeName is likely unqualified -- look it up according to the "like" type name resolution rules
+	                result = resolver.lookupLikeType(effectiveTypeName, interfaceType, contextProject); // actual type
+	                if (result == null)
+	                    visitor.unresolvedType(element, effectiveTypeName); // no such type
+	            }
+	        }
+	    }
+	    return result;
 	}
+
 }
