@@ -546,12 +546,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
     	INedTypeResolver nedResources = NedResourcesPlugin.getNedResources();
     	IProject contextProject = nedResources.getNedFile(elementWithParameters.getContainingNedFileElement()).getProject();
-    	NedTreeTraversal iterator = new NedTreeTraversal(nedResources, new TreeBuilder());
+    	NedTreeTraversal iterator = new NedTreeTraversal(nedResources, new TreeBuilder(), contextProject);
         if (elementWithParameters instanceof ISubmoduleOrConnection)
             iterator.traverse((ISubmoduleOrConnection)elementWithParameters);
         else if (elementWithParameters instanceof INedTypeElement){
             INedTypeElement typeElement = (INedTypeElement)elementWithParameters;
-            iterator.traverse(typeElement.getNedTypeInfo().getFullyQualifiedName(), contextProject);
+            iterator.traverse(typeElement.getNedTypeInfo().getFullyQualifiedName());
         }
         else {
         	showMessage("Please select a submodule, a compound module, a simple module or a connection");

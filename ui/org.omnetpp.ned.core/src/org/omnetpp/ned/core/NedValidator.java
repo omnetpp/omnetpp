@@ -356,7 +356,7 @@ public class NedValidator extends AbstractNedValidatorEx {
 				return;
 			}
 
-			Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(submoduleNode, parname);
+			Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(submoduleNode, parname, contextProject);
 			ParamElementEx paramDeclaration = (ParamElementEx)result[0];
 
 			if (paramDeclaration == null) {
@@ -384,7 +384,7 @@ public class NedValidator extends AbstractNedValidatorEx {
 			}
 		}
 		else {
-            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(componentNode.getNedTypeInfo(), parname);
+            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(componentNode.getNedTypeInfo(), parname, contextProject);
             ParamElementEx paramDeclaration = (ParamElementEx)result[0];
 
 			// global "parameters" section of type

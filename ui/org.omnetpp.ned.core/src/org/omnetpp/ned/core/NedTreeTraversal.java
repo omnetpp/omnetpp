@@ -27,20 +27,22 @@ import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 public class NedTreeTraversal {
 	private INedTypeResolver resolver;
 	private IModuleTreeVisitor visitor;
+	private IProject contextProject;  // for "like" type lookups
 	private Stack<INedTypeInfo> visitedTypes = new Stack<INedTypeInfo>(); // cycle detection
 
 	/**
 	 * Constructor
 	 */
-	public NedTreeTraversal(INedTypeResolver resolver, IModuleTreeVisitor visitor) {
+	public NedTreeTraversal(INedTypeResolver resolver, IModuleTreeVisitor visitor, IProject contextProject) {
 		this.resolver = resolver;
 		this.visitor = visitor;
+		this.contextProject = contextProject;
 	}
 
 	/**
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
-	public void traverse(String fullyQualifiedModuleTypeName, IProject contextProject) {
+	public void traverse(String fullyQualifiedModuleTypeName) {
 		INedTypeInfo moduleType = resolver.getToplevelOrInnerNedType(fullyQualifiedModuleTypeName, contextProject);
 		if (moduleType==null)
 			visitor.unresolvedType(null, fullyQualifiedModuleTypeName);
@@ -124,8 +126,7 @@ public class NedTreeTraversal {
 			    // the "like" type name resolution rules
 			    INedTypeInfo interfaceType = resolver.lookupNedType(element.getLikeType(), element.getEnclosingLookupContext());
 			    if (interfaceType != null) {
-	                IProject context = resolver.getNedFile(element.getContainingNedFileElement()).getProject();
-	                INedTypeInfo actualType = resolver.lookupLikeType(typeName, interfaceType, context);
+	                INedTypeInfo actualType = resolver.lookupLikeType(typeName, interfaceType, contextProject);
 			        if (actualType != null)
 			            typeName = actualType.getFullyQualifiedName();
 			    }

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.eclipse.core.resources.IProject;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -58,8 +59,8 @@ public class ParamUtil {
      * Calls visitor for each parameter declaration accessible under the provided type info.
      * Recurses down on submodules.
      */
-    public static void mapParamDeclarationsRecursively(INedTypeInfo typeInfo, RecursiveParamDeclarationVisitor visitor) {
-        NedTreeTraversal treeTraversal = new NedTreeTraversal(NedResourcesPlugin.getNedResources(), visitor);
+    public static void mapParamDeclarationsRecursively(INedTypeInfo typeInfo, RecursiveParamDeclarationVisitor visitor, IProject contextProject) {
+        NedTreeTraversal treeTraversal = new NedTreeTraversal(NedResourcesPlugin.getNedResources(), visitor, contextProject);
         treeTraversal.traverse(typeInfo);
     }
 
@@ -67,19 +68,20 @@ public class ParamUtil {
      * Calls visitor for each parameter declaration accessible under the provided submodule.
      * Recurses down on submodules.
      */
-    public static void mapParamDeclarationsRecursively(SubmoduleElementEx submodule, RecursiveParamDeclarationVisitor visitor) {
-        NedTreeTraversal treeTraversal = new NedTreeTraversal(NedResourcesPlugin.getNedResources(), visitor);
+    public static void mapParamDeclarationsRecursively(SubmoduleElementEx submodule, RecursiveParamDeclarationVisitor visitor, IProject contextProject) {
+        NedTreeTraversal treeTraversal = new NedTreeTraversal(NedResourcesPlugin.getNedResources(), visitor, contextProject);
         treeTraversal.traverse(submodule);
     }
 
     /**
      * Returns the parameter declaration under type info with the path that matches the provided name pattern.
      * Recurses down on submodules.
+     * The contextProject parameter affects the resolution of parametric submodule types ("like").
      */
-    public static Object[] findMatchingParamDeclarationRecursively(INedTypeInfo typeInfo, String paramNamePattern) {
+    public static Object[] findMatchingParamDeclarationRecursively(INedTypeInfo typeInfo, String paramNamePattern, IProject contextProject) {
         String fullPattern = typeInfo.getName() + "." + paramNamePattern;
         Object[] result = new Object[] {null, null, null};
-        mapParamDeclarationsRecursively(typeInfo, createFindMatchingParamDeclarationVisitor(fullPattern, result));
+        mapParamDeclarationsRecursively(typeInfo, createFindMatchingParamDeclarationVisitor(fullPattern, result), contextProject);
 
         return result;
     }
@@ -87,11 +89,12 @@ public class ParamUtil {
     /**
      * Returns the parameter declaration under type info with the path that matches the provided name pattern.
      * Recurses down on submodules.
+     * The contextProject parameter affects the resolution of parametric submodule types ("like").
      */
-    public static Object[] findMatchingParamDeclarationRecursively(SubmoduleElementEx submodule, String paramNamePattern) {
+    public static Object[] findMatchingParamDeclarationRecursively(SubmoduleElementEx submodule, String paramNamePattern, IProject contextProject) {
         String fullPattern = getParamPathElementName(submodule) + "." + paramNamePattern;
         Object[] result = new Object[] {null, null, null};
-        mapParamDeclarationsRecursively(submodule, createFindMatchingParamDeclarationVisitor(fullPattern, result));
+        mapParamDeclarationsRecursively(submodule, createFindMatchingParamDeclarationVisitor(fullPattern, result), contextProject);
 
         return result;
     }

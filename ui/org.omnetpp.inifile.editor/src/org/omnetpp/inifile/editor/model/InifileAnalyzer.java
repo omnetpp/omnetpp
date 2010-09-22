@@ -928,8 +928,8 @@ public class InifileAnalyzer {
 		// traverse the network and collect resolutions meanwhile
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		IProject contextProject = doc.getDocumentFile().getProject();
-		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
-		treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
+		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc), contextProject);
+		treeTraversal.traverse(network.getFullyQualifiedName());
 
 		return list;
 	}
@@ -1009,26 +1009,43 @@ public class InifileAnalyzer {
         }
     }
 */
-
+    
+    /**
+     * Collects parameters of a module type (recursively), *without* an inifile present.
+     */
+    public static List<ParamResolution> collectParameters(INedTypeInfo moduleType) {
+        return collectParameters(moduleType, moduleType.getNedFile().getProject());
+    }
+    
 	/**
 	 * Collects parameters of a module type (recursively), *without* an inifile present.
+	 * The contextProject parameter affects the resolution of parametric submodule types ("like").
 	 */
-	public static List<ParamResolution> collectParameters(INedTypeInfo moduleType) {
+	public static List<ParamResolution> collectParameters(INedTypeInfo moduleType, IProject contextProject) {
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		INedTypeResolver res = NedResourcesPlugin.getNedResources();
-		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
+		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null), contextProject);
 		treeTraversal.traverse(moduleType);
 		return list;
 	}
 
-	/**
+    /**
+     * Collects parameters of a submodule subtree, *without* an inifile present.
+     */
+    public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule) {
+        IProject contextProject = submodule.getEnclosingTypeElement().getNedTypeInfo().getNedFile().getProject();
+        return collectParameters(submodule, contextProject);
+    }
+    
+    /**
 	 * Collects parameters of a submodule subtree, *without* an inifile present.
+     * The contextProject parameter affects the resolution of parametric submodule types ("like").
 	 */
-	public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule) {
+	public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule, IProject contextProject) {
 		List<ParamResolution> list = new ArrayList<ParamResolution>();
 		INedTypeResolver res = NedResourcesPlugin.getNedResources();
 		// TODO: this ignores deep parameter settings from the compound module above the submodule
-		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
+		NedTreeTraversal treeTraversal = new NedTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null), contextProject);
 		treeTraversal.traverse(submodule);
 		return list;
 	}
@@ -1229,8 +1246,8 @@ public class InifileAnalyzer {
 
             public void unresolvedType(ISubmoduleOrConnection element, String typeName) {
             }
-        });
-        treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
+        }, contextProject);
+        treeTraversal.traverse(network.getFullyQualifiedName());
         return list;
 	}
 
