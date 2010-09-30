@@ -3,6 +3,7 @@
 
 <product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.1.0.qualifier" useFeatures="true" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -270,7 +271,7 @@ PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES.
 
                      END OF TERMS AND CONDITIONS
-      </text>
+         </text>
    </license>
 
    <plugins>
@@ -278,23 +279,23 @@ POSSIBILITY OF SUCH DAMAGES.
 
    <features>
       <feature id="org.omnetpp.ide.academic" version="4.1.0.qualifier"/>
-      <feature id="org.eclipse.platform" version="3.5.2.R35x_v20100210-0800-9hEiFzmFst-TiEn9hNYgDWg1XN8ulH_JvCNGB"/>
-      <feature id="org.eclipse.cdt" version="6.0.2.201002161416"/>
-      <feature id="org.eclipse.gef" version="3.5.2.v20100111-1352-777928194B66D5D476C33B2A"/>
-      <feature id="org.eclipse.emf.common" version="2.5.0.v200906151043"/>
-      <feature id="org.eclipse.emf.common.ui" version="2.5.0.v200906151043"/>
-      <feature id="org.eclipse.emf.ecore" version="2.5.0.v200906151043"/>
-      <feature id="org.eclipse.emf.ecore.edit" version="2.5.0.v200906151043"/>
-      <feature id="org.eclipse.emf.edit" version="2.5.0.v200906151043"/>
-      <feature id="org.eclipse.emf.edit.ui" version="2.5.0.v200906151043"/>
-      <feature id="com.lowagie.itext" version="1.5.4.v20080225-1437w31191339"/>
-      <feature id="org.eclipse.gmf.runtime.thirdparty" version="1.2.0.v20090729-2029-7P8W5FHV2CJug06-fEj-aw311A16"/>
-      <feature id="org.eclipse.egit" version="0.6.0.201001271947"/>
-      <feature id="org.eclipse.jgit" version="0.6.0.201001271946"/>
-      <feature id="org.eclipse.team.svn" version="0.7.8.I20090904-1300"/>
-      <feature id="org.polarion.eclipse.team.svn.connector" version="2.2.0.I20090505-1500"/>
-      <feature id="org.polarion.eclipse.team.svn.connector.svnkit15" version="2.2.0.I20090505-1500"/>
-      <feature id="org.polarion.eclipse.team.svn.connector.svnkit16" version="2.2.0.I20090505-1500"/>
+      <feature id="org.eclipse.platform"/>
+      <feature id="org.eclipse.cdt"/>
+      <feature id="org.eclipse.gef"/>
+      <feature id="org.eclipse.emf.common"/>
+      <feature id="org.eclipse.emf.common.ui"/>
+      <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.emf.ecore.edit"/>
+      <feature id="org.eclipse.emf.edit"/>
+      <feature id="org.eclipse.emf.edit.ui"/>
+      <feature id="com.lowagie.itext"/>
+      <feature id="org.eclipse.gmf.runtime.thirdparty"/>
+      <feature id="org.eclipse.egit"/>
+      <feature id="org.eclipse.jgit"/>
+      <feature id="org.eclipse.team.svn"/>
+      <feature id="org.polarion.eclipse.team.svn.connector"/>
+      <feature id="org.polarion.eclipse.team.svn.connector.svnkit15"/>
+      <feature id="org.polarion.eclipse.team.svn.connector.svnkit16"/>
    </features>
 
 

@@ -19,6 +19,7 @@
 				<exclude name="*/bin/**" />
 				<exclude name="org.omnetpp.ide/**" />
 				<exclude name="org.omnetpp.scave.old/**" />
+				<exclude name="org.omnetpp.scave.autoimport/**" />
 				<exclude name="org.omnetpp.test.*/**" />
 				<exclude name="org.omnetpp.experimental.*/**" />
 			</fileset>
