@@ -27,16 +27,16 @@
    <requires>
       <import feature="com.lowagie.itext" version="1.5.4.v20080225-1437w31191339"/>
       <import feature="de.unikassel.imageexport" version="0.11.0"/>
-      <import feature="org.eclipse.cdt" version="7.0.0.201006141710"/>
-      <import feature="org.eclipse.emf.common" version="2.6.0.v20100614-1136"/>
-      <import feature="org.eclipse.emf.common.ui" version="2.6.0.v20100614-1136"/>
-      <import feature="org.eclipse.emf.ecore" version="2.6.0.v20100614-1136"/>
-      <import feature="org.eclipse.emf.ecore.edit" version="2.6.0.v20100614-1136"/>
-      <import feature="org.eclipse.emf.edit" version="2.6.0.v20100614-1136"/>
-      <import feature="org.eclipse.emf.edit.ui" version="2.6.0.v20100614-1136"/>
-      <import feature="org.eclipse.gef" version="3.6.0.v20100519-2050-777B-81A2Bz-69793A8B83447"/>
-      <import feature="org.eclipse.platform" version="3.6.0.v20100602-9gF78GpqFt6trOGhL60z0oEx3fz-JKNwxPY"/>
+      <import feature="org.eclipse.cdt" version="7.0.1.201009141542"/>
+      <import feature="org.eclipse.emf.common" version="2.6.0.v20100914-1218"/>
+      <import feature="org.eclipse.emf.common.ui" version="2.6.0.v20100914-1218"/>
+      <import feature="org.eclipse.emf.ecore" version="2.6.1.v20100914-1218"/>
+      <import feature="org.eclipse.emf.ecore.edit" version="2.6.0.v20100914-1218"/>
+      <import feature="org.eclipse.emf.edit" version="2.6.0.v20100914-1218"/>
+      <import feature="org.eclipse.emf.edit.ui" version="2.6.0.v20100914-1218"/>
+      <import feature="org.eclipse.gef" version="3.6.1.v20100908-1100-777B181A3Bz-6B663E7974242"/>
       <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.4.0.v20100521-1113-7P8W5FHV2CNOiy0niXURaw311A16"/>
+      <import feature="org.eclipse.platform" version="3.6.1.r361_v20100909-9gF78GrkFqw7GrsZnvz0JWNTeb6fue6896L"/>
    </requires>
 
    <plugin
@@ -59,6 +59,7 @@
          install-size="0"
          version="1.0.4.v201005080501"
          unpack="false"/>
+
    <plugin
          id="org.omnetpp.common"
          download-size="0"
@@ -300,21 +301,21 @@
          id="org.eclipse.gmf.runtime.draw2d.ui"
          download-size="0"
          install-size="0"
-         version="1.4.0.v20100514-1615"
+         version="1.4.1.v20100909-1300"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.gmf.runtime.draw2d.ui.render"
          download-size="0"
          install-size="0"
-         version="1.4.0.v20100430-1518"
+         version="1.4.1.v20100813-0030"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.gmf.runtime.draw2d.ui.render.awt"
          download-size="0"
          install-size="0"
-         version="1.4.0.v20100430-1518"
+         version="1.4.1.v20100720-0030"
          unpack="false"/>
 
 </feature>
