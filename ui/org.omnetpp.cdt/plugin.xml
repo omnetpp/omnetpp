@@ -24,7 +24,7 @@
             superClass="cdt.managedbuild.toolchain.gnu.base"
             supportsManagedBuild="false">
          <targetPlatform
-               binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE"
+               binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE"
                id="org.omnetpp.cdt.targetPlatform"
                isAbstract="false"
                name="Windows, Linux, Mac"
@@ -35,7 +35,7 @@
             autoBuildTarget="all"
             cleanBuildTarget="clean"
             command="make"
-            errorParsers="org.eclipse.cdt.core.MakeErrorParser"
+            errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator"
             id="org.omnetpp.cdt.gnu.builder"
             ignoreErrCmd="-k"
             incrementalBuildTarget="all"
