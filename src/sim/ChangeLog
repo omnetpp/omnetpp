@@ -1,3 +1,9 @@
+2010-10-20  Andras Varga
+
+	* cQueue fix: op= could result in a different order of objects than 
+	the original (if objects were not originally ordered according to
+	the compareFunc)	
+
 2010-07-29  Andras Varga
 
 	* fixed a number of parallel simulation related bugs:

@@ -105,11 +105,14 @@ void cQueue::parsimUnpack(cCommBuffer *buffer)
 
     buffer->unpack(n);
 
+    CompareFunc old_cmp = compare;
+    compare = NULL; // temporarily, so that insert() keeps the original order
     for (int i=0; i<n; i++)
     {
         cObject *obj = buffer->unpackObject();
         insert(obj);
     }
+    compare = old_cmp;
 #endif
 }
 
@@ -137,27 +140,28 @@ cQueue& cQueue::operator=(const cQueue& queue)
     clear();
 
     cOwnedObject::operator=(queue);
-    tkownership = queue.tkownership;
-    compare = queue.compare;
 
-    bool old_tk = getTakeOwnership();
+    compare = NULL; // temporarily, so that insert() keeps the original order
     for (cQueue::Iterator iter(queue, false); !iter.end(); iter++)
     {
         cObject *obj = iter();
         if (!obj->isOwnedObject())
             {insert(obj->dup());}
-        else if (iter()->getOwner()==const_cast<cQueue*>(&queue))
+        else if (obj->getOwner()==const_cast<cQueue*>(&queue))
             {setTakeOwnership(true); insert(obj->dup());}
         else
             {setTakeOwnership(false); insert(obj);}
     }
-    setTakeOwnership(old_tk);
+
+    tkownership = queue.tkownership;
+    compare = queue.compare;
+
     return *this;
 }
 
 void cQueue::setup(CompareFunc cmp)
 {
-    compare=cmp;
+    compare = cmp;
 }
 
 cQueue::QElem *cQueue::find_qelem(cObject *obj) const
