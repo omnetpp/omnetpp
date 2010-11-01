@@ -483,6 +483,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Module IDs are guaranteed to be unique during a simulation run
      * (that is, IDs of deleted modules are not given out to newly created
      * modules).
+     *
+     * @see cSimulation::getModule()
      */
     int getId() const  {return mod_id;}
 

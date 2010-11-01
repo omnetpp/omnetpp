@@ -525,7 +525,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Returns a pointer to the arrival module. It returns NULL if the message
-     * has not been sent/scheduled yet, or if the module got deleted
+     * has not been sent/scheduled yet, or if the module was deleted
      * in the meantime.
      */
     cModule *getArrivalModule() const {return simulation.getModule(tomod);}
@@ -538,26 +538,36 @@ class SIM_API cMessage : public cOwnedObject
     cGate *getArrivalGate() const;
 
     /**
-     * Returns sender module's index in the module vector or -1 if the
+     * Returns the module ID of the sender module, or -1 if the
      * message has not been sent/scheduled yet.
+     *
+     * @see cModule::getId(), cSimulation::getModule()
      */
     int getSenderModuleId() const {return frommod;}
 
     /**
-     * Returns index of gate sent through in the sender module or -1
-     * if the message has not been sent/scheduled yet.
+     * Returns the gate ID of the gate in the sender module on which the
+     * message was sent, or -1 if the message has not been sent/scheduled yet.
+     * Note: this is not the same as the gate's index (cGate::getIndex()).
+     *
+     * @see cGate::getId(), cModule::gate(int)
      */
     int getSenderGateId() const   {return fromgate;}
 
     /**
-     * Returns receiver module's index in the module vector or -1 if
-     * the message has not been sent/scheduled yet.
+     * Returns the module ID of the receiver module, or -1 if the
+     * message has not been sent/scheduled yet.
+     *
+     * @see cModule::getId(), cSimulation::getModule()
      */
     int getArrivalModuleId() const {return tomod;}
 
     /**
-     * Returns index of gate the message arrived on in the sender module
-     * or -1 if the message has not sent/scheduled yet.
+     * Returns the gate ID of the gate in the receiver module on which the
+     * message was received, or -1 if the message has not been sent/scheduled yet.
+     * Note: this is not the same as the gate's index (cGate::getIndex()).
+     *
+     * @see cGate::getId(), cModule::gate(int)
      */
     int getArrivalGateId() const  {return togate;}
 
