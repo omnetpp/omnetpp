@@ -230,7 +230,18 @@
             sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchDelegate>
+      <launchDelegate
+            delegate="org.omnetpp.cdt.launch.SimulationValgrindProfileLaunchDelegate"
+            delegateDescription="Allows profiling an OMNeT++ simulation with Valgrind"
+            id="org.omnetpp.launch.simulationValgrindProfileDelegate"
+            modes="profile"
+            name="OMNeT++ Simulation Valgrind Profiler"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+            type="org.omnetpp.launch.simulationLaunchConfigurationType">
+      </launchDelegate>
    </extension>
+
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabs">
       <tab
@@ -241,6 +252,12 @@
          <placement
                after="org.eclipse.debug.ui.environmentTab">
          </placement>
+         <associatedDelegate
+               delegate="org.omnetpp.launch.simulationDebugDelegate">
+         </associatedDelegate>
+         <associatedDelegate
+               delegate="org.omnetpp.launch.simulationValgrindProfileDelegate">
+         </associatedDelegate>
       </tab>
       <tab
             class="org.omnetpp.cdt.launch.OmnetppCDebuggerTab"
@@ -250,6 +267,21 @@
          <placement
                after="org.eclipse.debug.ui.environmentTab">
          </placement>
+         <associatedDelegate
+               delegate="org.omnetpp.launch.simulationDebugDelegate">
+         </associatedDelegate>
+      </tab>
+      <tab
+            class="org.eclipse.linuxtools.internal.valgrind.launch.ValgrindOptionsTab"
+            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.cdt.valgrindoptions"
+            name="Valgrind Options">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+         <associatedDelegate
+               delegate="org.omnetpp.launch.simulationValgrindProfileDelegate">
+         </associatedDelegate>
       </tab>
    </extension>
    <extension

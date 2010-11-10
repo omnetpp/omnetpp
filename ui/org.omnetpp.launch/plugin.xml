@@ -26,7 +26,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="org.omnetpp.launch.SimulationLaunchConfigurationTabGroup"
-            description="Allows running and debugging an OMNeT++ simulation"
+            description="Allows running an OMNeT++ simulation"
             id="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchConfigurationTabGroup>
@@ -39,15 +39,14 @@
             id="org.omnetpp.launch.simulationLaunchConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>
-<extension
-point="org.eclipse.debug.ui.launchShortcuts">
+<extension point="org.eclipse.debug.ui.launchShortcuts">
 <shortcut
       class="org.omnetpp.launch.SimulationLaunchShortcut"
       description="Starts an OMNeT++ Simulation"
       icon="icons/full/ctool16/omnetsim.gif"
       id="org.omnetpp.launch.shortcut"
-      label="OMNeT++ Simulation..."
-      modes="run, debug">
+      label="OMNeT++ Simulation"
+      modes="run, debug, profile">
 <contextualLaunch>
   <enablement>
     <with variable="selection">
@@ -74,6 +73,10 @@ point="org.eclipse.debug.ui.launchShortcuts">
 <description
       description="Debugs an OMNeT++ Simulation"
       mode="debug">
+</description>
+<description
+      description="Profiles an OMNeT++ Simulation"
+      mode="profile">
 </description>
 <configurationType
       id="org.omnetpp.launch.simulationLaunchConfigurationType">
