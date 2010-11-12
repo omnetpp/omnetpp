@@ -15,6 +15,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.window.Window;
 
@@ -65,10 +66,13 @@ public class GenerateNeddocHandler extends AbstractHandler {
 		// collect the projects that are open
 		for (Object element : selection) {
 			IProject project = null;
-			if (element instanceof IProject)
-				project = (IProject) element;
+			IResource resource = null;
+			if (element instanceof IResource)
+				resource = (IResource) element;
 			else if (element instanceof IAdaptable)
-				project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
+				resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
+			if (resource != null)
+			    project = resource.getProject();
 			if (project != null && project.isOpen())
 				projects.add(project);
 		}
