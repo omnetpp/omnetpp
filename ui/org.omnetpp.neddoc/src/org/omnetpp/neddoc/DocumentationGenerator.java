@@ -193,6 +193,7 @@ public class DocumentationGenerator {
     protected boolean generateFullUsageDiagrams = false;
     protected boolean generateFullInheritanceDiagrams = false;
     protected boolean generateNedSourceListings = true;
+    protected boolean generateExplicitLinksOnly = false;
     protected boolean generateDoxy = true;
     protected boolean generateCppSourceListings = false;
 
@@ -262,6 +263,10 @@ public class DocumentationGenerator {
 
 	public void setGenerateNedSourceListings(boolean generateNedSourceListings) {
 		this.generateNedSourceListings = generateNedSourceListings;
+	}
+	
+	public void setGenerateExplicitLinksOnly(boolean generateExplicitLinksOnly) {
+	    this.generateExplicitLinksOnly = generateExplicitLinksOnly;
 	}
 
 	public void setGenerateDoxy(boolean generateDoxy) {
@@ -470,9 +475,11 @@ public class DocumentationGenerator {
             }
 
             String name = typeElement.getName();
-            if (typeNamesMap.containsKey(name))
+            if (typeNamesMap.containsKey(name)) {
                 // multiple names, ignoring short references in comments to those types
-                typeNamesMap.put(name, null);
+                if (typeNamesMap.get(name) != typeElement)
+                    typeNamesMap.put(name, null);
+            }
             else {
                 buffer.append(name + "|");
                 typeNamesMap.put(name, typeElement);
@@ -481,7 +488,9 @@ public class DocumentationGenerator {
         if (buffer.length() > 0)
             buffer.deleteCharAt(buffer.length() - 1);
 
-        typeNamesPattern = Pattern.compile("\\b(" + buffer.toString() + ")\\b");
+        String tilde = generateExplicitLinksOnly ? "~" : "~?";
+        typeNamesPattern = Pattern.compile("\\\\\\\\|\\\\~|"+tilde+"(" + buffer.toString() + ")(?=\\b)");
+
         monitor.worked(1);
     }
 
@@ -638,10 +647,18 @@ public class DocumentationGenerator {
         StringBuffer buffer = new StringBuffer();
 
         while (matcher.find()) {
-            ITypeElement typeElement = typeNamesMap.get(matcher.group(1));
+            String match = matcher.group();
+            if ("\\\\".equals(match))
+                ; // double backslashes are removed later (NedCommentFormatter.makeHtmlDocu) matcher.appendReplacement(buffer, "\\\\");
+            else if ("\\~".equals(match))
+                matcher.appendReplacement(buffer, "~");
+            else {
+                String typeName = match.charAt(0) == '~' ? match.substring(1) : match;
+                ITypeElement typeElement = typeNamesMap.get(typeName);
 
-            if (typeElement != null)
-                matcher.appendReplacement(buffer, "<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
+                if (typeElement != null)
+                    matcher.appendReplacement(buffer, "<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
+            }
         }
 
         matcher.appendTail(buffer);

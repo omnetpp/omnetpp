@@ -18,6 +18,7 @@ public class GeneratorConfiguration {
     private static final String GENERATE_PER_TYPE_INHERITANCE_DIAGRAMS = "GeneratePerTypeInheritanceDiagrams";
     private static final String GENERATE_FULL_INHERITANCE_DIAGRAMS = "GenerateFullInheritanceDiagrams";
     private static final String GENERATE_NED_SOURCE_LISTINGS = "GenerateNedSourceListings";
+    private static final String GENERATE_EXPLICIT_LINKS_ONLY = "GenerateExplicitLinks";
     private static final String GENERATE_DOXY = "GenerateDoxy";
     private static final String DOXY_SOURCE_BROWSER = "DoxySourceBrowser";
     private static final String OUTPUT_DIRECTORY_PATH = "OutputDirectoryPath";
@@ -30,7 +31,8 @@ public class GeneratorConfiguration {
     public boolean generatePerTypeInheritanceDiagrams = true;
     public boolean generateFullInheritanceDiagrams = false;
     public boolean nedSourceListings = true;
-
+    public boolean generateExplicitLinksOnly = false;
+    
     public boolean generateDoxy = true;
     public boolean cppSourceListings = false;
 
@@ -43,6 +45,7 @@ public class GeneratorConfiguration {
         settings.put(GENERATE_PER_TYPE_INHERITANCE_DIAGRAMS, generatePerTypeInheritanceDiagrams);
         settings.put(GENERATE_FULL_INHERITANCE_DIAGRAMS, generateFullInheritanceDiagrams);
         settings.put(GENERATE_NED_SOURCE_LISTINGS, nedSourceListings);
+        settings.put(GENERATE_EXPLICIT_LINKS_ONLY, generateExplicitLinksOnly);
 
         settings.put(GENERATE_DOXY, generateDoxy);
         settings.put(DOXY_SOURCE_BROWSER, cppSourceListings);
@@ -63,6 +66,8 @@ public class GeneratorConfiguration {
         	generateFullInheritanceDiagrams = settings.getBoolean(GENERATE_FULL_INHERITANCE_DIAGRAMS);
         if (settings.get(GENERATE_NED_SOURCE_LISTINGS) != null)
         	nedSourceListings = settings.getBoolean(GENERATE_NED_SOURCE_LISTINGS);
+        if (settings.get(GENERATE_EXPLICIT_LINKS_ONLY) != null)
+            generateExplicitLinksOnly = settings.getBoolean(GENERATE_EXPLICIT_LINKS_ONLY);
 
         if (settings.get(GENERATE_DOXY) != null)
             generateDoxy = settings.getBoolean(GENERATE_DOXY);

@@ -73,6 +73,7 @@ public class GeneratorConfigurationDialog
     private Button generateFullInheritanceDiagrams;
     private Button generateFullUsageDiagrams;
     private Button generateSourceContent;
+    private Button generateExplicitLinksOnly;
 
     private Button generateDoxy;
     private Button doxySourceBrowser;
@@ -241,6 +242,9 @@ public class GeneratorConfigurationDialog
         generateFullUsageDiagrams.setEnabled(dotAvailable);
         
         generateSourceContent = createCheckbox(group, "Source listings (NED, MSG)", configuration.nedSourceListings);
+        
+        generateExplicitLinksOnly = createCheckbox(group, "Require ~ prefix in NED comment links", configuration.generateExplicitLinksOnly);
+        
 
         boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
         generateDoxy = createCheckbox(group, "C++ documentation (requires Doxygen)", configuration.generateDoxy && doxygenAvailable);
@@ -339,6 +343,7 @@ public class GeneratorConfigurationDialog
         configuration.generateFullUsageDiagrams = generateFullUsageDiagrams.getSelection();
         configuration.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams.getSelection();
         configuration.nedSourceListings = generateSourceContent.getSelection();
+        configuration.generateExplicitLinksOnly = generateExplicitLinksOnly.getSelection();
 
         configuration.generateDoxy = generateDoxy.getSelection();
         configuration.cppSourceListings = doxySourceBrowser.getSelection();
@@ -377,6 +382,7 @@ public class GeneratorConfigurationDialog
             generator.setGeneratePerTypeInheritanceDiagrams(configuration.generatePerTypeInheritanceDiagrams);
             generator.setGenerateFullInheritanceDiagrams(configuration.generateFullInheritanceDiagrams);
             generator.setGenerateNedSourceListings(configuration.nedSourceListings);
+            generator.setGenerateExplicitLinksOnly(configuration.generateExplicitLinksOnly);
             generator.setGenerateDoxy(configuration.generateDoxy);
             generator.setGenerateCppSourceListings(configuration.cppSourceListings);
             generators.add(generator);
