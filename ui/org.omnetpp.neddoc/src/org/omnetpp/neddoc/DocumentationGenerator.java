@@ -706,15 +706,23 @@ public class DocumentationGenerator {
     }
 
     protected void generateHTMLFrame() throws Exception {
+        // note: index.html accepts the "p=<url>" URL parameter, and loads that page into the contents frame
         FileUtils.writeTextFile(getOutputFile("index.html"),
                 "<html>\r\n" +
                 "   <head>\r\n" +
                 "      <title>Model documentation -- generated from NED files</title>\r\n" +
                 "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
+                "      <script language=\"JavaScript\">\r\n" + 
+                "         <!--\r\n" + 
+                "         url = window.location.toString();\r\n" + 
+                "         pos = url.lastIndexOf(\"p=\");\r\n" + 
+                "         startpage = (pos==-1) ? \"overview.html\" : url.substring(pos+2);\r\n" + 
+                "         //-->\r\n" + 
+                "      </script>\r\n" + 
                 "   </head>\r\n" +
-                "   <frameset cols=\"25%,75%\">\r\n" +
+                "   <frameset cols=\"25%,75%\" onload=\"document.getElementById('mainframe').src = startpage;\">\r\n" +
                 "      <frame src=\"navigation.html\" name=\"componentsframe\"/>\r\n" +
-                "      <frame src=\"overview.html\" name=\"mainframe\"/>\r\n" +
+                "      <frame src=\"overview.html\" name=\"mainframe\" id=\"mainframe\"/>\r\n" +
                 "   </frameset>\r\n" +
                 "   <noframes>\r\n" +
                 "      <h2>Frame Alert</h2>\r\n" +
@@ -1135,7 +1143,7 @@ public class DocumentationGenerator {
 
     protected void generateTypePages() throws Exception {
         try {
-            monitor.beginTask("Generating ned type pages...", typeElements.size());
+            monitor.beginTask("Generating NED type pages...", typeElements.size());
 
             for (final ITypeElement typeElement : typeElements) {
                 withGeneratingHTMLFile(getOutputFileName(typeElement), new Runnable() {
@@ -2099,7 +2107,9 @@ public class DocumentationGenerator {
     }
 
     protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
-        withGeneratingHTMLFile(fileName, null, null, true, content);
+        // default onload script: if page is not under the index.html frameset, load it via index.html so that the tree gets displayed
+        String onload = "if (top.frames['componentsframe'] == undefined) { s = window.location.toString(); window.location = 'index.html?p=' + s.substring(s.lastIndexOf('/')+1); }";
+        withGeneratingHTMLFile(fileName, null, onload, true, content);
     }
 
     protected void withGeneratingHTMLFile(String fileName, String header, String onload, boolean copyrightFooter, Runnable content) throws Exception {
