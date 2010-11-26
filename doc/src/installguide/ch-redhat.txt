@@ -1,0 +1,111 @@
+== Red Hat
+
+=== Supported Releases
+
+This chapter provides additional information for installing @OMNETPP@ on
+Red Hat Enterprise Linux installations. The overall installation procedure 
+is described in the 'Linux' chapter.
+
+The following Red Hat release is covered:
+
+* Red Hat Enterprise Linux Desktop Workstation 5.5
+
+It was tested on the following architectures:
+
+* Intel 32-bit
+
+=== Opening a Terminal
+
+Choose 'Applications > Accessories > Terminal' from the menu.
+
+=== Installing the Prerequisite Packages
+
+You can perform the installation using the graphical user interface or
+from the terminal, whichever you prefer.
+
+[NOTE]
+===============================================================
+You will need Red Hat Enterprise Linux Desktop Workstation for @OMNETPP@.
+The 'Desktop Client' version does not contain development tools.
+===============================================================
+
+==== Command-Line Installation
+
+To install the required packages, type in the terminal:
+
+  $ su -c 'yum install make gcc gcc-c++ bison flex perl \
+      tcl-devel tk-devel libxml2-devel zlib-devel \
+      java-1.6.0-openjdk doxygen openmpi-devel libpcap-devel'
+
+then follow the instruction on the console.
+
+Note that 'openmpi' will not be available by default, it needs to be
+activated in every session with the
+
+  $ module load openmpi_<arch>
+
+command, where `<arch>` is your architecture (usually `i386` or `x86_64`).
+When in doubt, use `module avail` to display the list of available
+modules. If you need MPI in every session, you may add the `module load`
+command to your startup script (`.bashrc`).`
+
+[NOTE]
+===============================================================
+Red Hat provides no BLT package, so it is missing from the above list.
+BLT is optional in @OMNETPP@ and its absence will not result in loss
+of functionality, but you can download a BLT source package from sourceforge.net,
+and compile and install it yourself if you wish. See the 'Generic Unix'
+chapter of this Installation Guide for more information on BLT.
+Alternatively you may search for binary RPM packages using 
+`http://rpm.pbone.net`
+===============================================================
+
+[NOTE]
+===============================================================
+GraphViz packages for RHEL can be installed from graphviz.org,
+see http://www.graphviz.org/Download_linux_rhel.php. GraphViz is
+an optional package for @OMNETPP@; you only need it if you plan
+to generate HTML documentation from NED files, and would like
+the resulting documentation to contain diagrams.
+===============================================================
+
+
+==== Graphical Installation
+
+The graphical installer can be launched by choosing
+'Applications > Add/Remove Software' from the menu.
+
+Search for the following packages in the list. Select the checkboxes
+in front of the names, and pick the latest version of each package.
+
+The packages:
+
+* gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, libxml2-devel,
+zlib-devel, make, java-1.6.0-openjdk, doxygen, openmpi-devel, libpcap-devel
+
+Click 'Apply', then follow the instructions.
+
+[NOTE]
+===============================================================
+The above list does not contain BLT and GraphViz; see the previous section
+for more info about these packages.
+===============================================================
+
+=== SELinux
+
+You may need to turn off SELinux when running certain simulations.
+To do so, click on 'System > Administration > Security Level > Firewall',
+go to the 'SELinux' tab, and choose 'Disabled'.
+
+You can verify the SELinux status by typing the `sestatus` command in a terminal.
+
+[NOTE]
+===============================================================
+From @OMNETPP@ 4.1 on, makefiles that build shared libraries include the
+`chcon -t textrel_shlib_t lib<name>.so` command that properly sets the
+security context for the library. This should prevent the SELinux-related
+'"cannot restore segment prot after reloc: Permission denied"' error from
+occurring, unless you have a shared library which was built using an obsolete
+or hand-crafted makefile that does not contain the `chcon` command.
+===============================================================
+
