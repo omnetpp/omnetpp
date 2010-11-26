@@ -40,13 +40,13 @@ proc lookup_image {imgname {imgsize ""}} {
 #
 # helper function
 #
-proc dispstr_getimage {tags_i tags_is zoomfactor imagesizefactor} {
+proc dispstr_getimage {tags_i tags_is zoomfactor imagesizefactor {alphamult 1}} {
     global icons bitmaps imagecache
 
     set zoomfactor [expr $zoomfactor * $imagesizefactor]
     set iconminsize [opp_getsimoption iconminsize]
 
-    set key "[join $tags_i ,]:[join $tags_is ,]:$zoomfactor:$iconminsize"
+    set key "[join $tags_i ,]:[join $tags_is ,]:$zoomfactor:$iconminsize:$alphamult"
     if {![info exist imagecache($key)]} {
         # look up base image
         set imgsize [lindex $tags_is 0]
@@ -107,6 +107,14 @@ proc dispstr_getimage {tags_i tags_is zoomfactor imagesizefactor} {
             }
         }
 
+        # multiply alpha channel if needed
+        if {$alphamult != 1} {
+            set img2 [image create photo]
+            $img2 copy $img
+            opp_multiplyalpha $img2 $alphamult
+            set img $img2
+        }
+
         set imagecache($key) $img
     }
     return $imagecache($key)
@@ -142,8 +150,8 @@ proc get_submod_coords {c tag} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc draw_submod {c submodptr x y name dispstr scaling} {
-   #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr $scaling"
+proc draw_submod {c submodptr x y name dispstr scaling isplaceholder} {
+   #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr $scaling $isplaceholder"
    global icons inspectordata
 
    set zoomfactor $inspectordata($c:zoomfactor)
@@ -153,6 +161,9 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
    }
 
    set imagesizefactor $inspectordata($c:imagesizefactor)
+
+   set alphamult 1
+   if {$isplaceholder} {set alphamult 0.3}
 
    if [catch {
        opp_displaystring $dispstr parse tags $submodptr 1
@@ -172,7 +183,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            set tags(is) {}
        }
        if [info exists tags(i)] {
-           set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor $imagesizefactor]
+           set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor $imagesizefactor $alphamult]
            set isx [image width $img]
            set isy [image height $img]
        }
@@ -220,8 +231,11 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            if {$outline == "-"} {set outline ""}
            if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
 
+           set dash ""
+           if {$isplaceholder} {set dash "."}
+
            $c create $sh $x1 $y1 $x2 $y2 \
-               -fill $fill -width $width -outline $outline \
+               -fill $fill -width $width -outline $outline -dash $dash \
                -tags "dx tooltip submod $submodptr"
 
            if [info exists tags(i)] {
@@ -255,7 +269,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            set r [get_submod_coords $c $submodptr]
            set mx [expr [lindex $r 2]+2]
            set my [expr [lindex $r 1]-2]
-           set img2 [dispstr_getimage $tags(i2) $tags(is2) $zoomfactor $imagesizefactor]
+           set img2 [dispstr_getimage $tags(i2) $tags(is2) $zoomfactor $imagesizefactor $alphamult]
            $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
        }
 

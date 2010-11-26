@@ -615,6 +615,7 @@ void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, int
                     "{", submod->getFullName(), "} ",
                     TclQuotedString(dispstr).get(), " ",
                     "{", scaling, "} ",
+                    (submod->isPlaceholder() ? "1" : "0"),
                     NULL));
 }
 

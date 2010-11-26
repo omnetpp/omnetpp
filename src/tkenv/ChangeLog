@@ -1,3 +1,10 @@
+2010-11-26  Andras Varga
+
+	* placeholder modules are now displayed as semi-transparent icons, or,
+	when displayed as a "rect" or an "oval" using the "b" tag, they are
+	displayed with a dotted border. (Tk does not support transparency for
+	canvas polygons.)
+
 2010-07-29  Andras Varga
 
 	* fixed for bug #195: broadcast animation crashes if msg gets deleted 

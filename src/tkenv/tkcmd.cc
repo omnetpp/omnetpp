@@ -174,6 +174,7 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 int colorizeImage_cmd(ClientData, Tcl_Interp *, int, const char **);
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
+int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int setWindowProperty_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
 // command table
@@ -283,6 +284,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_colorizeimage",       colorizeImage_cmd      },   // args: <image> ... ret: -
    { "opp_resizeimage",         resizeImage_cmd        },   // args: <destimage> <srcimage>
    { "opp_swapredandblue",      imageSwapRedAndBlue_cmd},   // args: <image>
+   { "opp_multiplyalpha",       imageMultiplyAlpha_cmd},   // args: <image> <alphamultiplier>
    { "opp_setwindowproperty",   setWindowProperty_cmd  },   // args: <window> <propertyname> <value>
    // end of list
    { NULL, },
@@ -2080,29 +2082,29 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
    for (int destXIndex = 0; destXIndex < destWidth; destXIndex++)
    {
-	   for (int destYIndex = 0; destYIndex < destHeight; destYIndex++)
+       for (int destYIndex = 0; destYIndex < destHeight; destYIndex++)
        {
-    	   double destX = destXIndex + 0.5;
-    	   double destY = destYIndex + 0.5;
-    	   double srcX = destX * dest2SrcXRatio + dest2SrcXOffset;
-    	   double srcY = destY * dest2SrcYRatio + dest2SrcYOffset;
+           double destX = destXIndex + 0.5;
+           double destY = destYIndex + 0.5;
+           double srcX = destX * dest2SrcXRatio + dest2SrcXOffset;
+           double srcY = destY * dest2SrcYRatio + dest2SrcYOffset;
 
-    	   // these are the source floating point coordinates of the left, right, top, bottom edges
-    	   // for the 2x2 pixels which will be used in the interpolation
-    	   double srcLeft = floor(srcX - 0.5);
-    	   double srcRight = ceil(srcX + 0.5);
-    	   double srcTop = floor(srcY - 0.5);
-    	   double srcBottom = ceil(srcY + 0.5);
+           // these are the source floating point coordinates of the left, right, top, bottom edges
+           // for the 2x2 pixels which will be used in the interpolation
+           double srcLeft = floor(srcX - 0.5);
+           double srcRight = ceil(srcX + 0.5);
+           double srcTop = floor(srcY - 0.5);
+           double srcBottom = ceil(srcY + 0.5);
 
-    	   int srcLeftIndex = srcLeft;
-    	   int srcRightIndex = srcRight - 1;
-    	   int srcTopIndex = srcTop;
-    	   int srcBottomIndex = srcBottom - 1;
+           int srcLeftIndex = srcLeft;
+           int srcRightIndex = srcRight - 1;
+           int srcTopIndex = srcTop;
+           int srcBottomIndex = srcBottom - 1;
 
-    	   double weightLeft = srcRight - srcX;
-    	   double weightRight = srcX - srcLeft;
-    	   double weightTop = srcBottom - srcY;
-    	   double weightBottom = srcY - srcTop;
+           double weightLeft = srcRight - srcX;
+           double weightRight = srcX - srcLeft;
+           double weightTop = srcBottom - srcY;
+           double weightBottom = srcY - srcTop;
 
            double weightHorizontal = weightLeft + weightRight;
            double weightVertical = weightTop + weightBottom;
@@ -2172,6 +2174,43 @@ int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char
            int b = pixel[blueoffset];
            pixel[redoffset] = b;
            pixel[blueoffset] = r;
+       }
+   }
+
+   // Put back the image "onto itself", otherwise the internal
+   // masterPtr->validRegion data item is not updated, and the
+   // image will have no "valid region" and nothing will appear
+   // on the canvas when the icon is drawn.
+   Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
+   Tk_PhotoPutBlock(INTERP_IF_TK85 imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
+
+   return TCL_OK;
+}
+
+int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   // multiplies the alpha channel by a floating point value.
+
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC); return TCL_ERROR;}
+   const char *imgname = argv[1];
+   double c = 1.0;
+   setlocale(LC_NUMERIC, "C");
+   sscanf(argv[2],"%lg",&c);
+
+   Tk_PhotoImageBlock img;
+   if (getTkPhotoImageBlock(interp, imgname, &img)!=TCL_OK) return TCL_ERROR;
+
+   int alphaOffset = img.offset[3];
+
+   for (int y=0; y<img.height; y++)
+   {
+       for (int x=0; x<img.width; x++)
+       {
+           unsigned char *pixel = img.pixelPtr + y*img.pitch + x*img.pixelSize;
+           int alpha = pixel[alphaOffset];
+           alpha = (int)floor(c * alpha + 0.5);
+           alpha = (alpha < 0) ? 0 : (alpha > 255) ? 255 : alpha;
+           pixel[alphaOffset] = alpha;
        }
    }
 
