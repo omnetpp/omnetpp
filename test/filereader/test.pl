@@ -31,7 +31,7 @@ sub test
    $forwardResultFileName =~ s/^(.*)\//result\/forward-/;
    $backwardResultFileName =~ s/^(.*)\//result\/backward-/;
 
-   if (system("fileechotest $fileName forward > $forwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
+   if (system("./fileechotest $fileName forward > $forwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
    {
       print("PASS: Forward echoing $fileName\n\n");
    }
@@ -40,7 +40,7 @@ sub test
       print("FAIL: Forward echoing $fileName\n\n");
    }
 
-   if (system("fileechotest $fileName backward > $backwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
+   if (system("./fileechotest $fileName backward > $backwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
    {
       print("PASS: Backward echoing $fileName\n\n");
    }
@@ -49,7 +49,7 @@ sub test
       print("FAIL: Backward echoing $fileName\n\n");
    }
 
-   if (system("filereadertest $fileName $numberOfLines $numberOfSeeks $numberOfReadLines > $resultFileName") == 0)
+   if (system("./filereadertest $fileName $numberOfLines $numberOfSeeks $numberOfReadLines > $resultFileName") == 0)
    {
       print("PASS: Reader test on $fileName\n\n");
    }
@@ -103,6 +103,35 @@ sub generateAndTest
    test($fileName, generate($fileName, $fileSize, $maxLineSize), $numberOfSeeks, $numberOfReadLines);
 }
 
+sub concurrentTest
+{
+   my($fileName, $duration, $numberOfLines) = @_;
+   
+   my $pid = fork();
+   if (not defined $pid) {
+      print "resources not avilable.\n";
+   } elsif ($pid == 0) {
+      # child process
+      if (system("./filereaderproducer $fileName $duration $numberOfLines") != 0)
+      {
+         print("FAIL: Cannot start filereaderproducer with $fileName\n\n");
+      }
+      exit(0);
+   } else {
+      # parent process
+      if (system("./filereaderconsumer $fileName $duration") == 0)
+      {
+         print("PASS: Concurrent reader test on $fileName\n\n");
+      }
+      else
+      {
+         print("FAIL: Concurrent reader test on $fileName\n\n");
+      }
+      
+      waitpid($pid,0);
+   }
+}
+
 mkdir("generated");
 mkdir("result");
 
@@ -130,3 +159,6 @@ generateAndTest("generated/large-big-lines.txt",  1E+8, 32768, 100, 100);
 
 # uncomment this if you want to test it with GByte files
 #generateAndTest("generated/huge-big-lines.txt",   5E+9, 32768, 100, 100);
+
+concurrentTest("result/concurrent_small.txt", 1, 100);
+concurrentTest("result/concurrent_large.txt", 10, 10000);

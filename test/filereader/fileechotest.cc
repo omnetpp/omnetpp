@@ -14,9 +14,15 @@
 
 #include <stdio.h>
 #include <fcntl.h>
-#include <io.h>
+#include <string.h>
 #include "exception.h"
 #include "filereader.h"
+
+#ifdef _WIN32
+#include <io.h>
+#else
+#define _setmode(a,b)
+#endif
 
 void testFileEcho(const char *file, bool forward)
 {

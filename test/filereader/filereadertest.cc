@@ -13,11 +13,17 @@
 *--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
-#include <io.h>
 #include "lcgrandom.h"
 #include "exception.h"
 #include "filereader.h"
+
+#ifdef _WIN32
+#include <io.h>
+#else
+#define _setmode(a,b)
+#endif
 
 #define LL  INT64_PRINTF_FORMAT
 
