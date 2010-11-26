@@ -322,6 +322,7 @@ VectorFileIndex *IndexFileReader::readAll()
     char *line, **tokens;
 
     VectorFileIndex *index = new VectorFileIndex();
+	reader.setCheckFileChanged(false);
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
         int64 lineNum = reader.getNumReadLines();
@@ -341,6 +342,7 @@ VectorFileIndex *IndexFileReader::readFingerprint()
     char *line, **tokens;
 
     VectorFileIndex *index = NULL;
+	reader.setCheckFileChanged(false);
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
         int64 lineNum = reader.getNumReadLines();
