@@ -344,11 +344,8 @@ int cArray::find(cObject *obj) const
     int i;
     for (i=0; i<=last; i++)
         if (vect[i]==obj)
-            break;
-    if (i<=last)
-        return i;
-    else
-        return -1;
+            return i;
+    return -1;
 }
 
 int cArray::find(const char *objname) const
@@ -356,16 +353,13 @@ int cArray::find(const char *objname) const
     int i;
     for (i=0; i<=last; i++)
         if (vect[i] && vect[i]->isName(objname))
-            break;
-    if (i<=last)
-        return i;
-    else
-        return -1;
+            return i;
+    return -1;
 }
 
 cObject *cArray::get(int m)
 {
-    if (m>=0 && m<=last && vect[m])
+    if (m>=0 && m<=last)
         return vect[m];
     else
         return NULL;
@@ -373,7 +367,7 @@ cObject *cArray::get(int m)
 
 const cObject *cArray::get(int m) const
 {
-    if (m>=0 && m<=last && vect[m])
+    if (m>=0 && m<=last)
         return vect[m];
     else
         return NULL;
@@ -428,5 +422,3 @@ cObject *cArray::remove(int m)
         drop(static_cast<cOwnedObject *>(obj));
     return obj;
 }
-
-
