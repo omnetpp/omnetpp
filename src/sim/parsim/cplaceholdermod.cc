@@ -32,6 +32,13 @@ cPlaceholderModule::~cPlaceholderModule()
 {
 }
 
+std::string cPlaceholderModule::info() const
+{
+    std::stringstream out;
+    out << "id=" << getId() << ", PLACEHOLDER";
+    return out.str();
+}
+
 void cPlaceholderModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
 {
     throw cRuntimeError(this, "internal error: arrived() called");

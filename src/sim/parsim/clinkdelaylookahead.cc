@@ -73,17 +73,16 @@ void cLinkDelayLookahead::startRun()
             for (cModule::GateIterator i(mod); !i.end(); i++)
             {
                 // if this is a properly connected proxygate, process it
-                // FIXME leave out gates from other cPlaceholderModules
                 cGate *g = i();
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->getPreviousGate() && pg->getRemoteProcId()>=0)
+                if (pg && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder())
                 {
+                    ASSERT(pg->getRemoteProcId()>=0);
                     // check we have a delay on this link (it gives us lookahead)
-                    cGate *fromg  = pg->getPreviousGate();
-                    cChannel *chan = fromg->getChannel();
-                    simtime_t linkDelay = chan->hasPar("delay") ? chan->par("delay").doubleValue() : 0.0;
+                    simtime_t linkDelay = collectPathDelay(pg);
                     if (linkDelay<=0.0)
-                        throw cRuntimeError("cLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
+                        throw cRuntimeError("cLinkDelayLookahead: zero delay on path that ends at proxy gate `%s', no lookahead for parallel simulation",
+                                            pg->getFullPath().c_str());
 
                     // store
                     int procId = pg->getRemoteProcId();
@@ -104,6 +103,20 @@ void cLinkDelayLookahead::startRun()
             ev << "    lookahead to procId=" << i << " is " << segInfo[i].minDelay << "\n";
 
     ev << "  setup done.\n";
+}
+
+simtime_t cLinkDelayLookahead::collectPathDelay(cGate *g)
+{
+    simtime_t sum = 0;
+    while (g->getPreviousGate())
+    {
+        cGate *prevg  = g->getPreviousGate();
+        cChannel *chan = prevg->getChannel();
+        simtime_t delay = (chan && chan->hasPar("delay")) ? chan->par("delay").doubleValue() : 0.0;
+        sum += delay;
+        g = prevg;
+    }
+    return sum;
 }
 
 void cLinkDelayLookahead::endRun()

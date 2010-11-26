@@ -55,6 +55,15 @@ class SIM_API cPlaceholderModule : public cModule // so, noncopyable
     virtual ~cPlaceholderModule();
     //@}
 
+    /** @name Redefined cObject member functions. */
+    //@{
+    /**
+     * Produces a one-line description of the object's contents.
+     * See cObject for more details.
+     */
+    virtual std::string info() const;
+    //@}
+
     /** @name Redefined cModule functions */
     //@{
     /**

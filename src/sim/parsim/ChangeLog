@@ -1,3 +1,16 @@
+2010-11-26  Andras Varga
+
+	* cparsimpartition.cc: connectRemoteGates() failed for some
+	cases of deep partitioning
+
+	* clinkdelaylookahead: failed for some cases of deep partitioning
+	
+	* clinkdelaylookahead: we now use the lookahead from the whole path,
+	not only from the link that connects to the placeholder module
+
+	* cplaceholdermodule.cc/h: added an info() function that produces
+	a string containing the "placeholder" text
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-05-31  ------ omnetpp-4.1rc2 released ------

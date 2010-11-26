@@ -25,6 +25,8 @@
 
 NAMESPACE_BEGIN
 
+class cGate;
+
 /**
  * Lookahead calculation based on inter-partition link delays only.
  *
@@ -41,6 +43,9 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
     // partition information
     int numSeg;              // number of partitions
     PartitionInfo *segInfo;  // partition info array, size numSeg
+
+    // calculate the total delay along the path ending the given gate
+    simtime_t collectPathDelay(cGate *pathEndGate);
 
   public:
     /**

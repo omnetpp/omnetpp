@@ -1,5 +1,5 @@
 //=========================================================================
-//  CPARSIMSEGMENT.CC - part of
+//  CPARSIMPARTITION.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -86,30 +86,33 @@ void cParsimPartition::connectRemoteGates()
     cCommBuffer *buffer = comm->createCommBuffer();
 
     //
-    // Step 1: broadcast what input gates we have that have to be connected
+    // Step 1: broadcast list of all "normal" input gates that may have corresponding
+    // proxy gates in other partitions (as they need to redirect here)
     //
     ev << "connecting remote gates: step 1 - broadcasting input gates...\n";
     for (int modId=0; modId<=sim->getLastModuleId(); modId++)
     {
-        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
-        if (mod)
+        cModule *mod = sim->getModule(modId);
+        if (mod && !mod->isPlaceholder())
         {
             for (cModule::GateIterator i(mod); !i.end(); i++)
             {
                 cGate *g = i();
-                // if this is a normal output gate which leads to a simple module,
-                // send the input gate where it is connected.
-                if (g->getType()==cGate::OUTPUT && g->getNextGate() &&
-                    g->getPathEndGate()->getOwnerModule()->isSimple())
+                if (g->getType()==cGate::INPUT)
                 {
-                    cGate *ing = g->getNextGate();
-                    // pack gate "address" here
-                    buffer->pack(ing->getOwnerModule()->getId());
-                    buffer->pack(ing->getId());
-                    // pack gate name
-                    buffer->pack(ing->getOwnerModule()->getFullPath().c_str());
-                    buffer->pack(ing->getName());
-                    buffer->pack(ing->isVector() ? ing->getIndex() : -1);
+                    // if gate is connected to a placeholder module, in another partition that will
+                    // be a local module and our module will be a placeholder with proxy gates
+                    cGate *srcg = g->getPathStartGate();
+                    if (srcg != g && srcg->getOwnerModule()->isPlaceholder())
+                    {
+                        // pack gate "address" here
+                        buffer->pack(g->getOwnerModule()->getId());
+                        buffer->pack(g->getId());
+                        // pack gate name
+                        buffer->pack(g->getOwnerModule()->getFullPath().c_str());
+                        buffer->pack(g->getName());
+                        buffer->pack(g->isVector() ? g->getIndex() : -1);
+                    }
                 }
             }
         }
@@ -178,6 +181,23 @@ void cParsimPartition::connectRemoteGates()
     }
     ev << "  done.\n";
     comm->recycleCommBuffer(buffer);
+
+    // verify that all gates have been connected
+    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
+    {
+        cModule *mod = sim->getModule(modId);
+        if (mod && mod->isPlaceholder())
+        {
+            for (cModule::GateIterator i(mod); !i.end(); i++)
+            {
+                cProxyGate *pg = dynamic_cast<cProxyGate *>(i());
+                if (pg && pg->getRemoteProcId()==-1 && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder())
+                    throw cRuntimeError("parallel simulation error: dangling proxy gate '%s' "
+                        "(module '%s' or some of its submodules not instantiated in any partition?)",
+                        pg->getFullPath().c_str(), mod->getFullPath().c_str());
+            }
+        }
+    }
 }
 
 void cParsimPartition::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
