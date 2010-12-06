@@ -397,6 +397,12 @@
             id="org.omnetpp.cdt.gotoCppDefinitionForNedType"
             name="Goto C++ Definition">
       </command>
+      <command
+            defaultHandler="org.omnetpp.cdt.handlers.CleanSelectedProjects"
+            description="Clean the selected project(s) without cleaning referred projects."
+            id="org.omnetpp.cdt.cleanSelectedProjects"
+            name="Clean Selected Projects">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -416,6 +422,27 @@
                mnemonic="G"
                style="push"
                tooltip="&amp;Go To C++ Definition">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.build">
+         <command
+               commandId="org.omnetpp.cdt.cleanSelectedProjects"
+               style="push"
+               tooltip="Cleans the selected project">
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        operator="and">
+                     <test
+                           property="org.eclipse.core.resources.projectNature"
+                           value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
+                     </test>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </command>
       </menuContribution>
    </extension>
