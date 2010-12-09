@@ -969,12 +969,18 @@ proc graphmodwin_adjust_windowsize_and_zoom {w} {
         # note: $config(layout-may-change-zoom) is TRUE here because of the above "if"
         set canvaswidth [winfo width $c]
         set canvasheight [winfo height $c]
+        if {$canvaswidth == 0} {set canvaswidth 400}  ;# approximate size for (rare) case when window size is not yet available
+        if {$canvasheight == 0} {set canvasheight 300}
         set canvaswidth2 [expr $canvaswidth - 20]  ;# deduce 10px border around compound module
         set canvasheight2 [expr $canvasheight - 20]
+        if {$canvaswidth2 < 50} {set canvaswidth2 50}
+        if {$canvasheight2 < 50} {set canvasheight2 50}
 
         set zoomx [expr $canvaswidth2 / double($graphicswidth)]
         set zoomy [expr $canvasheight2 / double($graphicsheight)]
         set zoom [math_min $zoomx $zoomy]
+        if {$zoom < 0.001} {set zoom 0.001}
+        if {$zoom > 1000} {set zoom 1000}
 
         if {$zoom < 1.0} {
             graphmodwin_zoomby $w $zoom
@@ -992,6 +998,9 @@ proc graphmodwin_adjust_windowsize_and_zoom {w} {
 
         set chromewidth [expr [winfo width $w] - [winfo width $c]]
         set chromeheight [expr [winfo height $w] - [winfo height $c]]
+        if {$chromewidth <= 0} {set chromewidth 0}  ;# in case something was wrong with "winfo width"
+        if {$chromeheight <= 0} {set chromeheight 0}
+
         set scrollbarwidth 24
         set scrollbarheight 24
 
@@ -1013,6 +1022,8 @@ proc graphmodwin_adjust_windowsize_and_zoom {w} {
                 set zoomy [expr $maxcanvasheight / double($graphicsheight)]
             }
             if {$zoomx < $zoomy} {set zoom $zoomx} else {set zoom $zoomy}
+            if {$zoom < 0.001} {set zoom 0.001}
+            if {$zoom > 1000} {set zoom 1000}
         }
 
         set zoomedgraphicswidth [expr $zoom * $graphicswidth]

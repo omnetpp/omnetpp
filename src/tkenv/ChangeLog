@@ -1,3 +1,8 @@
+2010-12-09  Andras Varga
+
+	* fix for bug #221: Negative zoom level in Tkenv (could not reproduce
+	the bug, but the given changes probably fix it)
+
 2010-11-26  Andras Varga
 
 	* placeholder modules are now displayed as semi-transparent icons, or,
@@ -7,7 +12,7 @@
 
 2010-07-29  Andras Varga
 
-	* fixed for bug #195: broadcast animation crashes if msg gets deleted 
+	* fix for bug #195: broadcast animation crashes if msg gets deleted 
 	by the end of event processing.
     
 2010-06-11  ------ omnetpp-4.1 released ------
