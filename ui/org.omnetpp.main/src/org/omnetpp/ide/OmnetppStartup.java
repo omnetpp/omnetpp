@@ -293,7 +293,7 @@ public class OmnetppStartup implements IStartup {
                     File prefsFile = new File(member.getPath()+"/prefs.js");
                     if (prefsFile.isFile()) {
                         try {
-                            String prefsText = FileUtils.readTextFile(prefsFile);
+                            String prefsText = FileUtils.readTextFile(prefsFile, null);
                             if (prefsText != null) {
                                 // user_pref("network.proxy.http", "someproxy.edu");
                                 // user_pref("network.proxy.http_port", 9999);
@@ -393,7 +393,7 @@ public class OmnetppStartup implements IStartup {
             File kioslavercFile = new File(HOME + "/.kde/share/config/kioslaverc");
             if (kioslavercFile.isFile()) {
                 try {
-                    String kioslavercText = FileUtils.readTextFile(kioslavercFile);
+                    String kioslavercText = FileUtils.readTextFile(kioslavercFile, null);
                     if (kioslavercText != null) {
                         // httpProxy=http://127.0.0.1:3128
                         proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);

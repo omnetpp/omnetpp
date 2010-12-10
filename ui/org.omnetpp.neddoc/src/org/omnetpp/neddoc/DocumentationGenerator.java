@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -592,7 +593,7 @@ public class DocumentationGenerator {
                 }
 
                 if (doxyConfigFile.exists()) {
-                    String content = FileUtils.readTextFile(doxyConfigFile);
+                    String content = FileUtils.readTextFile(doxyConfigFile, null);
                     // these options must be always overwritten
                     IPath fullPath = getFullDoxyPath();
                     content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", fullPath.toOSString());
@@ -602,7 +603,7 @@ public class DocumentationGenerator {
                     File modifiedDoxyConfigFile = documentationRootPath.append("temp-doxy.cfg").toFile();
 
                     try {
-                        FileUtils.writeTextFile(modifiedDoxyConfigFile, content);
+                        FileUtils.writeTextFile(modifiedDoxyConfigFile, content, null);
                         ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString());
                     }
                     finally {
@@ -673,8 +674,10 @@ public class DocumentationGenerator {
                 "   <head>\r\n" +
                 "      <title>Redirect Page</title>\r\n" +
                 "      <meta http-equiv=\"refresh\" content=\"0;url=" + remainingPath.append("index.html").toPortableString() + "\"></head>\r\n" +
+                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" + 
                 "   <body/>\r\n" +
-                "</html>"
+                "</html>",
+                "UTF-8"
         );
     }
 
@@ -683,6 +686,7 @@ public class DocumentationGenerator {
                 "<html>\r\n" +
                 "   <head>\r\n" +
                 "      <title>Model documentation -- generated from NED files</title>\r\n" +
+                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" + 
                 "   </head>\r\n" +
                 "   <frameset cols=\"25%,75%\">\r\n" +
                 "      <frame src=\"navigation.html\" name=\"componentsframe\"/>\r\n" +
@@ -693,7 +697,8 @@ public class DocumentationGenerator {
                 "      <p>This document is designed to be viewed using HTML frames. If you see this message,\r\n" +
                 "      you are using a non-frame-capable browser.</p>\r\n" +
                 "   </noframes>\r\n" +
-                "</html>\r\n"
+                "</html>\r\n",
+                "UTF-8"
                 );
     }
 
@@ -1823,7 +1828,7 @@ public class DocumentationGenerator {
                 watermark(getOutputFile(imageFileName).toString());
 
             out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#usage-diagram\"/>");
-            out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName)) + "</map>\r\n");
+            out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName), null) + "</map>\r\n");
         }
     }
 
@@ -1902,12 +1907,12 @@ public class DocumentationGenerator {
                 watermark(getOutputFile(imageFileName).toString());
 
             out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#inheritance-diagram\"/>");
-            out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName)) + "</map>\r\n");
+            out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName), null) + "</map>\r\n");
         }
     }
 
     protected void generateSourceContent(IFile file) throws IOException, CoreException {
-        generateSourceContent(FileUtils.readTextFile(file.getContents()), nedResources.isNedFile(file));
+        generateSourceContent(FileUtils.readTextFile(file.getContents(), file.getCharset()), nedResources.isNedFile(file));
     }
 
     protected void generateSourceContent(ITypeElement typeElement) throws IOException {
@@ -2069,6 +2074,7 @@ public class DocumentationGenerator {
 
         out("<html>\r\n" +
             "   <head>\r\n" +
+            "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" + 
             "      <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\r\n");
 
         if (header != null)
@@ -2128,7 +2134,7 @@ public class DocumentationGenerator {
         if (monitor.isCanceled())
             throw new CancellationException();
 
-        currentOutputStream.write(string.getBytes());
+        currentOutputStream.write(string.getBytes("UTF-8"));
     }
 
     protected void out(byte[] data) throws IOException {

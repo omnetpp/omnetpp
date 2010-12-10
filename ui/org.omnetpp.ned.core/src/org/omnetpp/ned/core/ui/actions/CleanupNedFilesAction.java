@@ -32,6 +32,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.refactoring.RefactoringTools;
@@ -154,8 +155,10 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
 
         	// save the file if changed
         	String source = nedFileElement.getNedSource();
-        	if (!source.equals(originalSource))
-        	    file.setContents(new ByteArrayInputStream(source.getBytes()), IFile.FORCE, null);
+        	if (!source.equals(originalSource)) {
+        	    byte[] bytes = ProjectUtils.getBytesForFile(source, file);
+        	    file.setContents(new ByteArrayInputStream(bytes), IFile.FORCE, null);
+        	}
         }
     }
 

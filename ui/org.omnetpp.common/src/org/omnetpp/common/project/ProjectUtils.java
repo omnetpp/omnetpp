@@ -10,6 +10,7 @@ package org.omnetpp.common.project;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
@@ -150,7 +153,7 @@ public class ProjectUtils {
 		List<IContainer> result = new ArrayList<IContainer>();
 		IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
 		if (nedFoldersFile.exists()) {
-			String contents = FileUtils.readTextFile(nedFoldersFile.getContents());
+			String contents = FileUtils.readTextFile(nedFoldersFile.getContents(), null);
 			for (String line : StringUtils.splitToLines(contents)) {
 				line = line.trim();
 				if (line.equals("."))
@@ -289,6 +292,21 @@ public class ProjectUtils {
         }
 
         return project;
+    }
+
+    /**
+     * Utility function to convert a string to a byte array, using the 
+     * encoding of a resource (IFile). Useful for saving the string into
+     * the given file.
+     */
+    public static byte[] getBytesForFile(String content, IFile file) throws CoreException {
+        String charset = file.getCharset();
+        try {
+            return content.getBytes(charset);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new CoreException(new Status(IStatus.ERROR, CommonPlugin.PLUGIN_ID, 0, "", e));
+        }
     }
 
 }

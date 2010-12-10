@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.json.ExceptionErrorListener;
 import org.omnetpp.common.json.JSONValidatingReader;
+import org.omnetpp.common.project.ProjectUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -470,7 +471,7 @@ public class FileUtils {
      */
     public static String readExternalTextFile(String fileName) {
         try {
-            return org.omnetpp.common.util.FileUtils.readTextFile(fileName);
+            return org.omnetpp.common.util.FileUtils.readTextFile(fileName, null);
         } catch (IOException e) {
             throw new RuntimeException("Error reading file " + fileName + ": " + e.getMessage(), e);
         }
@@ -487,7 +488,7 @@ public class FileUtils {
     public static String createTempFile(String content) {
         try {
             File tempFile = File.createTempFile("oppwiz", null);
-            org.omnetpp.common.util.FileUtils.writeTextFile(tempFile, content);
+            org.omnetpp.common.util.FileUtils.writeTextFile(tempFile, content, null);
             tempFile.deleteOnExit();
             return tempFile.getAbsolutePath();
         }
@@ -501,10 +502,11 @@ public class FileUtils {
      */
     public static void createFile(String fileName, String content) throws CoreException {
         IFile file = asFile(fileName);
+        byte[] bytes = ProjectUtils.getBytesForFile(content, file);
         if (!file.exists())
-            file.create(new ByteArrayInputStream(content.getBytes()), true, null);
+            file.create(new ByteArrayInputStream(bytes), true, null);
         else
-            file.setContents(new ByteArrayInputStream(content.getBytes()), true, true, null);
+            file.setContents(new ByteArrayInputStream(bytes), true, true, null);
     }
 
     /**
@@ -513,7 +515,7 @@ public class FileUtils {
     public static void createExternalFile(String fileName, String content) {
         try {
             File file = new File(fileName);
-            org.omnetpp.common.util.FileUtils.writeTextFile(file, content);
+            org.omnetpp.common.util.FileUtils.writeTextFile(file, content, null);
         }
         catch (IOException e) {
             throw new RuntimeException("Error creating file " + fileName + ": " + e.getMessage(), e);

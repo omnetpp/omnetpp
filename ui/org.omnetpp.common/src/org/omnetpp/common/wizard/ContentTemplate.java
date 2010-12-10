@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.support.FileUtils;
@@ -452,7 +453,8 @@ public abstract class ContentTemplate implements IContentTemplate {
                     fileToSave = file.getParent().getFile(new Path(fileName+file.getName())); // with main file's name, in a different directory
                 else
                     fileToSave = file.getParent().getFile(new Path(fileName));
-                createVerbatimFile(fileToSave, new ByteArrayInputStream(contentToSave.getBytes()), context);
+                byte[] bytes = ProjectUtils.getBytesForFile(contentToSave, file);
+                createVerbatimFile(fileToSave, new ByteArrayInputStream(bytes), context);
             }
         }
     }

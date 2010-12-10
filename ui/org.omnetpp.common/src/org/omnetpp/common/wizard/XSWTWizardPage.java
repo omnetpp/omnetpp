@@ -44,7 +44,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
         super(name);
         this.creatorTemplate = creatorTemplate;
         this.xswtFileNameInfo = xswtFile.getFullPath().toString();
-        this.xswtContent = FileUtils.readTextFile(xswtFile.getContents());
+        this.xswtContent = FileUtils.readTextFile(xswtFile.getContents(), xswtFile.getCharset());
         this.condition = condition;
     }
 
@@ -54,7 +54,7 @@ public class XSWTWizardPage extends WizardPage implements ICustomWizardPage {
             throw new IllegalArgumentException("InputStream is null -- file may not exist: " + fileNameInfo);
         this.creatorTemplate = creatorTemplate;
         this.xswtFileNameInfo = fileNameInfo;
-        this.xswtContent = FileUtils.readTextFile(xswtInputStream);
+        this.xswtContent = FileUtils.readTextFile(xswtInputStream, null);
         this.condition = condition;
     }
 

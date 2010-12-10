@@ -121,16 +121,12 @@ public class FileUtils {
         return b;
     }
 
-    public static String readTextFile(File file) throws IOException {
-        return readTextFile(new FileInputStream(file), null);
+    public static String readTextFile(File file, String charset) throws IOException {
+        return readTextFile(new FileInputStream(file), charset);
     }
 
-    public static String readTextFile(String fileName) throws IOException {
-    	return readTextFile(new FileInputStream(fileName), null);
-    }
-
-    public static String readTextFile(InputStream stream) throws IOException {
-    	return readTextFile(stream, null);
+    public static String readTextFile(String fileName, String charset) throws IOException {
+    	return readTextFile(new FileInputStream(fileName), charset);
     }
 
     public static String readTextFile(InputStream stream, String charset) throws IOException {
@@ -148,11 +144,12 @@ public class FileUtils {
         copy(new ByteArrayInputStream(content), target);
     }
 
-    public static void writeTextFile(String fileName, String content) throws IOException {
-        writeTextFile(new File(fileName), content);
+    public static void writeTextFile(String fileName, String content, String charset) throws IOException {
+        writeTextFile(new File(fileName), content, charset);
     }
 
-    public static void writeTextFile(File target, String content) throws IOException {
-        writeBinaryFile(target, content.getBytes());
+    public static void writeTextFile(File target, String content, String charset) throws IOException {
+        byte[] bytes = charset==null ? content.getBytes() : content.getBytes(charset);
+        writeBinaryFile(target, bytes);
     }
 }

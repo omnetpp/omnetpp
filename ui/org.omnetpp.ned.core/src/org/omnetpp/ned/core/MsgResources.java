@@ -192,7 +192,7 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
     }
 
     private void readMsgFile(IFile file) throws IOException, CoreException {
-        String source = FileUtils.readTextFile(file.getContents());
+        String source = FileUtils.readTextFile(file.getContents(), file.getCharset());
         MsgFileElementEx element = NedTreeUtil.parseMsgSource(source, new SysoutNedErrorStore(), file.toString());
         msgFiles.put(file, element);
         msgElementFiles.put(element, file);

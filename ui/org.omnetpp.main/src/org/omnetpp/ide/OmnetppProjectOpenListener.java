@@ -153,7 +153,7 @@ public class OmnetppProjectOpenListener implements IResourceChangeListener {
     protected boolean projectFileContainsNature(IProject project, String natureId) {
         try {
             File projectFile = project.getLocation().append(".project").toFile();
-            String contents = FileUtils.readTextFile(projectFile);
+            String contents = FileUtils.readTextFile(projectFile, null);
             return contents.contains("<nature>" + natureId + "</nature>"); // keep it simple...
         }
         catch (IOException e) {

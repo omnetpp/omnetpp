@@ -520,7 +520,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
             else if (templateUrl != null) {
                 try {
                     // generic URL, so we expect to find a filelist.txt
-                    String filelistTxt = FileUtils.readTextFile(openFile(FILELIST_FILENAME));
+                    String filelistTxt = FileUtils.readTextFile(openFile(FILELIST_FILENAME), null);
                     fileList = filelistTxt.trim().split("\\s*\n\\s*");
                 } catch (IOException e) {
                     throw CommonPlugin.wrapIntoCoreException("Could not read filelist.txt", e);

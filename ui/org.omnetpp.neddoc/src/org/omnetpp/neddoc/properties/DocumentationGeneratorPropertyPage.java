@@ -277,7 +277,7 @@ public class DocumentationGeneratorPropertyPage
         try {
             ProcessUtils.exec(doxyExecutablePath, new String[] {"-g", fileName}, project.getLocation().toString());
 
-            String content = FileUtils.readTextFile(fileName);
+            String content = FileUtils.readTextFile(fileName, null);
             // AUTO means will be set when generating the documentation based on project settings
             content = replaceDoxygenConfigurationEntry(content, "PROJECT_NAME", project.getName());
             content = replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", "AUTO");
@@ -298,7 +298,7 @@ public class DocumentationGeneratorPropertyPage
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
             content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
             content = replaceDoxygenConfigurationEntry(content, "TAGFILES", OmnetppMainPlugin.getOmnetppRootDir() + "/doc/api/opptags.xml=" + OmnetppMainPlugin.getOmnetppRootDir() + "/doc/api");
-            FileUtils.writeTextFile(fileName, content);
+            FileUtils.writeTextFile(fileName, content, null);
         }
         catch (Exception x) {
             MessageDialog.openError(null, "Documentation Generation",
