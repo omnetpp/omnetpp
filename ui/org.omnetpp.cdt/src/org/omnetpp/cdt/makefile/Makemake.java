@@ -296,14 +296,14 @@ public class Makemake {
             if (!options.fragmentFiles.isEmpty()) {
                 for (String frag : options.fragmentFiles) {
                     makefrags += "# inserted from file '" + frag + "':\n";
-                    makefrags += FileUtils.readTextFile(file(frag)) + "\n";
+                    makefrags += FileUtils.readTextFile(file(frag), null) + "\n";
                 }
             }
             else {
                 String makefragFilename = isNMake ? "makefrag.vc" : "makefrag";
                 if (file(makefragFilename).isFile()) {
                     makefrags += "# inserted from file '" + makefragFilename + "':\n";
-                    makefrags += FileUtils.readTextFile(file(makefragFilename)) + "\n";
+                    makefrags += FileUtils.readTextFile(file(makefragFilename), null) + "\n";
                 }
             }
         } catch (IOException e) {
@@ -397,7 +397,7 @@ public class Makemake {
         Debug.println("generating makefile for " + folder.toString());
         if (template == null) {
             try {
-                template = FileUtils.readTextFile(Makemake.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME));
+                template = FileUtils.readTextFile(Makemake.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME), null);
                 template = template.replace("\r\n", "\n");
             } catch (IOException e) {
                 throw Activator.wrapIntoCoreException(e);

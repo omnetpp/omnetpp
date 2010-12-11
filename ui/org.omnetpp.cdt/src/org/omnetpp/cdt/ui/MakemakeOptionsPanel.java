@@ -55,8 +55,8 @@ import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
-import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
+import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -742,7 +742,7 @@ public class MakemakeOptionsPanel extends Composite {
         IFile makefragFile = sourceFolder.getFile(new Path(makefragFilename));
         if (makefragFile.exists()) {
             try {
-                return FileUtils.readTextFile(makefragFile.getContents());
+                return FileUtils.readTextFile(makefragFile.getContents(), null);
             }
             catch (IOException e1) {
                 throw Activator.wrapIntoCoreException("Cannot read "+makefragFile.toString(), e1);
@@ -761,7 +761,7 @@ public class MakemakeOptionsPanel extends Composite {
                 if (makefragContents == null)
                     makefragFile.delete(true, null);
                 else
-                    FileUtils.writeTextFile(makefragFile.getLocation().toFile(), makefragContents);
+                    FileUtils.writeTextFile(makefragFile.getLocation().toFile(), makefragContents, makefragFile.getCharset());
                 makefragFile.refreshLocal(IResource.DEPTH_ZERO, null);
             }
             catch (IOException e1) {

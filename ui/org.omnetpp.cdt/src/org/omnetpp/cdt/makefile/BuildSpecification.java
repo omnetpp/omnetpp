@@ -168,7 +168,7 @@ public class BuildSpecification implements Cloneable {
         else {
             try {
                 if (buildSpecFile.getContents().read()!='<')
-                    return readBuildSpecFileOld(project, FileUtils.readTextFile(buildSpecFile.getContents()));
+                    return readBuildSpecFileOld(project, FileUtils.readTextFile(buildSpecFile.getContents(),null));
                 BuildSpecification buildSpec = new BuildSpecification(project);
                 DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 Document doc = docBuilder.parse(buildSpecFile.getContents());

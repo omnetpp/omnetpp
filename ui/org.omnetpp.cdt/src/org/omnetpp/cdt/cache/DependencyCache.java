@@ -355,7 +355,7 @@ public class DependencyCache {
      */
     protected static List<Include> parseIncludes(IFile file) throws CoreException {
         try {
-            String contents = FileUtils.readTextFile(file.getContents()) + "\n";
+            String contents = FileUtils.readTextFile(file.getContents(), file.getCharset()) + "\n";
             return parseIncludes(contents);
         }
         catch (Exception e) {

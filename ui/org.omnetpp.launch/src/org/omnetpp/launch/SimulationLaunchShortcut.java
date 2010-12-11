@@ -384,7 +384,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         List<IniSection> result = new ArrayList<IniSection>();
         for (IFile iniFile : iniFiles) {
             try {
-                String iniFileText = FileUtils.readTextFile(iniFile.getContents());
+                String iniFileText = FileUtils.readTextFile(iniFile.getContents(), iniFile.getCharset());
                 if (iniFileText.matches(interestingInifileRegex)) {
                     // inifile looks interesting, so parse it
                     boolean isSameDir = iniFile.getParent().equals(nedFile.getParent());

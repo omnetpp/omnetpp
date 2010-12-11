@@ -87,7 +87,7 @@ public class NewOmnetppClassCreationWizard extends NewClassCreationWizard {
 
         protected void replaceBannerComment(IFile file, String bannerComment, IProgressMonitor monitor) throws CoreException {
             try {
-                String contents = FileUtils.readTextFile(file.getContents());
+                String contents = FileUtils.readTextFile(file.getContents(), file.getCharset());
                 contents = bannerComment + contents.replaceFirst("(?s)^\\s*/\\*.*?\\*/\\s*", "");
                 file.setContents(new ByteArrayInputStream(contents.getBytes()), true, false, monitor);
             }
