@@ -1,0 +1,119 @@
+2010-12-11 Rudolf Hornig 
+
+    * Added plugin customization to force workspace refresh on IDE startup.
+
+2010-12-11 Rudolf Hornig 
+
+    Fixed bug#213. NPE occurred in NedEditorLauncher if the filesystem and the workspace got out of sync.
+
+2010-12-11 Andras Varga 
+
+    * IDE: fix of bug #145: Open NED Type dialog comes up empty on first invocation
+    NedTypeSelectionDialog now contains a INedChangeListener, and any NED
+    change triggers a delayed update of the displayed list.
+
+    * IDE: fix for bug #223: bogus "X seems to be a hand-written makefile" message
+    when the makefile was deleted from the disk behind the IDE's back
+
+2010-12-10 Rudolf Hornig 
+
+    * Changed the default OMNeT++ source code formatter profile to match the current INET coding convention.
+    Profile is using only spaces instead of tabs for indentation.
+
+2010-12-10 Andras Varga 
+
+    * IDE: fix for bug #222: Chinese comments become gibberish in NED files.
+    Solution: wherever possible, save files in the file's own encoding
+    (i.e. charset), using content.getBytes(ifile.getCharset()).
+
+2010-12-06 Rudolf Hornig 
+
+    * IDE: Added a "Clean Selected Projects" menuitem to the project explorer context menu. 
+    This item DOES NOT clean referred projects.
+
+2010-11-10 Rudolf Hornig 
+
+    * Support for Profiling (in addition to Debug and Run modes). (enable to use linuxtools with valgrind)
+
+2010-10-19 Rudolf Hornig 
+
+    * MachO64 parser support added for new CDT projects. Updated error parsers provided by CDT 7.x.
+
+2010-09-30 Rudolf Hornig 
+
+    * Updated the base system to Eclipse 3.6.1
+
+2010-09-22 Andras Varga 
+
+    * IDE: fixed resolution of parametric submodule types in NedTreeTraversal
+
+    * IDE: refined the resolution of parametric submodule types
+    The actual type needs to be resolved in the project of the inifile,
+    not in the project of the compound module that contains the submodule
+    (for example, udpApp's type need not be in StandardHost's project INET,
+    it may also come from a project that has INET as dependency)
+
+2010-07-19 Levente Meszaros 
+
+    * SeqChart: Fixed a NPE.
+
+    * SeqChart: fix handling show/hide [self] message reuses toggle buttons
+    There was some confusion between those buttons, now they toggle showing/hidign
+    only for those arrows that they represent.
+
+    * SeqChart: fix message reuse arrows when affected by a module method call
+    The end point for a message reuse was wrong. It used the event's module of
+    the begin send entry instead of the context module to determine the Y coordinate.
+
+2010-07-13 Tamas Borbely
+
+    * fix issue 180: fixed assert when double coordinate is +-Infinite
+
+    * fix issue 196: use file/configname/runnumber to identify runs of temp chart data
+
+2010-07-13 Tamas Borbely
+
+    * BaseLineChartEditForm: fix issue 182
+    When the line property has the same value for each selected line,
+    then that value is displayed in the control instead of 'No change'.
+
+2010-07-12 Tamas Borbely
+
+    * small layout fix in BaseLineChartEditForm
+
+2010-07-08 Andras Varga 
+
+    * Scave: fix focus problems (bug #188) by using the new FocusManager class
+
+2010-07-07 Andras Varga 
+
+    * Scave: drawing timeouts come now from preferences
+
+    * Scave: time limit facility for line chart plotting
+
+    * Scave: removed smartMode in LinePlot as it was responsible for bug #181
+    Turning off symbols for DOTS line type resulted in empty chart.
+    http://dev.omnetpp.org/bugs/view.php?id=181
+
+    * SeqChart: axis ordering dialog layout improved: buttons move to the right
+
+    * SeqChart: fix: "Show self-messages" button (blue arched arrow) also toggled 
+    self-reuse (green) arrows on the chart
+
+2010-06-23 Levente Meszaros 
+
+    * Sequence Chart: Fix for find text bug. Find text did not work in filtered eventlogs.
+
+    * Cleanup the show/hide flags related to message send/reuse arrows.
+    A couple of renames and minor tweaks, namely arrows are categorized along
+    two axes: reuse/send, self/other.
+
+2010-06-22 Andras Varga 
+
+    * Scave: fix unreadable (black-on-black) filter combo dropdown on ubuntu 10.04
+    in Ubuntu 10.04: in the default theme, combo editfield is black-on-white
+    and dropdown list is white-on-black, so calling setForeground() on the combo
+    will inevitably make one of them unreadable. Workaround: do NOT call
+    getForeground().
+
+2010-06-11  ------ omnetpp-4.1 released ------
