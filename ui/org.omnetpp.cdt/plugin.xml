@@ -401,7 +401,7 @@
             defaultHandler="org.omnetpp.cdt.handlers.CleanSelectedProjects"
             description="Clean the selected project(s) without cleaning referred projects."
             id="org.omnetpp.cdt.cleanSelectedProjects"
-            name="Clean Selected Projects">
+            name="Clean Local">
       </command>
    </extension>
    <extension
@@ -429,7 +429,7 @@
          <command
                commandId="org.omnetpp.cdt.cleanSelectedProjects"
                style="push"
-               tooltip="Cleans the selected project">
+               tooltip="Cleans the selected project only without cleaning projects it is depending on">
             <visibleWhen
                   checkEnabled="false">
                <with
