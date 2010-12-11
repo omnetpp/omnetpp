@@ -34,8 +34,8 @@ public class NedEditorLauncher implements IEditorLauncher {
             IFile file = getNedFile(filePath);
             if (file == null) {
                 MessageDialog.openInformation(workbenchWindow.getShell(),
-                        "NED file not found",
-                        "There is no file on the local filesystem for this workspace path. Please refresh your workspace!");
+                        "NED File Not Found",
+                        "NED file has not been found. Please refresh the workspace.");
                 return;
             }
             INedResources res = NedResourcesPlugin.getNedResources();
