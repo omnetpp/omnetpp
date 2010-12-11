@@ -20,7 +20,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.IDE;
-
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
@@ -33,6 +32,12 @@ public class NedEditorLauncher implements IEditorLauncher {
         IWorkbenchPage page = workbenchWindow.getActivePage();
         try {
             IFile file = getNedFile(filePath);
+            if (file == null) {
+                MessageDialog.openInformation(workbenchWindow.getShell(),
+                        "NED file not found",
+                        "There is no file on the local filesystem for this workspace path. Please refresh your workspace!");
+                return;
+            }
             INedResources res = NedResourcesPlugin.getNedResources();
             if (!ProjectUtils.isOpenOmnetppProject(file.getProject())) {
                 boolean addNature = MessageDialog.openQuestion(workbenchWindow.getShell(),
