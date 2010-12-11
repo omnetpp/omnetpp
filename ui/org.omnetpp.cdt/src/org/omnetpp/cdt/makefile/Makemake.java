@@ -25,8 +25,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.Debug;
@@ -81,7 +83,7 @@ public class Makemake {
             throw new MakemakeException(options.getParseErrors().get(0));
     }
 
-    public static boolean isGeneratedMakefile(IFile file) {
+    public static boolean isGeneratedMakefile(IFile file) throws CoreException {
         try {
             byte[] buffer = new byte[1024];
             file.getContents().read(buffer, 0, buffer.length);
@@ -89,10 +91,7 @@ public class Makemake {
             return text.contains(GENERATED_MAKEFILE_MAGIC_STRING);
         }
         catch (IOException e) {
-            return false;
-        }
-        catch (CoreException e) {
-            return false;
+            throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error accessing " + file.getFullPath(), e));
         }
     }
 
@@ -112,6 +111,7 @@ public class Makemake {
 
         String makefileName = isNMake ? "Makefile.vc" : "Makefile";
         IFile makefile = folder.getFile(new Path(makefileName));
+        makefile.refreshLocal(IResource.DEPTH_ZERO, null);
         if (makefile.exists() && !options.force)
             throw new MakemakeException("use -f to force overwriting existing " + makefile.getFullPath().toString(), false);
         if (makefile.exists() && !isGeneratedMakefile(makefile))
